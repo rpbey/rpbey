@@ -29,6 +29,11 @@ model User {
   discordTag    String?
   role          String?   @default("user")
 
+  // Better Auth admin plugin fields
+  banned        Boolean?  @default(false)
+  banReason     String?
+  banExpires    DateTime?
+
   // Relations
   sessions      Session[]
   accounts      Account[]
