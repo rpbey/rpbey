@@ -1,6 +1,6 @@
 'use client'
 
-import { ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import Box from '@mui/material/Box'
 import { IconNav, MobileNav, IconFooter, ICON_NAV_WIDTH } from '@/components/layout'
 

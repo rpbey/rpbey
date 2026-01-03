@@ -1,6 +1,6 @@
 "use client";
 
-import { createTheme, ThemeOptions } from "@mui/material/styles";
+import { createTheme, type ThemeOptions } from "@mui/material/styles";
 import { fontFamily } from "./fonts";
 
 // RPB Colors - Extracted from Image

@@ -6,7 +6,7 @@ import { AppRouterCacheProvider } from '@mui/material-nextjs/v16-appRouter'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import 'dayjs/locale/fr'
-import { getTheme, ThemeMode } from '@/lib/theme'
+import { getTheme, type ThemeMode } from '@/lib/theme'
 
 interface ThemeContextType {
   mode: ThemeMode

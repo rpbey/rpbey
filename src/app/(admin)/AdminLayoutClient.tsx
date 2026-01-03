@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 import Box from '@mui/material/Box'
 import { AdminSidebar, AdminMobileHeader, ADMIN_DRAWER_WIDTH } from '@/components/layout/AdminSidebar'
 

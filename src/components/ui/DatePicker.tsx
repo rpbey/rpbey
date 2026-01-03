@@ -1,5 +1,5 @@
 import React from 'react';
-import { DatePicker as MuiDatePicker, DatePickerProps as MuiDatePickerProps } from '@mui/x-date-pickers/DatePicker';
+import { DatePicker as MuiDatePicker, type DatePickerProps as MuiDatePickerProps } from '@mui/x-date-pickers/DatePicker';
 
 export type DatePickerProps = MuiDatePickerProps & {
   label?: string;

@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useState, useEffect, useMemo } from "react";
 import { ThemeProvider as MuiThemeProvider } from "@mui/material/styles";
 import { CssBaseline } from "@mui/material";
-import { getTheme, ThemeMode } from "@/lib/theme";
+import { getTheme, type ThemeMode } from "@/lib/theme";
 
 interface ThemeContextType {
   mode: ThemeMode;

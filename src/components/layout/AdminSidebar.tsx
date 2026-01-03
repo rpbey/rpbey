@@ -29,6 +29,8 @@ import {
   BarChart,
   Logout,
   LiveTv,
+  Terminal,
+  Code,
 } from '@mui/icons-material'
 import { signOut, useSession } from '@/lib/auth-client'
 import { TrophyIcon } from '@/components/ui/Icons'
@@ -38,6 +40,8 @@ const DRAWER_WIDTH = 260
 const navItems = [
   { label: 'Vue d\'ensemble', href: '/admin', icon: Dashboard },
   { label: 'Bot Discord', href: '/admin/discord', icon: SmartToy },
+  { label: 'Bot Status', href: '/admin/bot', icon: Code },
+  { label: 'Bot Logs', href: '/admin/bot/logs', icon: Terminal },
   { label: 'Twitch', href: '/admin/twitch', icon: LiveTv },
   { label: 'Tournois', href: '/admin/tournaments', icon: TrophyIcon },
   { label: 'Utilisateurs', href: '/admin/users', icon: People },
