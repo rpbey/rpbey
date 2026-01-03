@@ -1,5 +1,6 @@
 # RPB Dashboard - Dockerfile for Coolify deployment
 # This Dockerfile bypasses Nixpacks to avoid ESM/CJS issues with Prisma 7
+# Build: 2026-01-03-v2
 
 FROM node:22-slim AS base
 
