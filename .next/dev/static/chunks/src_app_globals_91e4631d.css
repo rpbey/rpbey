@@ -1,0 +1,25 @@
+@import "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap";
+/* [project]/src/app/globals.css [app-client] (css) */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  max-width: 100vw;
+  font-family: Inter, sans-serif;
+  overflow-x: hidden;
+}
+
+body {
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+  min-height: 100vh;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/*# sourceMappingURL=src_app_globals_91e4631d.css.map*/

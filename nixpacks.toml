@@ -11,8 +11,9 @@ cacheDirectories = ["/root/.local/share/pnpm/store/v3"]
 paths = ["/app/node_modules/.bin"]
 
 [phases.build]
-# Use npx to run prisma directly instead of pnpm (avoids ESM/CJS issues with @prisma/dev)
-cmds = ["npx prisma generate", "pnpm run build"]
+# Use node_modules/.bin/prisma directly to avoid npx/pnpm ESM issues with @prisma/dev
+# Force Node.js to handle ESM in CommonJS context
+cmds = ["node --experimental-require-module ./node_modules/.bin/prisma generate", "pnpm run build"]
 # Fixed: removed tsconfig.tsbuildinfo from cache as it's a file, not a directory
 cacheDirectories = [".next/cache", "node_modules/.cache"]
 

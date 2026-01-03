@@ -16,10 +16,13 @@ export async function GET() {
     const profile = await prisma.profile.findUnique({
       where: { userId: session.user.id },
       include: {
-        user: true,
-        tournaments: {
+        user: {
           include: {
-            tournament: true,
+            tournaments: {
+              include: {
+                tournament: true,
+              },
+            },
           },
         },
       },
@@ -47,24 +50,21 @@ export async function PATCH(request: Request) {
     }
 
     const body = await request.json()
-    const { bladerName, favoriteBey, beybladeType, experienceLevel, bio } = body
+    const { bladerName, favoriteType, experience, bio } = body
 
     const profile = await prisma.profile.upsert({
       where: { userId: session.user.id },
       update: {
         bladerName,
-        favoriteBey,
-        beybladeType,
-        experienceLevel,
+        favoriteType,
+        experience,
         bio,
       },
       create: {
         userId: session.user.id,
-        discordId: session.user.id,
         bladerName: bladerName ?? session.user.name,
-        favoriteBey,
-        beybladeType,
-        experienceLevel,
+        favoriteType,
+        experience,
         bio,
       },
     })

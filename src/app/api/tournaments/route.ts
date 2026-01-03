@@ -8,9 +8,9 @@ export async function GET() {
       include: {
         participants: {
           include: {
-            profile: {
+            user: {
               include: {
-                user: true,
+                profile: true,
               },
             },
           },
@@ -28,14 +28,14 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const { name, description, date, maxParticipants, challongeId } = body
+    const { name, description, date, maxPlayers, challongeId } = body
 
     const tournament = await prisma.tournament.create({
       data: {
         name,
         description,
         date: new Date(date),
-        maxParticipants: maxParticipants ?? 16,
+        maxPlayers: maxPlayers ?? 64,
         challongeId,
         status: "UPCOMING",
       },

@@ -14,9 +14,9 @@ export async function GET(_request: Request, { params }: RouteParams) {
       include: {
         participants: {
           include: {
-            profile: {
+            user: {
               include: {
-                user: true,
+                profile: true,
               },
             },
           },

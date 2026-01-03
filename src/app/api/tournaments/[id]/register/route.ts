@@ -20,20 +20,15 @@ export async function POST(request: Request, { params }: RouteParams) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    // Get or create user profile
-    let profile = await prisma.profile.findUnique({
+    // Ensure user profile exists
+    await prisma.profile.upsert({
       where: { userId: session.user.id },
+      update: {},
+      create: {
+        userId: session.user.id,
+        bladerName: session.user.name,
+      },
     })
-
-    if (!profile) {
-      profile = await prisma.profile.create({
-        data: {
-          userId: session.user.id,
-          discordId: session.user.id, // Will be updated with real Discord ID
-          bladerName: session.user.name,
-        },
-      })
-    }
 
     // Check if tournament exists
     const tournament = await prisma.tournament.findUnique({
@@ -48,9 +43,9 @@ export async function POST(request: Request, { params }: RouteParams) {
     // Check if already registered
     const existingParticipant = await prisma.tournamentParticipant.findUnique({
       where: {
-        tournamentId_profileId: {
+        tournamentId_userId: {
           tournamentId: id,
-          profileId: profile.id,
+          userId: session.user.id,
         },
       },
     })
@@ -60,7 +55,7 @@ export async function POST(request: Request, { params }: RouteParams) {
     }
 
     // Check if tournament is full
-    if (tournament.maxParticipants && tournament.participants.length >= tournament.maxParticipants) {
+    if (tournament.maxPlayers && tournament.participants.length >= tournament.maxPlayers) {
       return NextResponse.json({ error: "Tournament is full" }, { status: 400 })
     }
 
@@ -68,12 +63,12 @@ export async function POST(request: Request, { params }: RouteParams) {
     const participant = await prisma.tournamentParticipant.create({
       data: {
         tournamentId: id,
-        profileId: profile.id,
+        userId: session.user.id,
       },
       include: {
-        profile: {
+        user: {
           include: {
-            user: true,
+            profile: true,
           },
         },
       },
@@ -99,21 +94,12 @@ export async function DELETE(request: Request, { params }: RouteParams) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    // Get user profile
-    const profile = await prisma.profile.findUnique({
-      where: { userId: session.user.id },
-    })
-
-    if (!profile) {
-      return NextResponse.json({ error: "Profile not found" }, { status: 404 })
-    }
-
     // Delete registration
     await prisma.tournamentParticipant.delete({
       where: {
-        tournamentId_profileId: {
+        tournamentId_userId: {
           tournamentId: id,
-          profileId: profile.id,
+          userId: session.user.id,
         },
       },
     })
