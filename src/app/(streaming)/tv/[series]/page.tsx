@@ -37,15 +37,15 @@ export default async function SeriesPage({ params }: SeriesPageProps) {
     <Container maxWidth="xl" sx={{ py: 4 }}>
       {/* Breadcrumbs */}
       <Breadcrumbs sx={{ mb: 3 }}>
-        <Link
-          component={NextLink}
-          href="/tv"
-          color="inherit"
-          sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}
-        >
-          <Home fontSize="small" />
-          Accueil
-        </Link>
+        <NextLink href="/tv" passHref legacyBehavior>
+          <Link
+            color="inherit"
+            sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}
+          >
+            <Home fontSize="small" />
+            Accueil
+          </Link>
+        </NextLink>
         <Typography color="text.primary">{series.name}</Typography>
       </Breadcrumbs>
 

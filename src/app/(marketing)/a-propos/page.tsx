@@ -326,16 +326,17 @@ export default function AboutPage() {
             >
               Rejoindre le Discord
             </Button>
-            <Button
-              component={Link}
-              href="/tournaments"
-              variant="outlined"
-              size="large"
-              startIcon={<EmojiEvents />}
-              sx={{ px: 4, py: 1.5 }}
-            >
-              Voir les tournois
-            </Button>
+            <Link href="/tournaments" passHref legacyBehavior>
+              <Button
+                component="a"
+                variant="outlined"
+                size="large"
+                startIcon={<EmojiEvents />}
+                sx={{ px: 4, py: 1.5 }}
+              >
+                Voir les tournois
+              </Button>
+            </Link>
           </Stack>
         </Box>
       </Container>
