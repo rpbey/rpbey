@@ -4,6 +4,9 @@ const nextConfig: NextConfig = {
   // Enable React strict mode
   reactStrictMode: true,
 
+  // Output standalone for Docker deployment
+  output: "standalone",
+
   // Experimental features
   experimental: {
     // Enable PPR for faster page loads
