@@ -1,49 +1,77 @@
 "use client"
 
-import { Box, Button, Card, CardContent, Container, Divider, Typography } from "@mui/material"
+import { Box, Button, Card, CardContent, Container, Divider, Typography, Alert } from "@mui/material"
 import Link from "next/link"
 import { signIn } from "@/lib/auth-client"
+import { useSearchParams } from "next/navigation"
+import { Suspense, useState } from "react"
+import { useThemeMode } from "@/components/theme/ThemeRegistry"
 
-export default function SignInPage() {
+function SignInContent() {
+  const searchParams = useSearchParams()
+  const error = searchParams.get("error")
+  const [isLoading, setIsLoading] = useState(false)
+  const { backgroundImage } = useThemeMode()
+
   const handleDiscordSignIn = async () => {
-    await signIn.social({
-      provider: "discord",
-      callbackURL: "/dashboard",
-    })
+    setIsLoading(true)
+    try {
+      await signIn.social({
+        provider: "discord",
+        callbackURL: "/dashboard",
+      })
+    } catch (err) {
+      console.error("Login failed", err)
+      setIsLoading(false)
+    }
   }
 
   return (
-    <Container maxWidth="sm">
-      <Box
-        sx={{
-          minHeight: "100vh",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          py: 4,
-        }}
-      >
-        <Card sx={{ width: "100%", maxWidth: 400 }}>
+    <Box
+      sx={{
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        py: 4,
+        backgroundImage: `url(${backgroundImage})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+      }}
+    >
+      <Container maxWidth="sm">
+        <Card sx={{ width: "100%", maxWidth: 400, borderRadius: 4, boxShadow: 3 }}>
           <CardContent sx={{ p: 4 }}>
             <Box sx={{ textAlign: "center", mb: 4 }}>
               <Typography variant="h4" component="h1" fontWeight="bold" gutterBottom>
-                🌀 Connexion
+                Connexion
               </Typography>
               <Typography variant="body2" color="text.secondary">
                 Connecte-toi à la République Populaire du Beyblade
               </Typography>
             </Box>
 
+            {error && (
+              <Alert severity="error" sx={{ mb: 3 }}>
+                Une erreur est survenue lors de la connexion.
+              </Alert>
+            )}
+
             <Button
               fullWidth
               variant="contained"
               size="large"
               onClick={handleDiscordSignIn}
+              disabled={isLoading}
               sx={{
                 bgcolor: "#5865F2",
                 "&:hover": { bgcolor: "#4752C4" },
                 py: 1.5,
                 mb: 3,
+                borderRadius: 2,
+                textTransform: "none",
+                fontSize: "1.1rem",
+                fontWeight: "bold",
               }}
               startIcon={
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
@@ -51,7 +79,7 @@ export default function SignInPage() {
                 </svg>
               }
             >
-              Continuer avec Discord
+              {isLoading ? "Connexion..." : "Continuer avec Discord"}
             </Button>
 
             <Divider sx={{ my: 3 }}>
@@ -62,13 +90,21 @@ export default function SignInPage() {
 
             <Typography variant="body2" color="text.secondary" textAlign="center">
               Pas encore membre ?{" "}
-              <Link href="https://discord.gg/twdVfesrRj" style={{ color: "#dc2626" }}>
+              <Link href="https://discord.gg/twdVfesrRj" style={{ color: "inherit", fontWeight: "bold", textDecoration: "none" }}>
                 Rejoins le Discord RPB
               </Link>
             </Typography>
           </CardContent>
         </Card>
-      </Box>
-    </Container>
+      </Container>
+    </Box>
+  )
+}
+
+export default function SignInPage() {
+  return (
+    <Suspense fallback={<div>Chargement...</div>}>
+      <SignInContent />
+    </Suspense>
   )
 }

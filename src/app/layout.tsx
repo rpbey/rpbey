@@ -1,18 +1,53 @@
-import type { Metadata } from "next";
-import { AppRouterCacheProvider } from "@mui/material-nextjs/v16-appRouter";
-import { ThemeProvider, CssBaseline } from "@mui/material";
-import theme from "@/lib/theme";
-import "@fontsource/roboto/300.css";
-import "@fontsource/roboto/400.css";
-import "@fontsource/roboto/500.css";
-import "@fontsource/roboto/700.css";
+import type { Metadata, Viewport } from "next";
+import ThemeRegistry from "@/components/theme/ThemeRegistry";
+import { googleSansFlex } from "@/lib/fonts";
 import "./globals.css";
 
+export const viewport: Viewport = {
+  themeColor: "#dc2626",
+  width: "device-width",
+  initialScale: 1,
+};
+
 export const metadata: Metadata = {
-  title: "RPB Dashboard - République Populaire du Beyblade",
-  description: "Dashboard officiel de la communauté Beyblade française",
+  title: {
+    default: "RPB - République Populaire du Beyblade",
+    template: "%s | RPB",
+  },
+  description: "La communauté française de Beyblade X. Tournois, streaming, classements et plus encore.",
+  keywords: ["Beyblade", "Beyblade X", "tournoi", "France", "communauté", "RPB"],
+  authors: [{ name: "RPB" }],
+  creator: "République Populaire du Beyblade",
   icons: {
-    icon: "/favicon.ico",
+    icon: "/logo.png",
+    apple: "/logo.png",
+  },
+  manifest: "/manifest.json",
+  openGraph: {
+    type: "website",
+    locale: "fr_FR",
+    url: "https://rpbey.fr",
+    siteName: "RPB - République Populaire du Beyblade",
+    title: "RPB - République Populaire du Beyblade",
+    description: "La communauté française de Beyblade X. Tournois, streaming, classements et plus encore.",
+    images: [
+      {
+        url: "/banner.png",
+        width: 1200,
+        height: 630,
+        alt: "RPB Banner",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "RPB - République Populaire du Beyblade",
+    description: "La communauté française de Beyblade X. Tournois, streaming, classements.",
+    images: ["/banner.png"],
+  },
+  robots: {
+    index: true,
+    follow: true,
   },
 };
 
@@ -22,14 +57,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fr">
+    <html lang="fr" className={googleSansFlex.variable}>
       <body>
-        <AppRouterCacheProvider>
-          <ThemeProvider theme={theme}>
-            <CssBaseline />
-            {children}
-          </ThemeProvider>
-        </AppRouterCacheProvider>
+        <ThemeRegistry>
+          {children}
+        </ThemeRegistry>
       </body>
     </html>
   );

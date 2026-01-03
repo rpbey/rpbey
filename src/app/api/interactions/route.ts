@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
         data: {
-          content: "🏓 Pong depuis le dashboard RPB !",
+          content: "Pong depuis le dashboard RPB !",
         },
       })
     }

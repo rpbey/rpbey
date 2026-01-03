@@ -47,3 +47,27 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Failed to create tournament" }, { status: 500 })
   }
 }
+
+// DELETE all fake tournaments (without challongeId)
+export async function DELETE(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url)
+    const deleteAll = searchParams.get("all") === "true"
+    
+    if (deleteAll) {
+      // Delete all tournaments (admin action)
+      const deleted = await prisma.tournament.deleteMany({})
+      return NextResponse.json({ deleted: deleted.count, message: "All tournaments deleted" })
+    }
+    
+    // Delete only fake tournaments (no challongeId)
+    const deleted = await prisma.tournament.deleteMany({
+      where: { challongeId: null }
+    })
+    
+    return NextResponse.json({ deleted: deleted.count, message: "Fake tournaments deleted" })
+  } catch (error) {
+    console.error("Error deleting tournaments:", error)
+    return NextResponse.json({ error: "Failed to delete tournaments" }, { status: 500 })
+  }
+}

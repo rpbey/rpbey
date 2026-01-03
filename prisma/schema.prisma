@@ -27,6 +27,7 @@ model User {
   // Discord OAuth
   discordId     String?   @unique
   discordTag    String?
+  role          String?   @default("user")
 
   // Relations
   sessions      Session[]
