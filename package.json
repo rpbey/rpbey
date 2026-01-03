@@ -1,0 +1,46 @@
+{
+  "name": "rpb-dashboard",
+  "version": "1.0.0",
+  "description": "Dashboard officiel de la République Populaire du Beyblade",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "prisma generate && next build",
+    "start": "next start",
+    "lint": "next lint",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:migrate": "prisma migrate dev",
+    "db:studio": "prisma studio",
+    "db:seed": "tsx prisma/seed.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.27.0",
+  "dependencies": {
+    "@emotion/cache": "^11.14.0",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mui/material": "^7.3.6",
+    "@mui/material-nextjs": "^7.3.6",
+    "@prisma/adapter-pg": "^7.2.0",
+    "@prisma/client": "^7.2.0",
+    "better-auth": "^1.4.10",
+    "discord-interactions": "^4.4.0",
+    "dotenv": "^17.2.3",
+    "next": "^16.1.1",
+    "pg": "^8.16.3",
+    "prisma": "^7.2.0",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3"
+  },
+  "devDependencies": {
+    "@types/node": "^25.0.3",
+    "@types/pg": "^8.16.0",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  }
+}

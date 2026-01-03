@@ -1,0 +1,30 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Next.js: Debug Server",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["dev"],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "skipFiles": ["<node_internals>/**"],
+      "envFile": "${workspaceFolder}/.env"
+    },
+    {
+      "name": "Next.js: Debug Full Stack",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["dev"],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "serverReadyAction": {
+        "pattern": "- Local:.+(https?://.+)",
+        "uriFormat": "%s",
+        "action": "debugWithChrome"
+      }
+    }
+  ]
+}
