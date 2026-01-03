@@ -2,7 +2,8 @@
 # See: https://nixpacks.com/docs/configuration/file
 
 [phases.setup]
-nixPkgs = ["nodejs_22", "pnpm-10_x", "openssl"]
+# Use Node.js 24 which has better ESM/CJS compatibility
+nixPkgs = ["nodejs_24", "pnpm-10_x", "openssl"]
 aptPkgs = ["curl", "wget"]
 
 [phases.install]
@@ -11,9 +12,9 @@ cacheDirectories = ["/root/.local/share/pnpm/store/v3"]
 paths = ["/app/node_modules/.bin"]
 
 [phases.build]
-# Use node_modules/.bin/prisma directly to avoid npx/pnpm ESM issues with @prisma/dev
-# Force Node.js to handle ESM in CommonJS context
-cmds = ["node --experimental-require-module ./node_modules/.bin/prisma generate", "pnpm run build"]
+# Run prisma generate using the binary directly, then build Next.js
+# The --no-engine flag tells Prisma to skip downloading query engine (already bundled)
+cmds = ["./node_modules/.bin/prisma generate", "pnpm run build"]
 # Fixed: removed tsconfig.tsbuildinfo from cache as it's a file, not a directory
 cacheDirectories = [".next/cache", "node_modules/.cache"]
 
