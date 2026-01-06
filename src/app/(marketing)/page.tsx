@@ -12,16 +12,12 @@ import {
   Leaderboard,
   Groups,
   ArrowForward,
-  ShoppingBag,
-  Newspaper,
-  Bolt,
-  Star,
 } from '@mui/icons-material'
 import { DiscordIcon, TrophyIcon, DiscordStatusCard } from '@/components/ui'
-import { motion, useScroll, useTransform, useSpring, AnimatePresence } from 'framer-motion'
+import { motion, useScroll, useTransform, useSpring } from 'framer-motion'
 import { ChallongeBracket } from '@/components/tournaments'
 import { useThemeMode } from '@/components/theme/ThemeRegistry'
-import { Card, CardContent, CardMedia, CardActionArea, Chip, useMediaQuery, useTheme } from '@mui/material'
+import { useMediaQuery, useTheme } from '@mui/material'
 
 export default function HomePage() {
   const { backgroundImage, mode } = useThemeMode()
@@ -218,210 +214,101 @@ export default function HomePage() {
         </Container>
       </Box>
 
-      {/* Quick Access Grid (Android/App Style) */}
-      <Container maxWidth="lg" sx={{ mt: { xs: -4, md: -6 }, position: 'relative', zIndex: 10 }}>
-        <Grid container spacing={2}>
-          {[
-            { label: 'Classement', icon: <Leaderboard sx={{ fontSize: 32 }} />, href: '/rankings', color: '#6366f1' },
-            { label: 'News X', icon: <Newspaper sx={{ fontSize: 32 }} />, href: '/news', color: '#f59e0b' },
-            { label: 'Lineup', icon: <ShoppingBag sx={{ fontSize: 32 }} />, href: '/lineup', color: '#10b981' },
-            { label: 'Communauté', icon: <Groups sx={{ fontSize: 32 }} />, href: '/notre-equipe', color: '#ec4899' },
-          ].map((item, i) => (
-            <Grid key={item.label} size={{ xs: 6, sm: 3 }}>
-              <Card
-                component={motion.div}
-                whileHover={{ y: -8 }}
-                whileTap={{ scale: 0.98 }}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                sx={{ 
-                  borderRadius: 5, 
-                  bgcolor: (theme) => alpha(theme.palette.background.paper, 0.9),
-                  backdropFilter: 'blur(10px)',
-                  border: '1px solid',
-                  borderColor: 'divider',
-                  textAlign: 'center',
-                }}
-              >
-                <CardActionArea component={Link} href={item.href} sx={{ p: 3 }}>
-                  <Box sx={{ color: item.color, mb: 1, display: 'flex', justifyContent: 'center' }}>
-                    {item.icon}
-                  </Box>
-                  <Typography variant="subtitle1" fontWeight="bold">
-                    {item.label}
-                  </Typography>
-                </CardActionArea>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
+      {/* Bracket Section */}
+      <Container maxWidth="lg" sx={{ py: 15 }}>
+        <Box
+          component={motion.div}
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.8 }}
+        >
+          <Typography
+            variant="h3"
+            fontWeight="bold"
+            textAlign="center"
+            sx={{ mb: 2 }}
+          >
+            BEY-TAMASHII SERIES #1
+          </Typography>
+          <Typography
+            variant="h6"
+            color="text.secondary"
+            textAlign="center"
+            sx={{ mb: 8, maxWidth: 600, mx: 'auto' }}
+          >
+            Suivez l'arbre du tournoi en direct et ne manquez aucun match !
+          </Typography>
+        </Box>
+
+        <Box
+          component={motion.div}
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+        >
+          <ChallongeBracket 
+            challongeId="rpbey" 
+            height={700}
+            title="Arbre Officiel - BEY-TAMASHII SERIES #1" 
+          />
+        </Box>
       </Container>
 
-      {/* Featured Items / News Section */}
-      <Box sx={{ py: 12, position: 'relative' }}>
-        <Container maxWidth="lg">
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', mb: 6 }}>
-            <Box>
-              <Typography variant="overline" sx={{ color: 'primary.main', fontWeight: 'bold', letterSpacing: 2 }}>
-                ACTUALITÉS
-              </Typography>
-              <Typography variant="h3" fontWeight="bold">
-                Le dernier cri de Gear Sports
-              </Typography>
-            </Box>
-            <Button endIcon={<ArrowForward />} sx={{ fontWeight: 'bold' }}>
-              Voir tout
-            </Button>
-          </Box>
-
-          <Grid container spacing={3}>
-            {[
-              { title: 'Bey-Tamashii #1: Les inscriptions sont ouvertes!', date: '6 janv. 2026', image: '/news/bt1.jpg', tag: 'Évènement' },
-              { title: 'UX-01 Dran Buster: Analyse complète du Bit Accel', date: '4 janv. 2026', image: '/news/dran.jpg', tag: 'Analyse' },
-              { title: 'Nouveau format 3on3: Ce qu\'il faut savoir', date: '2 janv. 2026', image: '/news/rules.jpg', tag: 'Règlement' },
-            ].map((news, i) => (
-              <Grid key={i} size={{ xs: 12, sm: 4 }}>
-                <Card
-                  component={motion.div}
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.2 }}
-                  sx={{ borderRadius: 6, overflow: 'hidden', height: '100%' }}
-                >
-                  <CardActionArea sx={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                    <Box sx={{ position: 'relative', width: '100%', pt: '56.25%', bgcolor: 'action.hover' }}>
-                      <Box 
-                        component="img" 
-                        src={news.image} 
-                        alt={news.title}
-                        sx={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }}
-                        onError={(e: any) => e.target.src = 'https://via.placeholder.com/800x450?text=News'}
-                      />
-                      <Chip 
-                        label={news.tag} 
-                        size="small" 
-                        sx={{ position: 'absolute', top: 16, right: 16, fontWeight: 'bold', bgcolor: 'background.paper', backdropFilter: 'blur(4px)' }} 
-                      />
-                    </Box>
-                    <CardContent sx={{ p: 3, flexGrow: 1 }}>
-                      <Typography variant="caption" color="text.secondary" sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                         {news.date}
-                      </Typography>
-                      <Typography variant="h6" fontWeight="bold" sx={{ mb: 2, lineHeight: 1.3 }}>
-                        {news.title}
-                      </Typography>
-                    </CardContent>
-                  </CardActionArea>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
-        </Container>
-      </Box>
-
-      {/* Bracket Section with App Feel */}
-      <Box sx={{ py: 12, bgcolor: (theme) => alpha(theme.palette.primary.main, 0.03) }}>
-        <Container maxWidth="lg">
-          <Box sx={{ textAlign: 'center', mb: 8 }}>
-            <Chip icon={<Star />} label="TOURNOI EN COURS" color="primary" variant="outlined" sx={{ mb: 2, fontWeight: 'bold' }} />
-            <Typography variant="h2" fontWeight="900" sx={{ mb: 2 }}>
-              BEY-TAMASHII #1
-            </Typography>
-            <Typography variant="h6" color="text.secondary" sx={{ maxWidth: 700, mx: 'auto' }}>
-              La compétition bat son plein au Dernier Bar Avant la Fin du Monde. Suivez les affrontements en temps réel !
-            </Typography>
-          </Box>
-
-          <Card
-            sx={{ 
-              borderRadius: 8, 
-              border: '1px solid', 
-              borderColor: 'divider',
-              boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
-              overflow: 'hidden'
-            }}
-          >
-            <ChallongeBracket 
-              challongeId="rpbey" 
-              height={600}
-            />
-          </Card>
-        </Container>
-      </Box>
-
-      {/* Features / Stats */}
-      <Container maxWidth="lg" sx={{ py: 15 }}>
-        <Grid container spacing={10} alignItems="center">
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Typography variant="h2" fontWeight="bold" sx={{ mb: 4 }}>
-              Pourquoi rejoindre la RPB ?
-            </Typography>
-            <Stack spacing={4}>
-              {[
-                { title: 'Tournois Réguliers', desc: 'Des évènements hebdomadaires et mensuels pour tous les niveaux.', icon: <Bolt color="primary" /> },
-                { title: 'Classement National', desc: 'Grimpez dans le ranking et devenez le Blader numéro 1 de France.', icon: <Star color="primary" /> },
-                { title: 'Entraide & Deckbuilding', desc: 'Partagez vos combos et recevez des conseils des meilleurs joueurs.', icon: <Groups color="primary" /> },
-              ].map((f, i) => (
-                <Box key={i} sx={{ display: 'flex', gap: 3 }}>
-                  <Box sx={{ 
-                    minWidth: 56, 
-                    height: 56, 
-                    borderRadius: 3, 
-                    bgcolor: (theme) => alpha(theme.palette.primary.main, 0.1),
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                  }}>
-                    {f.icon}
-                  </Box>
-                  <Box>
-                    <Typography variant="h6" fontWeight="bold" gutterBottom>{f.title}</Typography>
-                    <Typography color="text.secondary">{f.desc}</Typography>
-                  </Box>
-                </Box>
-              ))}
-            </Stack>
-          </Grid>
-          <Grid size={{ xs: 12, md: 6 }}>
-             <Box
+      {/* CTA Section */}
+      <Container maxWidth="md" sx={{ py: 15, textAlign: 'center' }}>
+        <Box
+          component={motion.div}
+          initial={{ opacity: 0, scale: 0.9 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+        >
+          <Typography variant="h3" fontWeight="bold" gutterBottom>
+            Prêt à rejoindre la communauté ?
+          </Typography>
+          <Typography variant="h6" color="text.secondary" sx={{ mb: 5 }}>
+            Inscris-toi gratuitement et participe à nos tournois
+          </Typography>
+          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} justifyContent="center">
+            <Button
+              component={Link}
+              href="/sign-up"
+              variant="contained"
+              size="large"
               sx={{
-                position: 'relative',
-                '&::before': {
-                  content: '""',
-                  position: 'absolute',
-                  top: '-10%',
-                  right: '-10%',
-                  width: '120%',
-                  height: '120%',
-                  background: (theme) => `radial-gradient(circle, ${alpha(theme.palette.primary.main, 0.1)} 0%, transparent 70%)`,
-                  zIndex: -1,
-                }
+                px: 6,
+                py: 1.5,
+                borderRadius: 3,
+                fontSize: '1.1rem',
+                textTransform: 'none',
+                fontWeight: 'bold',
+                boxShadow: '0 8px 20px rgba(220, 38, 38, 0.3)',
               }}
-             >
-              <Card sx={{ borderRadius: 10, p: 4, bgcolor: 'background.paper', border: '1px solid', borderColor: 'divider' }}>
-                <Stack spacing={3}>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Typography variant="h5" fontWeight="bold">Bladers Actifs</Typography>
-                    <Typography variant="h4" fontWeight="900" color="primary">500+</Typography>
-                  </Box>
-                  <Divider />
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Typography variant="h5" fontWeight="bold">Tournois Joués</Typography>
-                    <Typography variant="h4" fontWeight="900" color="primary">120+</Typography>
-                  </Box>
-                  <Divider />
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Typography variant="h5" fontWeight="bold">Parties Lancées</Typography>
-                    <Typography variant="h4" fontWeight="900" color="primary">1.5k+</Typography>
-                  </Box>
-                </Stack>
-              </Card>
-             </Box>
-          </Grid>
-        </Grid>
+            >
+              Créer un compte
+            </Button>
+            <Button
+              component={Link}
+              href="/sign-in"
+              variant="outlined"
+              size="large"
+              sx={{
+                px: 6,
+                py: 1.5,
+                borderRadius: 3,
+                fontSize: '1.1rem',
+                textTransform: 'none',
+                fontWeight: 'bold',
+                borderWidth: 2,
+                '&:hover': { borderWidth: 2 },
+              }}
+            >
+              Se connecter
+            </Button>
+          </Stack>
+        </Box>
       </Container>
     </>
   )
