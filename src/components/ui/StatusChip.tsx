@@ -71,19 +71,42 @@ const matchStatusConfig: Record<
 }
 
 interface StatusChipProps extends Omit<ChipProps, 'color' | 'label' | 'icon'> {
-  status: TournamentStatus | UserStatus | MatchStatus
-  type: 'tournament' | 'user' | 'match'
+  status?: TournamentStatus | UserStatus | MatchStatus
+  type?: 'tournament' | 'user' | 'match' | 'generic'
+  label?: string
+  customColor?: string
   showIcon?: boolean
 }
 
 export function StatusChip({
   status,
   type,
+  label,
+  customColor,
   showIcon = true,
   size = 'small',
+  sx,
   ...props
 }: StatusChipProps) {
   let config: { label: string; color: ChipProps['color']; icon?: React.ReactElement }
+
+  if (type === 'generic' || (!type && label)) {
+    return (
+      <Chip
+        label={label || status}
+        size={size}
+        sx={{
+          ...(customColor ? {
+            bgcolor: customColor,
+            color: 'white',
+            fontWeight: 600,
+          } : {}),
+          ...sx
+        }}
+        {...props}
+      />
+    )
+  }
 
   switch (type) {
     case 'tournament':
@@ -96,7 +119,7 @@ export function StatusChip({
       config = matchStatusConfig[status as MatchStatus]
       break
     default:
-      config = { label: status, color: 'default' }
+      config = { label: status || label || '', color: 'default' }
   }
 
   return (

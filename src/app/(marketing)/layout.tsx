@@ -7,7 +7,7 @@ export const metadata: Metadata = {
     default: 'RPB - République Populaire du Beyblade',
     template: '%s | RPB',
   },
-  description: 'La communauté française de Beyblade. Tournois, streaming, classements et plus encore.',
+  description: 'La communauté française de Beyblade. Tournois, classements et plus encore.',
 }
 
 export default function MarketingLayout({

@@ -1,0 +1,170 @@
+'use client'
+
+/**
+ * BeyBuilder - Component to build a single Bey (Blade + Ratchet + Bit)
+ */
+
+import Box from '@mui/material/Box'
+import Paper from '@mui/material/Paper'
+import Typography from '@mui/material/Typography'
+import TextField from '@mui/material/TextField'
+import Stack from '@mui/material/Stack'
+import Chip from '@mui/material/Chip'
+import { PartSelector } from './PartSelector'
+import type { Part } from '@prisma/client'
+
+export interface BeyData {
+  blade: Part | null
+  ratchet: Part | null
+  bit: Part | null
+  nickname: string
+}
+
+interface BeyBuilderProps {
+  position: number
+  data: BeyData
+  onChange: (data: BeyData) => void
+  usedPartIds: string[]
+  disabled?: boolean
+}
+
+function calculateStats(blade: Part | null): {
+  attack: number
+  defense: number
+  stamina: number
+} | null {
+  if (!blade) return null
+  return {
+    attack: blade.attack ?? 0,
+    defense: blade.defense ?? 0,
+    stamina: blade.stamina ?? 0,
+  }
+}
+
+function getBeyName(data: BeyData): string {
+  const parts = [
+    data.blade?.name,
+    data.ratchet?.name,
+    data.bit?.name,
+  ].filter(Boolean)
+
+  return parts.join(' ') || 'Bey non configuré'
+}
+
+export function BeyBuilder({
+  position,
+  data,
+  onChange,
+  usedPartIds,
+  disabled = false,
+}: BeyBuilderProps) {
+  const stats = calculateStats(data.blade)
+  const beyName = getBeyName(data)
+  const isComplete = data.blade && data.ratchet && data.bit
+
+  // Filter out current bey's parts from usedPartIds
+  const currentPartIds = [data.blade?.id, data.ratchet?.id, data.bit?.id].filter(
+    Boolean
+  ) as string[]
+  const otherUsedPartIds = usedPartIds.filter(
+    (id) => !currentPartIds.includes(id)
+  )
+
+  return (
+    <Paper
+      elevation={2}
+      sx={{
+        p: 2,
+        borderLeft: 4,
+        borderColor: isComplete ? 'primary.main' : 'grey.400',
+      }}
+    >
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          mb: 2,
+        }}
+      >
+        <Typography variant="subtitle1" fontWeight="bold">
+          Bey #{position}
+        </Typography>
+        {isComplete && (
+          <Chip
+            size="small"
+            label="Complet"
+            color="success"
+            variant="outlined"
+          />
+        )}
+      </Box>
+
+      <Stack spacing={2}>
+        <TextField
+          label="Surnom (optionnel)"
+          value={data.nickname}
+          onChange={(e) => onChange({ ...data, nickname: e.target.value })}
+          disabled={disabled}
+          size="small"
+          placeholder={beyName}
+          fullWidth
+        />
+
+        <PartSelector
+          type="BLADE"
+          value={data.blade}
+          onChange={(blade) => onChange({ ...data, blade })}
+          disabled={disabled}
+          disabledPartIds={otherUsedPartIds}
+        />
+
+        <PartSelector
+          type="RATCHET"
+          value={data.ratchet}
+          onChange={(ratchet) => onChange({ ...data, ratchet })}
+          disabled={disabled}
+          disabledPartIds={otherUsedPartIds}
+        />
+
+        <PartSelector
+          type="BIT"
+          value={data.bit}
+          onChange={(bit) => onChange({ ...data, bit })}
+          disabled={disabled}
+          disabledPartIds={otherUsedPartIds}
+        />
+
+        {stats && (
+          <Box
+            sx={{
+              display: 'flex',
+              gap: 2,
+              pt: 1,
+              borderTop: 1,
+              borderColor: 'divider',
+            }}
+          >
+            <Chip
+              size="small"
+              label={`ATK ${stats.attack}`}
+              sx={{ bgcolor: 'error.main', color: 'white' }}
+            />
+            <Chip
+              size="small"
+              label={`DEF ${stats.defense}`}
+              sx={{ bgcolor: 'info.main', color: 'white' }}
+            />
+            <Chip
+              size="small"
+              label={`STA ${stats.stamina}`}
+              sx={{ bgcolor: 'success.main', color: 'white' }}
+            />
+          </Box>
+        )}
+      </Stack>
+    </Paper>
+  )
+}
+
+export type { BeyData }

@@ -16,8 +16,8 @@ export default function DashboardRedirect() {
         if (session.user.role === "admin") {
           router.replace("/admin")
         } else {
-          // Regular users go to streams page
-          router.replace("/streams")
+          // Regular users go to TV page
+          router.replace("/tv")
         }
       } else {
         // Not logged in, redirect to sign-in

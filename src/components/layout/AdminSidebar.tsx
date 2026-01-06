@@ -31,6 +31,7 @@ import {
   LiveTv,
   Terminal,
   Code,
+  Article,
 } from '@mui/icons-material'
 import { signOut, useSession } from '@/lib/auth-client'
 import { TrophyIcon } from '@/components/ui/Icons'
@@ -40,10 +41,11 @@ const DRAWER_WIDTH = 260
 const navItems = [
   { label: 'Vue d\'ensemble', href: '/admin', icon: Dashboard },
   { label: 'Bot Discord', href: '/admin/discord', icon: SmartToy },
-  { label: 'Bot Status', href: '/admin/bot', icon: Code },
-  { label: 'Bot Logs', href: '/admin/bot/logs', icon: Terminal },
-  { label: 'Twitch', href: '/admin/twitch', icon: LiveTv },
+  { label: 'Statut du Bot', href: '/admin/bot', icon: Code },
+  { label: 'Logs du Bot', href: '/admin/bot/logs', icon: Terminal },
+  { label: 'Contenu du Site', href: '/admin/content', icon: Article },
   { label: 'Tournois', href: '/admin/tournaments', icon: TrophyIcon },
+  { label: 'Équipe', href: '/admin/staff', icon: People },
   { label: 'Utilisateurs', href: '/admin/users', icon: People },
   { label: 'Statistiques', href: '/admin/stats', icon: BarChart },
   { label: 'Paramètres', href: '/admin/settings', icon: Settings },

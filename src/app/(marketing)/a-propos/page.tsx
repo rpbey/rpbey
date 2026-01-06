@@ -19,36 +19,50 @@ import {
 } from '@mui/icons-material'
 import { PageHeader } from '@/components/ui'
 import { DiscordIcon } from '@/components/ui/Icons'
+import prisma from '@/lib/prisma'
+import { getBotStatus } from '@/lib/bot'
+import type { ContentBlock } from '@prisma/client'
+import { headers } from 'next/headers'
 
 export const metadata = {
   title: 'À Propos',
   description: 'Découvrez la République Populaire du Beyblade, la communauté française de Beyblade X.',
 }
 
-const values = [
+const ICON_MAP: Record<string, any> = {
+  Groups,
+  EmojiEvents,
+  Favorite,
+  Shield,
+  Gavel,
+  Star,
+}
+
+// Fallback data
+const DEFAULT_VALUES = [
   {
-    icon: Groups,
+    icon: 'Groups',
     title: 'Communauté',
     description: 'Une famille de passionnés qui partagent la même passion pour Beyblade.',
   },
   {
-    icon: EmojiEvents,
+    icon: 'EmojiEvents',
     title: 'Compétition',
     description: 'Des tournois réguliers pour tous les niveaux, du débutant au champion.',
   },
   {
-    icon: Favorite,
+    icon: 'Favorite',
     title: 'Passion',
     description: 'L\'amour du Beyblade nous unit depuis la première génération.',
   },
   {
-    icon: Shield,
+    icon: 'Shield',
     title: 'Fair-play',
     description: 'Le respect et la sportivité sont au cœur de notre communauté.',
   },
 ]
 
-const rules = [
+const DEFAULT_RULES = [
   {
     title: 'Respect mutuel',
     description: 'Traitez tous les membres avec respect et courtoisie. Aucune forme de harcèlement, discrimination ou comportement toxique ne sera tolérée.',
@@ -71,16 +85,72 @@ const rules = [
   },
 ]
 
-const team = [
-  {
-    name: 'Yohan',
-    role: 'Fondateur & Développeur',
-    avatar: '/avatars/yohan.png',
-    description: 'Créateur de la RPB et développeur du bot et du dashboard.',
-  },
-]
+const DEFAULT_INTRO = `La **République Populaire du Beyblade** (RPB) est née de la passion d'un groupe de fans français déterminés à créer la meilleure communauté Beyblade de l'hexagone.
 
-export default function AboutPage() {
+Avec l'arrivée de **Beyblade X**, une nouvelle ère s'ouvre pour notre communauté. Nous organisons des tournois réguliers et offrons une plateforme complète pour les bladers français.
+
+Que tu sois un vétéran des premières générations ou un nouveau venu découvrant Beyblade X, tu es le bienvenu dans notre communauté !`
+
+async function getContent(slug: string) {
+  try {
+    const block = await prisma.contentBlock.findUnique({
+      where: { slug },
+    })
+    return block
+  } catch (error) {
+    console.error(`Failed to fetch content block: ${slug}`, error)
+    return null
+  }
+}
+
+export default async function AboutPage() {
+  await headers()
+  const [botStatus, tournamentCount, introBlock, valuesBlock, rulesBlock] = await Promise.all([
+    getBotStatus(),
+    prisma.tournament.count(),
+    getContent('about-intro'),
+    getContent('about-values'),
+    getContent('about-rules'),
+  ])
+
+  const memberCount = botStatus?.memberCount || 500
+  const displayMemberCount = memberCount > 500 ? `${memberCount}+` : memberCount.toString()
+  const displayTournamentCount = tournamentCount > 20 ? `${tournamentCount}+` : tournamentCount.toString()
+
+  const introText = introBlock?.content || DEFAULT_INTRO
+  
+  let values = DEFAULT_VALUES
+  if (valuesBlock?.content) {
+    try {
+      values = JSON.parse(valuesBlock.content)
+    } catch (e) {
+      console.error('Failed to parse values block', e)
+    }
+  }
+
+  let rules = DEFAULT_RULES
+  if (rulesBlock?.content) {
+    try {
+      rules = JSON.parse(rulesBlock.content)
+    } catch (e) {
+      console.error('Failed to parse rules block', e)
+    }
+  }
+
+  // Helper to render intro text with basic formatting (bold and newlines)
+  const renderIntro = (text: string) => {
+    return text.split('\n\n').map((paragraph, i) => (
+      <Typography 
+        key={i} 
+        variant="body1" 
+        sx={{ mb: 2, fontSize: '1.1rem', lineHeight: 1.8 }}
+        dangerouslySetInnerHTML={{ 
+          __html: paragraph.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') 
+        }}
+      />
+    ))
+  }
+
   return (
     <>
       {/* Hero Section */}
@@ -131,20 +201,7 @@ export default function AboutPage() {
           </Typography>
           <Grid container spacing={4}>
             <Grid size={{ xs: 12, md: 7 }}>
-              <Typography variant="body1" sx={{ mb: 2, fontSize: '1.1rem', lineHeight: 1.8 }}>
-                La <strong>République Populaire du Beyblade</strong> (RPB) est née de la passion 
-                d'un groupe de fans français déterminés à créer la meilleure communauté Beyblade 
-                de l'hexagone.
-              </Typography>
-              <Typography variant="body1" sx={{ mb: 2, fontSize: '1.1rem', lineHeight: 1.8 }}>
-                Avec l'arrivée de <strong>Beyblade X</strong>, une nouvelle ère s'ouvre pour notre 
-                communauté. Nous organisons des tournois réguliers, proposons du streaming des 
-                animes, et offrons une plateforme complète pour les bladers français.
-              </Typography>
-              <Typography variant="body1" sx={{ fontSize: '1.1rem', lineHeight: 1.8 }}>
-                Que tu sois un vétéran des premières générations ou un nouveau venu découvrant 
-                Beyblade X, tu es le bienvenu dans notre communauté !
-              </Typography>
+              {renderIntro(introText)}
             </Grid>
             <Grid size={{ xs: 12, md: 5 }}>
               <Card
@@ -161,13 +218,13 @@ export default function AboutPage() {
                 }}
               >
                 <Typography variant="h3" fontWeight="bold" sx={{ mb: 1 }}>
-                  500+
+                  {displayMemberCount}
                 </Typography>
                 <Typography variant="h6" sx={{ mb: 3, opacity: 0.9 }}>
                   Membres sur Discord
                 </Typography>
                 <Typography variant="h3" fontWeight="bold" sx={{ mb: 1 }}>
-                  20+
+                  {displayTournamentCount}
                 </Typography>
                 <Typography variant="h6" sx={{ opacity: 0.9 }}>
                   Tournois organisés
@@ -183,44 +240,47 @@ export default function AboutPage() {
             Nos Valeurs
           </Typography>
           <Grid container spacing={3}>
-            {values.map((value) => (
-              <Grid key={value.title} size={{ xs: 12, sm: 6, md: 3 }}>
-                <Card
-                  elevation={0}
-                  sx={{
-                    textAlign: 'center',
-                    p: 3,
-                    height: '100%',
-                    border: '1px solid',
-                    borderColor: 'divider',
-                    borderRadius: 3,
-                    transition: 'all 0.3s',
-                    '&:hover': {
-                      borderColor: 'primary.main',
-                      transform: 'translateY(-4px)',
-                    },
-                  }}
-                >
-                  <Avatar
+            {values.map((value: any) => {
+              const Icon = ICON_MAP[value.icon] || Groups
+              return (
+                <Grid key={value.title} size={{ xs: 12, sm: 6, md: 3 }}>
+                  <Card
+                    elevation={0}
                     sx={{
-                      bgcolor: 'primary.main',
-                      width: 64,
-                      height: 64,
-                      mx: 'auto',
-                      mb: 2,
+                      textAlign: 'center',
+                      p: 3,
+                      height: '100%',
+                      border: '1px solid',
+                      borderColor: 'divider',
+                      borderRadius: 3,
+                      transition: 'all 0.3s',
+                      '&:hover': {
+                        borderColor: 'primary.main',
+                        transform: 'translateY(-4px)',
+                      },
                     }}
                   >
-                    <value.icon sx={{ fontSize: 32 }} />
-                  </Avatar>
-                  <Typography variant="h6" fontWeight="bold" sx={{ mb: 1 }}>
-                    {value.title}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {value.description}
-                  </Typography>
-                </Card>
-              </Grid>
-            ))}
+                    <Avatar
+                      sx={{
+                        bgcolor: 'primary.main',
+                        width: 64,
+                        height: 64,
+                        mx: 'auto',
+                        mb: 2,
+                      }}
+                    >
+                      <Icon sx={{ fontSize: 32 }} />
+                    </Avatar>
+                    <Typography variant="h6" fontWeight="bold" sx={{ mb: 1 }}>
+                      {value.title}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {value.description}
+                    </Typography>
+                  </Card>
+                </Grid>
+              )
+            })}
           </Grid>
         </Box>
 
@@ -257,7 +317,7 @@ export default function AboutPage() {
           </Card>
 
           <Grid container spacing={3}>
-            {rules.map((rule, index) => (
+            {rules.map((rule: any, index: number) => (
               <Grid key={rule.title} size={{ xs: 12, md: 6 }}>
                 <Card
                   elevation={0}

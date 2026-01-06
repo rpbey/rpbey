@@ -10,20 +10,36 @@ export interface User {
 }
 
 // Tournament types
+// NOTE: These types mirror the Prisma schema - use Prisma types directly when possible
 export interface Tournament {
   id: string
   name: string
   description: string | null
-  startDate: Date
-  endDate: Date | null
-  status: TournamentStatus
-  maxParticipants: number | null
+  date: Date
+  location: string | null
+  format: string
+  maxPlayers: number
   challongeId: string | null
+  challongeUrl: string | null
+  challongeState: string | null
+  registrationStart: Date | null
+  registrationEnd: Date | null
+  announcementMessageId: string | null
+  channelId: string | null
+  status: TournamentStatus
   createdAt: Date
   updatedAt: Date
 }
 
-export type TournamentStatus = 'DRAFT' | 'OPEN' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED'
+// Matches Prisma enum TournamentStatus
+export type TournamentStatus =
+  | 'UPCOMING'
+  | 'REGISTRATION_OPEN'
+  | 'REGISTRATION_CLOSED'
+  | 'CHECKIN'
+  | 'UNDERWAY'
+  | 'COMPLETE'
+  | 'CANCELLED'
 
 // Participant types
 export interface Participant {
@@ -45,14 +61,15 @@ export interface Match {
   player1Id: string | null
   player2Id: string | null
   winnerId: string | null
-  score1: number | null
-  score2: number | null
-  status: MatchStatus
-  scheduledAt: Date | null
-  completedAt: Date | null
+  score: string | null // Format: "2-1", "3-0", etc.
+  state: MatchState
+  challongeMatchId: string | null
+  createdAt: Date
+  updatedAt: Date
 }
 
-export type MatchStatus = 'PENDING' | 'IN_PROGRESS' | 'COMPLETED' | 'BYE'
+// Matches the 'state' field in TournamentMatch model
+export type MatchState = 'pending' | 'open' | 'complete'
 
 // API Response types
 export interface ApiResponse<T> {

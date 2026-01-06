@@ -1,5 +1,5 @@
-import prisma from '../src/lib/prisma'
 import 'dotenv/config'
+import prisma from '../src/lib/prisma'
 
 async function main() {
   console.log('Seeding tournaments...')
@@ -39,6 +39,83 @@ async function main() {
         ...t,
         status: t.status as any,
       },
+    })
+  }
+
+  console.log('Seeding content blocks...')
+  
+  const contentBlocks = [
+    {
+      slug: 'about-intro',
+      title: 'A Propos - Introduction',
+      type: 'markdown',
+      content: `La **République Populaire du Beyblade** (RPB) est née de la passion d'un groupe de fans français déterminés à créer la meilleure communauté Beyblade de l'hexagone.
+
+Avec l'arrivée de **Beyblade X**, une nouvelle ère s'ouvre pour notre communauté. Nous organisons des tournois réguliers et offrons une plateforme complète pour les bladers français.
+
+Que tu sois un vétéran des premières générations ou un nouveau venu découvrant Beyblade X, tu es le bienvenu dans notre communauté !`,
+    },
+    {
+      slug: 'about-values',
+      title: 'A Propos - Nos Valeurs',
+      type: 'json',
+      content: JSON.stringify([
+        {
+          icon: 'Groups',
+          title: 'Communauté',
+          description: 'Une famille de passionnés qui partagent la même passion pour Beyblade.',
+        },
+        {
+          icon: 'EmojiEvents',
+          title: 'Compétition',
+          description: 'Des tournois réguliers pour tous les niveaux, du débutant au champion.',
+        },
+        {
+          icon: 'Favorite',
+          title: 'Passion',
+          description: 'L\'amour du Beyblade nous unit depuis la première génération.',
+        },
+        {
+          icon: 'Shield',
+          title: 'Fair-play',
+          description: 'Le respect et la sportivité sont au cœur de notre communauté.',
+        },
+      ]),
+    },
+    {
+      slug: 'about-rules',
+      title: 'A Propos - Règlement',
+      type: 'json',
+      content: JSON.stringify([
+        {
+          title: 'Respect mutuel',
+          description: 'Traitez tous les membres avec respect et courtoisie. Aucune forme de harcèlement, discrimination ou comportement toxique ne sera tolérée.',
+        },
+        {
+          title: 'Fair-play',
+          description: 'Jouez de manière honnête. Pas de triche, pas de modifications non autorisées, pas de comportement antisportif.',
+        },
+        {
+          title: 'Équipement officiel',
+          description: 'Seules les toupies et accessoires officiels Takara Tomy et Hasbro sont autorisés en tournoi.',
+        },
+        {
+          title: 'Ponctualité',
+          description: 'Soyez présent et prêt à l\'heure pour vos matchs. Un retard excessif peut entraîner une disqualification.',
+        },
+        {
+          title: 'Communication',
+          description: 'Restez joignables sur Discord pendant les événements et signalez tout problème aux organisateurs.',
+        },
+      ]),
+    }
+  ]
+
+  for (const block of contentBlocks) {
+    await prisma.contentBlock.upsert({
+      where: { slug: block.slug },
+      update: {}, // Don't overwrite if exists
+      create: block,
     })
   }
 

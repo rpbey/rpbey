@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import {
   AppBar,
@@ -15,10 +15,10 @@ import {
   ListItemText,
   Toolbar,
   Typography,
-  useScrollTrigger,
 } from '@mui/material'
 import { Menu as MenuIcon, Close } from '@mui/icons-material'
 import { useSession } from '@/lib/auth-client'
+import { motion, useScroll, useMotionValueEvent } from 'framer-motion'
 
 const navItems = [
   { label: 'Accueil', href: '/' },
@@ -32,10 +32,19 @@ const navItems = [
 export function MarketingHeader() {
   const { data: session } = useSession()
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [hidden, setHidden] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
   
-  const trigger = useScrollTrigger({
-    disableHysteresis: true,
-    threshold: 50,
+  const { scrollY } = useScroll()
+
+  useMotionValueEvent(scrollY, "change", (latest) => {
+    const previous = scrollY.getPrevious() ?? 0
+    if (latest > previous && latest > 150) {
+      setHidden(true)
+    } else {
+      setHidden(false)
+    }
+    setScrolled(latest > 20)
   })
 
   const handleDrawerToggle = () => {
@@ -45,13 +54,21 @@ export function MarketingHeader() {
   return (
     <>
       <AppBar
+        component={motion.header}
+        variants={{
+          visible: { y: 0 },
+          hidden: { y: '-100%' },
+        }}
+        animate={hidden ? 'hidden' : 'visible'}
+        transition={{ duration: 0.35, ease: 'easeInOut' }}
         position="fixed"
-        elevation={trigger ? 4 : 0}
+        elevation={0}
         sx={{
-          bgcolor: trigger ? 'background.paper' : 'transparent',
-          borderBottom: trigger ? 1 : 0,
-          borderColor: 'divider',
-          transition: 'all 0.3s ease',
+          bgcolor: scrolled ? 'rgba(255, 255, 255, 0.8)' : 'transparent',
+          backdropFilter: scrolled ? 'blur(12px)' : 'none',
+          borderBottom: 1,
+          borderColor: scrolled ? 'divider' : 'transparent',
+          color: scrolled ? 'text.primary' : 'text.primary', // Keep text readable
         }}
       >
         <Container maxWidth="xl">

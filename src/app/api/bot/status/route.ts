@@ -1,9 +1,7 @@
 import { NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { headers } from 'next/headers'
-
-const BOT_API_URL = process.env.BOT_API_URL || 'http://bot.rpbey.fr:3001'
-const BOT_API_KEY = process.env.BOT_API_KEY
+import { botClient } from '@/lib/bot'
 
 interface BotStatus {
   status: 'running' | 'starting' | 'offline'
@@ -24,30 +22,11 @@ export async function GET() {
   }
   
   try {
-    const response = await fetch(`${BOT_API_URL}/api/status`, {
-      headers: {
-        'X-API-Key': BOT_API_KEY || '',
-      },
+    const data = await botClient.get<BotStatus>('/api/status', {
       cache: 'no-store',
     })
     
-    if (!response.ok) {
-      // Bot is offline
-      return NextResponse.json({
-        status: 'offline',
-        uptime: 0,
-        uptimeFormatted: 'Hors ligne',
-        guilds: 0,
-        users: 0,
-        ping: 0,
-        memoryUsage: 'N/A',
-        nodeVersion: 'N/A',
-      } as BotStatus)
-    }
-    
-    const data = await response.json()
-    
-    return NextResponse.json(data as BotStatus)
+    return NextResponse.json(data)
   } catch (error) {
     console.error('Error fetching status:', error)
     

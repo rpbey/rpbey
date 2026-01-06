@@ -25,7 +25,12 @@ export function Footer() {
             © {new Date().getFullYear()} République Populaire du Beyblade
           </Typography>
 
-          <Stack direction="row" spacing={2} alignItems="center">
+          <Stack direction="row" spacing={3} alignItems="center">
+            <Link href="/notre-equipe" style={{ textDecoration: 'none' }}>
+              <Typography variant="body2" color="text.secondary" sx={{ '&:hover': { color: 'primary.main' } }}>
+                Notre Équipe
+              </Typography>
+            </Link>
             <Link href="https://discord.gg/twdVfesrRj" target="_blank" rel="noopener">
               <IconButton size="small" aria-label="Discord">
                 <svg

@@ -1,9 +1,7 @@
 import { NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { headers } from 'next/headers'
-
-const BOT_API_URL = process.env.BOT_API_URL || 'http://localhost:3001'
-const BOT_API_KEY = process.env.BOT_API_KEY || ''
+import { botClient } from '@/lib/bot'
 
 interface BotConfig {
   env: Record<string, string>
@@ -23,18 +21,9 @@ export async function GET() {
   }
 
   try {
-    const response = await fetch(`${BOT_API_URL}/api/config`, {
-      headers: {
-        'x-api-key': BOT_API_KEY,
-      },
+    const data = await botClient.get<any>('/api/config', {
       cache: 'no-store',
     })
-
-    if (!response.ok) {
-      throw new Error(`Bot API responded with status ${response.status}`)
-    }
-
-    const data = await response.json()
 
     // Transform the response to match the expected format
     const config: BotConfig = {

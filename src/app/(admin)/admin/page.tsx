@@ -10,19 +10,32 @@ import {
   TrendingUp,
   Visibility,
   PlayArrow,
+  History,
 } from '@mui/icons-material'
 import { TrophyIcon } from '@/components/ui/Icons'
 import prisma from '@/lib/prisma'
+import { getBotStatus } from '@/lib/bot'
+import { formatDateTime } from '@/lib/utils'
+import { headers } from 'next/headers'
+
+import { QuickActions } from '@/components/admin/QuickActions'
 
 export default async function AdminDashboardPage() {
-  const userCount = await prisma.user.count()
-  const activeTournamentCount = await prisma.tournament.count({
-    where: {
-      status: {
-        in: ['REGISTRATION_OPEN', 'UNDERWAY', 'CHECKIN']
+  // Access headers to ensure this page is treated as dynamic by Next.js 16
+  await headers()
+
+  const [userCount, activeTournamentCount, profileCount, botStatus] = await Promise.all([
+    prisma.user.count(),
+    prisma.tournament.count({
+      where: {
+        status: {
+          in: ['REGISTRATION_OPEN', 'UNDERWAY', 'CHECKIN']
+        }
       }
-    }
-  })
+    }),
+    prisma.profile.count(),
+    getBotStatus()
+  ])
 
   const stats = [
     { 
@@ -41,26 +54,44 @@ export default async function AdminDashboardPage() {
     },
     { 
       label: 'Membres Discord', 
-      value: '5,678', 
-      change: '+156', 
+      value: botStatus?.memberCount?.toLocaleString() || '---', 
+      change: botStatus ? 'En ligne' : 'Hors ligne', 
       icon: SmartToy,
       color: '#5865F2',
     },
     { 
-      label: 'Vues TV (mois)', 
-      value: '45.2K', 
-      change: '+23%', 
+      label: 'Profils Bladers', 
+      value: profileCount.toLocaleString(), 
+      change: '+5%', 
       icon: Visibility,
       color: '#dc2626',
     },
   ]
 
+  const recentUsers = await prisma.user.findMany({
+    take: 5,
+    orderBy: { createdAt: 'desc' },
+    select: { name: true, createdAt: true }
+  })
+
+  const recentTournaments = await prisma.tournament.findMany({
+    take: 5,
+    orderBy: { createdAt: 'desc' },
+    select: { name: true, createdAt: true }
+  })
+
   const recentActivity = [
-    { type: 'user', message: 'Nouvel utilisateur inscrit: @Blader42', time: 'Il y a 5 min' },
-    { type: 'tournament', message: 'Tournoi "RPB Championship #6" créé', time: 'Il y a 1h' },
-    { type: 'bot', message: 'Bot Discord redémarré avec succès', time: 'Il y a 2h' },
-    { type: 'stream', message: '156 vues sur Beyblade X Ep.45', time: 'Il y a 3h' },
-  ]
+    ...recentUsers.map(u => ({ 
+      type: 'user', 
+      message: `Nouvel utilisateur inscrit: ${u.name || 'Anonyme'}`, 
+      date: u.createdAt 
+    })),
+    ...recentTournaments.map(t => ({ 
+      type: 'tournament', 
+      message: `Tournoi "${t.name}" créé`, 
+      date: t.createdAt 
+    }))
+  ].sort((a, b) => b.date.getTime() - a.date.getTime()).slice(0, 8)
 
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
@@ -95,8 +126,7 @@ export default async function AdminDashboardPage() {
                         {stat.value}
                       </Typography>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 1 }}>
-                        <TrendingUp sx={{ fontSize: 16, color: 'success.main' }} />
-                        <Typography variant="caption" color="success.main">
+                        <Typography variant="caption" color={stat.change === 'Hors ligne' ? 'error.main' : 'success.main'}>
                           {stat.change}
                         </Typography>
                       </Box>
@@ -130,11 +160,11 @@ export default async function AdminDashboardPage() {
             }}
           >
             <CardContent>
-              <Typography variant="h6" fontWeight="bold" gutterBottom>
-                Activité récente
+              <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <History /> Activité récente
               </Typography>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                {recentActivity.map((activity, index) => (
+                {recentActivity.length > 0 ? recentActivity.map((activity, index) => (
                   <Box
                     key={index}
                     sx={{
@@ -148,10 +178,14 @@ export default async function AdminDashboardPage() {
                   >
                     <Typography variant="body2">{activity.message}</Typography>
                     <Typography variant="caption" color="text.secondary">
-                      {activity.time}
+                      {formatDateTime(activity.date)}
                     </Typography>
                   </Box>
-                ))}
+                )) : (
+                  <Typography variant="body2" color="text.secondary" sx={{ p: 2, textAlign: 'center' }}>
+                    Aucune activité récente
+                  </Typography>
+                )}
               </Box>
             </CardContent>
           </Card>
@@ -171,37 +205,7 @@ export default async function AdminDashboardPage() {
               <Typography variant="h6" fontWeight="bold" gutterBottom>
                 Actions rapides
               </Typography>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                {[
-                  { label: 'Créer un tournoi', icon: TrophyIcon },
-                  { label: 'Redémarrer le bot', icon: SmartToy },
-                  { label: 'Lancer un stream', icon: PlayArrow },
-                ].map((action) => {
-                  const Icon = action.icon
-                  return (
-                    <Box
-                      key={action.label}
-                      sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 2,
-                        p: 2,
-                        borderRadius: 2,
-                        bgcolor: 'background.default',
-                        cursor: 'pointer',
-                        transition: 'all 0.2s',
-                        '&:hover': {
-                          bgcolor: 'primary.main',
-                          color: 'white',
-                        },
-                      }}
-                    >
-                      <Icon fontSize="small" />
-                      <Typography variant="body2">{action.label}</Typography>
-                    </Box>
-                  )
-                })}
-              </Box>
+              <QuickActions />
             </CardContent>
           </Card>
         </Grid>

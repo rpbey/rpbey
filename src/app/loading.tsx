@@ -34,7 +34,7 @@ export default function Loading() {
         }}
       >
         <Image
-          src="/logo.png"
+          src="/logo.svg"
           alt="RPB Logo"
           width={80}
           height={80}

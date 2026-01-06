@@ -7,6 +7,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import 'dayjs/locale/fr'
 import { getTheme, type ThemeMode } from '@/lib/theme'
+import { ToastProvider } from '@/components/ui'
 
 interface ThemeContextType {
   mode: ThemeMode
@@ -67,8 +68,10 @@ export default function ThemeRegistry({ children }: { children: React.ReactNode 
       <ThemeContext.Provider value={contextValue}>
         <ThemeProvider theme={theme}>
           <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="fr">
-            <CssBaseline />
-            {children}
+            <ToastProvider>
+              <CssBaseline />
+              {children}
+            </ToastProvider>
           </LocalizationProvider>
         </ThemeProvider>
       </ThemeContext.Provider>

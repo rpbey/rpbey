@@ -4,6 +4,7 @@ import Box from '@mui/material/Box'
 import { TournamentCardGrid } from '@/components/cards/TournamentCard'
 import prisma from '@/lib/prisma'
 import { PageHeader } from '@/components/ui'
+import { headers } from 'next/headers'
 
 export const metadata = {
   title: 'Tournois',
@@ -11,6 +12,7 @@ export const metadata = {
 }
 
 export default async function TournamentsPage() {
+  await headers()
   const tournaments = await prisma.tournament.findMany({
     orderBy: { date: 'asc' },
     include: {

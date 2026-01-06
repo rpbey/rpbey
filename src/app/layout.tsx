@@ -14,13 +14,13 @@ export const metadata: Metadata = {
     default: "RPB - République Populaire du Beyblade",
     template: "%s | RPB",
   },
-  description: "La communauté française de Beyblade X. Tournois, streaming, classements et plus encore.",
+  description: "La communauté française de Beyblade X. Tournois, classements et plus encore.",
   keywords: ["Beyblade", "Beyblade X", "tournoi", "France", "communauté", "RPB"],
   authors: [{ name: "RPB" }],
   creator: "République Populaire du Beyblade",
   icons: {
-    icon: "/logo.png",
-    apple: "/logo.png",
+    icon: "/logo.svg",
+    apple: "/logo.svg",
   },
   manifest: "/manifest.json",
   openGraph: {
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     url: "https://rpbey.fr",
     siteName: "RPB - République Populaire du Beyblade",
     title: "RPB - République Populaire du Beyblade",
-    description: "La communauté française de Beyblade X. Tournois, streaming, classements et plus encore.",
+    description: "La communauté française de Beyblade X. Tournois, classements et plus encore.",
     images: [
       {
         url: "/banner.png",
@@ -42,7 +42,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "RPB - République Populaire du Beyblade",
-    description: "La communauté française de Beyblade X. Tournois, streaming, classements.",
+    description: "La communauté française de Beyblade X. Tournois, classements.",
     images: ["/banner.png"],
   },
   robots: {

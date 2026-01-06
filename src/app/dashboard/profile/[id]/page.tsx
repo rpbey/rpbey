@@ -1,0 +1,128 @@
+/**
+ * RPB - Profile Page
+ * Full blader profile with stats, matches, and rivalries
+ */
+
+'use client'
+
+import { use } from 'react'
+import Box from '@mui/material/Box'
+import Container from '@mui/material/Container'
+import Typography from '@mui/material/Typography'
+import Grid from '@mui/material/Grid'
+import Skeleton from '@mui/material/Skeleton'
+import useSWR from 'swr'
+import {
+  BladerProfileHeader,
+  StatsCard,
+  MatchHistory,
+  RivalriesCard,
+  FavoritePartsCard,
+} from '@/components/profile'
+import type { UserStats } from '@/lib/stats'
+import { useAuth } from '@/hooks'
+
+interface ProfilePageProps {
+  params: Promise<{ id: string }>
+}
+
+const fetcher = (url: string) => fetch(url).then((res) => res.json())
+
+export default function ProfilePage({ params }: ProfilePageProps) {
+  const { id } = use(params)
+  const { user: currentUser } = useAuth()
+
+  // If no ID, show current user's profile
+  const userId = id === 'me' ? currentUser?.id : id
+
+  const { data: statsData, isLoading: statsLoading } = useSWR<{ data: UserStats }>(
+    userId ? `/api/stats?userId=${userId}` : null,
+    fetcher
+  )
+
+  const { data: userData, isLoading: userLoading } = useSWR(
+    userId ? `/api/users/${userId}` : null,
+    fetcher
+  )
+
+  const stats = statsData?.data
+  const user = userData?.data
+
+  const handleDownloadCard = async () => {
+    // Will trigger canvas generation endpoint
+    const response = await fetch(`/api/users/${userId}/card`)
+    if (response.ok) {
+      const blob = await response.blob()
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `${stats?.bladerName ?? 'profile'}-card.png`
+      a.click()
+      URL.revokeObjectURL(url)
+    }
+  }
+
+  if (statsLoading || userLoading) {
+    return (
+      <Container maxWidth="lg" sx={{ py: 4 }}>
+        <Skeleton variant="rectangular" height={200} sx={{ borderRadius: 2, mb: 3 }} />
+        <Grid container spacing={3}>
+          <Grid size={{ xs: 12, md: 8 }}>
+            <Skeleton variant="rectangular" height={300} sx={{ borderRadius: 2 }} />
+          </Grid>
+          <Grid size={{ xs: 12, md: 4 }}>
+            <Skeleton variant="rectangular" height={300} sx={{ borderRadius: 2 }} />
+          </Grid>
+        </Grid>
+      </Container>
+    )
+  }
+
+  if (!stats) {
+    return (
+      <Container maxWidth="lg" sx={{ py: 4 }}>
+        <Box textAlign="center" py={8}>
+          <Typography variant="h5" color="text.secondary">
+            Profil introuvable
+          </Typography>
+        </Box>
+      </Container>
+    )
+  }
+
+  return (
+    <Container maxWidth="lg" sx={{ py: 4 }}>
+      <Box sx={{ mb: 4 }}>
+        <BladerProfileHeader
+          stats={stats}
+          avatarUrl={user?.profile?.avatarUrl ?? user?.image}
+          joinDate={user?.createdAt}
+          bio={user?.profile?.bio}
+          onDownloadCard={handleDownloadCard}
+        />
+      </Box>
+
+      <Grid container spacing={3}>
+        {/* Main content */}
+        <Grid size={{ xs: 12, md: 8 }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+            <StatsCard stats={stats} />
+            <MatchHistory userId={userId!} />
+          </Box>
+        </Grid>
+
+        {/* Sidebar */}
+        <Grid size={{ xs: 12, md: 4 }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+            <RivalriesCard rivalries={stats.rivalries} />
+            <FavoritePartsCard
+              blades={stats.mostUsedBlades}
+              ratchets={stats.mostUsedRatchets}
+              bits={stats.mostUsedBits}
+            />
+          </Box>
+        </Grid>
+      </Grid>
+    </Container>
+  )
+}

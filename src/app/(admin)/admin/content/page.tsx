@@ -1,0 +1,234 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import {
+  Box,
+  IconButton,
+  Tooltip,
+  Typography,
+  Chip,
+} from '@mui/material'
+import {
+  Edit as EditIcon,
+  Delete as DeleteIcon,
+  ContentCopy as CopyIcon,
+} from '@mui/icons-material'
+import {
+  PageHeader,
+  DataTable,
+  useConfirmDialog,
+  useToast,
+} from '@/components/ui'
+import type { Column } from '@/components/ui/DataTable'
+import {
+  getContentBlocks,
+  createContentBlock,
+  updateContentBlock,
+  deleteContentBlock,
+} from './actions'
+import type { ContentBlockInput } from './actions'
+import { ContentDialog } from './ContentDialog'
+import CircularProgress from '@mui/material/CircularProgress'
+import type { ContentBlock } from '@prisma/client'
+
+export default function AdminContentPage() {
+  const [blocks, setBlocks] = useState<ContentBlock[]>([])
+  const [loading, setLoading] = useState(true)
+  const [dialogOpen, setDialogOpen] = useState(false)
+  const [selectedBlock, setSelectedBlock] = useState<ContentBlock | null>(null)
+  const [submitting, setSubmitting] = useState(false)
+
+  const { confirm } = useConfirmDialog()
+  const { showToast } = useToast()
+
+  const fetchBlocks = async () => {
+    setLoading(true)
+    try {
+      const data = await getContentBlocks()
+      setBlocks(data)
+    } catch (error) {
+      showToast('Erreur lors de la récupération du contenu', 'error')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchBlocks()
+  }, [])
+
+  const handleAdd = () => {
+    setSelectedBlock(null)
+    setDialogOpen(true)
+  }
+
+  const handleEdit = (block: ContentBlock) => {
+    setSelectedBlock(block)
+    setDialogOpen(true)
+  }
+
+  const handleDelete = async (block: ContentBlock) => {
+    const confirmed = await confirm({
+      title: 'Supprimer le contenu',
+      message: `Êtes-vous sûr de vouloir supprimer "${block.title}" (${block.slug}) ?`,
+      confirmText: 'Supprimer',
+      confirmColor: 'error',
+    })
+
+    if (confirmed) {
+      try {
+        await deleteContentBlock(block.id)
+        showToast('Contenu supprimé avec succès', 'success')
+        fetchBlocks()
+      } catch (error) {
+        showToast('Erreur lors de la suppression', 'error')
+      }
+    }
+  }
+
+  const handleSubmit = async (data: ContentBlockInput) => {
+    setSubmitting(true)
+    try {
+      if (data.type === 'json') {
+        try {
+          JSON.parse(data.content)
+        } catch (e) {
+          showToast('JSON invalide', 'error')
+          setSubmitting(false)
+          return
+        }
+      }
+
+      if (selectedBlock) {
+        await updateContentBlock(selectedBlock.id, data)
+        showToast('Contenu mis à jour', 'success')
+      } else {
+        await createContentBlock(data)
+        showToast('Contenu créé', 'success')
+      }
+      setDialogOpen(false)
+      fetchBlocks()
+    } catch (error) {
+      showToast('Erreur lors de l\'enregistrement', 'error')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  const columns: Column<ContentBlock>[] = [
+    {
+      id: 'title',
+      label: 'Titre / Slug',
+      render: (row) => (
+        <Box>
+          <Typography variant="subtitle2" fontWeight="bold">
+            {row.title}
+          </Typography>
+          <Typography variant="caption" color="text.secondary" sx={{ fontFamily: 'monospace' }}>
+            {row.slug}
+          </Typography>
+        </Box>
+      ),
+    },
+        {
+          id: 'type',
+          label: 'Type',
+          render: (row) => {
+            const typeLabels: Record<string, string> = {
+              text: 'Texte',
+              markdown: 'Markdown',
+              json: 'JSON',
+              html: 'HTML',
+            }
+            return (
+              <Chip 
+                label={typeLabels[row.type] || row.type} 
+                size="small" 
+                color={row.type === 'json' ? 'warning' : row.type === 'markdown' ? 'info' : 'default'} 
+                variant="outlined"
+              />
+            )
+          },
+        },    {
+      id: 'content',
+      label: 'Aperçu',
+      render: (row) => (
+        <Typography 
+          variant="body2" 
+          color="text.secondary" 
+          noWrap 
+          sx={{ maxWidth: 300 }}
+        >
+          {row.content}
+        </Typography>
+      ),
+    },
+    {
+      id: 'updatedAt',
+      label: 'Modifié le',
+      render: (row) => new Date(row.updatedAt).toLocaleDateString('fr-FR'),
+    },
+    {
+      id: 'actions',
+      label: 'Actions',
+      render: (row) => (
+        <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <Tooltip title="Modifier">
+            <IconButton 
+              onClick={(e) => {
+                e.stopPropagation()
+                handleEdit(row)
+              }} 
+              size="small"
+            >
+              <EditIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Supprimer">
+            <IconButton 
+              onClick={(e) => {
+                e.stopPropagation()
+                handleDelete(row)
+              }} 
+              size="small" 
+              color="error"
+            >
+              <DeleteIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        </Box>
+      ),
+    },
+  ]
+
+  return (
+    <Box>
+      <PageHeader
+        title="Contenu du Site"
+        description="Gérez les textes et configurations dynamiques du site"
+        actionLabel="Ajouter du contenu"
+        onAction={handleAdd}
+      />
+
+      {loading ? (
+        <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
+          <CircularProgress />
+        </Box>
+      ) : (
+        <DataTable
+          columns={columns}
+          rows={blocks}
+          emptyMessage="Aucun contenu trouvé."
+        />
+      )}
+
+      <ContentDialog
+        open={dialogOpen}
+        onClose={() => setDialogOpen(false)}
+        onSubmit={handleSubmit}
+        initialData={selectedBlock}
+        loading={submitting}
+      />
+    </Box>
+  )
+}

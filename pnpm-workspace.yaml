@@ -1,4 +1,5 @@
 ignoredBuiltDependencies:
   - '@prisma/engines'
+  - canvas
   - prisma
   - sharp

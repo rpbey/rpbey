@@ -9,3 +9,12 @@ export * from './cards'
 
 // Auth Components
 export * from './auth'
+
+// Profile Components
+export * from './profile'
+
+// Deck Components
+export * from './deck'
+
+// Tournament Components
+export * from './tournaments'

@@ -18,12 +18,14 @@ import {
 } from '@mui/icons-material'
 import { getRPBStreamInfo } from '@/lib/twitch'
 import { formatDateTime } from '@/lib/utils'
+import { headers } from 'next/headers'
 
 export const metadata = {
   title: 'Twitch Integration',
 }
 
 export default async function AdminTwitchPage() {
+  await headers()
   const streamInfo = await getRPBStreamInfo()
   const isConfigured = !!process.env.TWITCH_CLIENT_ID && !!process.env.TWITCH_CLIENT_SECRET
 

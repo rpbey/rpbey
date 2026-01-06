@@ -6,6 +6,9 @@ const nextConfig: NextConfig = {
 
   // Output standalone for Docker deployment
   output: "standalone",
+  
+  // Cache Components (Next.js 16+)
+  cacheComponents: true,
 
   // Experimental features
   experimental: {

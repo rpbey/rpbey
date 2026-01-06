@@ -9,26 +9,16 @@ import Grid from '@mui/material/Grid'
 import Stack from '@mui/material/Stack'
 import { alpha } from '@mui/material/styles'
 import {
-  Tv,
   Leaderboard,
   Groups,
   ArrowForward,
 } from '@mui/icons-material'
-import { DiscordIcon, TrophyIcon, NextTournamentButton } from '@/components/ui'
-import { BEYBLADE_SERIES } from '@/lib/streaming'
-import { motion } from 'framer-motion'
+import { DiscordIcon, TrophyIcon, DiscordStatusCard } from '@/components/ui'
+import { motion, useScroll, useTransform, useSpring } from 'framer-motion'
 import { FeatureCard } from '@/components/cards'
-import { SeriesCard } from '@/components/streaming'
 import { useThemeMode } from '@/components/theme/ThemeRegistry'
 
 const features = [
-  {
-    icon: Tv,
-    title: 'Streaming',
-    description: 'Regardez tous les animes Beyblade en streaming gratuit.',
-    href: '/tv',
-    color: '#dc2626',
-  },
   {
     icon: TrophyIcon,
     title: 'Tournois',
@@ -56,45 +46,83 @@ const features = [
 
 export default function HomePage() {
   const { backgroundImage, mode } = useThemeMode()
+  const { scrollY } = useScroll()
+
+  // Parallax effects
+  const heroY = useTransform(scrollY, [0, 500], [0, 150])
+  const heroOpacity = useTransform(scrollY, [0, 400], [1, 0])
+  const textY = useTransform(scrollY, [0, 500], [0, 50])
+  
+  // Smooth spring for image
+  const imageSpring = useSpring(scrollY, { stiffness: 100, damping: 30 })
+  const imageY = useTransform(imageSpring, [0, 500], [0, -50])
 
   return (
     <>
       {/* Hero Section */}
       <Box
         component={motion.div}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1 }}
+        style={{ opacity: heroOpacity }}
         sx={{
           position: 'relative',
-          minHeight: '80vh',
+          minHeight: '90vh', // Increased height for better parallax feel
           display: 'flex',
           alignItems: 'center',
           overflow: 'hidden',
-          backgroundImage: `url(${backgroundImage})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          transition: 'background-image 0.5s ease',
+          perspective: '1000px', // For 3D effects
         }}
       >
+        {/* Parallax Background */}
+        <Box
+          component={motion.div}
+          style={{ y: heroY }}
+          sx={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: -200, // Extend bottom for parallax
+            backgroundImage: `url(${backgroundImage})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            zIndex: -1,
+            transition: 'background-image 0.5s ease',
+          }}
+        />
+        
+        {/* Gradient Overlay for Text Readability */}
+        <Box
+          sx={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.6) 100%)',
+            zIndex: 0,
+          }}
+        />
+
         <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
           <Grid container spacing={4} alignItems="center">
             <Grid size={{ xs: 12, md: 7 }}>
               <Box
                 component={motion.div}
-                initial={{ x: -50, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                transition={{ delay: 0.2, duration: 0.8 }}
+                initial={{ opacity: 0, y: 30, filter: 'blur(10px)' }}
+                animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                transition={{ duration: 1, ease: 'easeOut' }}
+                style={{ y: textY }}
               >
                 <Typography
                   variant="h1"
                   fontWeight={800}
                   sx={{
-                    fontSize: { xs: '2.5rem', md: '4rem' },
+                    fontSize: { xs: '2.5rem', md: '4.5rem' },
                     letterSpacing: '-0.02em',
                     mb: 2,
                     color: '#ffffff',
-                    textShadow: '0 2px 20px rgba(0,0,0,0.5)',
+                    lineHeight: 1.1,
+                    textShadow: '0 4px 30px rgba(0,0,0,0.3)',
                   }}
                 >
                   République Populaire
@@ -116,39 +144,30 @@ export default function HomePage() {
                 </Typography>
                 <Typography
                   variant="h6"
-                  sx={{ mb: 4, maxWidth: 500, color: 'rgba(255,255,255,0.9)', textShadow: '0 1px 10px rgba(0,0,0,0.5)' }}
+                  component={motion.p}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 0.9, x: 0 }}
+                  transition={{ delay: 0.3, duration: 0.8 }}
+                  sx={{ 
+                    mb: 5, 
+                    maxWidth: 550, 
+                    color: 'white', 
+                    fontSize: '1.25rem',
+                    fontWeight: 300,
+                    textShadow: '0 2px 10px rgba(0,0,0,0.3)' 
+                  }}
                 >
-               La communauté française de Beyblade qui allie divertissement et compétitivité
+               La communauté française de Beyblade qui allie divertissement et compétitivité.
                 </Typography>
 
-                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-                  <NextTournamentButton />
-                  <Button
-                    component="a"
-                    href="https://discord.gg/twdVfesrRj"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    variant="outlined"
-                    size="large"
-                    startIcon={<DiscordIcon />}
-                    sx={{
-                      px: 4,
-                      py: 1.5,
-                      borderRadius: 3,
-                      fontSize: '1rem',
-                      borderColor: 'rgba(255,255,255,0.5)',
-                      color: '#ffffff',
-                      backdropFilter: 'blur(8px)',
-                      bgcolor: 'rgba(255,255,255,0.1)',
-                      '&:hover': {
-                        borderColor: '#5865F2',
-                        bgcolor: alpha('#5865F2', 0.3),
-                      },
-                    }}
-                  >
-                    Rejoindre le Discord
-                  </Button>
-                </Stack>
+                <Box
+                  component={motion.div}
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.6, duration: 0.8 }}
+                >
+                  <DiscordStatusCard />
+                </Box>
               </Box>
             </Grid>
 
@@ -157,16 +176,17 @@ export default function HomePage() {
                 component={motion.img}
                 src="/tournoi.png"
                 alt="Tournoi Beyblade"
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ delay: 0.4, duration: 0.8 }}
+                style={{ y: imageY }}
+                initial={{ scale: 0.9, opacity: 0, rotate: -5 }}
+                animate={{ scale: 1, opacity: 1, rotate: 0 }}
+                transition={{ delay: 0.4, duration: 1.2, type: 'spring' }}
                 sx={{
                   width: '100%',
-                  maxHeight: 500,
+                  maxHeight: 600,
                   objectFit: 'contain',
                   filter: mode === 'tournament' 
-                    ? 'drop-shadow(0 20px 40px rgba(96,165,250,0.5))'
-                    : 'drop-shadow(0 20px 40px rgba(220,38,38,0.5))',
+                    ? 'drop-shadow(0 30px 60px rgba(96,165,250,0.4))'
+                    : 'drop-shadow(0 30px 60px rgba(220,38,38,0.4))',
                 }}
               />
             </Grid>
@@ -175,27 +195,59 @@ export default function HomePage() {
       </Box>
 
       {/* Features Section */}
-      <Container maxWidth="lg" sx={{ py: 10 }}>
-        <Typography
-          variant="h3"
-          fontWeight="bold"
-          textAlign="center"
-          sx={{ mb: 2 }}
+      <Container maxWidth="lg" sx={{ py: 15 }}>
+        <Box
+          component={motion.div}
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.8 }}
         >
-          Tout pour les Bladers
-        </Typography>
-        <Typography
-          variant="h6"
-          color="text.secondary"
-          textAlign="center"
-          sx={{ mb: 6, maxWidth: 600, mx: 'auto' }}
-        >
-          Découvrez tout ce que RPB a à offrir à la communauté Beyblade française
-        </Typography>
+          <Typography
+            variant="h3"
+            fontWeight="bold"
+            textAlign="center"
+            sx={{ mb: 2 }}
+          >
+            Tout pour les Bladers
+          </Typography>
+          <Typography
+            variant="h6"
+            color="text.secondary"
+            textAlign="center"
+            sx={{ mb: 8, maxWidth: 600, mx: 'auto' }}
+          >
+            Découvrez tout ce que RPB a à offrir à la communauté Beyblade française
+          </Typography>
+        </Box>
 
-        <Grid container spacing={3}>
+        <Grid 
+          container 
+          spacing={4}
+          component={motion.div}
+          variants={{
+            hidden: { opacity: 0 },
+            show: {
+              opacity: 1,
+              transition: {
+                staggerChildren: 0.2
+              }
+            }
+          }}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: "-50px" }}
+        >
           {features.map((feature) => (
-            <Grid key={feature.title} size={{ xs: 12, sm: 6, md: 3 }}>
+            <Grid 
+              key={feature.title} 
+              size={{ xs: 12, sm: 6, md: 4 }}
+              component={motion.div}
+              variants={{
+                hidden: { opacity: 0, y: 50 },
+                show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 50 } }
+              }}
+            >
               <FeatureCard
                 icon={feature.icon}
                 title={feature.title}
@@ -209,77 +261,59 @@ export default function HomePage() {
         </Grid>
       </Container>
 
-      {/* Streaming Section */}
-      <Box sx={{ bgcolor: 'background.paper', py: 10 }}>
-        <Container maxWidth="lg">
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
-            <Box>
-              <Typography variant="h3" fontWeight="bold">
-                Streaming Beyblade
-              </Typography>
-              <Typography variant="h6" color="text.secondary">
-                Toutes les séries disponibles gratuitement
-              </Typography>
-            </Box>
+      {/* CTA Section */}
+      <Container maxWidth="md" sx={{ py: 15, textAlign: 'center' }}>
+        <Box
+          component={motion.div}
+          initial={{ opacity: 0, scale: 0.9 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+        >
+          <Typography variant="h3" fontWeight="bold" gutterBottom>
+            Prêt à rejoindre la communauté ?
+          </Typography>
+          <Typography variant="h6" color="text.secondary" sx={{ mb: 5 }}>
+            Inscris-toi gratuitement et participe à nos tournois
+          </Typography>
+          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} justifyContent="center">
             <Button
               component={Link}
-              href="/tv"
-              variant="outlined"
-              endIcon={<ArrowForward />}
-              sx={{ display: { xs: 'none', sm: 'flex' } }}
+              href="/sign-up"
+              variant="contained"
+              size="large"
+              sx={{
+                px: 6,
+                py: 1.5,
+                borderRadius: 3,
+                fontSize: '1.1rem',
+                textTransform: 'none',
+                fontWeight: 'bold',
+                boxShadow: '0 8px 20px rgba(220, 38, 38, 0.3)',
+              }}
             >
-              Voir tout
+              Créer un compte
             </Button>
-          </Box>
-
-          <Grid container spacing={3}>
-            {BEYBLADE_SERIES.map((series) => (
-              <Grid key={series.id} size={{ xs: 6, sm: 4, md: 3 }}>
-                <SeriesCard series={series} type="anime" />
-              </Grid>
-            ))}
-          </Grid>
-        </Container>
-      </Box>
-
-      {/* CTA Section */}
-      <Container maxWidth="md" sx={{ py: 10, textAlign: 'center' }}>
-        <Typography variant="h3" fontWeight="bold" gutterBottom>
-          Prêt à rejoindre la communauté ?
-        </Typography>
-        <Typography variant="h6" color="text.secondary" sx={{ mb: 4 }}>
-          Inscris-toi gratuitement et participe à nos tournois
-        </Typography>
-        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} justifyContent="center">
-          <Button
-            component={Link}
-            href="/sign-up"
-            variant="contained"
-            size="large"
-            sx={{
-              px: 6,
-              py: 1.5,
-              borderRadius: 3,
-              fontSize: '1.1rem',
-            }}
-          >
-            Créer un compte
-          </Button>
-          <Button
-            component={Link}
-            href="/sign-in"
-            variant="outlined"
-            size="large"
-            sx={{
-              px: 6,
-              py: 1.5,
-              borderRadius: 3,
-              fontSize: '1.1rem',
-            }}
-          >
-            Se connecter
-          </Button>
-        </Stack>
+            <Button
+              component={Link}
+              href="/sign-in"
+              variant="outlined"
+              size="large"
+              sx={{
+                px: 6,
+                py: 1.5,
+                borderRadius: 3,
+                fontSize: '1.1rem',
+                textTransform: 'none',
+                fontWeight: 'bold',
+                borderWidth: 2,
+                '&:hover': { borderWidth: 2 },
+              }}
+            >
+              Se connecter
+            </Button>
+          </Stack>
+        </Box>
       </Container>
     </>
   )

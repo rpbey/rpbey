@@ -7,12 +7,12 @@ import { usePathname } from 'next/navigation'
 import { Box, IconButton, Tooltip, alpha, Menu, MenuItem, ListItemIcon, ListItemText, Divider } from '@mui/material'
 import {
   Home,
-  Tv,
   Login,
   PersonAdd,
   AdminPanelSettings,
   AccountCircle,
   Logout,
+  People,
 } from '@mui/icons-material'
 import { useSession, signOut } from '@/lib/auth-client'
 import { DiscordIcon, TrophyIcon } from '@/components/ui/Icons'
@@ -23,8 +23,8 @@ export const ICON_NAV_WIDTH = 80
 
 const navItems = [
   { icon: Home, label: 'Accueil', href: '/' },
-  { icon: Tv, label: 'TV', href: '/tv' },
   { icon: TrophyIcon, label: 'Tournois', href: '/tournaments' },
+  { icon: People, label: 'Notre Équipe', href: '/notre-equipe' },
 ]
 
 export function IconNav() {
@@ -192,6 +192,13 @@ export function IconNav() {
         anchorOrigin={{ horizontal: 'right', vertical: 'top' }}
       >
         {session?.user ? [
+          <MenuItem key="profile" component={Link} href="/profile">
+            <ListItemIcon>
+              <AccountCircle fontSize="small" />
+            </ListItemIcon>
+            <ListItemText primary="Mon Profil" />
+          </MenuItem>,
+          <Divider key="divider-profile" />,
           (session.user.role === 'admin' || (session.user as any).role === 'superadmin') && (
             <MenuItem key="admin" component={Link} href="/admin">
               <ListItemIcon>
@@ -237,7 +244,6 @@ export function MobileNav() {
 
   const mobileItems = [
     { icon: Home, label: 'Accueil', href: '/' },
-    { icon: Tv, label: 'TV', href: '/tv' },
     { icon: TrophyIcon, label: 'Tournois', href: '/tournaments' },
     isAdmin 
       ? { icon: AdminPanelSettings, label: 'Admin', href: '/admin' }

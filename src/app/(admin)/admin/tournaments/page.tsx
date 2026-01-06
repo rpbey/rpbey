@@ -1,44 +1,119 @@
-import Box from '@mui/material/Box'
-import Container from '@mui/material/Container'
-import Typography from '@mui/material/Typography'
-import Grid from '@mui/material/Grid'
-import Card from '@mui/material/Card'
-import CardContent from '@mui/material/CardContent'
-import Button from '@mui/material/Button'
-import Chip from '@mui/material/Chip'
-import Table from '@mui/material/Table'
-import TableBody from '@mui/material/TableBody'
-import TableCell from '@mui/material/TableCell'
-import TableContainer from '@mui/material/TableContainer'
-import TableHead from '@mui/material/TableHead'
-import TableRow from '@mui/material/TableRow'
-import { Add, Edit, Delete } from '@mui/icons-material'
-import prisma from '@/lib/prisma'
-import { formatDateShort } from '@/lib/utils'
+'use client'
 
-export default async function AdminTournamentsPage() {
-  const tournaments = await prisma.tournament.findMany({
-    orderBy: { date: 'desc' },
-    include: {
-      _count: {
-        select: { participants: true }
+import { useState, useEffect } from 'react'
+import {
+  Box,
+  Container,
+  Typography,
+  Grid,
+  Card,
+  CardContent,
+  Button,
+  Chip,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  CircularProgress,
+  IconButton,
+  Tooltip,
+} from '@mui/material'
+import { Add, Edit, Delete, Link as LinkIcon } from '@mui/icons-material'
+import {
+  PageHeader,
+  useConfirmDialog,
+  useToast,
+} from '@/components/ui'
+import { getTournaments, createTournament, updateTournament, deleteTournament } from './actions'
+import type { TournamentInput } from './actions'
+import { TournamentDialog } from './TournamentDialog'
+import { formatDateShort } from '@/lib/utils'
+import type { Tournament } from '@prisma/client'
+
+export default function AdminTournamentsPage() {
+  const [tournaments, setTournaments] = useState<(Tournament & { _count: { participants: number } })[]>([])
+  const [loading, setLoading] = useState(true)
+  const [dialogOpen, setDialogOpen] = useState(false)
+  const [selectedTournament, setSelectedTournament] = useState<Tournament | null>(null)
+  const [submitting, setSubmitting] = useState(false)
+
+  const { confirm, ConfirmDialogComponent } = useConfirmDialog()
+  const { showToast } = useToast()
+
+  const fetchTournaments = async () => {
+    setLoading(true)
+    try {
+      const data = await getTournaments()
+      setTournaments(data as any)
+    } catch (error) {
+      showToast('Erreur lors de la récupération des tournois', 'error')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchTournaments()
+  }, [])
+
+  const handleAdd = () => {
+    setSelectedTournament(null)
+    setDialogOpen(true)
+  }
+
+  const handleEdit = (tournament: Tournament) => {
+    setSelectedTournament(tournament)
+    setDialogOpen(true)
+  }
+
+  const handleDelete = async (tournament: Tournament) => {
+    const confirmed = await confirm({
+      title: 'Supprimer le tournoi',
+      message: `Êtes-vous sûr de vouloir supprimer "${tournament.name}" ? Tous les participants seront également retirés.`, 
+      confirmText: 'Supprimer',
+      confirmColor: 'error',
+    })
+
+    if (confirmed) {
+      try {
+        await deleteTournament(tournament.id)
+        showToast('Tournoi supprimé avec succès', 'success')
+        fetchTournaments()
+      } catch (error) {
+        showToast('Erreur lors de la suppression', 'error')
       }
     }
-  })
+  }
 
-  const totalParticipants = await prisma.tournamentParticipant.count()
-  const activeTournaments = tournaments.filter(t => 
-    ['REGISTRATION_OPEN', 'UNDERWAY', 'CHECKIN'].includes(t.status)
-  ).length
+  const handleSubmit = async (data: TournamentInput) => {
+    setSubmitting(true)
+    try {
+      if (selectedTournament) {
+        await updateTournament(selectedTournament.id, data)
+        showToast('Tournoi mis à jour', 'success')
+      } else {
+        await createTournament(data)
+        showToast('Tournoi créé', 'success')
+      }
+      setDialogOpen(false)
+      fetchTournaments()
+    } catch (error) {
+      showToast('Erreur lors de l\'enregistrement', 'error')
+    } finally {
+      setSubmitting(false)
+    }
+  }
 
-  const statusColors: Record<string, 'success' | 'warning' | 'default' | 'info'> = {
+  const statusColors: Record<string, 'success' | 'warning' | 'default' | 'info' | 'error'> = {
     REGISTRATION_OPEN: 'success',
     REGISTRATION_CLOSED: 'warning',
     UPCOMING: 'info',
     COMPLETE: 'default',
     UNDERWAY: 'success',
     CHECKIN: 'info',
-    CANCELLED: 'error' as any,
+    CANCELLED: 'error',
   }
 
   const statusLabels: Record<string, string> = {
@@ -51,109 +126,138 @@ export default async function AdminTournamentsPage() {
     CANCELLED: 'Annulé',
   }
 
+  const totalParticipants = tournaments.reduce((acc, t) => acc + t._count.participants, 0)
+  const activeTournaments = tournaments.filter(t => 
+    ['REGISTRATION_OPEN', 'UNDERWAY', 'CHECKIN'].includes(t.status)
+  ).length
+
   return (
-    <Container maxWidth="xl" sx={{ py: 4 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
-        <Box>
-          <Typography variant="h4" fontWeight="bold" gutterBottom>
-            Tournois
-          </Typography>
-          <Typography variant="body1" color="text.secondary">
-            Gérez les tournois Beyblade
-          </Typography>
+    <Box>
+      <PageHeader
+        title="Tournois"
+        description="Gérez les tournois Beyblade et les participants"
+        actionLabel="Nouveau tournoi"
+        onAction={handleAdd}
+      />
+
+      {loading ? (
+        <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
+          <CircularProgress />
         </Box>
-        <Button variant="contained" startIcon={<Add />}>
-          Nouveau tournoi
-        </Button>
-      </Box>
-
-      {/* Stats */}
-      <Grid container spacing={3} sx={{ mb: 4 }}>
-        {[
-          { label: 'Total tournois', value: tournaments.length },
-          { label: 'En cours / Ouverts', value: activeTournaments },
-          { label: 'Participants totaux', value: totalParticipants },
-        ].map((stat) => (
-          <Grid key={stat.label} size={{ xs: 12, sm: 4 }}>
-            <Card
-              elevation={0}
-              sx={{
-                borderRadius: 3,
-                border: '1px solid',
-                borderColor: 'divider',
-              }}
-            >
-              <CardContent sx={{ textAlign: 'center' }}>
-                <Typography variant="h3" fontWeight="bold" color="primary">
-                  {stat.value}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {stat.label}
-                </Typography>
-              </CardContent>
-            </Card>
+      ) : (
+        <>
+          {/* Stats */}
+          <Grid container spacing={3} sx={{ mb: 4 }}>
+            {[ 
+              { label: 'Total tournois', value: tournaments.length },
+              { label: 'En cours / Ouverts', value: activeTournaments },
+              { label: 'Participants totaux', value: totalParticipants },
+            ].map((stat) => (
+              <Grid key={stat.label} size={{ xs: 12, sm: 4 }}>
+                <Card
+                  elevation={0}
+                  sx={{
+                    borderRadius: 3,
+                    border: '1px solid',
+                    borderColor: 'divider',
+                  }}
+                >
+                  <CardContent sx={{ textAlign: 'center' }}>
+                    <Typography variant="h3" fontWeight="bold" color="primary">
+                      {stat.value}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {stat.label}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
           </Grid>
-        ))}
-      </Grid>
 
-      {/* Tournaments Table */}
-      <Card
-        elevation={0}
-        sx={{
-          borderRadius: 3,
-          border: '1px solid',
-          borderColor: 'divider',
-        }}
-      >
-        <TableContainer>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Nom</TableCell>
-                <TableCell>Date</TableCell>
-                <TableCell>Participants</TableCell>
-                <TableCell>Status</TableCell>
-                <TableCell align="right">Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {tournaments.map((tournament) => (
-                <TableRow key={tournament.id} hover>
-                  <TableCell>
-                    <Typography fontWeight="bold">{tournament.name}</Typography>
-                  </TableCell>
-                  <TableCell>{formatDateShort(tournament.date)}</TableCell>
-                  <TableCell>
-                    {tournament._count.participants}/{tournament.maxPlayers}
-                  </TableCell>
-                  <TableCell>
-                    <Chip
-                      label={statusLabels[tournament.status] || tournament.status}
-                      color={statusColors[tournament.status] || 'default'}
-                      size="small"
-                    />
-                  </TableCell>
-                  <TableCell align="right">
-                    <Button size="small" startIcon={<Edit />}>
-                      Modifier
-                    </Button>
-                    <Button size="small" color="error" startIcon={<Delete />}>
-                      Supprimer
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-              {tournaments.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={5} align="center" sx={{ py: 4 }}>
-                    <Typography color="text.secondary">Aucun tournoi trouvé</Typography>
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Card>
-    </Container>
+          {/* Tournaments Table */}
+          <Card
+            elevation={0}
+            sx={{
+              borderRadius: 3,
+              border: '1px solid',
+              borderColor: 'divider',
+            }}
+          >
+            <TableContainer>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Nom</TableCell>
+                    <TableCell>Date</TableCell>
+                    <TableCell>Participants</TableCell>
+                    <TableCell>Status</TableCell>
+                    <TableCell align="right">Actions</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {tournaments.map((tournament) => (
+                    <TableRow key={tournament.id} hover>
+                      <TableCell>
+                        <Typography fontWeight="bold">{tournament.name}</Typography>
+                        {tournament.challongeUrl && (
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 0.5 }}>
+                            <LinkIcon sx={{ fontSize: 12, color: 'text.secondary' }} />
+                            <Typography variant="caption" color="text.secondary" noWrap sx={{ maxWidth: 200 }}>
+                              {tournament.challongeUrl}
+                            </Typography>
+                          </Box>
+                        )}
+                      </TableCell>
+                      <TableCell>{formatDateShort(tournament.date)}</TableCell>
+                      <TableCell>
+                        {tournament._count.participants}/{tournament.maxPlayers}
+                      </TableCell>
+                      <TableCell>
+                        <Chip
+                          label={statusLabels[tournament.status] || tournament.status}
+                          color={statusColors[tournament.status] || 'default'}
+                          size="small"
+                        />
+                      </TableCell>
+                      <TableCell align="right">
+                        <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                          <Tooltip title="Modifier">
+                            <IconButton onClick={() => handleEdit(tournament)} size="small">
+                              <Edit fontSize="small" />
+                            </IconButton>
+                          </Tooltip>
+                          <Tooltip title="Supprimer">
+                            <IconButton onClick={() => handleDelete(tournament)} size="small" color="error">
+                              <Delete fontSize="small" />
+                            </IconButton>
+                          </Tooltip>
+                        </Box>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                  {tournaments.length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={5} align="center" sx={{ py: 4 }}>
+                        <Typography color="text.secondary">Aucun tournoi trouvé</Typography>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Card>
+        </>
+      )}
+
+      <TournamentDialog
+        open={dialogOpen}
+        onClose={() => setDialogOpen(false)}
+        onSubmit={handleSubmit}
+        initialData={selectedTournament}
+        loading={submitting}
+      />
+      {ConfirmDialogComponent}
+    </Box>
   )
 }
