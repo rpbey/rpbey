@@ -146,12 +146,10 @@ export default function HomePage() {
                     href="/tournaments"
                     startIcon={<TrophyIcon color="white" />}
                     sx={{ 
-                      borderRadius: 4, 
                       px: 4, 
-                      py: 2, 
+                      py: 1.5,
                       fontSize: '1.1rem', 
                       bgcolor: mode === 'tournament' ? 'primary.main' : '#dc2626',
-                      boxShadow: '0 10px 20px rgba(220, 38, 38, 0.4)'
                     }}
                   >
                     Voir les tournois
@@ -165,12 +163,11 @@ export default function HomePage() {
                     href="https://discord.gg/twdVfesrRj"
                     startIcon={<DiscordIcon />}
                     sx={{ 
-                      borderRadius: 4, 
                       px: 4, 
-                      py: 2, 
+                      py: 1.5,
                       fontSize: '1.1rem', 
                       color: 'white', 
-                      borderColor: 'rgba(255,255,255,0.5)',
+                      borderColor: 'rgba(255,255,255,0.4)',
                       '&:hover': { borderColor: 'white', bgcolor: 'rgba(255,255,255,0.1)' }
                     }}
                   >
@@ -215,46 +212,56 @@ export default function HomePage() {
       </Box>
 
       {/* Bracket Section */}
-      <Container maxWidth="lg" sx={{ py: 15 }}>
-        <Box
-          component={motion.div}
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.8 }}
-        >
-          <Typography
-            variant="h3"
-            fontWeight="bold"
-            textAlign="center"
-            sx={{ mb: 2 }}
+      <Box sx={{ bgcolor: 'surface.low', py: 15 }}>
+        <Container maxWidth="lg">
+          <Box
+            component={motion.div}
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8 }}
           >
-            BEY-TAMASHII SERIES #1
-          </Typography>
-          <Typography
-            variant="h6"
-            color="text.secondary"
-            textAlign="center"
-            sx={{ mb: 8, maxWidth: 600, mx: 'auto' }}
-          >
-            Suivez l'arbre du tournoi en direct et ne manquez aucun match !
-          </Typography>
-        </Box>
+            <Typography
+              variant="h3"
+              fontWeight="bold"
+              textAlign="center"
+              sx={{ mb: 2, letterSpacing: '-0.02em' }}
+            >
+              BEY-TAMASHII SERIES #1
+            </Typography>
+            <Typography
+              variant="h6"
+              color="text.secondary"
+              textAlign="center"
+              sx={{ mb: 8, maxWidth: 600, mx: 'auto' }}
+            >
+              Suivez l'arbre du tournoi en direct et ne manquez aucun match !
+            </Typography>
+          </Box>
 
-        <Box
-          component={motion.div}
-          initial={{ opacity: 0, scale: 0.95 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          <ChallongeBracket 
-            challongeId="rpbey" 
-            height={700}
-            title="Arbre Officiel - BEY-TAMASHII SERIES #1" 
-          />
-        </Box>
-      </Container>
+          <Box
+            component={motion.div}
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            sx={{
+              borderRadius: 7, // 28px approx (7 * 4px)
+              overflow: 'hidden',
+              bgcolor: 'surface.main',
+              border: '1px solid',
+              borderColor: 'divider',
+              boxShadow: '0 4px 40px rgba(0,0,0,0.2)',
+            }}
+          >
+            <ChallongeBracket 
+              challongeId="rpbey" 
+              height={700}
+              title="Arbre Officiel - BEY-TAMASHII SERIES #1" 
+            />
+          </Box>
+        </Container>
+      </Box>
 
       {/* CTA Section */}
       <Container maxWidth="md" sx={{ py: 15, textAlign: 'center' }}>
@@ -264,11 +271,17 @@ export default function HomePage() {
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
+          sx={{
+            p: { xs: 4, md: 8 },
+            borderRadius: 8, // 32px
+            bgcolor: 'primary.container',
+            color: 'primary.onContainer',
+          }}
         >
-          <Typography variant="h3" fontWeight="bold" gutterBottom>
+          <Typography variant="h3" fontWeight="bold" gutterBottom sx={{ color: 'inherit' }}>
             Prêt à rejoindre la communauté ?
           </Typography>
-          <Typography variant="h6" color="text.secondary" sx={{ mb: 5 }}>
+          <Typography variant="h6" sx={{ mb: 5, color: 'inherit', opacity: 0.9 }}>
             Inscris-toi gratuitement et participe à nos tournois
           </Typography>
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} justifyContent="center">
@@ -279,12 +292,11 @@ export default function HomePage() {
               size="large"
               sx={{
                 px: 6,
-                py: 1.5,
-                borderRadius: 3,
-                fontSize: '1.1rem',
-                textTransform: 'none',
-                fontWeight: 'bold',
-                boxShadow: '0 8px 20px rgba(220, 38, 38, 0.3)',
+                py: 2,
+                fontSize: '1.2rem',
+                bgcolor: 'primary.main',
+                color: 'primary.contrastText',
+                '&:hover': { bgcolor: 'primary.dark' }
               }}
             >
               Créer un compte
@@ -296,13 +308,12 @@ export default function HomePage() {
               size="large"
               sx={{
                 px: 6,
-                py: 1.5,
-                borderRadius: 3,
-                fontSize: '1.1rem',
-                textTransform: 'none',
-                fontWeight: 'bold',
+                py: 2,
+                fontSize: '1.2rem',
+                color: 'primary.onContainer',
+                borderColor: 'primary.main',
                 borderWidth: 2,
-                '&:hover': { borderWidth: 2 },
+                '&:hover': { borderWidth: 2, bgcolor: 'rgba(255,255,255,0.05)' },
               }}
             >
               Se connecter

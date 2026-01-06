@@ -57,40 +57,43 @@ export function IconNav() {
         position: 'fixed',
         top: 16,
         left: 16,
+        bottom: 16,
         zIndex: 1200,
         display: { xs: 'none', md: 'flex' },
         flexDirection: 'column',
-        gap: 1,
-        p: 1,
-        borderRadius: 4,
-        bgcolor: (theme) => alpha(theme.palette.background.paper, 0.8),
-        backdropFilter: 'blur(12px)',
-        boxShadow: (theme) => theme.shadows[4],
+        alignItems: 'center',
+        gap: 1.5,
+        p: 1.5,
+        borderRadius: 8, // 32px - Extra large M3
+        bgcolor: (theme) => alpha(theme.palette.background.paper, 0.9),
+        backdropFilter: 'blur(20px)',
+        boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
         border: '1px solid',
         borderColor: 'divider',
+        width: 80,
       }}
     >
       {/* Logo */}
       <Tooltip title="RPB" placement="right">
-        <Link href="/" style={{ display: 'block' }}>
+        <Link href="/" style={{ display: 'block', marginBottom: 12 }}>
           <Box
             sx={{
-              width: 48,
-              height: 48,
+              width: 56,
+              height: 56,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              transition: 'transform 0.2s',
+              transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
               '&:hover': {
-                transform: 'scale(1.1)',
+                transform: 'scale(1.15) rotate(5deg)',
               },
             }}
           >
             <Image
               src="/logo.png"
               alt="RPB Logo"
-              width={48}
-              height={48}
+              width={56}
+              height={56}
               style={{ objectFit: 'contain' }}
               priority
             />
@@ -98,80 +101,104 @@ export function IconNav() {
         </Link>
       </Tooltip>
 
-      <Box sx={{ my: 1, borderBottom: '1px solid', borderColor: 'divider' }} />
+      <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 1 }}>
+        {/* Nav items */}
+        {navItems.map((item) => {
+          const Icon = item.icon
+          const isActive = pathname === item.href || 
+            (item.href !== '/' && pathname.startsWith(item.href))
 
-      {/* Nav items */}
-      {navItems.map((item) => {
-        const Icon = item.icon
-        const isActive = pathname === item.href || 
-          (item.href !== '/' && pathname.startsWith(item.href))
+          return (
+            <Tooltip key={item.href} title={item.label} placement="right">
+              <IconButton
+                component={Link}
+                href={item.href}
+                sx={{
+                  width: 56,
+                  height: 48,
+                  borderRadius: 24, // Pill shape
+                  position: 'relative',
+                  color: isActive ? 'primary.main' : 'text.secondary',
+                  transition: 'all 0.2s ease',
+                  '&:hover': {
+                    color: 'primary.main',
+                    bgcolor: 'rgba(255,255,255,0.05)',
+                  },
+                }}
+              >
+                {/* M3 Active Indicator */}
+                {isActive && (
+                  <Box
+                    component={motion.div}
+                    layoutId="desktop-nav-active"
+                    sx={{
+                      position: 'absolute',
+                      top: 4,
+                      left: 4,
+                      right: 4,
+                      bottom: 4,
+                      bgcolor: (theme) => alpha(theme.palette.primary.main, 0.15),
+                      borderRadius: 20,
+                      zIndex: -1,
+                    }}
+                  />
+                )}
+                <Icon sx={{ fontSize: 26 }} />
+              </IconButton>
+            </Tooltip>
+          )
+        })}
 
-        return (
-          <Tooltip key={item.href} title={item.label} placement="right">
-            <IconButton
-              component={Link}
-              href={item.href}
-              sx={{
-                width: 48,
-                height: 48,
-                color: isActive ? 'primary.main' : 'text.secondary',
-                bgcolor: isActive ? (theme) => alpha(theme.palette.primary.main, 0.15) : 'transparent',
-                '&:hover': {
-                  color: 'primary.main',
-                  bgcolor: (theme) => alpha(theme.palette.primary.main, 0.1),
-                },
-              }}
-            >
-              <Icon />
-            </IconButton>
-          </Tooltip>
-        )
-      })}
+        {/* Discord */}
+        <Tooltip title="Discord" placement="right">
+          <IconButton
+            component="a"
+            href="https://discord.gg/twdVfesrRj"
+            target="_blank"
+            rel="noopener noreferrer"
+            sx={{
+              width: 56,
+              height: 48,
+              borderRadius: 24,
+              color: 'text.secondary',
+              '&:hover': {
+                color: '#5865F2',
+                bgcolor: (theme) => alpha('#5865F2', 0.1),
+              },
+            }}
+          >
+            <DiscordIcon sx={{ fontSize: 24 }} />
+          </IconButton>
+        </Tooltip>
+      </Box>
 
-      {/* Discord */}
-      <Tooltip title="Discord" placement="right">
-        <IconButton
-          component="a"
-          href="https://discord.gg/twdVfesrRj"
-          target="_blank"
-          rel="noopener noreferrer"
-          sx={{
-            width: 48,
-            height: 48,
-            color: 'text.secondary',
-            '&:hover': {
-              color: '#5865F2',
-              bgcolor: (theme) => alpha('#5865F2', 0.1),
-            },
-          }}
-        >
-          <DiscordIcon />
-        </IconButton>
-      </Tooltip>
+      <Box sx={{ flexGrow: 1 }} />
 
-      <ThemeSwitcher />
+      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1, width: '100%' }}>
+        <ThemeSwitcher />
 
-      <Box sx={{ my: 1, borderBottom: '1px solid', borderColor: 'divider' }} />
+        {/* Auth Menu */}
+        <Tooltip title="Compte" placement="right">
+          <IconButton
+            onClick={handleMenuOpen}
+            sx={{
+              width: 56,
+              height: 56,
+              borderRadius: 28,
+              color: session?.user ? 'primary.main' : 'text.secondary',
+              bgcolor: session?.user ? (theme) => alpha(theme.palette.primary.main, 0.1) : 'transparent',
+              transition: 'all 0.2s ease',
+              '&:hover': {
+                bgcolor: (theme) => alpha(theme.palette.primary.main, 0.15),
+              },
+            }}
+          >
+            <AccountCircle sx={{ fontSize: 32 }} />
+          </IconButton>
+        </Tooltip>
+      </Box>
 
-      {/* Auth Menu */}
-      <Tooltip title="Compte" placement="right">
-        <IconButton
-          onClick={handleMenuOpen}
-          sx={{
-            width: 48,
-            height: 48,
-            color: session?.user ? 'primary.main' : 'text.secondary',
-            bgcolor: session?.user ? (theme) => alpha(theme.palette.primary.main, 0.15) : 'transparent',
-            '&:hover': {
-              color: 'primary.main',
-              bgcolor: (theme) => alpha(theme.palette.primary.main, 0.1),
-            },
-          }}
-        >
-          <AccountCircle />
-        </IconButton>
-      </Tooltip>
-
+      {/* Menu remains same but with M3 Paper */}
       <Menu
         anchorEl={anchorEl}
         open={open}
@@ -180,31 +207,30 @@ export function IconNav() {
         PaperProps={{
           elevation: 0,
           sx: {
+            borderRadius: 6, // 24px
+            minWidth: 200,
             overflow: 'visible',
-            filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
             mt: 1.5,
-            ml: 1,
-            '& .MuiAvatar-root': {
-              width: 32,
-              height: 32,
-              ml: -0.5,
-              mr: 1,
-            },
+            ml: 2,
+            bgcolor: 'surface.high',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
+            border: '1px solid',
+            borderColor: 'divider',
           },
         }}
-        transformOrigin={{ horizontal: 'left', vertical: 'top' }}
-        anchorOrigin={{ horizontal: 'right', vertical: 'top' }}
+        transformOrigin={{ horizontal: 'left', vertical: 'bottom' }}
+        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
         {session?.user ? [
-          <MenuItem key="profile" component={Link} href="/profile">
+          <MenuItem key="profile" component={Link} href="/profile" sx={{ borderRadius: 1.5, m: 0.5 }}>
             <ListItemIcon>
               <AccountCircle fontSize="small" />
             </ListItemIcon>
             <ListItemText primary="Mon Profil" />
           </MenuItem>,
-          <Divider key="divider-profile" />,
+          <Divider key="divider-profile" sx={{ my: 0.5 }} />,
           (session.user.role === 'admin' || (session.user as any).role === 'superadmin') && (
-            <MenuItem key="admin" component={Link} href="/admin">
+            <MenuItem key="admin" component={Link} href="/admin" sx={{ borderRadius: 1.5, m: 0.5 }}>
               <ListItemIcon>
                 <AdminPanelSettings fontSize="small" />
               </ListItemIcon>
@@ -212,22 +238,22 @@ export function IconNav() {
             </MenuItem>
           ),
           (session.user.role === 'admin' || (session.user as any).role === 'superadmin') && (
-            <Divider key="divider-admin" />
+            <Divider key="divider-admin" sx={{ my: 0.5 }} />
           ),
-          <MenuItem key="logout" onClick={handleLogout}>
+          <MenuItem key="logout" onClick={handleLogout} sx={{ borderRadius: 1.5, m: 0.5, color: 'error.main' }}>
             <ListItemIcon>
-              <Logout fontSize="small" />
+              <Logout fontSize="small" color="error" />
             </ListItemIcon>
             <ListItemText primary="Déconnexion" />
           </MenuItem>
         ].filter(Boolean) : [
-          <MenuItem key="login" component={Link} href="/sign-in">
+          <MenuItem key="login" component={Link} href="/sign-in" sx={{ borderRadius: 1.5, m: 0.5 }}>
             <ListItemIcon>
               <Login fontSize="small" />
             </ListItemIcon>
             <ListItemText primary="Se connecter" />
           </MenuItem>,
-          <MenuItem key="register" component={Link} href="/sign-up">
+          <MenuItem key="register" component={Link} href="/sign-up" sx={{ borderRadius: 1.5, m: 0.5 }}>
             <ListItemIcon>
               <PersonAdd fontSize="small" />
             </ListItemIcon>
@@ -239,7 +265,7 @@ export function IconNav() {
   )
 }
 
-// Mobile bottom navigation with modern look
+// Mobile bottom navigation with M3 Expressive look
 export function MobileNav() {
   const pathname = usePathname()
   const router = useRouter()
@@ -247,6 +273,7 @@ export function MobileNav() {
   const trigger = useScrollTrigger()
 
   const isAdmin = session?.user?.role === 'admin' || (session?.user as any)?.role === 'superadmin'
+  const activeValue = pathname === '/' ? '/' : `/${pathname.split('/')[1]}`
 
   return (
     <Slide appear={false} direction="up" in={!trigger}>
@@ -254,37 +281,54 @@ export function MobileNav() {
         elevation={0}
         sx={{
           position: 'fixed',
-          bottom: 0,
-          left: 0,
-          right: 0,
+          bottom: 16,
+          left: 16,
+          right: 16,
           zIndex: 1200,
           display: { xs: 'block', md: 'none' },
-          borderTop: '1px solid',
+          borderRadius: 8, // Pill/Rounded container
+          bgcolor: (theme) => alpha(theme.palette.background.paper, 0.85),
+          backdropFilter: 'blur(24px)',
+          border: '1px solid',
           borderColor: 'divider',
-          bgcolor: (theme) => alpha(theme.palette.background.paper, 0.95),
-          backdropFilter: 'blur(16px)',
-          pb: 'env(safe-area-inset-bottom)',
-          borderRadius: '20px 20px 0 0',
-          boxShadow: '0 -8px 20px rgba(0,0,0,0.1)',
+          boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+          overflow: 'hidden',
+          transition: 'all 0.3s ease',
         }}
       >
         <BottomNavigation
           showLabels
-          value={pathname === '/' ? '/' : `/${pathname.split('/')[1]}`}
+          value={activeValue}
           onChange={(_, newValue) => router.push(newValue)}
           sx={{ 
-            height: 72,
+            height: 80, // M3 Navigation Bar Height
             bgcolor: 'transparent',
             '& .MuiBottomNavigationAction-root': {
               minWidth: 0,
-              padding: '12px 0',
               color: 'text.secondary',
+              position: 'relative',
               '&.Mui-selected': {
                 color: 'primary.main',
                 '& .MuiSvgIcon-root': {
-                  transform: 'scale(1.2) translateY(-2px)',
-                  transition: 'transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+                  zIndex: 2,
+                },
+                '&::after': {
+                    content: '""',
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -100%)',
+                    width: 64,
+                    height: 32,
+                    bgcolor: (theme) => alpha(theme.palette.primary.main, 0.2),
+                    borderRadius: 16,
+                    zIndex: 1,
                 }
+              },
+              '& .MuiBottomNavigationAction-label': {
+                mt: 0.5,
+                fontWeight: 600,
+                fontSize: '0.75rem',
               }
             }
           }}
@@ -305,9 +349,9 @@ export function MobileNav() {
             icon={<BarChart />}
           />
           <BottomNavigationAction
-            label={isAdmin ? 'Admin' : (session?.user ? 'Profil' : 'Connexion')}
+            label={isAdmin ? 'Admin' : (session?.user ? 'Profil' : 'Compte')}
             value={isAdmin ? '/admin' : (session?.user ? '/profile' : '/sign-in')}
-            icon={isAdmin ? <AdminPanelSettings /> : (session?.user ? <AccountCircle /> : <Login />)}
+            icon={isAdmin ? <AdminPanelSettings /> : (session?.user ? <AccountCircle /> : <AccountCircle />)}
           />
         </BottomNavigation>
       </Paper>

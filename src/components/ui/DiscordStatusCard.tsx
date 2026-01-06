@@ -40,7 +40,7 @@ export function DiscordStatusCard() {
         variant="rounded"
         width="100%"
         height={160}
-        sx={{ borderRadius: 4, maxWidth: 400 }}
+        sx={{ maxWidth: 400 }}
       />
     )
   }
@@ -53,10 +53,6 @@ export function DiscordStatusCard() {
       elevation={0}
       sx={{
         p: 3,
-        borderRadius: 4,
-        bgcolor: 'background.paper',
-        border: '1px solid',
-        borderColor: 'divider',
         display: 'flex',
         flexDirection: 'column',
         gap: 2,
@@ -73,7 +69,7 @@ export function DiscordStatusCard() {
         <Box
           sx={{
             p: 1.5,
-            borderRadius: 2,
+            borderRadius: 3,
             bgcolor: '#5865F220',
             color: '#5865F2',
             display: 'flex',
@@ -126,10 +122,7 @@ export function DiscordStatusCard() {
         sx={{
           bgcolor: '#5865F2',
           '&:hover': { bgcolor: '#4752C4' },
-          py: 1.2,
-          borderRadius: 2,
-          fontWeight: 'bold',
-          textTransform: 'none',
+          py: 1.5,
           fontSize: '1rem',
         }}
       >
