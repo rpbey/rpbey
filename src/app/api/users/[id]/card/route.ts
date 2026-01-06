@@ -50,6 +50,8 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       return NextResponse.json({ error: 'Stats not found' }, { status: 404 })
     }
 
+    const bladerName = stats.bladerName || user.name || '?'
+
     // Dynamic import of canvas (server-side only)
     const { createCanvas, loadImage } = await import('canvas')
     
@@ -98,14 +100,15 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     ctx.font = 'bold 48px sans-serif'
     ctx.textAlign = 'center'
     ctx.textBaseline = 'middle'
-    ctx.fillText(stats.bladerName[0].toUpperCase(), avatarX, avatarY)
+    const initial = bladerName?.charAt(0) || '?'
+    ctx.fillText(initial.toUpperCase(), avatarX, avatarY)
 
     // Blader name
     ctx.fillStyle = '#ffffff'
     ctx.font = 'bold 36px sans-serif'
     ctx.textAlign = 'left'
     ctx.textBaseline = 'top'
-    ctx.fillText(stats.bladerName, 190, 100)
+    ctx.fillText(bladerName, 190, 100)
 
     // Rank badge
     ctx.fillStyle = getRankColor(stats.rank)
@@ -183,10 +186,10 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     // Convert to PNG
     const buffer = canvas.toBuffer('image/png')
 
-    return new NextResponse(buffer, {
+    return new NextResponse(new Uint8Array(buffer), {
       headers: {
         'Content-Type': 'image/png',
-        'Content-Disposition': `inline; filename="${stats.bladerName}-card.png"`,
+        'Content-Disposition': `inline; filename="${bladerName}-card.png"`,
         'Cache-Control': 'public, max-age=300',
       },
     })

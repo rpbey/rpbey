@@ -13,10 +13,14 @@ import {
   AccountCircle,
   Logout,
   People,
+  Newspaper,
+  BarChart,
 } from '@mui/icons-material'
 import { useSession, signOut } from '@/lib/auth-client'
 import { DiscordIcon, TrophyIcon } from '@/components/ui/Icons'
 import { ThemeSwitcher } from '@/components/theme/ThemeSwitcher'
+import { BottomNavigation, BottomNavigationAction, Paper, Slide, useScrollTrigger } from '@mui/material'
+import { useRouter } from 'next/navigation'
 
 // Width of the icon navigation sidebar (48px icon + 16px padding each side)
 export const ICON_NAV_WIDTH = 80
@@ -235,62 +239,78 @@ export function IconNav() {
   )
 }
 
-// Mobile bottom navigation
+// Mobile bottom navigation with modern look
 export function MobileNav() {
   const pathname = usePathname()
+  const router = useRouter()
   const { data: session } = useSession()
+  const trigger = useScrollTrigger()
 
   const isAdmin = session?.user?.role === 'admin' || (session?.user as any)?.role === 'superadmin'
 
-  const mobileItems = [
-    { icon: Home, label: 'Accueil', href: '/' },
-    { icon: TrophyIcon, label: 'Tournois', href: '/tournaments' },
-    isAdmin 
-      ? { icon: AdminPanelSettings, label: 'Admin', href: '/admin' }
-      : { icon: session?.user ? AccountCircle : Login, label: session?.user ? 'Profil' : 'Login', href: session?.user ? '/profile' : '/sign-in' },
-  ]
-
   return (
-    <Box
-      component="nav"
-      sx={{
-        position: 'fixed',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        zIndex: 1200,
-        display: { xs: 'flex', md: 'none' },
-        justifyContent: 'space-around',
-        alignItems: 'center',
-        py: 1,
-        px: 2,
-        bgcolor: (theme) => alpha(theme.palette.background.paper, 0.9),
-        backdropFilter: 'blur(12px)',
-        borderTop: '1px solid',
-        borderColor: 'divider',
-      }}
-    >
-      {mobileItems.map((item) => {
-        const Icon = item.icon
-        const isActive = pathname === item.href || 
-          (item.href !== '/' && pathname.startsWith(item.href))
-
-        return (
-          <IconButton
-            key={item.href}
-            component={Link}
-            href={item.href}
-            sx={{
-              color: isActive ? 'primary.main' : 'text.secondary',
-              '&:hover': {
+    <Slide appear={false} direction="up" in={!trigger}>
+      <Paper
+        elevation={0}
+        sx={{
+          position: 'fixed',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          zIndex: 1200,
+          display: { xs: 'block', md: 'none' },
+          borderTop: '1px solid',
+          borderColor: 'divider',
+          bgcolor: (theme) => alpha(theme.palette.background.paper, 0.95),
+          backdropFilter: 'blur(16px)',
+          pb: 'env(safe-area-inset-bottom)',
+          borderRadius: '20px 20px 0 0',
+          boxShadow: '0 -8px 20px rgba(0,0,0,0.1)',
+        }}
+      >
+        <BottomNavigation
+          showLabels
+          value={pathname === '/' ? '/' : `/${pathname.split('/')[1]}`}
+          onChange={(_, newValue) => router.push(newValue)}
+          sx={{ 
+            height: 72,
+            bgcolor: 'transparent',
+            '& .MuiBottomNavigationAction-root': {
+              minWidth: 0,
+              padding: '12px 0',
+              color: 'text.secondary',
+              '&.Mui-selected': {
                 color: 'primary.main',
-              },
-            }}
-          >
-            <Icon />
-          </IconButton>
-        )
-      })}
-    </Box>
+                '& .MuiSvgIcon-root': {
+                  transform: 'scale(1.2) translateY(-2px)',
+                  transition: 'transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+                }
+              }
+            }
+          }}
+        >
+          <BottomNavigationAction
+            label="Home"
+            value="/"
+            icon={<Home />}
+          />
+          <BottomNavigationAction
+            label="Tournois"
+            value="/tournaments"
+            icon={<TrophyIcon />}
+          />
+           <BottomNavigationAction
+            label="Stats"
+            value="/rankings"
+            icon={<BarChart />}
+          />
+          <BottomNavigationAction
+            label={isAdmin ? 'Admin' : (session?.user ? 'Profil' : 'Connexion')}
+            value={isAdmin ? '/admin' : (session?.user ? '/profile' : '/sign-in')}
+            icon={isAdmin ? <AdminPanelSettings /> : (session?.user ? <AccountCircle /> : <Login />)}
+          />
+        </BottomNavigation>
+      </Paper>
+    </Slide>
   )
 }

@@ -214,7 +214,7 @@ export function TournamentBracket({ matches, format = 'single' }: TournamentBrac
               flex: 1,
             }}
           >
-            {rounds[roundNum].map((match) => (
+            {rounds[roundNum]?.map((match) => (
               <MatchCard key={match.id} match={match} />
             ))}
           </Box>

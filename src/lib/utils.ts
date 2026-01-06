@@ -73,3 +73,13 @@ export function getInitials(name: string | null | undefined) {
     .toUpperCase()
     .slice(0, 2)
 }
+
+/**
+ * Parse a stat string (e.g. "29+") to a number
+ */
+export function parseStat(stat: string | number | null | undefined): number {
+  if (typeof stat === 'number') return stat
+  if (!stat) return 0
+  const match = String(stat).match(/^(\d+)/)
+  return (match && match[1]) ? parseInt(match[1], 10) : 0
+}

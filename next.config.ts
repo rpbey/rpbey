@@ -14,7 +14,13 @@ const nextConfig: NextConfig = {
   experimental: {
     // Enable PPR for faster page loads
     // ppr: true,
+    serverActions: {
+      allowedOrigins: ["46.224.145.55:3000", "rpbey.fr", "localhost:3000"],
+    },
   },
+  
+  // Dev origins
+  allowedDevOrigins: ["46.224.145.55", "rpbey.fr"],
 
   // Image optimization
   images: {

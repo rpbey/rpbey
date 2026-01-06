@@ -31,8 +31,9 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
           select: {
             id: true,
             name: true,
+            image: true,
             profile: {
-              select: { bladerName: true, avatarUrl: true },
+              select: { bladerName: true },
             },
           },
         },
@@ -40,8 +41,9 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
           select: {
             id: true,
             name: true,
+            image: true,
             profile: {
-              select: { bladerName: true, avatarUrl: true },
+              select: { bladerName: true },
             },
           },
         },

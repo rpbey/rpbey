@@ -14,7 +14,7 @@ import Skeleton from '@mui/material/Skeleton'
 import useSWR from 'swr'
 import {
   BladerProfileHeader,
-  StatsCard,
+  UserProfileStatsCard,
   MatchHistory,
   RivalriesCard,
   FavoritePartsCard,
@@ -106,7 +106,7 @@ export default function ProfilePage({ params }: ProfilePageProps) {
         {/* Main content */}
         <Grid size={{ xs: 12, md: 8 }}>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-            <StatsCard stats={stats} />
+            <UserProfileStatsCard stats={stats} />
             <MatchHistory userId={userId!} />
           </Box>
         </Grid>

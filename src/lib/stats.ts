@@ -179,16 +179,16 @@ export async function getUserStats(userId: string): Promise<UserStats | null> {
   for (const deck of user.decks) {
     for (const bey of deck.beys) {
       if (bey.blade) {
-        bladeUsage[bey.bladeId] = bladeUsage[bey.bladeId] || { name: bey.blade.name, count: 0 }
-        bladeUsage[bey.bladeId].count++
+        if (!bladeUsage[bey.bladeId]) bladeUsage[bey.bladeId] = { name: bey.blade.name, count: 0 }
+        bladeUsage[bey.bladeId]!.count++
       }
       if (bey.ratchet) {
-        ratchetUsage[bey.ratchetId] = ratchetUsage[bey.ratchetId] || { name: bey.ratchet.name, count: 0 }
-        ratchetUsage[bey.ratchetId].count++
+        if (!ratchetUsage[bey.ratchetId]) ratchetUsage[bey.ratchetId] = { name: bey.ratchet.name, count: 0 }
+        ratchetUsage[bey.ratchetId]!.count++
       }
       if (bey.bit) {
-        bitUsage[bey.bitId] = bitUsage[bey.bitId] || { name: bey.bit.name, count: 0 }
-        bitUsage[bey.bitId].count++
+        if (!bitUsage[bey.bitId]) bitUsage[bey.bitId] = { name: bey.bit.name, count: 0 }
+        bitUsage[bey.bitId]!.count++
       }
     }
   }

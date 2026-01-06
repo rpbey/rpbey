@@ -19,8 +19,9 @@ import StarOutlineIcon from '@mui/icons-material/StarOutline'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
 import type { Part } from '@prisma/client'
+import { parseStat } from '@/lib/utils'
 
-interface DeckBey {
+export interface DeckBey {
   id: string
   position: number
   nickname: string | null
@@ -48,9 +49,9 @@ interface DeckCardProps {
 function BeyLine({ bey }: { bey: DeckBey }) {
   const name = bey.nickname || `${bey.blade.name} ${bey.ratchet.name} ${bey.bit.name}`
   const stats = {
-    attack: bey.blade.attack ?? 0,
-    defense: bey.blade.defense ?? 0,
-    stamina: bey.blade.stamina ?? 0,
+    attack: parseStat(bey.blade.attack),
+    defense: parseStat(bey.blade.defense),
+    stamina: parseStat(bey.blade.stamina),
   }
 
   return (
@@ -110,9 +111,9 @@ export function DeckCard({ deck, onEdit, onDelete, onActivate }: DeckCardProps) 
   // Calculate total stats
   const totalStats = sortedBeys.reduce(
     (acc, bey) => ({
-      attack: acc.attack + (bey.blade.attack ?? 0),
-      defense: acc.defense + (bey.blade.defense ?? 0),
-      stamina: acc.stamina + (bey.blade.stamina ?? 0),
+      attack: acc.attack + parseStat(bey.blade.attack),
+      defense: acc.defense + parseStat(bey.blade.defense),
+      stamina: acc.stamina + parseStat(bey.blade.stamina),
     }),
     { attack: 0, defense: 0, stamina: 0 }
   )
@@ -222,4 +223,4 @@ export function DeckCard({ deck, onEdit, onDelete, onActivate }: DeckCardProps) 
   )
 }
 
-export type { Deck, DeckBey }
+

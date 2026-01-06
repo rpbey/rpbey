@@ -3,7 +3,7 @@
  */
 
 export { BladerProfileHeader } from './BladerProfileHeader'
-export { StatsCard } from './StatsCard'
+export { UserProfileStatsCard } from './UserProfileStatsCard'
 export { MatchHistory } from './MatchHistory'
 export { RivalriesCard } from './RivalriesCard'
 export { FavoritePartsCard } from './FavoritePartsCard'

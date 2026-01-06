@@ -60,7 +60,7 @@ function StatItem({ icon, label, value, subValue, color = 'primary.main' }: Stat
   )
 }
 
-export function StatsCard({ stats }: StatsCardProps) {
+export function UserProfileStatsCard({ stats }: StatsCardProps) {
   return (
     <Card>
       <CardContent>

@@ -15,34 +15,8 @@ import {
 } from '@mui/icons-material'
 import { DiscordIcon, TrophyIcon, DiscordStatusCard } from '@/components/ui'
 import { motion, useScroll, useTransform, useSpring } from 'framer-motion'
-import { FeatureCard } from '@/components/cards'
+import { ChallongeBracket } from '@/components/tournaments'
 import { useThemeMode } from '@/components/theme/ThemeRegistry'
-
-const features = [
-  {
-    icon: TrophyIcon,
-    title: 'Tournois',
-    description: 'Participez à des tournois compétitifs et grimpez dans les classements.',
-    href: 'https://challonge.com/fr/B_TS1',
-    color: '#fbbf24',
-    external: true,
-  },
-  {
-    icon: Leaderboard,
-    title: 'Classements',
-    description: 'Suivez votre progression et comparez-vous aux meilleurs bladers.',
-    href: '/rankings',
-    color: '#3b82f6',
-  },
-  {
-    icon: Groups,
-    title: 'Communauté',
-    description: 'Rejoignez notre Discord pour échanger avec des passionnés.',
-    href: 'https://discord.gg/twdVfesrRj',
-    color: '#5865F2',
-    external: true,
-  },
-]
 
 export default function HomePage() {
   const { backgroundImage, mode } = useThemeMode()
@@ -194,7 +168,7 @@ export default function HomePage() {
         </Container>
       </Box>
 
-      {/* Features Section */}
+      {/* Bracket Section */}
       <Container maxWidth="lg" sx={{ py: 15 }}>
         <Box
           component={motion.div}
@@ -209,7 +183,7 @@ export default function HomePage() {
             textAlign="center"
             sx={{ mb: 2 }}
           >
-            Tout pour les Bladers
+            BEY-TAMASHII SERIES #1
           </Typography>
           <Typography
             variant="h6"
@@ -217,48 +191,23 @@ export default function HomePage() {
             textAlign="center"
             sx={{ mb: 8, maxWidth: 600, mx: 'auto' }}
           >
-            Découvrez tout ce que RPB a à offrir à la communauté Beyblade française
+            Suivez l'arbre du tournoi en direct et ne manquez aucun match !
           </Typography>
         </Box>
 
-        <Grid 
-          container 
-          spacing={4}
+        <Box
           component={motion.div}
-          variants={{
-            hidden: { opacity: 0 },
-            show: {
-              opacity: 1,
-              transition: {
-                staggerChildren: 0.2
-              }
-            }
-          }}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, margin: "-50px" }}
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
         >
-          {features.map((feature) => (
-            <Grid 
-              key={feature.title} 
-              size={{ xs: 12, sm: 6, md: 4 }}
-              component={motion.div}
-              variants={{
-                hidden: { opacity: 0, y: 50 },
-                show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 50 } }
-              }}
-            >
-              <FeatureCard
-                icon={feature.icon}
-                title={feature.title}
-                description={feature.description}
-                href={feature.href}
-                color={feature.color}
-                external={feature.external}
-              />
-            </Grid>
-          ))}
-        </Grid>
+          <ChallongeBracket 
+            challongeId="rpbey" 
+            height={700}
+            title="Arbre Officiel - BEY-TAMASHII SERIES #1" 
+          />
+        </Box>
       </Container>
 
       {/* CTA Section */}

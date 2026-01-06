@@ -28,6 +28,13 @@ interface BeyBuilderProps {
   disabled?: boolean
 }
 
+function parseStat(stat: string | number | null | undefined): number {
+  if (typeof stat === 'number') return stat
+  if (!stat) return 0
+  const match = String(stat).match(/^(\d+)/)
+  return (match && match[1]) ? parseInt(match[1], 10) : 0
+}
+
 function calculateStats(blade: Part | null): {
   attack: number
   defense: number
@@ -35,9 +42,9 @@ function calculateStats(blade: Part | null): {
 } | null {
   if (!blade) return null
   return {
-    attack: blade.attack ?? 0,
-    defense: blade.defense ?? 0,
-    stamina: blade.stamina ?? 0,
+    attack: parseStat(blade.attack),
+    defense: parseStat(blade.defense),
+    stamina: parseStat(blade.stamina),
   }
 }
 
@@ -167,4 +174,4 @@ export function BeyBuilder({
   )
 }
 
-export type { BeyData }
+

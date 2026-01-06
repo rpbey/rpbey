@@ -57,7 +57,20 @@ export class StandardAPI {
     // Determine final URL
     const urlBase = baseUrl ?? this.baseUrl;
     const urlPath = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
-    const url = new URL(`${urlBase}${urlPath}`);
+    
+    // Check if we have a valid base URL with protocol
+    const hasProtocol = urlBase.startsWith('http://') || urlBase.startsWith('https://');
+    const fullUrlString = `${urlBase}${urlPath}`;
+    
+    let url: URL;
+    
+    if (hasProtocol) {
+      url = new URL(fullUrlString);
+    } else {
+      // Handle relative URLs (e.g. for internal API calls)
+      // We use a dummy base to leverage URLSearchParams, then strip it
+      url = new URL(fullUrlString, 'http://dummy-base.com');
+    }
 
     // Append query parameters
     if (params) {
@@ -66,6 +79,14 @@ export class StandardAPI {
           url.searchParams.append(key, String(value));
         }
       });
+    }
+    
+    // Get final string
+    let finalUrl = hasProtocol ? url.toString() : url.pathname + url.search;
+    
+    // If original base was empty but we have a relative path, ensure we don't double slash if not needed
+    if (!hasProtocol && urlBase === '') {
+        finalUrl = urlPath + url.search;
     }
 
     // Merge headers
@@ -100,12 +121,12 @@ export class StandardAPI {
     // Apply request interceptors
     for (const interceptor of this.interceptors) {
       if (interceptor.onRequest) {
-        finalOptions = await interceptor.onRequest(url.toString(), finalOptions);
+        finalOptions = await interceptor.onRequest(finalUrl, finalOptions);
       }
     }
 
     try {
-      let response = await fetch(url.toString(), finalOptions);
+      let response = await fetch(finalUrl, finalOptions);
 
       // Apply response interceptors
       for (const interceptor of this.interceptors) {
@@ -122,7 +143,7 @@ export class StandardAPI {
         } catch {
           errorData = await response.text();
         }
-        throw new APIError(response.status, response.statusText, errorData, url.toString());
+        throw new APIError(response.status, response.statusText, errorData, finalUrl);
       }
 
       // Handle empty responses
@@ -135,7 +156,7 @@ export class StandardAPI {
       try {
         data = await response.json();
       } catch (error) {
-        throw new APIError(response.status, 'Invalid JSON Response', null, url.toString());
+        throw new APIError(response.status, 'Invalid JSON Response', null, finalUrl);
       }
 
       // Optional validation

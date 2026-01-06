@@ -10,6 +10,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://rpbey.fr"),
   title: {
     default: "RPB - République Populaire du Beyblade",
     template: "%s | RPB",
