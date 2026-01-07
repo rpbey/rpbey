@@ -17,7 +17,7 @@
     "db:seed": "tsx prisma/seed.ts",
     "bot:dev": "tsx bot/src/index.ts",
     "bot:build": "tsc -p bot/tsconfig.build.json",
-    "bot:start": "node dist/bot/index.js",
+    "bot:start": "node bot/dist/index.js",
     "mcp": "tsx src/server/mcp/stdio.ts"
   },
   "keywords": [],
