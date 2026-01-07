@@ -15,8 +15,14 @@ export type TournamentInput = {
   challongeUrl?: string | null
 }
 
-export async function getTournaments() {
+export async function getTournaments(search?: string) {
   return await prisma.tournament.findMany({
+    where: search ? {
+      OR: [
+        { name: { contains: search, mode: 'insensitive' } },
+        { description: { contains: search, mode: 'insensitive' } },
+      ]
+    } : undefined,
     orderBy: { date: 'desc' },
     include: {
       _count: {

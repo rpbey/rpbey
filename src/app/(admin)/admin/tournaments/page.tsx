@@ -17,8 +17,10 @@ import {
   CircularProgress,
   IconButton,
   Tooltip,
+  TextField,
+  InputAdornment,
 } from '@mui/material'
-import { Edit, Delete, Link as LinkIcon } from '@mui/icons-material'
+import { Edit, Delete, Link as LinkIcon, Search } from '@mui/icons-material'
 import {
   PageHeader,
   useConfirmDialog,
@@ -36,14 +38,16 @@ export default function AdminTournamentsPage() {
   const [dialogOpen, setDialogOpen] = useState(false)
   const [selectedTournament, setSelectedTournament] = useState<Tournament | null>(null)
   const [submitting, setSubmitting] = useState(false)
+  const [search, setSearch] = useState('')
+  const [debouncedSearch, setDebouncedSearch] = useState('')
 
   const { confirm, ConfirmDialogComponent } = useConfirmDialog()
   const { showToast } = useToast()
 
-  const fetchTournaments = useCallback(async () => {
+  const fetchTournaments = useCallback(async (query?: string) => {
     setLoading(true)
     try {
-      const data = await getTournaments()
+      const data = await getTournaments(query)
       // Cast is needed because dates are serialized as strings in server actions
       setTournaments(data as unknown as (Tournament & { _count: { participants: number } })[])
     } catch {
@@ -54,8 +58,15 @@ export default function AdminTournamentsPage() {
   }, [showToast])
 
   useEffect(() => {
-    fetchTournaments()
-  }, [fetchTournaments])
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search)
+    }, 500)
+    return () => clearTimeout(timer)
+  }, [search])
+
+  useEffect(() => {
+    fetchTournaments(debouncedSearch)
+  }, [fetchTournaments, debouncedSearch])
 
   const handleAdd = () => {
     setSelectedTournament(null)
@@ -139,114 +150,156 @@ export default function AdminTournamentsPage() {
         onAction={handleAdd}
       />
 
-      {loading ? (
+      {/* Stats */}
+      <Grid container spacing={3} sx={{ mb: 4 }}>
+        {[ 
+          { label: 'Total tournois', value: tournaments.length },
+          { label: 'En cours / Ouverts', value: activeTournaments },
+          { label: 'Participants totaux', value: totalParticipants },
+        ].map((stat) => (
+          <Grid key={stat.label} size={{ xs: 12, sm: 4 }}>
+            <Card
+              elevation={0}
+              sx={{
+                borderRadius: 3,
+                border: '1px solid',
+                borderColor: 'divider',
+              }}
+            >
+              <CardContent sx={{ textAlign: 'center' }}>
+                <Typography variant="h3" fontWeight="bold" color="primary">
+                  {stat.value}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {stat.label}
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
+
+      {/* Search Bar */}
+      <Box sx={{ mb: 3 }}>
+        <TextField
+          fullWidth
+          placeholder="Rechercher un tournoi par nom ou description..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Search />
+                </InputAdornment>
+              ),
+            },
+          }}
+          sx={{
+            '& .MuiOutlinedInput-root': {
+              borderRadius: 3,
+              bgcolor: 'background.paper',
+            },
+          }}
+        />
+      </Box>
+
+      {loading && tournaments.length === 0 ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
           <CircularProgress />
         </Box>
       ) : (
-        <>
-          {/* Stats */}
-          <Grid container spacing={3} sx={{ mb: 4 }}>
-            {[ 
-              { label: 'Total tournois', value: tournaments.length },
-              { label: 'En cours / Ouverts', value: activeTournaments },
-              { label: 'Participants totaux', value: totalParticipants },
-            ].map((stat) => (
-              <Grid key={stat.label} size={{ xs: 12, sm: 4 }}>
-                <Card
-                  elevation={0}
-                  sx={{
-                    borderRadius: 3,
-                    border: '1px solid',
-                    borderColor: 'divider',
-                  }}
-                >
-                  <CardContent sx={{ textAlign: 'center' }}>
-                    <Typography variant="h3" fontWeight="bold" color="primary">
-                      {stat.value}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {stat.label}
-                    </Typography>
-                  </CardContent>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
-
-          {/* Tournaments Table */}
-          <Card
-            elevation={0}
-            sx={{
-              borderRadius: 3,
-              border: '1px solid',
-              borderColor: 'divider',
-            }}
-          >
-            <TableContainer>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Nom</TableCell>
-                    <TableCell>Date</TableCell>
-                    <TableCell>Participants</TableCell>
-                    <TableCell>Status</TableCell>
-                    <TableCell align="right">Actions</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {tournaments.map((tournament) => (
-                    <TableRow key={tournament.id} hover>
-                      <TableCell>
-                        <Typography fontWeight="bold">{tournament.name}</Typography>
-                        {tournament.challongeUrl && (
-                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 0.5 }}>
-                            <LinkIcon sx={{ fontSize: 12, color: 'text.secondary' }} />
-                            <Typography variant="caption" color="text.secondary" noWrap sx={{ maxWidth: 200 }}>
-                              {tournament.challongeUrl}
-                            </Typography>
-                          </Box>
-                        )}
-                      </TableCell>
-                      <TableCell>{formatDateShort(tournament.date)}</TableCell>
-                      <TableCell>
-                        {tournament._count.participants}/{tournament.maxPlayers}
-                      </TableCell>
-                      <TableCell>
-                        <Chip
-                          label={statusLabels[tournament.status] || tournament.status}
-                          color={statusColors[tournament.status] || 'default'}
-                          size="small"
-                        />
-                      </TableCell>
-                      <TableCell align="right">
-                        <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                          <Tooltip title="Modifier">
-                            <IconButton onClick={() => handleEdit(tournament)} size="small">
-                              <Edit fontSize="small" />
-                            </IconButton>
-                          </Tooltip>
-                          <Tooltip title="Supprimer">
-                            <IconButton onClick={() => handleDelete(tournament)} size="small" color="error">
-                              <Delete fontSize="small" />
-                            </IconButton>
-                          </Tooltip>
+        <Card
+          elevation={0}
+          sx={{
+            borderRadius: 3,
+            border: '1px solid',
+            borderColor: 'divider',
+            position: 'relative',
+          }}
+        >
+          {loading && (
+            <Box 
+              sx={{ 
+                position: 'absolute', 
+                top: 0, 
+                left: 0, 
+                right: 0, 
+                bottom: 0, 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center',
+                bgcolor: 'rgba(255, 255, 255, 0.7)',
+                zIndex: 1,
+                borderRadius: 3,
+              }}
+            >
+              <CircularProgress />
+            </Box>
+          )}
+          <TableContainer>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Nom</TableCell>
+                  <TableCell>Date</TableCell>
+                  <TableCell>Participants</TableCell>
+                  <TableCell>Status</TableCell>
+                  <TableCell align="right">Actions</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {tournaments.map((tournament) => (
+                  <TableRow key={tournament.id} hover>
+                    <TableCell>
+                      <Typography fontWeight="bold">{tournament.name}</Typography>
+                      {tournament.challongeUrl && (
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 0.5 }}>
+                          <LinkIcon sx={{ fontSize: 12, color: 'text.secondary' }} />
+                          <Typography variant="caption" color="text.secondary" noWrap sx={{ maxWidth: 200 }}>
+                            {tournament.challongeUrl}
+                          </Typography>
                         </Box>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                  {tournaments.length === 0 && (
-                    <TableRow>
-                      <TableCell colSpan={5} align="center" sx={{ py: 4 }}>
-                        <Typography color="text.secondary">Aucun tournoi trouvé</Typography>
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Card>
-        </>
+                      )}
+                    </TableCell>
+                    <TableCell>{formatDateShort(tournament.date)}</TableCell>
+                    <TableCell>
+                      {tournament._count.participants}/{tournament.maxPlayers}
+                    </TableCell>
+                    <TableCell>
+                      <Chip
+                        label={statusLabels[tournament.status] || tournament.status}
+                        color={statusColors[tournament.status] || 'default'}
+                        size="small"
+                      />
+                    </TableCell>
+                    <TableCell align="right">
+                      <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                        <Tooltip title="Modifier">
+                          <IconButton onClick={() => handleEdit(tournament)} size="small">
+                            <Edit fontSize="small" />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Supprimer">
+                          <IconButton onClick={() => handleDelete(tournament)} size="small" color="error">
+                            <Delete fontSize="small" />
+                          </IconButton>
+                        </Tooltip>
+                      </Box>
+                    </TableCell>
+                  </TableRow>
+                ))}
+                {tournaments.length === 0 && !loading && (
+                  <TableRow>
+                    <TableCell colSpan={5} align="center" sx={{ py: 4 }}>
+                      <Typography color="text.secondary">Aucun tournoi trouvé</Typography>
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Card>
       )}
 
       <TournamentDialog
