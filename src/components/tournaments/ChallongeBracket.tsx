@@ -123,9 +123,7 @@ export function ChallongeBracket({
           src={moduleUrl.toString()}
           width="100%"
           height="100%"
-          frameBorder="0"
           scrolling="auto"
-          allowTransparency={true}
           onLoad={() => setLoading(false)}
           style={{
             border: 'none',

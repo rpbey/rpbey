@@ -24,6 +24,14 @@ FROM base AS deps
 RUN pnpm install --frozen-lockfile
 
 # ============================================
+# Production Dependencies stage
+# ============================================
+FROM base AS prod-deps
+
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm install --prod --frozen-lockfile
+
+# ============================================
 # Builder stage
 # ============================================
 FROM base AS builder
@@ -53,8 +61,15 @@ RUN addgroup --system --gid 1001 nodejs && \
 
 WORKDIR /app
 
-# Copy necessary files from builder
+# Copy necessary files
 COPY --from=builder /app/public ./public
+COPY --from=builder /app/package.json ./package.json
+
+# Copy production dependencies (needed for Bot and full Next.js support)
+COPY --from=prod-deps /app/node_modules ./node_modules
+
+# Copy Bot build artifacts
+COPY --from=builder --chown=nextjs:nodejs /app/dist ./dist
 
 # Automatically leverage output traces to reduce image size
 # https://nextjs.org/docs/advanced-features/output-file-tracing

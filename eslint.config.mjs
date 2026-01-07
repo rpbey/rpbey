@@ -13,6 +13,8 @@ export default tseslint.config(
       'public/**',
       'generated/**',
       'src/generated/**',
+      'dist/**',
+      'bot/dist/**',
     ],
   },
   js.configs.recommended,
