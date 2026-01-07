@@ -21,7 +21,7 @@ export async function GET() {
   }
 
   try {
-    const data = await botClient.get<any>('/api/config', {
+    const data = await botClient.get<BotConfig>('/api/config', {
       cache: 'no-store',
     })
 

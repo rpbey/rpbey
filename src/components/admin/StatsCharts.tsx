@@ -70,7 +70,7 @@ export function StatsCharts({ registrations, tournaments, matchesStatus }: Stats
                     cornerRadius: 5,
                   },
                 ]}
-                slotProps={{ legend: { hidden: true } }}
+                legend={{ hidden: true }}
                 height={300}
                 margin={{ right: 5 }}
               />

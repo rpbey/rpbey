@@ -17,12 +17,25 @@ export type StaffMemberInput = {
   isActive?: boolean
 }
 
+export interface DiscordMember {
+  id: string
+  username: string
+  displayName?: string
+  avatar?: string
+}
+
+export interface DiscordRole {
+  id: string
+  name: string
+  color: string
+}
+
 async function checkAdmin() {
   const session = await auth.api.getSession({
     headers: await headers(),
   })
 
-  const userRole = (session?.user as any)?.role || session?.user?.role
+  const userRole = (session?.user as { role?: string } | undefined)?.role
   if (!session || (userRole !== 'admin' && userRole !== 'superadmin')) {
     throw new Error('Non autorisé')
   }
@@ -75,7 +88,7 @@ export async function deleteStaffMember(id: string) {
   return { success: true }
 }
 
-export async function getDiscordRoles() {
+export async function getDiscordRoles(): Promise<DiscordRole[]> {
   await checkAdmin()
   const botUrl = process.env.BOT_API_URL || 'http://localhost:3001'
   const apiKey = process.env.BOT_API_KEY
@@ -87,14 +100,14 @@ export async function getDiscordRoles() {
     })
     if (!response.ok) return []
     const data = await response.json()
-    return data.roles || []
+    return (data.roles as DiscordRole[]) || []
   } catch (error) {
     console.error('Failed to fetch roles:', error)
     return []
   }
 }
 
-export async function getMembersByRole(roleId: string) {
+export async function getMembersByRole(roleId: string): Promise<DiscordMember[]> {
   await checkAdmin()
   const botUrl = process.env.BOT_API_URL || 'http://localhost:3001'
   const apiKey = process.env.BOT_API_KEY
@@ -106,7 +119,7 @@ export async function getMembersByRole(roleId: string) {
     })
     if (!response.ok) return []
     const data = await response.json()
-    return data.members || []
+    return (data.members as DiscordMember[]) || []
   } catch (error) {
     console.error('Failed to fetch members by role:', error)
     return []
@@ -131,7 +144,7 @@ export async function syncStaffFromDiscord() {
   }
 
   const staffMap = new Map<string, {
-    member: any,
+    member: DiscordMember,
     roleType: string,
     priority: number
   }>()

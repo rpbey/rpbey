@@ -101,7 +101,7 @@ export function StaffCard({ member }: StaffCardProps) {
 
         {roleType ? (
           <Box sx={{ mx: 'auto', mb: 2, display: 'flex', justifyContent: 'center' }}>
-            <RoleLogo role={roleType as any} size={100} />
+            <RoleLogo role={roleType} size={100} />
           </Box>
         ) : (
           <Avatar

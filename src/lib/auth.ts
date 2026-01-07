@@ -51,7 +51,10 @@ export const auth = betterAuth({
 
   // Callbacks
   callbacks: {
-    async session({ session, user }: { session: any, user: any }) {
+    async session({ session, user }: { 
+      session: { user: Record<string, unknown> }; 
+      user: { role?: string } 
+    }) {
       return {
         ...session,
         user: {

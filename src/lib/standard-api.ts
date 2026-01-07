@@ -8,7 +8,7 @@ export class APIError extends Error {
   constructor(
     public status: number,
     public statusText: string,
-    public data: any,
+    public data: unknown,
     public url: string
   ) {
     super(`API Error ${status} (${statusText}) at ${url}`);
@@ -19,7 +19,7 @@ export class APIError extends Error {
 export interface StandardAPIOptions extends RequestInit {
   baseUrl?: string;
   params?: Record<string, string | number | boolean | undefined | null>;
-  validationSchema?: any; // To be used with Zod or similar
+  validationSchema?: { safeParse: (data: unknown) => { success: boolean; data?: unknown; error?: unknown } }; 
   revalidate?: number | false; // Next.js shortcut
 }
 
@@ -51,7 +51,7 @@ export class StandardAPI {
   /**
    * Core request method
    */
-  async request<T = any>(endpoint: string, options: StandardAPIOptions = {}): Promise<T> {
+  async request<T = unknown>(endpoint: string, options: StandardAPIOptions = {}): Promise<T> {
     const { baseUrl, params, validationSchema, revalidate, ...fetchOptions } = options;
 
     // Determine final URL
@@ -99,7 +99,7 @@ export class StandardAPI {
 
     // Next.js specific caching shortcut
     if (revalidate !== undefined) {
-      (fetchOptions as any).next = { revalidate };
+      (fetchOptions as { next?: { revalidate: number | false } }).next = { revalidate };
     }
 
     // Auto-set Content-Type for JSON bodies
@@ -137,7 +137,7 @@ export class StandardAPI {
 
       // Handle non-2xx responses
       if (!response.ok) {
-        let errorData;
+        let errorData: unknown;
         try {
           errorData = await response.json();
         } catch {
@@ -152,7 +152,7 @@ export class StandardAPI {
       }
 
       // Parse JSON response
-      let data: any;
+      let data: unknown;
       try {
         data = await response.json();
       } catch {
@@ -182,23 +182,23 @@ export class StandardAPI {
     }
   }
 
-  get<T = any>(endpoint: string, options?: StandardAPIOptions) {
+  get<T = unknown>(endpoint: string, options?: StandardAPIOptions) {
     return this.request<T>(endpoint, { ...options, method: 'GET' });
   }
 
-  post<T = any>(endpoint: string, body?: any, options?: StandardAPIOptions) {
+  post<T = unknown>(endpoint: string, body?: unknown, options?: StandardAPIOptions) {
     return this.request<T>(endpoint, { ...options, method: 'POST', body });
   }
 
-  put<T = any>(endpoint: string, body?: any, options?: StandardAPIOptions) {
+  put<T = unknown>(endpoint: string, body?: unknown, options?: StandardAPIOptions) {
     return this.request<T>(endpoint, { ...options, method: 'PUT', body });
   }
 
-  patch<T = any>(endpoint: string, body?: any, options?: StandardAPIOptions) {
+  patch<T = unknown>(endpoint: string, body?: unknown, options?: StandardAPIOptions) {
     return this.request<T>(endpoint, { ...options, method: 'PATCH', body });
   }
 
-  delete<T = any>(endpoint: string, options?: StandardAPIOptions) {
+  delete<T = unknown>(endpoint: string, options?: StandardAPIOptions) {
     return this.request<T>(endpoint, { ...options, method: 'DELETE' });
   }
 }

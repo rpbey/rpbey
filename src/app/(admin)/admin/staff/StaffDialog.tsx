@@ -14,8 +14,9 @@ import {
   Grid,
 } from '@mui/material'
 import { FormDialog } from '@/components/ui'
-import type { StaffMemberInput } from './actions'
+import type { StaffMemberInput, DiscordRole, DiscordMember } from './actions'
 import { getDiscordRoles, getMembersByRole } from './actions'
+import type { StaffMember } from '@prisma/client'
 
 const TEAMS = [
   { value: 'admin', label: 'Administration' },
@@ -31,7 +32,7 @@ interface StaffDialogProps {
   open: boolean
   onClose: () => void
   onSubmit: (data: StaffMemberInput) => Promise<void>
-  initialData?: any
+  initialData?: StaffMember | null
   loading?: boolean
 }
 
@@ -52,9 +53,9 @@ export function StaffDialog({
     isActive: true,
   })
 
-  const [roles, setRoles] = useState<any[]>([])
+  const [roles, setRoles] = useState<DiscordRole[]>([])
   const [selectedRoleId, setSelectedRoleId] = useState<string>('')
-  const [discordMembers, setDiscordMembers] = useState<any[]>([])
+  const [discordMembers, setDiscordMembers] = useState<DiscordMember[]>([])
   const [loadingRoles, setLoadingRoles] = useState(false)
   const [loadingMembers, setLoadingMembers] = useState(false)
 
@@ -79,7 +80,7 @@ export function StaffDialog({
     setLoadingMembers(false)
   }
 
-  const handleSelectDiscordMember = (member: any) => {
+  const handleSelectDiscordMember = (member: DiscordMember) => {
     setFormData({
       ...formData,
       name: member.displayName || member.username,

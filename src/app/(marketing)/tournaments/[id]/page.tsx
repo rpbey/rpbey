@@ -21,6 +21,7 @@ import {
 import { TournamentStatusChip } from '@/components/ui'
 import { ChallongeBracket } from '@/components/tournaments'
 import dynamic from 'next/dynamic'
+import type { Tournament } from '@prisma/client'
 
 const Map = dynamic(() => import('@/components/ui/Map'), { 
   ssr: false,
@@ -29,15 +30,15 @@ const Map = dynamic(() => import('@/components/ui/Map'), {
 
 export default function TournamentDetailPage() {
   const { id } = useParams()
-  const [tournament, setTournament] = useState<any>(null)
+  const [tournament, setTournament] = useState<Tournament | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     async function fetchTournament() {
       try {
         const res = await fetch(`/api/tournaments/${id}`)
-        const data = await res.json()
-        setTournament(data)
+        const response = await res.json()
+        setTournament(response.data)
       } catch (error) {
         console.error('Failed to fetch tournament details:', error)
       } finally {

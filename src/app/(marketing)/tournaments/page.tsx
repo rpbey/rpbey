@@ -8,10 +8,11 @@ import { PageHeader } from '@/components/ui'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Skeleton from '@mui/material/Skeleton'
+import type { Tournament } from '@prisma/client'
 
 export default function TournamentsPage() {
   const router = useRouter()
-  const [tournaments, setTournaments] = useState<any[]>([])
+  const [tournaments, setTournaments] = useState<Tournament[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {

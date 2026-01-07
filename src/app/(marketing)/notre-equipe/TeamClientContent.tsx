@@ -5,9 +5,10 @@ import Grid from '@mui/material/Grid'
 import Link from 'next/link'
 import { NavigateNext } from '@mui/icons-material'
 import { StaffCard } from '@/components/cards'
+import type { StaffMember } from '@prisma/client'
 
 interface TeamClientContentProps {
-  groupedMembers: Record<string, any[]>
+  groupedMembers: Record<string, StaffMember[]>
   teamLabels: Record<string, string>
   teamOrder: string[]
 }

@@ -3,6 +3,35 @@
 import { createTheme, type ThemeOptions } from "@mui/material/styles";
 import { fontFamily } from "./fonts";
 
+declare module "@mui/material/styles" {
+  interface Palette {
+    surface: {
+      lowest: string;
+      low: string;
+      main: string;
+      high: string;
+      highest: string;
+    };
+  }
+  interface PaletteOptions {
+    surface?: {
+      lowest: string;
+      low: string;
+      main: string;
+      high: string;
+      highest: string;
+    };
+  }
+  interface PaletteColor {
+    container?: string;
+    onContainer?: string;
+  }
+  interface SimplePaletteColorOptions {
+    container?: string;
+    onContainer?: string;
+  }
+}
+
 // RPB Colors - Extracted from Image
 const RPB_RED = "#E31C25"; // Rouge vif du logo RPB (Licorne/Texte)
 const RPB_YELLOW = "#FFD700"; // Jaune/Or de la crinière
@@ -201,7 +230,7 @@ export const rpbTheme = createTheme({
     },
     divider: "rgba(255, 255, 255, 0.08)",
   },
-} as any); // Type cast for M3 custom palette extensions
+}); // Type cast for M3 custom palette extensions removed via module augmentation
 
 export const tournamentTheme = createTheme({
   ...commonOptions,

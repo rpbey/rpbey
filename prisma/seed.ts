@@ -1,6 +1,6 @@
 import 'dotenv/config'
 import prisma from '../src/lib/prisma'
-import { TournamentStatus } from '@prisma/client'
+import type { TournamentStatus } from '@prisma/client'
 
 async function main() {
   console.log('Seeding tournaments...')

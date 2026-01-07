@@ -20,7 +20,7 @@ async function subscribe() {
     // Delete existing subscriptions to avoid duplicates
     const subs = await apiClient.eventSub.getSubscriptions();
     for (const sub of subs.data) {
-      if (sub.type === 'stream.online' && (sub.condition as any).broadcaster_user_id === userId) {
+      if (sub.type === 'stream.online' && (sub.condition as Record<string, unknown>).broadcaster_user_id === userId) {
         console.log(`Deleting existing subscription ${sub.id}`);
         await apiClient.eventSub.deleteSubscription(sub.id);
       }
