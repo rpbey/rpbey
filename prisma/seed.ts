@@ -1,5 +1,6 @@
 import 'dotenv/config'
 import prisma from '../src/lib/prisma'
+import { TournamentStatus } from '@prisma/client'
 
 async function main() {
   console.log('Seeding tournaments...')
@@ -33,11 +34,11 @@ async function main() {
 
   for (const t of tournaments) {
     await prisma.tournament.upsert({
-      where: { challongeId: (t as any).challongeId ?? t.name },
+      where: { id: t.name }, // Using name as ID placeholder for seed
       update: {},
       create: {
         ...t,
-        status: t.status as any,
+        status: t.status as TournamentStatus,
       },
     })
   }

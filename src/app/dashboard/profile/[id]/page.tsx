@@ -99,6 +99,7 @@ export default function ProfilePage({ params }: ProfilePageProps) {
           joinDate={user?.createdAt}
           bio={user?.profile?.bio}
           onDownloadCard={handleDownloadCard}
+          isOwnProfile={currentUser?.id === userId}
         />
       </Box>
 

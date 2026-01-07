@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Box, Typography, Button, Stack, useTheme } from '@mui/material';
+import { Box, Typography, Button, Stack } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
 
 interface PageHeaderProps {
@@ -21,8 +21,6 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
   actionIcon = <AddIcon />,
   children,
 }) => {
-  const theme = useTheme();
-
   return (
     <Box sx={{ mb: 4 }}>
       <Stack

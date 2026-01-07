@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import {
   Box,
   Button,
@@ -13,16 +13,13 @@ import {
   Add as AddIcon,
   Edit as EditIcon,
   Delete as DeleteIcon,
-  Shield as ShieldIcon,
 } from '@mui/icons-material'
 import {
   PageHeader,
-  DataTable,
   StatusChip,
   useConfirmDialog,
   useToast,
 } from '@/components/ui'
-import type { Column } from '@/components/ui/DataTable'
 import {
   getStaffMembers,
   createStaffMember,
@@ -34,10 +31,10 @@ import type { StaffMemberInput } from './actions'
 import { StaffDialog } from './StaffDialog'
 import CircularProgress from '@mui/material/CircularProgress'
 import type { StaffMember } from '@prisma/client'
-import { RoleColors, DiscordRoleMapping } from '@/lib/role-colors'
+import { RoleColors } from '@/lib/role-colors'
 import { RoleLogo } from '@/components/ui/RoleLogo'
-import { Card, CardContent, Grid as MuiGrid, Divider as MuiDivider, Stack, Chip, ButtonGroup } from '@mui/material'
-import { Refresh as RefreshIcon, Sync as SyncIcon } from '@mui/icons-material'
+import { Card, CardContent, Grid as MuiGrid, Stack, Chip, ButtonGroup } from '@mui/material'
+import { Sync as SyncIcon } from '@mui/icons-material'
 
 const TEAM_LABELS: Record<string, string> = {
   admin: 'Administration',
@@ -69,21 +66,21 @@ export default function AdminStaffPage() {
   const { confirm } = useConfirmDialog()
   const { showToast } = useToast()
 
-  const fetchMembers = async () => {
+  const fetchMembers = useCallback(async () => {
     setLoading(true)
     try {
       const data = await getStaffMembers()
       setMembers(data)
-    } catch (error) {
+    } catch {
       showToast('Erreur lors de la récupération des membres', 'error')
     } finally {
       setLoading(false)
     }
-  }
+  }, [showToast])
 
   useEffect(() => {
     fetchMembers()
-  }, [])
+  }, [fetchMembers])
 
   const handleAdd = () => {
     setSelectedMember(null)
@@ -106,7 +103,7 @@ export default function AdminStaffPage() {
           'success'
         )
         fetchMembers()
-      } catch (error) {
+      } catch {
         showToast('Erreur lors de la synchronisation', 'error')
       } finally {
         setLoading(false)
@@ -132,7 +129,7 @@ export default function AdminStaffPage() {
         await deleteStaffMember(member.id)
         showToast('Membre supprimé avec succès', 'success')
         fetchMembers()
-      } catch (error) {
+      } catch {
         showToast('Erreur lors de la suppression', 'error')
       }
     }
@@ -150,7 +147,7 @@ export default function AdminStaffPage() {
       }
       setDialogOpen(false)
       fetchMembers()
-    } catch (error) {
+    } catch {
       showToast('Erreur lors de l\'enregistrement', 'error')
     } finally {
       setSubmitting(false)
@@ -219,7 +216,7 @@ export default function AdminStaffPage() {
                         <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
                           <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
                             {member.role && (member.role === 'ADMIN' || member.role === 'RH' || member.role === 'MODO' || member.role === 'STAFF') ? (
-                              <RoleLogo role={member.role as any} size={48} />
+                              <RoleLogo role={member.role as 'ADMIN' | 'RH' | 'MODO' | 'STAFF'} size={48} />
                             ) : (
                               <Avatar src={member.imageUrl || undefined} sx={{ width: 48, height: 48 }}>
                                 {member.name.charAt(0)}

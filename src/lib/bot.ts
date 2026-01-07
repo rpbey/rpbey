@@ -27,7 +27,7 @@ export async function getBotStatus(): Promise<BotStatus | null> {
     return await botClient.get<BotStatus>('/api/status', {
       revalidate: 60, // Use the new shortcut
     });
-  } catch (error) {
+  } catch {
     // Error is already logged by interceptor in dev
     return null;
   }

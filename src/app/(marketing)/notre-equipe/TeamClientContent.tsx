@@ -1,6 +1,7 @@
 'use client'
 
-import { Container, Typography, Box, Grid, Breadcrumbs, useTheme, alpha } from '@mui/material'
+import { Container, Typography, Box, Breadcrumbs, useTheme, alpha } from '@mui/material'
+import Grid from '@mui/material/Grid'
 import Link from 'next/link'
 import { NavigateNext } from '@mui/icons-material'
 import { StaffCard } from '@/components/cards'

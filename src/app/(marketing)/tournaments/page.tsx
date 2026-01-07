@@ -18,8 +18,8 @@ export default function TournamentsPage() {
     async function fetchTournaments() {
       try {
         const res = await fetch('/api/tournaments')
-        const data = await res.json()
-        setTournaments(data)
+        const json = await res.json()
+        setTournaments(json.data || [])
       } catch (error) {
         console.error('Failed to fetch tournaments:', error)
       } finally {

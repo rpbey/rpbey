@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import {
   Box,
   IconButton,
@@ -11,7 +11,6 @@ import {
 import {
   Edit as EditIcon,
   Delete as DeleteIcon,
-  ContentCopy as CopyIcon,
 } from '@mui/icons-material'
 import {
   PageHeader,
@@ -41,21 +40,21 @@ export default function AdminContentPage() {
   const { confirm } = useConfirmDialog()
   const { showToast } = useToast()
 
-  const fetchBlocks = async () => {
+  const fetchBlocks = useCallback(async () => {
     setLoading(true)
     try {
       const data = await getContentBlocks()
       setBlocks(data)
-    } catch (error) {
+    } catch {
       showToast('Erreur lors de la récupération du contenu', 'error')
     } finally {
       setLoading(false)
     }
-  }
+  }, [showToast])
 
   useEffect(() => {
     fetchBlocks()
-  }, [])
+  }, [fetchBlocks])
 
   const handleAdd = () => {
     setSelectedBlock(null)
@@ -80,7 +79,7 @@ export default function AdminContentPage() {
         await deleteContentBlock(block.id)
         showToast('Contenu supprimé avec succès', 'success')
         fetchBlocks()
-      } catch (error) {
+      } catch {
         showToast('Erreur lors de la suppression', 'error')
       }
     }
@@ -92,7 +91,7 @@ export default function AdminContentPage() {
       if (data.type === 'json') {
         try {
           JSON.parse(data.content)
-        } catch (e) {
+        } catch {
           showToast('JSON invalide', 'error')
           setSubmitting(false)
           return
@@ -108,7 +107,7 @@ export default function AdminContentPage() {
       }
       setDialogOpen(false)
       fetchBlocks()
-    } catch (error) {
+    } catch {
       showToast('Erreur lors de l\'enregistrement', 'error')
     } finally {
       setSubmitting(false)

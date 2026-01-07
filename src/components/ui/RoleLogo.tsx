@@ -1,7 +1,6 @@
 'use client';
 
-import Image from 'next/image';
-import { RoleColors, getRoleFilter, type RoleType } from '@/lib/role-colors';
+import { RoleColors, type RoleType } from '@/lib/role-colors';
 
 interface RoleLogoProps {
   role?: RoleType;

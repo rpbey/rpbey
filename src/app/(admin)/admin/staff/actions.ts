@@ -122,40 +122,74 @@ export async function syncStaffFromDiscord() {
     errors: 0
   }
 
-  // Iterate over mapped roles
+  // Priority definition (Higher number = Higher priority)
+  const ROLE_PRIORITY: Record<string, number> = {
+    'ADMIN': 4,
+    'RH': 3,
+    'MODO': 2,
+    'STAFF': 1
+  }
+
+  const staffMap = new Map<string, {
+    member: any,
+    roleType: string,
+    priority: number
+  }>()
+
+  // 1. Collect all members from all mapped roles
   for (const [roleId, roleType] of Object.entries(DiscordRoleMapping)) {
-    const teamId = roleType.toLowerCase()
-    const members = await getMembersByRole(roleId)
-    
-    for (const member of members) {
-      try {
-        const existing = await prisma.staffMember.findFirst({
-          where: { discordId: member.id }
-        })
+    try {
+      const members = await getMembersByRole(roleId)
+      const priority = ROLE_PRIORITY[roleType] || 0
 
-        const data = {
-          name: member.displayName || member.username,
-          role: roleType,
-          teamId: teamId,
-          imageUrl: member.avatar,
-          discordId: member.id,
-          isActive: true
-        }
-
-        if (existing) {
-          await prisma.staffMember.update({
-            where: { id: existing.id },
-            data
+      for (const member of members) {
+        const existing = staffMap.get(member.id)
+        
+        // If user not seen yet, or this role has higher priority, update map
+        if (!existing || priority > existing.priority) {
+          staffMap.set(member.id, {
+            member,
+            roleType,
+            priority
           })
-          results.updated++
-        } else {
-          await prisma.staffMember.create({ data })
-          results.added++
         }
-      } catch (e) {
-        console.error('Sync error for member:', member.id, e)
-        results.errors++
       }
+    } catch (e) {
+      console.error(`Failed to fetch members for role ${roleType} (${roleId}):`, e)
+      results.errors++
+    }
+  }
+
+  // 2. Upsert unique users with their highest role
+  for (const [discordId, { member, roleType }] of staffMap.entries()) {
+    try {
+      const teamId = roleType.toLowerCase()
+      const existing = await prisma.staffMember.findFirst({
+        where: { discordId }
+      })
+
+      const data = {
+        name: member.displayName || member.username,
+        role: roleType,
+        teamId: teamId,
+        imageUrl: member.avatar,
+        discordId: member.id,
+        isActive: true
+      }
+
+      if (existing) {
+        await prisma.staffMember.update({
+          where: { id: existing.id },
+          data
+        })
+        results.updated++
+      } else {
+        await prisma.staffMember.create({ data })
+        results.added++
+      }
+    } catch (e) {
+      console.error('Sync error for member:', discordId, e)
+      results.errors++
     }
   }
 

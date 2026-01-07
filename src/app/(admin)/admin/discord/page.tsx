@@ -4,35 +4,24 @@ import Typography from '@mui/material/Typography'
 import Grid from '@mui/material/Grid'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
-import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
-import Switch from '@mui/material/Switch'
 import {
-  Power,
-  Refresh,
-  Terminal,
   Check,
   Close,
+  Memory,
+  Speed,
+  AccessTime,
+  Dns,
 } from '@mui/icons-material'
+import { getBotStatus } from '@/lib/bot'
+import { BotActions } from '@/components/admin/BotActions'
+import { headers } from 'next/headers'
 
-const botStatus = {
-  online: true,
-  uptime: '5j 12h 34m',
-  servers: 12,
-  users: 5678,
-  commands: 1234,
-  lastRestart: '28 Dec 2025 14:30',
-}
+export default async function AdminDiscordPage() {
+  await headers()
+  const status = await getBotStatus()
+  const isOnline = !!status
 
-const features = [
-  { name: 'Tournois', enabled: true, description: 'Système de gestion des tournois' },
-  { name: 'Leveling', enabled: true, description: 'Système de niveaux et XP' },
-  { name: 'Modération', enabled: true, description: 'Commandes de modération' },
-  { name: 'Musique', enabled: false, description: 'Lecteur musical' },
-  { name: 'Logs', enabled: true, description: 'Logs des actions' },
-]
-
-export default function AdminDiscordPage() {
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
@@ -45,140 +34,125 @@ export default function AdminDiscordPage() {
           </Typography>
         </Box>
         <Chip
-          icon={botStatus.online ? <Check /> : <Close />}
-          label={botStatus.online ? 'En ligne' : 'Hors ligne'}
-          color={botStatus.online ? 'success' : 'error'}
+          icon={isOnline ? <Check /> : <Close />}
+          label={isOnline ? 'En ligne' : 'Hors ligne'}
+          color={isOnline ? 'success' : 'error'}
           variant="outlined"
         />
       </Box>
 
       <Grid container spacing={3}>
         {/* Status Card */}
-        <Grid size={{ xs: 12, lg: 4 }}>
+        <Grid size={{ xs: 12, lg: 8 }}>
           <Card
             elevation={0}
             sx={{
               borderRadius: 3,
               border: '1px solid',
               borderColor: 'divider',
+              height: '100%',
             }}
           >
             <CardContent>
               <Typography variant="h6" fontWeight="bold" gutterBottom>
-                Status
+                Status Système
               </Typography>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <Typography variant="body2" color="text.secondary">Uptime</Typography>
-                  <Typography variant="body2" fontWeight="bold">{botStatus.uptime}</Typography>
-                </Box>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <Typography variant="body2" color="text.secondary">Serveurs</Typography>
-                  <Typography variant="body2" fontWeight="bold">{botStatus.servers}</Typography>
-                </Box>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <Typography variant="body2" color="text.secondary">Utilisateurs</Typography>
-                  <Typography variant="body2" fontWeight="bold">{botStatus.users.toLocaleString()}</Typography>
-                </Box>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <Typography variant="body2" color="text.secondary">Commandes (24h)</Typography>
-                  <Typography variant="body2" fontWeight="bold">{botStatus.commands.toLocaleString()}</Typography>
-                </Box>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <Typography variant="body2" color="text.secondary">Dernier redémarrage</Typography>
-                  <Typography variant="body2" fontWeight="bold">{botStatus.lastRestart}</Typography>
-                </Box>
-              </Box>
+              
+              <Grid container spacing={4} sx={{ mt: 1 }}>
+                <Grid size={{ xs: 6, md: 4 }}>
+                  <Box sx={{ display: 'flex', gap: 2 }}>
+                    <AccessTime color="primary" />
+                    <Box>
+                      <Typography variant="caption" color="text.secondary">Uptime</Typography>
+                      <Typography variant="body1" fontWeight="bold">
+                        {status?.uptimeFormatted || '---'}
+                      </Typography>
+                    </Box>
+                  </Box>
+                </Grid>
+
+                <Grid size={{ xs: 6, md: 4 }}>
+                  <Box sx={{ display: 'flex', gap: 2 }}>
+                    <Speed color="warning" />
+                    <Box>
+                      <Typography variant="caption" color="text.secondary">Latence</Typography>
+                      <Typography variant="body1" fontWeight="bold">
+                        {status?.ping ? `${Math.round(status.ping)}ms` : '---'}
+                      </Typography>
+                    </Box>
+                  </Box>
+                </Grid>
+
+                <Grid size={{ xs: 6, md: 4 }}>
+                  <Box sx={{ display: 'flex', gap: 2 }}>
+                    <Memory color="info" />
+                    <Box>
+                      <Typography variant="caption" color="text.secondary">Mémoire</Typography>
+                      <Typography variant="body1" fontWeight="bold">
+                        {status?.memoryUsage || '---'}
+                      </Typography>
+                    </Box>
+                  </Box>
+                </Grid>
+
+                <Grid size={{ xs: 6, md: 4 }}>
+                  <Box sx={{ display: 'flex', gap: 2 }}>
+                    <Dns color="secondary" />
+                    <Box>
+                      <Typography variant="caption" color="text.secondary">Node Version</Typography>
+                      <Typography variant="body1" fontWeight="bold">
+                        {status?.nodeVersion || '---'}
+                      </Typography>
+                    </Box>
+                  </Box>
+                </Grid>
+              </Grid>
+
+              <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ mt: 4 }}>
+                Statistiques Discord
+              </Typography>
+              
+              <Grid container spacing={2} sx={{ mt: 1 }}>
+                <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+                  <PaperStat label="Serveurs" value={status?.guilds || 0} />
+                </Grid>
+                <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+                  <PaperStat label="Utilisateurs" value={status?.memberCount || 0} />
+                </Grid>
+                <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+                  <PaperStat label="En ligne" value={status?.onlineCount || 0} color="success.main" />
+                </Grid>
+              </Grid>
+
             </CardContent>
           </Card>
         </Grid>
 
         {/* Actions Card */}
         <Grid size={{ xs: 12, lg: 4 }}>
-          <Card
-            elevation={0}
-            sx={{
-              borderRadius: 3,
-              border: '1px solid',
-              borderColor: 'divider',
-            }}
-          >
-            <CardContent>
-              <Typography variant="h6" fontWeight="bold" gutterBottom>
-                Actions
-              </Typography>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                <Button
-                  variant="outlined"
-                  color="success"
-                  startIcon={<Refresh />}
-                  fullWidth
-                >
-                  Redémarrer le bot
-                </Button>
-                <Button
-                  variant="outlined"
-                  color="error"
-                  startIcon={<Power />}
-                  fullWidth
-                >
-                  Arrêter le bot
-                </Button>
-                <Button
-                  variant="outlined"
-                  startIcon={<Terminal />}
-                  fullWidth
-                >
-                  Voir les logs
-                </Button>
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-
-        {/* Features Card */}
-        <Grid size={{ xs: 12, lg: 4 }}>
-          <Card
-            elevation={0}
-            sx={{
-              borderRadius: 3,
-              border: '1px solid',
-              borderColor: 'divider',
-            }}
-          >
-            <CardContent>
-              <Typography variant="h6" fontWeight="bold" gutterBottom>
-                Fonctionnalités
-              </Typography>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                {features.map((feature) => (
-                  <Box
-                    key={feature.name}
-                    sx={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      p: 1,
-                      borderRadius: 1,
-                      bgcolor: 'background.default',
-                    }}
-                  >
-                    <Box>
-                      <Typography variant="body2" fontWeight="bold">
-                        {feature.name}
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        {feature.description}
-                      </Typography>
-                    </Box>
-                    <Switch checked={feature.enabled} size="small" />
-                  </Box>
-                ))}
-              </Box>
-            </CardContent>
-          </Card>
+          <BotActions />
         </Grid>
       </Grid>
     </Container>
+  )
+}
+
+function PaperStat({ label, value, color }: { label: string, value: number | string, color?: string }) {
+  return (
+    <Box sx={{ 
+      p: 2, 
+      borderRadius: 2, 
+      bgcolor: 'background.default',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+    }}>
+      <Typography variant="h4" fontWeight="bold" color={color}>
+        {value}
+      </Typography>
+      <Typography variant="body2" color="text.secondary">
+        {label}
+      </Typography>
+    </Box>
   )
 }

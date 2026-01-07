@@ -14,7 +14,6 @@ import {
   EmojiEvents,
   Leaderboard,
   Person,
-  Search,
 } from '@mui/icons-material'
 import { usePathname, useRouter } from 'next/navigation'
 import { useSession } from '@/lib/auth-client'
@@ -30,9 +29,6 @@ export function MobileBottomNav() {
   React.useEffect(() => {
     setValue(pathname)
   }, [pathname])
-
-  // Don't show on desktop
-  const isMobile = true // We handle visibility via SX
 
   return (
     <Box sx={{ display: { xs: 'block', md: 'none' } }}>

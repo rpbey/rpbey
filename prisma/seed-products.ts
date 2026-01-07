@@ -43,13 +43,6 @@ interface ProductData {
   shopUrl?: string
 }
 
-// Helper to determine product line from code
-function getProductLine(code: string): 'BX' | 'UX' | 'CX' {
-  if (code.startsWith('CX')) return 'CX'
-  if (code.startsWith('UX')) return 'UX'
-  return 'BX'
-}
-
 // Helper to parse date string (2025.3.29) to Date
 function parseReleaseDate(dateStr?: string): Date | undefined {
   if (!dateStr) return undefined

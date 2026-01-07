@@ -147,7 +147,7 @@ function getRoundName(round: number, maxRound: number): string {
   return `Round ${round}`
 }
 
-export function TournamentBracket({ matches, format = 'single' }: TournamentBracketProps) {
+export function TournamentBracket({ matches }: TournamentBracketProps) {
   // Group matches by round
   const rounds = matches.reduce(
     (acc, match) => {

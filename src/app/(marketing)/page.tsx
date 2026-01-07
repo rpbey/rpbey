@@ -7,13 +7,7 @@ import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
 import Grid from '@mui/material/Grid'
 import Stack from '@mui/material/Stack'
-import { alpha } from '@mui/material/styles'
-import {
-  Leaderboard,
-  Groups,
-  ArrowForward,
-} from '@mui/icons-material'
-import { DiscordIcon, TrophyIcon, DiscordStatusCard } from '@/components/ui'
+import { DiscordStatusCard } from '@/components/ui'
 import { motion, useScroll, useTransform, useSpring } from 'framer-motion'
 import { ChallongeBracket } from '@/components/tournaments'
 import { useThemeMode } from '@/components/theme/ThemeRegistry'
@@ -103,6 +97,8 @@ export default function HomePage() {
                 >
                   RÉPUBLIQUE
                   <br />
+                  POPULAIRE
+                  <br />
                   <Box
                     component="span"
                     sx={{
@@ -136,52 +132,13 @@ export default function HomePage() {
                La communauté française de référence pour Beyblade X. Divertissement, passion et compétition réunis en un seul lieu.
                 </Typography>
 
-                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mb: 6 }}>
-                  <Button
-                    component={motion.a}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    variant="contained"
-                    size="large"
-                    href="/tournaments"
-                    startIcon={<TrophyIcon color="white" />}
-                    sx={{ 
-                      px: 4, 
-                      py: 1.5,
-                      fontSize: '1.1rem', 
-                      bgcolor: mode === 'tournament' ? 'primary.main' : '#dc2626',
-                    }}
-                  >
-                    Voir les tournois
-                  </Button>
-                  <Button
-                    component={motion.a}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    variant="outlined"
-                    size="large"
-                    href="https://discord.gg/twdVfesrRj"
-                    startIcon={<DiscordIcon />}
-                    sx={{ 
-                      px: 4, 
-                      py: 1.5,
-                      fontSize: '1.1rem', 
-                      color: 'white', 
-                      borderColor: 'rgba(255,255,255,0.4)',
-                      '&:hover': { borderColor: 'white', bgcolor: 'rgba(255,255,255,0.1)' }
-                    }}
-                  >
-                    Rejoindre le Discord
-                  </Button>
-                </Stack>
-
                 <Box
                   component={motion.div}
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   whileInView={{ opacity: 1 }}
                   transition={{ delay: 0.6, duration: 0.8 }}
-                  sx={{ maxWidth: 400 }}
+                  sx={{ maxWidth: 400, mt: 4 }}
                 >
                   <DiscordStatusCard />
                 </Box>

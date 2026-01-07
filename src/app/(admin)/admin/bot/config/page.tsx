@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import {
   Box,
-  Paper,
   Typography,
   Stack,
   Card,

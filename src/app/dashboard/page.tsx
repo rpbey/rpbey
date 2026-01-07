@@ -16,8 +16,8 @@ export default function DashboardRedirect() {
         if (session.user.role === "admin") {
           router.replace("/admin")
         } else {
-          // Regular users go to TV page
-          router.replace("/tv")
+          // Regular users go to their own profile by default
+          router.replace("/profile")
         }
       } else {
         // Not logged in, redirect to sign-in
@@ -39,7 +39,7 @@ export default function DashboardRedirect() {
     >
       <CircularProgress color="primary" size={48} />
       <Typography variant="body1" color="text.secondary">
-        Redirection en cours...
+        Chargement de votre espace...
       </Typography>
     </Box>
   )

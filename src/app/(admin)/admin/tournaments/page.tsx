@@ -1,14 +1,12 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import {
   Box,
-  Container,
   Typography,
   Grid,
   Card,
   CardContent,
-  Button,
   Chip,
   Table,
   TableBody,
@@ -20,7 +18,7 @@ import {
   IconButton,
   Tooltip,
 } from '@mui/material'
-import { Add, Edit, Delete, Link as LinkIcon } from '@mui/icons-material'
+import { Edit, Delete, Link as LinkIcon } from '@mui/icons-material'
 import {
   PageHeader,
   useConfirmDialog,
@@ -42,21 +40,22 @@ export default function AdminTournamentsPage() {
   const { confirm, ConfirmDialogComponent } = useConfirmDialog()
   const { showToast } = useToast()
 
-  const fetchTournaments = async () => {
+  const fetchTournaments = useCallback(async () => {
     setLoading(true)
     try {
       const data = await getTournaments()
-      setTournaments(data as any)
-    } catch (error) {
+      // Cast is needed because dates are serialized as strings in server actions
+      setTournaments(data as unknown as (Tournament & { _count: { participants: number } })[])
+    } catch {
       showToast('Erreur lors de la récupération des tournois', 'error')
     } finally {
       setLoading(false)
     }
-  }
+  }, [showToast])
 
   useEffect(() => {
     fetchTournaments()
-  }, [])
+  }, [fetchTournaments])
 
   const handleAdd = () => {
     setSelectedTournament(null)
@@ -81,7 +80,7 @@ export default function AdminTournamentsPage() {
         await deleteTournament(tournament.id)
         showToast('Tournoi supprimé avec succès', 'success')
         fetchTournaments()
-      } catch (error) {
+      } catch {
         showToast('Erreur lors de la suppression', 'error')
       }
     }
@@ -99,7 +98,7 @@ export default function AdminTournamentsPage() {
       }
       setDialogOpen(false)
       fetchTournaments()
-    } catch (error) {
+    } catch {
       showToast('Erreur lors de l\'enregistrement', 'error')
     } finally {
       setSubmitting(false)

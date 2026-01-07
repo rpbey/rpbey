@@ -7,9 +7,7 @@ import CardContent from '@mui/material/CardContent'
 import { 
   SmartToy, 
   People, 
-  TrendingUp,
   Visibility,
-  PlayArrow,
   History,
 } from '@mui/icons-material'
 import { TrophyIcon } from '@/components/ui/Icons'
@@ -21,10 +19,20 @@ import { headers } from 'next/headers'
 import { QuickActions } from '@/components/admin/QuickActions'
 
 export default async function AdminDashboardPage() {
-  // Access headers to ensure this page is treated as dynamic by Next.js 16
   await headers()
 
-  const [userCount, activeTournamentCount, profileCount, botStatus] = await Promise.all([
+  const thirtyDaysAgo = new Date()
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
+
+  // Current Counts
+  const [
+    userCount, 
+    activeTournamentCount, 
+    profileCount, 
+    botStatus,
+    usersLastMonth,
+    profilesLastMonth
+  ] = await Promise.all([
     prisma.user.count(),
     prisma.tournament.count({
       where: {
@@ -34,23 +42,38 @@ export default async function AdminDashboardPage() {
       }
     }),
     prisma.profile.count(),
-    getBotStatus()
+    getBotStatus(),
+    prisma.user.count({ where: { createdAt: { lte: thirtyDaysAgo } } }),
+    prisma.profile.count({ where: { createdAt: { lte: thirtyDaysAgo } } })
   ])
+
+  // Calculate Trends
+  const calculateTrend = (current: number, previous: number) => {
+    if (previous === 0) return current > 0 ? '+100%' : '0%'
+    const diff = current - previous
+    const percent = ((diff / previous) * 100).toFixed(1)
+    return `${diff >= 0 ? '+' : ''}${percent}%`
+  }
+
+  const userTrend = calculateTrend(userCount, usersLastMonth)
+  const profileTrend = calculateTrend(profileCount, profilesLastMonth)
 
   const stats = [
     { 
       label: 'Utilisateurs', 
       value: userCount.toLocaleString(), 
-      change: '+12%', 
+      change: `${userTrend} (30j)`, 
       icon: People,
       color: '#3b82f6',
+      trendColor: userCount >= usersLastMonth ? 'success.main' : 'error.main'
     },
     { 
       label: 'Tournois actifs', 
       value: activeTournamentCount.toString(), 
-      change: '+2', 
+      change: 'En cours', 
       icon: TrophyIcon,
       color: '#fbbf24',
+      trendColor: 'text.secondary'
     },
     { 
       label: 'Membres Discord', 
@@ -58,13 +81,15 @@ export default async function AdminDashboardPage() {
       change: botStatus ? 'En ligne' : 'Hors ligne', 
       icon: SmartToy,
       color: '#5865F2',
+      trendColor: botStatus ? 'success.main' : 'error.main'
     },
     { 
       label: 'Profils Bladers', 
       value: profileCount.toLocaleString(), 
-      change: '+5%', 
+      change: `${profileTrend} (30j)`, 
       icon: Visibility,
       color: '#dc2626',
+      trendColor: profileCount >= profilesLastMonth ? 'success.main' : 'error.main'
     },
   ]
 
@@ -126,7 +151,7 @@ export default async function AdminDashboardPage() {
                         {stat.value}
                       </Typography>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 1 }}>
-                        <Typography variant="caption" color={stat.change === 'Hors ligne' ? 'error.main' : 'success.main'}>
+                        <Typography variant="caption" color={stat.trendColor}>
                           {stat.change}
                         </Typography>
                       </Box>

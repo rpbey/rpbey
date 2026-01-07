@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 import {
   AppBar,
@@ -26,7 +26,6 @@ const navItems = [
   { label: 'Tournois', href: '/tournaments' },
   { label: 'À Propos', href: '/a-propos' },
   { label: 'Classements', href: '/rankings' },
-  { label: 'Discord', href: 'https://discord.gg/twdVfesrRj', external: true },
 ]
 
 export function MarketingHeader() {

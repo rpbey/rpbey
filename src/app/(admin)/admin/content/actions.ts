@@ -2,7 +2,6 @@
 
 import prisma from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
-import type { ContentBlock } from '@prisma/client'
 
 export type ContentBlockInput = {
   slug: string

@@ -53,7 +53,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     const bladerName = stats.bladerName || user.name || '?'
 
     // Dynamic import of canvas (server-side only)
-    const { createCanvas, loadImage } = await import('canvas')
+    const { createCanvas } = await import('canvas')
     
     const canvas = createCanvas(CARD_WIDTH, CARD_HEIGHT)
     const ctx = canvas.getContext('2d')

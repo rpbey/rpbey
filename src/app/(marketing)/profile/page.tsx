@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import {
   Box,
   Container,
@@ -19,12 +19,11 @@ import {
 } from '@mui/material'
 import {
   EmojiEvents as MedalIcon,
-  Person as PersonIcon,
   Save as SaveIcon,
 } from '@mui/icons-material'
 import { useSession } from '@/lib/auth-client'
 import { useToast, TrophyIcon } from '@/components/ui'
-import type { BeyType, ExperienceLevel } from '@prisma/client'
+import type { BeyType, ExperienceLevel, UserProfile } from '@prisma/client'
 
 const BEYBLADE_TYPES: { value: BeyType; label: string }[] = [
   { value: 'ATTACK', label: 'Attaque' },
@@ -45,7 +44,7 @@ export default function ProfilePage() {
   const { data: session, isPending: sessionPending } = useSession()
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
-  const [profile, setProfile] = useState<any>(null)
+  const [profile, setProfile] = useState<(UserProfile & { wins?: number, losses?: number, tournamentWins?: number }) | null>(null)
   const [formData, setFormData] = useState({
     bladerName: '',
     favoriteType: 'ATTACK' as BeyType,
@@ -55,13 +54,7 @@ export default function ProfilePage() {
 
   const { showToast } = useToast()
 
-  useEffect(() => {
-    if (session?.user) {
-      fetchProfile()
-    }
-  }, [session])
-
-  const fetchProfile = async () => {
+  const fetchProfile = useCallback(async () => {
     try {
       const response = await fetch('/api/profile')
       if (response.ok) {
@@ -75,17 +68,23 @@ export default function ProfilePage() {
         })
       } else if (response.status === 404) {
         // Profile doesn't exist yet, we'll create it on first save or just show empty form
-        setFormData({
-          ...formData,
+        setFormData((prev) => ({
+          ...prev,
           bladerName: session?.user.name || '',
-        })
+        }))
       }
-    } catch (error) {
+    } catch {
       showToast('Erreur lors de la récupération du profil', 'error')
     } finally {
       setLoading(false)
     }
-  }
+  }, [session, showToast])
+
+  useEffect(() => {
+    if (session?.user) {
+      fetchProfile()
+    }
+  }, [session, fetchProfile])
 
   const handleSave = async () => {
     setSaving(true)
@@ -103,7 +102,7 @@ export default function ProfilePage() {
       } else {
         throw new Error('Failed to update')
       }
-    } catch (error) {
+    } catch {
       showToast('Erreur lors de la mise à jour', 'error')
     } finally {
       setSaving(false)

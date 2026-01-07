@@ -1,6 +1,5 @@
 'use client'
 
-import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
@@ -28,7 +27,6 @@ import {
   Settings,
   BarChart,
   Logout,
-  LiveTv,
   Terminal,
   Code,
   Article,

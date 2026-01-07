@@ -10,7 +10,6 @@ import Stack from '@mui/material/Stack'
 import Alert from '@mui/material/Alert'
 import {
   LiveTv,
-  Person,
   VideogameAsset,
   AccessTime,
   Visibility,

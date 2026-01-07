@@ -101,7 +101,6 @@ export function ChallongeBracket({ challongeId, height = 600, title }: Challonge
           height="100%"
           frameBorder="0"
           scrolling="auto"
-          allowTransparency={true}
           onLoad={() => setLoading(false)}
           style={{
             border: 'none',

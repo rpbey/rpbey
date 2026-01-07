@@ -1,5 +1,25 @@
 'use client'
 
+import { useState, useEffect } from 'react'
+import { useParams } from 'next/navigation'
+import {
+  Box,
+  Container,
+  Typography,
+  Grid,
+  Paper,
+  Stack,
+  Button,
+  Skeleton,
+} from '@mui/material'
+import {
+  CalendarMonth,
+  Info,
+  LocationOn,
+  EmojiEvents as Trophy,
+} from '@mui/icons-material'
+import { TournamentStatusChip } from '@/components/ui'
+import { ChallongeBracket } from '@/components/tournaments'
 import dynamic from 'next/dynamic'
 
 const Map = dynamic(() => import('@/components/ui/Map'), { 
@@ -61,7 +81,7 @@ export default function TournamentDetailPage() {
           <Typography variant="h3" fontWeight="bold">
             {tournament.name}
           </Typography>
-          <TournamentStatusChip status={tournament.status.toLowerCase()} />
+          <TournamentStatusChip status={(tournament.status || '').toLowerCase()} />
         </Stack>
       </Box>
 

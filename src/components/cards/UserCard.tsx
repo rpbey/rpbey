@@ -71,7 +71,6 @@ interface UserCardProps {
 }
 
 export function UserCard({
-  id,
   name,
   image,
   discordId,

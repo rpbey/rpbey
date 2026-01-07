@@ -1,7 +1,6 @@
 'use client'
 
-import Link from 'next/link'
-import { Box, IconButton, Tooltip, Typography, alpha } from '@mui/material'
+import { Box, IconButton, Tooltip, Typography } from '@mui/material'
 import { GitHub, X as XIcon } from '@mui/icons-material'
 import { DiscordIcon, TikTokIcon, TwitchIcon } from '@/components/ui/Icons'
 

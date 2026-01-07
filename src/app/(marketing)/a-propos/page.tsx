@@ -3,7 +3,6 @@ import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
 import Card from '@mui/material/Card'
-import CardContent from '@mui/material/CardContent'
 import Stack from '@mui/material/Stack'
 import Avatar from '@mui/material/Avatar'
 import Divider from '@mui/material/Divider'
@@ -17,11 +16,9 @@ import {
   Star,
   Shield,
 } from '@mui/icons-material'
-import { PageHeader } from '@/components/ui'
 import { DiscordIcon } from '@/components/ui/Icons'
 import prisma from '@/lib/prisma'
 import { getBotStatus } from '@/lib/bot'
-import type { ContentBlock } from '@prisma/client'
 import { headers } from 'next/headers'
 
 export const metadata = {
@@ -29,7 +26,19 @@ export const metadata = {
   description: 'Découvrez la République Populaire du Beyblade, la communauté française de Beyblade X.',
 }
 
-const ICON_MAP: Record<string, any> = {
+interface ValueItem {
+  icon: string
+  title: string
+  description: string
+}
+
+interface RuleItem {
+  title: string
+  description: string
+}
+
+// Fallback data
+const ICON_MAP: Record<string, React.ElementType> = {
   Groups,
   EmojiEvents,
   Favorite,
@@ -119,7 +128,7 @@ export default async function AboutPage() {
 
   const introText = introBlock?.content || DEFAULT_INTRO
   
-  let values = DEFAULT_VALUES
+  let values: ValueItem[] = DEFAULT_VALUES
   if (valuesBlock?.content) {
     try {
       values = JSON.parse(valuesBlock.content)
@@ -128,7 +137,7 @@ export default async function AboutPage() {
     }
   }
 
-  let rules = DEFAULT_RULES
+  let rules: RuleItem[] = DEFAULT_RULES
   if (rulesBlock?.content) {
     try {
       rules = JSON.parse(rulesBlock.content)
@@ -240,7 +249,7 @@ export default async function AboutPage() {
             Nos Valeurs
           </Typography>
           <Grid container spacing={3}>
-            {values.map((value: any) => {
+            {values.map((value: ValueItem) => {
               const Icon = ICON_MAP[value.icon] || Groups
               return (
                 <Grid key={value.title} size={{ xs: 12, sm: 6, md: 3 }}>
@@ -317,7 +326,7 @@ export default async function AboutPage() {
           </Card>
 
           <Grid container spacing={3}>
-            {rules.map((rule: any, index: number) => (
+            {rules.map((rule: RuleItem, index: number) => (
               <Grid key={rule.title} size={{ xs: 12, md: 6 }}>
                 <Card
                   elevation={0}

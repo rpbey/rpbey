@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
-import { SmartToy, PlayArrow } from '@mui/icons-material'
+import { SmartToy } from '@mui/icons-material'
 import { TrophyIcon } from '@/components/ui/Icons'
 import { useRouter } from 'next/navigation'
 import { useToast } from '@/components/ui'
@@ -27,7 +27,7 @@ export function QuickActions() {
       } else {
         showToast('Erreur lors du redémarrage du bot', 'error')
       }
-    } catch (error) {
+    } catch {
       showToast('Erreur réseau', 'error')
     } finally {
       setIsRestarting(false)

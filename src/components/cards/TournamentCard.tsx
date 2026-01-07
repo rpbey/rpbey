@@ -28,7 +28,6 @@ interface TournamentCardProps {
 }
 
 export function TournamentCard({
-  id,
   name,
   description,
   startDate,

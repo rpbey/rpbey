@@ -13,12 +13,13 @@ import {
   AccountCircle,
   Logout,
   People,
-  Newspaper,
   BarChart,
+  Settings,
 } from '@mui/icons-material'
 import { useSession, signOut } from '@/lib/auth-client'
-import { DiscordIcon, TrophyIcon } from '@/components/ui/Icons'
+import { TrophyIcon } from '@/components/ui/Icons'
 import { ThemeSwitcher } from '@/components/theme/ThemeSwitcher'
+import { motion } from 'framer-motion'
 import { BottomNavigation, BottomNavigationAction, Paper, Slide, useScrollTrigger } from '@mui/material'
 import { useRouter } from 'next/navigation'
 
@@ -148,28 +149,6 @@ export function IconNav() {
             </Tooltip>
           )
         })}
-
-        {/* Discord */}
-        <Tooltip title="Discord" placement="right">
-          <IconButton
-            component="a"
-            href="https://discord.gg/twdVfesrRj"
-            target="_blank"
-            rel="noopener noreferrer"
-            sx={{
-              width: 56,
-              height: 48,
-              borderRadius: 24,
-              color: 'text.secondary',
-              '&:hover': {
-                color: '#5865F2',
-                bgcolor: (theme) => alpha('#5865F2', 0.1),
-              },
-            }}
-          >
-            <DiscordIcon sx={{ fontSize: 24 }} />
-          </IconButton>
-        </Tooltip>
       </Box>
 
       <Box sx={{ flexGrow: 1 }} />
@@ -222,14 +201,20 @@ export function IconNav() {
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
         {session?.user ? [
-          <MenuItem key="profile" component={Link} href="/profile" sx={{ borderRadius: 1.5, m: 0.5 }}>
+          <MenuItem key="profile" component={Link} href={`/dashboard/profile/${session.user.id}`} sx={{ borderRadius: 1.5, m: 0.5 }}>
             <ListItemIcon>
               <AccountCircle fontSize="small" />
             </ListItemIcon>
             <ListItemText primary="Mon Profil" />
           </MenuItem>,
+          <MenuItem key="settings" component={Link} href="/profile" sx={{ borderRadius: 1.5, m: 0.5 }}>
+            <ListItemIcon>
+              <Settings fontSize="small" />
+            </ListItemIcon>
+            <ListItemText primary="Paramètres" />
+          </MenuItem>,
           <Divider key="divider-profile" sx={{ my: 0.5 }} />,
-          (session.user.role === 'admin' || (session.user as any).role === 'superadmin') && (
+          (session.user.role === 'admin' || (session.user as { role: string }).role === 'superadmin') && (
             <MenuItem key="admin" component={Link} href="/admin" sx={{ borderRadius: 1.5, m: 0.5 }}>
               <ListItemIcon>
                 <AdminPanelSettings fontSize="small" />
@@ -237,7 +222,7 @@ export function IconNav() {
               <ListItemText primary="Admin" />
             </MenuItem>
           ),
-          (session.user.role === 'admin' || (session.user as any).role === 'superadmin') && (
+          (session.user.role === 'admin' || (session.user as { role: string }).role === 'superadmin') && (
             <Divider key="divider-admin" sx={{ my: 0.5 }} />
           ),
           <MenuItem key="logout" onClick={handleLogout} sx={{ borderRadius: 1.5, m: 0.5, color: 'error.main' }}>
@@ -272,7 +257,7 @@ export function MobileNav() {
   const { data: session } = useSession()
   const trigger = useScrollTrigger()
 
-  const isAdmin = session?.user?.role === 'admin' || (session?.user as any)?.role === 'superadmin'
+  const isAdmin = session?.user?.role === 'admin' || (session?.user as { role: string } | undefined)?.role === 'superadmin'
   const activeValue = pathname === '/' ? '/' : `/${pathname.split('/')[1]}`
 
   return (
@@ -317,7 +302,7 @@ export function MobileNav() {
                     position: 'absolute',
                     top: '50%',
                     left: '50%',
-                    transform: 'translate(-50%, -100%)',
+                    transform: 'translate(-50%, -50%)',
                     width: 64,
                     height: 32,
                     bgcolor: (theme) => alpha(theme.palette.primary.main, 0.2),
@@ -350,8 +335,8 @@ export function MobileNav() {
           />
           <BottomNavigationAction
             label={isAdmin ? 'Admin' : (session?.user ? 'Profil' : 'Compte')}
-            value={isAdmin ? '/admin' : (session?.user ? '/profile' : '/sign-in')}
-            icon={isAdmin ? <AdminPanelSettings /> : (session?.user ? <AccountCircle /> : <AccountCircle />)}
+            value={isAdmin ? '/admin' : (session?.user ? `/dashboard/profile/${session.user.id}` : '/sign-in')}
+            icon={isAdmin ? <AdminPanelSettings /> : (session?.user ? <AccountCircle /> : <Login />)}
           />
         </BottomNavigation>
       </Paper>

@@ -155,7 +155,7 @@ export class StandardAPI {
       let data: any;
       try {
         data = await response.json();
-      } catch (error) {
+      } catch {
         throw new APIError(response.status, 'Invalid JSON Response', null, finalUrl);
       }
 
