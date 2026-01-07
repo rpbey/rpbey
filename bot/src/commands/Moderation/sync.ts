@@ -28,6 +28,10 @@ export class SyncCommand extends Subcommand {
           name: 'tournament',
           chatInputRun: 'chatInputTournament',
         },
+        {
+          name: 'roles',
+          chatInputRun: 'chatInputRoles',
+        },
       ],
     });
   }
@@ -56,6 +60,9 @@ export class SyncCommand extends Subcommand {
                 .setDescription('ID ou URL du tournoi (ex: B_TS1)')
                 .setRequired(true),
             ),
+        )
+        .addSubcommand((sub) =>
+          sub.setName('roles').setDescription('Synchronise les rôles du serveur'),
         ),
     );
   }
@@ -226,6 +233,65 @@ export class SyncCommand extends Subcommand {
       this.container.logger.error(error);
       return interaction.editReply(
         "❌ Une erreur fatale est survenue lors de l'import.",
+      );
+    }
+  }
+
+  public async chatInputRoles(
+    interaction: Subcommand.ChatInputCommandInteraction,
+  ) {
+    await interaction.deferReply();
+    const { guild } = interaction;
+
+    if (!guild) {
+      return interaction.editReply(
+        '❌ Cette commande doit être exécutée sur un serveur.',
+      );
+    }
+
+    try {
+      const roles = await guild.roles.fetch();
+      let count = 0;
+
+      for (const [, role] of roles) {
+        if (role.name === '@everyone') continue;
+
+        await prisma.discordRole.upsert({
+          where: { id: role.id },
+          update: {
+            name: role.name,
+            color: role.hexColor,
+            position: role.position,
+            icon: role.iconURL(),
+            permissions: role.permissions.bitfield.toString(),
+            managed: role.managed,
+            hoist: role.hoist,
+          },
+          create: {
+            id: role.id,
+            name: role.name,
+            color: role.hexColor,
+            position: role.position,
+            icon: role.iconURL(),
+            permissions: role.permissions.bitfield.toString(),
+            managed: role.managed,
+            hoist: role.hoist,
+          },
+        });
+        count++;
+      }
+
+      const embed = new EmbedBuilder()
+        .setTitle('✅ Synchronisation des Rôles terminée')
+        .setDescription(`${count} rôles ont été synchronisés.`)
+        .setColor(Colors.Success)
+        .setFooter({ text: RPB.Name });
+
+      return interaction.editReply({ embeds: [embed] });
+    } catch (error) {
+      this.container.logger.error(error);
+      return interaction.editReply(
+        '❌ Une erreur est survenue lors de la synchronisation des rôles.',
       );
     }
   }
