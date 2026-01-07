@@ -10,6 +10,7 @@ import Box from '@mui/material/Box'
 import Avatar from '@mui/material/Avatar'
 import Badge from '@mui/material/Badge'
 import Chip from '@mui/material/Chip'
+import Grid from '@mui/material/Grid'
 import { styled } from '@mui/material/styles'
 import { Message } from '@mui/icons-material'
 import { TrophyIcon } from '@/components/ui/Icons'
@@ -233,27 +234,22 @@ export function UserCardGrid({
   compact = false,
 }: UserCardGridProps) {
   return (
-    <Box
-      sx={{
-        display: 'grid',
-        gridTemplateColumns: {
-          xs: '1fr',
-          sm: compact ? '1fr' : 'repeat(2, 1fr)',
-          md: compact ? 'repeat(2, 1fr)' : 'repeat(3, 1fr)',
-          lg: compact ? 'repeat(3, 1fr)' : 'repeat(4, 1fr)',
-        },
-        gap: compact ? 2 : 3,
-      }}
-    >
+    <Grid container spacing={compact ? 2 : 3}>
       {users.map((user) => (
-        <UserCard
-          key={user.id}
-          {...user}
-          compact={compact}
-          onClick={() => onUserClick?.(user.id)}
-          onMessage={onMessage ? () => onMessage(user.id) : undefined}
-        />
+        <Grid key={user.id} size={{
+          xs: 12,
+          sm: compact ? 12 : 6,
+          md: compact ? 6 : 4,
+          lg: compact ? 4 : 3,
+        }}>
+          <UserCard
+            {...user}
+            compact={compact}
+            onClick={() => onUserClick?.(user.id)}
+            onMessage={onMessage ? () => onMessage(user.id) : undefined}
+          />
+        </Grid>
       ))}
-    </Box>
+    </Grid>
   )
 }

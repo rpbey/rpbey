@@ -134,14 +134,13 @@ export default async function AdminDashboardPage() {
           return (
             <Grid key={stat.label} size={{ xs: 12, sm: 6, lg: 3 }}>
               <Card
-                elevation={0}
+                variant="filled"
                 sx={{
-                  borderRadius: 3,
-                  border: '1px solid',
-                  borderColor: 'divider',
+                  transition: 'transform 0.2s',
+                  '&:hover': { transform: 'translateY(-4px)' }
                 }}
               >
-                <CardContent>
+                <CardContent sx={{ p: 3 }}>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                     <Box>
                       <Typography variant="body2" color="text.secondary" gutterBottom>
@@ -177,15 +176,11 @@ export default async function AdminDashboardPage() {
         {/* Recent Activity */}
         <Grid size={{ xs: 12, lg: 8 }}>
           <Card
-            elevation={0}
-            sx={{
-              borderRadius: 3,
-              border: '1px solid',
-              borderColor: 'divider',
-            }}
+            variant="elevated"
+            sx={{ height: '100%' }}
           >
-            <CardContent>
-              <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <CardContent sx={{ p: 4 }}>
+              <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
                 <History /> Activité récente
               </Typography>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -219,15 +214,11 @@ export default async function AdminDashboardPage() {
         {/* Quick Actions */}
         <Grid size={{ xs: 12, lg: 4 }}>
           <Card
-            elevation={0}
-            sx={{
-              borderRadius: 3,
-              border: '1px solid',
-              borderColor: 'divider',
-            }}
+            variant="elevated"
+            sx={{ height: '100%' }}
           >
-            <CardContent>
-              <Typography variant="h6" fontWeight="bold" gutterBottom>
+            <CardContent sx={{ p: 4 }}>
+              <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ mb: 3 }}>
                 Actions rapides
               </Typography>
               <QuickActions />

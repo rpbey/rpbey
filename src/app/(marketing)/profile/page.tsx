@@ -23,9 +23,18 @@ import {
 } from '@mui/icons-material'
 import { useSession } from '@/lib/auth-client'
 import { useToast, TrophyIcon } from '@/components/ui'
-import type { BeyType, ExperienceLevel, Profile } from '@prisma/client'
+import type { BeyType, ExperienceLevel, Profile, Tournament, TournamentParticipant, User } from '@prisma/client'
 
 import SecuritySettings from '@/components/profile/SecuritySettings'
+
+// Extended Profile type to include relations fetched from API
+type ProfileWithRelations = Profile & {
+  user: User & {
+    tournaments: (TournamentParticipant & {
+      tournament: Tournament
+    })[]
+  }
+}
 
 const BEYBLADE_TYPES: { value: BeyType; label: string }[] = [
   { value: 'ATTACK', label: 'Attaque' },
@@ -46,7 +55,7 @@ export default function ProfilePage() {
   const { data: session, isPending: sessionPending } = useSession()
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
-  const [profile, setProfile] = useState<(Profile & { wins?: number, losses?: number, tournamentWins?: number }) | null>(null)
+  const [profile, setProfile] = useState<ProfileWithRelations | null>(null)
   const [formData, setFormData] = useState({
     bladerName: '',
     favoriteType: 'ATTACK' as BeyType,
@@ -99,7 +108,10 @@ export default function ProfilePage() {
 
       if (response.ok) {
         const updatedProfile = await response.json()
-        setProfile(updatedProfile)
+        // Determine if we need to merge with existing relations or if API returns them
+        // API PATCH currently returns just the Profile without relations.
+        // We should probably re-fetch or optimistically update, but let's keep the relations.
+        setProfile(prev => prev ? { ...prev, ...updatedProfile } : updatedProfile)
         showToast('Profil mis à jour avec succès', 'success')
       } else {
         throw new Error('Failed to update')
@@ -317,7 +329,7 @@ export default function ProfilePage() {
 
           <SecuritySettings />
 
-          {/* Tournament History placeholder */}
+          {/* Tournament History */}
           <Box sx={{ mt: 4 }}>
             <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <TrophyIcon color="primary" /> Mes Tournois
@@ -331,13 +343,49 @@ export default function ProfilePage() {
                 mt: 2,
               }}
             >
-              <CardContent sx={{ py: 4, textAlign: 'center' }}>
-                <Typography color="text.secondary">
-                  Vous n'avez pas encore participé à des tournois officiels.
-                </Typography>
-                <Button variant="text" href="/tournaments" sx={{ mt: 1 }}>
-                  Voir les prochains tournois
-                </Button>
+              <CardContent sx={{ py: 2 }}>
+                {profile?.user?.tournaments && profile.user.tournaments.length > 0 ? (
+                  <Stack spacing={2}>
+                    {profile.user.tournaments.map((participation) => (
+                      <Box
+                        key={participation.id}
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          p: 2,
+                          bgcolor: 'background.default',
+                          borderRadius: 2,
+                        }}
+                      >
+                        <Box>
+                          <Typography fontWeight="bold">
+                            {participation.tournament.name}
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            {new Date(participation.tournament.date).toLocaleDateString()}
+                          </Typography>
+                        </Box>
+                        <Box sx={{ textAlign: 'right' }}>
+                          <Chip
+                            label={participation.finalPlacement ? `${participation.finalPlacement}${participation.finalPlacement === 1 ? 'er' : 'ème'} Place` : 'Participant'}
+                            color={participation.finalPlacement === 1 ? 'warning' : 'default'}
+                            size="small"
+                          />
+                        </Box>
+                      </Box>
+                    ))}
+                  </Stack>
+                ) : (
+                  <Box sx={{ py: 4, textAlign: 'center' }}>
+                    <Typography color="text.secondary">
+                      Vous n'avez pas encore participé à des tournois officiels.
+                    </Typography>
+                    <Button variant="text" href="/tournaments" sx={{ mt: 1 }}>
+                      Voir les prochains tournois
+                    </Button>
+                  </Box>
+                )}
               </CardContent>
             </Card>
           </Box>

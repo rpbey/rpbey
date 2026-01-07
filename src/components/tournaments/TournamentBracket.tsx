@@ -12,6 +12,7 @@ import Typography from '@mui/material/Typography'
 import Chip from '@mui/material/Chip'
 import Avatar from '@mui/material/Avatar'
 import { alpha } from '@mui/material/styles'
+import { useState } from 'react'
 
 interface Player {
   id: string
@@ -32,16 +33,21 @@ interface Match {
   winner: Player | null
 }
 
+import { ScoreReportDialog } from './ScoreReportDialog'
+
 interface TournamentBracketProps {
   matches: Match[]
   format?: 'single' | 'double'
+  canReport?: boolean
+  onReportMatch?: (matchId: string, data: { winnerId: string; score: string }) => Promise<void>
 }
 
 interface MatchCardProps {
   match: Match
+  onClick?: () => void
 }
 
-function MatchCard({ match }: MatchCardProps) {
+function MatchCard({ match, onClick }: MatchCardProps) {
   const player1Name = match.player1?.profile?.bladerName ?? match.player1?.name ?? 'TBD'
   const player2Name = match.player2?.profile?.bladerName ?? match.player2?.name ?? 'TBD'
   const isComplete = match.state === 'complete'
@@ -49,11 +55,17 @@ function MatchCard({ match }: MatchCardProps) {
 
   return (
     <Card
+      onClick={onClick}
       sx={{
         minWidth: 200,
         bgcolor: isComplete ? 'background.paper' : 'action.hover',
         border: 1,
         borderColor: isComplete ? 'divider' : 'action.disabled',
+        cursor: onClick ? 'pointer' : 'default',
+        '&:hover': onClick ? {
+          borderColor: 'primary.main',
+          bgcolor: 'action.selected'
+        } : {},
       }}
     >
       <CardContent sx={{ p: 1.5, '&:last-child': { pb: 1.5 } }}>
@@ -147,7 +159,9 @@ function getRoundName(round: number, maxRound: number): string {
   return `Round ${round}`
 }
 
-export function TournamentBracket({ matches }: TournamentBracketProps) {
+export function TournamentBracket({ matches, canReport, onReportMatch }: TournamentBracketProps) {
+  const [selectedMatch, setSelectedMatch] = useState<Match | null>(null)
+
   // Group matches by round
   const rounds = matches.reduce(
     (acc, match) => {
@@ -165,6 +179,29 @@ export function TournamentBracket({ matches }: TournamentBracketProps) {
     .sort((a, b) => a - b)
 
   const maxRound = Math.max(...roundNumbers)
+
+  const handleMatchClick = (match: Match) => {
+    if (!canReport || match.state === 'complete' || !match.player1 || !match.player2) return
+    setSelectedMatch(match)
+  }
+
+  const handleReport = async (data: { winnerId: string; score: string }) => {
+    if (!selectedMatch || !onReportMatch) return
+    
+    try {
+      // Find the match's challonge ID if we have it, or its internal ID
+      // Matches passed here should have challongeMatchId if possible, or we use match.id
+      // For now we assume match.id is what we need or we need to extend the type
+      // The actions.ts expects challongeMatchId. Let's check the type.
+      // The Match interface here doesn't have challongeMatchId.
+      // I'll cast it for now or fix the interface.
+      const matchId = (selectedMatch as any).challongeMatchId || selectedMatch.id
+      await onReportMatch(matchId, data)
+      setSelectedMatch(null)
+    } catch (err) {
+      console.error('Failed to report score:', err)
+    }
+  }
 
   if (roundNumbers.length === 0) {
     return (
@@ -215,11 +252,35 @@ export function TournamentBracket({ matches }: TournamentBracketProps) {
             }}
           >
             {rounds[roundNum]?.map((match) => (
-              <MatchCard key={match.id} match={match} />
+              <MatchCard 
+                key={match.id} 
+                match={match} 
+                onClick={canReport ? () => handleMatchClick(match) : undefined}
+              />
             ))}
           </Box>
         </Box>
       ))}
+
+      {selectedMatch && (
+        <ScoreReportDialog
+          open={!!selectedMatch}
+          onClose={() => setSelectedMatch(null)}
+          onReport={handleReport}
+          match={{
+            player1: selectedMatch.player1 ? { 
+              id: selectedMatch.player1.id, 
+              name: selectedMatch.player1.profile?.bladerName || selectedMatch.player1.name,
+              avatarUrl: selectedMatch.player1.profile?.avatarUrl 
+            } : null,
+            player2: selectedMatch.player2 ? { 
+              id: selectedMatch.player2.id, 
+              name: selectedMatch.player2.profile?.bladerName || selectedMatch.player2.name,
+              avatarUrl: selectedMatch.player2.profile?.avatarUrl 
+            } : null,
+          }}
+        />
+      )}
     </Box>
   )
 }

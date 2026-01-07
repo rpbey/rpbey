@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import Container from '@mui/material/Container'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
@@ -64,12 +65,27 @@ export default async function RankingsPage() {
                     </Typography>
                   </TableCell>
                   <TableCell>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                    <Box
+                      component={Link}
+                      href={`/profile/${profile.userId}`}
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 2,
+                        textDecoration: 'none',
+                        color: 'inherit',
+                        '&:hover': {
+                          '& .MuiTypography-root': {
+                            color: 'primary.main',
+                          },
+                        },
+                      }}
+                    >
                       <Avatar src={profile.user.image || undefined}>
                         {getInitials(profile.bladerName || profile.user.name)}
                       </Avatar>
                       <Box>
-                        <Typography fontWeight="medium">
+                        <Typography fontWeight="medium" sx={{ transition: 'color 0.2s' }}>
                           {profile.bladerName || profile.user.name || 'Anonyme'}
                         </Typography>
                         <Typography variant="caption" color="text.secondary">

@@ -66,8 +66,86 @@ class ChallongeService {
   private accessToken: string | null = null
   private tokenExpiresAt: number | null = null
 
-  private async getOAuthToken(): Promise<string> {
-    // Check if current token is still valid (with 5 min margin)
+  // ==================== AUTH & TOKEN MANAGEMENT ====================
+
+  /**
+   * Generates the Challonge OAuth Authorization URL
+   */
+  getAuthorizationUrl(state: string): string {
+    const clientId = process.env.CHALLONGE_CLIENT_ID
+    const redirectUri = `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/callback/challonge`
+    
+    if (!clientId) throw new Error('CHALLONGE_CLIENT_ID required')
+
+    const url = new URL(`${OAUTH_BASE}/oauth/authorize`)
+    url.searchParams.set('client_id', clientId)
+    url.searchParams.set('redirect_uri', redirectUri)
+    url.searchParams.set('response_type', 'code')
+    url.searchParams.set('scope', 'me tournaments:read tournaments:write matches:read matches:write participants:read participants:write')
+    url.searchParams.set('state', state)
+
+    return url.toString()
+  }
+
+  /**
+   * Exchange authorization code for access and refresh tokens
+   */
+  async exchangeCodeForToken(code: string): Promise<OAuthToken & { refresh_token: string }> {
+    const clientId = process.env.CHALLONGE_CLIENT_ID
+    const clientSecret = process.env.CHALLONGE_CLIENT_SECRET
+    const redirectUri = `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/callback/challonge`
+
+    const response = await fetch(`${OAUTH_BASE}/oauth/token`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        grant_type: 'authorization_code',
+        code,
+        client_id: clientId!,
+        client_secret: clientSecret!,
+        redirect_uri: redirectUri,
+      }).toString(),
+    })
+
+    if (!response.ok) {
+      const error = await response.text()
+      throw new Error(`OAuth Exchange Error: ${error}`)
+    }
+
+    return response.json()
+  }
+
+  /**
+   * Refresh an expired access token
+   */
+  async refreshToken(refreshToken: string): Promise<OAuthToken & { refresh_token: string }> {
+    const clientId = process.env.CHALLONGE_CLIENT_ID
+    const clientSecret = process.env.CHALLONGE_CLIENT_SECRET
+
+    const response = await fetch(`${OAUTH_BASE}/oauth/token`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        grant_type: 'refresh_token',
+        refresh_token: refreshToken,
+        client_id: clientId!,
+        client_secret: clientSecret!,
+      }).toString(),
+    })
+
+    if (!response.ok) {
+      const error = await response.text()
+      throw new Error(`Token Refresh Error: ${error}`)
+    }
+
+    return response.json()
+  }
+
+  private async getOAuthToken(userToken?: string): Promise<string> {
+    // If a user-specific token is provided, use it
+    if (userToken) return userToken
+
+    // Otherwise, fallback to client credentials (global bot access)
     if (
       this.accessToken &&
       this.tokenExpiresAt &&
@@ -109,8 +187,8 @@ class ChallongeService {
     return this.accessToken
   }
 
-  private async getHeaders(): Promise<Record<string, string>> {
-    const token = await this.getOAuthToken()
+  private async getHeaders(userToken?: string): Promise<Record<string, string>> {
+    const token = await this.getOAuthToken(userToken)
     return {
       'Content-Type': 'application/vnd.api+json',
       Accept: 'application/json',
@@ -122,9 +200,10 @@ class ChallongeService {
   private async request<T>(
     method: string,
     endpoint: string,
-    body?: unknown
+    body?: unknown,
+    userToken?: string
   ): Promise<T> {
-    const headers = await this.getHeaders()
+    const headers = await this.getHeaders(userToken)
 
     const response = await fetch(`${API_BASE}${endpoint}`, {
       method,
@@ -151,6 +230,7 @@ class ChallongeService {
     state?: 'pending' | 'in_progress' | 'ended'
     page?: number
     perPage?: number
+    userToken?: string
   }): Promise<ApiResponse<ChallongeTournament[]>> {
     const query = new URLSearchParams()
     if (params?.state) query.set('state', params.state)
@@ -160,16 +240,21 @@ class ChallongeService {
     const queryString = query.toString() ? `?${query.toString()}` : ''
     return this.request<ApiResponse<ChallongeTournament[]>>(
       'GET',
-      `/tournaments${queryString}`
+      `/tournaments${queryString}`,
+      undefined,
+      params?.userToken
     )
   }
 
   async getTournament(
-    tournamentId: string
+    tournamentId: string,
+    userToken?: string
   ): Promise<ApiResponse<ChallongeTournament>> {
     return this.request<ApiResponse<ChallongeTournament>>(
       'GET',
-      `/tournaments/${tournamentId}`
+      `/tournaments/${tournamentId}`,
+      undefined,
+      userToken
     )
   }
 
@@ -186,22 +271,57 @@ class ChallongeService {
     startAt?: string
     signupCap?: number
     openSignup?: boolean
+    swissOptions?: {
+      ptsForGameWin?: number
+      ptsForGameTie?: number
+      ptsForMatchWin?: number
+      ptsForMatchTie?: number
+    }
+    userToken?: string
   }): Promise<ApiResponse<ChallongeTournament>> {
+    const attributes: any = {
+      name: data.name,
+      url: data.url,
+      tournament_type: data.tournamentType ?? 'double elimination',
+      description: data.description,
+      game_name: data.gameName ?? 'Beyblade X',
+      start_at: data.startAt,
+      signup_cap: data.signupCap,
+      open_signup: data.openSignup ?? false,
+    }
+
+    if (data.tournamentType === 'swiss' && data.swissOptions) {
+      attributes.swiss_options = {
+        pts_for_game_win: data.swissOptions.ptsForGameWin ?? 1.0,
+        pts_for_game_tie: data.swissOptions.ptsForGameTie ?? 0.0,
+        pts_for_match_win: data.swissOptions.ptsForMatchWin ?? 1.0,
+        pts_for_match_tie: data.swissOptions.ptsForMatchTie ?? 0.5,
+      }
+    }
+
     return this.request<ApiResponse<ChallongeTournament>>('POST', '/tournaments', {
       data: {
         type: 'tournaments',
-        attributes: {
-          name: data.name,
-          url: data.url,
-          tournament_type: data.tournamentType ?? 'double elimination',
-          description: data.description,
-          game_name: data.gameName ?? 'Beyblade X',
-          start_at: data.startAt,
-          signup_cap: data.signupCap,
-          open_signup: data.openSignup ?? false,
+        attributes,
+      },
+    }, data.userToken)
+  }
+
+  async resetTournament(
+    tournamentId: string,
+    userToken?: string
+  ): Promise<ApiResponse<ChallongeTournament>> {
+    return this.request<ApiResponse<ChallongeTournament>>(
+      'PUT',
+      `/tournaments/${tournamentId}/change_state`,
+      {
+        data: {
+          type: 'TournamentState',
+          attributes: { state: 'reset' },
         },
       },
-    })
+      userToken
+    )
   }
 
   async updateTournament(
@@ -210,6 +330,7 @@ class ChallongeService {
       name?: string
       description?: string
       startAt?: string
+      userToken?: string
     }
   ): Promise<ApiResponse<ChallongeTournament>> {
     return this.request<ApiResponse<ChallongeTournament>>(
@@ -224,12 +345,14 @@ class ChallongeService {
             start_at: data.startAt,
           },
         },
-      }
+      },
+      data.userToken
     )
   }
 
   async startTournament(
-    tournamentId: string
+    tournamentId: string,
+    userToken?: string
   ): Promise<ApiResponse<ChallongeTournament>> {
     return this.request<ApiResponse<ChallongeTournament>>(
       'PUT',
@@ -239,12 +362,14 @@ class ChallongeService {
           type: 'TournamentState',
           attributes: { state: 'start' },
         },
-      }
+      },
+      userToken
     )
   }
 
   async finalizeTournament(
-    tournamentId: string
+    tournamentId: string,
+    userToken?: string
   ): Promise<ApiResponse<ChallongeTournament>> {
     return this.request<ApiResponse<ChallongeTournament>>(
       'PUT',
@@ -254,22 +379,26 @@ class ChallongeService {
           type: 'TournamentState',
           attributes: { state: 'finalize' },
         },
-      }
+      },
+      userToken
     )
   }
 
-  async deleteTournament(tournamentId: string): Promise<void> {
-    await this.request('DELETE', `/tournaments/${tournamentId}`)
+  async deleteTournament(tournamentId: string, userToken?: string): Promise<void> {
+    await this.request('DELETE', `/tournaments/${tournamentId}`, undefined, userToken)
   }
 
   // ==================== PARTICIPANTS ====================
 
   async listParticipants(
-    tournamentId: string
+    tournamentId: string,
+    userToken?: string
   ): Promise<ApiResponse<ChallongeParticipant[]>> {
     return this.request<ApiResponse<ChallongeParticipant[]>>(
       'GET',
-      `/tournaments/${tournamentId}/participants`
+      `/tournaments/${tournamentId}/participants`,
+      undefined,
+      userToken
     )
   }
 
@@ -280,6 +409,7 @@ class ChallongeService {
       email?: string
       seed?: number
       misc?: string // Discord ID
+      userToken?: string
     }
   ): Promise<ApiResponse<ChallongeParticipant>> {
     return this.request<ApiResponse<ChallongeParticipant>>(
@@ -295,23 +425,56 @@ class ChallongeService {
             misc: data.misc,
           },
         },
-      }
+      },
+      data.userToken
+    )
+  }
+
+  async bulkCreateParticipants(
+    tournamentId: string,
+    participants: Array<{
+      name: string
+      email?: string
+      seed?: number
+      misc?: string
+    }>,
+    userToken?: string
+  ): Promise<ApiResponse<ChallongeParticipant[]>> {
+    return this.request<ApiResponse<ChallongeParticipant[]>>(
+      'POST',
+      `/tournaments/${tournamentId}/participants/bulk_add`,
+      {
+        data: participants.map(p => ({
+          type: 'participants',
+          attributes: {
+            name: p.name,
+            email: p.email,
+            seed: p.seed,
+            misc: p.misc,
+          }
+        }))
+      },
+      userToken
     )
   }
 
   async deleteParticipant(
     tournamentId: string,
-    participantId: string
+    participantId: string,
+    userToken?: string
   ): Promise<void> {
     await this.request(
       'DELETE',
-      `/tournaments/${tournamentId}/participants/${participantId}`
+      `/tournaments/${tournamentId}/participants/${participantId}`,
+      undefined,
+      userToken
     )
   }
 
   async checkInParticipant(
     tournamentId: string,
-    participantId: string
+    participantId: string,
+    userToken?: string
   ): Promise<ApiResponse<ChallongeParticipant>> {
     return this.request<ApiResponse<ChallongeParticipant>>(
       'PUT',
@@ -321,14 +484,17 @@ class ChallongeService {
           type: 'participants',
           attributes: { checked_in: true },
         },
-      }
+      },
+      userToken
     )
   }
 
-  async randomizeSeeds(tournamentId: string): Promise<void> {
+  async randomizeSeeds(tournamentId: string, userToken?: string): Promise<void> {
     await this.request(
       'POST',
-      `/tournaments/${tournamentId}/participants/randomize`
+      `/tournaments/${tournamentId}/participants/randomize`,
+      undefined,
+      userToken
     )
   }
 
@@ -336,7 +502,7 @@ class ChallongeService {
 
   async listMatches(
     tournamentId: string,
-    params?: { state?: 'open' | 'pending' | 'complete' }
+    params?: { state?: 'open' | 'pending' | 'complete'; userToken?: string }
   ): Promise<ApiResponse<ChallongeMatch[]>> {
     const query = new URLSearchParams()
     if (params?.state) query.set('state', params.state)
@@ -344,17 +510,22 @@ class ChallongeService {
 
     return this.request<ApiResponse<ChallongeMatch[]>>(
       'GET',
-      `/tournaments/${tournamentId}/matches${queryString}`
+      `/tournaments/${tournamentId}/matches${queryString}`,
+      undefined,
+      params?.userToken
     )
   }
 
   async getMatch(
     tournamentId: string,
-    matchId: string
+    matchId: string,
+    userToken?: string
   ): Promise<ApiResponse<ChallongeMatch>> {
     return this.request<ApiResponse<ChallongeMatch>>(
       'GET',
-      `/tournaments/${tournamentId}/matches/${matchId}`
+      `/tournaments/${tournamentId}/matches/${matchId}`,
+      undefined,
+      userToken
     )
   }
 
@@ -364,6 +535,7 @@ class ChallongeService {
     data: {
       winnerId: string
       scoresCsv: string // e.g. "3-2"
+      userToken?: string
     }
   ): Promise<ApiResponse<ChallongeMatch>> {
     return this.request<ApiResponse<ChallongeMatch>>(
@@ -377,13 +549,15 @@ class ChallongeService {
             scores_csv: data.scoresCsv,
           },
         },
-      }
+      },
+      data.userToken
     )
   }
 
   async markMatchUnderway(
     tournamentId: string,
-    matchId: string
+    matchId: string,
+    userToken?: string
   ): Promise<ApiResponse<ChallongeMatch>> {
     return this.request<ApiResponse<ChallongeMatch>>(
       'PUT',
@@ -393,7 +567,8 @@ class ChallongeService {
           type: 'MatchState',
           attributes: { state: 'mark_underway' },
         },
-      }
+      },
+      userToken
     )
   }
 }

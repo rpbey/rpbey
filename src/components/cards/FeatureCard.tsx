@@ -23,14 +23,12 @@ export function FeatureCard({ icon: Icon, title, description, href, color, exter
       elevation={0}
       sx={{
         height: '100%',
-        borderRadius: 4,
-        border: '1px solid',
-        borderColor: 'divider',
-        transition: 'all 0.3s ease',
+        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
         '&:hover': {
-          borderColor: color,
-          transform: 'translateY(-8px)',
-          boxShadow: `0 20px 40px ${alpha(color, 0.2)}`,
+          bgcolor: alpha(color, 0.08),
+          transform: 'scale(1.02)',
+          boxShadow: `0 12px 24px ${alpha(color, 0.15)}`,
+          borderColor: alpha(color, 0.3),
         },
       }}
     >

@@ -32,6 +32,20 @@ declare module "@mui/material/styles" {
   }
 }
 
+declare module "@mui/material/Card" {
+  interface CardPropsVariantOverrides {
+    filled: true;
+    elevated: true;
+  }
+}
+
+declare module "@mui/material/Paper" {
+  interface PaperPropsVariantOverrides {
+    filled: true;
+    elevated: true;
+  }
+}
+
 // RPB Colors - Extracted from Image
 const RPB_RED = "#E31C25"; // Rouge vif du logo RPB (Licorne/Texte)
 const RPB_YELLOW = "#FFD700"; // Jaune/Or de la crinière
@@ -153,13 +167,52 @@ const commonOptions: ThemeOptions = {
         },
       },
     },
+    MuiCardContent: {
+      styleOverrides: {
+        root: {
+          padding: 24,
+          '&:last-child': {
+            paddingBottom: 24,
+          },
+        },
+      },
+    },
     MuiCard: {
+      defaultProps: {
+        variant: 'filled',
+      },
+      variants: [
+        {
+          props: { variant: 'elevated' },
+          style: {
+            backgroundColor: surfaceContainerLow,
+            boxShadow: '0px 1px 3px 1px rgba(0, 0, 0, 0.15), 0px 1px 2px rgba(0, 0, 0, 0.3)',
+            border: 'none',
+          },
+        },
+        {
+          props: { variant: 'filled' },
+          style: {
+            backgroundColor: surfaceContainer,
+            boxShadow: 'none',
+            border: 'none',
+          },
+        },
+        {
+          props: { variant: 'outlined' },
+          style: {
+            backgroundColor: surfaceContainerLowest,
+            boxShadow: 'none',
+            border: '1px solid',
+            borderColor: 'rgba(255, 255, 255, 0.12)',
+          },
+        },
+      ],
       styleOverrides: {
         root: {
           borderRadius: 28, // M3 Extra Large rounding
           backgroundImage: "none",
-          backgroundColor: surfaceContainer,
-          border: "1px solid rgba(255, 255, 255, 0.05)",
+          transition: 'all 0.2s ease-in-out',
         },
       },
     },

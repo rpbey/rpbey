@@ -45,6 +45,11 @@ export const auth = betterAuth({
       clientId: process.env.TWITCH_CLIENT_ID!,
       clientSecret: process.env.TWITCH_CLIENT_SECRET!,
     },
+    google: {
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      scope: ["https://www.googleapis.com/auth/spreadsheets"],
+    },
   },
 
   // Callbacks

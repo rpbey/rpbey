@@ -8,6 +8,7 @@ import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
 import Box from '@mui/material/Box'
 import Chip from '@mui/material/Chip'
+import Grid from '@mui/material/Grid'
 import { CalendarMonth, Group } from '@mui/icons-material'
 import { TrophyIcon } from '@/components/ui/Icons'
 import { TournamentStatusChip, type TournamentStatus } from '@/components/ui/StatusChip'
@@ -140,25 +141,16 @@ export function TournamentCardGrid({
   onRegister,
 }: TournamentCardGridProps) {
   return (
-    <Box
-      sx={{
-        display: 'grid',
-        gridTemplateColumns: {
-          xs: '1fr',
-          sm: 'repeat(2, 1fr)',
-          md: 'repeat(3, 1fr)',
-        },
-        gap: 3,
-      }}
-    >
+    <Grid container spacing={3}>
       {tournaments.map((tournament) => (
-        <TournamentCard
-          key={tournament.id}
-          {...tournament}
-          onClick={() => onTournamentClick?.(tournament.id)}
-          onRegister={() => onRegister?.(tournament.id)}
-        />
+        <Grid key={tournament.id} size={{ xs: 12, sm: 6, md: 4 }}>
+          <TournamentCard
+            {...tournament}
+            onClick={() => onTournamentClick?.(tournament.id)}
+            onRegister={() => onRegister?.(tournament.id)}
+          />
+        </Grid>
       ))}
-    </Box>
+    </Grid>
   )
 }

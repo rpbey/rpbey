@@ -4,12 +4,23 @@
 RPB is a French Beyblade X community hosted on Discord. This repository contains the **rpb-dashboard**, a web management interface.
 
 ## Tech Stack
-- **Framework**: Next.js 16 (App Router, Turbopack)
+- **Framework**: Next.js 16.1 (App Router, Turbopack)
 - **Authentication**: Better Auth with Discord OAuth
-- **Database**: Prisma 7 + PostgreSQL 17 (Postgres container: `rb-db`)
-- **UI Framework**: MUI 7 + Tailwind CSS
+- **Database**: Prisma 7.2 + PostgreSQL 17 (Postgres container: `rb-db`)
+- **UI Framework**: MUI 7 (Material UI) + Emotion
 - **Styling**: RPB Red (`#dc2626`) + Gold (`#fbbf24`)
 - **Runtime**: Node.js 24+ with pnpm
+
+## Project Structure
+The application is divided into three main domains:
+- **Marketing** (`src/app/(marketing)`): Public pages, rankings, tournament listings, and "TV" (Twitch stream).
+- **Dashboard** (`src/app/dashboard`): User area for managing Beyblade Decks, Profile, and viewing personal stats.
+- **Admin** (`src/app/(admin)`): Restricted area for site management, bot controls, and content management.
+
+## Integrations
+- **Discord**: OAuth login via Better Auth, plus custom Bot API interactions.
+- **Challonge**: Tournament bracket management (API v2.1) synced with local DB.
+- **Twitch**: Live stream status monitoring for `tv_rpb` (using `@twurple`).
 
 ## Infrastructure (Hetzner)
 - **IP**: `46.224.145.55` (Ubuntu 24.04 LTS)

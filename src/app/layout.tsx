@@ -1,6 +1,8 @@
 import ThemeRegistry from "@/components/theme/ThemeRegistry";
 import { SmoothScroll } from "@/components/ui/SmoothScroll";
 import { googleSansFlex } from "@/lib/fonts";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { generateWebsiteJsonLd } from "@/lib/seo-utils";
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
@@ -61,6 +63,7 @@ export default function RootLayout({
   return (
     <html lang="fr" className={googleSansFlex.variable}>
       <body>
+        <JsonLd data={generateWebsiteJsonLd()} />
         <ThemeRegistry>
           <SmoothScroll />
           {children}

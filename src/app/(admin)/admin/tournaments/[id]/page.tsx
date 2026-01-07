@@ -25,11 +25,15 @@ import useSWR, { mutate } from 'swr'
 import PlayArrowIcon from '@mui/icons-material/PlayArrow'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import SyncIcon from '@mui/icons-material/Sync'
+import PeopleOutlineIcon from '@mui/icons-material/PeopleOutline'
 import OpenInNewIcon from '@mui/icons-material/OpenInNew'
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday'
 import LocationOnIcon from '@mui/icons-material/LocationOn'
 import PeopleIcon from '@mui/icons-material/People'
+import TableViewIcon from '@mui/icons-material/TableView'
 import { TournamentBracket, ParticipantList } from '@/components/tournaments'
+import { authClient } from '@/lib/auth-client'
+import { exportTournamentToSheets, reportChallongeMatch } from './actions'
 
 interface TournamentDetailPageProps {
   params: Promise<{ id: string }>
@@ -140,7 +144,21 @@ export default function TournamentDetailPage({ params }: TournamentDetailPagePro
 
   const tournament = data?.data
 
-  const handleAction = async (action: 'start' | 'finalize' | 'sync') => {
+  const handleReportMatch = async (matchId: string, reportData: { winnerId: string; score: string }) => {
+    try {
+      const result = await reportChallongeMatch(id, matchId, reportData)
+      if (result.success) {
+        mutate(`/api/tournaments/${id}`)
+      } else {
+        alert('Erreur report: ' + result.error)
+      }
+    } catch (err) {
+      console.error('Failed to report:', err)
+    }
+  }
+
+
+  const handleAction = async (action: 'start' | 'finalize' | 'sync' | 'sync_participants') => {
     setActionLoading(action)
     try {
       const response = await fetch(`/api/tournaments/${id}`, {
@@ -151,6 +169,9 @@ export default function TournamentDetailPage({ params }: TournamentDetailPagePro
 
       if (response.ok) {
         mutate(`/api/tournaments/${id}`)
+      } else {
+        const err = await response.json()
+        alert('Erreur: ' + (err.error || 'Action échouée'))
       }
     } catch (err) {
       console.error('Action failed:', err)
@@ -169,6 +190,36 @@ export default function TournamentDetailPage({ params }: TournamentDetailPagePro
       mutate(`/api/tournaments/${id}`)
     } catch (err) {
       console.error('Failed to remove participant:', err)
+    }
+  }
+
+  const handleExport = async () => {
+    setActionLoading('export')
+    try {
+      const result = await exportTournamentToSheets(id)
+      
+      if (result.error === 'NO_GOOGLE_ACCOUNT') {
+        const { error } = await authClient.signIn.social({
+          provider: 'google',
+          callbackURL: window.location.href,
+        })
+        if (error) alert('Erreur lors de la connexion Google')
+        return
+      }
+
+      if (result.error) {
+        alert('Erreur export: ' + result.error)
+        return
+      }
+
+      if (result.url) {
+        window.open(result.url, '_blank')
+      }
+    } catch (err) {
+      console.error('Export error:', err)
+      alert('Une erreur est survenue')
+    } finally {
+      setActionLoading(null)
     }
   }
 
@@ -284,8 +335,19 @@ export default function TournamentDetailPage({ params }: TournamentDetailPagePro
                     startIcon={<SyncIcon />}
                     onClick={() => handleAction('sync')}
                     disabled={actionLoading !== null}
+                    title="Sync Matchs"
                   >
-                    {actionLoading === 'sync' ? 'Sync...' : 'Sync'}
+                    {actionLoading === 'sync' ? 'Sync...' : 'Sync Matchs'}
+                  </Button>
+                )}
+                {tournament.challongeId && (
+                  <Button
+                    startIcon={<PeopleOutlineIcon />}
+                    onClick={() => handleAction('sync_participants')}
+                    disabled={actionLoading !== null}
+                    title="Sync Participants"
+                  >
+                    {actionLoading === 'sync_participants' ? 'Sync...' : 'Sync Part.'}
                   </Button>
                 )}
               </ButtonGroup>
@@ -301,6 +363,17 @@ export default function TournamentDetailPage({ params }: TournamentDetailPagePro
                   Challonge
                 </Button>
               )}
+
+              <Button
+                size="small"
+                variant="outlined"
+                startIcon={<TableViewIcon />}
+                onClick={handleExport}
+                disabled={actionLoading !== null}
+                color="success"
+              >
+                {actionLoading === 'export' ? 'Export...' : 'Exporter (Sheets)'}
+              </Button>
             </Box>
           </Box>
         </CardContent>
@@ -316,7 +389,11 @@ export default function TournamentDetailPage({ params }: TournamentDetailPagePro
       {tab === 0 && (
         <Card>
           <CardContent>
-            <TournamentBracket matches={tournament.matches} />
+            <TournamentBracket 
+              matches={tournament.matches} 
+              canReport={tournament.status === 'ONGOING'}
+              onReportMatch={handleReportMatch}
+            />
           </CardContent>
         </Card>
       )}

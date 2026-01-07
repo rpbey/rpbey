@@ -114,6 +114,31 @@ export function IconFooter() {
       {/* Divider */}
       <Box sx={{ width: 1, height: 16, bgcolor: 'divider', mx: 1 }} />
 
+      {/* Links */}
+      <Typography 
+        component="a" 
+        href="/reglement" 
+        variant="caption" 
+        color="text.secondary"
+        sx={{ textDecoration: 'none', '&:hover': { textDecoration: 'underline' } }}
+      >
+        Règlement
+      </Typography>
+
+      <Box sx={{ width: 1, height: 16, bgcolor: 'divider', mx: 1 }} />
+
+      <Typography 
+        component="a" 
+        href="/privacy" 
+        variant="caption" 
+        color="text.secondary"
+        sx={{ textDecoration: 'none', '&:hover': { textDecoration: 'underline' } }}
+      >
+        Confidentialité
+      </Typography>
+
+      <Box sx={{ width: 1, height: 16, bgcolor: 'divider', mx: 1 }} />
+
       {/* Copyright */}
       <Typography variant="caption" color="text.secondary">
         © {new Date().getFullYear()} RPB

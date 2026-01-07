@@ -18,6 +18,7 @@ import {
   useMediaQuery,
   useTheme,
   Chip,
+  alpha,
 } from '@mui/material'
 import {
   Menu as MenuIcon,
@@ -107,32 +108,40 @@ export function AdminSidebar({ mobileOpen, onMobileClose }: AdminSidebarProps) {
             (item.href !== '/admin' && pathname.startsWith(item.href))
 
           return (
-            <ListItem key={item.href} disablePadding sx={{ mb: 0.5 }}>
+            <ListItem key={item.href} disablePadding sx={{ mb: 1, px: 2 }}>
               <ListItemButton
                 component={Link}
                 href={item.href}
                 selected={isActive}
                 onClick={isMobile ? onMobileClose : undefined}
                 sx={{
-                  borderRadius: 2,
+                  borderRadius: 32, // Pill shape
+                  height: 56, // M3 Navigation Drawer Item Height
+                  px: 3,
                   '&.Mui-selected': {
-                    bgcolor: 'primary.main',
-                    color: 'primary.contrastText',
+                    bgcolor: (theme) => alpha(theme.palette.primary.main, 0.1),
+                    color: 'primary.main',
                     '&:hover': {
-                      bgcolor: 'primary.dark',
+                      bgcolor: (theme) => alpha(theme.palette.primary.main, 0.2),
                     },
                     '& .MuiListItemIcon-root': {
-                      color: 'inherit',
+                      color: 'primary.main',
                     },
+                  },
+                  '&:hover': {
+                    bgcolor: 'rgba(255, 255, 255, 0.05)',
                   },
                 }}
               >
-                <ListItemIcon sx={{ minWidth: 40 }}>
+                <ListItemIcon sx={{ minWidth: 44, color: isActive ? 'primary.main' : 'text.secondary' }}>
                   <Icon />
                 </ListItemIcon>
                 <ListItemText 
                   primary={item.label}
-                  primaryTypographyProps={{ fontWeight: isActive ? 600 : 400 }}
+                  primaryTypographyProps={{ 
+                    fontWeight: isActive ? 700 : 500,
+                    fontSize: '0.875rem'
+                  }}
                 />
               </ListItemButton>
             </ListItem>
@@ -194,10 +203,14 @@ export function AdminSidebar({ mobileOpen, onMobileClose }: AdminSidebarProps) {
           display: { xs: 'none', md: 'block' },
           '& .MuiDrawer-paper': {
             boxSizing: 'border-box',
-            width: DRAWER_WIDTH,
+            width: DRAWER_WIDTH - 32, // Accommodate margin
+            m: 2,
+            height: 'calc(100% - 32px)',
+            borderRadius: 6, // 24px
             bgcolor: 'background.paper',
-            borderRight: 1,
+            border: '1px solid',
             borderColor: 'divider',
+            boxShadow: '0 4px 20px rgba(0,0,0,0.2)',
           },
         }}
         open
@@ -214,17 +227,27 @@ export function AdminMobileHeader({ onMenuClick }: { onMenuClick: () => void }) 
       sx={{
         display: { xs: 'flex', md: 'none' },
         alignItems: 'center',
-        gap: 1,
-        p: 1,
-        borderBottom: 1,
+        gap: 1.5,
+        p: 2,
+        position: 'sticky',
+        top: 0,
+        zIndex: 1100,
+        bgcolor: 'rgba(15, 15, 15, 0.8)',
+        backdropFilter: 'blur(12px)',
+        borderBottom: '1px solid',
         borderColor: 'divider',
-        bgcolor: 'background.paper',
       }}
     >
-      <IconButton onClick={onMenuClick}>
+      <IconButton 
+        onClick={onMenuClick}
+        sx={{ 
+          bgcolor: 'rgba(255, 255, 255, 0.05)',
+          borderRadius: 3
+        }}
+      >
         <MenuIcon />
       </IconButton>
-      <Typography variant="h6" fontWeight="bold" color="primary.main">
+      <Typography variant="h6" fontWeight="800" color="primary.main" letterSpacing="-0.02em">
         RPB Admin
       </Typography>
     </Box>

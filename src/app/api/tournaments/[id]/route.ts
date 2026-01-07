@@ -199,12 +199,12 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 
     const { id } = await params
     const body = await request.json()
-    const { action } = body as { action: 'start' | 'finalize' | 'sync' }
+    const { action } = body as { action: 'start' | 'finalize' | 'sync' | 'sync_participants' }
 
     const tournament = await prisma.tournament.findUnique({
       where: { id },
       include: {
-        participants: true,
+        participants: { include: { user: true } },
         matches: true,
       },
     })
@@ -223,6 +223,50 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     const challonge = getChallongeService()
 
     switch (action) {
+      case 'sync_participants': {
+        const { data: challongeParticipants } = await challonge.listParticipants(tournament.challongeId)
+        
+        const participantsToCreate = []
+        const alreadySyncedLocalIds = new Set(tournament.participants.filter(p => p.challongeParticipantId).map(p => p.id))
+
+        for (const localParticipant of tournament.participants) {
+          if (alreadySyncedLocalIds.has(localParticipant.id)) continue
+
+          const existingInChallonge = challongeParticipants.find(
+            (p) => p.attributes.misc === localParticipant.userId || p.attributes.name === (localParticipant.user.name || localParticipant.user.email)
+          )
+
+          if (existingInChallonge) {
+            await prisma.tournamentParticipant.update({
+              where: { id: localParticipant.id },
+              data: { challongeParticipantId: String(existingInChallonge.id) }
+            })
+          } else {
+            participantsToCreate.push({
+              name: localParticipant.user.name || localParticipant.user.email,
+              misc: localParticipant.userId,
+              seed: localParticipant.seed ?? undefined
+            })
+          }
+        }
+
+        if (participantsToCreate.length > 0) {
+          const { data: createdParticipants } = await challonge.bulkCreateParticipants(tournament.challongeId, participantsToCreate)
+          
+          // Map created participants back to local records
+          for (const created of createdParticipants) {
+            const localParticipant = tournament.participants.find(p => p.userId === created.attributes.misc)
+            if (localParticipant) {
+              await prisma.tournamentParticipant.update({
+                where: { id: localParticipant.id },
+                data: { challongeParticipantId: String(created.id) }
+              })
+            }
+          }
+        }
+        break
+      }
+
       case 'start': {
         await challonge.startTournament(tournament.challongeId)
         await prisma.tournament.update({
@@ -259,6 +303,9 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
             (p) => p.challongeParticipantId === String(attrs.winnerId)
           )
 
+          // Challonge v2.1 uses scores as an array or CSV depending on request. Attributes usually have scores as string.
+          const scoreStr = attrs.scores || null
+
           await prisma.tournamentMatch.upsert({
             where: {
               tournamentId_challongeMatchId: {
@@ -269,7 +316,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
             update: {
               round: attrs.round,
               state: attrs.state,
-              score: attrs.scores ? JSON.stringify(attrs.scores) : null,
+              score: scoreStr,
               winnerId: winner?.userId ?? null,
             },
             create: {
@@ -280,7 +327,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
               player1Id: player1?.userId ?? null,
               player2Id: player2?.userId ?? null,
               winnerId: winner?.userId ?? null,
-              score: attrs.scores ? JSON.stringify(attrs.scores) : null,
+              score: scoreStr,
             },
           })
         }
