@@ -13,7 +13,7 @@ export default function DashboardRedirect() {
     if (!isPending) {
       if (session?.user) {
         // Redirect based on role
-        if (session.user.role === "admin") {
+        if (session.user.role === "admin" || session.user.role === "superadmin") {
           router.replace("/admin")
         } else {
           // Regular users go to their own profile by default

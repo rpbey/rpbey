@@ -9,7 +9,6 @@ interface UserWithRole extends User {
 
 const authRoutes = ["/sign-in", "/sign-up"];
 const passwordRoutes = ["/reset-password", "/forgot-password"];
-const adminRoutes = ["/admin"];
 const privateRoutes = ["/dashboard"];
 
 export default async function authMiddleware(request: NextRequest) {
@@ -41,7 +40,7 @@ export default async function authMiddleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
-  if (isAdminRoute && sessionData.user.role !== "admin") {
+  if (isAdminRoute && sessionData.user.role !== "admin" && sessionData.user.role !== "superadmin") {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
