@@ -1,35 +1,23 @@
+import type { TournamentStatus } from '@prisma/client'
 import 'dotenv/config'
 import prisma from '../src/lib/prisma'
-import type { TournamentStatus } from '@prisma/client'
 
 async function main() {
+  console.log('Clearing old tournaments...')
+  await prisma.tournament.deleteMany({})
   console.log('Seeding tournaments...')
 
   const tournaments = [
     {
-      name: 'RPB Championship #6',
-      description: 'Le plus grand tournoi de la saison. Venez affronter les meilleurs bladers de France.',
-      date: new Date('2026-01-15T14:00:00Z'),
-      location: 'Paris, France',
+      name: 'BEY-TAMASHII SERIES #1',
+      description: 'Le tout premier tournoi compétitif de la RPB ! Au Dernier Bar Avant la Fin du Monde à Paris.',
+      date: new Date('2026-01-11T14:00:00Z'),
+      location: 'Dernier Bar Avant la Fin du Monde, 19 Avenue Victoria, 75001 Paris',
       maxPlayers: 64,
       status: 'REGISTRATION_OPEN',
-    },
-    {
-      name: 'Weekly Battle - Janvier W1',
-      description: 'Tournoi hebdomadaire pour s\'entraîner et gagner des points au classement.',
-      date: new Date('2026-01-10T18:00:00Z'),
-      location: 'Online',
-      maxPlayers: 16,
-      status: 'UPCOMING',
-    },
-    {
-      name: 'Coupe de France Beyblade X',
-      description: 'Tournoi officiel qualificatif pour les championnats d\'Europe.',
-      date: new Date('2026-02-01T10:00:00Z'),
-      location: 'Lyon, France',
-      maxPlayers: 128,
-      status: 'UPCOMING',
-    },
+      format: '3on3 Double Elimination',
+      challongeUrl: 'https://challonge.com/fr/B_TS1'
+    }
   ]
 
   for (const t of tournaments) {

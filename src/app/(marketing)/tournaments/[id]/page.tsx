@@ -1,27 +1,27 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useParams } from 'next/navigation'
-import {
-  Box,
-  Container,
-  Typography,
-  Grid,
-  Paper,
-  Stack,
-  Button,
-  Skeleton,
-} from '@mui/material'
-import {
-  CalendarMonth,
-  Info,
-  LocationOn,
-  EmojiEvents as Trophy,
-} from '@mui/icons-material'
-import { TournamentStatusChip } from '@/components/ui'
 import { ChallongeBracket } from '@/components/tournaments'
-import dynamic from 'next/dynamic'
+import { TournamentStatusChip } from '@/components/ui'
+import {
+    CalendarMonth,
+    Info,
+    LocationOn,
+    EmojiEvents as Trophy,
+} from '@mui/icons-material'
+import {
+    Box,
+    Button,
+    Container,
+    Grid,
+    Paper,
+    Skeleton,
+    Stack,
+    Typography,
+} from '@mui/material'
 import type { Tournament } from '@prisma/client'
+import dynamic from 'next/dynamic'
+import { useParams } from 'next/navigation'
+import { useEffect, useState } from 'react'
 
 const Map = dynamic(() => import('@/components/ui/Map'), { 
   ssr: false,
@@ -147,8 +147,8 @@ export default function TournamentDetailPage() {
           </Paper>
 
           {/* Challonge Bracket */}
-          {tournament.challongeId && (
-            <ChallongeBracket challongeId={tournament.challongeId} title={`Arbre: ${tournament.name}`} />
+          {tournament.challongeUrl && (
+            <ChallongeBracket challongeUrl={tournament.challongeUrl} title={`Arbre: ${tournament.name}`} />
           )}
         </Grid>
 

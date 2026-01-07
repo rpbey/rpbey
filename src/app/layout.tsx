@@ -1,6 +1,7 @@
-import type { Metadata, Viewport } from "next";
 import ThemeRegistry from "@/components/theme/ThemeRegistry";
+import { SmoothScroll } from "@/components/ui/SmoothScroll";
 import { googleSansFlex } from "@/lib/fonts";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const viewport: Viewport = {
@@ -61,6 +62,7 @@ export default function RootLayout({
     <html lang="fr" className={googleSansFlex.variable}>
       <body>
         <ThemeRegistry>
+          <SmoothScroll />
           {children}
         </ThemeRegistry>
       </body>

@@ -1,113 +1,98 @@
 'use client'
 
-import React, { useState } from 'react'
 import Box from '@mui/material/Box'
 import Paper from '@mui/material/Paper'
-import Typography from '@mui/material/Typography'
 import Skeleton from '@mui/material/Skeleton'
-import IconButton from '@mui/material/IconButton'
-import Tooltip from '@mui/material/Tooltip'
-import OpenInNewIcon from '@mui/icons-material/OpenInNew'
-import RefreshIcon from '@mui/icons-material/Refresh'
+import { useState } from 'react'
 
 interface ChallongeBracketProps {
-  challongeId: string
+  challongeUrl: string
   height?: number | string
   title?: string
+  themeId?: string
 }
 
-export function ChallongeBracket({ challongeId, height = 600, title }: ChallongeBracketProps) {
-  const [loading, setLoading] = useState(true)
-  const [key, setKey] = useState(0) // Used to force refresh
+export function ChallongeBracket({ 
+  challongeUrl, 
+  height = 600, 
 
-  const handleRefresh = () => {
-    setLoading(true)
-    setKey(prev => prev + 1)
-  }
+    themeId = '7792' // ID d'un thème transparent ou thème par défaut RPB si existant
 
-  const challongeUrl = `https://challonge.com/fr/${challongeId}/module`
-  const fullUrl = `https://challonge.com/fr/${challongeId}`
+  }: ChallongeBracketProps) {
 
-  return (
-    <Paper
-      elevation={0}
-      sx={{
-        width: '100%',
-        borderRadius: 4,
-        overflow: 'hidden',
-        border: '1px solid',
-        borderColor: 'divider',
-        bgcolor: 'background.paper',
-      }}
-    >
-      <Box
+    const [loading, setLoading] = useState(true)
+
+  
+
+    // Construction de l'URL du module avec les bons paramètres pour la transparence
+
+  
+    // On force le mode module et on ajoute les paramètres d'affichage
+    let moduleUrlString = ''
+    if (challongeUrl) {
+      try {
+        const moduleUrl = new URL(`${challongeUrl}/module`)
+        moduleUrl.searchParams.set('theme', themeId)
+        moduleUrl.searchParams.set('multiplier', '0.9')
+        moduleUrl.searchParams.set('match_width_multiplier', '1.2')
+        moduleUrl.searchParams.set('show_final_results', '1')
+        moduleUrlString = moduleUrl.toString()
+      } catch {
+        console.error('Invalid Challonge URL:', challongeUrl)
+      }
+    }
+    
+  
+    return (
+      <Paper
+        elevation={0}
         sx={{
-          px: 3,
-          py: 2,
-          borderBottom: '1px solid',
-          borderColor: 'divider',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          bgcolor: (theme) => theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
+          width: '100%',
+          borderRadius: 4,
+          overflow: 'hidden',
+  
+          // Fond semi-transparent pour le conteneur
+          bgcolor: (theme) => theme.palette.mode === 'dark' 
+            ? 'rgba(0, 0, 0, 0.2)' 
+            : 'rgba(255, 255, 255, 0.4)',
+          backdropFilter: 'blur(10px)',
         }}
       >
-        <Typography variant="subtitle1" fontWeight="bold">
-          {title || 'Arbre du Tournoi'}
-        </Typography>
-        <Box>
-          <Tooltip title="Rafraîchir">
-            <IconButton size="small" onClick={handleRefresh} sx={{ mr: 1 }}>
-              <RefreshIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Ouvrir sur Challonge">
-            <IconButton 
-              size="small" 
-              component="a" 
-              href={fullUrl} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              color="primary"
+  
+  
+        <Box sx={{ position: 'relative', width: '100%', height }}>
+          {loading && (
+            <Box
+              sx={{
+                position: 'absolute',
+                inset: 0,
+                p: 2,
+                zIndex: 1,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
             >
-              <OpenInNewIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-        </Box>
-      </Box>
-
-      <Box sx={{ position: 'relative', width: '100%', height }}>
-        {loading && (
-          <Box
-            sx={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              p: 2,
-              zIndex: 1,
-              bgcolor: 'background.paper',
+              <Skeleton variant="rectangular" width="100%" height="100%" sx={{ borderRadius: 2, opacity: 0.5 }} />
+            </Box>
+          )}
+          
+          <iframe
+            src={moduleUrlString}
+            width="100%"
+            height="100%"
+            frameBorder="0"
+            scrolling="auto"
+            onLoad={() => setLoading(false)}
+            style={{
+              border: 'none',
+              display: 'block',
+              // Astuce CSS pour forcer la transparence si le thème le permet
+              colorScheme: 'auto', 
             }}
-          >
-            <Skeleton variant="rectangular" width="100%" height="100%" sx={{ borderRadius: 2 }} />
-          </Box>
-        )}
-        
-        <iframe
-          key={key}
-          src={`${challongeUrl}?theme=1&multiplier=0.9&match_width_multiplier=1.2`}
-          width="100%"
-          height="100%"
-          frameBorder="0"
-          scrolling="auto"
-          onLoad={() => setLoading(false)}
-          style={{
-            border: 'none',
-            display: 'block',
-          }}
-        />
-      </Box>
-    </Paper>
-  )
-}
+          />
+        </Box>
+      </Paper>
+    )
+  }
+  

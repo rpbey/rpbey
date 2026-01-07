@@ -1,17 +1,17 @@
 'use client'
 
-import Link from 'next/link'
+import { useThemeMode } from '@/components/theme/ThemeRegistry'
+import { ChallongeBracket } from '@/components/tournaments'
+import { DiscordStatusCard } from '@/components/ui'
+import { useMediaQuery, useTheme } from '@mui/material'
 import Box from '@mui/material/Box'
-import Container from '@mui/material/Container'
-import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
+import Container from '@mui/material/Container'
 import Grid from '@mui/material/Grid'
 import Stack from '@mui/material/Stack'
-import { DiscordStatusCard } from '@/components/ui'
-import { motion, useScroll, useTransform, useSpring } from 'framer-motion'
-import { ChallongeBracket } from '@/components/tournaments'
-import { useThemeMode } from '@/components/theme/ThemeRegistry'
-import { useMediaQuery, useTheme } from '@mui/material'
+import Typography from '@mui/material/Typography'
+import { motion, useScroll, useSpring, useTransform } from 'framer-motion'
+import Link from 'next/link'
 
 export default function HomePage() {
   const { backgroundImage, mode } = useThemeMode()
@@ -169,14 +169,14 @@ export default function HomePage() {
       </Box>
 
       {/* Bracket Section */}
-      <Box sx={{ bgcolor: 'surface.low', py: 15 }}>
+      <Box sx={{ bgcolor: 'surface.low', py: 8 }}>
         <Container maxWidth="lg">
           <Box
             component={motion.div}
-            initial={{ opacity: 0, y: 50 }}
+            initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.8 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.6 }}
           >
             <Typography
               variant="h3"
@@ -212,7 +212,7 @@ export default function HomePage() {
             }}
           >
             <ChallongeBracket 
-              challongeId="rpbey" 
+              challongeUrl="https://challonge.com/fr/B_TS1" 
               height={700}
               title="Arbre Officiel - BEY-TAMASHII SERIES #1" 
             />
@@ -221,61 +221,193 @@ export default function HomePage() {
       </Box>
 
       {/* CTA Section */}
-      <Container maxWidth="md" sx={{ py: 15, textAlign: 'center' }}>
+      {/* CTA Section */}
+      <Container maxWidth="lg" sx={{ py: 8, position: 'relative' }}>
         <Box
           component={motion.div}
-          initial={{ opacity: 0, scale: 0.9 }}
-          whileInView={{ opacity: 1, scale: 1 }}
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.8 }}
           sx={{
-            p: { xs: 4, md: 8 },
-            borderRadius: 8, // 32px
-            bgcolor: 'primary.container',
-            color: 'primary.onContainer',
+            position: 'relative',
+            borderRadius: 8,
+            overflow: 'hidden',
+            background: 'linear-gradient(135deg, #1a1a1a 0%, #450a0a 100%)',
+            boxShadow: '0 20px 80px rgba(220, 38, 38, 0.2)',
+            border: '1px solid rgba(255,255,255,0.1)',
           }}
         >
-          <Typography variant="h3" fontWeight="bold" gutterBottom sx={{ color: 'inherit' }}>
-            Prêt à rejoindre la communauté ?
-          </Typography>
-          <Typography variant="h6" sx={{ mb: 5, color: 'inherit', opacity: 0.9 }}>
-            Inscris-toi gratuitement et participe à nos tournois
-          </Typography>
-          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} justifyContent="center">
-            <Button
-              component={Link}
-              href="/sign-up"
-              variant="contained"
-              size="large"
-              sx={{
-                px: 6,
-                py: 2,
-                fontSize: '1.2rem',
-                bgcolor: 'primary.main',
-                color: 'primary.contrastText',
-                '&:hover': { bgcolor: 'primary.dark' }
-              }}
-            >
-              Créer un compte
-            </Button>
-            <Button
-              component={Link}
-              href="/sign-in"
-              variant="outlined"
-              size="large"
-              sx={{
-                px: 6,
-                py: 2,
-                fontSize: '1.2rem',
-                color: 'primary.onContainer',
-                borderColor: 'primary.main',
-                borderWidth: 2,
-                '&:hover': { borderWidth: 2, bgcolor: 'rgba(255,255,255,0.05)' },
-              }}
-            >
-              Se connecter
-            </Button>
-          </Stack>
+          {/* Decorative Background Elements */}
+          <Box
+            sx={{
+              position: 'absolute',
+              top: '-50%',
+              left: '-20%',
+              width: '80%',
+              height: '200%',
+              background: 'radial-gradient(circle, rgba(220, 38, 38, 0.2) 0%, rgba(0,0,0,0) 70%)',
+              transform: 'rotate(-45deg)',
+              pointerEvents: 'none',
+            }}
+          />
+          <Box
+            sx={{
+              position: 'absolute',
+              bottom: '-50%',
+              right: '-20%',
+              width: '80%',
+              height: '200%',
+              background: 'radial-gradient(circle, rgba(251, 191, 36, 0.1) 0%, rgba(0,0,0,0) 70%)',
+              transform: 'rotate(-45deg)',
+              pointerEvents: 'none',
+            }}
+          />
+
+          <Grid container alignItems="center" sx={{ position: 'relative', zIndex: 1, minHeight: 400 }}>
+            <Grid size={{ xs: 12, md: 7 }} sx={{ p: { xs: 4, md: 8 }, textAlign: { xs: 'center', md: 'left' } }}>
+              <Typography 
+                variant="h2" 
+                fontWeight={900} 
+                gutterBottom 
+                sx={{ 
+                  color: 'white',
+                  fontSize: { xs: '2.5rem', md: '3.5rem' },
+                  letterSpacing: '-0.02em',
+                  lineHeight: 1.1
+                }}
+              >
+                Prêt à rejoindre
+                <br />
+                <Box component="span" sx={{ color: '#fbbf24' }}>la communauté ?</Box>
+              </Typography>
+              
+
+
+              <Stack 
+                direction={{ xs: 'column', sm: 'row' }} 
+                spacing={2} 
+                justifyContent={{ xs: 'center', md: 'flex-start' }}
+              >
+                <Button
+                  component="a"
+                  href="https://x.com/i/communities/1809671339109658814"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  variant="contained"
+                  size="large"
+                  startIcon={
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                    </svg>
+                  }
+                  sx={{
+                    px: 4,
+                    py: 1.8,
+                    fontSize: '1rem',
+                    fontWeight: 800,
+                    textTransform: 'none',
+                    borderRadius: '16px', // Modern slightly squared rounded corners
+                    background: '#000000',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    boxShadow: '0 4px 20px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.2)', 
+                    position: 'relative',
+                    overflow: 'hidden',
+                    '&:hover': {
+                       background: '#000000',
+                       borderColor: 'rgba(255,255,255,0.3)',
+                       transform: 'translateY(-2px)',
+                       boxShadow: '0 8px 30px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.3)',
+                    },
+                    '&::before': {
+                      content: '""',
+                      position: 'absolute',
+                      top: 0,
+                      left: '-100%',
+                      width: '100%',
+                      height: '100%',
+                      background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent)',
+                      transition: '0.5s',
+                    },
+                    '&:hover::before': {
+                      left: '100%',
+                    },
+                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                  }}
+                >
+                  Rejoindre la Communauté
+                </Button>
+                <Button
+                  component={Link}
+                  href="/sign-in"
+                  variant="outlined"
+                  size="large"
+                  sx={{
+                    px: 4,
+                    py: 1.8,
+                    fontSize: '1rem',
+                    fontWeight: 700,
+                    textTransform: 'none',
+                    borderRadius: '16px',
+                    color: '#ffffff',
+                    borderColor: 'rgba(255,255,255,0.2)',
+                    background: 'rgba(255,255,255,0.03)',
+                    backdropFilter: 'blur(10px)',
+                    boxShadow: '0 4px 20px rgba(0,0,0,0.2)',
+                    '&:hover': {
+                      borderColor: '#ffffff',
+                      background: 'rgba(255,255,255,0.1)',
+                      transform: 'translateY(-2px)',
+                      boxShadow: '0 8px 25px rgba(255,255,255,0.1)',
+                    },
+                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                  }}
+                >
+                  Se connecter
+                </Button>
+              </Stack>
+            </Grid>
+
+            <Grid size={{ xs: 12, md: 5 }} sx={{ display: { xs: 'none', md: 'block' }, height: '100%', position: 'relative', minHeight: 400 }}>
+              {/* Abstract graphic or dynamic element could go here */}
+              <Box
+                sx={{
+                  position: 'absolute',
+                  top: 0,
+                  right: 0,
+                  bottom: 0,
+                  width: '100%',
+                  background: 'radial-gradient(circle at center, rgba(255,255,255,0.05) 1px, transparent 1px)',
+                  backgroundSize: '20px 20px',
+                  maskImage: 'linear-gradient(to right, transparent, black)',
+                }}
+              />
+              <Box
+                component={motion.div}
+                animate={{ 
+                  y: [0, -20, 0],
+                  rotate: [0, 5, 0]
+                }}
+                transition={{ 
+                  duration: 6,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+                sx={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  width: 250,
+                  height: 250,
+                  borderRadius: '50%',
+                  background: 'linear-gradient(45deg, #dc2626, #fbbf24)',
+                  filter: 'blur(60px)',
+                  opacity: 0.6,
+                }}
+              />
+            </Grid>
+          </Grid>
         </Box>
       </Container>
     </>

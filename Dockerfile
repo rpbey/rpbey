@@ -1,8 +1,8 @@
 # RPB Dashboard - Dockerfile for Coolify deployment
 # This Dockerfile bypasses Nixpacks to avoid ESM/CJS issues with Prisma 7
-# Build: 2026-01-03-v2
+# Build: 2026-01-07-v3
 
-FROM node:22-slim AS base
+FROM node:24-slim AS base
 
 # Install OpenSSL (required by Prisma)
 RUN apt-get update && apt-get install -y openssl ca-certificates && rm -rf /var/lib/apt/lists/*
@@ -44,6 +44,8 @@ RUN pnpm run build
 FROM base AS runner
 
 ENV NODE_ENV=production
+# Disable Next.js telemetry during runtime
+ENV NEXT_TELEMETRY_DISABLED=1
 
 # Create non-root user for security
 RUN addgroup --system --gid 1001 nodejs && \
@@ -53,6 +55,9 @@ WORKDIR /app
 
 # Copy necessary files from builder
 COPY --from=builder /app/public ./public
+
+# Automatically leverage output traces to reduce image size
+# https://nextjs.org/docs/advanced-features/output-file-tracing
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
