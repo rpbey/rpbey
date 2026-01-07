@@ -46,7 +46,15 @@ model User {
   player2Matches TournamentMatch[] @relation("Player2Matches")
   winnerMatches  TournamentMatch[] @relation("WinnerMatches")
 
+  username        String?
+  displayUsername String?
+
+  // Two Factor Auth
+  twoFactorEnabled Boolean @default(false)
+  twoFactors       TwoFactor[]
+
   @@map("users")
+  @@unique([username])
 }
 
 model Session {
@@ -60,6 +68,8 @@ model Session {
 
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  impersonatedBy String?
 
   @@index([userId])
   @@map("sessions")
@@ -85,6 +95,17 @@ model Account {
   @@unique([providerId, accountId])
   @@index([userId])
   @@map("accounts")
+}
+
+model TwoFactor {
+  id          String @id @default(cuid())
+  secret      String
+  backupCodes String
+  userId      String
+  user        User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("two_factors")
 }
 
 model Verification {
@@ -351,11 +372,11 @@ model TournamentParticipant {
 
   // Deck used for this tournament
   deckId String?
-  deck   Deck?  @relation(fields: [deckId], references: [id])
+  deck   Deck?   @relation(fields: [deckId], references: [id])
 
   // Status
-  checkedIn Boolean @default(false)
-  seed      Int?
+  checkedIn      Boolean @default(false)
+  seed           Int?
   finalPlacement Int? // Final placement in tournament (1st, 2nd, 3rd, etc.)
 
   // Stats for this tournament
@@ -450,9 +471,9 @@ model Product {
   code String @unique // BX-01, UX-17, CX-10, etc.
 
   // Product info
-  name      String // Japanese name
-  nameEn    String? // English name (translated)
-  nameFr    String? // French name (translated)
+  name   String // Japanese name
+  nameEn String? // English name (translated)
+  nameFr String? // French name (translated)
 
   // Product type
   productType ProductType
@@ -504,19 +525,18 @@ enum ProductLine {
 // ============================================================================
 
 model BotCommand {
-  id          String   @id @default(cuid())
-  name        String   @unique
-  description String
-  response    String   // Text response or JSON for embeds
-  enabled     Boolean  @default(true)
-  
+  id           String   @id @default(cuid())
+  name         String   @unique
+  description  String
+  response     String // Text response or JSON for embeds
+  enabled      Boolean  @default(true)
   // Future proofing: aliases, cooldowns, roles allowed
-  aliases     String[] @default([])
-  cooldown    Int      @default(0)
+  aliases      String[] @default([])
+  cooldown     Int      @default(0)
   allowedRoles String[] @default([])
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("bot_commands")
 }

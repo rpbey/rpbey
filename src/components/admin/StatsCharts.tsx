@@ -70,7 +70,7 @@ export function StatsCharts({ registrations, tournaments, matchesStatus }: Stats
                     cornerRadius: 5,
                   },
                 ]}
-                legend={{ hidden: true }}
+                hideLegend
                 height={300}
                 margin={{ right: 5 }}
               />

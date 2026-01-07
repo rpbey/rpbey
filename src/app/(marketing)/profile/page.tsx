@@ -25,6 +25,8 @@ import { useSession } from '@/lib/auth-client'
 import { useToast, TrophyIcon } from '@/components/ui'
 import type { BeyType, ExperienceLevel, Profile } from '@prisma/client'
 
+import SecuritySettings from '@/components/profile/SecuritySettings'
+
 const BEYBLADE_TYPES: { value: BeyType; label: string }[] = [
   { value: 'ATTACK', label: 'Attaque' },
   { value: 'DEFENSE', label: 'Défense' },
@@ -312,6 +314,8 @@ export default function ProfilePage() {
               </Stack>
             </CardContent>
           </Card>
+
+          <SecuritySettings />
 
           {/* Tournament History placeholder */}
           <Box sx={{ mt: 4 }}>

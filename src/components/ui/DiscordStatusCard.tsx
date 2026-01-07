@@ -50,7 +50,7 @@ export function DiscordStatusCard() {
 
   return (
     <Card
-      elevation={0}
+      variant="outlined"
       sx={{
         p: 3,
         display: 'flex',
@@ -58,10 +58,15 @@ export function DiscordStatusCard() {
         gap: 2,
         maxWidth: 400,
         width: '100%',
-        transition: 'transform 0.2s',
+        bgcolor: 'surface.containerLow',
+        borderRadius: 4,
+        border: '1px solid',
+        borderColor: 'divider',
+        transition: 'transform 0.2s, box-shadow 0.2s',
         '&:hover': {
           transform: 'translateY(-4px)',
-          boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
+          boxShadow: (theme) => `0 10px 30px ${theme.palette.mode === 'dark' ? 'rgba(0,0,0,0.4)' : 'rgba(0,0,0,0.1)'}`,
+          borderColor: '#5865F2',
         },
       }}
     >
@@ -70,7 +75,7 @@ export function DiscordStatusCard() {
           sx={{
             p: 1.5,
             borderRadius: 3,
-            bgcolor: '#5865F220',
+            bgcolor: (theme) => theme.palette.mode === 'dark' ? 'rgba(88, 101, 242, 0.2)' : 'rgba(88, 101, 242, 0.1)',
             color: '#5865F2',
             display: 'flex',
           }}
@@ -89,6 +94,7 @@ export function DiscordStatusCard() {
                   height: 8,
                   borderRadius: '50%',
                   bgcolor: '#22c55e',
+                  boxShadow: '0 0 8px rgba(34, 197, 94, 0.4)',
                 }}
               />
               <Typography variant="body2" color="text.secondary">
@@ -121,9 +127,15 @@ export function DiscordStatusCard() {
         fullWidth
         sx={{
           bgcolor: '#5865F2',
-          '&:hover': { bgcolor: '#4752C4' },
+          '&:hover': { 
+            bgcolor: '#4752C4',
+            boxShadow: '0 4px 12px rgba(88, 101, 242, 0.4)',
+          },
           py: 1.5,
           fontSize: '1rem',
+          borderRadius: 3,
+          textTransform: 'none',
+          fontWeight: 600,
         }}
       >
         Rejoindre le serveur

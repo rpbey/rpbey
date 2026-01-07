@@ -1,7 +1,7 @@
 'use client'
 
 import Box from '@mui/material/Box'
-import Paper from '@mui/material/Paper'
+import Card from '@mui/material/Card'
 import Skeleton from '@mui/material/Skeleton'
 import { useState } from 'react'
 
@@ -44,17 +44,19 @@ export function ChallongeBracket({
     
   
     return (
-      <Paper
-        elevation={0}
+      <Card
+        variant="outlined"
         sx={{
           width: '100%',
           borderRadius: 4,
           overflow: 'hidden',
+          border: '1px solid',
+          borderColor: 'divider',
   
           // Fond semi-transparent pour le conteneur
           bgcolor: (theme) => theme.palette.mode === 'dark' 
-            ? 'rgba(0, 0, 0, 0.2)' 
-            : 'rgba(255, 255, 255, 0.4)',
+            ? 'rgba(33, 31, 31, 0.8)' // surface.container approx
+            : 'rgba(255, 255, 255, 0.6)',
           backdropFilter: 'blur(10px)',
         }}
       >
@@ -92,7 +94,7 @@ export function ChallongeBracket({
             }}
           />
         </Box>
-      </Paper>
+      </Card>
     )
   }
   

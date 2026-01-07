@@ -1,7 +1,7 @@
 'use client'
 
 import { ChallongeBracket } from '@/components/tournaments'
-import { TournamentStatusChip } from '@/components/ui'
+import { TournamentStatusChip, type TournamentStatus } from '@/components/ui'
 import {
     CalendarMonth,
     Info,
@@ -82,7 +82,7 @@ export default function TournamentDetailPage() {
           <Typography variant="h3" fontWeight="bold">
             {tournament.name}
           </Typography>
-          <TournamentStatusChip status={(tournament.status || '').toLowerCase()} />
+          <TournamentStatusChip status={(tournament.status || '').toLowerCase() as TournamentStatus} />
         </Stack>
       </Box>
 

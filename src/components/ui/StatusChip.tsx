@@ -110,13 +110,13 @@ export function StatusChip({
 
   switch (type) {
     case 'tournament':
-      config = tournamentStatusConfig[status as TournamentStatus]
+      config = tournamentStatusConfig[status as TournamentStatus] || { label: status as string, color: 'default' }
       break
     case 'user':
-      config = userStatusConfig[status as UserStatus]
+      config = userStatusConfig[status as UserStatus] || { label: status as string, color: 'default' }
       break
     case 'match':
-      config = matchStatusConfig[status as MatchStatus]
+      config = matchStatusConfig[status as MatchStatus] || { label: status as string, color: 'default' }
       break
     default:
       config = { label: status || label || '', color: 'default' }

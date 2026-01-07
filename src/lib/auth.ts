@@ -1,6 +1,6 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
-import { admin } from "better-auth/plugins";
+import { admin, username, twoFactor } from "better-auth/plugins";
 import prisma from "@/lib/prisma";
 
 export const auth = betterAuth({
@@ -13,17 +13,11 @@ export const auth = betterAuth({
       defaultRole: "user",
       adminRoles: ["admin"],
     }),
+    username(),
+    twoFactor({
+      issuer: "RPB Dashboard",
+    }),
   ],
-
-  user: {
-    additionalFields: {
-      role: {
-        type: "string",
-        required: false,
-        defaultValue: "user",
-      },
-    },
-  },
 
   // Email & Password authentication
   emailAndPassword: {
@@ -47,6 +41,10 @@ export const auth = betterAuth({
       clientId: process.env.DISCORD_CLIENT_ID!,
       clientSecret: process.env.DISCORD_CLIENT_SECRET!,
     },
+    twitch: {
+      clientId: process.env.TWITCH_CLIENT_ID!,
+      clientSecret: process.env.TWITCH_CLIENT_SECRET!,
+    },
   },
 
   // Callbacks
@@ -68,7 +66,6 @@ export const auth = betterAuth({
   // Trusted origins
   trustedOrigins: [
     process.env.BETTER_AUTH_URL || "http://localhost:3000",
-    "http://46.224.145.55:3000",
     "https://rpbey.fr",
   ],
 });

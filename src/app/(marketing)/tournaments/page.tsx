@@ -4,7 +4,7 @@ import Container from '@mui/material/Container'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import { TournamentCardGrid } from '@/components/cards/TournamentCard'
-import { PageHeader } from '@/components/ui'
+import { PageHeader, type TournamentStatus } from '@/components/ui'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Skeleton from '@mui/material/Skeleton'
@@ -62,7 +62,7 @@ export default function TournamentsPage() {
           tournaments={tournaments.map(t => ({
             ...t,
             startDate: t.date,
-            status: t.status.toLowerCase()
+            status: t.status.toLowerCase() as TournamentStatus
           }))} 
           onTournamentClick={handleTournamentClick}
           onRegister={handleRegister}

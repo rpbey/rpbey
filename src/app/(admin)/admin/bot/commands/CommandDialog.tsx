@@ -88,7 +88,7 @@ export function CommandDialog({
       maxWidth="md"
     >
       <Grid container spacing={2} sx={{ mt: 0.5 }}>
-        <Grid item xs={12} sm={6}>
+        <Grid size={{ xs: 12, sm: 6 }}>
           <TextField
             fullWidth
             label="Nom de la commande"
@@ -98,7 +98,7 @@ export function CommandDialog({
             helperText="Sans le préfixe /"
           />
         </Grid>
-        <Grid item xs={12} sm={6}>
+        <Grid size={{ xs: 12, sm: 6 }}>
           <TextField
             fullWidth
             label="Description"
@@ -107,7 +107,7 @@ export function CommandDialog({
             required
           />
         </Grid>
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <TextField
             fullWidth
             multiline
@@ -119,7 +119,7 @@ export function CommandDialog({
             helperText="Texte simple ou JSON pour embed"
           />
         </Grid>
-        <Grid item xs={12} sm={6}>
+        <Grid size={{ xs: 12, sm: 6 }}>
           <TextField
             fullWidth
             label="Alias (séparés par des virgules)"
@@ -127,7 +127,7 @@ export function CommandDialog({
             onChange={(e) => setAliasesString(e.target.value)}
           />
         </Grid>
-        <Grid item xs={12} sm={6}>
+        <Grid size={{ xs: 12, sm: 6 }}>
           <TextField
             fullWidth
             type="number"
@@ -136,7 +136,7 @@ export function CommandDialog({
             onChange={(e) => setFormData({ ...formData, cooldown: parseInt(e.target.value) || 0 })}
           />
         </Grid>
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <TextField
             fullWidth
             label="Rôles autorisés (ID séparés par des virgules)"
@@ -145,7 +145,7 @@ export function CommandDialog({
             helperText="Laisser vide pour tout le monde"
           />
         </Grid>
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <FormControlLabel
             control={
               <Switch

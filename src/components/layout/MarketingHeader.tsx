@@ -20,7 +20,7 @@ import { Menu as MenuIcon, Close } from '@mui/icons-material'
 import { useSession } from '@/lib/auth-client'
 import { motion, useScroll, useMotionValueEvent } from 'framer-motion'
 
-const navItems = [
+const navItems: { label: string; href: string; external?: boolean }[] = [
   { label: 'Accueil', href: '/' },
   { label: 'TV', href: '/tv' },
   { label: 'Tournois', href: '/tournaments' },

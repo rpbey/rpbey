@@ -16,7 +16,8 @@ export class APIError extends Error {
   }
 }
 
-export interface StandardAPIOptions extends RequestInit {
+export interface StandardAPIOptions extends Omit<RequestInit, 'body'> {
+  body?: unknown;
   baseUrl?: string;
   params?: Record<string, string | number | boolean | undefined | null>;
   validationSchema?: { safeParse: (data: unknown) => { success: boolean; data?: unknown; error?: unknown } }; 
@@ -116,7 +117,7 @@ export class StandardAPI {
       fetchOptions.body = JSON.stringify(fetchOptions.body);
     }
 
-    let finalOptions: RequestInit = { ...fetchOptions, headers };
+    let finalOptions: RequestInit = { ...fetchOptions, headers } as RequestInit;
 
     // Apply request interceptors
     for (const interceptor of this.interceptors) {

@@ -155,8 +155,8 @@ export default function AdminBotCommandsPage() {
       render: (row) => (
         <StatusChip
           type="generic"
-          status={row.enabled ? 'active' : 'inactive'}
           label={row.enabled ? 'Activée' : 'Désactivée'}
+          customColor={row.enabled ? 'success.main' : undefined}
           size="small"
         />
       ),
