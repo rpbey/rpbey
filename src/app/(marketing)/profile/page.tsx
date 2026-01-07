@@ -23,7 +23,7 @@ import {
 } from '@mui/icons-material'
 import { useSession } from '@/lib/auth-client'
 import { useToast, TrophyIcon } from '@/components/ui'
-import type { BeyType, ExperienceLevel, UserProfile } from '@prisma/client'
+import type { BeyType, ExperienceLevel, Profile } from '@prisma/client'
 
 const BEYBLADE_TYPES: { value: BeyType; label: string }[] = [
   { value: 'ATTACK', label: 'Attaque' },
@@ -44,7 +44,7 @@ export default function ProfilePage() {
   const { data: session, isPending: sessionPending } = useSession()
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
-  const [profile, setProfile] = useState<(UserProfile & { wins?: number, losses?: number, tournamentWins?: number }) | null>(null)
+  const [profile, setProfile] = useState<(Profile & { wins?: number, losses?: number, tournamentWins?: number }) | null>(null)
   const [formData, setFormData] = useState({
     bladerName: '',
     favoriteType: 'ATTACK' as BeyType,
