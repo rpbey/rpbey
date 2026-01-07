@@ -22,7 +22,7 @@ export default async function authMiddleware(request: NextRequest) {
   const { data: sessionData } = await betterFetch<{ session: Session; user: UserWithRole }>(
     "/api/auth/get-session",
     {
-      baseURL: request.nextUrl.origin,
+      baseURL: "http://localhost:3000",
       headers: {
         // get the cookie from the request
         cookie: request.headers.get("cookie") || "",
