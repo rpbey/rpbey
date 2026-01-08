@@ -11,7 +11,7 @@ const authRoutes = ["/sign-in", "/sign-up"];
 const passwordRoutes = ["/reset-password", "/forgot-password"];
 const privateRoutes = ["/dashboard"];
 
-export default async function authMiddleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const pathName = request.nextUrl.pathname;
   const isAuthRoute = authRoutes.includes(pathName);
   const isPasswordRoute = passwordRoutes.includes(pathName);

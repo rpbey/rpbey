@@ -56,9 +56,9 @@ export function IconNav() {
       component="nav"
       sx={{
         position: 'fixed',
-        top: 16,
-        left: 16,
-        bottom: 16,
+        top: 'calc(16px + env(safe-area-inset-top))',
+        left: 'calc(16px + env(safe-area-inset-left))',
+        bottom: 'calc(16px + env(safe-area-inset-bottom))',
         zIndex: 1200,
         display: { xs: 'none', md: 'flex' },
         flexDirection: 'column',
@@ -266,9 +266,9 @@ export function MobileNav() {
         elevation={0}
         sx={{
           position: 'fixed',
-          bottom: 16,
-          left: 16,
-          right: 16,
+          bottom: 'calc(16px + env(safe-area-inset-bottom))',
+          left: 'calc(16px + env(safe-area-inset-left))',
+          right: 'calc(16px + env(safe-area-inset-right))',
           zIndex: 1200,
           display: { xs: 'block', md: 'none' },
           borderRadius: 8, // Pill/Rounded container

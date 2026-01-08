@@ -21,6 +21,7 @@ import {
   InputAdornment,
 } from '@mui/material'
 import { Edit, Delete, Link as LinkIcon, Search } from '@mui/icons-material'
+import TablePagination from '@mui/material/TablePagination'
 import {
   PageHeader,
   useConfirmDialog,
@@ -31,6 +32,7 @@ import type { TournamentInput } from './actions'
 import { TournamentDialog } from './TournamentDialog'
 import { formatDateShort } from '@/lib/utils'
 import type { Tournament } from '@prisma/client'
+import { useDebounce } from '@/hooks/use-debounce'
 
 export default function AdminTournamentsPage() {
   const [tournaments, setTournaments] = useState<(Tournament & { _count: { participants: number } })[]>([])
@@ -39,34 +41,46 @@ export default function AdminTournamentsPage() {
   const [selectedTournament, setSelectedTournament] = useState<Tournament | null>(null)
   const [submitting, setSubmitting] = useState(false)
   const [search, setSearch] = useState('')
-  const [debouncedSearch, setDebouncedSearch] = useState('')
+  const [page, setPage] = useState(0)
+  const [rowsPerPage, setRowsPerPage] = useState(10)
+  const [total, setTotal] = useState(0)
+  const [summary, setSummary] = useState({
+    totalTournaments: 0,
+    activeTournaments: 0,
+    totalParticipants: 0
+  })
+
+  const debouncedSearch = useDebounce(search, 500)
 
   const { confirm, ConfirmDialogComponent } = useConfirmDialog()
   const { showToast } = useToast()
 
-  const fetchTournaments = useCallback(async (query?: string) => {
+  const fetchTournaments = useCallback(async () => {
     setLoading(true)
     try {
-      const data = await getTournaments(query)
-      // Cast is needed because dates are serialized as strings in server actions
+      const { tournaments: data, total: totalCount, summary: stats } = await getTournaments(page + 1, rowsPerPage, debouncedSearch)
       setTournaments(data as unknown as (Tournament & { _count: { participants: number } })[])
+      setTotal(totalCount)
+      setSummary(stats)
     } catch {
       showToast('Erreur lors de la récupération des tournois', 'error')
     } finally {
       setLoading(false)
     }
-  }, [showToast])
+  }, [page, rowsPerPage, debouncedSearch, showToast])
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearch(search)
-    }, 500)
-    return () => clearTimeout(timer)
-  }, [search])
+    fetchTournaments()
+  }, [fetchTournaments])
 
-  useEffect(() => {
-    fetchTournaments(debouncedSearch)
-  }, [fetchTournaments, debouncedSearch])
+  const handleChangePage = (event: unknown, newPage: number) => {
+    setPage(newPage)
+  }
+
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRowsPerPage(parseInt(event.target.value, 10))
+    setPage(0)
+  }
 
   const handleAdd = () => {
     setSelectedTournament(null)
@@ -136,11 +150,6 @@ export default function AdminTournamentsPage() {
     CANCELLED: 'Annulé',
   }
 
-  const totalParticipants = tournaments.reduce((acc, t) => acc + t._count.participants, 0)
-  const activeTournaments = tournaments.filter(t => 
-    ['REGISTRATION_OPEN', 'UNDERWAY', 'CHECKIN'].includes(t.status)
-  ).length
-
   return (
     <Box>
       <PageHeader
@@ -153,9 +162,9 @@ export default function AdminTournamentsPage() {
       {/* Stats */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
         {[ 
-          { label: 'Total tournois', value: tournaments.length },
-          { label: 'En cours / Ouverts', value: activeTournaments },
-          { label: 'Participants totaux', value: totalParticipants },
+          { label: 'Total tournois', value: summary.totalTournaments },
+          { label: 'En cours / Ouverts', value: summary.activeTournaments },
+          { label: 'Participants totaux', value: summary.totalParticipants },
         ].map((stat) => (
           <Grid key={stat.label} size={{ xs: 12, sm: 4 }}>
             <Card
@@ -299,6 +308,16 @@ export default function AdminTournamentsPage() {
               </TableBody>
             </Table>
           </TableContainer>
+          <TablePagination
+            rowsPerPageOptions={[5, 10, 25, 50]}
+            component="div"
+            count={total}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+            labelRowsPerPage="Lignes par page:"
+          />
         </Card>
       )}
 

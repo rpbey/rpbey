@@ -15,21 +15,50 @@ export type TournamentInput = {
   challongeUrl?: string | null
 }
 
-export async function getTournaments(search?: string) {
-  return await prisma.tournament.findMany({
-    where: search ? {
-      OR: [
-        { name: { contains: search, mode: 'insensitive' } },
-        { description: { contains: search, mode: 'insensitive' } },
-      ]
-    } : undefined,
-    orderBy: { date: 'desc' },
-    include: {
-      _count: {
-        select: { participants: true }
+export async function getTournaments(page = 1, pageSize = 10, search = '') {
+  const skip = (page - 1) * pageSize
+  
+  const where = search ? {
+    OR: [
+      { name: { contains: search, mode: 'insensitive' as const } },
+      { description: { contains: search, mode: 'insensitive' as const } },
+    ]
+  } : {}
+
+  const [tournaments, total, stats] = await Promise.all([
+    prisma.tournament.findMany({
+      where,
+      skip,
+      take: pageSize,
+      orderBy: { date: 'desc' },
+      include: {
+        _count: {
+          select: { participants: true }
+        }
       }
+    }),
+    prisma.tournament.count({ where }),
+    // Global stats (not filtered by search to keep dashboard summary accurate)
+    prisma.$transaction([
+      prisma.tournament.count(),
+      prisma.tournament.count({
+        where: {
+          status: { in: ['REGISTRATION_OPEN', 'UNDERWAY', 'CHECKIN'] }
+        }
+      }),
+      prisma.tournamentParticipant.count()
+    ])
+  ])
+
+  return { 
+    tournaments, 
+    total,
+    summary: {
+      totalTournaments: stats[0],
+      activeTournaments: stats[1],
+      totalParticipants: stats[2]
     }
-  })
+  }
 }
 
 export async function createTournament(data: TournamentInput) {

@@ -72,7 +72,13 @@ export function AdminSidebar({ mobileOpen, onMobileClose }: AdminSidebarProps) {
   }
 
   const drawer = (
-    <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+    <Box sx={{ 
+      height: '100%', 
+      display: 'flex', 
+      flexDirection: 'column',
+      pb: 'env(safe-area-inset-bottom)',
+      pl: 'env(safe-area-inset-left)' 
+    }}>
       <Toolbar sx={{ gap: 1, px: 2 }}>
         <Typography variant="h6" fontWeight="bold" color="primary.main">
           RPB Admin
@@ -229,6 +235,9 @@ export function AdminMobileHeader({ onMenuClick }: { onMenuClick: () => void }) 
         alignItems: 'center',
         gap: 1.5,
         p: 2,
+        pt: 'calc(16px + env(safe-area-inset-top))',
+        pl: 'calc(16px + env(safe-area-inset-left))',
+        pr: 'calc(16px + env(safe-area-inset-right))',
         position: 'sticky',
         top: 0,
         zIndex: 1100,

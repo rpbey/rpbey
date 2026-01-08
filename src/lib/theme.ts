@@ -158,6 +158,7 @@ const commonOptions: ThemeOptions = {
           borderRadius: 24, // M3 Pill shape for buttons
           padding: "10px 24px",
           fontWeight: 600,
+          minHeight: 48, // Touch target size
         },
         contained: {
           boxShadow: "none",
@@ -230,6 +231,8 @@ const commonOptions: ThemeOptions = {
           backdropFilter: "blur(20px)",
           boxShadow: "none",
           borderBottom: "1px solid rgba(255, 255, 255, 0.05)",
+          paddingTop: "env(safe-area-inset-top)",
+          height: "auto",
         },
       },
     },

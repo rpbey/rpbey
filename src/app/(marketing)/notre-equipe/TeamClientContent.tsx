@@ -3,6 +3,7 @@
 import { Container, Typography, Box, Breadcrumbs, useTheme, alpha } from '@mui/material'
 import Grid from '@mui/material/Grid'
 import Link from 'next/link'
+import Image from 'next/image'
 import { NavigateNext } from '@mui/icons-material'
 import { StaffCard } from '@/components/cards'
 import type { StaffMember } from '@prisma/client'
@@ -11,6 +12,13 @@ interface TeamClientContentProps {
   groupedMembers: Record<string, StaffMember[]>
   teamLabels: Record<string, string>
   teamOrder: string[]
+}
+
+const TEAM_LOGOS: Record<string, string> = {
+  admin: '/logo-admin.svg',
+  rh: '/logo-rh.svg',
+  modo: '/logo-modo.svg',
+  staff: '/logo-staff.svg',
 }
 
 export function TeamClientContent({ groupedMembers, teamLabels, teamOrder }: TeamClientContentProps) {
@@ -78,9 +86,20 @@ export function TeamClientContent({ groupedMembers, teamLabels, teamOrder }: Tea
           const teamMembers = groupedMembers[teamId]
           if (!teamMembers || teamMembers.length === 0) return null
 
+          const logoPath = TEAM_LOGOS[teamId]
+
           return (
             <Box key={teamId} sx={{ mb: { xs: 8, md: 12 } }}>
               <Box sx={{ mb: 5, display: 'flex', alignItems: 'center', gap: 2 }}>
+                {logoPath && (
+                  <Image
+                    src={logoPath}
+                    alt={`${teamLabels[teamId]} Logo`}
+                    width={48}
+                    height={48}
+                    style={{ width: 'auto', height: '3rem' }}
+                  />
+                )}
                 <Typography variant="h3" fontWeight="800" sx={{ fontSize: { xs: '1.75rem', md: '2.5rem' } }}>
                   {teamLabels[teamId] || teamId}
                 </Typography>

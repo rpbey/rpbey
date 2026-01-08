@@ -3,15 +3,32 @@
 import prisma from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
 
-export async function getUsers() {
-  return await prisma.user.findMany({
-    orderBy: { createdAt: 'desc' },
-    include: {
-      _count: {
-        select: { tournaments: true }
+export async function getUsers(page = 1, pageSize = 10, search = '') {
+  const skip = (page - 1) * pageSize
+  
+  const where = search ? {
+    OR: [
+      { name: { contains: search, mode: 'insensitive' as const } },
+      { email: { contains: search, mode: 'insensitive' as const } },
+    ]
+  } : {}
+
+  const [users, total] = await Promise.all([
+    prisma.user.findMany({
+      where,
+      skip,
+      take: pageSize,
+      orderBy: { createdAt: 'desc' },
+      include: {
+        _count: {
+          select: { tournaments: true }
+        }
       }
-    }
-  })
+    }),
+    prisma.user.count({ where })
+  ])
+
+  return { users, total }
 }
 
 export async function updateUserRole(id: string, role: string) {

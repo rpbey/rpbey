@@ -1,5 +1,3 @@
-'use client'
-
 import { useThemeMode } from '@/components/theme/ThemeRegistry'
 import { ChallongeBracket } from '@/components/tournaments'
 import { DiscordStatusCard } from '@/components/ui'
@@ -12,10 +10,13 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { motion, useScroll, useSpring, useTransform } from 'framer-motion'
 import Link from 'next/link'
+import { useSession } from '@/lib/auth-client'
+import { AdminPanelSettings } from '@mui/icons-material'
 
 export default function HomePage() {
   const { backgroundImage, mode } = useThemeMode()
   const { scrollY } = useScroll()
+  const { data: session } = useSession()
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
 
@@ -338,34 +339,64 @@ export default function HomePage() {
                 >
                   Rejoindre la Communauté
                 </Button>
-                <Button
-                  component={Link}
-                  href="/sign-in"
-                  variant="outlined"
-                  size="large"
-                  sx={{
-                    px: 4,
-                    py: 1.8,
-                    fontSize: '1rem',
-                    fontWeight: 700,
-                    textTransform: 'none',
-                    borderRadius: '16px',
-                    color: '#ffffff',
-                    borderColor: 'rgba(255,255,255,0.2)',
-                    background: 'rgba(255,255,255,0.03)',
-                    backdropFilter: 'blur(10px)',
-                    boxShadow: '0 4px 20px rgba(0,0,0,0.2)',
-                    '&:hover': {
-                      borderColor: '#ffffff',
-                      background: 'rgba(255,255,255,0.1)',
-                      transform: 'translateY(-2px)',
-                      boxShadow: '0 8px 25px rgba(255,255,255,0.1)',
-                    },
-                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                  }}
-                >
-                  Se connecter
-                </Button>
+                
+                {session?.user?.role === 'admin' ? (
+                  <Button
+                    component={Link}
+                    href="/admin"
+                    variant="contained"
+                    size="large"
+                    startIcon={<AdminPanelSettings />}
+                    sx={{
+                      px: 4,
+                      py: 1.8,
+                      fontSize: '1rem',
+                      fontWeight: 700,
+                      textTransform: 'none',
+                      borderRadius: '16px',
+                      color: '#000000',
+                      background: '#fbbf24',
+                      boxShadow: '0 4px 20px rgba(251, 191, 36, 0.3)',
+                      '&:hover': {
+                        background: '#f59e0b',
+                        transform: 'translateY(-2px)',
+                        boxShadow: '0 8px 30px rgba(251, 191, 36, 0.4)',
+                      },
+                      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                    }}
+                  >
+                    Admin Dashboard
+                  </Button>
+                ) : (
+                  <Button
+                    component={Link}
+                    href="/sign-in"
+                    variant="outlined"
+                    size="large"
+                    sx={{
+                      px: 4,
+                      py: 1.8,
+                      fontSize: '1rem',
+                      fontWeight: 700,
+                      textTransform: 'none',
+                      borderRadius: '16px',
+                      color: '#ffffff',
+                      borderColor: 'rgba(255,255,255,0.2)',
+                      background: 'rgba(255,255,255,0.03)',
+                      backdropFilter: 'blur(10px)',
+                      boxShadow: '0 4px 20px rgba(0,0,0,0.2)',
+                      '&:hover': {
+                        borderColor: '#ffffff',
+                        background: 'rgba(255,255,255,0.1)',
+                        transform: 'translateY(-2px)',
+                        boxShadow: '0 8px 25px rgba(255,255,255,0.1)',
+                      },
+                      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                    }}
+                  >
+                    Se connecter
+                  </Button>
+                )}
               </Stack>
             </Grid>
 

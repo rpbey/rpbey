@@ -119,8 +119,8 @@ export default async function AdminDashboardPage() {
   ].sort((a, b) => b.date.getTime() - a.date.getTime()).slice(0, 8)
 
   return (
-    <Container maxWidth="xl" sx={{ py: 4 }}>
-      <Typography variant="h4" fontWeight="bold" gutterBottom>
+    <Container maxWidth="xl" component="main" sx={{ py: 4 }}>
+      <Typography variant="h4" component="h1" fontWeight="bold" gutterBottom>
         Vue d'ensemble
       </Typography>
       <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
@@ -128,17 +128,19 @@ export default async function AdminDashboardPage() {
       </Typography>
 
       {/* Stats Grid */}
-      <Grid container spacing={3} sx={{ mb: 4 }}>
+      <Grid container spacing={3} sx={{ mb: 4 }} role="list" aria-label="Statistiques clés">
         {stats.map((stat) => {
           const Icon = stat.icon
           return (
-            <Grid key={stat.label} size={{ xs: 12, sm: 6, lg: 3 }}>
+            <Grid key={stat.label} size={{ xs: 12, sm: 6, lg: 3 }} role="listitem">
               <Card
                 variant="filled"
                 sx={{
                   transition: 'transform 0.2s',
                   '&:hover': { transform: 'translateY(-4px)' }
                 }}
+                role="article"
+                aria-label={`Statistique: ${stat.label}`}
               >
                 <CardContent sx={{ p: 3 }}>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -161,6 +163,7 @@ export default async function AdminDashboardPage() {
                         borderRadius: 2,
                         bgcolor: `${stat.color}20`,
                       }}
+                      aria-hidden="true"
                     >
                       <Icon sx={{ color: stat.color }} />
                     </Box>
@@ -178,14 +181,24 @@ export default async function AdminDashboardPage() {
           <Card
             variant="elevated"
             sx={{ height: '100%' }}
+            role="region"
+            aria-labelledby="recent-activity-title"
           >
             <CardContent sx={{ p: 4 }}>
-              <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
-                <History /> Activité récente
+              <Typography 
+                variant="h6" 
+                fontWeight="bold" 
+                gutterBottom 
+                sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}
+                id="recent-activity-title"
+                component="h2"
+              >
+                <History aria-hidden="true" /> Activité récente
               </Typography>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <Box component="ul" sx={{ display: 'flex', flexDirection: 'column', gap: 2, p: 0, m: 0, listStyle: 'none' }}>
                 {recentActivity.length > 0 ? recentActivity.map((activity, index) => (
                   <Box
+                    component="li"
                     key={index}
                     sx={{
                       display: 'flex',
@@ -202,9 +215,11 @@ export default async function AdminDashboardPage() {
                     </Typography>
                   </Box>
                 )) : (
-                  <Typography variant="body2" color="text.secondary" sx={{ p: 2, textAlign: 'center' }}>
-                    Aucune activité récente
-                  </Typography>
+                  <Box component="li">
+                    <Typography variant="body2" color="text.secondary" sx={{ p: 2, textAlign: 'center' }}>
+                      Aucune activité récente
+                    </Typography>
+                  </Box>
                 )}
               </Box>
             </CardContent>
@@ -216,9 +231,18 @@ export default async function AdminDashboardPage() {
           <Card
             variant="elevated"
             sx={{ height: '100%' }}
+            role="region"
+            aria-labelledby="quick-actions-title"
           >
             <CardContent sx={{ p: 4 }}>
-              <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ mb: 3 }}>
+              <Typography 
+                variant="h6" 
+                fontWeight="bold" 
+                gutterBottom 
+                sx={{ mb: 3 }}
+                id="quick-actions-title"
+                component="h2"
+              >
                 Actions rapides
               </Typography>
               <QuickActions />
