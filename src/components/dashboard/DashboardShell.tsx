@@ -5,21 +5,17 @@ import {
   Inventory2,
   Leaderboard,
   Logout,
-  Menu as MenuIcon,
   Person,
 } from '@mui/icons-material';
 import {
   AppBar,
   Avatar,
   Box,
-  CircularProgress,
-  Drawer,
   IconButton,
   List,
   ListItem,
   ListItemButton,
   ListItemIcon,
-  ListItemText,
   Menu,
   MenuItem,
   Toolbar,
@@ -27,19 +23,15 @@ import {
   Typography,
   useMediaQuery,
   useTheme,
-  Zoom,
 } from '@mui/material';
 import BottomNavigation from '@mui/material/BottomNavigation';
 import BottomNavigationAction from '@mui/material/BottomNavigationAction';
-import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { useThemeMode } from '@/components/theme/ThemeRegistry';
+import { useState } from 'react';
 import { RpbLogo } from '@/components/ui/RpbLogo';
 import { signOut, useSession } from '@/lib/auth-client';
 
-const DRAWER_WIDTH = 280;
 const RAIL_WIDTH = 80;
 
 interface NavItem {
@@ -72,16 +64,14 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const { data: session } = useSession();
-  const { toggleTheme, mode } = useThemeMode();
 
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
 
   // Derive active tab from pathname
   // For BottomNav (Mobile)
-  const activeNavIndex = NAV_ITEMS.findIndex((item) =>
-    pathname.startsWith(item.path),
-  );
-  const bottomNavValue = activeNavIndex !== -1 ? activeNavIndex : 0;
+  const activeNavItem =
+    NAV_ITEMS.find((item) => pathname.startsWith(item.path)) || NAV_ITEMS[0]!;
+  const bottomNavValue = activeNavItem.path;
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
@@ -292,7 +282,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             showLabels
             value={bottomNavValue}
             onChange={(_, newValue) => {
-              router.push(NAV_ITEMS[newValue].path);
+              router.push(newValue);
             }}
             sx={{
               height: 64, // MD3 specs usually 80, but 64 is often better for space
@@ -302,6 +292,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             {NAV_ITEMS.map((item) => (
               <BottomNavigationAction
                 key={item.path}
+                value={item.path}
                 label={item.label}
                 icon={item.icon}
                 sx={{

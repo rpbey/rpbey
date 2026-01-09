@@ -50,17 +50,17 @@ declare module '@mui/material/Paper' {
 }
 
 // RPB Colors - Extracted from Image
-const RPB_RED = '#E31C25'; // Rouge vif du logo RPB (Licorne/Texte)
-const RPB_YELLOW = '#FFD700'; // Jaune/Or de la crinière
-const TOURNAMENT_SKY = '#60A5FA'; // Bleu ciel du fond (Sky 400 approx)
-const TOURNAMENT_WHITE = '#FFFFFF'; // Blanc du texte
+// const RPB_RED = '#E31C25'; // Rouge vif du logo RPB (Licorne/Texte)
+// const RPB_YELLOW = '#FFD700'; // Jaune/Or de la crinière
+// const TOURNAMENT_SKY = '#60A5FA'; // Bleu ciel du fond (Sky 400 approx)
+// const TOURNAMENT_WHITE = '#FFFFFF'; // Blanc du texte
 
 // M3 Surface tones (dark theme with warm tint)
 const surfaceContainerLowest = '#0F0F0F';
 const surfaceContainerLow = '#1D1B1B';
 const surfaceContainer = '#211F1F';
-const surfaceContainerHigh = '#2B2929';
-const surfaceContainerHighest = '#363434';
+// const surfaceContainerHigh = '#2B2929';
+// const surfaceContainerHighest = '#363434';
 
 const commonOptions: ThemeOptions = {
   typography: {
@@ -259,74 +259,8 @@ const commonOptions: ThemeOptions = {
 
 export const theme = createTheme({
   ...commonOptions,
-  cssVariables: {
-    colorSchemeSelector: 'class',
-  },
-  colorSchemes: {
-    light: {
-      palette: {
-        mode: 'light',
-      },
-    },
-    dark: {
-      palette: {
-        mode: 'dark',
-        primary: {
-          main: RPB_RED,
-          container: '#8C0009',
-          onContainer: '#FFDAD9',
-          contrastText: '#FFFFFF',
-        },
-        secondary: {
-          main: RPB_YELLOW,
-          container: '#534600',
-          onContainer: '#FFE135',
-          contrastText: '#000000',
-        },
-        background: {
-          default: surfaceContainerLowest,
-          paper: surfaceContainer,
-        },
-        surface: {
-          lowest: surfaceContainerLowest,
-          low: surfaceContainerLow,
-          main: surfaceContainer,
-          high: surfaceContainerHigh,
-          highest: surfaceContainerHighest,
-        },
-        text: {
-          primary: '#F5F2F2',
-          secondary: '#D1C4C4',
-        },
-        divider: 'rgba(255, 255, 255, 0.08)',
-      },
-    },
-    tournament: {
-      palette: {
-        mode: 'dark',
-        primary: {
-          main: TOURNAMENT_SKY,
-          light: '#93c5fd',
-          dark: '#2563eb',
-          contrastText: '#000000',
-        },
-        secondary: {
-          main: TOURNAMENT_WHITE,
-          light: '#ffffff',
-          dark: '#cccccc',
-          contrastText: '#000000',
-        },
-        background: {
-          default: '#0f172a',
-          paper: '#1e293b',
-        },
-        text: {
-          primary: TOURNAMENT_WHITE,
-          secondary: '#94a3b8',
-        },
-        divider: 'rgba(255, 255, 255, 0.1)',
-      },
-    },
+  palette: {
+    mode: 'dark',
   },
 });
 

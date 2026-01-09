@@ -29,10 +29,12 @@ if (process.env.NODE_ENV === 'development') {
 export async function getBotStatus(): Promise<BotStatus | null> {
   try {
     return await botClient.get<BotStatus>('/api/status', {
-      revalidate: 60, // Use the new shortcut
+      revalidate: 10, // Short cache to reflect status changes quickly
     });
-  } catch {
-    // Error is already logged by interceptor in dev
+  } catch (error) {
+    if (process.env.NODE_ENV === 'development') {
+       console.warn('[BotAPI] Failed to fetch status (Bot likely offline):', (error as Error).message);
+    }
     return null;
   }
 }

@@ -23,7 +23,7 @@ import TextField from '@mui/material/TextField';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 export default function AdminSettingsPage() {
   const searchParams = useSearchParams();
@@ -57,7 +57,7 @@ export default function AdminSettingsPage() {
     window.location.href = '/api/auth/challonge';
   };
 
-  const fetchConfig = async () => {
+  const fetchConfig = useCallback(async () => {
     setLoading(true);
     try {
       const res = await fetch('/api/admin/config');
@@ -69,7 +69,7 @@ export default function AdminSettingsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   const testChallonge = async () => {
     setChallongeStatus('loading');

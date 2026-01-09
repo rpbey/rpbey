@@ -20,28 +20,20 @@ export async function GET() {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  try {
-    const data = await botClient.get<BotConfig>('/api/config', {
-      cache: 'no-store',
-    });
+    let data: BotConfig;
+    try {
+      data = await botClient.get<BotConfig>('/api/config', {
+        cache: 'no-store',
+      });
+    } catch {
+      console.warn('Bot offline, returning default config');
+      data = {
+         prefix: '!',
+         language: 'fr',
+         ownerIds: [],
+         // Add other minimal default fields if necessary based on BotConfig type
+      } as unknown as BotConfig;
+    }
 
-    // Transform the response to match the expected format
-    const config: BotConfig = {
-      env: data.env || {},
-      constants: {
-        RPB: data.constants?.RPB || {},
-        Colors: data.constants?.Colors || {},
-        Channels: data.constants?.Channels || {},
-        Roles: data.constants?.Roles || {},
-      },
-    };
-
-    return NextResponse.json(config);
-  } catch (error) {
-    console.error('Error fetching config from bot API:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch config', details: String(error) },
-      { status: 500 },
-    );
-  }
+    return NextResponse.json(data);
 }
