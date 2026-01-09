@@ -1,9 +1,23 @@
-'use client'
+'use client';
 
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
 import {
+  Article,
+  BarChart,
+  Code,
+  Dashboard,
+  Logout,
+  Menu as MenuIcon,
+  People,
+  Settings,
+  SmartToy,
+  Terminal,
+} from '@mui/icons-material';
+import {
+  Avatar,
+  alpha,
   Box,
+  Chip,
+  Divider,
   Drawer,
   IconButton,
   List,
@@ -13,32 +27,18 @@ import {
   ListItemText,
   Toolbar,
   Typography,
-  Divider,
-  Avatar,
   useMediaQuery,
   useTheme,
-  Chip,
-  alpha,
-} from '@mui/material'
-import {
-  Menu as MenuIcon,
-  Dashboard,
-  SmartToy,
-  People,
-  Settings,
-  BarChart,
-  Logout,
-  Terminal,
-  Code,
-  Article,
-} from '@mui/icons-material'
-import { signOut, useSession } from '@/lib/auth-client'
-import { TrophyIcon } from '@/components/ui/Icons'
+} from '@mui/material';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { TrophyIcon } from '@/components/ui/Icons';
+import { signOut, useSession } from '@/lib/auth-client';
 
-const DRAWER_WIDTH = 260
+const DRAWER_WIDTH = 260;
 
 const navItems = [
-  { label: 'Vue d\'ensemble', href: '/admin', icon: Dashboard },
+  { label: "Vue d'ensemble", href: '/admin', icon: Dashboard },
   { label: 'Bot Discord', href: '/admin/discord', icon: SmartToy },
   { label: 'Statut du Bot', href: '/admin/bot', icon: Code },
   { label: 'Logs du Bot', href: '/admin/bot/logs', icon: Terminal },
@@ -48,37 +48,39 @@ const navItems = [
   { label: 'Utilisateurs', href: '/admin/users', icon: People },
   { label: 'Statistiques', href: '/admin/stats', icon: BarChart },
   { label: 'Paramètres', href: '/admin/settings', icon: Settings },
-]
+];
 
 interface AdminSidebarProps {
-  mobileOpen: boolean
-  onMobileClose: () => void
+  mobileOpen: boolean;
+  onMobileClose: () => void;
 }
 
 export function AdminSidebar({ mobileOpen, onMobileClose }: AdminSidebarProps) {
-  const pathname = usePathname()
-  const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'))
-  const { data: session } = useSession()
+  const pathname = usePathname();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const { data: session } = useSession();
 
   const handleSignOut = async () => {
     await signOut({
       fetchOptions: {
         onSuccess: () => {
-          window.location.href = '/'
+          window.location.href = '/';
         },
       },
-    })
-  }
+    });
+  };
 
   const drawer = (
-    <Box sx={{ 
-      height: '100%', 
-      display: 'flex', 
-      flexDirection: 'column',
-      pb: 'env(safe-area-inset-bottom)',
-      pl: 'env(safe-area-inset-left)' 
-    }}>
+    <Box
+      sx={{
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        pb: 'env(safe-area-inset-bottom)',
+        pl: 'env(safe-area-inset-left)',
+      }}
+    >
       <Toolbar sx={{ gap: 1, px: 2 }}>
         <Typography variant="h6" fontWeight="bold" color="primary.main">
           RPB Admin
@@ -109,9 +111,10 @@ export function AdminSidebar({ mobileOpen, onMobileClose }: AdminSidebarProps) {
 
       <List sx={{ flex: 1, px: 1 }}>
         {navItems.map((item) => {
-          const Icon = item.icon
-          const isActive = pathname === item.href || 
-            (item.href !== '/admin' && pathname.startsWith(item.href))
+          const Icon = item.icon;
+          const isActive =
+            pathname === item.href ||
+            (item.href !== '/admin' && pathname.startsWith(item.href));
 
           return (
             <ListItem key={item.href} disablePadding sx={{ mb: 1, px: 2 }}>
@@ -128,7 +131,8 @@ export function AdminSidebar({ mobileOpen, onMobileClose }: AdminSidebarProps) {
                     bgcolor: (theme) => alpha(theme.palette.primary.main, 0.1),
                     color: 'primary.main',
                     '&:hover': {
-                      bgcolor: (theme) => alpha(theme.palette.primary.main, 0.2),
+                      bgcolor: (theme) =>
+                        alpha(theme.palette.primary.main, 0.2),
                     },
                     '& .MuiListItemIcon-root': {
                       color: 'primary.main',
@@ -139,19 +143,24 @@ export function AdminSidebar({ mobileOpen, onMobileClose }: AdminSidebarProps) {
                   },
                 }}
               >
-                <ListItemIcon sx={{ minWidth: 44, color: isActive ? 'primary.main' : 'text.secondary' }}>
+                <ListItemIcon
+                  sx={{
+                    minWidth: 44,
+                    color: isActive ? 'primary.main' : 'text.secondary',
+                  }}
+                >
                   <Icon />
                 </ListItemIcon>
-                <ListItemText 
+                <ListItemText
                   primary={item.label}
-                  primaryTypographyProps={{ 
+                  primaryTypographyProps={{
                     fontWeight: isActive ? 700 : 500,
-                    fontSize: '0.875rem'
+                    fontSize: '0.875rem',
                   }}
                 />
               </ListItemButton>
             </ListItem>
-          )
+          );
         })}
       </List>
 
@@ -177,7 +186,7 @@ export function AdminSidebar({ mobileOpen, onMobileClose }: AdminSidebarProps) {
         </ListItem>
       </List>
     </Box>
-  )
+  );
 
   return (
     <Box
@@ -224,10 +233,14 @@ export function AdminSidebar({ mobileOpen, onMobileClose }: AdminSidebarProps) {
         {drawer}
       </Drawer>
     </Box>
-  )
+  );
 }
 
-export function AdminMobileHeader({ onMenuClick }: { onMenuClick: () => void }) {
+export function AdminMobileHeader({
+  onMenuClick,
+}: {
+  onMenuClick: () => void;
+}) {
   return (
     <Box
       sx={{
@@ -247,20 +260,25 @@ export function AdminMobileHeader({ onMenuClick }: { onMenuClick: () => void }) 
         borderColor: 'divider',
       }}
     >
-      <IconButton 
+      <IconButton
         onClick={onMenuClick}
-        sx={{ 
+        sx={{
           bgcolor: 'rgba(255, 255, 255, 0.05)',
-          borderRadius: 3
+          borderRadius: 3,
         }}
       >
         <MenuIcon />
       </IconButton>
-      <Typography variant="h6" fontWeight="800" color="primary.main" letterSpacing="-0.02em">
+      <Typography
+        variant="h6"
+        fontWeight="800"
+        color="primary.main"
+        letterSpacing="-0.02em"
+      >
         RPB Admin
       </Typography>
     </Box>
-  )
+  );
 }
 
-export const ADMIN_DRAWER_WIDTH = DRAWER_WIDTH
+export const ADMIN_DRAWER_WIDTH = DRAWER_WIDTH;

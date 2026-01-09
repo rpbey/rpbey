@@ -46,8 +46,10 @@ export function getRoleFilter(role: RoleType): string {
   // These filters approximate the target colors when applied to a white/light image
   const filters: Record<RoleType, string> = {
     MODO: 'brightness(0) saturate(100%) invert(37%) sepia(52%) saturate(747%) hue-rotate(238deg) brightness(87%) contrast(91%)',
-    STAFF: 'brightness(0) saturate(100%) invert(32%) sepia(98%) saturate(407%) hue-rotate(167deg) brightness(93%) contrast(87%)',
-    ADMIN: 'brightness(0) saturate(100%) invert(48%) sepia(69%) saturate(419%) hue-rotate(109deg) brightness(94%) contrast(87%)',
+    STAFF:
+      'brightness(0) saturate(100%) invert(32%) sepia(98%) saturate(407%) hue-rotate(167deg) brightness(93%) contrast(87%)',
+    ADMIN:
+      'brightness(0) saturate(100%) invert(48%) sepia(69%) saturate(419%) hue-rotate(109deg) brightness(94%) contrast(87%)',
     RH: 'brightness(0) saturate(100%) invert(55%) sepia(57%) saturate(525%) hue-rotate(176deg) brightness(97%) contrast(89%)',
     DEFAULT: 'none',
   };

@@ -1,6 +1,6 @@
-import Link from 'next/link'
-import { Box, Container, IconButton, Stack, Typography } from '@mui/material'
-import GitHubIcon from '@mui/icons-material/GitHub'
+import GitHubIcon from '@mui/icons-material/GitHub';
+import { Box, Container, IconButton, Stack, Typography } from '@mui/material';
+import Link from 'next/link';
 
 export function Footer() {
   return (
@@ -27,11 +27,19 @@ export function Footer() {
 
           <Stack direction="row" spacing={3} alignItems="center">
             <Link href="/notre-equipe" style={{ textDecoration: 'none' }}>
-              <Typography variant="body2" color="text.secondary" sx={{ '&:hover': { color: 'primary.main' } }}>
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{ '&:hover': { color: 'primary.main' } }}
+              >
                 Notre Équipe
               </Typography>
             </Link>
-            <Link href="https://discord.gg/twdVfesrRj" target="_blank" rel="noopener">
+            <Link
+              href="https://discord.gg/twdVfesrRj"
+              target="_blank"
+              rel="noopener"
+            >
               <IconButton size="small" aria-label="Discord">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -44,7 +52,11 @@ export function Footer() {
                 </svg>
               </IconButton>
             </Link>
-            <Link href="https://github.com/aphrody-code" target="_blank" rel="noopener">
+            <Link
+              href="https://github.com/aphrody-code"
+              target="_blank"
+              rel="noopener"
+            >
               <IconButton size="small" aria-label="GitHub">
                 <GitHubIcon fontSize="small" />
               </IconButton>
@@ -53,5 +65,5 @@ export function Footer() {
         </Stack>
       </Container>
     </Box>
-  )
+  );
 }

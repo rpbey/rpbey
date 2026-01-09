@@ -1,21 +1,21 @@
-'use client'
+'use client';
 
-import { useSession, signIn, signOut } from '@/lib/auth-client'
+import { signIn, signOut, useSession } from '@/lib/auth-client';
 
 export function useAuth() {
-  const { data: session, isPending } = useSession()
+  const { data: session, isPending } = useSession();
 
-  const user = session?.user ?? null
-  const isAuthenticated = !!user
-  const isLoading = isPending
+  const user = session?.user ?? null;
+  const isAuthenticated = !!user;
+  const isLoading = isPending;
 
   const loginWithDiscord = async () => {
-    await signIn.social({ provider: 'discord' })
-  }
+    await signIn.social({ provider: 'discord' });
+  };
 
   const logout = async () => {
-    await signOut()
-  }
+    await signOut();
+  };
 
   return {
     user,
@@ -24,5 +24,5 @@ export function useAuth() {
     isLoading,
     loginWithDiscord,
     logout,
-  }
+  };
 }

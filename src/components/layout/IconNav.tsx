@@ -1,31 +1,44 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import Link from 'next/link'
-import Image from 'next/image'
-import { usePathname } from 'next/navigation'
-import { Box, IconButton, Tooltip, alpha, Menu, MenuItem, ListItemIcon, ListItemText, Divider } from '@mui/material'
 import {
-  Home,
-  Login,
-  PersonAdd,
-  AdminPanelSettings,
   AccountCircle,
+  AdminPanelSettings,
+  BarChart,
+  Home,
+  LiveTv,
+  Login,
   Logout,
   People,
-  BarChart,
+  PersonAdd,
   Settings,
-  LiveTv,
-} from '@mui/icons-material'
-import { useSession, signOut } from '@/lib/auth-client'
-import { TrophyIcon } from '@/components/ui/Icons'
-import { ThemeSwitcher } from '@/components/theme/ThemeSwitcher'
-import { motion } from 'framer-motion'
-import { BottomNavigation, BottomNavigationAction, Paper, Slide, useScrollTrigger } from '@mui/material'
-import { useRouter } from 'next/navigation'
+} from '@mui/icons-material';
+import {
+  alpha,
+  BottomNavigation,
+  BottomNavigationAction,
+  Box,
+  Divider,
+  IconButton,
+  ListItemIcon,
+  ListItemText,
+  Menu,
+  MenuItem,
+  Paper,
+  Slide,
+  Tooltip,
+  useScrollTrigger,
+} from '@mui/material';
+import { motion } from 'framer-motion';
+import Image from 'next/image';
+import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { ThemeSwitcher } from '@/components/theme/ThemeSwitcher';
+import { TrophyIcon } from '@/components/ui/Icons';
+import { signOut, useSession } from '@/lib/auth-client';
 
 // Width of the icon navigation sidebar (48px icon + 16px padding each side)
-export const ICON_NAV_WIDTH = 80
+export const ICON_NAV_WIDTH = 80;
 
 const navItems = [
   { icon: Home, label: 'Accueil', href: '/' },
@@ -33,26 +46,26 @@ const navItems = [
   { icon: BarChart, label: 'Classements', href: '/rankings' },
   { icon: LiveTv, label: 'TV', href: '/tv' },
   { icon: People, label: 'L’Équipe', href: '/notre-equipe' },
-]
+];
 
 export function IconNav() {
-  const pathname = usePathname()
-  const { data: session } = useSession()
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
-  const open = Boolean(anchorEl)
+  const pathname = usePathname();
+  const { data: session } = useSession();
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget)
-  }
+    setAnchorEl(event.currentTarget);
+  };
 
   const handleMenuClose = () => {
-    setAnchorEl(null)
-  }
+    setAnchorEl(null);
+  };
 
   const handleLogout = async () => {
-    handleMenuClose()
-    await signOut()
-  }
+    handleMenuClose();
+    await signOut();
+  };
 
   return (
     <Box
@@ -105,12 +118,15 @@ export function IconNav() {
         </Link>
       </Tooltip>
 
-      <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 1 }}>
+      <Box
+        sx={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 1 }}
+      >
         {/* Nav items */}
         {navItems.map((item) => {
-          const Icon = item.icon
-          const isActive = pathname === item.href || 
-            (item.href !== '/' && pathname.startsWith(item.href))
+          const Icon = item.icon;
+          const isActive =
+            pathname === item.href ||
+            (item.href !== '/' && pathname.startsWith(item.href));
 
           return (
             <Tooltip key={item.href} title={item.label} placement="right">
@@ -141,7 +157,8 @@ export function IconNav() {
                       left: 4,
                       right: 4,
                       bottom: 4,
-                      bgcolor: (theme) => alpha(theme.palette.primary.main, 0.15),
+                      bgcolor: (theme) =>
+                        alpha(theme.palette.primary.main, 0.15),
                       borderRadius: 20,
                       zIndex: -1,
                     }}
@@ -150,13 +167,21 @@ export function IconNav() {
                 <Icon sx={{ fontSize: 26 }} />
               </IconButton>
             </Tooltip>
-          )
+          );
         })}
       </Box>
 
       <Box sx={{ flexGrow: 1 }} />
 
-      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1, width: '100%' }}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: 1,
+          width: '100%',
+        }}
+      >
         <ThemeSwitcher />
 
         {/* Auth Menu */}
@@ -168,7 +193,9 @@ export function IconNav() {
               height: 56,
               borderRadius: 28,
               color: session?.user ? 'primary.main' : 'text.secondary',
-              bgcolor: session?.user ? (theme) => alpha(theme.palette.primary.main, 0.1) : 'transparent',
+              bgcolor: session?.user
+                ? (theme) => alpha(theme.palette.primary.main, 0.1)
+                : 'transparent',
               transition: 'all 0.2s ease',
               '&:hover': {
                 bgcolor: (theme) => alpha(theme.palette.primary.main, 0.15),
@@ -203,78 +230,117 @@ export function IconNav() {
         transformOrigin={{ horizontal: 'left', vertical: 'bottom' }}
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
-        {session?.user ? [
-          <MenuItem key="profile" component={Link} href={`/dashboard/profile/${session.user.id}`} sx={{ borderRadius: 1.5, m: 0.5 }}>
-            <ListItemIcon>
-              <AccountCircle fontSize="small" />
-            </ListItemIcon>
-            <ListItemText primary="Mon Profil" />
-          </MenuItem>,
-          <MenuItem key="settings" component={Link} href="/profile" sx={{ borderRadius: 1.5, m: 0.5 }}>
-            <ListItemIcon>
-              <Settings fontSize="small" />
-            </ListItemIcon>
-            <ListItemText primary="Paramètres" />
-          </MenuItem>,
-          <Divider key="divider-profile" sx={{ my: 0.5 }} />,
-          (session.user.role === 'admin' || (session.user as { role: string }).role === 'superadmin') && (
-            <MenuItem key="admin" component={Link} href="/admin" sx={{ borderRadius: 1.5, m: 0.5 }}>
-              <ListItemIcon>
-                <AdminPanelSettings fontSize="small" />
-              </ListItemIcon>
-              <ListItemText primary="Admin" />
-            </MenuItem>
-          ),
-          (session.user.role === 'admin' || (session.user as { role: string }).role === 'superadmin') && (
-            <Divider key="divider-admin" sx={{ my: 0.5 }} />
-          ),
-          <MenuItem key="logout" onClick={handleLogout} sx={{ borderRadius: 1.5, m: 0.5, color: 'error.main' }}>
-            <ListItemIcon>
-              <Logout fontSize="small" color="error" />
-            </ListItemIcon>
-            <ListItemText primary="Déconnexion" />
-          </MenuItem>
-        ].filter(Boolean) : [
-          <MenuItem key="login" component={Link} href="/sign-in" sx={{ borderRadius: 1.5, m: 0.5 }}>
-            <ListItemIcon>
-              <Login fontSize="small" />
-            </ListItemIcon>
-            <ListItemText primary="Se connecter" />
-          </MenuItem>,
-          <MenuItem key="register" component={Link} href="/sign-up" sx={{ borderRadius: 1.5, m: 0.5 }}>
-            <ListItemIcon>
-              <PersonAdd fontSize="small" />
-            </ListItemIcon>
-            <ListItemText primary="S'inscrire" />
-          </MenuItem>
-        ]}
+        {session?.user
+          ? [
+              <MenuItem
+                key="profile"
+                component={Link}
+                href={`/dashboard/profile/${session.user.id}`}
+                sx={{ borderRadius: 1.5, m: 0.5 }}
+              >
+                <ListItemIcon>
+                  <AccountCircle fontSize="small" />
+                </ListItemIcon>
+                <ListItemText primary="Mon Profil" />
+              </MenuItem>,
+              <MenuItem
+                key="settings"
+                component={Link}
+                href="/profile"
+                sx={{ borderRadius: 1.5, m: 0.5 }}
+              >
+                <ListItemIcon>
+                  <Settings fontSize="small" />
+                </ListItemIcon>
+                <ListItemText primary="Paramètres" />
+              </MenuItem>,
+              <Divider key="divider-profile" sx={{ my: 0.5 }} />,
+              (session.user.role === 'admin' ||
+                (session.user as { role: string }).role === 'superadmin') && (
+                <MenuItem
+                  key="admin"
+                  component={Link}
+                  href="/admin"
+                  sx={{ borderRadius: 1.5, m: 0.5 }}
+                >
+                  <ListItemIcon>
+                    <AdminPanelSettings fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText primary="Admin" />
+                </MenuItem>
+              ),
+              (session.user.role === 'admin' ||
+                (session.user as { role: string }).role === 'superadmin') && (
+                <Divider key="divider-admin" sx={{ my: 0.5 }} />
+              ),
+              <MenuItem
+                key="logout"
+                onClick={handleLogout}
+                sx={{ borderRadius: 1.5, m: 0.5, color: 'error.main' }}
+              >
+                <ListItemIcon>
+                  <Logout fontSize="small" color="error" />
+                </ListItemIcon>
+                <ListItemText primary="Déconnexion" />
+              </MenuItem>,
+            ].filter(Boolean)
+          : [
+              <MenuItem
+                key="login"
+                component={Link}
+                href="/sign-in"
+                sx={{ borderRadius: 1.5, m: 0.5 }}
+              >
+                <ListItemIcon>
+                  <Login fontSize="small" />
+                </ListItemIcon>
+                <ListItemText primary="Se connecter" />
+              </MenuItem>,
+              <MenuItem
+                key="register"
+                component={Link}
+                href="/sign-up"
+                sx={{ borderRadius: 1.5, m: 0.5 }}
+              >
+                <ListItemIcon>
+                  <PersonAdd fontSize="small" />
+                </ListItemIcon>
+                <ListItemText primary="S'inscrire" />
+              </MenuItem>,
+            ]}
       </Menu>
     </Box>
-  )
+  );
 }
 
 // Mobile bottom navigation with M3 Expressive look
 export function MobileNav() {
-  const pathname = usePathname()
-  const router = useRouter()
-  const { data: session } = useSession()
-  const trigger = useScrollTrigger()
+  const pathname = usePathname();
+  const router = useRouter();
+  const { data: session } = useSession();
+  const trigger = useScrollTrigger();
 
-  const isAdmin = session?.user?.role === 'admin' || (session?.user as { role: string } | undefined)?.role === 'superadmin'
-  
+  const isAdmin =
+    session?.user?.role === 'admin' ||
+    (session?.user as { role: string } | undefined)?.role === 'superadmin';
+
   const getActiveValue = () => {
-    if (pathname === '/') return '/'
-    if (pathname.startsWith('/tournaments')) return '/tournaments'
-    if (pathname.startsWith('/tv')) return '/tv'
-    if (pathname.startsWith('/rankings')) return '/rankings'
-    if (pathname.startsWith('/admin')) return '/admin'
-    if (pathname.startsWith('/dashboard') || pathname.startsWith('/sign-in') || pathname.startsWith('/sign-up')) {
-      return isAdmin ? '/admin' : '/account'
+    if (pathname === '/') return '/';
+    if (pathname.startsWith('/tournaments')) return '/tournaments';
+    if (pathname.startsWith('/tv')) return '/tv';
+    if (pathname.startsWith('/rankings')) return '/rankings';
+    if (pathname.startsWith('/admin')) return '/admin';
+    if (
+      pathname.startsWith('/dashboard') ||
+      pathname.startsWith('/sign-in') ||
+      pathname.startsWith('/sign-up')
+    ) {
+      return isAdmin ? '/admin' : '/account';
     }
-    return '/'
-  }
+    return '/';
+  };
 
-  const activeValue = getActiveValue()
+  const activeValue = getActiveValue();
 
   return (
     <Slide appear={false} direction="up" in={!trigger}>
@@ -303,15 +369,15 @@ export function MobileNav() {
           onChange={(_, newValue) => {
             if (newValue === '/account') {
               if (session?.user) {
-                router.push(`/dashboard/profile/${session.user.id}`)
+                router.push(`/dashboard/profile/${session.user.id}`);
               } else {
-                router.push('/sign-in')
+                router.push('/sign-in');
               }
             } else {
-              router.push(newValue)
+              router.push(newValue);
             }
           }}
-          sx={{ 
+          sx={{
             height: 80, // M3 Navigation Bar Height
             bgcolor: 'transparent',
             '& .MuiBottomNavigationAction-root': {
@@ -324,17 +390,17 @@ export function MobileNav() {
                   zIndex: 2,
                 },
                 '&::after': {
-                    content: '""',
-                    position: 'absolute',
-                    top: '50%',
-                    left: '50%',
-                    transform: 'translate(-50%, -50%)',
-                    width: 64,
-                    height: 32,
-                    bgcolor: (theme) => alpha(theme.palette.primary.main, 0.2),
-                    borderRadius: 16,
-                    zIndex: 1,
-                }
+                  content: '""',
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  width: 64,
+                  height: 32,
+                  bgcolor: (theme) => alpha(theme.palette.primary.main, 0.2),
+                  borderRadius: 16,
+                  zIndex: 1,
+                },
               },
               '& .MuiBottomNavigationAction-label': {
                 mt: 0.5,
@@ -342,38 +408,38 @@ export function MobileNav() {
                 fontSize: '0.65rem',
                 '&.Mui-selected': {
                   fontSize: '0.7rem',
-                }
-              }
-            }
+                },
+              },
+            },
           }}
         >
-          <BottomNavigationAction
-            label="Accueil"
-            value="/"
-            icon={<Home />}
-          />
+          <BottomNavigationAction label="Accueil" value="/" icon={<Home />} />
           <BottomNavigationAction
             label="Tournois"
             value="/tournaments"
             icon={<TrophyIcon />}
           />
+          <BottomNavigationAction label="TV" value="/tv" icon={<LiveTv />} />
           <BottomNavigationAction
-            label="TV"
-            value="/tv"
-            icon={<LiveTv />}
-          />
-           <BottomNavigationAction
             label="Classements"
             value="/rankings"
             icon={<BarChart />}
           />
           <BottomNavigationAction
-            label={isAdmin ? 'Admin' : (session?.user ? 'Profil' : 'Compte')}
+            label={isAdmin ? 'Admin' : session?.user ? 'Profil' : 'Compte'}
             value={isAdmin ? '/admin' : '/account'}
-            icon={isAdmin ? <AdminPanelSettings /> : (session?.user ? <AccountCircle /> : <Login />)}
+            icon={
+              isAdmin ? (
+                <AdminPanelSettings />
+              ) : session?.user ? (
+                <AccountCircle />
+              ) : (
+                <Login />
+              )
+            }
           />
         </BottomNavigation>
       </Paper>
     </Slide>
-  )
+  );
 }

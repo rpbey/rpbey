@@ -1,17 +1,22 @@
-import type { WithContext, TechArticle, WebSite, BreadcrumbList } from 'schema-dts'
+import type {
+  BreadcrumbList,
+  TechArticle,
+  WebSite,
+  WithContext,
+} from 'schema-dts';
 
-const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://rpbey.fr'
+const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://rpbey.fr';
 
 export function generateTechArticleJsonLd(article: {
-  title: string
-  description: string
-  publishedAt: string
-  modifiedAt: string
-  authorName: string
-  url: string
-  image?: string
-  keywords?: string[]
-  proficiencyLevel?: 'Beginner' | 'Intermediate' | 'Expert'
+  title: string;
+  description: string;
+  publishedAt: string;
+  modifiedAt: string;
+  authorName: string;
+  url: string;
+  image?: string;
+  keywords?: string[];
+  proficiencyLevel?: 'Beginner' | 'Intermediate' | 'Expert';
 }): WithContext<TechArticle> {
   return {
     '@context': 'https://schema.org',
@@ -40,10 +45,12 @@ export function generateTechArticleJsonLd(article: {
     },
     proficiencyLevel: article.proficiencyLevel || 'Beginner',
     keywords: article.keywords?.join(', '),
-  }
+  };
 }
 
-export function generateBreadcrumbJsonLd(items: { name: string; item: string }[]): WithContext<BreadcrumbList> {
+export function generateBreadcrumbJsonLd(
+  items: { name: string; item: string }[],
+): WithContext<BreadcrumbList> {
   return {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
@@ -53,7 +60,7 @@ export function generateBreadcrumbJsonLd(items: { name: string; item: string }[]
       name: item.name,
       item: `${baseUrl}${item.item}`,
     })),
-  }
+  };
 }
 
 export function generateWebsiteJsonLd(): WithContext<WebSite> {
@@ -71,5 +78,5 @@ export function generateWebsiteJsonLd(): WithContext<WebSite> {
       // @ts-expect-error - query-input is required by Google but not in schema-dts
       'query-input': 'required name=search_term_string',
     },
-  }
+  };
 }

@@ -1,32 +1,32 @@
-'use client'
+'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react'
 import {
-  Box,
-  Paper,
-  Typography,
-  IconButton,
-  Chip,
-  Stack,
-  TextField,
-  FormControlLabel,
-  Switch,
-  CircularProgress,
-  Alert,
-  Tooltip,
-} from '@mui/material'
-import {
-  Refresh as RefreshIcon,
-  Download as DownloadIcon,
   Clear as ClearIcon,
-  PlayArrow as PlayIcon,
+  Download as DownloadIcon,
   Pause as PauseIcon,
-} from '@mui/icons-material'
+  PlayArrow as PlayIcon,
+  Refresh as RefreshIcon,
+} from '@mui/icons-material';
+import {
+  Alert,
+  Box,
+  Chip,
+  CircularProgress,
+  FormControlLabel,
+  IconButton,
+  Paper,
+  Stack,
+  Switch,
+  TextField,
+  Tooltip,
+  Typography,
+} from '@mui/material';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 interface LogEntry {
-  timestamp: string
-  level: 'INFO' | 'WARN' | 'ERROR' | 'DEBUG'
-  message: string
+  timestamp: string;
+  level: 'INFO' | 'WARN' | 'ERROR' | 'DEBUG';
+  message: string;
 }
 
 const levelColors: Record<LogEntry['level'], string> = {
@@ -34,93 +34,98 @@ const levelColors: Record<LogEntry['level'], string> = {
   WARN: '#ff9800',
   ERROR: '#f44336',
   DEBUG: '#2196f3',
-}
+};
 
 export default function BotLogsPage() {
-  const [logs, setLogs] = useState<LogEntry[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [autoRefresh, setAutoRefresh] = useState(true)
-  const [filter, setFilter] = useState('')
-  const [tail, setTail] = useState(100)
-  const logsEndRef = useRef<HTMLDivElement>(null)
-  const containerRef = useRef<HTMLDivElement>(null)
+  const [logs, setLogs] = useState<LogEntry[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [autoRefresh, setAutoRefresh] = useState(true);
+  const [filter, setFilter] = useState('');
+  const [tail, setTail] = useState(100);
+  const logsEndRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const fetchLogs = useCallback(async () => {
     try {
-      const response = await fetch(`/api/bot/logs?tail=${tail}`)
-      if (!response.ok) throw new Error('Failed to fetch logs')
-      
-      const data = await response.json()
-      setLogs(data.logs || [])
-      setError(null)
+      const response = await fetch(`/api/bot/logs?tail=${tail}`);
+      if (!response.ok) throw new Error('Failed to fetch logs');
+
+      const data = await response.json();
+      setLogs(data.logs || []);
+      setError(null);
     } catch (err) {
-      setError(String(err))
+      setError(String(err));
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [tail])
+  }, [tail]);
 
   useEffect(() => {
-    fetchLogs()
-  }, [fetchLogs])
+    fetchLogs();
+  }, [fetchLogs]);
 
   useEffect(() => {
-    if (!autoRefresh) return
-    
-    const interval = setInterval(fetchLogs, 5000)
-    return () => clearInterval(interval)
-  }, [autoRefresh, fetchLogs])
+    if (!autoRefresh) return;
+
+    const interval = setInterval(fetchLogs, 5000);
+    return () => clearInterval(interval);
+  }, [autoRefresh, fetchLogs]);
 
   useEffect(() => {
     if (logsEndRef.current) {
-      logsEndRef.current.scrollIntoView({ behavior: 'smooth' })
+      logsEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [logs])
+  }, []);
 
   const filteredLogs = logs.filter((log) => {
-    if (!filter) return true
-    const searchLower = filter.toLowerCase()
+    if (!filter) return true;
+    const searchLower = filter.toLowerCase();
     return (
       log.message.toLowerCase().includes(searchLower) ||
       log.level.toLowerCase().includes(searchLower)
-    )
-  })
+    );
+  });
 
   const handleDownload = () => {
     const content = logs
       .map((log) => `${log.timestamp} - ${log.level} - ${log.message}`)
-      .join('\n')
-    
-    const blob = new Blob([content], { type: 'text/plain' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `bot-logs-${new Date().toISOString().slice(0, 10)}.txt`
-    a.click()
-    URL.revokeObjectURL(url)
-  }
+      .join('\n');
+
+    const blob = new Blob([content], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `bot-logs-${new Date().toISOString().slice(0, 10)}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
   const formatTimestamp = (ts: string) => {
     try {
-      const date = new Date(ts)
+      const date = new Date(ts);
       return date.toLocaleString('fr-FR', {
         hour: '2-digit',
         minute: '2-digit',
         second: '2-digit',
-      })
+      });
     } catch {
-      return ts
+      return ts;
     }
-  }
+  };
 
   return (
     <Box sx={{ p: 3 }}>
-      <Stack direction="row" justifyContent="space-between" alignItems="center" mb={3}>
+      <Stack
+        direction="row"
+        justifyContent="space-between"
+        alignItems="center"
+        mb={3}
+      >
         <Typography variant="h4" fontWeight={600}>
           🤖 Logs du Bot
         </Typography>
-        
+
         <Stack direction="row" spacing={1} alignItems="center">
           <FormControlLabel
             control={
@@ -132,18 +137,22 @@ export default function BotLogsPage() {
             }
             label={
               <Stack direction="row" alignItems="center" spacing={0.5}>
-                {autoRefresh ? <PlayIcon fontSize="small" /> : <PauseIcon fontSize="small" />}
+                {autoRefresh ? (
+                  <PlayIcon fontSize="small" />
+                ) : (
+                  <PauseIcon fontSize="small" />
+                )}
                 <Typography variant="body2">Auto-refresh</Typography>
               </Stack>
             }
           />
-          
+
           <Tooltip title="Rafraîchir">
             <IconButton onClick={fetchLogs} disabled={loading}>
               <RefreshIcon />
             </IconButton>
           </Tooltip>
-          
+
           <Tooltip title="Télécharger">
             <IconButton onClick={handleDownload}>
               <DownloadIcon />
@@ -175,7 +184,7 @@ export default function BotLogsPage() {
             },
           }}
         />
-        
+
         <TextField
           size="small"
           type="number"
@@ -184,10 +193,10 @@ export default function BotLogsPage() {
           onChange={(e) => setTail(Number(e.target.value))}
           sx={{ width: 100 }}
         />
-        
+
         <Stack direction="row" spacing={1}>
           {(['INFO', 'WARN', 'ERROR', 'DEBUG'] as const).map((level) => {
-            const count = logs.filter((l) => l.level === level).length
+            const count = logs.filter((l) => l.level === level).length;
             return (
               <Chip
                 key={level}
@@ -200,7 +209,7 @@ export default function BotLogsPage() {
                 }}
                 onClick={() => setFilter(level)}
               />
-            )
+            );
           })}
         </Stack>
       </Stack>
@@ -219,7 +228,12 @@ export default function BotLogsPage() {
         }}
       >
         {loading && logs.length === 0 ? (
-          <Box display="flex" justifyContent="center" alignItems="center" height="100%">
+          <Box
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            height="100%"
+          >
             <CircularProgress size={40} />
           </Box>
         ) : filteredLogs.length === 0 ? (
@@ -240,10 +254,7 @@ export default function BotLogsPage() {
                   },
                 }}
               >
-                <Typography
-                  component="span"
-                  sx={{ color: '#8b949e', mr: 2 }}
-                >
+                <Typography component="span" sx={{ color: '#8b949e', mr: 2 }}>
                   {formatTimestamp(log.timestamp)}
                 </Typography>
                 <Typography
@@ -282,5 +293,5 @@ export default function BotLogsPage() {
         </Typography>
       </Stack>
     </Box>
-  )
+  );
 }

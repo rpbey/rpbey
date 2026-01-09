@@ -3,33 +3,39 @@
  * Displays key statistics in a grid
  */
 
-'use client'
+'use client';
 
-import Box from '@mui/material/Box'
-import Card from '@mui/material/Card'
-import CardContent from '@mui/material/CardContent'
-import Grid from '@mui/material/Grid'
-import Typography from '@mui/material/Typography'
-import LinearProgress from '@mui/material/LinearProgress'
-import EmojiEventsIcon from '@mui/icons-material/EmojiEvents'
-import SportsMmaIcon from '@mui/icons-material/SportsMma'
-import TrendingUpIcon from '@mui/icons-material/TrendingUp'
-import WhatshotIcon from '@mui/icons-material/Whatshot'
-import type { UserStats } from '@/lib/stats'
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import SportsMmaIcon from '@mui/icons-material/SportsMma';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import WhatshotIcon from '@mui/icons-material/Whatshot';
+import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Grid from '@mui/material/Grid';
+import LinearProgress from '@mui/material/LinearProgress';
+import Typography from '@mui/material/Typography';
+import type { UserStats } from '@/lib/stats';
 
 interface StatsCardProps {
-  stats: UserStats
+  stats: UserStats;
 }
 
 interface StatItemProps {
-  icon: React.ReactNode
-  label: string
-  value: string | number
-  subValue?: string
-  color?: string
+  icon: React.ReactNode;
+  label: string;
+  value: string | number;
+  subValue?: string;
+  color?: string;
 }
 
-function StatItem({ icon, label, value, subValue, color = 'primary.main' }: StatItemProps) {
+function StatItem({
+  icon,
+  label,
+  value,
+  subValue,
+  color = 'primary.main',
+}: StatItemProps) {
   return (
     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
       <Box
@@ -57,7 +63,7 @@ function StatItem({ icon, label, value, subValue, color = 'primary.main' }: Stat
         )}
       </Box>
     </Box>
-  )
+  );
 }
 
 export function UserProfileStatsCard({ stats }: StatsCardProps) {
@@ -83,7 +89,9 @@ export function UserProfileStatsCard({ stats }: StatsCardProps) {
           {/* Win Rate */}
           <Grid size={{ xs: 12, sm: 6 }}>
             <Box>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+              <Box
+                sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}
+              >
                 <Typography variant="body2" color="text.secondary">
                   Taux de victoire
                 </Typography>
@@ -136,7 +144,9 @@ export function UserProfileStatsCard({ stats }: StatsCardProps) {
               label="Série actuelle"
               value={stats.currentStreak}
               subValue={`Record: ${stats.bestStreak}`}
-              color={stats.currentStreak > 0 ? 'success.main' : 'text.secondary'}
+              color={
+                stats.currentStreak > 0 ? 'success.main' : 'text.secondary'
+              }
             />
           </Grid>
 
@@ -178,5 +188,5 @@ export function UserProfileStatsCard({ stats }: StatsCardProps) {
         </Grid>
       </CardContent>
     </Card>
-  )
+  );
 }

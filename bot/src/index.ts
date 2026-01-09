@@ -58,7 +58,7 @@ try {
   });
 
   await client.login(process.env.DISCORD_TOKEN);
-  
+
   // Start API server for dashboard integration after login
   const apiPort = parseInt(process.env.BOT_API_PORT ?? '3001', 10);
   startApiServer(apiPort);

@@ -1,25 +1,31 @@
-import type { Metadata } from 'next'
-import Box from '@mui/material/Box'
-import { IconNav, MobileNav, IconFooter, ICON_NAV_WIDTH } from '@/components/layout'
+import Box from '@mui/material/Box';
+import type { Metadata } from 'next';
+import {
+  ICON_NAV_WIDTH,
+  IconFooter,
+  IconNav,
+  MobileNav,
+} from '@/components/layout';
 
 export const metadata: Metadata = {
   title: {
     default: 'RPB - République Populaire du Beyblade',
     template: '%s | RPB',
   },
-  description: 'La communauté française de Beyblade. Tournois, classements et plus encore.',
-}
+  description:
+    'La communauté française de Beyblade. Tournois, classements et plus encore.',
+};
 
 export default function MarketingLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
     <Box sx={{ display: 'flex', minHeight: '100vh' }}>
       {/* Desktop: Left icon navigation */}
       <IconNav />
-      
+
       {/* Main content */}
       <Box
         component="main"
@@ -33,14 +39,12 @@ export default function MarketingLayout({
           bgcolor: 'background.default',
         }}
       >
-        <Box sx={{ flex: 1 }}>
-          {children}
-        </Box>
+        <Box sx={{ flex: 1 }}>{children}</Box>
         <IconFooter />
       </Box>
-      
+
       {/* Mobile: Bottom navigation */}
       <MobileNav />
     </Box>
-  )
+  );
 }

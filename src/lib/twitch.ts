@@ -32,7 +32,7 @@ export async function getRPBStreamInfo(): Promise<StreamInfo | null> {
 
   try {
     const user = await twitchClient.users.getUserByName(channelName);
-    
+
     if (!user) {
       return null;
     }
@@ -45,7 +45,9 @@ export async function getRPBStreamInfo(): Promise<StreamInfo | null> {
       gameName: stream?.gameName,
       viewerCount: stream?.viewers,
       startedAt: stream?.startDate,
-      thumbnailUrl: stream?.thumbnailUrl?.replace('{width}', '1280').replace('{height}', '720'),
+      thumbnailUrl: stream?.thumbnailUrl
+        ?.replace('{width}', '1280')
+        .replace('{height}', '720'),
       userName: user.displayName,
       avatarUrl: user.profilePictureUrl,
     };
@@ -72,7 +74,7 @@ export async function getLatestRPBVideo(): Promise<VideoInfo | null> {
 
   try {
     const user = await twitchClient.users.getUserByName(channelName);
-    
+
     if (!user) {
       return null;
     }
@@ -96,7 +98,9 @@ export async function getLatestRPBVideo(): Promise<VideoInfo | null> {
       id: video.id,
       title: video.title,
       url: video.url,
-      thumbnailUrl: video.thumbnailUrl.replace('%{width}', '640').replace('%{height}', '360'),
+      thumbnailUrl: video.thumbnailUrl
+        .replace('%{width}', '640')
+        .replace('%{height}', '360'),
       duration: video.duration,
       publishedAt: video.publishDate,
       viewCount: video.views,

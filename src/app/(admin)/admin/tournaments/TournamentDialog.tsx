@@ -1,32 +1,32 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
   Button,
-  TextField,
-  MenuItem,
-  Stack,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   FormControl,
-  InputLabel,
-  Select,
   Grid,
-} from '@mui/material'
-import { DatePicker } from '@/components/ui'
-import dayjs from 'dayjs'
-import type { Dayjs } from 'dayjs'
-import type { Tournament, TournamentStatus } from '@prisma/client'
-import type { TournamentInput } from './actions'
+  InputLabel,
+  MenuItem,
+  Select,
+  Stack,
+  TextField,
+} from '@mui/material';
+import type { Tournament, TournamentStatus } from '@prisma/client';
+import type { Dayjs } from 'dayjs';
+import dayjs from 'dayjs';
+import { useEffect, useState } from 'react';
+import { DatePicker } from '@/components/ui';
+import type { TournamentInput } from './actions';
 
 interface TournamentDialogProps {
-  open: boolean
-  onClose: () => void
-  onSubmit: (data: TournamentInput) => Promise<void>
-  initialData: Tournament | null
-  loading: boolean
+  open: boolean;
+  onClose: () => void;
+  onSubmit: (data: TournamentInput) => Promise<void>;
+  initialData: Tournament | null;
+  loading: boolean;
 }
 
 const TOURNAMENT_STATUSES: { value: TournamentStatus; label: string }[] = [
@@ -37,7 +37,7 @@ const TOURNAMENT_STATUSES: { value: TournamentStatus; label: string }[] = [
   { value: 'UNDERWAY', label: 'En cours' },
   { value: 'COMPLETE', label: 'Terminé' },
   { value: 'CANCELLED', label: 'Annulé' },
-]
+];
 
 export function TournamentDialog({
   open,
@@ -46,7 +46,9 @@ export function TournamentDialog({
   initialData,
   loading,
 }: TournamentDialogProps) {
-  const [formData, setFormData] = useState<Omit<TournamentInput, 'date'> & { date: Dayjs | null }>({
+  const [formData, setFormData] = useState<
+    Omit<TournamentInput, 'date'> & { date: Dayjs | null }
+  >({
     name: '',
     description: '',
     date: dayjs(),
@@ -55,7 +57,7 @@ export function TournamentDialog({
     maxPlayers: 64,
     status: 'UPCOMING',
     challongeUrl: '',
-  })
+  });
 
   useEffect(() => {
     if (initialData) {
@@ -68,7 +70,7 @@ export function TournamentDialog({
         maxPlayers: initialData.maxPlayers,
         status: initialData.status,
         challongeUrl: initialData.challongeUrl || '',
-      })
+      });
     } else {
       setFormData({
         name: '',
@@ -79,19 +81,19 @@ export function TournamentDialog({
         maxPlayers: 64,
         status: 'UPCOMING',
         challongeUrl: '',
-      })
+      });
     }
-  }, [initialData, open])
+  }, [initialData]);
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!formData.date) return
-    
+    e.preventDefault();
+    if (!formData.date) return;
+
     onSubmit({
       ...formData,
       date: formData.date.toDate(),
-    } as TournamentInput)
-  }
+    } as TournamentInput);
+  };
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
@@ -104,7 +106,9 @@ export function TournamentDialog({
             <TextField
               label="Nom du tournoi"
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, name: e.target.value })
+              }
               fullWidth
               required
             />
@@ -114,7 +118,9 @@ export function TournamentDialog({
                 <DatePicker
                   label="Date du tournoi"
                   value={formData.date}
-                  onChange={(newValue) => setFormData({ ...formData, date: newValue })}
+                  onChange={(newValue) =>
+                    setFormData({ ...formData, date: newValue })
+                  }
                 />
               </Grid>
               <Grid size={{ xs: 12, sm: 6 }}>
@@ -123,7 +129,12 @@ export function TournamentDialog({
                   <Select
                     value={formData.status}
                     label="Status"
-                    onChange={(e) => setFormData({ ...formData, status: e.target.value as TournamentStatus })}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        status: e.target.value as TournamentStatus,
+                      })
+                    }
                   >
                     {TOURNAMENT_STATUSES.map((status) => (
                       <MenuItem key={status.value} value={status.value}>
@@ -140,7 +151,9 @@ export function TournamentDialog({
                 <TextField
                   label="Lieu"
                   value={formData.location}
-                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, location: e.target.value })
+                  }
                   fullWidth
                 />
               </Grid>
@@ -149,7 +162,12 @@ export function TournamentDialog({
                   label="Max Joueurs"
                   type="number"
                   value={formData.maxPlayers}
-                  onChange={(e) => setFormData({ ...formData, maxPlayers: parseInt(e.target.value) || 0 })}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      maxPlayers: parseInt(e.target.value, 10) || 0,
+                    })
+                  }
                   fullWidth
                   required
                 />
@@ -158,7 +176,9 @@ export function TournamentDialog({
                 <TextField
                   label="Format"
                   value={formData.format}
-                  onChange={(e) => setFormData({ ...formData, format: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, format: e.target.value })
+                  }
                   fullWidth
                   required
                 />
@@ -168,7 +188,9 @@ export function TournamentDialog({
             <TextField
               label="Lien Challonge (Optionnel)"
               value={formData.challongeUrl}
-              onChange={(e) => setFormData({ ...formData, challongeUrl: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, challongeUrl: e.target.value })
+              }
               fullWidth
               placeholder="https://challonge.com/..."
             />
@@ -176,7 +198,9 @@ export function TournamentDialog({
             <TextField
               label="Description"
               value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, description: e.target.value })
+              }
               fullWidth
               multiline
               rows={4}
@@ -185,11 +209,15 @@ export function TournamentDialog({
         </DialogContent>
         <DialogActions>
           <Button onClick={onClose}>Annuler</Button>
-          <Button type="submit" variant="contained" disabled={loading || !formData.date}>
+          <Button
+            type="submit"
+            variant="contained"
+            disabled={loading || !formData.date}
+          >
             {loading ? 'Enregistrement...' : 'Enregistrer'}
           </Button>
         </DialogActions>
       </form>
     </Dialog>
-  )
+  );
 }

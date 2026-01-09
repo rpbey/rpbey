@@ -3,17 +3,17 @@
  * Get user details by ID
  */
 
-import type { NextRequest } from 'next/server'
-import { NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import type { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
 
 interface RouteParams {
-  params: Promise<{ id: string }>
+  params: Promise<{ id: string }>;
 }
 
-export async function GET(request: NextRequest, { params }: RouteParams) {
+export async function GET(_request: NextRequest, { params }: RouteParams) {
   try {
-    const { id } = await params
+    const { id } = await params;
 
     const user = await prisma.user.findUnique({
       where: { id },
@@ -56,18 +56,18 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
           },
         },
       },
-    })
+    });
 
     if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    return NextResponse.json({ data: user })
+    return NextResponse.json({ data: user });
   } catch (error) {
-    console.error('Error fetching user:', error)
+    console.error('Error fetching user:', error);
     return NextResponse.json(
       { error: 'Failed to fetch user' },
-      { status: 500 }
-    )
+      { status: 500 },
+    );
   }
 }

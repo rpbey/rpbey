@@ -1,40 +1,45 @@
-'use client'
+'use client';
 
-import { useState, useEffect, useCallback } from 'react'
-import {
-  Box,
-  Button,
-  IconButton,
-  Tooltip,
-  Avatar,
-  Typography,
-} from '@mui/material'
 import {
   Add as AddIcon,
-  Edit as EditIcon,
   Delete as DeleteIcon,
-} from '@mui/icons-material'
+  Edit as EditIcon,
+  Sync as SyncIcon,
+} from '@mui/icons-material';
+import {
+  Avatar,
+  Box,
+  Button,
+  ButtonGroup,
+  Card,
+  CardContent,
+  Chip,
+  IconButton,
+  Grid as MuiGrid,
+  Stack,
+  Tooltip,
+  Typography,
+} from '@mui/material';
+import CircularProgress from '@mui/material/CircularProgress';
+import type { StaffMember } from '@prisma/client';
+import { useCallback, useEffect, useState } from 'react';
 import {
   PageHeader,
   StatusChip,
   useConfirmDialog,
   useToast,
-} from '@/components/ui'
+} from '@/components/ui';
+import { RoleLogo } from '@/components/ui/RoleLogo';
+import { RoleColors } from '@/lib/role-colors';
+import type { StaffMemberInput } from './actions';
 import {
-  getStaffMembers,
   createStaffMember,
-  updateStaffMember,
   deleteStaffMember,
+  getStaffMembers,
   syncStaffFromDiscord,
-} from './actions'
-import type { StaffMemberInput } from './actions'
-import { StaffDialog } from './StaffDialog'
-import CircularProgress from '@mui/material/CircularProgress'
-import type { StaffMember } from '@prisma/client'
-import { RoleColors } from '@/lib/role-colors'
-import { RoleLogo } from '@/components/ui/RoleLogo'
-import { Card, CardContent, Grid as MuiGrid, Stack, Chip, ButtonGroup } from '@mui/material'
-import { Sync as SyncIcon } from '@mui/icons-material'
+  updateStaffMember,
+} from './actions';
+import { StaffDialog } from './StaffDialog';
 
 const TEAM_LABELS: Record<string, string> = {
   admin: 'Administration',
@@ -44,7 +49,7 @@ const TEAM_LABELS: Record<string, string> = {
   dev: 'Développement',
   event: 'Événementiel',
   media: 'Média / Design',
-}
+};
 
 const TEAM_COLORS: Record<string, string> = {
   admin: RoleColors.ADMIN.hex,
@@ -54,67 +59,70 @@ const TEAM_COLORS: Record<string, string> = {
   dev: '#10b981', // Emerald
   event: '#f59e0b', // Amber
   media: '#8b5cf6', // Violet
-}
+};
 
 export default function AdminStaffPage() {
-  const [members, setMembers] = useState<StaffMember[]>([])
-  const [loading, setLoading] = useState(true)
-  const [dialogOpen, setDialogOpen] = useState(false)
-  const [selectedMember, setSelectedMember] = useState<StaffMember | null>(null)
-  const [submitting, setSubmitting] = useState(false)
+  const [members, setMembers] = useState<StaffMember[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectedMember, setSelectedMember] = useState<StaffMember | null>(
+    null,
+  );
+  const [submitting, setSubmitting] = useState(false);
 
-  const { confirm } = useConfirmDialog()
-  const { showToast } = useToast()
+  const { confirm } = useConfirmDialog();
+  const { showToast } = useToast();
 
   const fetchMembers = useCallback(async () => {
-    setLoading(true)
+    setLoading(true);
     try {
-      const data = await getStaffMembers()
-      setMembers(data)
+      const data = await getStaffMembers();
+      setMembers(data);
     } catch {
-      showToast('Erreur lors de la récupération des membres', 'error')
+      showToast('Erreur lors de la récupération des membres', 'error');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [showToast])
+  }, [showToast]);
 
   useEffect(() => {
-    fetchMembers()
-  }, [fetchMembers])
+    fetchMembers();
+  }, [fetchMembers]);
 
   const handleAdd = () => {
-    setSelectedMember(null)
-    setDialogOpen(true)
-  }
+    setSelectedMember(null);
+    setDialogOpen(true);
+  };
 
   const handleSync = async () => {
     const confirmed = await confirm({
       title: 'Synchroniser le staff',
-      message: 'Cette action va importer ou mettre à jour tous les membres Discord possédant les rôles Admin, RH, Modo et Staff. Continuer ?',
+      message:
+        'Cette action va importer ou mettre à jour tous les membres Discord possédant les rôles Admin, RH, Modo et Staff. Continuer ?',
       confirmText: 'Synchroniser',
-    })
+    });
 
     if (confirmed) {
-      setLoading(true)
+      setLoading(true);
       try {
-        const results = await syncStaffFromDiscord()
+        const results = await syncStaffFromDiscord();
         showToast(
           `Synchronisation terminée : ${results.added} ajoutés, ${results.updated} mis à jour.`,
-          'success'
-        )
-        fetchMembers()
+          'success',
+        );
+        fetchMembers();
       } catch {
-        showToast('Erreur lors de la synchronisation', 'error')
+        showToast('Erreur lors de la synchronisation', 'error');
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
     }
-  }
+  };
 
   const handleEdit = (member: StaffMember) => {
-    setSelectedMember(member)
-    setDialogOpen(true)
-  }
+    setSelectedMember(member);
+    setDialogOpen(true);
+  };
 
   const handleDelete = async (member: StaffMember) => {
     const confirmed = await confirm({
@@ -122,37 +130,37 @@ export default function AdminStaffPage() {
       message: `Êtes-vous sûr de vouloir supprimer ${member.name} du staff ?`,
       confirmText: 'Supprimer',
       confirmColor: 'error',
-    })
+    });
 
     if (confirmed) {
       try {
-        await deleteStaffMember(member.id)
-        showToast('Membre supprimé avec succès', 'success')
-        fetchMembers()
+        await deleteStaffMember(member.id);
+        showToast('Membre supprimé avec succès', 'success');
+        fetchMembers();
       } catch {
-        showToast('Erreur lors de la suppression', 'error')
+        showToast('Erreur lors de la suppression', 'error');
       }
     }
-  }
+  };
 
   const handleSubmit = async (data: StaffMemberInput) => {
-    setSubmitting(true)
+    setSubmitting(true);
     try {
       if (selectedMember) {
-        await updateStaffMember(selectedMember.id, data)
-        showToast('Membre mis à jour', 'success')
+        await updateStaffMember(selectedMember.id, data);
+        showToast('Membre mis à jour', 'success');
       } else {
-        await createStaffMember(data)
-        showToast('Membre ajouté', 'success')
+        await createStaffMember(data);
+        showToast('Membre ajouté', 'success');
       }
-      setDialogOpen(false)
-      fetchMembers()
+      setDialogOpen(false);
+      fetchMembers();
     } catch {
-      showToast('Erreur lors de l\'enregistrement', 'error')
+      showToast("Erreur lors de l'enregistrement", 'error');
     } finally {
-      setSubmitting(false)
+      setSubmitting(false);
     }
-  }
+  };
 
   return (
     <Box>
@@ -169,10 +177,7 @@ export default function AdminStaffPage() {
           >
             Sync Discord
           </Button>
-          <Button
-            startIcon={<AddIcon />}
-            onClick={handleAdd}
-          >
+          <Button startIcon={<AddIcon />} onClick={handleAdd}>
             Ajouter manuellement
           </Button>
         </ButtonGroup>
@@ -185,12 +190,14 @@ export default function AdminStaffPage() {
       ) : (
         <Stack spacing={4}>
           {Object.keys(TEAM_LABELS).map((teamId) => {
-            const teamMembers = members.filter((m) => m.teamId === teamId)
-            if (teamMembers.length === 0) return null
+            const teamMembers = members.filter((m) => m.teamId === teamId);
+            if (teamMembers.length === 0) return null;
 
             return (
               <Box key={teamId}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+                <Box
+                  sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}
+                >
                   <Typography variant="h6" fontWeight="bold">
                     {TEAM_LABELS[teamId]}
                   </Typography>
@@ -204,55 +211,110 @@ export default function AdminStaffPage() {
 
                 <MuiGrid container spacing={2}>
                   {teamMembers.map((member) => (
-                    <MuiGrid key={member.id} size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
-                      <Card 
-                        variant="outlined" 
-                        sx={{ 
-                          height: '100%', 
+                    <MuiGrid
+                      key={member.id}
+                      size={{ xs: 12, sm: 6, md: 4, lg: 3 }}
+                    >
+                      <Card
+                        variant="outlined"
+                        sx={{
+                          height: '100%',
                           transition: 'transform 0.2s',
-                          '&:hover': { transform: 'translateY(-4px)', boxShadow: 1, borderColor: TEAM_COLORS[teamId] } 
+                          '&:hover': {
+                            transform: 'translateY(-4px)',
+                            boxShadow: 1,
+                            borderColor: TEAM_COLORS[teamId],
+                          },
                         }}
                       >
                         <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
-                          <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
-                            {member.role && (member.role === 'ADMIN' || member.role === 'RH' || member.role === 'MODO' || member.role === 'STAFF') ? (
-                              <RoleLogo role={member.role as 'ADMIN' | 'RH' | 'MODO' | 'STAFF'} size={48} />
+                          <Box
+                            sx={{
+                              display: 'flex',
+                              alignItems: 'flex-start',
+                              gap: 2,
+                            }}
+                          >
+                            {member.role &&
+                            (member.role === 'ADMIN' ||
+                              member.role === 'RH' ||
+                              member.role === 'MODO' ||
+                              member.role === 'STAFF') ? (
+                              <RoleLogo
+                                role={
+                                  member.role as
+                                    | 'ADMIN'
+                                    | 'RH'
+                                    | 'MODO'
+                                    | 'STAFF'
+                                }
+                                size={48}
+                              />
                             ) : (
-                              <Avatar src={member.imageUrl || undefined} sx={{ width: 48, height: 48 }}>
+                              <Avatar
+                                src={member.imageUrl || undefined}
+                                sx={{ width: 48, height: 48 }}
+                              >
                                 {member.name.charAt(0)}
                               </Avatar>
                             )}
                             <Box sx={{ flex: 1, minWidth: 0 }}>
-                              <Typography variant="subtitle1" fontWeight="bold" noWrap>
+                              <Typography
+                                variant="subtitle1"
+                                fontWeight="bold"
+                                noWrap
+                              >
                                 {member.name}
                               </Typography>
-                              <Typography variant="body2" color="text.secondary" noWrap gutterBottom>
+                              <Typography
+                                variant="body2"
+                                color="text.secondary"
+                                noWrap
+                                gutterBottom
+                              >
                                 {member.role}
                               </Typography>
-                              <Box sx={{ display: 'flex', gap: 0.5, alignItems: 'center' }}>
+                              <Box
+                                sx={{
+                                  display: 'flex',
+                                  gap: 0.5,
+                                  alignItems: 'center',
+                                }}
+                              >
                                 <StatusChip
                                   type="user"
-                                  status={member.isActive ? 'verified' : 'offline'}
+                                  status={
+                                    member.isActive ? 'verified' : 'offline'
+                                  }
                                   showIcon={false}
                                   size="small"
                                 />
                                 {member.discordId && (
                                   <Tooltip title={`ID: ${member.discordId}`}>
-                                    <Chip 
-                                      label="Discord" 
-                                      size="small" 
+                                    <Chip
+                                      label="Discord"
+                                      size="small"
                                       variant="outlined"
-                                      sx={{ height: 20, fontSize: '0.65rem' }} 
+                                      sx={{ height: 20, fontSize: '0.65rem' }}
                                     />
                                   </Tooltip>
                                 )}
                               </Box>
                             </Box>
-                            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                              <IconButton size="small" onClick={() => handleEdit(member)}>
+                            <Box
+                              sx={{ display: 'flex', flexDirection: 'column' }}
+                            >
+                              <IconButton
+                                size="small"
+                                onClick={() => handleEdit(member)}
+                              >
                                 <EditIcon fontSize="small" />
                               </IconButton>
-                              <IconButton size="small" color="error" onClick={() => handleDelete(member)}>
+                              <IconButton
+                                size="small"
+                                color="error"
+                                onClick={() => handleDelete(member)}
+                              >
                                 <DeleteIcon fontSize="small" />
                               </IconButton>
                             </Box>
@@ -263,7 +325,7 @@ export default function AdminStaffPage() {
                   ))}
                 </MuiGrid>
               </Box>
-            )
+            );
           })}
         </Stack>
       )}
@@ -276,5 +338,5 @@ export default function AdminStaffPage() {
         loading={submitting}
       />
     </Box>
-  )
+  );
 }

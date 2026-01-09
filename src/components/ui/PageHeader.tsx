@@ -1,8 +1,8 @@
 'use client';
 
-import React from 'react';
-import { Box, Typography, Button, Stack } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
+import { Box, Button, Stack, Typography } from '@mui/material';
+import type React from 'react';
 
 interface PageHeaderProps {
   title: string;
@@ -30,7 +30,12 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
         spacing={2}
       >
         <Box>
-          <Typography variant="h4" component="h1" fontWeight="bold" gutterBottom>
+          <Typography
+            variant="h4"
+            component="h1"
+            fontWeight="bold"
+            gutterBottom
+          >
             {title}
           </Typography>
           {description && (

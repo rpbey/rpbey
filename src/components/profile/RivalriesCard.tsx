@@ -3,22 +3,22 @@
  * Displays head-to-head records against opponents
  */
 
-'use client'
+'use client';
 
-import Box from '@mui/material/Box'
-import Card from '@mui/material/Card'
-import CardContent from '@mui/material/CardContent'
-import Typography from '@mui/material/Typography'
-import List from '@mui/material/List'
-import ListItem from '@mui/material/ListItem'
-import ListItemText from '@mui/material/ListItemText'
-import ListItemAvatar from '@mui/material/ListItemAvatar'
-import Avatar from '@mui/material/Avatar'
-import LinearProgress from '@mui/material/LinearProgress'
-import type { UserStats } from '@/lib/stats'
+import Avatar from '@mui/material/Avatar';
+import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import LinearProgress from '@mui/material/LinearProgress';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemAvatar from '@mui/material/ListItemAvatar';
+import ListItemText from '@mui/material/ListItemText';
+import Typography from '@mui/material/Typography';
+import type { UserStats } from '@/lib/stats';
 
 interface RivalriesCardProps {
-  rivalries: UserStats['rivalries']
+  rivalries: UserStats['rivalries'];
 }
 
 export function RivalriesCard({ rivalries }: RivalriesCardProps) {
@@ -34,7 +34,7 @@ export function RivalriesCard({ rivalries }: RivalriesCardProps) {
           </Typography>
         </CardContent>
       </Card>
-    )
+    );
   }
 
   return (
@@ -46,8 +46,8 @@ export function RivalriesCard({ rivalries }: RivalriesCardProps) {
 
         <List disablePadding>
           {rivalries.map((rivalry) => {
-            const total = rivalry.wins + rivalry.losses
-            const winRate = total > 0 ? (rivalry.wins / total) * 100 : 50
+            const total = rivalry.wins + rivalry.losses;
+            const winRate = total > 0 ? (rivalry.wins / total) * 100 : 50;
 
             return (
               <ListItem key={rivalry.opponentId} sx={{ px: 0 }}>
@@ -56,16 +56,24 @@ export function RivalriesCard({ rivalries }: RivalriesCardProps) {
                 </ListItemAvatar>
                 <ListItemText
                   primary={
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Box
+                      sx={{ display: 'flex', justifyContent: 'space-between' }}
+                    >
                       <Typography variant="body1" fontWeight="medium">
                         {rivalry.opponentName}
                       </Typography>
                       <Typography variant="body2">
-                        <Box component="span" sx={{ color: 'success.main', fontWeight: 'bold' }}>
+                        <Box
+                          component="span"
+                          sx={{ color: 'success.main', fontWeight: 'bold' }}
+                        >
                           {rivalry.wins}
                         </Box>
                         {' - '}
-                        <Box component="span" sx={{ color: 'error.main', fontWeight: 'bold' }}>
+                        <Box
+                          component="span"
+                          sx={{ color: 'error.main', fontWeight: 'bold' }}
+                        >
                           {rivalry.losses}
                         </Box>
                       </Typography>
@@ -89,10 +97,10 @@ export function RivalriesCard({ rivalries }: RivalriesCardProps) {
                   }
                 />
               </ListItem>
-            )
+            );
           })}
         </List>
       </CardContent>
     </Card>
-  )
+  );
 }

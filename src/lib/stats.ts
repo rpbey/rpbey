@@ -3,55 +3,60 @@
  * Computes and caches user statistics from tournament data
  */
 
-import { prisma } from '@/lib/prisma'
+import { prisma } from '@/lib/prisma';
 
 export interface UserStats {
-  userId: string
-  bladerName: string
-  totalMatches: number
-  wins: number
-  losses: number
-  winRate: number
-  tournamentsPlayed: number
-  tournamentsWon: number
-  currentStreak: number
-  bestStreak: number
-  recentForm: ('W' | 'L')[]
-  rank: number
-  elo: number
-  mostUsedBlades: { partId: string; name: string; count: number }[]
-  mostUsedRatchets: { partId: string; name: string; count: number }[]
-  mostUsedBits: { partId: string; name: string; count: number }[]
-  rivalries: { opponentId: string; opponentName: string; wins: number; losses: number }[]
+  userId: string;
+  bladerName: string;
+  totalMatches: number;
+  wins: number;
+  losses: number;
+  winRate: number;
+  tournamentsPlayed: number;
+  tournamentsWon: number;
+  currentStreak: number;
+  bestStreak: number;
+  recentForm: ('W' | 'L')[];
+  rank: number;
+  elo: number;
+  mostUsedBlades: { partId: string; name: string; count: number }[];
+  mostUsedRatchets: { partId: string; name: string; count: number }[];
+  mostUsedBits: { partId: string; name: string; count: number }[];
+  rivalries: {
+    opponentId: string;
+    opponentName: string;
+    wins: number;
+    losses: number;
+  }[];
 }
 
 export interface LeaderboardEntry {
-  userId: string
-  bladerName: string
-  elo: number
-  wins: number
-  losses: number
-  winRate: number
-  rank: number
+  userId: string;
+  bladerName: string;
+  elo: number;
+  wins: number;
+  losses: number;
+  winRate: number;
+  rank: number;
 }
 
-const K_FACTOR = 32 // ELO K-factor for rating changes
-const STARTING_ELO = 1000
+const K_FACTOR = 32; // ELO K-factor for rating changes
+const STARTING_ELO = 1000;
 
 /**
  * Calculate new ELO ratings after a match
  */
 function calculateEloChange(
   winnerElo: number,
-  loserElo: number
+  loserElo: number,
 ): { winnerNew: number; loserNew: number } {
-  const expectedWinner = 1 / (1 + Math.pow(10, (loserElo - winnerElo) / 400))
-  const expectedLoser = 1 / (1 + Math.pow(10, (winnerElo - loserElo) / 400))
+  const expectedWinner = 1 / (1 + 10 ** ((loserElo - winnerElo) / 400));
+  const expectedLoser = 1 / (1 + 10 ** ((winnerElo - loserElo) / 400));
 
-  const winnerNew = Math.round(winnerElo + K_FACTOR * (1 - expectedWinner))
-  const loserNew = Math.round(loserElo + K_FACTOR * (0 - expectedLoser))
+  const winnerNew = Math.round(winnerElo + K_FACTOR * (1 - expectedWinner));
+  const loserNew = Math.round(loserElo + K_FACTOR * (0 - expectedLoser));
 
-  return { winnerNew, loserNew: Math.max(loserNew, 100) }
+  return { winnerNew, loserNew: Math.max(loserNew, 100) };
 }
 
 /**
@@ -74,9 +79,9 @@ export async function getUserStats(userId: string): Promise<UserStats | null> {
         },
       },
     },
-  })
+  });
 
-  if (!user) return null
+  if (!user) return null;
 
   // Get all matches involving this user
   const matches = await prisma.tournamentMatch.findMany({
@@ -90,7 +95,7 @@ export async function getUserStats(userId: string): Promise<UserStats | null> {
       player2: { include: { profile: true } },
     },
     orderBy: { createdAt: 'asc' },
-  })
+  });
 
   // Get tournament participations
   const participations = await prisma.tournamentParticipant.findMany({
@@ -104,47 +109,49 @@ export async function getUserStats(userId: string): Promise<UserStats | null> {
         },
       },
     },
-  })
+  });
 
   // Calculate basic stats
-  const wins = matches.filter((m) => m.winnerId === userId).length
-  const losses = matches.length - wins
-  const winRate = matches.length > 0 ? (wins / matches.length) * 100 : 0
+  const wins = matches.filter((m) => m.winnerId === userId).length;
+  const losses = matches.length - wins;
+  const winRate = matches.length > 0 ? (wins / matches.length) * 100 : 0;
 
   // Calculate current streak
-  let currentStreak = 0
-  let bestStreak = 0
-  let tempStreak = 0
-  const recentForm: ('W' | 'L')[] = []
+  let currentStreak = 0;
+  let bestStreak = 0;
+  let tempStreak = 0;
+  const recentForm: ('W' | 'L')[] = [];
 
   for (const match of matches.slice(-10).reverse()) {
-    const won = match.winnerId === userId
-    recentForm.push(won ? 'W' : 'L')
+    const won = match.winnerId === userId;
+    recentForm.push(won ? 'W' : 'L');
   }
 
   for (const match of [...matches].reverse()) {
-    const won = match.winnerId === userId
+    const won = match.winnerId === userId;
     if (won) {
-      tempStreak++
-      if (tempStreak > bestStreak) bestStreak = tempStreak
+      tempStreak++;
+      if (tempStreak > bestStreak) bestStreak = tempStreak;
     } else {
-      if (currentStreak === 0) currentStreak = tempStreak
-      tempStreak = 0
+      if (currentStreak === 0) currentStreak = tempStreak;
+      tempStreak = 0;
     }
   }
-  if (currentStreak === 0) currentStreak = tempStreak
+  if (currentStreak === 0) currentStreak = tempStreak;
 
   // Count tournament wins
-  const tournamentsWon = participations.filter((p) => p.finalPlacement === 1).length
+  const tournamentsWon = participations.filter(
+    (p) => p.finalPlacement === 1,
+  ).length;
 
   // Calculate ELO (simplified - would need full history)
-  const eloChange = wins * 15 - losses * 15
-  const elo = STARTING_ELO + eloChange
+  const eloChange = wins * 15 - losses * 15;
+  const elo = STARTING_ELO + eloChange;
 
   // Get rank based on ELO
   const allUsers = await prisma.user.findMany({
     select: { id: true },
-  })
+  });
 
   const allStats = await Promise.all(
     allUsers.map(async (u) => {
@@ -153,42 +160,45 @@ export async function getUserStats(userId: string): Promise<UserStats | null> {
           winnerId: u.id,
           state: 'complete',
         },
-      })
+      });
       const userLosses = await prisma.tournamentMatch.count({
         where: {
           OR: [{ player1Id: u.id }, { player2Id: u.id }],
           NOT: { winnerId: u.id },
           state: 'complete',
         },
-      })
+      });
       return {
         id: u.id,
         elo: STARTING_ELO + userMatches * 15 - userLosses * 15,
-      }
-    })
-  )
+      };
+    }),
+  );
 
-  const sortedByElo = allStats.sort((a, b) => b.elo - a.elo)
-  const rank = sortedByElo.findIndex((s) => s.id === userId) + 1
+  const sortedByElo = allStats.sort((a, b) => b.elo - a.elo);
+  const rank = sortedByElo.findIndex((s) => s.id === userId) + 1;
 
   // Analyze most used parts from active decks
-  const bladeUsage: Record<string, { name: string; count: number }> = {}
-  const ratchetUsage: Record<string, { name: string; count: number }> = {}
-  const bitUsage: Record<string, { name: string; count: number }> = {}
+  const bladeUsage: Record<string, { name: string; count: number }> = {};
+  const ratchetUsage: Record<string, { name: string; count: number }> = {};
+  const bitUsage: Record<string, { name: string; count: number }> = {};
 
   for (const deck of user.decks) {
     for (const bey of deck.beys) {
       if (bey.blade) {
-        if (!bladeUsage[bey.bladeId]) bladeUsage[bey.bladeId] = { name: bey.blade.name, count: 0 }
-        bladeUsage[bey.bladeId]!.count++
+        if (!bladeUsage[bey.bladeId])
+          bladeUsage[bey.bladeId] = { name: bey.blade.name, count: 0 };
+        bladeUsage[bey.bladeId]!.count++;
       }
       if (bey.ratchet) {
-        if (!ratchetUsage[bey.ratchetId]) ratchetUsage[bey.ratchetId] = { name: bey.ratchet.name, count: 0 }
-        ratchetUsage[bey.ratchetId]!.count++
+        if (!ratchetUsage[bey.ratchetId])
+          ratchetUsage[bey.ratchetId] = { name: bey.ratchet.name, count: 0 };
+        ratchetUsage[bey.ratchetId]!.count++;
       }
       if (bey.bit) {
-        if (!bitUsage[bey.bitId]) bitUsage[bey.bitId] = { name: bey.bit.name, count: 0 }
-        bitUsage[bey.bitId]!.count++
+        if (!bitUsage[bey.bitId])
+          bitUsage[bey.bitId] = { name: bey.bit.name, count: 0 };
+        bitUsage[bey.bitId]!.count++;
       }
     }
   }
@@ -196,36 +206,41 @@ export async function getUserStats(userId: string): Promise<UserStats | null> {
   const mostUsedBlades = Object.entries(bladeUsage)
     .map(([partId, { name, count }]) => ({ partId, name, count }))
     .sort((a, b) => b.count - a.count)
-    .slice(0, 3)
+    .slice(0, 3);
 
   const mostUsedRatchets = Object.entries(ratchetUsage)
     .map(([partId, { name, count }]) => ({ partId, name, count }))
     .sort((a, b) => b.count - a.count)
-    .slice(0, 3)
+    .slice(0, 3);
 
   const mostUsedBits = Object.entries(bitUsage)
     .map(([partId, { name, count }]) => ({ partId, name, count }))
     .sort((a, b) => b.count - a.count)
-    .slice(0, 3)
+    .slice(0, 3);
 
   // Calculate rivalries
-  const opponentStats: Record<string, { name: string; wins: number; losses: number }> = {}
+  const opponentStats: Record<
+    string,
+    { name: string; wins: number; losses: number }
+  > = {};
 
   for (const match of matches) {
-    const opponentId = match.player1Id === userId ? match.player2Id : match.player1Id
-    if (!opponentId) continue
+    const opponentId =
+      match.player1Id === userId ? match.player2Id : match.player1Id;
+    if (!opponentId) continue;
 
-    const opponent = match.player1Id === userId ? match.player2 : match.player1
-    const opponentName = opponent?.profile?.bladerName ?? opponent?.name ?? 'Unknown'
+    const opponent = match.player1Id === userId ? match.player2 : match.player1;
+    const opponentName =
+      opponent?.profile?.bladerName ?? opponent?.name ?? 'Unknown';
 
     if (!opponentStats[opponentId]) {
-      opponentStats[opponentId] = { name: opponentName, wins: 0, losses: 0 }
+      opponentStats[opponentId] = { name: opponentName, wins: 0, losses: 0 };
     }
 
     if (match.winnerId === userId) {
-      opponentStats[opponentId].wins++
+      opponentStats[opponentId].wins++;
     } else {
-      opponentStats[opponentId].losses++
+      opponentStats[opponentId].losses++;
     }
   }
 
@@ -236,8 +251,8 @@ export async function getUserStats(userId: string): Promise<UserStats | null> {
       wins,
       losses,
     }))
-    .sort((a, b) => (b.wins + b.losses) - (a.wins + a.losses))
-    .slice(0, 5)
+    .sort((a, b) => b.wins + b.losses - (a.wins + a.losses))
+    .slice(0, 5);
 
   return {
     userId,
@@ -257,7 +272,7 @@ export async function getUserStats(userId: string): Promise<UserStats | null> {
     mostUsedRatchets,
     mostUsedBits,
     rivalries,
-  }
+  };
 }
 
 /**
@@ -274,15 +289,16 @@ export async function getLeaderboard(limit = 50): Promise<LeaderboardEntry[]> {
         where: { state: 'complete' },
       },
     },
-  })
+  });
 
   const leaderboard: LeaderboardEntry[] = users
     .map((user) => {
-      const allMatches = [...user.player1Matches, ...user.player2Matches]
-      const wins = allMatches.filter((m) => m.winnerId === user.id).length
-      const losses = allMatches.length - wins
-      const winRate = allMatches.length > 0 ? (wins / allMatches.length) * 100 : 0
-      const elo = STARTING_ELO + wins * 15 - losses * 15
+      const allMatches = [...user.player1Matches, ...user.player2Matches];
+      const wins = allMatches.filter((m) => m.winnerId === user.id).length;
+      const losses = allMatches.length - wins;
+      const winRate =
+        allMatches.length > 0 ? (wins / allMatches.length) * 100 : 0;
+      const elo = STARTING_ELO + wins * 15 - losses * 15;
 
       return {
         userId: user.id,
@@ -292,18 +308,18 @@ export async function getLeaderboard(limit = 50): Promise<LeaderboardEntry[]> {
         losses,
         winRate,
         rank: 0,
-      }
+      };
     })
     .filter((entry) => entry.wins + entry.losses > 0)
     .sort((a, b) => b.elo - a.elo)
-    .slice(0, limit)
+    .slice(0, limit);
 
   // Assign ranks
   leaderboard.forEach((entry, index) => {
-    entry.rank = index + 1
-  })
+    entry.rank = index + 1;
+  });
 
-  return leaderboard
+  return leaderboard;
 }
 
 /**
@@ -311,11 +327,11 @@ export async function getLeaderboard(limit = 50): Promise<LeaderboardEntry[]> {
  */
 export async function getHeadToHead(
   userId1: string,
-  userId2: string
+  userId2: string,
 ): Promise<{
-  user1Wins: number
-  user2Wins: number
-  matches: Awaited<ReturnType<typeof prisma.tournamentMatch.findMany>>
+  user1Wins: number;
+  user2Wins: number;
+  matches: Awaited<ReturnType<typeof prisma.tournamentMatch.findMany>>;
 }> {
   const matches = await prisma.tournamentMatch.findMany({
     where: {
@@ -331,12 +347,12 @@ export async function getHeadToHead(
       player2: { include: { profile: true } },
     },
     orderBy: { createdAt: 'desc' },
-  })
+  });
 
-  const user1Wins = matches.filter((m) => m.winnerId === userId1).length
-  const user2Wins = matches.filter((m) => m.winnerId === userId2).length
+  const user1Wins = matches.filter((m) => m.winnerId === userId1).length;
+  const user2Wins = matches.filter((m) => m.winnerId === userId2).length;
 
-  return { user1Wins, user2Wins, matches }
+  return { user1Wins, user2Wins, matches };
 }
 
-export { calculateEloChange, STARTING_ELO }
+export { calculateEloChange, STARTING_ELO };

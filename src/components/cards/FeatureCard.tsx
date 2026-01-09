@@ -1,23 +1,30 @@
-'use client'
+'use client';
 
-import Link from 'next/link'
-import Box from '@mui/material/Box'
-import Card from '@mui/material/Card'
-import CardActionArea from '@mui/material/CardActionArea'
-import Typography from '@mui/material/Typography'
-import { alpha } from '@mui/material/styles'
-import type { ElementType } from 'react'
+import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
+import CardActionArea from '@mui/material/CardActionArea';
+import { alpha } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
+import Link from 'next/link';
+import type { ElementType } from 'react';
 
 interface FeatureCardProps {
-  icon: ElementType
-  title: string
-  description: string
-  href: string
-  color: string
-  external?: boolean
+  icon: ElementType;
+  title: string;
+  description: string;
+  href: string;
+  color: string;
+  external?: boolean;
 }
 
-export function FeatureCard({ icon: Icon, title, description, href, color, external }: FeatureCardProps) {
+export function FeatureCard({
+  icon: Icon,
+  title,
+  description,
+  href,
+  color,
+  external,
+}: FeatureCardProps) {
   return (
     <Card
       elevation={0}
@@ -61,5 +68,5 @@ export function FeatureCard({ icon: Icon, title, description, href, color, exter
         </Typography>
       </CardActionArea>
     </Card>
-  )
+  );
 }

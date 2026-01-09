@@ -1,77 +1,81 @@
-'use client'
+'use client';
 
-import { useCallback, useMemo, useState, type ReactNode } from 'react'
-import Table from '@mui/material/Table'
-import TableBody from '@mui/material/TableBody'
-import TableCell from '@mui/material/TableCell'
-import TableContainer from '@mui/material/TableContainer'
-import TableHead from '@mui/material/TableHead'
-import TableRow from '@mui/material/TableRow'
-import TableSortLabel from '@mui/material/TableSortLabel'
-import TablePagination from '@mui/material/TablePagination'
-import Paper from '@mui/material/Paper'
-import Checkbox from '@mui/material/Checkbox'
-import Toolbar from '@mui/material/Toolbar'
-import Typography from '@mui/material/Typography'
-import { alpha } from '@mui/material/styles'
+import Checkbox from '@mui/material/Checkbox';
+import Paper from '@mui/material/Paper';
+import { alpha } from '@mui/material/styles';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TablePagination from '@mui/material/TablePagination';
+import TableRow from '@mui/material/TableRow';
+import TableSortLabel from '@mui/material/TableSortLabel';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import { type ReactNode, useCallback, useMemo, useState } from 'react';
 
-type Order = 'asc' | 'desc'
+type Order = 'asc' | 'desc';
 
 export interface Column<T> {
-  id: keyof T | string
-  label: string
-  numeric?: boolean
-  disablePadding?: boolean
-  sortable?: boolean
-  render?: (row: T) => ReactNode
-  width?: number | string
+  id: keyof T | string;
+  label: string;
+  numeric?: boolean;
+  disablePadding?: boolean;
+  sortable?: boolean;
+  render?: (row: T) => ReactNode;
+  width?: number | string;
 }
 
 interface DataTableProps<T extends { id: string | number }> {
-  columns: Column<T>[]
-  rows: T[]
-  title?: string
-  selectable?: boolean
-  selected?: (string | number)[]
-  onSelectionChange?: (selected: (string | number)[]) => void
-  defaultOrderBy?: keyof T | string
-  defaultOrder?: Order
-  rowsPerPageOptions?: number[]
-  dense?: boolean
-  stickyHeader?: boolean
-  maxHeight?: number | string
-  actions?: ReactNode
-  selectedActions?: (selected: (string | number)[]) => ReactNode
-  onRowClick?: (row: T) => void
-  emptyMessage?: string
+  columns: Column<T>[];
+  rows: T[];
+  title?: string;
+  selectable?: boolean;
+  selected?: (string | number)[];
+  onSelectionChange?: (selected: (string | number)[]) => void;
+  defaultOrderBy?: keyof T | string;
+  defaultOrder?: Order;
+  rowsPerPageOptions?: number[];
+  dense?: boolean;
+  stickyHeader?: boolean;
+  maxHeight?: number | string;
+  actions?: ReactNode;
+  selectedActions?: (selected: (string | number)[]) => ReactNode;
+  onRowClick?: (row: T) => void;
+  emptyMessage?: string;
 }
 
-function descendingComparator<T>(a: T, b: T, orderBy: keyof T | string): number {
-  const aValue = (a as Record<string, unknown>)[orderBy as string]
-  const bValue = (b as Record<string, unknown>)[orderBy as string]
+function descendingComparator<T>(
+  a: T,
+  b: T,
+  orderBy: keyof T | string,
+): number {
+  const aValue = (a as Record<string, unknown>)[orderBy as string];
+  const bValue = (b as Record<string, unknown>)[orderBy as string];
 
-  if (bValue == null && aValue != null) return -1
-  if (aValue == null && bValue != null) return 1
-  if (aValue == null && bValue == null) return 0
+  if (bValue == null && aValue != null) return -1;
+  if (aValue == null && bValue != null) return 1;
+  if (aValue == null && bValue == null) return 0;
 
   if (typeof aValue === 'string' && typeof bValue === 'string') {
-    return bValue.localeCompare(aValue)
+    return bValue.localeCompare(aValue);
   }
 
   if (typeof aValue === 'number' && typeof bValue === 'number') {
-    return bValue - aValue
+    return bValue - aValue;
   }
 
   // Fallback for dates and other types
-  if (String(bValue) < String(aValue)) return -1
-  if (String(bValue) > String(aValue)) return 1
-  return 0
+  if (String(bValue) < String(aValue)) return -1;
+  if (String(bValue) > String(aValue)) return 1;
+  return 0;
 }
 
 function getComparator<T>(order: Order, orderBy: keyof T | string) {
   return order === 'desc'
     ? (a: T, b: T) => descendingComparator(a, b, orderBy)
-    : (a: T, b: T) => -descendingComparator(a, b, orderBy)
+    : (a: T, b: T) => -descendingComparator(a, b, orderBy);
 }
 
 export function DataTable<T extends { id: string | number }>({
@@ -92,66 +96,74 @@ export function DataTable<T extends { id: string | number }>({
   onRowClick,
   emptyMessage = 'Aucune donnée',
 }: DataTableProps<T>) {
-  const [order, setOrder] = useState<Order>(defaultOrder)
-  const [orderBy, setOrderBy] = useState<keyof T | string>(defaultOrderBy ?? columns[0]?.id ?? '')
-  const [page, setPage] = useState(0)
-  const [rowsPerPage, setRowsPerPage] = useState(rowsPerPageOptions[0] ?? 10)
+  const [order, setOrder] = useState<Order>(defaultOrder);
+  const [orderBy, setOrderBy] = useState<keyof T | string>(
+    defaultOrderBy ?? columns[0]?.id ?? '',
+  );
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(rowsPerPageOptions[0] ?? 10);
 
   const handleRequestSort = useCallback(
     (property: keyof T | string) => {
-      const isAsc = orderBy === property && order === 'asc'
-      setOrder(isAsc ? 'desc' : 'asc')
-      setOrderBy(property)
+      const isAsc = orderBy === property && order === 'asc';
+      setOrder(isAsc ? 'desc' : 'asc');
+      setOrderBy(property);
     },
-    [order, orderBy]
-  )
+    [order, orderBy],
+  );
 
   const handleSelectAllClick = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       if (event.target.checked) {
-        onSelectionChange?.(rows.map((row) => row.id))
+        onSelectionChange?.(rows.map((row) => row.id));
       } else {
-        onSelectionChange?.([])
+        onSelectionChange?.([]);
       }
     },
-    [rows, onSelectionChange]
-  )
+    [rows, onSelectionChange],
+  );
 
   const handleClick = useCallback(
     (id: string | number) => {
-      const selectedIndex = selected.indexOf(id)
-      let newSelected: (string | number)[] = []
+      const selectedIndex = selected.indexOf(id);
+      let newSelected: (string | number)[] = [];
 
       if (selectedIndex === -1) {
-        newSelected = [...selected, id]
+        newSelected = [...selected, id];
       } else {
-        newSelected = selected.filter((itemId) => itemId !== id)
+        newSelected = selected.filter((itemId) => itemId !== id);
       }
 
-      onSelectionChange?.(newSelected)
+      onSelectionChange?.(newSelected);
     },
-    [selected, onSelectionChange]
-  )
+    [selected, onSelectionChange],
+  );
 
   const handleChangePage = useCallback((_: unknown, newPage: number) => {
-    setPage(newPage)
-  }, [])
+    setPage(newPage);
+  }, []);
 
-  const handleChangeRowsPerPage = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(parseInt(event.target.value, 10))
-    setPage(0)
-  }, [])
+  const handleChangeRowsPerPage = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      setRowsPerPage(parseInt(event.target.value, 10));
+      setPage(0);
+    },
+    [],
+  );
 
   const sortedRows = useMemo(() => {
-    return [...rows].sort(getComparator(order, orderBy))
-  }, [rows, order, orderBy])
+    return [...rows].sort(getComparator(order, orderBy));
+  }, [rows, order, orderBy]);
 
   const paginatedRows = useMemo(() => {
-    return sortedRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-  }, [sortedRows, page, rowsPerPage])
+    return sortedRows.slice(
+      page * rowsPerPage,
+      page * rowsPerPage + rowsPerPage,
+    );
+  }, [sortedRows, page, rowsPerPage]);
 
-  const numSelected = selected.length
-  const rowCount = rows.length
+  const numSelected = selected.length;
+  const rowCount = rows.length;
 
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
@@ -162,12 +174,20 @@ export function DataTable<T extends { id: string | number }>({
             pr: { xs: 1, sm: 1 },
             ...(numSelected > 0 && {
               bgcolor: (theme) =>
-                alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
+                alpha(
+                  theme.palette.primary.main,
+                  theme.palette.action.activatedOpacity,
+                ),
             }),
           }}
         >
           {numSelected > 0 ? (
-            <Typography sx={{ flex: '1 1 100%' }} color="inherit" variant="subtitle1" component="div">
+            <Typography
+              sx={{ flex: '1 1 100%' }}
+              color="inherit"
+              variant="subtitle1"
+              component="div"
+            >
               {numSelected} sélectionné{numSelected > 1 ? 's' : ''}
             </Typography>
           ) : (
@@ -223,7 +243,10 @@ export function DataTable<T extends { id: string | number }>({
           <TableBody>
             {paginatedRows.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={columns.length + (selectable ? 1 : 0)} align="center">
+                <TableCell
+                  colSpan={columns.length + (selectable ? 1 : 0)}
+                  align="center"
+                >
                   <Typography color="text.secondary" sx={{ py: 4 }}>
                     {emptyMessage}
                   </Typography>
@@ -231,24 +254,30 @@ export function DataTable<T extends { id: string | number }>({
               </TableRow>
             ) : (
               paginatedRows.map((row) => {
-                const isSelected = selected.includes(row.id)
+                const isSelected = selected.includes(row.id);
                 return (
                   <TableRow
                     key={row.id}
                     hover
-                    onClick={() => (selectable ? handleClick(row.id) : onRowClick?.(row))}
+                    onClick={() =>
+                      selectable ? handleClick(row.id) : onRowClick?.(row)
+                    }
                     role={selectable ? 'checkbox' : undefined}
                     aria-checked={selectable ? isSelected : undefined}
                     tabIndex={-1}
                     selected={isSelected}
-                    sx={{ cursor: selectable || onRowClick ? 'pointer' : 'default' }}
+                    sx={{
+                      cursor: selectable || onRowClick ? 'pointer' : 'default',
+                    }}
                   >
                     {selectable && (
                       <TableCell padding="checkbox">
                         <Checkbox
                           color="primary"
                           checked={isSelected}
-                          inputProps={{ 'aria-labelledby': `table-row-${row.id}` }}
+                          inputProps={{
+                            'aria-labelledby': `table-row-${row.id}`,
+                          }}
                         />
                       </TableCell>
                     )}
@@ -260,11 +289,15 @@ export function DataTable<T extends { id: string | number }>({
                       >
                         {column.render
                           ? column.render(row)
-                          : String((row as Record<string, unknown>)[column.id as string] ?? '')}
+                          : String(
+                              (row as Record<string, unknown>)[
+                                column.id as string
+                              ] ?? '',
+                            )}
                       </TableCell>
                     ))}
                   </TableRow>
-                )
+                );
               })
             )}
           </TableBody>
@@ -284,5 +317,5 @@ export function DataTable<T extends { id: string | number }>({
         }
       />
     </Paper>
-  )
+  );
 }

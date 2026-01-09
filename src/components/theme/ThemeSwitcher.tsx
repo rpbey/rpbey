@@ -1,14 +1,17 @@
-'use client'
+'use client';
 
-import { IconButton, Tooltip, alpha } from '@mui/material'
-import { Palette, SportsEsports } from '@mui/icons-material'
-import { useThemeMode } from './ThemeRegistry'
+import { Palette, SportsEsports } from '@mui/icons-material';
+import { alpha, IconButton, Tooltip } from '@mui/material';
+import { useThemeMode } from './ThemeRegistry';
 
 export function ThemeSwitcher() {
-  const { mode, toggleTheme } = useThemeMode()
+  const { mode, toggleTheme } = useThemeMode();
 
   return (
-    <Tooltip title={mode === 'rpb' ? 'Mode Tournoi' : 'Mode RPB'} placement="right">
+    <Tooltip
+      title={mode === 'rpb' ? 'Mode Tournoi' : 'Mode RPB'}
+      placement="right"
+    >
       <IconButton
         onClick={toggleTheme}
         sx={{
@@ -24,5 +27,5 @@ export function ThemeSwitcher() {
         {mode === 'rpb' ? <Palette /> : <SportsEsports />}
       </IconButton>
     </Tooltip>
-  )
+  );
 }

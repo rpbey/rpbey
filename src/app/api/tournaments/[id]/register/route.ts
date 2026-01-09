@@ -1,23 +1,23 @@
-import { NextResponse } from "next/server"
-import { headers } from "next/headers"
-import prisma from "@/lib/prisma"
-import { auth } from "@/lib/auth"
+import { headers } from 'next/headers';
+import { NextResponse } from 'next/server';
+import { auth } from '@/lib/auth';
+import prisma from '@/lib/prisma';
 
 interface RouteParams {
-  params: Promise<{ id: string }>
+  params: Promise<{ id: string }>;
 }
 
-export async function POST(request: Request, { params }: RouteParams) {
+export async function POST(_request: Request, { params }: RouteParams) {
   try {
-    const { id } = await params
+    const { id } = await params;
 
     // Get current user
     const session = await auth.api.getSession({
       headers: await headers(),
-    })
+    });
 
     if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Ensure user profile exists
@@ -28,16 +28,19 @@ export async function POST(request: Request, { params }: RouteParams) {
         userId: session.user.id,
         bladerName: session.user.name,
       },
-    })
+    });
 
     // Check if tournament exists
     const tournament = await prisma.tournament.findUnique({
       where: { id },
       include: { participants: true },
-    })
+    });
 
     if (!tournament) {
-      return NextResponse.json({ error: "Tournament not found" }, { status: 404 })
+      return NextResponse.json(
+        { error: 'Tournament not found' },
+        { status: 404 },
+      );
     }
 
     // Check if already registered
@@ -48,15 +51,24 @@ export async function POST(request: Request, { params }: RouteParams) {
           userId: session.user.id,
         },
       },
-    })
+    });
 
     if (existingParticipant) {
-      return NextResponse.json({ error: "Already registered" }, { status: 400 })
+      return NextResponse.json(
+        { error: 'Already registered' },
+        { status: 400 },
+      );
     }
 
     // Check if tournament is full
-    if (tournament.maxPlayers && tournament.participants.length >= tournament.maxPlayers) {
-      return NextResponse.json({ error: "Tournament is full" }, { status: 400 })
+    if (
+      tournament.maxPlayers &&
+      tournament.participants.length >= tournament.maxPlayers
+    ) {
+      return NextResponse.json(
+        { error: 'Tournament is full' },
+        { status: 400 },
+      );
     }
 
     // Register participant
@@ -72,26 +84,26 @@ export async function POST(request: Request, { params }: RouteParams) {
           },
         },
       },
-    })
+    });
 
-    return NextResponse.json(participant, { status: 201 })
+    return NextResponse.json(participant, { status: 201 });
   } catch (error) {
-    console.error("Error registering for tournament:", error)
-    return NextResponse.json({ error: "Failed to register" }, { status: 500 })
+    console.error('Error registering for tournament:', error);
+    return NextResponse.json({ error: 'Failed to register' }, { status: 500 });
   }
 }
 
-export async function DELETE(request: Request, { params }: RouteParams) {
+export async function DELETE(_request: Request, { params }: RouteParams) {
   try {
-    const { id } = await params
+    const { id } = await params;
 
     // Get current user
     const session = await auth.api.getSession({
       headers: await headers(),
-    })
+    });
 
     if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Delete registration
@@ -102,11 +114,14 @@ export async function DELETE(request: Request, { params }: RouteParams) {
           userId: session.user.id,
         },
       },
-    })
+    });
 
-    return NextResponse.json({ message: "Unregistered from tournament" })
+    return NextResponse.json({ message: 'Unregistered from tournament' });
   } catch (error) {
-    console.error("Error unregistering from tournament:", error)
-    return NextResponse.json({ error: "Failed to unregister" }, { status: 500 })
+    console.error('Error unregistering from tournament:', error);
+    return NextResponse.json(
+      { error: 'Failed to unregister' },
+      { status: 500 },
+    );
   }
 }

@@ -1,47 +1,53 @@
-'use client'
+'use client';
 
-import { useState, useEffect, useCallback } from 'react'
-import {
-  Box,
-  Container,
-  Typography,
-  Grid,
-  Card,
-  CardContent,
-  Avatar,
-  TextField,
-  Button,
-  MenuItem,
-  Stack,
-  Divider,
-  CircularProgress,
-  Chip,
-} from '@mui/material'
 import {
   EmojiEvents as MedalIcon,
   Save as SaveIcon,
-} from '@mui/icons-material'
-import { useSession } from '@/lib/auth-client'
-import { useToast, TrophyIcon } from '@/components/ui'
-import type { BeyType, ExperienceLevel, Profile, Tournament, TournamentParticipant, User } from '@prisma/client'
-
-import SecuritySettings from '@/components/profile/SecuritySettings'
+} from '@mui/icons-material';
+import {
+  Avatar,
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Chip,
+  CircularProgress,
+  Container,
+  Divider,
+  Grid,
+  MenuItem,
+  Stack,
+  TextField,
+  Typography,
+} from '@mui/material';
+import type {
+  BeyType,
+  ExperienceLevel,
+  Profile,
+  Tournament,
+  TournamentParticipant,
+  User,
+} from '@prisma/client';
+import { useCallback, useEffect, useState } from 'react';
+import SecuritySettings from '@/components/profile/SecuritySettings';
+import { TrophyIcon, useToast } from '@/components/ui';
+import { useSession } from '@/lib/auth-client';
 
 // Extended Profile type to include relations fetched from API
 type ProfileWithRelations = Profile & {
   user: User & {
     tournaments: (TournamentParticipant & {
-      tournament: Tournament
-    })[]
-  }
-}
+      tournament: Tournament;
+    })[];
+  };
+};
 
 const BEYBLADE_TYPES: { value: BeyType; label: string }[] = [
   { value: 'ATTACK', label: 'Attaque' },
   { value: 'DEFENSE', label: 'Défense' },
   { value: 'STAMINA', label: 'Endurance' },
   { value: 'BALANCE', label: 'Équilibre' },
-]
+];
 
 const EXPERIENCE_LEVELS: { value: ExperienceLevel; label: string }[] = [
   { value: 'BEGINNER', label: 'Débutant' },
@@ -49,86 +55,88 @@ const EXPERIENCE_LEVELS: { value: ExperienceLevel; label: string }[] = [
   { value: 'ADVANCED', label: 'Avancé' },
   { value: 'EXPERT', label: 'Expert' },
   { value: 'LEGEND', label: 'Légende' },
-]
+];
 
 export default function ProfilePage() {
-  const { data: session, isPending: sessionPending } = useSession()
-  const [loading, setLoading] = useState(true)
-  const [saving, setSaving] = useState(false)
-  const [profile, setProfile] = useState<ProfileWithRelations | null>(null)
+  const { data: session, isPending: sessionPending } = useSession();
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [profile, setProfile] = useState<ProfileWithRelations | null>(null);
   const [formData, setFormData] = useState({
     bladerName: '',
     favoriteType: 'ATTACK' as BeyType,
     experience: 'BEGINNER' as ExperienceLevel,
     bio: '',
-  })
+  });
 
-  const { showToast } = useToast()
+  const { showToast } = useToast();
 
   const fetchProfile = useCallback(async () => {
     try {
-      const response = await fetch('/api/profile')
+      const response = await fetch('/api/profile');
       if (response.ok) {
-        const data = await response.json()
-        setProfile(data)
+        const data = await response.json();
+        setProfile(data);
         setFormData({
           bladerName: data.bladerName || session?.user.name || '',
           favoriteType: data.favoriteType || 'ATTACK',
           experience: data.experience || 'BEGINNER',
           bio: data.bio || '',
-        })
+        });
       } else if (response.status === 404) {
         // Profile doesn't exist yet, we'll create it on first save or just show empty form
         setFormData((prev) => ({
           ...prev,
           bladerName: session?.user.name || '',
-        }))
+        }));
       }
     } catch {
-      showToast('Erreur lors de la récupération du profil', 'error')
+      showToast('Erreur lors de la récupération du profil', 'error');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [session, showToast])
+  }, [session, showToast]);
 
   useEffect(() => {
     if (session?.user) {
-      fetchProfile()
+      fetchProfile();
     }
-  }, [session, fetchProfile])
+  }, [session, fetchProfile]);
 
   const handleSave = async () => {
-    setSaving(true)
+    setSaving(true);
     try {
       const response = await fetch('/api/profile', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
-      })
+      });
 
       if (response.ok) {
-        const updatedProfile = await response.json()
+        const updatedProfile = await response.json();
         // Determine if we need to merge with existing relations or if API returns them
         // API PATCH currently returns just the Profile without relations.
         // We should probably re-fetch or optimistically update, but let's keep the relations.
-        setProfile(prev => prev ? { ...prev, ...updatedProfile } : updatedProfile)
-        showToast('Profil mis à jour avec succès', 'success')
+        setProfile((prev) =>
+          prev ? { ...prev, ...updatedProfile } : updatedProfile,
+        );
+        showToast('Profil mis à jour avec succès', 'success');
       } else {
-        throw new Error('Failed to update')
+        throw new Error('Failed to update');
       }
     } catch {
-      showToast('Erreur lors de la mise à jour', 'error')
+      showToast('Erreur lors de la mise à jour', 'error');
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
-  }
+  };
 
   if (sessionPending || (loading && session)) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', py: 20 }}>
         <CircularProgress />
       </Box>
-    )
+    );
   }
 
   if (!session) {
@@ -144,7 +152,7 @@ export default function ProfilePage() {
           Se connecter
         </Button>
       </Container>
-    )
+    );
   }
 
   return (
@@ -171,10 +179,18 @@ export default function ProfilePage() {
                 pb: 2,
               }}
             >
-              <Box sx={{ position: 'relative', display: 'inline-block', mb: 2 }}>
+              <Box
+                sx={{ position: 'relative', display: 'inline-block', mb: 2 }}
+              >
                 <Avatar
                   src={session.user.image || undefined}
-                  sx={{ width: 120, height: 120, mx: 'auto', border: '4px solid', borderColor: 'primary.main' }}
+                  sx={{
+                    width: 120,
+                    height: 120,
+                    mx: 'auto',
+                    border: '4px solid',
+                    borderColor: 'primary.main',
+                  }}
                 >
                   {session.user.name?.charAt(0)}
                 </Avatar>
@@ -206,19 +222,25 @@ export default function ProfilePage() {
                     <Typography variant="h6" fontWeight="bold">
                       {profile?.wins || 0}
                     </Typography>
-                    <Typography variant="caption" color="text.secondary">Victoires</Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      Victoires
+                    </Typography>
                   </Grid>
                   <Grid size={{ xs: 4 }}>
                     <Typography variant="h6" fontWeight="bold">
                       {profile?.losses || 0}
                     </Typography>
-                    <Typography variant="caption" color="text.secondary">Défaites</Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      Défaites
+                    </Typography>
                   </Grid>
                   <Grid size={{ xs: 4 }}>
                     <Typography variant="h6" fontWeight="bold">
                       {profile?.tournamentWins || 0}
                     </Typography>
-                    <Typography variant="caption" color="text.secondary">Titres</Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      Titres
+                    </Typography>
                   </Grid>
                 </Grid>
               </Box>
@@ -233,7 +255,12 @@ export default function ProfilePage() {
               }}
             >
               <CardContent>
-                <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Typography
+                  variant="h6"
+                  fontWeight="bold"
+                  gutterBottom
+                  sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
+                >
                   <MedalIcon color="primary" /> Badges
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
@@ -255,7 +282,12 @@ export default function ProfilePage() {
             }}
           >
             <CardContent sx={{ p: 4 }}>
-              <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ mb: 4 }}>
+              <Typography
+                variant="h6"
+                fontWeight="bold"
+                gutterBottom
+                sx={{ mb: 4 }}
+              >
                 Paramètres du Blader
               </Typography>
 
@@ -264,7 +296,9 @@ export default function ProfilePage() {
                   label="Nom de Blader"
                   fullWidth
                   value={formData.bladerName}
-                  onChange={(e) => setFormData({ ...formData, bladerName: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, bladerName: e.target.value })
+                  }
                   helperText="C'est le nom qui sera affiché dans les classements et tournois"
                 />
 
@@ -275,7 +309,12 @@ export default function ProfilePage() {
                       label="Type de Beyblade favori"
                       fullWidth
                       value={formData.favoriteType}
-                      onChange={(e) => setFormData({ ...formData, favoriteType: e.target.value as BeyType })}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          favoriteType: e.target.value as BeyType,
+                        })
+                      }
                     >
                       {BEYBLADE_TYPES.map((option) => (
                         <MenuItem key={option.value} value={option.value}>
@@ -290,7 +329,12 @@ export default function ProfilePage() {
                       label="Niveau d'expérience"
                       fullWidth
                       value={formData.experience}
-                      onChange={(e) => setFormData({ ...formData, experience: e.target.value as ExperienceLevel })}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          experience: e.target.value as ExperienceLevel,
+                        })
+                      }
                     >
                       {EXPERIENCE_LEVELS.map((option) => (
                         <MenuItem key={option.value} value={option.value}>
@@ -307,7 +351,9 @@ export default function ProfilePage() {
                   multiline
                   rows={4}
                   value={formData.bio}
-                  onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, bio: e.target.value })
+                  }
                   placeholder="Parlez-nous de vous et de vos combos préférés..."
                 />
 
@@ -315,7 +361,13 @@ export default function ProfilePage() {
                   <Button
                     variant="contained"
                     size="large"
-                    startIcon={saving ? <CircularProgress size={20} color="inherit" /> : <SaveIcon />}
+                    startIcon={
+                      saving ? (
+                        <CircularProgress size={20} color="inherit" />
+                      ) : (
+                        <SaveIcon />
+                      )
+                    }
                     onClick={handleSave}
                     disabled={saving}
                     sx={{ px: 4 }}
@@ -331,7 +383,12 @@ export default function ProfilePage() {
 
           {/* Tournament History */}
           <Box sx={{ mt: 4 }}>
-            <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Typography
+              variant="h6"
+              fontWeight="bold"
+              gutterBottom
+              sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
+            >
               <TrophyIcon color="primary" /> Mes Tournois
             </Typography>
             <Card
@@ -344,7 +401,8 @@ export default function ProfilePage() {
               }}
             >
               <CardContent sx={{ py: 2 }}>
-                {profile?.user?.tournaments && profile.user.tournaments.length > 0 ? (
+                {profile?.user?.tournaments &&
+                profile.user.tournaments.length > 0 ? (
                   <Stack spacing={2}>
                     {profile.user.tournaments.map((participation) => (
                       <Box
@@ -363,13 +421,23 @@ export default function ProfilePage() {
                             {participation.tournament.name}
                           </Typography>
                           <Typography variant="caption" color="text.secondary">
-                            {new Date(participation.tournament.date).toLocaleDateString()}
+                            {new Date(
+                              participation.tournament.date,
+                            ).toLocaleDateString()}
                           </Typography>
                         </Box>
                         <Box sx={{ textAlign: 'right' }}>
                           <Chip
-                            label={participation.finalPlacement ? `${participation.finalPlacement}${participation.finalPlacement === 1 ? 'er' : 'ème'} Place` : 'Participant'}
-                            color={participation.finalPlacement === 1 ? 'warning' : 'default'}
+                            label={
+                              participation.finalPlacement
+                                ? `${participation.finalPlacement}${participation.finalPlacement === 1 ? 'er' : 'ème'} Place`
+                                : 'Participant'
+                            }
+                            color={
+                              participation.finalPlacement === 1
+                                ? 'warning'
+                                : 'default'
+                            }
                             size="small"
                           />
                         </Box>
@@ -392,5 +460,5 @@ export default function ProfilePage() {
         </Grid>
       </Grid>
     </Container>
-  )
+  );
 }

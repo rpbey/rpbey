@@ -1,54 +1,54 @@
-'use client'
+'use client';
 
 /**
  * PartSelector - Autocomplete component for selecting Beyblade parts
  */
 
-import { useState, useEffect, useCallback } from 'react'
-import Autocomplete from '@mui/material/Autocomplete'
-import TextField from '@mui/material/TextField'
-import Box from '@mui/material/Box'
-import Typography from '@mui/material/Typography'
-import Chip from '@mui/material/Chip'
-import CircularProgress from '@mui/material/CircularProgress'
-import type { Part, PartType, BeyType } from '@prisma/client'
+import Autocomplete from '@mui/material/Autocomplete';
+import Box from '@mui/material/Box';
+import Chip from '@mui/material/Chip';
+import CircularProgress from '@mui/material/CircularProgress';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
+import type { BeyType, Part, PartType } from '@prisma/client';
+import { useCallback, useEffect, useState } from 'react';
 
 interface PartSelectorProps {
-  type: PartType
-  value: Part | null
-  onChange: (part: Part | null) => void
-  disabled?: boolean
-  disabledPartIds?: string[]
-  label?: string
-  error?: boolean
-  helperText?: string
+  type: PartType;
+  value: Part | null;
+  onChange: (part: Part | null) => void;
+  disabled?: boolean;
+  disabledPartIds?: string[];
+  label?: string;
+  error?: boolean;
+  helperText?: string;
 }
 
 function getBeyTypeColor(beyType: BeyType | null): string {
   switch (beyType) {
     case 'ATTACK':
-      return '#ef4444' // red
+      return '#ef4444'; // red
     case 'DEFENSE':
-      return '#3b82f6' // blue
+      return '#3b82f6'; // blue
     case 'STAMINA':
-      return '#22c55e' // green
+      return '#22c55e'; // green
     case 'BALANCE':
-      return '#a855f7' // purple
+      return '#a855f7'; // purple
     default:
-      return '#6b7280' // gray
+      return '#6b7280'; // gray
   }
 }
 
 function getPartTypeLabel(type: PartType): string {
   switch (type) {
     case 'BLADE':
-      return 'Blade'
+      return 'Blade';
     case 'RATCHET':
-      return 'Ratchet'
+      return 'Ratchet';
     case 'BIT':
-      return 'Bit'
+      return 'Bit';
     default:
-      return 'Part'
+      return 'Part';
   }
 }
 
@@ -62,43 +62,46 @@ export function PartSelector({
   error,
   helperText,
 }: PartSelectorProps) {
-  const [options, setOptions] = useState<Part[]>([])
-  const [loading, setLoading] = useState(false)
-  const [inputValue, setInputValue] = useState('')
+  const [options, setOptions] = useState<Part[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [inputValue, setInputValue] = useState('');
 
   // Fetch parts on mount and when search changes
-  const fetchParts = useCallback(async (search?: string) => {
-    setLoading(true)
-    try {
-      const params = new URLSearchParams({ type })
-      if (search) params.set('search', search)
+  const fetchParts = useCallback(
+    async (search?: string) => {
+      setLoading(true);
+      try {
+        const params = new URLSearchParams({ type });
+        if (search) params.set('search', search);
 
-      const response = await fetch(`/api/parts?${params}`)
-      const result = await response.json()
+        const response = await fetch(`/api/parts?${params}`);
+        const result = await response.json();
 
-      if (result.data) {
-        setOptions(result.data)
+        if (result.data) {
+          setOptions(result.data);
+        }
+      } catch (err) {
+        console.error('Failed to fetch parts:', err);
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      console.error('Failed to fetch parts:', err)
-    } finally {
-      setLoading(false)
-    }
-  }, [type])
+    },
+    [type],
+  );
 
   useEffect(() => {
-    fetchParts()
-  }, [fetchParts])
+    fetchParts();
+  }, [fetchParts]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       if (inputValue) {
-        fetchParts(inputValue)
+        fetchParts(inputValue);
       }
-    }, 300)
+    }, 300);
 
-    return () => clearTimeout(timer)
-  }, [inputValue, fetchParts])
+    return () => clearTimeout(timer);
+  }, [inputValue, fetchParts]);
 
   return (
     <Autocomplete
@@ -135,7 +138,7 @@ export function PartSelector({
         />
       )}
       renderOption={(props, option) => {
-        const { key, ...rest } = props
+        const { key, ...rest } = props;
         return (
           <Box
             component="li"
@@ -175,8 +178,8 @@ export function PartSelector({
               )}
             </Box>
           </Box>
-        )
+        );
       }}
     />
-  )
+  );
 }

@@ -1,7 +1,6 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import Link from 'next/link'
+import MenuIcon from '@mui/icons-material/Menu';
 import {
   AppBar,
   Avatar,
@@ -13,41 +12,42 @@ import {
   MenuItem,
   Toolbar,
   Typography,
-} from '@mui/material'
-import MenuIcon from '@mui/icons-material/Menu'
-import { useSession, signOut } from '@/lib/auth-client'
+} from '@mui/material';
+import Link from 'next/link';
+import { useState } from 'react';
+import { signOut, useSession } from '@/lib/auth-client';
 
 const pages = [
   { label: 'Dashboard', href: '/dashboard' },
   { label: 'Tournois', href: '/tournaments' },
   { label: 'Classements', href: '/rankings' },
-]
+];
 
 export function Header() {
-  const { data: session } = useSession()
-  const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null)
-  const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null)
+  const { data: session } = useSession();
+  const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
+  const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElNav(event.currentTarget)
-  }
+    setAnchorElNav(event.currentTarget);
+  };
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElUser(event.currentTarget)
-  }
+    setAnchorElUser(event.currentTarget);
+  };
 
   const handleCloseNavMenu = () => {
-    setAnchorElNav(null)
-  }
+    setAnchorElNav(null);
+  };
 
   const handleCloseUserMenu = () => {
-    setAnchorElUser(null)
-  }
+    setAnchorElUser(null);
+  };
 
   const handleSignOut = async () => {
-    await signOut()
-    handleCloseUserMenu()
-  }
+    await signOut();
+    handleCloseUserMenu();
+  };
 
   return (
     <AppBar position="sticky" color="default" elevation={1}>
@@ -71,7 +71,11 @@ export function Header() {
 
           {/* Mobile menu */}
           <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
-            <IconButton size="large" onClick={handleOpenNavMenu} color="inherit">
+            <IconButton
+              size="large"
+              onClick={handleOpenNavMenu}
+              color="inherit"
+            >
               <MenuIcon />
             </IconButton>
             <Menu
@@ -110,7 +114,9 @@ export function Header() {
           </Typography>
 
           {/* Desktop menu */}
-          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' }, gap: 1 }}>
+          <Box
+            sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' }, gap: 1 }}
+          >
             {pages.map((page) => (
               <Button
                 key={page.href}
@@ -140,14 +146,23 @@ export function Header() {
                   anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
                   transformOrigin={{ vertical: 'top', horizontal: 'right' }}
                 >
-                  <MenuItem component={Link} href="/profile" onClick={handleCloseUserMenu}>
+                  <MenuItem
+                    component={Link}
+                    href="/profile"
+                    onClick={handleCloseUserMenu}
+                  >
                     Profil
                   </MenuItem>
                   <MenuItem onClick={handleSignOut}>Déconnexion</MenuItem>
                 </Menu>
               </>
             ) : (
-              <Button component={Link} href="/sign-in" variant="contained" color="primary">
+              <Button
+                component={Link}
+                href="/sign-in"
+                variant="contained"
+                color="primary"
+              >
                 Connexion
               </Button>
             )}
@@ -155,5 +170,5 @@ export function Header() {
         </Toolbar>
       </Container>
     </AppBar>
-  )
+  );
 }

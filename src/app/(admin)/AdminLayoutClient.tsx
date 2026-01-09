@@ -1,45 +1,55 @@
-'use client'
+'use client';
 
-import { useState, type ReactNode } from 'react'
-import Box from '@mui/material/Box'
-import Typography from '@mui/material/Typography'
-import { usePathname } from 'next/navigation'
-import { AdminSidebar, AdminMobileHeader, ADMIN_DRAWER_WIDTH } from '@/components/layout/AdminSidebar'
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import { usePathname } from 'next/navigation';
+import { type ReactNode, useState } from 'react';
+import {
+  ADMIN_DRAWER_WIDTH,
+  AdminMobileHeader,
+  AdminSidebar,
+} from '@/components/layout/AdminSidebar';
 
 interface AdminLayoutClientProps {
-  children: ReactNode
+  children: ReactNode;
 }
 
 const getPageTitle = (pathname: string) => {
-  if (pathname === '/admin') return 'Vue d\'ensemble'
-  if (pathname.startsWith('/admin/discord')) return 'Bot Discord'
-  if (pathname.startsWith('/admin/bot')) return 'Statut du Bot'
-  if (pathname.startsWith('/admin/content')) return 'Contenu du Site'
-  if (pathname.startsWith('/admin/tournaments')) return 'Tournois'
-  if (pathname.startsWith('/admin/staff')) return 'Équipe'
-  if (pathname.startsWith('/admin/users')) return 'Utilisateurs'
-  if (pathname.startsWith('/admin/stats')) return 'Statistiques'
-  if (pathname.startsWith('/admin/settings')) return 'Paramètres'
-  return 'Admin'
-}
+  if (pathname === '/admin') return "Vue d'ensemble";
+  if (pathname.startsWith('/admin/discord')) return 'Bot Discord';
+  if (pathname.startsWith('/admin/bot')) return 'Statut du Bot';
+  if (pathname.startsWith('/admin/content')) return 'Contenu du Site';
+  if (pathname.startsWith('/admin/tournaments')) return 'Tournois';
+  if (pathname.startsWith('/admin/staff')) return 'Équipe';
+  if (pathname.startsWith('/admin/users')) return 'Utilisateurs';
+  if (pathname.startsWith('/admin/stats')) return 'Statistiques';
+  if (pathname.startsWith('/admin/settings')) return 'Paramètres';
+  return 'Admin';
+};
 
 export function AdminLayoutClient({ children }: AdminLayoutClientProps) {
-  const [mobileOpen, setMobileOpen] = useState(false)
-  const pathname = usePathname()
-  const title = getPageTitle(pathname)
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const pathname = usePathname();
+  const title = getPageTitle(pathname);
 
   const handleMobileClose = () => {
-    setMobileOpen(false)
-  }
+    setMobileOpen(false);
+  };
 
   const handleMobileToggle = () => {
-    setMobileOpen(!mobileOpen)
-  }
+    setMobileOpen(!mobileOpen);
+  };
 
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: 'background.default' }}>
+    <Box
+      sx={{
+        display: 'flex',
+        minHeight: '100vh',
+        bgcolor: 'background.default',
+      }}
+    >
       <AdminSidebar mobileOpen={mobileOpen} onMobileClose={handleMobileClose} />
-      
+
       <Box
         component="main"
         sx={{
@@ -51,7 +61,7 @@ export function AdminLayoutClient({ children }: AdminLayoutClientProps) {
         }}
       >
         <AdminMobileHeader onMenuClick={handleMobileToggle} />
-        
+
         {/* Desktop Header */}
         <Box
           sx={{
@@ -72,10 +82,8 @@ export function AdminLayoutClient({ children }: AdminLayoutClientProps) {
           </Typography>
         </Box>
 
-        <Box sx={{ flexGrow: 1, px: { xs: 2, md: 4 }, pb: 4 }}>
-          {children}
-        </Box>
+        <Box sx={{ flexGrow: 1, px: { xs: 2, md: 4 }, pb: 4 }}>{children}</Box>
       </Box>
     </Box>
-  )
+  );
 }

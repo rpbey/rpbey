@@ -1,11 +1,11 @@
-'use client'
+'use client';
 
-import { Box, CircularProgress, Typography } from '@mui/material'
-import { useThemeMode } from '@/components/theme/ThemeRegistry'
-import Image from 'next/image'
+import { Box, CircularProgress, Typography } from '@mui/material';
+import Image from 'next/image';
+import { useThemeMode } from '@/components/theme/ThemeRegistry';
 
 export default function Loading() {
-  const { backgroundImage } = useThemeMode()
+  const { backgroundImage } = useThemeMode();
 
   return (
     <Box
@@ -33,18 +33,12 @@ export default function Loading() {
           p: 4,
         }}
       >
-        <Image
-          src="/logo.svg"
-          alt="RPB Logo"
-          width={80}
-          height={80}
-          priority
-        />
+        <Image src="/logo.svg" alt="RPB Logo" width={80} height={80} priority />
         <CircularProgress color="primary" size={48} />
         <Typography variant="body1" color="text.secondary">
           Chargement...
         </Typography>
       </Box>
     </Box>
-  )
+  );
 }

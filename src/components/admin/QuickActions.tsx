@@ -1,57 +1,57 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import Box from '@mui/material/Box'
-import Typography from '@mui/material/Typography'
-import { SmartToy } from '@mui/icons-material'
-import { TrophyIcon } from '@/components/ui/Icons'
-import { useRouter } from 'next/navigation'
-import { useToast } from '@/components/ui'
+import { SmartToy } from '@mui/icons-material';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { useToast } from '@/components/ui';
+import { TrophyIcon } from '@/components/ui/Icons';
 
 export function QuickActions() {
-  const router = useRouter()
-  const { showToast } = useToast()
-  const [isRestarting, setIsRestarting] = useState(false)
+  const router = useRouter();
+  const { showToast } = useToast();
+  const [isRestarting, setIsRestarting] = useState(false);
 
   const handleRestartBot = async () => {
-    if (!confirm('Êtes-vous sûr de vouloir redémarrer le bot ?')) return
+    if (!confirm('Êtes-vous sûr de vouloir redémarrer le bot ?')) return;
 
-    setIsRestarting(true)
+    setIsRestarting(true);
     try {
       const response = await fetch('/api/admin/bot/restart', {
         method: 'POST',
-      })
+      });
 
       if (response.ok) {
-        showToast('Redémarrage du bot demandé...', 'success')
+        showToast('Redémarrage du bot demandé...', 'success');
       } else {
-        showToast('Erreur lors du redémarrage du bot', 'error')
+        showToast('Erreur lors du redémarrage du bot', 'error');
       }
     } catch {
-      showToast('Erreur réseau', 'error')
+      showToast('Erreur réseau', 'error');
     } finally {
-      setIsRestarting(false)
+      setIsRestarting(false);
     }
-  }
+  };
 
   const actions = [
-    { 
-      label: 'Créer un tournoi', 
-      icon: TrophyIcon, 
-      onClick: () => router.push('/admin/tournaments/new') 
+    {
+      label: 'Créer un tournoi',
+      icon: TrophyIcon,
+      onClick: () => router.push('/admin/tournaments/new'),
     },
-    { 
-      label: isRestarting ? 'Redémarrage...' : 'Redémarrer le bot', 
-      icon: SmartToy, 
+    {
+      label: isRestarting ? 'Redémarrage...' : 'Redémarrer le bot',
+      icon: SmartToy,
       onClick: handleRestartBot,
-      disabled: isRestarting
+      disabled: isRestarting,
     },
-  ]
+  ];
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
       {actions.map((action) => {
-        const Icon = action.icon
+        const Icon = action.icon;
         return (
           <Box
             key={action.label}
@@ -66,17 +66,19 @@ export function QuickActions() {
               cursor: action.disabled ? 'not-allowed' : 'pointer',
               opacity: action.disabled ? 0.6 : 1,
               transition: 'all 0.2s',
-              '&:hover': action.disabled ? {} : {
-                bgcolor: 'primary.main',
-                color: 'white',
-              },
+              '&:hover': action.disabled
+                ? {}
+                : {
+                    bgcolor: 'primary.main',
+                    color: 'white',
+                  },
             }}
           >
             <Icon fontSize="small" />
             <Typography variant="body2">{action.label}</Typography>
           </Box>
-        )
+        );
       })}
     </Box>
-  )
+  );
 }

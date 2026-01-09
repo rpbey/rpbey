@@ -1,1 +1,1 @@
-export * from './FeedMyPartnership'
+export * from './FeedMyPartnership';

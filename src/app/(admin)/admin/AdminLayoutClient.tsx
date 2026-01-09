@@ -1,18 +1,28 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { Box } from '@mui/material'
-import { AdminSidebar, AdminMobileHeader, ADMIN_DRAWER_WIDTH } from '@/components/layout/AdminSidebar'
+import { Box } from '@mui/material';
+import { useState } from 'react';
+import {
+  ADMIN_DRAWER_WIDTH,
+  AdminMobileHeader,
+  AdminSidebar,
+} from '@/components/layout/AdminSidebar';
 
 export function AdminLayoutClient({ children }: { children: React.ReactNode }) {
-  const [mobileOpen, setMobileOpen] = useState(false)
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen)
-  }
+    setMobileOpen(!mobileOpen);
+  };
 
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: 'background.default' }}>
+    <Box
+      sx={{
+        display: 'flex',
+        minHeight: '100vh',
+        bgcolor: 'background.default',
+      }}
+    >
       <AdminSidebar
         mobileOpen={mobileOpen}
         onMobileClose={() => setMobileOpen(false)}
@@ -31,5 +41,5 @@ export function AdminLayoutClient({ children }: { children: React.ReactNode }) {
         {children}
       </Box>
     </Box>
-  )
+  );
 }

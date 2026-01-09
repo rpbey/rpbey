@@ -1,16 +1,23 @@
-import type { MetadataRoute } from 'next'
+import type { MetadataRoute } from 'next';
 
-export const dynamic = 'force-static'
+export const dynamic = 'force-static';
 
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://rpbey.fr'
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://rpbey.fr';
 
   return {
     rules: [
       {
         userAgent: '*',
         allow: '/',
-        disallow: ['/api/', '/admin/', '/dashboard/', '/sign-in', '/sign-up', '/two-factor'],
+        disallow: [
+          '/api/',
+          '/admin/',
+          '/dashboard/',
+          '/sign-in',
+          '/sign-up',
+          '/two-factor',
+        ],
       },
       {
         userAgent: 'Googlebot',
@@ -29,5 +36,5 @@ export default function robots(): MetadataRoute.Robots {
       },
     ],
     sitemap: `${baseUrl}/sitemap.xml`,
-  }
+  };
 }

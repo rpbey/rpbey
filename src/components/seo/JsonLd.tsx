@@ -1,8 +1,8 @@
-import type { Thing, WithContext } from 'schema-dts'
+import type { Thing, WithContext } from 'schema-dts';
 
 type JsonLdProps<T extends Thing> = {
-  data: WithContext<T>
-}
+  data: WithContext<T>;
+};
 
 export function JsonLd<T extends Thing>({ data }: JsonLdProps<T>) {
   return (
@@ -10,5 +10,5 @@ export function JsonLd<T extends Thing>({ data }: JsonLdProps<T>) {
       type="application/ld+json"
       dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
     />
-  )
+  );
 }

@@ -9,7 +9,7 @@ export class APIError extends Error {
     public status: number,
     public statusText: string,
     public data: unknown,
-    public url: string
+    public url: string,
   ) {
     super(`API Error ${status} (${statusText}) at ${url}`);
     this.name = 'APIError';
@@ -20,12 +20,21 @@ export interface StandardAPIOptions extends Omit<RequestInit, 'body'> {
   body?: unknown;
   baseUrl?: string;
   params?: Record<string, string | number | boolean | undefined | null>;
-  validationSchema?: { safeParse: (data: unknown) => { success: boolean; data?: unknown; error?: unknown } }; 
+  validationSchema?: {
+    safeParse: (data: unknown) => {
+      success: boolean;
+      data?: unknown;
+      error?: unknown;
+    };
+  };
   revalidate?: number | false; // Next.js shortcut
 }
 
 export interface APIInterceptor {
-  onRequest?: (url: string, options: RequestInit) => RequestInit | Promise<RequestInit>;
+  onRequest?: (
+    url: string,
+    options: RequestInit,
+  ) => RequestInit | Promise<RequestInit>;
   onResponse?: (response: Response) => Response | Promise<Response>;
   onError?: (error: APIError) => void | Promise<void>;
 }
@@ -52,19 +61,24 @@ export class StandardAPI {
   /**
    * Core request method
    */
-  async request<T = unknown>(endpoint: string, options: StandardAPIOptions = {}): Promise<T> {
-    const { baseUrl, params, validationSchema, revalidate, ...fetchOptions } = options;
+  async request<T = unknown>(
+    endpoint: string,
+    options: StandardAPIOptions = {},
+  ): Promise<T> {
+    const { baseUrl, params, validationSchema, revalidate, ...fetchOptions } =
+      options;
 
     // Determine final URL
     const urlBase = baseUrl ?? this.baseUrl;
     const urlPath = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
-    
+
     // Check if we have a valid base URL with protocol
-    const hasProtocol = urlBase.startsWith('http://') || urlBase.startsWith('https://');
+    const hasProtocol =
+      urlBase.startsWith('http://') || urlBase.startsWith('https://');
     const fullUrlString = `${urlBase}${urlPath}`;
-    
+
     let url: URL;
-    
+
     if (hasProtocol) {
       url = new URL(fullUrlString);
     } else {
@@ -81,13 +95,13 @@ export class StandardAPI {
         }
       });
     }
-    
+
     // Get final string
     let finalUrl = hasProtocol ? url.toString() : url.pathname + url.search;
-    
+
     // If original base was empty but we have a relative path, ensure we don't double slash if not needed
     if (!hasProtocol && urlBase === '') {
-        finalUrl = urlPath + url.search;
+      finalUrl = urlPath + url.search;
     }
 
     // Merge headers
@@ -100,7 +114,9 @@ export class StandardAPI {
 
     // Next.js specific caching shortcut
     if (revalidate !== undefined) {
-      (fetchOptions as { next?: { revalidate: number | false } }).next = { revalidate };
+      (fetchOptions as { next?: { revalidate: number | false } }).next = {
+        revalidate,
+      };
     }
 
     // Auto-set Content-Type for JSON bodies
@@ -144,7 +160,12 @@ export class StandardAPI {
         } catch {
           errorData = await response.text();
         }
-        throw new APIError(response.status, response.statusText, errorData, finalUrl);
+        throw new APIError(
+          response.status,
+          response.statusText,
+          errorData,
+          finalUrl,
+        );
       }
 
       // Handle empty responses
@@ -157,12 +178,19 @@ export class StandardAPI {
       try {
         data = await response.json();
       } catch {
-        throw new APIError(response.status, 'Invalid JSON Response', null, finalUrl);
+        throw new APIError(
+          response.status,
+          'Invalid JSON Response',
+          null,
+          finalUrl,
+        );
       }
 
       // Optional validation
       if (validationSchema) {
-        const result = validationSchema.safeParse ? validationSchema.safeParse(data) : { success: true, data };
+        const result = validationSchema.safeParse
+          ? validationSchema.safeParse(data)
+          : { success: true, data };
         if (!result.success) {
           console.error('API Validation Error:', result.error);
           // We still return data but log the error
@@ -187,15 +215,27 @@ export class StandardAPI {
     return this.request<T>(endpoint, { ...options, method: 'GET' });
   }
 
-  post<T = unknown>(endpoint: string, body?: unknown, options?: StandardAPIOptions) {
+  post<T = unknown>(
+    endpoint: string,
+    body?: unknown,
+    options?: StandardAPIOptions,
+  ) {
     return this.request<T>(endpoint, { ...options, method: 'POST', body });
   }
 
-  put<T = unknown>(endpoint: string, body?: unknown, options?: StandardAPIOptions) {
+  put<T = unknown>(
+    endpoint: string,
+    body?: unknown,
+    options?: StandardAPIOptions,
+  ) {
     return this.request<T>(endpoint, { ...options, method: 'PUT', body });
   }
 
-  patch<T = unknown>(endpoint: string, body?: unknown, options?: StandardAPIOptions) {
+  patch<T = unknown>(
+    endpoint: string,
+    body?: unknown,
+    options?: StandardAPIOptions,
+  ) {
     return this.request<T>(endpoint, { ...options, method: 'PATCH', body });
   }
 

@@ -1,7 +1,10 @@
 {
   "$schema": "https://biomejs.dev/schemas/2.3.11/schema.json",
   "vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true },
-  "files": { "ignoreUnknown": false, "includes": ["src/**", "bot/src/**", "!src/generated"] },
+  "files": {
+    "ignoreUnknown": false,
+    "includes": ["src/**", "bot/src/**", "!src/generated"]
+  },
   "formatter": {
     "enabled": true,
     "formatWithErrors": false,
@@ -15,7 +18,31 @@
     "expand": "auto",
     "useEditorconfig": true
   },
-  "linter": { "enabled": true, "rules": { "recommended": true } },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": true,
+      "style": {
+        "noNonNullAssertion": "info"
+      },
+      "suspicious": {
+        "noArrayIndexKey": "info",
+        "noShadowRestrictedNames": "info",
+        "noExplicitAny": "info"
+      },
+      "correctness": {
+        "useExhaustiveDependencies": "info"
+      },
+      "security": {
+        "noDangerouslySetInnerHtml": "info"
+      },
+      "a11y": {
+        "noSvgWithoutTitle": "info",
+        "useIframeTitle": "info",
+        "useButtonType": "info"
+      }
+    }
+  },
   "javascript": {
     "formatter": {
       "jsxQuoteStyle": "double",

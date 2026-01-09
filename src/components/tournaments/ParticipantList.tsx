@@ -3,47 +3,47 @@
  * Displays registered participants for a tournament
  */
 
-'use client'
+'use client';
 
-import Box from '@mui/material/Box'
-import Card from '@mui/material/Card'
-import CardContent from '@mui/material/CardContent'
-import Typography from '@mui/material/Typography'
-import List from '@mui/material/List'
-import ListItem from '@mui/material/ListItem'
-import ListItemAvatar from '@mui/material/ListItemAvatar'
-import ListItemText from '@mui/material/ListItemText'
-import Avatar from '@mui/material/Avatar'
-import Chip from '@mui/material/Chip'
-import IconButton from '@mui/material/IconButton'
-import Tooltip from '@mui/material/Tooltip'
-import PersonRemoveIcon from '@mui/icons-material/PersonRemove'
-import Link from 'next/link'
+import PersonRemoveIcon from '@mui/icons-material/PersonRemove';
+import Avatar from '@mui/material/Avatar';
+import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Chip from '@mui/material/Chip';
+import IconButton from '@mui/material/IconButton';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemAvatar from '@mui/material/ListItemAvatar';
+import ListItemText from '@mui/material/ListItemText';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+import Link from 'next/link';
 
 interface Participant {
-  id: string
-  seed: number | null
-  userId: string
+  id: string;
+  seed: number | null;
+  userId: string;
   user: {
-    id: string
-    name: string
+    id: string;
+    name: string;
     profile?: {
-      bladerName?: string
-      avatarUrl?: string
-    }
+      bladerName?: string;
+      avatarUrl?: string;
+    };
     decks?: Array<{
-      id: string
-      name: string
-      isActive: boolean
-    }>
-  }
+      id: string;
+      name: string;
+      isActive: boolean;
+    }>;
+  };
 }
 
 interface ParticipantListProps {
-  participants: Participant[]
-  maxPlayers: number
-  canManage?: boolean
-  onRemove?: (userId: string) => void
+  participants: Participant[];
+  maxPlayers: number;
+  canManage?: boolean;
+  onRemove?: (userId: string) => void;
 }
 
 export function ParticipantList({
@@ -53,11 +53,11 @@ export function ParticipantList({
   onRemove,
 }: ParticipantListProps) {
   const sortedParticipants = [...participants].sort((a, b) => {
-    if (a.seed && b.seed) return a.seed - b.seed
-    if (a.seed) return -1
-    if (b.seed) return 1
-    return 0
-  })
+    if (a.seed && b.seed) return a.seed - b.seed;
+    if (a.seed) return -1;
+    if (b.seed) return 1;
+    return 0;
+  });
 
   return (
     <Card>
@@ -80,8 +80,11 @@ export function ParticipantList({
         ) : (
           <List disablePadding>
             {sortedParticipants.map((participant, index) => {
-              const name = participant.user.profile?.bladerName ?? participant.user.name
-              const hasActiveDeck = participant.user.decks?.some((d) => d.isActive)
+              const name =
+                participant.user.profile?.bladerName ?? participant.user.name;
+              const hasActiveDeck = participant.user.decks?.some(
+                (d) => d.isActive,
+              );
 
               return (
                 <ListItem
@@ -129,7 +132,9 @@ export function ParticipantList({
                         href={`/dashboard/profile/${participant.userId}`}
                         style={{ textDecoration: 'none', color: 'inherit' }}
                       >
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <Box
+                          sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
+                        >
                           <Typography variant="body2" fontWeight="medium">
                             {index + 1}. {name}
                           </Typography>
@@ -165,11 +170,11 @@ export function ParticipantList({
                     }
                   />
                 </ListItem>
-              )
+              );
             })}
           </List>
         )}
       </CardContent>
     </Card>
-  )
+  );
 }

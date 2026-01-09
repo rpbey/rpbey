@@ -1,31 +1,34 @@
-'use client'
+'use client';
 
-import Card from '@mui/material/Card'
-import CardContent from '@mui/material/CardContent'
-import CardActions from '@mui/material/CardActions'
-import CardActionArea from '@mui/material/CardActionArea'
-import Typography from '@mui/material/Typography'
-import Button from '@mui/material/Button'
-import Box from '@mui/material/Box'
-import Chip from '@mui/material/Chip'
-import Grid from '@mui/material/Grid'
-import { CalendarMonth, Group } from '@mui/icons-material'
-import { TrophyIcon } from '@/components/ui/Icons'
-import { TournamentStatusChip, type TournamentStatus } from '@/components/ui/StatusChip'
-import { formatDateShort } from '@/lib/utils'
+import { CalendarMonth, Group } from '@mui/icons-material';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Card from '@mui/material/Card';
+import CardActionArea from '@mui/material/CardActionArea';
+import CardActions from '@mui/material/CardActions';
+import CardContent from '@mui/material/CardContent';
+import Chip from '@mui/material/Chip';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import { TrophyIcon } from '@/components/ui/Icons';
+import {
+  type TournamentStatus,
+  TournamentStatusChip,
+} from '@/components/ui/StatusChip';
+import { formatDateShort } from '@/lib/utils';
 
 interface TournamentCardProps {
-  id: string
-  name: string
-  description?: string | null
-  startDate: Date | string
-  endDate?: Date | string | null
-  status: TournamentStatus
-  maxParticipants?: number | null
-  currentParticipants?: number
-  onClick?: () => void
-  onRegister?: () => void
-  showActions?: boolean
+  id: string;
+  name: string;
+  description?: string | null;
+  startDate: Date | string;
+  endDate?: Date | string | null;
+  status: TournamentStatus;
+  maxParticipants?: number | null;
+  currentParticipants?: number;
+  onClick?: () => void;
+  onRegister?: () => void;
+  showActions?: boolean;
 }
 
 export function TournamentCard({
@@ -40,16 +43,29 @@ export function TournamentCard({
   onRegister,
   showActions = true,
 }: TournamentCardProps) {
-  const formattedStartDate = formatDateShort(new Date(startDate))
-  const formattedEndDate = endDate ? formatDateShort(new Date(endDate)) : null
-  const isRegistrationOpen = status === 'registration_open'
-  const isFull = maxParticipants ? currentParticipants >= maxParticipants : false
+  const formattedStartDate = formatDateShort(new Date(startDate));
+  const formattedEndDate = endDate ? formatDateShort(new Date(endDate)) : null;
+  const isRegistrationOpen = status === 'registration_open';
+  const isFull = maxParticipants
+    ? currentParticipants >= maxParticipants
+    : false;
 
   const cardContent = (
     <>
       <CardContent sx={{ pb: showActions ? 1 : 2 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
-          <Typography variant="h6" component="h3" sx={{ fontWeight: 600, pr: 1 }}>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'flex-start',
+            mb: 1,
+          }}
+        >
+          <Typography
+            variant="h6"
+            component="h3"
+            sx={{ fontWeight: 600, pr: 1 }}
+          >
             {name}
           </Typography>
           <TournamentStatusChip status={status} />
@@ -74,7 +90,11 @@ export function TournamentCard({
         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
           <Chip
             icon={<CalendarMonth />}
-            label={formattedEndDate ? `${formattedStartDate} - ${formattedEndDate}` : formattedStartDate}
+            label={
+              formattedEndDate
+                ? `${formattedStartDate} - ${formattedEndDate}`
+                : formattedStartDate
+            }
             size="small"
             variant="outlined"
           />
@@ -103,8 +123,8 @@ export function TournamentCard({
               color="primary"
               startIcon={<TrophyIcon size={16} />}
               onClick={(e) => {
-                e.stopPropagation()
-                onRegister?.()
+                e.stopPropagation();
+                onRegister?.();
               }}
             >
               S&apos;inscrire
@@ -113,7 +133,7 @@ export function TournamentCard({
         </CardActions>
       )}
     </>
-  )
+  );
 
   if (onClick && !showActions) {
     return (
@@ -122,17 +142,17 @@ export function TournamentCard({
           {cardContent}
         </CardActionArea>
       </Card>
-    )
+    );
   }
 
-  return <Card sx={{ height: '100%' }}>{cardContent}</Card>
+  return <Card sx={{ height: '100%' }}>{cardContent}</Card>;
 }
 
 // Grid variant for list views
 interface TournamentCardGridProps {
-  tournaments: TournamentCardProps[]
-  onTournamentClick?: (id: string) => void
-  onRegister?: (id: string) => void
+  tournaments: TournamentCardProps[];
+  onTournamentClick?: (id: string) => void;
+  onRegister?: (id: string) => void;
 }
 
 export function TournamentCardGrid({
@@ -152,5 +172,5 @@ export function TournamentCardGrid({
         </Grid>
       ))}
     </Grid>
-  )
+  );
 }

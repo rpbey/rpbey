@@ -3,49 +3,52 @@
  * Global rankings with ELO and win rates
  */
 
-'use client'
+'use client';
 
-import Box from '@mui/material/Box'
-import Container from '@mui/material/Container'
-import Typography from '@mui/material/Typography'
-import Card from '@mui/material/Card'
-import Table from '@mui/material/Table'
-import TableBody from '@mui/material/TableBody'
-import TableCell from '@mui/material/TableCell'
-import TableContainer from '@mui/material/TableContainer'
-import TableHead from '@mui/material/TableHead'
-import TableRow from '@mui/material/TableRow'
-import Avatar from '@mui/material/Avatar'
-import Chip from '@mui/material/Chip'
-import Skeleton from '@mui/material/Skeleton'
-import EmojiEventsIcon from '@mui/icons-material/EmojiEvents'
-import useSWR from 'swr'
-import Link from 'next/link'
-import type { LeaderboardEntry } from '@/lib/stats'
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import Avatar from '@mui/material/Avatar';
+import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
+import Chip from '@mui/material/Chip';
+import Container from '@mui/material/Container';
+import Skeleton from '@mui/material/Skeleton';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Typography from '@mui/material/Typography';
+import Link from 'next/link';
+import useSWR from 'swr';
+import type { LeaderboardEntry } from '@/lib/stats';
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json())
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 function getRankIcon(rank: number) {
-  if (rank === 1) return <EmojiEventsIcon sx={{ color: '#FFD700', fontSize: 24 }} />
-  if (rank === 2) return <EmojiEventsIcon sx={{ color: '#C0C0C0', fontSize: 24 }} />
-  if (rank === 3) return <EmojiEventsIcon sx={{ color: '#CD7F32', fontSize: 24 }} />
-  return null
+  if (rank === 1)
+    return <EmojiEventsIcon sx={{ color: '#FFD700', fontSize: 24 }} />;
+  if (rank === 2)
+    return <EmojiEventsIcon sx={{ color: '#C0C0C0', fontSize: 24 }} />;
+  if (rank === 3)
+    return <EmojiEventsIcon sx={{ color: '#CD7F32', fontSize: 24 }} />;
+  return null;
 }
 
 function getRankBgColor(rank: number) {
-  if (rank === 1) return 'rgba(255, 215, 0, 0.1)'
-  if (rank === 2) return 'rgba(192, 192, 192, 0.1)'
-  if (rank === 3) return 'rgba(205, 127, 50, 0.1)'
-  return 'transparent'
+  if (rank === 1) return 'rgba(255, 215, 0, 0.1)';
+  if (rank === 2) return 'rgba(192, 192, 192, 0.1)';
+  if (rank === 3) return 'rgba(205, 127, 50, 0.1)';
+  return 'transparent';
 }
 
 export default function LeaderboardPage() {
   const { data, isLoading } = useSWR<{ data: LeaderboardEntry[] }>(
     '/api/stats?type=leaderboard&limit=100',
-    fetcher
-  )
+    fetcher,
+  );
 
-  const leaderboard = data?.data ?? []
+  const leaderboard = data?.data ?? [];
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
@@ -74,16 +77,26 @@ export default function LeaderboardPage() {
               {isLoading ? (
                 [...Array(10)].map((_, i) => (
                   <TableRow key={i}>
-                    <TableCell><Skeleton width={30} /></TableCell>
                     <TableCell>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                      <Skeleton width={30} />
+                    </TableCell>
+                    <TableCell>
+                      <Box
+                        sx={{ display: 'flex', alignItems: 'center', gap: 2 }}
+                      >
                         <Skeleton variant="circular" width={40} height={40} />
                         <Skeleton width={120} />
                       </Box>
                     </TableCell>
-                    <TableCell><Skeleton width={60} /></TableCell>
-                    <TableCell><Skeleton width={60} /></TableCell>
-                    <TableCell><Skeleton width={60} /></TableCell>
+                    <TableCell>
+                      <Skeleton width={60} />
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton width={60} />
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton width={60} />
+                    </TableCell>
                   </TableRow>
                 ))
               ) : leaderboard.length === 0 ? (
@@ -104,7 +117,9 @@ export default function LeaderboardPage() {
                     }}
                   >
                     <TableCell>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <Box
+                        sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
+                      >
                         {getRankIcon(entry.rank)}
                         <Typography
                           fontWeight={entry.rank <= 3 ? 'bold' : 'normal'}
@@ -119,7 +134,9 @@ export default function LeaderboardPage() {
                         href={`/dashboard/profile/${entry.userId}`}
                         style={{ textDecoration: 'none', color: 'inherit' }}
                       >
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <Box
+                          sx={{ display: 'flex', alignItems: 'center', gap: 2 }}
+                        >
                           <Avatar sx={{ width: 40, height: 40 }}>
                             {entry.bladerName[0]}
                           </Avatar>
@@ -139,11 +156,17 @@ export default function LeaderboardPage() {
                     </TableCell>
                     <TableCell align="right">
                       <Typography>
-                        <Box component="span" sx={{ color: 'success.main', fontWeight: 'bold' }}>
+                        <Box
+                          component="span"
+                          sx={{ color: 'success.main', fontWeight: 'bold' }}
+                        >
                           {entry.wins}
                         </Box>
                         {' / '}
-                        <Box component="span" sx={{ color: 'error.main', fontWeight: 'bold' }}>
+                        <Box
+                          component="span"
+                          sx={{ color: 'error.main', fontWeight: 'bold' }}
+                        >
                           {entry.losses}
                         </Box>
                       </Typography>
@@ -164,5 +187,5 @@ export default function LeaderboardPage() {
         </TableContainer>
       </Card>
     </Container>
-  )
+  );
 }

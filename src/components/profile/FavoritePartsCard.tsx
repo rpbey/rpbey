@@ -3,21 +3,21 @@
  * Displays most used Beyblade parts
  */
 
-'use client'
+'use client';
 
-import Box from '@mui/material/Box'
-import Card from '@mui/material/Card'
-import CardContent from '@mui/material/CardContent'
-import Typography from '@mui/material/Typography'
-import Chip from '@mui/material/Chip'
-import Stack from '@mui/material/Stack'
-import Divider from '@mui/material/Divider'
-import type { UserStats } from '@/lib/stats'
+import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Chip from '@mui/material/Chip';
+import Divider from '@mui/material/Divider';
+import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
+import type { UserStats } from '@/lib/stats';
 
 interface FavoritePartsCardProps {
-  blades: UserStats['mostUsedBlades']
-  ratchets: UserStats['mostUsedRatchets']
-  bits: UserStats['mostUsedBits']
+  blades: UserStats['mostUsedBlades'];
+  ratchets: UserStats['mostUsedRatchets'];
+  bits: UserStats['mostUsedBits'];
 }
 
 function PartSection({
@@ -25,9 +25,9 @@ function PartSection({
   color,
   parts,
 }: {
-  title: string
-  color: 'primary' | 'secondary' | 'success'
-  parts: { partId: string; name: string; count: number }[]
+  title: string;
+  color: 'primary' | 'secondary' | 'success';
+  parts: { partId: string; name: string; count: number }[];
 }) {
   if (parts.length === 0) {
     return (
@@ -39,7 +39,7 @@ function PartSection({
           Aucune donnée
         </Typography>
       </Box>
-    )
+    );
   }
 
   return (
@@ -75,11 +75,15 @@ function PartSection({
         ))}
       </Stack>
     </Box>
-  )
+  );
 }
 
-export function FavoritePartsCard({ blades, ratchets, bits }: FavoritePartsCardProps) {
-  const hasData = blades.length > 0 || ratchets.length > 0 || bits.length > 0
+export function FavoritePartsCard({
+  blades,
+  ratchets,
+  bits,
+}: FavoritePartsCardProps) {
+  const hasData = blades.length > 0 || ratchets.length > 0 || bits.length > 0;
 
   return (
     <Card>
@@ -101,5 +105,5 @@ export function FavoritePartsCard({ blades, ratchets, bits }: FavoritePartsCardP
         )}
       </CardContent>
     </Card>
-  )
+  );
 }

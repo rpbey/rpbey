@@ -1,32 +1,33 @@
-import Box from '@mui/material/Box'
-import Container from '@mui/material/Container'
-import Typography from '@mui/material/Typography'
-import Card from '@mui/material/Card'
-import CardContent from '@mui/material/CardContent'
-import Grid from '@mui/material/Grid'
-import Chip from '@mui/material/Chip'
-import Avatar from '@mui/material/Avatar'
-import Stack from '@mui/material/Stack'
-import Alert from '@mui/material/Alert'
 import {
+  AccessTime,
+  Circle,
   LiveTv,
   VideogameAsset,
-  AccessTime,
   Visibility,
-  Circle
-} from '@mui/icons-material'
-import { getRPBStreamInfo } from '@/lib/twitch'
-import { formatDateTime } from '@/lib/utils'
-import { headers } from 'next/headers'
+} from '@mui/icons-material';
+import Alert from '@mui/material/Alert';
+import Avatar from '@mui/material/Avatar';
+import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Chip from '@mui/material/Chip';
+import Container from '@mui/material/Container';
+import Grid from '@mui/material/Grid';
+import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
+import { headers } from 'next/headers';
+import { getRPBStreamInfo } from '@/lib/twitch';
+import { formatDateTime } from '@/lib/utils';
 
 export const metadata = {
   title: 'Twitch Integration',
-}
+};
 
 export default async function AdminTwitchPage() {
-  await headers()
-  const streamInfo = await getRPBStreamInfo()
-  const isConfigured = !!process.env.TWITCH_CLIENT_ID && !!process.env.TWITCH_CLIENT_SECRET
+  await headers();
+  const streamInfo = await getRPBStreamInfo();
+  const isConfigured =
+    !!process.env.TWITCH_CLIENT_ID && !!process.env.TWITCH_CLIENT_SECRET;
 
   if (!isConfigured) {
     return (
@@ -35,10 +36,11 @@ export default async function AdminTwitchPage() {
           Twitch
         </Typography>
         <Alert severity="warning">
-          L'intégration Twitch n'est pas configurée. Veuillez ajouter TWITCH_CLIENT_ID et TWITCH_CLIENT_SECRET dans votre fichier .env.
+          L'intégration Twitch n'est pas configurée. Veuillez ajouter
+          TWITCH_CLIENT_ID et TWITCH_CLIENT_SECRET dans votre fichier .env.
         </Alert>
       </Container>
-    )
+    );
   }
 
   if (!streamInfo) {
@@ -48,10 +50,11 @@ export default async function AdminTwitchPage() {
           Twitch
         </Typography>
         <Alert severity="error">
-          Impossible de récupérer les informations de la chaîne. Vérifiez le nom de la chaîne et vos identifiants.
+          Impossible de récupérer les informations de la chaîne. Vérifiez le nom
+          de la chaîne et vos identifiants.
         </Alert>
       </Container>
-    )
+    );
   }
 
   return (
@@ -62,11 +65,19 @@ export default async function AdminTwitchPage() {
         </Typography>
         {streamInfo.isLive ? (
           <Chip
-            icon={<Circle sx={{ fontSize: '12px !important', color: 'error.main' }} />}
+            icon={
+              <Circle
+                sx={{ fontSize: '12px !important', color: 'error.main' }}
+              />
+            }
             label="EN LIVE"
             color="error"
             variant="outlined"
-            sx={{ fontWeight: 'bold', borderColor: 'error.main', color: 'error.main' }}
+            sx={{
+              fontWeight: 'bold',
+              borderColor: 'error.main',
+              color: 'error.main',
+            }}
           />
         ) : (
           <Chip
@@ -98,12 +109,17 @@ export default async function AdminTwitchPage() {
                 />
                 <Box>
                   <Typography variant="h5" fontWeight="bold" gutterBottom>
-                    {streamInfo.title || "Aucun titre"}
+                    {streamInfo.title || 'Aucun titre'}
                   </Typography>
-                  <Stack direction="row" spacing={1} alignItems="center" color="text.secondary">
+                  <Stack
+                    direction="row"
+                    spacing={1}
+                    alignItems="center"
+                    color="text.secondary"
+                  >
                     <VideogameAsset fontSize="small" />
                     <Typography variant="body1">
-                      {streamInfo.gameName || "Aucun jeu"}
+                      {streamInfo.gameName || 'Aucun jeu'}
                     </Typography>
                   </Stack>
                 </Box>
@@ -172,7 +188,9 @@ export default async function AdminTwitchPage() {
                   </Typography>
                 </Stack>
                 <Typography variant="h6" fontWeight="bold">
-                  {streamInfo.startedAt ? formatDateTime(streamInfo.startedAt) : '-'}
+                  {streamInfo.startedAt
+                    ? formatDateTime(streamInfo.startedAt)
+                    : '-'}
                 </Typography>
               </CardContent>
             </Card>
@@ -204,5 +222,5 @@ export default async function AdminTwitchPage() {
         </Grid>
       </Grid>
     </Container>
-  )
+  );
 }

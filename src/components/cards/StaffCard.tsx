@@ -1,29 +1,29 @@
-'use client'
+'use client';
 
 import {
+  Avatar,
+  alpha,
+  Box,
   Card,
   CardContent,
-  Avatar,
-  Typography,
-  Box,
-  alpha,
   IconButton,
   Tooltip,
+  Typography,
   useTheme,
-} from '@mui/material'
-import { motion } from 'framer-motion'
-import { DiscordIcon } from '@/components/ui/Icons'
-import { RoleColors, DiscordRoleMapping } from '@/lib/role-colors'
-import { RoleLogo } from '@/components/ui/RoleLogo'
+} from '@mui/material';
+import { motion } from 'framer-motion';
+import { DiscordIcon } from '@/components/ui/Icons';
+import { RoleLogo } from '@/components/ui/RoleLogo';
+import { DiscordRoleMapping, RoleColors } from '@/lib/role-colors';
 
 interface StaffCardProps {
   member: {
-    name: string
-    role: string
-    imageUrl?: string | null
-    teamId: string
-    discordId?: string | null
-  }
+    name: string;
+    role: string;
+    imageUrl?: string | null;
+    teamId: string;
+    discordId?: string | null;
+  };
 }
 
 const TEAM_LABELS: Record<string, string> = {
@@ -35,7 +35,7 @@ const TEAM_LABELS: Record<string, string> = {
   dev: 'Développement',
   event: 'Événementiel',
   media: 'Média / Design',
-}
+};
 
 const TEAM_COLORS: Record<string, string> = {
   admin: RoleColors.ADMIN.hex,
@@ -46,13 +46,15 @@ const TEAM_COLORS: Record<string, string> = {
   dev: '#10b981',
   event: '#f59e0b',
   media: '#8b5cf6',
-}
+};
 
 export function StaffCard({ member }: StaffCardProps) {
-  const theme = useTheme()
-  const color = TEAM_COLORS[member.teamId] || theme.palette.primary.main
-  const teamLabel = TEAM_LABELS[member.teamId] || member.teamId
-  const roleType = member.discordId ? DiscordRoleMapping[member.discordId] : undefined
+  const theme = useTheme();
+  const color = TEAM_COLORS[member.teamId] || theme.palette.primary.main;
+  const teamLabel = TEAM_LABELS[member.teamId] || member.teamId;
+  const roleType = member.discordId
+    ? DiscordRoleMapping[member.discordId]
+    : undefined;
 
   return (
     <Card
@@ -92,7 +94,10 @@ export function StaffCard({ member }: StaffCardProps) {
                 target="_blank"
                 sx={{
                   color: 'text.disabled',
-                  '&:hover': { color: '#5865F2', bgcolor: alpha('#5865F2', 0.1) },
+                  '&:hover': {
+                    color: '#5865F2',
+                    bgcolor: alpha('#5865F2', 0.1),
+                  },
                 }}
               >
                 <DiscordIcon size={18} />
@@ -102,7 +107,14 @@ export function StaffCard({ member }: StaffCardProps) {
         )}
 
         {roleType ? (
-          <Box sx={{ mx: 'auto', mb: 2, display: 'flex', justifyContent: 'center' }}>
+          <Box
+            sx={{
+              mx: 'auto',
+              mb: 2,
+              display: 'flex',
+              justifyContent: 'center',
+            }}
+          >
             <RoleLogo role={roleType} size={100} />
           </Box>
         ) : (
@@ -124,11 +136,11 @@ export function StaffCard({ member }: StaffCardProps) {
             {member.name.charAt(0)}
           </Avatar>
         )}
-        
+
         <Typography variant="h6" fontWeight="bold" sx={{ mb: 0.5 }}>
           {member.name}
         </Typography>
-        
+
         <Typography
           variant="body2"
           sx={{
@@ -164,11 +176,15 @@ export function StaffCard({ member }: StaffCardProps) {
               mr: 1,
             }}
           />
-          <Typography variant="caption" fontWeight="medium" color="text.secondary">
+          <Typography
+            variant="caption"
+            fontWeight="medium"
+            color="text.secondary"
+          >
             {teamLabel}
           </Typography>
         </Box>
       </CardContent>
     </Card>
-  )
+  );
 }

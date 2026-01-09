@@ -1,15 +1,15 @@
-'use client'
+'use client';
 
-import { useCallback, useState } from 'react'
-import Button, { type ButtonProps } from '@mui/material/Button'
-import CircularProgress from '@mui/material/CircularProgress'
-import { signIn } from '@/lib/auth-client'
-import { TwitchIcon } from '@/components/ui/Icons'
+import Button, { type ButtonProps } from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
+import { useCallback, useState } from 'react';
+import { TwitchIcon } from '@/components/ui/Icons';
+import { signIn } from '@/lib/auth-client';
 
 interface TwitchButtonProps extends Omit<ButtonProps, 'onClick' | 'children'> {
-  callbackURL?: string
-  text?: string
-  loadingText?: string
+  callbackURL?: string;
+  text?: string;
+  loadingText?: string;
 }
 
 export function TwitchButton({
@@ -21,20 +21,20 @@ export function TwitchButton({
   fullWidth = true,
   ...props
 }: TwitchButtonProps) {
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
 
   const handleClick = useCallback(async () => {
-    setLoading(true)
+    setLoading(true);
     try {
       await signIn.social({
         provider: 'twitch',
         callbackURL,
-      })
+      });
     } catch (error) {
-      console.error('Twitch sign in error:', error)
-      setLoading(false)
+      console.error('Twitch sign in error:', error);
+      setLoading(false);
     }
-  }, [callbackURL])
+  }, [callbackURL]);
 
   return (
     <Button
@@ -43,7 +43,13 @@ export function TwitchButton({
       fullWidth={fullWidth}
       onClick={handleClick}
       disabled={loading}
-      startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <TwitchIcon size={20} />}
+      startIcon={
+        loading ? (
+          <CircularProgress size={20} color="inherit" />
+        ) : (
+          <TwitchIcon size={20} />
+        )
+      }
       sx={{
         backgroundColor: '#9146FF',
         color: '#ffffff',
@@ -63,5 +69,5 @@ export function TwitchButton({
     >
       {loading ? loadingText : text}
     </Button>
-  )
+  );
 }

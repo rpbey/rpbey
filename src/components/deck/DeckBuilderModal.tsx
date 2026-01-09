@@ -1,30 +1,30 @@
-'use client'
+'use client';
 
 /**
  * DeckBuilderModal - Modal for creating/editing decks
  */
 
-import { useState, useEffect } from 'react'
-import Dialog from '@mui/material/Dialog'
-import DialogTitle from '@mui/material/DialogTitle'
-import DialogContent from '@mui/material/DialogContent'
-import DialogActions from '@mui/material/DialogActions'
-import Button from '@mui/material/Button'
-import TextField from '@mui/material/TextField'
-import Stack from '@mui/material/Stack'
-import Alert from '@mui/material/Alert'
-import CircularProgress from '@mui/material/CircularProgress'
-import FormControlLabel from '@mui/material/FormControlLabel'
-import Switch from '@mui/material/Switch'
-import { BeyBuilder } from './BeyBuilder'
-import type { BeyData } from './BeyBuilder'
-import type { Deck } from './DeckCard'
+import Alert from '@mui/material/Alert';
+import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Stack from '@mui/material/Stack';
+import Switch from '@mui/material/Switch';
+import TextField from '@mui/material/TextField';
+import { useEffect, useState } from 'react';
+import type { BeyData } from './BeyBuilder';
+import { BeyBuilder } from './BeyBuilder';
+import type { Deck } from './DeckCard';
 
 interface DeckBuilderModalProps {
-  open: boolean
-  onClose: () => void
-  onSave: () => void
-  deck?: Deck | null
+  open: boolean;
+  onClose: () => void;
+  onSave: () => void;
+  deck?: Deck | null;
 }
 
 const emptyBey: BeyData = {
@@ -32,7 +32,7 @@ const emptyBey: BeyData = {
   ratchet: null,
   bit: null,
   nickname: '',
-}
+};
 
 export function DeckBuilderModal({
   open,
@@ -40,23 +40,25 @@ export function DeckBuilderModal({
   onSave,
   deck,
 }: DeckBuilderModalProps) {
-  const [name, setName] = useState('')
-  const [isActive, setIsActive] = useState(false)
+  const [name, setName] = useState('');
+  const [isActive, setIsActive] = useState(false);
   const [beys, setBeys] = useState<[BeyData, BeyData, BeyData]>([
     { ...emptyBey },
     { ...emptyBey },
     { ...emptyBey },
-  ])
-  const [saving, setSaving] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  ]);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Reset form when modal opens/closes or deck changes
   useEffect(() => {
     if (open) {
       if (deck) {
-        setName(deck.name)
-        setIsActive(deck.isActive)
-        const sortedBeys = [...deck.beys].sort((a, b) => a.position - b.position)
+        setName(deck.name);
+        setIsActive(deck.isActive);
+        const sortedBeys = [...deck.beys].sort(
+          (a, b) => a.position - b.position,
+        );
         setBeys([
           {
             blade: sortedBeys[0]?.blade ?? null,
@@ -76,36 +78,35 @@ export function DeckBuilderModal({
             bit: sortedBeys[2]?.bit ?? null,
             nickname: sortedBeys[2]?.nickname ?? '',
           },
-        ])
+        ]);
       } else {
-        setName('')
-        setIsActive(false)
-        setBeys([{ ...emptyBey }, { ...emptyBey }, { ...emptyBey }])
+        setName('');
+        setIsActive(false);
+        setBeys([{ ...emptyBey }, { ...emptyBey }, { ...emptyBey }]);
       }
-      setError(null)
+      setError(null);
     }
-  }, [open, deck])
+  }, [open, deck]);
 
   const handleBeyChange = (index: number, data: BeyData) => {
-    const newBeys = [...beys] as [BeyData, BeyData, BeyData]
-    newBeys[index] = data
-    setBeys(newBeys)
-  }
+    const newBeys = [...beys] as [BeyData, BeyData, BeyData];
+    newBeys[index] = data;
+    setBeys(newBeys);
+  };
 
   // Get all used part IDs across all beys
   const usedPartIds = beys.flatMap((bey) =>
-    [bey.blade?.id, bey.ratchet?.id, bey.bit?.id].filter(Boolean)
-  ) as string[]
+    [bey.blade?.id, bey.ratchet?.id, bey.bit?.id].filter(Boolean),
+  ) as string[];
 
   const isValid =
-    name.trim() &&
-    beys.every((bey) => bey.blade && bey.ratchet && bey.bit)
+    name.trim() && beys.every((bey) => bey.blade && bey.ratchet && bey.bit);
 
   const handleSave = async () => {
-    if (!isValid) return
+    if (!isValid) return;
 
-    setSaving(true)
-    setError(null)
+    setSaving(true);
+    setError(null);
 
     try {
       const payload = {
@@ -114,34 +115,34 @@ export function DeckBuilderModal({
         beys: beys.map((bey, index) => ({
           position: index + 1,
           nickname: bey.nickname || null,
-          bladeId: bey.blade!.id,
-          ratchetId: bey.ratchet!.id,
-          bitId: bey.bit!.id,
+          bladeId: bey.blade?.id,
+          ratchetId: bey.ratchet?.id,
+          bitId: bey.bit?.id,
         })),
-      }
+      };
 
-      const url = deck ? `/api/decks/${deck.id}` : '/api/decks'
-      const method = deck ? 'PUT' : 'POST'
+      const url = deck ? `/api/decks/${deck.id}` : '/api/decks';
+      const method = deck ? 'PUT' : 'POST';
 
       const response = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
-      })
+      });
 
       if (!response.ok) {
-        const result = await response.json()
-        throw new Error(result.error || 'Failed to save deck')
+        const result = await response.json();
+        throw new Error(result.error || 'Failed to save deck');
       }
 
-      onSave()
-      onClose()
+      onSave();
+      onClose();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred')
+      setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
-  }
+  };
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
@@ -199,5 +200,5 @@ export function DeckBuilderModal({
         </Button>
       </DialogActions>
     </Dialog>
-  )
+  );
 }

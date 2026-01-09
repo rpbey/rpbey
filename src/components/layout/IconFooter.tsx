@@ -1,8 +1,8 @@
-'use client'
+'use client';
 
-import { Box, IconButton, Tooltip, Typography } from '@mui/material'
-import { GitHub, X as XIcon } from '@mui/icons-material'
-import { DiscordIcon, TikTokIcon, TwitchIcon } from '@/components/ui/Icons'
+import { GitHub, X as XIcon } from '@mui/icons-material';
+import { Box, IconButton, Tooltip, Typography } from '@mui/material';
+import { DiscordIcon, TikTokIcon, TwitchIcon } from '@/components/ui/Icons';
 
 export function IconFooter() {
   return (
@@ -115,24 +115,30 @@ export function IconFooter() {
       <Box sx={{ width: 1, height: 16, bgcolor: 'divider', mx: 1 }} />
 
       {/* Links */}
-      <Typography 
-        component="a" 
-        href="/reglement" 
-        variant="caption" 
+      <Typography
+        component="a"
+        href="/reglement"
+        variant="caption"
         color="text.secondary"
-        sx={{ textDecoration: 'none', '&:hover': { textDecoration: 'underline' } }}
+        sx={{
+          textDecoration: 'none',
+          '&:hover': { textDecoration: 'underline' },
+        }}
       >
         Règlement
       </Typography>
 
       <Box sx={{ width: 1, height: 16, bgcolor: 'divider', mx: 1 }} />
 
-      <Typography 
-        component="a" 
-        href="/privacy" 
-        variant="caption" 
+      <Typography
+        component="a"
+        href="/privacy"
+        variant="caption"
         color="text.secondary"
-        sx={{ textDecoration: 'none', '&:hover': { textDecoration: 'underline' } }}
+        sx={{
+          textDecoration: 'none',
+          '&:hover': { textDecoration: 'underline' },
+        }}
       >
         Confidentialité
       </Typography>
@@ -144,5 +150,5 @@ export function IconFooter() {
         © {new Date().getFullYear()} RPB
       </Typography>
     </Box>
-  )
+  );
 }

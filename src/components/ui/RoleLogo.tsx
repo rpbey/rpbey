@@ -12,7 +12,11 @@ interface RoleLogoProps {
  * RPB Logo with dynamic role-based coloring
  * Uses the SVG vector directly to allow perfect scaling and dynamic fill coloring.
  */
-export function RoleLogo({ role = 'DEFAULT', size = 64, className = '' }: RoleLogoProps) {
+export function RoleLogo({
+  role = 'DEFAULT',
+  size = 64,
+  className = '',
+}: RoleLogoProps) {
   const roleColor = RoleColors[role];
   const colorHex = 'hex' in roleColor ? roleColor.hex : roleColor.primary;
 
@@ -28,7 +32,10 @@ export function RoleLogo({ role = 'DEFAULT', size = 64, className = '' }: RoleLo
         aria-label="Logo RPB"
         className="object-contain"
       >
-        <g id="star" style={{ color: role === 'DEFAULT' ? '#dc2626' : colorHex }}>
+        <g
+          id="star"
+          style={{ color: role === 'DEFAULT' ? '#dc2626' : colorHex }}
+        >
           <path
             d="M400,100 L470.5,315.5 L700,315.5 L515.25,450.25 L585.75,665.75 L400,531 L214.25,665.75 L284.75,450.25 L100,315.5 L329.5,315.5 Z"
             fill="currentColor"
@@ -38,7 +45,10 @@ export function RoleLogo({ role = 'DEFAULT', size = 64, className = '' }: RoleLo
           />
         </g>
 
-        <g id="horse-body" style={{ color: role === 'DEFAULT' ? '#fbbf24' : colorHex }}>
+        <g
+          id="horse-body"
+          style={{ color: role === 'DEFAULT' ? '#fbbf24' : colorHex }}
+        >
           <path
             d="M329.5,315.5 C329.5,315.5 250,450 200,480 C180,500 200,550 250,560 C240,580 200,600 250,650 C270,670 300,620 330,610 C350,650 330,700 380,750 C390,740 400,700 400,650 C430,650 450,680 480,700 L550,680 C530,660 510,640 520,620 C550,620 600,650 650,630 L620,600 C650,580 700,600 700,550 L650,530 C680,500 730,520 750,480 C750,450 700,430 680,450 C700,400 750,400 770,350 C770,320 720,310 700,330 C720,290 750,280 730,260 C710,240 650,270 620,290 C640,250 680,230 660,200 C640,180 590,210 560,230 C580,190 620,170 600,150 C580,130 530,160 500,180 C520,140 550,120 520,110 C500,100 470,130 450,150 C470,120 480,80 440,90 C420,100 420,150 430,180 C410,220 400,300 329.5,315.5 M220,230 L400,380"
             fill="currentColor"
@@ -54,7 +64,10 @@ export function RoleLogo({ role = 'DEFAULT', size = 64, className = '' }: RoleLo
       {role !== 'DEFAULT' && (
         <span
           className="absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 border-white"
-          style={{ backgroundColor: 'hex' in roleColor ? roleColor.hex : roleColor.primary }}
+          style={{
+            backgroundColor:
+              'hex' in roleColor ? roleColor.hex : roleColor.primary,
+          }}
           title={'name' in roleColor ? roleColor.name : 'RPB'}
         />
       )}

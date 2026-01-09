@@ -272,7 +272,9 @@ export class ScraperService {
       // 2. Extract HTML only (Safe)
       const html = await page.content();
       const title = await page.title();
-      const lang = await page.evaluate(() => document.documentElement.lang || 'ja');
+      const lang = await page.evaluate(
+        () => document.documentElement.lang || 'ja',
+      );
 
       // 3. Convert to Markdown
       const markdown = this.turndown.turndown(html);

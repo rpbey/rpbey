@@ -1,17 +1,19 @@
-'use server'
+'use server';
 
-import prisma from '@/lib/prisma'
-import { revalidatePath } from 'next/cache'
+import { revalidatePath } from 'next/cache';
+import prisma from '@/lib/prisma';
 
 export async function getUsers(page = 1, pageSize = 10, search = '') {
-  const skip = (page - 1) * pageSize
-  
-  const where = search ? {
-    OR: [
-      { name: { contains: search, mode: 'insensitive' as const } },
-      { email: { contains: search, mode: 'insensitive' as const } },
-    ]
-  } : {}
+  const skip = (page - 1) * pageSize;
+
+  const where = search
+    ? {
+        OR: [
+          { name: { contains: search, mode: 'insensitive' as const } },
+          { email: { contains: search, mode: 'insensitive' as const } },
+        ],
+      }
+    : {};
 
   const [users, total] = await Promise.all([
     prisma.user.findMany({
@@ -21,28 +23,28 @@ export async function getUsers(page = 1, pageSize = 10, search = '') {
       orderBy: { createdAt: 'desc' },
       include: {
         _count: {
-          select: { tournaments: true }
-        }
-      }
+          select: { tournaments: true },
+        },
+      },
     }),
-    prisma.user.count({ where })
-  ])
+    prisma.user.count({ where }),
+  ]);
 
-  return { users, total }
+  return { users, total };
 }
 
 export async function updateUserRole(id: string, role: string) {
   await prisma.user.update({
     where: { id },
     data: { role },
-  })
-  revalidatePath('/admin/users')
+  });
+  revalidatePath('/admin/users');
 }
 
 export async function deleteUser(id: string) {
   // Use caution when deleting users
   await prisma.user.delete({
     where: { id },
-  })
-  revalidatePath('/admin/users')
+  });
+  revalidatePath('/admin/users');
 }

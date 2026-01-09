@@ -1,22 +1,22 @@
-'use client'
+'use client';
 
-import { useEffect } from 'react'
-import { Box, Button, Container, Typography } from '@mui/material'
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline'
-import { useThemeMode } from '@/components/theme/ThemeRegistry'
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import { Box, Button, Container, Typography } from '@mui/material';
+import { useEffect } from 'react';
+import { useThemeMode } from '@/components/theme/ThemeRegistry';
 
 export default function Error({
   error,
   reset,
 }: {
-  error: Error & { digest?: string }
-  reset: () => void
+  error: Error & { digest?: string };
+  reset: () => void;
 }) {
-  const { backgroundImage } = useThemeMode()
+  const { backgroundImage } = useThemeMode();
 
   useEffect(() => {
-    console.error('Application error:', error)
-  }, [error])
+    console.error('Application error:', error);
+  }, [error]);
 
   return (
     <Box
@@ -45,23 +45,28 @@ export default function Error({
             p: 6,
           }}
         >
-        <ErrorOutlineIcon sx={{ fontSize: 64, color: 'error.main' }} />
-        <Typography variant="h4" component="h1" gutterBottom>
-          Une erreur est survenue
-        </Typography>
-        <Typography variant="body1" color="text.secondary">
-          Désolé, quelque chose s&apos;est mal passé. Veuillez réessayer.
-        </Typography>
-        {error.digest && (
-          <Typography variant="caption" color="text.disabled">
-            Code erreur: {error.digest}
+          <ErrorOutlineIcon sx={{ fontSize: 64, color: 'error.main' }} />
+          <Typography variant="h4" component="h1" gutterBottom>
+            Une erreur est survenue
           </Typography>
-        )}
-        <Button variant="contained" color="primary" onClick={reset} size="large">
-          Réessayer
-        </Button>
+          <Typography variant="body1" color="text.secondary">
+            Désolé, quelque chose s&apos;est mal passé. Veuillez réessayer.
+          </Typography>
+          {error.digest && (
+            <Typography variant="caption" color="text.disabled">
+              Code erreur: {error.digest}
+            </Typography>
+          )}
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={reset}
+            size="large"
+          >
+            Réessayer
+          </Button>
         </Box>
       </Container>
     </Box>
-  )
+  );
 }

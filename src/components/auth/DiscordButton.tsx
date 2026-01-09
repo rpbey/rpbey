@@ -1,15 +1,15 @@
-'use client'
+'use client';
 
-import { useCallback, useState } from 'react'
-import Button, { type ButtonProps } from '@mui/material/Button'
-import CircularProgress from '@mui/material/CircularProgress'
-import { signIn } from '@/lib/auth-client'
-import { DiscordIcon } from '@/components/ui/Icons'
+import Button, { type ButtonProps } from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
+import { useCallback, useState } from 'react';
+import { DiscordIcon } from '@/components/ui/Icons';
+import { signIn } from '@/lib/auth-client';
 
 interface DiscordButtonProps extends Omit<ButtonProps, 'onClick' | 'children'> {
-  callbackURL?: string
-  text?: string
-  loadingText?: string
+  callbackURL?: string;
+  text?: string;
+  loadingText?: string;
 }
 
 export function DiscordButton({
@@ -21,20 +21,20 @@ export function DiscordButton({
   fullWidth = true,
   ...props
 }: DiscordButtonProps) {
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
 
   const handleClick = useCallback(async () => {
-    setLoading(true)
+    setLoading(true);
     try {
       await signIn.social({
         provider: 'discord',
         callbackURL,
-      })
+      });
     } catch (error) {
-      console.error('Discord sign in error:', error)
-      setLoading(false)
+      console.error('Discord sign in error:', error);
+      setLoading(false);
     }
-  }, [callbackURL])
+  }, [callbackURL]);
 
   return (
     <Button
@@ -43,7 +43,13 @@ export function DiscordButton({
       fullWidth={fullWidth}
       onClick={handleClick}
       disabled={loading}
-      startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <DiscordIcon size={20} />}
+      startIcon={
+        loading ? (
+          <CircularProgress size={20} color="inherit" />
+        ) : (
+          <DiscordIcon size={20} />
+        )
+      }
       sx={{
         backgroundColor: '#5865F2',
         color: '#ffffff',
@@ -63,7 +69,7 @@ export function DiscordButton({
     >
       {loading ? loadingText : text}
     </Button>
-  )
+  );
 }
 
 // Compact version for header/navbar
@@ -71,20 +77,20 @@ export function DiscordButtonCompact({
   callbackURL = '/dashboard',
   ...props
 }: Omit<DiscordButtonProps, 'text' | 'loadingText' | 'fullWidth'>) {
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
 
   const handleClick = useCallback(async () => {
-    setLoading(true)
+    setLoading(true);
     try {
       await signIn.social({
         provider: 'discord',
         callbackURL,
-      })
+      });
     } catch (error) {
-      console.error('Discord sign in error:', error)
-      setLoading(false)
+      console.error('Discord sign in error:', error);
+      setLoading(false);
     }
-  }, [callbackURL])
+  }, [callbackURL]);
 
   return (
     <Button
@@ -92,7 +98,13 @@ export function DiscordButtonCompact({
       size="small"
       onClick={handleClick}
       disabled={loading}
-      startIcon={loading ? <CircularProgress size={16} color="inherit" /> : <DiscordIcon size={16} />}
+      startIcon={
+        loading ? (
+          <CircularProgress size={16} color="inherit" />
+        ) : (
+          <DiscordIcon size={16} />
+        )
+      }
       sx={{
         backgroundColor: '#5865F2',
         color: '#ffffff',
@@ -107,5 +119,5 @@ export function DiscordButtonCompact({
     >
       Connexion
     </Button>
-  )
+  );
 }

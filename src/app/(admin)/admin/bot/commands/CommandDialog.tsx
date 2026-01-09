@@ -1,22 +1,17 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import {
-  TextField,
-  FormControlLabel,
-  Switch,
-  Grid,
-} from '@mui/material'
-import { FormDialog } from '@/components/ui'
-import type { BotCommandInput } from './actions'
-import type { BotCommand } from '@prisma/client'
+import { FormControlLabel, Grid, Switch, TextField } from '@mui/material';
+import type { BotCommand } from '@prisma/client';
+import { useEffect, useState } from 'react';
+import { FormDialog } from '@/components/ui';
+import type { BotCommandInput } from './actions';
 
 interface CommandDialogProps {
-  open: boolean
-  onClose: () => void
-  onSubmit: (data: BotCommandInput) => Promise<void>
-  initialData?: BotCommand | null
-  loading?: boolean
+  open: boolean;
+  onClose: () => void;
+  onSubmit: (data: BotCommandInput) => Promise<void>;
+  initialData?: BotCommand | null;
+  loading?: boolean;
 }
 
 export function CommandDialog({
@@ -34,10 +29,10 @@ export function CommandDialog({
     aliases: [],
     cooldown: 0,
     allowedRoles: [],
-  })
+  });
 
-  const [aliasesString, setAliasesString] = useState('')
-  const [rolesString, setRolesString] = useState('')
+  const [aliasesString, setAliasesString] = useState('');
+  const [rolesString, setRolesString] = useState('');
 
   useEffect(() => {
     if (initialData) {
@@ -49,9 +44,9 @@ export function CommandDialog({
         aliases: initialData.aliases || [],
         cooldown: initialData.cooldown || 0,
         allowedRoles: initialData.allowedRoles || [],
-      })
-      setAliasesString(initialData.aliases?.join(', ') || '')
-      setRolesString(initialData.allowedRoles?.join(', ') || '')
+      });
+      setAliasesString(initialData.aliases?.join(', ') || '');
+      setRolesString(initialData.allowedRoles?.join(', ') || '');
     } else {
       setFormData({
         name: '',
@@ -61,22 +56,28 @@ export function CommandDialog({
         aliases: [],
         cooldown: 0,
         allowedRoles: [],
-      })
-      setAliasesString('')
-      setRolesString('')
+      });
+      setAliasesString('');
+      setRolesString('');
     }
-  }, [initialData, open])
+  }, [initialData]);
 
   const handleSubmit = async () => {
-    const aliases = aliasesString.split(',').map(s => s.trim()).filter(Boolean)
-    const allowedRoles = rolesString.split(',').map(s => s.trim()).filter(Boolean)
-    
+    const aliases = aliasesString
+      .split(',')
+      .map((s) => s.trim())
+      .filter(Boolean);
+    const allowedRoles = rolesString
+      .split(',')
+      .map((s) => s.trim())
+      .filter(Boolean);
+
     await onSubmit({
       ...formData,
       aliases,
       allowedRoles,
-    })
-  }
+    });
+  };
 
   return (
     <FormDialog
@@ -103,7 +104,9 @@ export function CommandDialog({
             fullWidth
             label="Description"
             value={formData.description}
-            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, description: e.target.value })
+            }
             required
           />
         </Grid>
@@ -114,7 +117,9 @@ export function CommandDialog({
             rows={4}
             label="Réponse"
             value={formData.response}
-            onChange={(e) => setFormData({ ...formData, response: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, response: e.target.value })
+            }
             required
             helperText="Texte simple ou JSON pour embed"
           />
@@ -133,7 +138,12 @@ export function CommandDialog({
             type="number"
             label="Cooldown (secondes)"
             value={formData.cooldown}
-            onChange={(e) => setFormData({ ...formData, cooldown: parseInt(e.target.value) || 0 })}
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                cooldown: parseInt(e.target.value, 10) || 0,
+              })
+            }
           />
         </Grid>
         <Grid size={{ xs: 12 }}>
@@ -150,7 +160,9 @@ export function CommandDialog({
             control={
               <Switch
                 checked={formData.enabled}
-                onChange={(e) => setFormData({ ...formData, enabled: e.target.checked })}
+                onChange={(e) =>
+                  setFormData({ ...formData, enabled: e.target.checked })
+                }
               />
             }
             label="Commande activée"
@@ -158,5 +170,5 @@ export function CommandDialog({
         </Grid>
       </Grid>
     </FormDialog>
-  )
+  );
 }

@@ -61,10 +61,10 @@ export class TakaraTomyScraper {
    */
   public async syncLineup() {
     log.info('📥 Fetching Takara Tomy lineup via Puppeteer...');
-    
+
     // Use ScraperService to get the page content safely (handles JS rendering)
     const pages = await this.scraper.scrape([this.LINEUP_URL]);
-    
+
     if (pages.length === 0 || !pages[0]?.html) {
       throw new Error('Failed to retrieve content from Takara Tomy website.');
     }

@@ -1,34 +1,37 @@
-'use client'
+'use client';
 
-import Box from '@mui/material/Box'
-import Card from '@mui/material/Card'
-import Button from '@mui/material/Button'
-import Typography from '@mui/material/Typography'
-import Stack from '@mui/material/Stack'
-import Grid from '@mui/material/Grid'
-import { alpha, useTheme } from '@mui/material/styles'
-import LocalOfferIcon from '@mui/icons-material/LocalOffer'
-import LaunchIcon from '@mui/icons-material/Launch'
-import ContentCopyIcon from '@mui/icons-material/ContentCopy'
-import { useState } from 'react'
-import useSWR from 'swr'
-import type { FeedMyProduct } from '@/lib/feedmy'
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import LaunchIcon from '@mui/icons-material/Launch';
+import LocalOfferIcon from '@mui/icons-material/LocalOffer';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Card from '@mui/material/Card';
+import Grid from '@mui/material/Grid';
+import Stack from '@mui/material/Stack';
+import { alpha, useTheme } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
+import { useState } from 'react';
+import useSWR from 'swr';
+import type { FeedMyProduct } from '@/lib/feedmy';
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json())
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 export function FeedMyPartnership() {
-  const theme = useTheme()
-  const [copied, setCopied] = useState(false)
-  const discountCode = 'RPB10'
-  const discountUrl = 'https://feedmy.fr/discount/RPB10'
+  const theme = useTheme();
+  const [copied, setCopied] = useState(false);
+  const discountCode = 'RPB10';
+  const discountUrl = 'https://feedmy.fr/discount/RPB10';
 
-  const { data: products } = useSWR<FeedMyProduct[]>('/api/marketing/feedmy', fetcher)
+  const { data: products } = useSWR<FeedMyProduct[]>(
+    '/api/marketing/feedmy',
+    fetcher,
+  );
 
   const handleCopyCode = () => {
-    navigator.clipboard.writeText(discountCode)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-  }
+    navigator.clipboard.writeText(discountCode);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   return (
     <Card
@@ -49,10 +52,14 @@ export function FeedMyPartnership() {
           background: `radial-gradient(circle at center, ${alpha(theme.palette.primary.main, 0.15)} 0%, transparent 70%)`,
           transform: 'translate(30%, -30%)',
           pointerEvents: 'none',
-        }
+        },
       }}
     >
-      <Stack direction={{ xs: 'column', sm: 'row' }} spacing={3} alignItems="center">
+      <Stack
+        direction={{ xs: 'column', sm: 'row' }}
+        spacing={3}
+        alignItems="center"
+      >
         <Box
           sx={{
             width: 80,
@@ -76,13 +83,19 @@ export function FeedMyPartnership() {
           <Typography variant="h4" gutterBottom fontWeight="bold">
             FeedMy x RPB
           </Typography>
-          <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 500, mb: 2 }}>
-            Profitez de <strong>10% de réduction</strong> sur votre commande chez FeedMy, le spécialiste de l'importation japonaise, avec notre code exclusif.
+          <Typography
+            variant="body1"
+            color="text.secondary"
+            sx={{ maxWidth: 500, mb: 2 }}
+          >
+            Profitez de <strong>10% de réduction</strong> sur votre commande
+            chez FeedMy, le spécialiste de l'importation japonaise, avec notre
+            code exclusif.
           </Typography>
 
-          <Stack 
-            direction={{ xs: 'column', md: 'row' }} 
-            spacing={2} 
+          <Stack
+            direction={{ xs: 'column', md: 'row' }}
+            spacing={2}
             alignItems={{ xs: 'stretch', md: 'center' }}
           >
             <Box
@@ -101,26 +114,32 @@ export function FeedMyPartnership() {
                 '&:hover': {
                   bgcolor: alpha(theme.palette.primary.main, 0.15),
                   borderColor: theme.palette.primary.main,
-                }
+                },
               }}
             >
-              <Typography 
-                variant="h6" 
-                sx={{ 
-                  fontFamily: 'monospace', 
-                  fontWeight: 'bold', 
+              <Typography
+                variant="h6"
+                sx={{
+                  fontFamily: 'monospace',
+                  fontWeight: 'bold',
                   color: theme.palette.primary.main,
-                  mr: 2 
+                  mr: 2,
                 }}
               >
                 {discountCode}
               </Typography>
               {copied ? (
-                <Typography variant="caption" fontWeight="bold" color="success.main">
+                <Typography
+                  variant="caption"
+                  fontWeight="bold"
+                  color="success.main"
+                >
                   Copié !
                 </Typography>
               ) : (
-                <ContentCopyIcon sx={{ fontSize: 18, color: theme.palette.primary.main }} />
+                <ContentCopyIcon
+                  sx={{ fontSize: 18, color: theme.palette.primary.main }}
+                />
               )}
             </Box>
 
@@ -140,63 +159,86 @@ export function FeedMyPartnership() {
       </Stack>
 
       {products && products.length > 0 && (
-        <Box sx={{ mt: 4, pt: 3, borderTop: `1px solid ${alpha(theme.palette.divider, 0.1)}` }}>
-             <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-                <LocalOfferIcon fontSize="small" />
-                Derniers arrivages Beyblade
-             </Typography>
-             <Grid container spacing={2}>
-               {products.map((product) => (
-                 <Grid size={{ xs: 6, md: 3 }} key={product.id}>
-                    <Box 
-                      component="a"
-                      href={`https://feedmy.fr/products/${product.handle}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      sx={{ 
-                        display: 'block', 
-                        textDecoration: 'none',
-                        transition: 'transform 0.2s',
-                        '&:hover': { transform: 'translateY(-4px)' }
-                      }}
-                    >
-                      <Box sx={{ 
-                        position: 'relative', 
-                        paddingTop: '100%', 
-                        bgcolor: 'background.default',
-                        borderRadius: 2,
-                        overflow: 'hidden',
-                        mb: 1,
-                        border: `1px solid ${alpha(theme.palette.divider, 0.1)}`
-                      }}>
-                        {product.images[0] && (
-                           <Box
-                             component="img"
-                             src={product.images[0].src}
-                             alt={product.title}
-                             sx={{
-                               position: 'absolute',
-                               top: 0,
-                               left: 0,
-                               width: '100%',
-                               height: '100%',
-                               objectFit: 'cover'
-                             }}
-                           />
-                        )}
-                      </Box>
-                      <Typography variant="caption" color="text.primary" fontWeight="bold" display="block" noWrap title={product.title}>
-                        {product.title}
-                      </Typography>
-                       <Typography variant="caption" color="primary" fontWeight="bold">
-                        {product.variants[0]?.price} €
-                      </Typography>
-                    </Box>
-                 </Grid>
-               ))}
-             </Grid>
+        <Box
+          sx={{
+            mt: 4,
+            pt: 3,
+            borderTop: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
+          }}
+        >
+          <Typography
+            variant="subtitle2"
+            color="text.secondary"
+            sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}
+          >
+            <LocalOfferIcon fontSize="small" />
+            Derniers arrivages Beyblade
+          </Typography>
+          <Grid container spacing={2}>
+            {products.map((product) => (
+              <Grid size={{ xs: 6, md: 3 }} key={product.id}>
+                <Box
+                  component="a"
+                  href={`https://feedmy.fr/products/${product.handle}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  sx={{
+                    display: 'block',
+                    textDecoration: 'none',
+                    transition: 'transform 0.2s',
+                    '&:hover': { transform: 'translateY(-4px)' },
+                  }}
+                >
+                  <Box
+                    sx={{
+                      position: 'relative',
+                      paddingTop: '100%',
+                      bgcolor: 'background.default',
+                      borderRadius: 2,
+                      overflow: 'hidden',
+                      mb: 1,
+                      border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
+                    }}
+                  >
+                    {product.images[0] && (
+                      <Box
+                        component="img"
+                        src={product.images[0].src}
+                        alt={product.title}
+                        sx={{
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover',
+                        }}
+                      />
+                    )}
+                  </Box>
+                  <Typography
+                    variant="caption"
+                    color="text.primary"
+                    fontWeight="bold"
+                    display="block"
+                    noWrap
+                    title={product.title}
+                  >
+                    {product.title}
+                  </Typography>
+                  <Typography
+                    variant="caption"
+                    color="primary"
+                    fontWeight="bold"
+                  >
+                    {product.variants[0]?.price} €
+                  </Typography>
+                </Box>
+              </Grid>
+            ))}
+          </Grid>
         </Box>
       )}
     </Card>
-  )
+  );
 }

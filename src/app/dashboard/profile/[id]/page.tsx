@@ -3,79 +3,90 @@
  * Full blader profile with stats, matches, and rivalries
  */
 
-'use client'
+'use client';
 
-import { use } from 'react'
-import Box from '@mui/material/Box'
-import Container from '@mui/material/Container'
-import Typography from '@mui/material/Typography'
-import Grid from '@mui/material/Grid'
-import Skeleton from '@mui/material/Skeleton'
-import useSWR from 'swr'
+import Box from '@mui/material/Box';
+import Container from '@mui/material/Container';
+import Grid from '@mui/material/Grid';
+import Skeleton from '@mui/material/Skeleton';
+import Typography from '@mui/material/Typography';
+import { use } from 'react';
+import useSWR from 'swr';
 import {
   BladerProfileHeader,
-  UserProfileStatsCard,
+  FavoritePartsCard,
   MatchHistory,
   RivalriesCard,
-  FavoritePartsCard,
-} from '@/components/profile'
-import type { UserStats } from '@/lib/stats'
-import { useAuth } from '@/hooks'
+  UserProfileStatsCard,
+} from '@/components/profile';
+import { useAuth } from '@/hooks';
+import type { UserStats } from '@/lib/stats';
 
 interface ProfilePageProps {
-  params: Promise<{ id: string }>
+  params: Promise<{ id: string }>;
 }
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json())
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 export default function ProfilePage({ params }: ProfilePageProps) {
-  const { id } = use(params)
-  const { user: currentUser } = useAuth()
+  const { id } = use(params);
+  const { user: currentUser } = useAuth();
 
   // If no ID, show current user's profile
-  const userId = id === 'me' ? currentUser?.id : id
+  const userId = id === 'me' ? currentUser?.id : id;
 
-  const { data: statsData, isLoading: statsLoading } = useSWR<{ data: UserStats }>(
-    userId ? `/api/stats?userId=${userId}` : null,
-    fetcher
-  )
+  const { data: statsData, isLoading: statsLoading } = useSWR<{
+    data: UserStats;
+  }>(userId ? `/api/stats?userId=${userId}` : null, fetcher);
 
   const { data: userData, isLoading: userLoading } = useSWR(
     userId ? `/api/users/${userId}` : null,
-    fetcher
-  )
+    fetcher,
+  );
 
-  const stats = statsData?.data
-  const user = userData?.data
+  const stats = statsData?.data;
+  const user = userData?.data;
 
   const handleDownloadCard = async () => {
     // Will trigger canvas generation endpoint
-    const response = await fetch(`/api/users/${userId}/card`)
+    const response = await fetch(`/api/users/${userId}/card`);
     if (response.ok) {
-      const blob = await response.blob()
-      const url = URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.href = url
-      a.download = `${stats?.bladerName ?? 'profile'}-card.png`
-      a.click()
-      URL.revokeObjectURL(url)
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${stats?.bladerName ?? 'profile'}-card.png`;
+      a.click();
+      URL.revokeObjectURL(url);
     }
-  }
+  };
 
   if (statsLoading || userLoading) {
     return (
       <Container maxWidth="lg" sx={{ py: 4 }}>
-        <Skeleton variant="rectangular" height={200} sx={{ borderRadius: 2, mb: 3 }} />
+        <Skeleton
+          variant="rectangular"
+          height={200}
+          sx={{ borderRadius: 2, mb: 3 }}
+        />
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, md: 8 }}>
-            <Skeleton variant="rectangular" height={300} sx={{ borderRadius: 2 }} />
+            <Skeleton
+              variant="rectangular"
+              height={300}
+              sx={{ borderRadius: 2 }}
+            />
           </Grid>
           <Grid size={{ xs: 12, md: 4 }}>
-            <Skeleton variant="rectangular" height={300} sx={{ borderRadius: 2 }} />
+            <Skeleton
+              variant="rectangular"
+              height={300}
+              sx={{ borderRadius: 2 }}
+            />
           </Grid>
         </Grid>
       </Container>
-    )
+    );
   }
 
   if (!stats) {
@@ -87,7 +98,7 @@ export default function ProfilePage({ params }: ProfilePageProps) {
           </Typography>
         </Box>
       </Container>
-    )
+    );
   }
 
   return (
@@ -125,5 +136,5 @@ export default function ProfilePage({ params }: ProfilePageProps) {
         </Grid>
       </Grid>
     </Container>
-  )
+  );
 }

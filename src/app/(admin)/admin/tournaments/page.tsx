@@ -1,144 +1,171 @@
-'use client'
+'use client';
 
-import { useState, useEffect, useCallback } from 'react'
+import {
+  CloudDownload,
+  Delete,
+  Edit,
+  Link as LinkIcon,
+  Search,
+} from '@mui/icons-material';
 import {
   Box,
-  Typography,
-  Grid,
+  Button, // Add Button here
   Card,
   CardContent,
   Chip,
+  CircularProgress,
+  Grid,
+  IconButton,
+  InputAdornment,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  CircularProgress,
-  IconButton,
-  Tooltip,
   TextField,
-  InputAdornment,
-  Button, // Add Button here
-} from '@mui/material'
-import { Edit, Delete, Link as LinkIcon, Search, CloudDownload } from '@mui/icons-material'
-import TablePagination from '@mui/material/TablePagination'
+  Tooltip,
+  Typography,
+} from '@mui/material';
+import TablePagination from '@mui/material/TablePagination';
+import type { Tournament } from '@prisma/client';
+import { useCallback, useEffect, useState } from 'react';
 import {
   PageHeader,
   useConfirmDialog,
   useToast,
   // Remove Button from here
-} from '@/components/ui'
-import { getTournaments, createTournament, updateTournament, deleteTournament } from './actions'
-import type { TournamentInput } from './actions'
-import { TournamentDialog } from './TournamentDialog'
-import { CommunitySyncDialog } from './CommunitySyncDialog'
-import { formatDateShort } from '@/lib/utils'
-import type { Tournament } from '@prisma/client'
-import { useDebounce } from '@/hooks/use-debounce'
+} from '@/components/ui';
+import { useDebounce } from '@/hooks/use-debounce';
+import { formatDateShort } from '@/lib/utils';
+import type { TournamentInput } from './actions';
+import {
+  createTournament,
+  deleteTournament,
+  getTournaments,
+  updateTournament,
+} from './actions';
+import { CommunitySyncDialog } from './CommunitySyncDialog';
+import { TournamentDialog } from './TournamentDialog';
 
 export default function AdminTournamentsPage() {
-  const [tournaments, setTournaments] = useState<(Tournament & { _count: { participants: number } })[]>([])
-  const [loading, setLoading] = useState(true)
-  const [dialogOpen, setDialogOpen] = useState(false)
-  const [syncDialogOpen, setSyncDialogOpen] = useState(false)
-  const [selectedTournament, setSelectedTournament] = useState<Tournament | null>(null)
-  const [submitting, setSubmitting] = useState(false)
-  const [search, setSearch] = useState('')
-  const [page, setPage] = useState(0)
-  const [rowsPerPage, setRowsPerPage] = useState(10)
-  const [total, setTotal] = useState(0)
+  const [tournaments, setTournaments] = useState<
+    (Tournament & { _count: { participants: number } })[]
+  >([]);
+  const [loading, setLoading] = useState(true);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [syncDialogOpen, setSyncDialogOpen] = useState(false);
+  const [selectedTournament, setSelectedTournament] =
+    useState<Tournament | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [search, setSearch] = useState('');
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [total, setTotal] = useState(0);
   const [summary, setSummary] = useState({
     totalTournaments: 0,
     activeTournaments: 0,
-    totalParticipants: 0
-  })
+    totalParticipants: 0,
+  });
 
-  const debouncedSearch = useDebounce(search, 500)
+  const debouncedSearch = useDebounce(search, 500);
 
-  const { confirm, ConfirmDialogComponent } = useConfirmDialog()
-  const { showToast } = useToast()
+  const { confirm, ConfirmDialogComponent } = useConfirmDialog();
+  const { showToast } = useToast();
 
   const fetchTournaments = useCallback(async () => {
-    setLoading(true)
+    setLoading(true);
     try {
-      const { tournaments: data, total: totalCount, summary: stats } = await getTournaments(page + 1, rowsPerPage, debouncedSearch)
-      setTournaments(data as unknown as (Tournament & { _count: { participants: number } })[])
-      setTotal(totalCount)
-      setSummary(stats)
+      const {
+        tournaments: data,
+        total: totalCount,
+        summary: stats,
+      } = await getTournaments(page + 1, rowsPerPage, debouncedSearch);
+      setTournaments(
+        data as unknown as (Tournament & {
+          _count: { participants: number };
+        })[],
+      );
+      setTotal(totalCount);
+      setSummary(stats);
     } catch {
-      showToast('Erreur lors de la récupération des tournois', 'error')
+      showToast('Erreur lors de la récupération des tournois', 'error');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [page, rowsPerPage, debouncedSearch, showToast])
+  }, [page, rowsPerPage, debouncedSearch, showToast]);
 
   useEffect(() => {
-    fetchTournaments()
-  }, [fetchTournaments])
+    fetchTournaments();
+  }, [fetchTournaments]);
 
-  const handleChangePage = (event: unknown, newPage: number) => {
-    setPage(newPage)
-  }
+  const handleChangePage = (_event: unknown, newPage: number) => {
+    setPage(newPage);
+  };
 
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(parseInt(event.target.value, 10))
-    setPage(0)
-  }
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
 
   const handleAdd = () => {
-    setSelectedTournament(null)
-    setDialogOpen(true)
-  }
+    setSelectedTournament(null);
+    setDialogOpen(true);
+  };
 
   const handleSyncCommunity = () => {
-    setSyncDialogOpen(true)
-  }
+    setSyncDialogOpen(true);
+  };
 
   const handleEdit = (tournament: Tournament) => {
-    setSelectedTournament(tournament)
-    setDialogOpen(true)
-  }
+    setSelectedTournament(tournament);
+    setDialogOpen(true);
+  };
 
   const handleDelete = async (tournament: Tournament) => {
     const confirmed = await confirm({
       title: 'Supprimer le tournoi',
-      message: `Êtes-vous sûr de vouloir supprimer "${tournament.name}" ? Tous les participants seront également retirés.`, 
+      message: `Êtes-vous sûr de vouloir supprimer "${tournament.name}" ? Tous les participants seront également retirés.`,
       confirmText: 'Supprimer',
       confirmColor: 'error',
-    })
+    });
 
     if (confirmed) {
       try {
-        await deleteTournament(tournament.id)
-        showToast('Tournoi supprimé avec succès', 'success')
-        fetchTournaments()
+        await deleteTournament(tournament.id);
+        showToast('Tournoi supprimé avec succès', 'success');
+        fetchTournaments();
       } catch {
-        showToast('Erreur lors de la suppression', 'error')
+        showToast('Erreur lors de la suppression', 'error');
       }
     }
-  }
+  };
 
   const handleSubmit = async (data: TournamentInput) => {
-    setSubmitting(true)
+    setSubmitting(true);
     try {
       if (selectedTournament) {
-        await updateTournament(selectedTournament.id, data)
-        showToast('Tournoi mis à jour', 'success')
+        await updateTournament(selectedTournament.id, data);
+        showToast('Tournoi mis à jour', 'success');
       } else {
-        await createTournament(data)
-        showToast('Tournoi créé', 'success')
+        await createTournament(data);
+        showToast('Tournoi créé', 'success');
       }
-      setDialogOpen(false)
-      fetchTournaments()
+      setDialogOpen(false);
+      fetchTournaments();
     } catch {
-      showToast('Erreur lors de l\'enregistrement', 'error')
+      showToast("Erreur lors de l'enregistrement", 'error');
     } finally {
-      setSubmitting(false)
+      setSubmitting(false);
     }
-  }
+  };
 
-  const statusColors: Record<string, 'success' | 'warning' | 'default' | 'info' | 'error'> = {
+  const statusColors: Record<
+    string,
+    'success' | 'warning' | 'default' | 'info' | 'error'
+  > = {
     REGISTRATION_OPEN: 'success',
     REGISTRATION_CLOSED: 'warning',
     UPCOMING: 'info',
@@ -146,7 +173,7 @@ export default function AdminTournamentsPage() {
     UNDERWAY: 'success',
     CHECKIN: 'info',
     CANCELLED: 'error',
-  }
+  };
 
   const statusLabels: Record<string, string> = {
     REGISTRATION_OPEN: 'Inscriptions ouvertes',
@@ -156,11 +183,18 @@ export default function AdminTournamentsPage() {
     UNDERWAY: 'En cours',
     CHECKIN: 'Check-in',
     CANCELLED: 'Annulé',
-  }
+  };
 
   return (
     <Box>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          mb: 3,
+        }}
+      >
         <PageHeader
           title="Tournois"
           description="Gérez les tournois Beyblade et les participants"
@@ -174,10 +208,7 @@ export default function AdminTournamentsPage() {
           >
             Sync Challonge
           </Button>
-          <Button
-            variant="contained"
-            onClick={handleAdd}
-          >
+          <Button variant="contained" onClick={handleAdd}>
             Nouveau tournoi
           </Button>
         </Box>
@@ -185,7 +216,7 @@ export default function AdminTournamentsPage() {
 
       {/* Stats */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
-        {[ 
+        {[
           { label: 'Total tournois', value: summary.totalTournaments },
           { label: 'En cours / Ouverts', value: summary.activeTournaments },
           { label: 'Participants totaux', value: summary.totalParticipants },
@@ -252,15 +283,15 @@ export default function AdminTournamentsPage() {
           }}
         >
           {loading && (
-            <Box 
-              sx={{ 
-                position: 'absolute', 
-                top: 0, 
-                left: 0, 
-                right: 0, 
-                bottom: 0, 
-                display: 'flex', 
-                alignItems: 'center', 
+            <Box
+              sx={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                display: 'flex',
+                alignItems: 'center',
                 justifyContent: 'center',
                 bgcolor: 'rgba(255, 255, 255, 0.7)',
                 zIndex: 1,
@@ -285,11 +316,27 @@ export default function AdminTournamentsPage() {
                 {tournaments.map((tournament) => (
                   <TableRow key={tournament.id} hover>
                     <TableCell>
-                      <Typography fontWeight="bold">{tournament.name}</Typography>
+                      <Typography fontWeight="bold">
+                        {tournament.name}
+                      </Typography>
                       {tournament.challongeUrl && (
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 0.5 }}>
-                          <LinkIcon sx={{ fontSize: 12, color: 'text.secondary' }} />
-                          <Typography variant="caption" color="text.secondary" noWrap sx={{ maxWidth: 200 }}>
+                        <Box
+                          sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 0.5,
+                            mt: 0.5,
+                          }}
+                        >
+                          <LinkIcon
+                            sx={{ fontSize: 12, color: 'text.secondary' }}
+                          />
+                          <Typography
+                            variant="caption"
+                            color="text.secondary"
+                            noWrap
+                            sx={{ maxWidth: 200 }}
+                          >
                             {tournament.challongeUrl}
                           </Typography>
                         </Box>
@@ -301,7 +348,9 @@ export default function AdminTournamentsPage() {
                     </TableCell>
                     <TableCell>
                       <Chip
-                        label={statusLabels[tournament.status] || tournament.status}
+                        label={
+                          statusLabels[tournament.status] || tournament.status
+                        }
                         color={statusColors[tournament.status] || 'default'}
                         size="small"
                       />
@@ -309,12 +358,19 @@ export default function AdminTournamentsPage() {
                     <TableCell align="right">
                       <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                         <Tooltip title="Modifier">
-                          <IconButton onClick={() => handleEdit(tournament)} size="small">
+                          <IconButton
+                            onClick={() => handleEdit(tournament)}
+                            size="small"
+                          >
                             <Edit fontSize="small" />
                           </IconButton>
                         </Tooltip>
                         <Tooltip title="Supprimer">
-                          <IconButton onClick={() => handleDelete(tournament)} size="small" color="error">
+                          <IconButton
+                            onClick={() => handleDelete(tournament)}
+                            size="small"
+                            color="error"
+                          >
                             <Delete fontSize="small" />
                           </IconButton>
                         </Tooltip>
@@ -325,7 +381,9 @@ export default function AdminTournamentsPage() {
                 {tournaments.length === 0 && !loading && (
                   <TableRow>
                     <TableCell colSpan={5} align="center" sx={{ py: 4 }}>
-                      <Typography color="text.secondary">Aucun tournoi trouvé</Typography>
+                      <Typography color="text.secondary">
+                        Aucun tournoi trouvé
+                      </Typography>
                     </TableCell>
                   </TableRow>
                 )}
@@ -361,5 +419,5 @@ export default function AdminTournamentsPage() {
 
       {ConfirmDialogComponent}
     </Box>
-  )
+  );
 }

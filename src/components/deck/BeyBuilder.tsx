@@ -1,61 +1,59 @@
-'use client'
+'use client';
 
 /**
  * BeyBuilder - Component to build a single Bey (Blade + Ratchet + Bit)
  */
 
-import Box from '@mui/material/Box'
-import Paper from '@mui/material/Paper'
-import Typography from '@mui/material/Typography'
-import TextField from '@mui/material/TextField'
-import Stack from '@mui/material/Stack'
-import Chip from '@mui/material/Chip'
-import { PartSelector } from './PartSelector'
-import type { Part } from '@prisma/client'
+import Box from '@mui/material/Box';
+import Chip from '@mui/material/Chip';
+import Paper from '@mui/material/Paper';
+import Stack from '@mui/material/Stack';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
+import type { Part } from '@prisma/client';
+import { PartSelector } from './PartSelector';
 
 export interface BeyData {
-  blade: Part | null
-  ratchet: Part | null
-  bit: Part | null
-  nickname: string
+  blade: Part | null;
+  ratchet: Part | null;
+  bit: Part | null;
+  nickname: string;
 }
 
 interface BeyBuilderProps {
-  position: number
-  data: BeyData
-  onChange: (data: BeyData) => void
-  usedPartIds: string[]
-  disabled?: boolean
+  position: number;
+  data: BeyData;
+  onChange: (data: BeyData) => void;
+  usedPartIds: string[];
+  disabled?: boolean;
 }
 
 function parseStat(stat: string | number | null | undefined): number {
-  if (typeof stat === 'number') return stat
-  if (!stat) return 0
-  const match = String(stat).match(/^(\d+)/)
-  return (match && match[1]) ? parseInt(match[1], 10) : 0
+  if (typeof stat === 'number') return stat;
+  if (!stat) return 0;
+  const match = String(stat).match(/^(\d+)/);
+  return match?.[1] ? parseInt(match[1], 10) : 0;
 }
 
 function calculateStats(blade: Part | null): {
-  attack: number
-  defense: number
-  stamina: number
+  attack: number;
+  defense: number;
+  stamina: number;
 } | null {
-  if (!blade) return null
+  if (!blade) return null;
   return {
     attack: parseStat(blade.attack),
     defense: parseStat(blade.defense),
     stamina: parseStat(blade.stamina),
-  }
+  };
 }
 
 function getBeyName(data: BeyData): string {
-  const parts = [
-    data.blade?.name,
-    data.ratchet?.name,
-    data.bit?.name,
-  ].filter(Boolean)
+  const parts = [data.blade?.name, data.ratchet?.name, data.bit?.name].filter(
+    Boolean,
+  );
 
-  return parts.join(' ') || 'Bey non configuré'
+  return parts.join(' ') || 'Bey non configuré';
 }
 
 export function BeyBuilder({
@@ -65,17 +63,19 @@ export function BeyBuilder({
   usedPartIds,
   disabled = false,
 }: BeyBuilderProps) {
-  const stats = calculateStats(data.blade)
-  const beyName = getBeyName(data)
-  const isComplete = data.blade && data.ratchet && data.bit
+  const stats = calculateStats(data.blade);
+  const beyName = getBeyName(data);
+  const isComplete = data.blade && data.ratchet && data.bit;
 
   // Filter out current bey's parts from usedPartIds
-  const currentPartIds = [data.blade?.id, data.ratchet?.id, data.bit?.id].filter(
-    Boolean
-  ) as string[]
+  const currentPartIds = [
+    data.blade?.id,
+    data.ratchet?.id,
+    data.bit?.id,
+  ].filter(Boolean) as string[];
   const otherUsedPartIds = usedPartIds.filter(
-    (id) => !currentPartIds.includes(id)
-  )
+    (id) => !currentPartIds.includes(id),
+  );
 
   return (
     <Paper
@@ -171,7 +171,5 @@ export function BeyBuilder({
         )}
       </Stack>
     </Paper>
-  )
+  );
 }
-
-

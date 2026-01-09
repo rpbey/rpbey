@@ -1,39 +1,42 @@
-"use client"
+'use client';
 
-import { useEffect } from "react"
-import { useRouter } from "next/navigation"
-import { useSession } from "@/lib/auth-client"
-import { Box, CircularProgress, Typography } from "@mui/material"
+import { Box, CircularProgress, Typography } from '@mui/material';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+import { useSession } from '@/lib/auth-client';
 
 export default function DashboardRedirect() {
-  const router = useRouter()
-  const { data: session, isPending } = useSession()
+  const router = useRouter();
+  const { data: session, isPending } = useSession();
 
   useEffect(() => {
     if (!isPending) {
       if (session?.user) {
         // Redirect based on role
-        if (session.user.role === "admin" || session.user.role === "superadmin") {
-          router.replace("/admin")
+        if (
+          session.user.role === 'admin' ||
+          session.user.role === 'superadmin'
+        ) {
+          router.replace('/admin');
         } else {
           // Regular users go to their own profile by default
-          router.replace("/profile")
+          router.replace('/profile');
         }
       } else {
         // Not logged in, redirect to sign-in
-        router.replace("/sign-in")
+        router.replace('/sign-in');
       }
     }
-  }, [session, isPending, router])
+  }, [session, isPending, router]);
 
   return (
     <Box
       sx={{
-        minHeight: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
+        minHeight: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
         gap: 2,
       }}
     >
@@ -42,5 +45,5 @@ export default function DashboardRedirect() {
         Chargement de votre espace...
       </Typography>
     </Box>
-  )
+  );
 }

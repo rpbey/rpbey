@@ -1,58 +1,59 @@
-'use client'
+'use client';
 
 /**
  * DeckCard - Display a deck with its 3 beys
  */
 
-import Card from '@mui/material/Card'
-import CardContent from '@mui/material/CardContent'
-import CardActions from '@mui/material/CardActions'
-import Typography from '@mui/material/Typography'
-import Box from '@mui/material/Box'
-import Chip from '@mui/material/Chip'
-import Button from '@mui/material/Button'
-import IconButton from '@mui/material/IconButton'
-import Stack from '@mui/material/Stack'
-import Divider from '@mui/material/Divider'
-import StarIcon from '@mui/icons-material/Star'
-import StarOutlineIcon from '@mui/icons-material/StarOutline'
-import EditIcon from '@mui/icons-material/Edit'
-import DeleteIcon from '@mui/icons-material/Delete'
-import type { Part } from '@prisma/client'
-import { parseStat } from '@/lib/utils'
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+import StarIcon from '@mui/icons-material/Star';
+import StarOutlineIcon from '@mui/icons-material/StarOutline';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Card from '@mui/material/Card';
+import CardActions from '@mui/material/CardActions';
+import CardContent from '@mui/material/CardContent';
+import Chip from '@mui/material/Chip';
+import Divider from '@mui/material/Divider';
+import IconButton from '@mui/material/IconButton';
+import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
+import type { Part } from '@prisma/client';
+import { parseStat } from '@/lib/utils';
 
 export interface DeckBey {
-  id: string
-  position: number
-  nickname: string | null
-  blade: Part
-  ratchet: Part
-  bit: Part
+  id: string;
+  position: number;
+  nickname: string | null;
+  blade: Part;
+  ratchet: Part;
+  bit: Part;
 }
 
 export interface Deck {
-  id: string
-  name: string
-  isActive: boolean
-  beys: DeckBey[]
-  createdAt: string
-  updatedAt: string
+  id: string;
+  name: string;
+  isActive: boolean;
+  beys: DeckBey[];
+  createdAt: string;
+  updatedAt: string;
 }
 
 interface DeckCardProps {
-  deck: Deck
-  onEdit?: () => void
-  onDelete?: () => void
-  onActivate?: () => void
+  deck: Deck;
+  onEdit?: () => void;
+  onDelete?: () => void;
+  onActivate?: () => void;
 }
 
 function BeyLine({ bey }: { bey: DeckBey }) {
-  const name = bey.nickname || `${bey.blade.name} ${bey.ratchet.name} ${bey.bit.name}`
+  const name =
+    bey.nickname || `${bey.blade.name} ${bey.ratchet.name} ${bey.bit.name}`;
   const stats = {
     attack: parseStat(bey.blade.attack),
     defense: parseStat(bey.blade.defense),
     stamina: parseStat(bey.blade.stamina),
-  }
+  };
 
   return (
     <Box
@@ -102,11 +103,16 @@ function BeyLine({ bey }: { bey: DeckBey }) {
         />
       </Box>
     </Box>
-  )
+  );
 }
 
-export function DeckCard({ deck, onEdit, onDelete, onActivate }: DeckCardProps) {
-  const sortedBeys = [...deck.beys].sort((a, b) => a.position - b.position)
+export function DeckCard({
+  deck,
+  onEdit,
+  onDelete,
+  onActivate,
+}: DeckCardProps) {
+  const sortedBeys = [...deck.beys].sort((a, b) => a.position - b.position);
 
   // Calculate total stats
   const totalStats = sortedBeys.reduce(
@@ -115,8 +121,8 @@ export function DeckCard({ deck, onEdit, onDelete, onActivate }: DeckCardProps) 
       defense: acc.defense + parseStat(bey.blade.defense),
       stamina: acc.stamina + parseStat(bey.blade.stamina),
     }),
-    { attack: 0, defense: 0, stamina: 0 }
-  )
+    { attack: 0, defense: 0, stamina: 0 },
+  );
 
   return (
     <Card
@@ -220,7 +226,5 @@ export function DeckCard({ deck, onEdit, onDelete, onActivate }: DeckCardProps) 
         </CardActions>
       )}
     </Card>
-  )
+  );
 }
-
-

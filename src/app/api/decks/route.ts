@@ -4,21 +4,21 @@
  * POST /api/decks - Create a new deck
  */
 
-import type { NextRequest } from 'next/server'
-import { NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
-import { auth } from '@/lib/auth'
-import { headers } from 'next/headers'
+import { headers } from 'next/headers';
+import type { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
+import { auth } from '@/lib/auth';
+import { prisma } from '@/lib/prisma';
 
 // GET - List user's decks
 export async function GET() {
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
-    })
+    });
 
     if (!session?.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const decks = await prisma.deck.findMany({
@@ -34,15 +34,15 @@ export async function GET() {
         },
       },
       orderBy: [{ isActive: 'desc' }, { updatedAt: 'desc' }],
-    })
+    });
 
-    return NextResponse.json({ data: decks })
+    return NextResponse.json({ data: decks });
   } catch (error) {
-    console.error('Error fetching decks:', error)
+    console.error('Error fetching decks:', error);
     return NextResponse.json(
       { error: 'Failed to fetch decks' },
-      { status: 500 }
-    )
+      { status: 500 },
+    );
   }
 }
 
@@ -51,72 +51,72 @@ export async function POST(request: NextRequest) {
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
-    })
+    });
 
     if (!session?.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const body = await request.json()
+    const body = await request.json();
     const { name, beys, isActive } = body as {
-      name: string
-      isActive?: boolean
+      name: string;
+      isActive?: boolean;
       beys: Array<{
-        position: number
-        nickname?: string
-        bladeId: string
-        ratchetId: string
-        bitId: string
-      }>
-    }
+        position: number;
+        nickname?: string;
+        bladeId: string;
+        ratchetId: string;
+        bitId: string;
+      }>;
+    };
 
     // Validate input
     if (!name || !beys || beys.length !== 3) {
       return NextResponse.json(
         { error: 'Invalid deck: name and exactly 3 beys required' },
-        { status: 400 }
-      )
+        { status: 400 },
+      );
     }
 
     // Validate uniqueness of parts within deck
-    const allPartIds = beys.flatMap((b) => [b.bladeId, b.ratchetId, b.bitId])
-    const uniquePartIds = new Set(allPartIds)
+    const allPartIds = beys.flatMap((b) => [b.bladeId, b.ratchetId, b.bitId]);
+    const uniquePartIds = new Set(allPartIds);
     if (uniquePartIds.size !== allPartIds.length) {
       return NextResponse.json(
         { error: 'Invalid deck: each part can only be used once' },
-        { status: 400 }
-      )
+        { status: 400 },
+      );
     }
 
     // Validate parts exist and are correct types
     const parts = await prisma.part.findMany({
       where: { id: { in: allPartIds } },
-    })
+    });
 
-    const partMap = new Map(parts.map((p) => [p.id, p]))
+    const partMap = new Map(parts.map((p) => [p.id, p]));
 
     for (const bey of beys) {
-      const blade = partMap.get(bey.bladeId)
-      const ratchet = partMap.get(bey.ratchetId)
-      const bit = partMap.get(bey.bitId)
+      const blade = partMap.get(bey.bladeId);
+      const ratchet = partMap.get(bey.ratchetId);
+      const bit = partMap.get(bey.bitId);
 
       if (!blade || blade.type !== 'BLADE') {
         return NextResponse.json(
           { error: `Invalid blade ID: ${bey.bladeId}` },
-          { status: 400 }
-        )
+          { status: 400 },
+        );
       }
       if (!ratchet || ratchet.type !== 'RATCHET') {
         return NextResponse.json(
           { error: `Invalid ratchet ID: ${bey.ratchetId}` },
-          { status: 400 }
-        )
+          { status: 400 },
+        );
       }
       if (!bit || bit.type !== 'BIT') {
         return NextResponse.json(
           { error: `Invalid bit ID: ${bey.bitId}` },
-          { status: 400 }
-        )
+          { status: 400 },
+        );
       }
     }
 
@@ -125,7 +125,7 @@ export async function POST(request: NextRequest) {
       await prisma.deck.updateMany({
         where: { userId: session.user.id, isActive: true },
         data: { isActive: false },
-      })
+      });
     }
 
     // Create deck with beys
@@ -154,14 +154,14 @@ export async function POST(request: NextRequest) {
           orderBy: { position: 'asc' },
         },
       },
-    })
+    });
 
-    return NextResponse.json({ data: deck }, { status: 201 })
+    return NextResponse.json({ data: deck }, { status: 201 });
   } catch (error) {
-    console.error('Error creating deck:', error)
+    console.error('Error creating deck:', error);
     return NextResponse.json(
       { error: 'Failed to create deck' },
-      { status: 500 }
-    )
+      { status: 500 },
+    );
   }
 }

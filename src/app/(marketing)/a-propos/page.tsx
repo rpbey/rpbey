@@ -1,40 +1,41 @@
-import Container from '@mui/material/Container'
-import Typography from '@mui/material/Typography'
-import Box from '@mui/material/Box'
-import Grid from '@mui/material/Grid'
-import Card from '@mui/material/Card'
-import Stack from '@mui/material/Stack'
-import Avatar from '@mui/material/Avatar'
-import Divider from '@mui/material/Divider'
-import Button from '@mui/material/Button'
-import Link from 'next/link'
 import {
   EmojiEvents,
-  Groups,
-  Gavel,
   Favorite,
-  Star,
+  Gavel,
+  Groups,
   Shield,
-} from '@mui/icons-material'
-import { DiscordIcon } from '@/components/ui/Icons'
-import prisma from '@/lib/prisma'
-import { getBotStatus } from '@/lib/bot'
-import { headers } from 'next/headers'
+  Star,
+} from '@mui/icons-material';
+import Avatar from '@mui/material/Avatar';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Card from '@mui/material/Card';
+import Container from '@mui/material/Container';
+import Divider from '@mui/material/Divider';
+import Grid from '@mui/material/Grid';
+import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
+import { headers } from 'next/headers';
+import Link from 'next/link';
+import { DiscordIcon } from '@/components/ui/Icons';
+import { getBotStatus } from '@/lib/bot';
+import prisma from '@/lib/prisma';
 
 export const metadata = {
   title: 'À Propos',
-  description: 'Découvrez la République Populaire du Beyblade, la communauté française de Beyblade X.',
-}
+  description:
+    'Découvrez la République Populaire du Beyblade, la communauté française de Beyblade X.',
+};
 
 interface ValueItem {
-  icon: string
-  title: string
-  description: string
+  icon: string;
+  title: string;
+  description: string;
 }
 
 interface RuleItem {
-  title: string
-  description: string
+  title: string;
+  description: string;
 }
 
 // Fallback data
@@ -45,127 +46,139 @@ const ICON_MAP: Record<string, React.ElementType> = {
   Shield,
   Gavel,
   Star,
-}
+};
 
 // Fallback data
 const DEFAULT_VALUES = [
   {
     icon: 'Groups',
     title: 'Communauté',
-    description: 'Une famille de passionnés qui partagent la même passion pour Beyblade.',
+    description:
+      'Une famille de passionnés qui partagent la même passion pour Beyblade.',
   },
   {
     icon: 'EmojiEvents',
     title: 'Compétition',
-    description: 'Des tournois réguliers pour tous les niveaux, du débutant au champion.',
+    description:
+      'Des tournois réguliers pour tous les niveaux, du débutant au champion.',
   },
   {
     icon: 'Favorite',
     title: 'Passion',
-    description: 'L\'amour du Beyblade nous unit depuis la première génération.',
+    description: "L'amour du Beyblade nous unit depuis la première génération.",
   },
   {
     icon: 'Shield',
     title: 'Fair-play',
-    description: 'Le respect et la sportivité sont au cœur de notre communauté.',
+    description:
+      'Le respect et la sportivité sont au cœur de notre communauté.',
   },
-]
+];
 
 const DEFAULT_RULES = [
   {
     title: 'Respect mutuel',
-    description: 'Traitez tous les membres avec respect et courtoisie. Aucune forme de harcèlement, discrimination ou comportement toxique ne sera tolérée.',
+    description:
+      'Traitez tous les membres avec respect et courtoisie. Aucune forme de harcèlement, discrimination ou comportement toxique ne sera tolérée.',
   },
   {
     title: 'Fair-play',
-    description: 'Jouez de manière honnête. Pas de triche, pas de modifications non autorisées, pas de comportement antisportif.',
+    description:
+      'Jouez de manière honnête. Pas de triche, pas de modifications non autorisées, pas de comportement antisportif.',
   },
   {
     title: 'Équipement officiel',
-    description: 'Seules les toupies et accessoires officiels Takara Tomy et Hasbro sont autorisés en tournoi.',
+    description:
+      'Seules les toupies et accessoires officiels Takara Tomy et Hasbro sont autorisés en tournoi.',
   },
   {
     title: 'Ponctualité',
-    description: 'Soyez présent et prêt à l\'heure pour vos matchs. Un retard excessif peut entraîner une disqualification.',
+    description:
+      "Soyez présent et prêt à l'heure pour vos matchs. Un retard excessif peut entraîner une disqualification.",
   },
   {
     title: 'Communication',
-    description: 'Restez joignables sur Discord pendant les événements et signalez tout problème aux organisateurs.',
+    description:
+      'Restez joignables sur Discord pendant les événements et signalez tout problème aux organisateurs.',
   },
-]
+];
 
 const DEFAULT_INTRO = `La **République Populaire du Beyblade** (RPB) est née de la passion d'un groupe de fans français déterminés à créer la meilleure communauté Beyblade de l'hexagone.
 
 Avec l'arrivée de **Beyblade X**, une nouvelle ère s'ouvre pour notre communauté. Nous organisons des tournois réguliers et offrons une plateforme complète pour les bladers français.
 
-Que tu sois un vétéran des premières générations ou un nouveau venu découvrant Beyblade X, tu es le bienvenu dans notre communauté !`
+Que tu sois un vétéran des premières générations ou un nouveau venu découvrant Beyblade X, tu es le bienvenu dans notre communauté !`;
 
 async function getContent(slug: string) {
   try {
     const block = await prisma.contentBlock.findUnique({
       where: { slug },
-    })
-    return block
+    });
+    return block;
   } catch (error) {
-    console.error(`Failed to fetch content block: ${slug}`, error)
-    return null
+    console.error(`Failed to fetch content block: ${slug}`, error);
+    return null;
   }
 }
 
 export default async function AboutPage() {
-  await headers()
-  const [botStatus, tournamentCount, introBlock, valuesBlock, rulesBlock] = await Promise.all([
-    getBotStatus(),
-    prisma.tournament.count(),
-    getContent('about-intro'),
-    getContent('about-values'),
-    getContent('about-rules'),
-  ])
+  await headers();
+  const [botStatus, tournamentCount, introBlock, valuesBlock, rulesBlock] =
+    await Promise.all([
+      getBotStatus(),
+      prisma.tournament.count(),
+      getContent('about-intro'),
+      getContent('about-values'),
+      getContent('about-rules'),
+    ]);
 
-  const memberCount = botStatus?.memberCount || 500
-  const displayMemberCount = memberCount > 500 ? `${memberCount}+` : memberCount.toString()
-  const displayTournamentCount = tournamentCount > 20 ? `${tournamentCount}+` : tournamentCount.toString()
+  const memberCount = botStatus?.memberCount || 500;
+  const displayMemberCount =
+    memberCount > 500 ? `${memberCount}+` : memberCount.toString();
+  const displayTournamentCount =
+    tournamentCount > 20 ? `${tournamentCount}+` : tournamentCount.toString();
 
-  const introText = introBlock?.content || DEFAULT_INTRO
-  
-  let values: ValueItem[] = DEFAULT_VALUES
+  const introText = introBlock?.content || DEFAULT_INTRO;
+
+  let values: ValueItem[] = DEFAULT_VALUES;
   if (valuesBlock?.content) {
     try {
-      values = JSON.parse(valuesBlock.content)
+      values = JSON.parse(valuesBlock.content);
     } catch (e) {
-      console.error('Failed to parse values block', e)
+      console.error('Failed to parse values block', e);
     }
   }
 
-  let rules: RuleItem[] = DEFAULT_RULES
+  let rules: RuleItem[] = DEFAULT_RULES;
   if (rulesBlock?.content) {
     try {
-      rules = JSON.parse(rulesBlock.content)
+      rules = JSON.parse(rulesBlock.content);
     } catch (e) {
-      console.error('Failed to parse rules block', e)
+      console.error('Failed to parse rules block', e);
     }
   }
 
   // Helper to render intro text with basic formatting (bold and newlines)
   const renderIntro = (text: string) => {
     return text.split('\n\n').map((paragraph, i) => (
-      <Typography 
-        key={i} 
-        variant="body1" 
+      <Typography
+        key={i}
+        variant="body1"
         sx={{ mb: 2, fontSize: '1.1rem', lineHeight: 1.8 }}
-        dangerouslySetInnerHTML={{ 
-          __html: paragraph.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') 
+        dangerouslySetInnerHTML={{
+          __html: paragraph.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'),
         }}
       />
-    ))
-  }
+    ));
+  };
 
   return (
     <>
       {/* Hero Section */}
       <Box
         sx={{
-          background: 'linear-gradient(135deg, #dc2626 0%, #991b1b 50%, #7f1d1d 100%)',
+          background:
+            'linear-gradient(135deg, #dc2626 0%, #991b1b 50%, #7f1d1d 100%)',
           color: 'white',
           py: { xs: 8, md: 12 },
           position: 'relative',
@@ -197,7 +210,8 @@ export default async function AboutPage() {
             textAlign="center"
             sx={{ opacity: 0.9, maxWidth: 600, mx: 'auto' }}
           >
-            La communauté française de Beyblade qui allie divertissement et compétitivité
+            La communauté française de Beyblade qui allie divertissement et
+            compétitivité
           </Typography>
         </Container>
       </Box>
@@ -209,9 +223,7 @@ export default async function AboutPage() {
             Notre Histoire
           </Typography>
           <Grid container spacing={4}>
-            <Grid size={{ xs: 12, md: 7 }}>
-              {renderIntro(introText)}
-            </Grid>
+            <Grid size={{ xs: 12, md: 7 }}>{renderIntro(introText)}</Grid>
             <Grid size={{ xs: 12, md: 5 }}>
               <Card
                 elevation={0}
@@ -245,12 +257,16 @@ export default async function AboutPage() {
 
         {/* Nos Valeurs */}
         <Box sx={{ mb: 10 }}>
-          <Typography variant="h4" fontWeight="bold" sx={{ mb: 4, textAlign: 'center' }}>
+          <Typography
+            variant="h4"
+            fontWeight="bold"
+            sx={{ mb: 4, textAlign: 'center' }}
+          >
             Nos Valeurs
           </Typography>
           <Grid container spacing={3}>
             {values.map((value: ValueItem) => {
-              const Icon = ICON_MAP[value.icon] || Groups
+              const Icon = ICON_MAP[value.icon] || Groups;
               return (
                 <Grid key={value.title} size={{ xs: 12, sm: 6, md: 3 }}>
                   <Card
@@ -288,7 +304,7 @@ export default async function AboutPage() {
                     </Typography>
                   </Card>
                 </Grid>
-              )
+              );
             })}
           </Grid>
         </Box>
@@ -304,7 +320,8 @@ export default async function AboutPage() {
                 Règlement
               </Typography>
               <Typography variant="body1" color="text.secondary">
-                Afin que chaque événement se passe sans soucis, la RPB possède un règlement.
+                Afin que chaque événement se passe sans soucis, la RPB possède
+                un règlement.
               </Typography>
             </Box>
           </Stack>
@@ -320,8 +337,9 @@ export default async function AboutPage() {
             }}
           >
             <Typography variant="body1" fontWeight="medium">
-              ⚠️ Nous serons intransigeants, alors merci de respecter ces règles afin que chacun 
-              puisse passer un événement dans la joie et la bonne humeur.
+              ⚠️ Nous serons intransigeants, alors merci de respecter ces règles
+              afin que chacun puisse passer un événement dans la joie et la
+              bonne humeur.
             </Typography>
           </Card>
 
@@ -352,7 +370,11 @@ export default async function AboutPage() {
                       {index + 1}
                     </Avatar>
                     <Box>
-                      <Typography variant="h6" fontWeight="bold" sx={{ mb: 0.5 }}>
+                      <Typography
+                        variant="h6"
+                        fontWeight="bold"
+                        sx={{ mb: 0.5 }}
+                      >
                         {rule.title}
                       </Typography>
                       <Typography variant="body2" color="text.secondary">
@@ -373,11 +395,19 @@ export default async function AboutPage() {
           <Typography variant="h4" fontWeight="bold" sx={{ mb: 2 }}>
             Prêt à rejoindre l'aventure ?
           </Typography>
-          <Typography variant="body1" color="text.secondary" sx={{ mb: 4, maxWidth: 500, mx: 'auto' }}>
-            Rejoins notre communauté Discord pour participer aux tournois, discuter avec d'autres 
-            bladers et ne manquer aucun événement !
+          <Typography
+            variant="body1"
+            color="text.secondary"
+            sx={{ mb: 4, maxWidth: 500, mx: 'auto' }}
+          >
+            Rejoins notre communauté Discord pour participer aux tournois,
+            discuter avec d'autres bladers et ne manquer aucun événement !
           </Typography>
-          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} justifyContent="center">
+          <Stack
+            direction={{ xs: 'column', sm: 'row' }}
+            spacing={2}
+            justifyContent="center"
+          >
             <Button
               component="a"
               href="https://discord.gg/twdVfesrRj"
@@ -410,5 +440,5 @@ export default async function AboutPage() {
         </Box>
       </Container>
     </>
-  )
+  );
 }

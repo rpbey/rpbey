@@ -316,7 +316,12 @@ export class ChallongeClient {
    */
   async bulkCreateParticipants(
     tournamentId: string,
-    participants: { name: string; seed?: number; email?: string; misc?: string }[],
+    participants: {
+      name: string;
+      seed?: number;
+      email?: string;
+      misc?: string;
+    }[],
   ): Promise<ApiResponse<Participant[]>> {
     return this.request<ApiResponse<Participant[]>>(
       'POST',

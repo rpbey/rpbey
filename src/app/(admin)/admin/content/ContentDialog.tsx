@@ -1,28 +1,28 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
   Button,
-  TextField,
-  MenuItem,
-  Stack,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   FormControl,
   InputLabel,
+  MenuItem,
   Select,
-} from '@mui/material'
-import type { ContentBlock } from '@prisma/client'
-import type { ContentBlockInput } from './actions'
+  Stack,
+  TextField,
+} from '@mui/material';
+import type { ContentBlock } from '@prisma/client';
+import { useEffect, useState } from 'react';
+import type { ContentBlockInput } from './actions';
 
 interface ContentDialogProps {
-  open: boolean
-  onClose: () => void
-  onSubmit: (data: ContentBlockInput) => Promise<void>
-  initialData: ContentBlock | null
-  loading: boolean
+  open: boolean;
+  onClose: () => void;
+  onSubmit: (data: ContentBlockInput) => Promise<void>;
+  initialData: ContentBlock | null;
+  loading: boolean;
 }
 
 export function ContentDialog({
@@ -37,7 +37,7 @@ export function ContentDialog({
     title: '',
     type: 'text',
     content: '',
-  })
+  });
 
   useEffect(() => {
     if (initialData) {
@@ -46,21 +46,21 @@ export function ContentDialog({
         title: initialData.title || '',
         type: initialData.type,
         content: initialData.content,
-      })
+      });
     } else {
       setFormData({
         slug: '',
         title: '',
         type: 'text',
         content: '',
-      })
+      });
     }
-  }, [initialData, open])
+  }, [initialData]);
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    onSubmit(formData)
-  }
+    e.preventDefault();
+    onSubmit(formData);
+  };
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
@@ -74,7 +74,9 @@ export function ContentDialog({
               <TextField
                 label="Slug (Clé unique)"
                 value={formData.slug}
-                onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, slug: e.target.value })
+                }
                 fullWidth
                 required
                 disabled={!!initialData} // Prevent changing slug of existing content
@@ -83,7 +85,9 @@ export function ContentDialog({
               <TextField
                 label="Titre (Admin)"
                 value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, title: e.target.value })
+                }
                 fullWidth
                 required
               />
@@ -94,7 +98,9 @@ export function ContentDialog({
               <Select
                 value={formData.type}
                 label="Type de contenu"
-                onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, type: e.target.value })
+                }
               >
                 <MenuItem value="text">Texte Simple</MenuItem>
                 <MenuItem value="markdown">Markdown</MenuItem>
@@ -106,7 +112,9 @@ export function ContentDialog({
             <TextField
               label="Contenu"
               value={formData.content}
-              onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, content: e.target.value })
+              }
               fullWidth
               required
               multiline
@@ -124,5 +132,5 @@ export function ContentDialog({
         </DialogActions>
       </form>
     </Dialog>
-  )
+  );
 }

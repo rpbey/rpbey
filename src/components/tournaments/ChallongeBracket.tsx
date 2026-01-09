@@ -1,43 +1,43 @@
-'use client'
+'use client';
 
-import OpenInNewIcon from '@mui/icons-material/OpenInNew'
-import RefreshIcon from '@mui/icons-material/Refresh'
-import Box from '@mui/material/Box'
-import IconButton from '@mui/material/IconButton'
-import Paper from '@mui/material/Paper'
-import Skeleton from '@mui/material/Skeleton'
-import Tooltip from '@mui/material/Tooltip'
-import Typography from '@mui/material/Typography'
-import { useState } from 'react'
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
+import Paper from '@mui/material/Paper';
+import Skeleton from '@mui/material/Skeleton';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+import { useState } from 'react';
 
 interface ChallongeBracketProps {
-  challongeUrl: string
-  height?: number | string
-  title?: string
-  themeId?: string
+  challongeUrl: string;
+  height?: number | string;
+  title?: string;
+  themeId?: string;
 }
 
-export function ChallongeBracket({ 
-  challongeUrl, 
-  height = 600, 
+export function ChallongeBracket({
+  challongeUrl,
+  height = 600,
   title,
-  themeId = '7792' // ID d'un thème transparent ou thème par défaut RPB si existant
+  themeId = '7792', // ID d'un thème transparent ou thème par défaut RPB si existant
 }: ChallongeBracketProps) {
-  const [loading, setLoading] = useState(true)
-  const [key, setKey] = useState(0)
+  const [loading, setLoading] = useState(true);
+  const [key, setKey] = useState(0);
 
   // Construction de l'URL du module avec les bons paramètres pour la transparence
   // On force le mode module et on ajoute les paramètres d'affichage
-  const moduleUrl = new URL(`${challongeUrl}/module`)
-  moduleUrl.searchParams.set('theme', themeId)
-  moduleUrl.searchParams.set('multiplier', '0.9')
-  moduleUrl.searchParams.set('match_width_multiplier', '1.2')
-  moduleUrl.searchParams.set('show_final_results', '1')
-  
+  const moduleUrl = new URL(`${challongeUrl}/module`);
+  moduleUrl.searchParams.set('theme', themeId);
+  moduleUrl.searchParams.set('multiplier', '0.9');
+  moduleUrl.searchParams.set('match_width_multiplier', '1.2');
+  moduleUrl.searchParams.set('show_final_results', '1');
+
   const handleRefresh = () => {
-    setLoading(true)
-    setKey(prev => prev + 1)
-  }
+    setLoading(true);
+    setKey((prev) => prev + 1);
+  };
 
   return (
     <Paper
@@ -49,9 +49,10 @@ export function ChallongeBracket({
         border: '1px solid',
         borderColor: 'divider',
         // Fond semi-transparent pour le conteneur
-        bgcolor: (theme) => theme.palette.mode === 'dark' 
-          ? 'rgba(0, 0, 0, 0.2)' 
-          : 'rgba(255, 255, 255, 0.4)',
+        bgcolor: (theme) =>
+          theme.palette.mode === 'dark'
+            ? 'rgba(0, 0, 0, 0.2)'
+            : 'rgba(255, 255, 255, 0.4)',
         backdropFilter: 'blur(10px)',
       }}
     >
@@ -78,11 +79,11 @@ export function ChallongeBracket({
             </IconButton>
           </Tooltip>
           <Tooltip title="Ouvrir sur Challonge">
-            <IconButton 
-              size="small" 
-              component="a" 
-              href={challongeUrl} 
-              target="_blank" 
+            <IconButton
+              size="small"
+              component="a"
+              href={challongeUrl}
+              target="_blank"
               rel="noopener noreferrer"
               color="primary"
             >
@@ -105,10 +106,15 @@ export function ChallongeBracket({
               justifyContent: 'center',
             }}
           >
-            <Skeleton variant="rectangular" width="100%" height="100%" sx={{ borderRadius: 2, opacity: 0.5 }} />
+            <Skeleton
+              variant="rectangular"
+              width="100%"
+              height="100%"
+              sx={{ borderRadius: 2, opacity: 0.5 }}
+            />
           </Box>
         )}
-        
+
         <iframe
           key={key}
           src={moduleUrl.toString()}
@@ -120,10 +126,10 @@ export function ChallongeBracket({
             border: 'none',
             display: 'block',
             // Astuce CSS pour forcer la transparence si le thème le permet
-            colorScheme: 'auto', 
+            colorScheme: 'auto',
           }}
         />
       </Box>
     </Paper>
-  )
+  );
 }

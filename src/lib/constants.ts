@@ -1,7 +1,8 @@
-export const APP_NAME = 'RPB Dashboard'
-export const APP_DESCRIPTION = 'Le dashboard officiel de la République Populaire du Beyblade'
+export const APP_NAME = 'RPB Dashboard';
+export const APP_DESCRIPTION =
+  'Le dashboard officiel de la République Populaire du Beyblade';
 
-export const DISCORD_INVITE_URL = 'https://discord.gg/twdVfesrRj'
+export const DISCORD_INVITE_URL = 'https://discord.gg/twdVfesrRj';
 
 export const ROUTES = {
   HOME: '/',
@@ -21,11 +22,11 @@ export const ROUTES = {
   TOURNAMENTS: '/tournaments',
   RANKINGS: '/rankings',
   PROFILE: '/profile',
-} as const
+} as const;
 
 export const RPB_COLORS = {
   primary: '#dc2626', // Rouge RPB
   secondary: '#fbbf24', // Or
   background: '#121212',
   surface: '#1e1e1e',
-} as const
+} as const;

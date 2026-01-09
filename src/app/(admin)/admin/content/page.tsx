@@ -1,70 +1,61 @@
-'use client'
+'use client';
 
-import { useState, useEffect, useCallback } from 'react'
+import { Delete as DeleteIcon, Edit as EditIcon } from '@mui/icons-material';
+import { Box, Chip, IconButton, Tooltip, Typography } from '@mui/material';
+import CircularProgress from '@mui/material/CircularProgress';
+import type { ContentBlock } from '@prisma/client';
+import { useCallback, useEffect, useState } from 'react';
 import {
-  Box,
-  IconButton,
-  Tooltip,
-  Typography,
-  Chip,
-} from '@mui/material'
-import {
-  Edit as EditIcon,
-  Delete as DeleteIcon,
-} from '@mui/icons-material'
-import {
-  PageHeader,
   DataTable,
+  PageHeader,
   useConfirmDialog,
   useToast,
-} from '@/components/ui'
-import type { Column } from '@/components/ui/DataTable'
+} from '@/components/ui';
+import type { Column } from '@/components/ui/DataTable';
+import type { ContentBlockInput } from './actions';
 import {
-  getContentBlocks,
   createContentBlock,
-  updateContentBlock,
   deleteContentBlock,
-} from './actions'
-import type { ContentBlockInput } from './actions'
-import { ContentDialog } from './ContentDialog'
-import CircularProgress from '@mui/material/CircularProgress'
-import type { ContentBlock } from '@prisma/client'
+  getContentBlocks,
+  updateContentBlock,
+} from './actions';
+import { ContentDialog } from './ContentDialog';
 
 export default function AdminContentPage() {
-  const [blocks, setBlocks] = useState<ContentBlock[]>([])
-  const [loading, setLoading] = useState(true)
-  const [dialogOpen, setDialogOpen] = useState(false)
-  const [selectedBlock, setSelectedBlock] = useState<ContentBlock | null>(null)
-  const [submitting, setSubmitting] = useState(false)
+  const [blocks, setBlocks] = useState<ContentBlock[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectedBlock, setSelectedBlock] = useState<ContentBlock | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
-  const { confirm } = useConfirmDialog()
-  const { showToast } = useToast()
+  const { confirm } = useConfirmDialog();
+  const { showToast } = useToast();
 
   const fetchBlocks = useCallback(async () => {
-    setLoading(true)
+    setLoading(true);
     try {
-      const data = await getContentBlocks()
-      setBlocks(data)
+      const data = await getContentBlocks();
+      setBlocks(data);
     } catch {
-      showToast('Erreur lors de la récupération du contenu', 'error')
+      showToast('Erreur lors de la récupération du contenu', 'error');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [showToast])
+  }, [showToast]);
 
   useEffect(() => {
-    fetchBlocks()
-  }, [fetchBlocks])
+    fetchBlocks();
+  }, [fetchBlocks]);
 
   const handleAdd = () => {
-    setSelectedBlock(null)
-    setDialogOpen(true)
-  }
+    setSelectedBlock(null);
+    setDialogOpen(true);
+  };
 
   const handleEdit = (block: ContentBlock) => {
-    setSelectedBlock(block)
-    setDialogOpen(true)
-  }
+    setSelectedBlock(block);
+    setDialogOpen(true);
+  };
 
   const handleDelete = async (block: ContentBlock) => {
     const confirmed = await confirm({
@@ -72,47 +63,47 @@ export default function AdminContentPage() {
       message: `Êtes-vous sûr de vouloir supprimer "${block.title}" (${block.slug}) ?`,
       confirmText: 'Supprimer',
       confirmColor: 'error',
-    })
+    });
 
     if (confirmed) {
       try {
-        await deleteContentBlock(block.id)
-        showToast('Contenu supprimé avec succès', 'success')
-        fetchBlocks()
+        await deleteContentBlock(block.id);
+        showToast('Contenu supprimé avec succès', 'success');
+        fetchBlocks();
       } catch {
-        showToast('Erreur lors de la suppression', 'error')
+        showToast('Erreur lors de la suppression', 'error');
       }
     }
-  }
+  };
 
   const handleSubmit = async (data: ContentBlockInput) => {
-    setSubmitting(true)
+    setSubmitting(true);
     try {
       if (data.type === 'json') {
         try {
-          JSON.parse(data.content)
+          JSON.parse(data.content);
         } catch {
-          showToast('JSON invalide', 'error')
-          setSubmitting(false)
-          return
+          showToast('JSON invalide', 'error');
+          setSubmitting(false);
+          return;
         }
       }
 
       if (selectedBlock) {
-        await updateContentBlock(selectedBlock.id, data)
-        showToast('Contenu mis à jour', 'success')
+        await updateContentBlock(selectedBlock.id, data);
+        showToast('Contenu mis à jour', 'success');
       } else {
-        await createContentBlock(data)
-        showToast('Contenu créé', 'success')
+        await createContentBlock(data);
+        showToast('Contenu créé', 'success');
       }
-      setDialogOpen(false)
-      fetchBlocks()
+      setDialogOpen(false);
+      fetchBlocks();
     } catch {
-      showToast('Erreur lors de l\'enregistrement', 'error')
+      showToast("Erreur lors de l'enregistrement", 'error');
     } finally {
-      setSubmitting(false)
+      setSubmitting(false);
     }
-  }
+  };
 
   const columns: Column<ContentBlock>[] = [
     {
@@ -123,39 +114,50 @@ export default function AdminContentPage() {
           <Typography variant="subtitle2" fontWeight="bold">
             {row.title}
           </Typography>
-          <Typography variant="caption" color="text.secondary" sx={{ fontFamily: 'monospace' }}>
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            sx={{ fontFamily: 'monospace' }}
+          >
             {row.slug}
           </Typography>
         </Box>
       ),
     },
-        {
-          id: 'type',
-          label: 'Type',
-          render: (row) => {
-            const typeLabels: Record<string, string> = {
-              text: 'Texte',
-              markdown: 'Markdown',
-              json: 'JSON',
-              html: 'HTML',
+    {
+      id: 'type',
+      label: 'Type',
+      render: (row) => {
+        const typeLabels: Record<string, string> = {
+          text: 'Texte',
+          markdown: 'Markdown',
+          json: 'JSON',
+          html: 'HTML',
+        };
+        return (
+          <Chip
+            label={typeLabels[row.type] || row.type}
+            size="small"
+            color={
+              row.type === 'json'
+                ? 'warning'
+                : row.type === 'markdown'
+                  ? 'info'
+                  : 'default'
             }
-            return (
-              <Chip 
-                label={typeLabels[row.type] || row.type} 
-                size="small" 
-                color={row.type === 'json' ? 'warning' : row.type === 'markdown' ? 'info' : 'default'} 
-                variant="outlined"
-              />
-            )
-          },
-        },    {
+            variant="outlined"
+          />
+        );
+      },
+    },
+    {
       id: 'content',
       label: 'Aperçu',
       render: (row) => (
-        <Typography 
-          variant="body2" 
-          color="text.secondary" 
-          noWrap 
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          noWrap
           sx={{ maxWidth: 300 }}
         >
           {row.content}
@@ -173,23 +175,23 @@ export default function AdminContentPage() {
       render: (row) => (
         <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
           <Tooltip title="Modifier">
-            <IconButton 
+            <IconButton
               onClick={(e) => {
-                e.stopPropagation()
-                handleEdit(row)
-              }} 
+                e.stopPropagation();
+                handleEdit(row);
+              }}
               size="small"
             >
               <EditIcon fontSize="small" />
             </IconButton>
           </Tooltip>
           <Tooltip title="Supprimer">
-            <IconButton 
+            <IconButton
               onClick={(e) => {
-                e.stopPropagation()
-                handleDelete(row)
-              }} 
-              size="small" 
+                e.stopPropagation();
+                handleDelete(row);
+              }}
+              size="small"
               color="error"
             >
               <DeleteIcon fontSize="small" />
@@ -198,7 +200,7 @@ export default function AdminContentPage() {
         </Box>
       ),
     },
-  ]
+  ];
 
   return (
     <Box>
@@ -229,5 +231,5 @@ export default function AdminContentPage() {
         loading={submitting}
       />
     </Box>
-  )
+  );
 }

@@ -1,21 +1,21 @@
-import { betterAuth } from "better-auth";
-import { prismaAdapter } from "better-auth/adapters/prisma";
-import { admin, username, twoFactor } from "better-auth/plugins";
-import prisma from "@/lib/prisma";
+import { betterAuth } from 'better-auth';
+import { prismaAdapter } from 'better-auth/adapters/prisma';
+import { admin, twoFactor, username } from 'better-auth/plugins';
+import prisma from '@/lib/prisma';
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
-    provider: "postgresql",
+    provider: 'postgresql',
   }),
 
   plugins: [
     admin({
-      defaultRole: "user",
-      adminRoles: ["admin"],
+      defaultRole: 'user',
+      adminRoles: ['admin'],
     }),
     username(),
     twoFactor({
-      issuer: "RPB Dashboard",
+      issuer: 'RPB Dashboard',
     }),
   ],
 
@@ -48,15 +48,18 @@ export const auth = betterAuth({
     google: {
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-      scope: ["https://www.googleapis.com/auth/spreadsheets"],
+      scope: ['https://www.googleapis.com/auth/spreadsheets'],
     },
   },
 
   // Callbacks
   callbacks: {
-    async session({ session, user }: { 
-      session: { user: Record<string, unknown> }; 
-      user: { role?: string } 
+    async session({
+      session,
+      user,
+    }: {
+      session: { user: Record<string, unknown> };
+      user: { role?: string };
     }) {
       return {
         ...session,
@@ -70,10 +73,10 @@ export const auth = betterAuth({
 
   // Trusted origins
   trustedOrigins: [
-    process.env.BETTER_AUTH_URL || "http://localhost:3000",
-    "https://rpbey.fr",
+    process.env.BETTER_AUTH_URL || 'http://localhost:3000',
+    'https://rpbey.fr',
   ],
 });
 
 export type Session = typeof auth.$Infer.Session;
-export type User = typeof auth.$Infer.Session["user"];
+export type User = (typeof auth.$Infer.Session)['user'];

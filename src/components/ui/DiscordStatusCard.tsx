@@ -1,53 +1,61 @@
-'use client'
+'use client';
 
-import { useEffect, useState } from 'react'
-import Box from '@mui/material/Box'
-import Card from '@mui/material/Card'
-import Typography from '@mui/material/Typography'
-import Button from '@mui/material/Button'
-import Stack from '@mui/material/Stack'
-import Skeleton from '@mui/material/Skeleton'
-import Avatar from '@mui/material/Avatar'
-import Divider from '@mui/material/Divider'
-import { DiscordIcon } from './Icons'
-import { api } from '@/lib/standard-api'
-import { DiscordRoleBadge } from './DiscordRoleBadge'
-import type { RoleType } from '@/lib/role-colors'
-import type { BotMember } from '@/types/api'
-import { alpha } from '@mui/material/styles'
-import { motion, AnimatePresence } from 'framer-motion'
+import Avatar from '@mui/material/Avatar';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Card from '@mui/material/Card';
+import Divider from '@mui/material/Divider';
+import Skeleton from '@mui/material/Skeleton';
+import Stack from '@mui/material/Stack';
+import { alpha } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
+import { AnimatePresence, motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
+import type { RoleType } from '@/lib/role-colors';
+import { api } from '@/lib/standard-api';
+import type { BotMember } from '@/types/api';
+import { DiscordRoleBadge } from './DiscordRoleBadge';
+import { DiscordIcon } from './Icons';
 
 interface TeamGroup {
-  roleId: string
-  roleType: RoleType
-  members: BotMember[]
+  roleId: string;
+  roleType: RoleType;
+  members: BotMember[];
 }
 
 export function DiscordStatusCard() {
-  const [stats, setStats] = useState<{ onlineCount: number; memberCount: number } | null>(null)
-  const [team, setTeam] = useState<TeamGroup[]>([])
-  const [loading, setLoading] = useState(true)
+  const [stats, setStats] = useState<{
+    onlineCount: number;
+    memberCount: number;
+  } | null>(null);
+  const [team, setTeam] = useState<TeamGroup[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchData() {
       try {
         const [statsData, teamData] = await Promise.all([
-          api.get<{ onlineCount: number; memberCount: number }>('/api/discord/stats', { cache: 'no-store' }),
-          api.get<{ team: TeamGroup[] }>('/api/discord/team', { cache: 'no-store' })
-        ])
-        setStats(statsData)
-        setTeam(teamData.team)
+          api.get<{ onlineCount: number; memberCount: number }>(
+            '/api/discord/stats',
+            { cache: 'no-store' },
+          ),
+          api.get<{ team: TeamGroup[] }>('/api/discord/team', {
+            cache: 'no-store',
+          }),
+        ]);
+        setStats(statsData);
+        setTeam(teamData.team);
       } catch (error) {
-        console.error('Failed to fetch discord data:', error)
+        console.error('Failed to fetch discord data:', error);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
     }
-    
-    fetchData()
-    const interval = setInterval(fetchData, 60000)
-    return () => clearInterval(interval)
-  }, [])
+
+    fetchData();
+    const interval = setInterval(fetchData, 60000);
+    return () => clearInterval(interval);
+  }, []);
 
   if (loading) {
     return (
@@ -57,11 +65,11 @@ export function DiscordStatusCard() {
         height={320}
         sx={{ maxWidth: 450, borderRadius: 4 }}
       />
-    )
+    );
   }
 
-  const onlineCount = stats?.onlineCount || 0
-  const totalCount = stats?.memberCount || 0
+  const onlineCount = stats?.onlineCount || 0;
+  const totalCount = stats?.memberCount || 0;
 
   return (
     <Card
@@ -86,7 +94,13 @@ export function DiscordStatusCard() {
       }}
     >
       {/* Header */}
-      <Box sx={{ p: 2.5, pb: 2, bgcolor: (theme) => alpha(theme.palette.divider, 0.03) }}>
+      <Box
+        sx={{
+          p: 2.5,
+          pb: 2,
+          bgcolor: (theme) => alpha(theme.palette.divider, 0.03),
+        }}
+      >
         <Stack direction="row" spacing={2} alignItems="center">
           <Box
             sx={{
@@ -101,10 +115,19 @@ export function DiscordStatusCard() {
             <DiscordIcon size={28} />
           </Box>
           <Box sx={{ flex: 1 }}>
-            <Typography variant="subtitle1" fontWeight={800} sx={{ color: 'text.primary', lineHeight: 1.2 }}>
+            <Typography
+              variant="subtitle1"
+              fontWeight={800}
+              sx={{ color: 'text.primary', lineHeight: 1.2 }}
+            >
               RPB OFFICIAL
             </Typography>
-            <Stack direction="row" spacing={1.5} alignItems="center" sx={{ mt: 0.5 }}>
+            <Stack
+              direction="row"
+              spacing={1.5}
+              alignItems="center"
+              sx={{ mt: 0.5 }}
+            >
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                 <Box
                   sx={{
@@ -115,13 +138,28 @@ export function DiscordStatusCard() {
                     boxShadow: '0 0 8px rgba(34, 197, 94, 0.6)',
                   }}
                 />
-                <Typography variant="caption" color="text.secondary" fontWeight={600}>
+                <Typography
+                  variant="caption"
+                  color="text.secondary"
+                  fontWeight={600}
+                >
                   {onlineCount.toLocaleString()} ONLINE
                 </Typography>
               </Box>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                <Box sx={{ width: 6, height: 6, borderRadius: '50%', bgcolor: 'text.disabled' }} />
-                <Typography variant="caption" color="text.secondary" fontWeight={600}>
+                <Box
+                  sx={{
+                    width: 6,
+                    height: 6,
+                    borderRadius: '50%',
+                    bgcolor: 'text.disabled',
+                  }}
+                />
+                <Typography
+                  variant="caption"
+                  color="text.secondary"
+                  fontWeight={600}
+                >
                   {totalCount.toLocaleString()} MEMBERS
                 </Typography>
               </Box>
@@ -133,20 +171,25 @@ export function DiscordStatusCard() {
       <Divider />
 
       {/* Team Section */}
-      <Box sx={{ 
-        p: 2, 
-        maxHeight: 280, 
-        overflowY: 'auto',
-        '&::-webkit-scrollbar': { width: '4px' },
-        '&::-webkit-scrollbar-thumb': { bgcolor: 'divider', borderRadius: '4px' }
-      }}>
+      <Box
+        sx={{
+          p: 2,
+          maxHeight: 280,
+          overflowY: 'auto',
+          '&::-webkit-scrollbar': { width: '4px' },
+          '&::-webkit-scrollbar-thumb': {
+            bgcolor: 'divider',
+            borderRadius: '4px',
+          },
+        }}
+      >
         <Stack spacing={2.5}>
           {team.map((group) => (
             <Box key={group.roleId}>
               <Box sx={{ mb: 1.5, display: 'flex' }}>
-                <DiscordRoleBadge 
-                  roleType={group.roleType} 
-                  size="small" 
+                <DiscordRoleBadge
+                  roleType={group.roleType}
+                  size="small"
                   variant="glow"
                   duration={2}
                 />
@@ -168,24 +211,33 @@ export function DiscordStatusCard() {
                         borderRadius: 2,
                         transition: 'all 0.2s ease',
                         '&:hover': {
-                          bgcolor: (theme) => alpha(theme.palette.action.hover, 0.05),
-                          transform: 'translateX(4px)'
-                        }
+                          bgcolor: (theme) =>
+                            alpha(theme.palette.action.hover, 0.05),
+                          transform: 'translateX(4px)',
+                        },
                       }}
                     >
-                      <Avatar 
-                        src={member.avatar} 
-                        sx={{ 
-                          width: 32, 
-                          height: 32, 
+                      <Avatar
+                        src={member.avatar}
+                        sx={{
+                          width: 32,
+                          height: 32,
                           border: '1.5px solid',
-                          borderColor: (theme) => alpha(theme.palette.divider, 0.1)
-                        }} 
+                          borderColor: (theme) =>
+                            alpha(theme.palette.divider, 0.1),
+                        }}
                       />
-                      <Typography variant="body2" fontWeight={600} sx={{ color: 'text.primary' }}>
+                      <Typography
+                        variant="body2"
+                        fontWeight={600}
+                        sx={{ color: 'text.primary' }}
+                      >
                         {member.displayName}
                       </Typography>
-                      <Typography variant="caption" sx={{ color: 'text.disabled', opacity: 0.7 }}>
+                      <Typography
+                        variant="caption"
+                        sx={{ color: 'text.disabled', opacity: 0.7 }}
+                      >
                         @{member.username}
                       </Typography>
                     </Box>
@@ -209,7 +261,7 @@ export function DiscordStatusCard() {
           sx={{
             bgcolor: '#5865F2',
             color: 'white',
-            '&:hover': { 
+            '&:hover': {
               bgcolor: '#4752C4',
               boxShadow: '0 4px 12px rgba(88, 101, 242, 0.4)',
             },
@@ -218,12 +270,12 @@ export function DiscordStatusCard() {
             borderRadius: 2.5,
             textTransform: 'none',
             fontWeight: 800,
-            letterSpacing: '0.02em'
+            letterSpacing: '0.02em',
           }}
         >
           REJOINDRE LE SERVEUR
         </Button>
       </Box>
     </Card>
-  )
+  );
 }

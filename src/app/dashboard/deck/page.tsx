@@ -1,100 +1,100 @@
-'use client'
+'use client';
 
 /**
  * Deck Management Page
  * /dashboard/deck - View, create, edit decks
  */
 
-import { useState, useEffect, useCallback } from 'react'
-import Box from '@mui/material/Box'
-import Typography from '@mui/material/Typography'
-import Button from '@mui/material/Button'
-import Grid from '@mui/material/Grid'
-import Alert from '@mui/material/Alert'
-import Skeleton from '@mui/material/Skeleton'
-import Dialog from '@mui/material/Dialog'
-import DialogTitle from '@mui/material/DialogTitle'
-import DialogContent from '@mui/material/DialogContent'
-import DialogContentText from '@mui/material/DialogContentText'
-import DialogActions from '@mui/material/DialogActions'
-import AddIcon from '@mui/icons-material/Add'
-import { DeckCard, DeckBuilderModal } from '@/components/deck'
-import type { Deck } from '@/components/deck'
+import AddIcon from '@mui/icons-material/Add';
+import Alert from '@mui/material/Alert';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import Grid from '@mui/material/Grid';
+import Skeleton from '@mui/material/Skeleton';
+import Typography from '@mui/material/Typography';
+import { useCallback, useEffect, useState } from 'react';
+import type { Deck } from '@/components/deck';
+import { DeckBuilderModal, DeckCard } from '@/components/deck';
 
 export default function DeckPage() {
-  const [decks, setDecks] = useState<Deck[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const [decks, setDecks] = useState<Deck[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   // Modal states
-  const [builderOpen, setBuilderOpen] = useState(false)
-  const [editingDeck, setEditingDeck] = useState<Deck | null>(null)
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
-  const [deletingDeck, setDeletingDeck] = useState<Deck | null>(null)
+  const [builderOpen, setBuilderOpen] = useState(false);
+  const [editingDeck, setEditingDeck] = useState<Deck | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deletingDeck, setDeletingDeck] = useState<Deck | null>(null);
 
   const fetchDecks = useCallback(async () => {
     try {
-      const response = await fetch('/api/decks')
-      const result = await response.json()
+      const response = await fetch('/api/decks');
+      const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.error || 'Failed to fetch decks')
+        throw new Error(result.error || 'Failed to fetch decks');
       }
 
-      setDecks(result.data)
-      setError(null)
+      setDecks(result.data);
+      setError(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred')
+      setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
-    fetchDecks()
-  }, [fetchDecks])
+    fetchDecks();
+  }, [fetchDecks]);
 
   const handleEdit = (deck: Deck) => {
-    setEditingDeck(deck)
-    setBuilderOpen(true)
-  }
+    setEditingDeck(deck);
+    setBuilderOpen(true);
+  };
 
   const handleDelete = (deck: Deck) => {
-    setDeletingDeck(deck)
-    setDeleteDialogOpen(true)
-  }
+    setDeletingDeck(deck);
+    setDeleteDialogOpen(true);
+  };
 
   const confirmDelete = async () => {
-    if (!deletingDeck) return
+    if (!deletingDeck) return;
 
     try {
       const response = await fetch(`/api/decks/${deletingDeck.id}`, {
         method: 'DELETE',
-      })
+      });
 
       if (!response.ok) {
-        const result = await response.json()
-        throw new Error(result.error || 'Failed to delete deck')
+        const result = await response.json();
+        throw new Error(result.error || 'Failed to delete deck');
       }
 
-      setDecks(decks.filter((d) => d.id !== deletingDeck.id))
+      setDecks(decks.filter((d) => d.id !== deletingDeck.id));
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred')
+      setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
-      setDeleteDialogOpen(false)
-      setDeletingDeck(null)
+      setDeleteDialogOpen(false);
+      setDeletingDeck(null);
     }
-  }
+  };
 
   const handleActivate = async (deck: Deck) => {
     try {
       const response = await fetch(`/api/decks/${deck.id}/activate`, {
         method: 'POST',
-      })
+      });
 
       if (!response.ok) {
-        const result = await response.json()
-        throw new Error(result.error || 'Failed to activate deck')
+        const result = await response.json();
+        throw new Error(result.error || 'Failed to activate deck');
       }
 
       // Update local state
@@ -102,21 +102,21 @@ export default function DeckPage() {
         decks.map((d) => ({
           ...d,
           isActive: d.id === deck.id,
-        }))
-      )
+        })),
+      );
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred')
+      setError(err instanceof Error ? err.message : 'An error occurred');
     }
-  }
+  };
 
   const handleBuilderClose = () => {
-    setBuilderOpen(false)
-    setEditingDeck(null)
-  }
+    setBuilderOpen(false);
+    setEditingDeck(null);
+  };
 
   const handleBuilderSave = () => {
-    fetchDecks()
-  }
+    fetchDecks();
+  };
 
   return (
     <Box>
@@ -208,12 +208,15 @@ export default function DeckPage() {
       />
 
       {/* Delete Confirmation Dialog */}
-      <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
+      <Dialog
+        open={deleteDialogOpen}
+        onClose={() => setDeleteDialogOpen(false)}
+      >
         <DialogTitle>Supprimer le deck ?</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Es-tu sûr de vouloir supprimer le deck &quot;{deletingDeck?.name}&quot; ? Cette
-            action est irréversible.
+            Es-tu sûr de vouloir supprimer le deck &quot;{deletingDeck?.name}
+            &quot; ? Cette action est irréversible.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -224,5 +227,5 @@ export default function DeckPage() {
         </DialogActions>
       </Dialog>
     </Box>
-  )
+  );
 }

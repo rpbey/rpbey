@@ -1,6 +1,6 @@
-import React from 'react';
-import { Paper, Box, Typography, useTheme } from '@mui/material';
-import { TrendingUp, TrendingDown } from '@mui/icons-material';
+import { TrendingDown, TrendingUp } from '@mui/icons-material';
+import { Box, Paper, Typography, useTheme } from '@mui/material';
+import type React from 'react';
 
 interface StatsCardProps {
   title: string;
@@ -36,8 +36,19 @@ export const StatsCard: React.FC<StatsCardProps> = ({
         justifyContent: 'space-between',
       }}
     >
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
-        <Typography variant="subtitle2" color="text.secondary" fontWeight="medium">
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'flex-start',
+          mb: 2,
+        }}
+      >
+        <Typography
+          variant="subtitle2"
+          color="text.secondary"
+          fontWeight="medium"
+        >
           {title}
         </Typography>
         {icon && (
@@ -63,15 +74,23 @@ export const StatsCard: React.FC<StatsCardProps> = ({
         <Typography variant="h4" fontWeight="bold" sx={{ mb: 1 }}>
           {value}
         </Typography>
-        
+
         {trend !== undefined && (
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <Box
               sx={{
                 display: 'flex',
                 alignItems: 'center',
-                color: isPositive ? 'success.main' : isNegative ? 'error.main' : 'text.secondary',
-                bgcolor: isPositive ? 'success.lighter' : isNegative ? 'error.lighter' : 'action.hover',
+                color: isPositive
+                  ? 'success.main'
+                  : isNegative
+                    ? 'error.main'
+                    : 'text.secondary',
+                bgcolor: isPositive
+                  ? 'success.lighter'
+                  : isNegative
+                    ? 'error.lighter'
+                    : 'action.hover',
                 px: 0.5,
                 py: 0.25,
                 borderRadius: 0.5,
@@ -80,7 +99,8 @@ export const StatsCard: React.FC<StatsCardProps> = ({
               {isPositive && <TrendingUp fontSize="small" sx={{ mr: 0.5 }} />}
               {isNegative && <TrendingDown fontSize="small" sx={{ mr: 0.5 }} />}
               <Typography variant="caption" fontWeight="bold">
-                {trend > 0 ? '+' : ''}{trend}%
+                {trend > 0 ? '+' : ''}
+                {trend}%
               </Typography>
             </Box>
             {trendLabel && (

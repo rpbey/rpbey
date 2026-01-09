@@ -1,45 +1,39 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { 
-  Box, 
-  Button, 
-  Card, 
-  CardContent, 
-  Typography 
-} from '@mui/material'
-import { 
-  Refresh as RefreshIcon, 
-  Terminal as TerminalIcon 
-} from '@mui/icons-material'
-import { useRouter } from 'next/navigation'
-import { useToast } from '@/components/ui'
+import {
+  Refresh as RefreshIcon,
+  Terminal as TerminalIcon,
+} from '@mui/icons-material';
+import { Box, Button, Card, CardContent, Typography } from '@mui/material';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { useToast } from '@/components/ui';
 
 export function BotActions() {
-  const router = useRouter()
-  const { showToast } = useToast()
-  const [isRestarting, setIsRestarting] = useState(false)
+  const router = useRouter();
+  const { showToast } = useToast();
+  const [isRestarting, setIsRestarting] = useState(false);
 
   const handleRestartBot = async () => {
-    if (!confirm('Êtes-vous sûr de vouloir redémarrer le bot ?')) return
+    if (!confirm('Êtes-vous sûr de vouloir redémarrer le bot ?')) return;
 
-    setIsRestarting(true)
+    setIsRestarting(true);
     try {
       const response = await fetch('/api/admin/bot/restart', {
         method: 'POST',
-      })
+      });
 
       if (response.ok) {
-        showToast('Redémarrage du bot demandé...', 'success')
+        showToast('Redémarrage du bot demandé...', 'success');
       } else {
-        showToast('Erreur lors du redémarrage du bot', 'error')
+        showToast('Erreur lors du redémarrage du bot', 'error');
       }
     } catch {
-      showToast('Erreur réseau', 'error')
+      showToast('Erreur réseau', 'error');
     } finally {
-      setIsRestarting(false)
+      setIsRestarting(false);
     }
-  }
+  };
 
   return (
     <Card
@@ -77,5 +71,5 @@ export function BotActions() {
         </Box>
       </CardContent>
     </Card>
-  )
+  );
 }

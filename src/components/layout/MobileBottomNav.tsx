@@ -1,34 +1,29 @@
-'use client'
+'use client';
 
-import * as React from 'react'
+import { EmojiEvents, Home, Leaderboard, Person } from '@mui/icons-material';
 import {
   BottomNavigation,
   BottomNavigationAction,
-  Paper,
   Box,
-  useScrollTrigger,
+  Paper,
   Slide,
-} from '@mui/material'
-import {
-  Home,
-  EmojiEvents,
-  Leaderboard,
-  Person,
-} from '@mui/icons-material'
-import { usePathname, useRouter } from 'next/navigation'
-import { useSession } from '@/lib/auth-client'
+  useScrollTrigger,
+} from '@mui/material';
+import { usePathname, useRouter } from 'next/navigation';
+import * as React from 'react';
+import { useSession } from '@/lib/auth-client';
 
 export function MobileBottomNav() {
-  const pathname = usePathname()
-  const router = useRouter()
-  const { data: session } = useSession()
-  const trigger = useScrollTrigger()
+  const pathname = usePathname();
+  const router = useRouter();
+  const { data: session } = useSession();
+  const trigger = useScrollTrigger();
 
-  const [value, setValue] = React.useState(pathname)
+  const [value, setValue] = React.useState(pathname);
 
   React.useEffect(() => {
-    setValue(pathname)
-  }, [pathname])
+    setValue(pathname);
+  }, [pathname]);
 
   return (
     <Box sx={{ display: { xs: 'block', md: 'none' } }}>
@@ -53,22 +48,18 @@ export function MobileBottomNav() {
             showLabels
             value={value}
             onChange={(_, newValue) => {
-              setValue(newValue)
-              router.push(newValue)
+              setValue(newValue);
+              router.push(newValue);
             }}
             sx={{ height: 64 }}
           >
-            <BottomNavigationAction
-              label="Accueil"
-              value="/"
-              icon={<Home />}
-            />
+            <BottomNavigationAction label="Accueil" value="/" icon={<Home />} />
             <BottomNavigationAction
               label="Tournois"
               value="/tournaments"
               icon={<EmojiEvents />}
             />
-             <BottomNavigationAction
+            <BottomNavigationAction
               label="Classement"
               value="/rankings"
               icon={<Leaderboard />}
@@ -84,5 +75,5 @@ export function MobileBottomNav() {
       {/* Spacer to prevent content from being hidden behind nav */}
       <Box sx={{ height: 80 }} />
     </Box>
-  )
+  );
 }

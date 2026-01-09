@@ -1,80 +1,89 @@
-import Container from '@mui/material/Container'
-import Typography from '@mui/material/Typography'
-import Box from '@mui/material/Box'
-import Grid from '@mui/material/Grid'
-import Card from '@mui/material/Card'
-import Stack from '@mui/material/Stack'
-import Avatar from '@mui/material/Avatar'
-import Divider from '@mui/material/Divider'
-import Button from '@mui/material/Button'
-import Paper from '@mui/material/Paper'
 import {
-  Gavel,
-  Shield,
-  Warning,
-  EmojiEmotions,
-  Chat,
   Campaign,
+  Chat,
+  EmojiEmotions,
+  Gavel,
   Group,
   Handshake,
-} from '@mui/icons-material'
-import { DiscordIcon } from '@/components/ui/Icons'
+  Shield,
+  Warning,
+} from '@mui/icons-material';
+import Avatar from '@mui/material/Avatar';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Card from '@mui/material/Card';
+import Container from '@mui/material/Container';
+import Divider from '@mui/material/Divider';
+import Grid from '@mui/material/Grid';
+import Paper from '@mui/material/Paper';
+import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
+import { DiscordIcon } from '@/components/ui/Icons';
 
 export const metadata = {
   title: 'Règlement de la RPB',
-  description: 'Le règlement officiel de la communauté République Populaire du Beyblade.',
-}
+  description:
+    'Le règlement officiel de la communauté République Populaire du Beyblade.',
+};
 
 const RULES = [
   {
     icon: <Handshake />,
     title: 'Le respect avant tout',
-    description: 'Les insultes, propos haineux, discriminatoires ou agressifs sont strictement interdits. Traitez les autres membres avec courtoisie et respect.',
+    description:
+      'Les insultes, propos haineux, discriminatoires ou agressifs sont strictement interdits. Traitez les autres membres avec courtoisie et respect.',
     color: '#dc2626',
   },
   {
     icon: <Shield />,
     title: 'Contenu approprié',
-    description: 'Pas de contenu NSFW, choquant ou inapproprié. Le serveur est accessible à tous, y compris aux plus jeunes.',
+    description:
+      'Pas de contenu NSFW, choquant ou inapproprié. Le serveur est accessible à tous, y compris aux plus jeunes.',
     color: '#fbbf24',
   },
   {
     icon: <Warning />,
     title: 'Pas de spam',
-    description: "Évitez de flood les salons ou d'envoyer des messages répétitifs. Cela inclut les pubs non autorisées, les liens ou les bots non approuvés.",
+    description:
+      "Évitez de flood les salons ou d'envoyer des messages répétitifs. Cela inclut les pubs non autorisées, les liens ou les bots non approuvés.",
     color: '#dc2626',
   },
   {
     icon: <Chat />,
     title: 'Suivez les catégories',
-    description: 'Utilisez les salons correctement (par exemple, ne postez pas de discussions hors-sujet dans les salons dédiés).',
+    description:
+      'Utilisez les salons correctement (par exemple, ne postez pas de discussions hors-sujet dans les salons dédiés).',
     color: '#fbbf24',
   },
   {
     icon: <Campaign />,
     title: 'Publicité réglementée',
-    description: "La publicité pour d'autres serveurs ou contenus est autorisée uniquement dans les salons dédiés et avec l'accord des modérateurs.",
+    description:
+      "La publicité pour d'autres serveurs ou contenus est autorisée uniquement dans les salons dédiés et avec l'accord des modérateurs.",
     color: '#dc2626',
   },
   {
     icon: <Gavel />,
     title: 'Pas de comportements toxiques',
-    description: 'Les provocations, conflits inutiles ou comportements toxiques (trash-talk excessif par exemple) ne seront pas tolérés.',
+    description:
+      'Les provocations, conflits inutiles ou comportements toxiques (trash-talk excessif par exemple) ne seront pas tolérés.',
     color: '#fbbf24',
   },
   {
     icon: <EmojiEmotions />,
     title: 'Amusez-vous !',
-    description: 'Ce serveur est un espace convivial pour les fans de Beyblade. Partagez vos passions, stratégies et créations, et profitez de l’ambiance communautaire !',
+    description:
+      'Ce serveur est un espace convivial pour les fans de Beyblade. Partagez vos passions, stratégies et créations, et profitez de l’ambiance communautaire !',
     color: '#dc2626',
   },
   {
     icon: <Group />,
     title: 'Respect mutuel exigé',
-    description: 'Toute forme de harcèlement visant un membre ou un staff de la RPB sera sévèrement puni. Si vous n’êtes pas d’accord avec une décision prise, cela doit se faire entendre dans le respect et la courtoisie.',
+    description:
+      'Toute forme de harcèlement visant un membre ou un staff de la RPB sera sévèrement puni. Si vous n’êtes pas d’accord avec une décision prise, cela doit se faire entendre dans le respect et la courtoisie.',
     color: '#fbbf24',
   },
-]
+];
 
 export default function RulesPage() {
   return (
@@ -82,7 +91,8 @@ export default function RulesPage() {
       {/* Header Section */}
       <Box
         sx={{
-          background: 'linear-gradient(135deg, #dc2626 0%, #991b1b 50%, #7f1d1d 100%)',
+          background:
+            'linear-gradient(135deg, #dc2626 0%, #991b1b 50%, #7f1d1d 100%)',
           color: 'white',
           py: { xs: 8, md: 10 },
           position: 'relative',
@@ -105,11 +115,11 @@ export default function RulesPage() {
             variant="h2"
             fontWeight="bold"
             textAlign="center"
-            sx={{ 
-              mb: 2, 
+            sx={{
+              mb: 2,
               fontSize: { xs: '2.5rem', md: '3.75rem' },
               textTransform: 'uppercase',
-              letterSpacing: '0.1em'
+              letterSpacing: '0.1em',
             }}
           >
             Règlement de la RPB
@@ -117,23 +127,30 @@ export default function RulesPage() {
           <Typography
             variant="h6"
             textAlign="center"
-            sx={{ opacity: 0.9, maxWidth: 700, mx: 'auto', fontStyle: 'italic' }}
+            sx={{
+              opacity: 0.9,
+              maxWidth: 700,
+              mx: 'auto',
+              fontStyle: 'italic',
+            }}
           >
-            "Amusez-vous et prenez du plaisir au sein de la RPB, le but est avant tout de se réunir et de s’entraider autour de la passion commune qui nous anime."
+            "Amusez-vous et prenez du plaisir au sein de la RPB, le but est
+            avant tout de se réunir et de s’entraider autour de la passion
+            commune qui nous anime."
           </Typography>
         </Container>
       </Box>
 
       <Container maxWidth="lg" sx={{ py: 8 }}>
-        <Paper 
-          elevation={0} 
-          sx={{ 
-            p: { xs: 3, md: 5 }, 
-            borderRadius: 4, 
-            border: '1px solid', 
+        <Paper
+          elevation={0}
+          sx={{
+            p: { xs: 3, md: 5 },
+            borderRadius: 4,
+            border: '1px solid',
             borderColor: 'divider',
             mb: 6,
-            bgcolor: 'background.paper'
+            bgcolor: 'background.paper',
           }}
         >
           <Grid container spacing={4}>
@@ -146,7 +163,7 @@ export default function RulesPage() {
                       color: 'white',
                       width: 56,
                       height: 56,
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
                     }}
                   >
                     {rule.icon}
@@ -155,13 +172,19 @@ export default function RulesPage() {
                     <Typography variant="h6" fontWeight="bold" gutterBottom>
                       {index + 1}. {rule.title}
                     </Typography>
-                    <Typography variant="body1" color="text.secondary" sx={{ fontStyle: 'italic', lineHeight: 1.6 }}>
+                    <Typography
+                      variant="body1"
+                      color="text.secondary"
+                      sx={{ fontStyle: 'italic', lineHeight: 1.6 }}
+                    >
                       {rule.description}
                     </Typography>
                   </Box>
                 </Stack>
                 {index < RULES.length - 2 && (
-                  <Divider sx={{ mt: 4, display: { xs: 'block', md: 'none' } }} />
+                  <Divider
+                    sx={{ mt: 4, display: { xs: 'block', md: 'none' } }}
+                  />
                 )}
               </Grid>
             ))}
@@ -177,19 +200,35 @@ export default function RulesPage() {
             border: '1px solid',
             borderColor: 'primary.main',
             bgcolor: 'rgba(220, 38, 38, 0.05)',
-            mb: 6
+            mb: 6,
           }}
         >
-          <Stack direction={{ xs: 'column', md: 'row' }} spacing={4} alignItems="center">
+          <Stack
+            direction={{ xs: 'column', md: 'row' }}
+            spacing={4}
+            alignItems="center"
+          >
             <Box sx={{ textAlign: { xs: 'center', md: 'left' } }}>
-              <Typography variant="h5" fontWeight="bold" gutterBottom color="primary.main">
+              <Typography
+                variant="h5"
+                fontWeight="bold"
+                gutterBottom
+                color="primary.main"
+              >
                 Besoin d'aide ou de médiation ?
               </Typography>
               <Typography variant="body1" paragraph>
-                En cas de litige ou de requête spécifique, veuillez vous diriger vers les membres du Staff (Fondateurs, Administrateurs ou Modérateurs) sur notre serveur Discord.
+                En cas de litige ou de requête spécifique, veuillez vous diriger
+                vers les membres du Staff (Fondateurs, Administrateurs ou
+                Modérateurs) sur notre serveur Discord.
               </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic' }}>
-                Toute forme de harcèlement visant un membre ou un staff de la RPB sera sévèrement punie.
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{ fontStyle: 'italic' }}
+              >
+                Toute forme de harcèlement visant un membre ou un staff de la
+                RPB sera sévèrement punie.
               </Typography>
             </Box>
             <Button
@@ -215,12 +254,17 @@ export default function RulesPage() {
 
         {/* Closing Message */}
         <Box sx={{ textAlign: 'center', py: 4 }}>
-          <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 800, mx: 'auto', fontStyle: 'italic' }}>
-            Restez courtois et respectueux les uns envers les autres même si vos opinions divergent. 
-            Profitons ensemble de cette passion pour Beyblade X !
+          <Typography
+            variant="body1"
+            color="text.secondary"
+            sx={{ maxWidth: 800, mx: 'auto', fontStyle: 'italic' }}
+          >
+            Restez courtois et respectueux les uns envers les autres même si vos
+            opinions divergent. Profitons ensemble de cette passion pour
+            Beyblade X !
           </Typography>
         </Box>
       </Container>
     </>
-  )
+  );
 }

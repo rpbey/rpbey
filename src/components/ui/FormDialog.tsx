@@ -1,26 +1,26 @@
-'use client'
+'use client';
 
-import { useCallback, useState, type FormEvent, type ReactNode } from 'react'
-import Button from '@mui/material/Button'
-import Dialog from '@mui/material/Dialog'
-import DialogActions from '@mui/material/DialogActions'
-import DialogContent from '@mui/material/DialogContent'
-import DialogTitle from '@mui/material/DialogTitle'
-import CircularProgress from '@mui/material/CircularProgress'
-import IconButton from '@mui/material/IconButton'
-import CloseIcon from '@mui/icons-material/Close'
+import CloseIcon from '@mui/icons-material/Close';
+import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import IconButton from '@mui/material/IconButton';
+import { type FormEvent, type ReactNode, useCallback, useState } from 'react';
 
 interface FormDialogProps {
-  open: boolean
-  title: string
-  children: ReactNode
-  submitText?: string
-  cancelText?: string
-  loading?: boolean
-  disabled?: boolean
-  maxWidth?: 'xs' | 'sm' | 'md' | 'lg' | 'xl'
-  onSubmit: () => void | Promise<void>
-  onClose: () => void
+  open: boolean;
+  title: string;
+  children: ReactNode;
+  submitText?: string;
+  cancelText?: string;
+  loading?: boolean;
+  disabled?: boolean;
+  maxWidth?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+  onSubmit: () => void | Promise<void>;
+  onClose: () => void;
 }
 
 export function FormDialog({
@@ -35,23 +35,23 @@ export function FormDialog({
   onSubmit,
   onClose,
 }: FormDialogProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = useCallback(
     async (e: FormEvent) => {
-      e.preventDefault()
-      setIsSubmitting(true)
+      e.preventDefault();
+      setIsSubmitting(true);
       try {
-        await onSubmit()
+        await onSubmit();
       } finally {
-        setIsSubmitting(false)
+        setIsSubmitting(false);
       }
     },
-    [onSubmit]
-  )
+    [onSubmit],
+  );
 
-  const isLoading = loading || isSubmitting
-  const isDisabled = disabled || isLoading
+  const isLoading = loading || isSubmitting;
+  const isDisabled = disabled || isLoading;
 
   return (
     <Dialog
@@ -89,11 +89,15 @@ export function FormDialog({
           type="submit"
           disabled={isDisabled}
           variant="contained"
-          startIcon={isLoading ? <CircularProgress size={16} color="inherit" /> : undefined}
+          startIcon={
+            isLoading ? (
+              <CircularProgress size={16} color="inherit" />
+            ) : undefined
+          }
         >
           {submitText}
         </Button>
       </DialogActions>
     </Dialog>
-  )
+  );
 }

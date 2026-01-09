@@ -1,9 +1,13 @@
-'use client'
+'use client';
 
-import React from 'react';
-import Link from 'next/link';
-import { Breadcrumbs as MuiBreadcrumbs, Typography, Link as MuiLink } from '@mui/material';
 import { NavigateNext } from '@mui/icons-material';
+import {
+  Breadcrumbs as MuiBreadcrumbs,
+  Link as MuiLink,
+  Typography,
+} from '@mui/material';
+import Link from 'next/link';
+import type React from 'react';
 
 export interface BreadcrumbItem {
   label: string;
@@ -16,8 +20,8 @@ interface BreadcrumbsProps {
 
 export const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ items }) => {
   return (
-    <MuiBreadcrumbs 
-      separator={<NavigateNext fontSize="small" />} 
+    <MuiBreadcrumbs
+      separator={<NavigateNext fontSize="small" />}
       aria-label="breadcrumb"
       sx={{ mb: 2 }}
     >
@@ -26,7 +30,11 @@ export const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ items }) => {
 
         if (isLast || !item.href) {
           return (
-            <Typography key={index} color="text.primary" fontWeight={isLast ? 'medium' : 'regular'}>
+            <Typography
+              key={index}
+              color="text.primary"
+              fontWeight={isLast ? 'medium' : 'regular'}
+            >
               {item.label}
             </Typography>
           );

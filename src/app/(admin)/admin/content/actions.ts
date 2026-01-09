@@ -1,24 +1,24 @@
-'use server'
+'use server';
 
-import prisma from '@/lib/prisma'
-import { revalidatePath } from 'next/cache'
+import { revalidatePath } from 'next/cache';
+import prisma from '@/lib/prisma';
 
 export type ContentBlockInput = {
-  slug: string
-  title: string
-  type: string
-  content: string
-}
+  slug: string;
+  title: string;
+  type: string;
+  content: string;
+};
 
 export async function getContentBlocks() {
   return await prisma.contentBlock.findMany({
     orderBy: { slug: 'asc' },
-  })
+  });
 }
 
 export async function updateContentBlock(id: string, data: ContentBlockInput) {
-  const { slug, title, type, content } = data
-  
+  const { slug, title, type, content } = data;
+
   await prisma.contentBlock.update({
     where: { id },
     data: {
@@ -27,15 +27,15 @@ export async function updateContentBlock(id: string, data: ContentBlockInput) {
       type,
       content,
     },
-  })
+  });
 
-  revalidatePath('/admin/content')
-  revalidatePath('/') // Revalidate potentially everything since content can be anywhere
+  revalidatePath('/admin/content');
+  revalidatePath('/'); // Revalidate potentially everything since content can be anywhere
 }
 
 export async function createContentBlock(data: ContentBlockInput) {
-  const { slug, title, type, content } = data
-  
+  const { slug, title, type, content } = data;
+
   await prisma.contentBlock.create({
     data: {
       slug,
@@ -43,15 +43,15 @@ export async function createContentBlock(data: ContentBlockInput) {
       type,
       content,
     },
-  })
+  });
 
-  revalidatePath('/admin/content')
+  revalidatePath('/admin/content');
 }
 
 export async function deleteContentBlock(id: string) {
   await prisma.contentBlock.delete({
     where: { id },
-  })
+  });
 
-  revalidatePath('/admin/content')
+  revalidatePath('/admin/content');
 }

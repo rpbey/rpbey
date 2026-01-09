@@ -1,8 +1,8 @@
 'use client';
 
-import React from 'react';
-import { BarChart as MuiBarChart } from '@mui/x-charts/BarChart';
 import { Box, Typography, useTheme } from '@mui/material';
+import { BarChart as MuiBarChart } from '@mui/x-charts/BarChart';
+import type React from 'react';
 
 interface ChartProps {
   title?: string;

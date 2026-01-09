@@ -1,10 +1,10 @@
 'use client';
 
-import React from 'react';
+import Box from '@mui/material/Box';
 import { motion, type Variants } from 'framer-motion';
+import type React from 'react';
 import { RoleColors, type RoleType } from '@/lib/role-colors';
 import { RolePaths } from '@/lib/role-paths';
-import Box from '@mui/material/Box';
 
 export interface RoleIconProps {
   /**
@@ -55,35 +55,35 @@ export const RoleIcon: React.FC<RoleIconProps> = ({
   const paths = RolePaths[role] || RolePaths.DEFAULT;
 
   const pathVariants: Variants = {
-    initial: { 
-      pathLength: 0, 
-      opacity: 0 
+    initial: {
+      pathLength: 0,
+      opacity: 0,
     },
-    animate: { 
-      pathLength: 1, 
+    animate: {
+      pathLength: 1,
       opacity: 1,
       transition: {
-        pathLength: { 
-          duration: duration, 
-          ease: "easeInOut",
+        pathLength: {
+          duration: duration,
+          ease: 'easeInOut',
           repeat: loop ? Infinity : 0,
-          repeatType: "loop",
-          repeatDelay: 1
+          repeatType: 'loop',
+          repeatDelay: 1,
         },
-        opacity: { duration: 0.2 }
-      }
-    }
+        opacity: { duration: 0.2 },
+      },
+    },
   };
 
   const fillVariants: Variants = {
     initial: { opacity: 0 },
-    animate: { 
+    animate: {
       opacity: 1,
-      transition: { 
+      transition: {
         delay: duration * 0.8, // Start filling when drawing is mostly done
-        duration: 0.5 
-      }
-    }
+        duration: 0.5,
+      },
+    },
   };
 
   return (
@@ -111,7 +111,7 @@ export const RoleIcon: React.FC<RoleIconProps> = ({
               d={d}
               variants={pathVariants}
               initial="initial"
-              animate={animate ? "animate" : "initial"}
+              animate={animate ? 'animate' : 'initial'}
             />
           ))}
         </g>
@@ -122,7 +122,7 @@ export const RoleIcon: React.FC<RoleIconProps> = ({
               d={d}
               variants={fillVariants}
               initial="initial"
-              animate={animate ? "animate" : "initial"}
+              animate={animate ? 'animate' : 'initial'}
             />
           ))}
         </g>

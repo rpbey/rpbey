@@ -1,11 +1,11 @@
-'use client'
+'use client';
 
 export default function GlobalError({
   error,
   reset,
 }: {
-  error: Error & { digest?: string }
-  reset: () => void
+  error: Error & { digest?: string };
+  reset: () => void;
 }) {
   return (
     <html lang="fr">
@@ -31,7 +31,13 @@ export default function GlobalError({
             Une erreur inattendue s&apos;est produite.
           </p>
           {error.digest && (
-            <p style={{ color: '#666', fontSize: '0.875rem', marginBottom: '1rem' }}>
+            <p
+              style={{
+                color: '#666',
+                fontSize: '0.875rem',
+                marginBottom: '1rem',
+              }}
+            >
               Code: {error.digest}
             </p>
           )}
@@ -52,5 +58,5 @@ export default function GlobalError({
         </div>
       </body>
     </html>
-  )
+  );
 }

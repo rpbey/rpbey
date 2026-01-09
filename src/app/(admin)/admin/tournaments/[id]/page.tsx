@@ -3,233 +3,243 @@
  * View and manage a single tournament with bracket
  */
 
-'use client'
+'use client';
 
-import { use, useState } from 'react'
-import Box from '@mui/material/Box'
-import Container from '@mui/material/Container'
-import Typography from '@mui/material/Typography'
-import Card from '@mui/material/Card'
-import CardContent from '@mui/material/CardContent'
-import Button from '@mui/material/Button'
-import ButtonGroup from '@mui/material/ButtonGroup'
-import Chip from '@mui/material/Chip'
-import Grid from '@mui/material/Grid'
-import Tabs from '@mui/material/Tabs'
-import Tab from '@mui/material/Tab'
-import Skeleton from '@mui/material/Skeleton'
-import Alert from '@mui/material/Alert'
-import Breadcrumbs from '@mui/material/Breadcrumbs'
-import Link from 'next/link'
-import useSWR, { mutate } from 'swr'
-import PlayArrowIcon from '@mui/icons-material/PlayArrow'
-import CheckCircleIcon from '@mui/icons-material/CheckCircle'
-import SyncIcon from '@mui/icons-material/Sync'
-import PeopleOutlineIcon from '@mui/icons-material/PeopleOutline'
-import OpenInNewIcon from '@mui/icons-material/OpenInNew'
-import CalendarTodayIcon from '@mui/icons-material/CalendarToday'
-import LocationOnIcon from '@mui/icons-material/LocationOn'
-import PeopleIcon from '@mui/icons-material/People'
-import TableViewIcon from '@mui/icons-material/TableView'
-import { TournamentBracket, ParticipantList } from '@/components/tournaments'
-import { authClient } from '@/lib/auth-client'
-import { exportTournamentToSheets, reportChallongeMatch } from './actions'
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import PeopleIcon from '@mui/icons-material/People';
+import PeopleOutlineIcon from '@mui/icons-material/PeopleOutline';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import SyncIcon from '@mui/icons-material/Sync';
+import TableViewIcon from '@mui/icons-material/TableView';
+import Alert from '@mui/material/Alert';
+import Box from '@mui/material/Box';
+import Breadcrumbs from '@mui/material/Breadcrumbs';
+import Button from '@mui/material/Button';
+import ButtonGroup from '@mui/material/ButtonGroup';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Chip from '@mui/material/Chip';
+import Container from '@mui/material/Container';
+import Grid from '@mui/material/Grid';
+import Skeleton from '@mui/material/Skeleton';
+import Tab from '@mui/material/Tab';
+import Tabs from '@mui/material/Tabs';
+import Typography from '@mui/material/Typography';
+import Link from 'next/link';
+import { use, useState } from 'react';
+import useSWR, { mutate } from 'swr';
+import { ParticipantList, TournamentBracket } from '@/components/tournaments';
+import { authClient } from '@/lib/auth-client';
+import { exportTournamentToSheets, reportChallongeMatch } from './actions';
 
 interface TournamentDetailPageProps {
-  params: Promise<{ id: string }>
+  params: Promise<{ id: string }>;
 }
 
 interface Tournament {
-  id: string
-  name: string
-  description: string | null
-  date: string
-  location: string | null
-  format: string
-  maxPlayers: number
-  status: string
-  challongeId: string | null
-  challongeUrl: string | null
+  id: string;
+  name: string;
+  description: string | null;
+  date: string;
+  location: string | null;
+  format: string;
+  maxPlayers: number;
+  status: string;
+  challongeId: string | null;
+  challongeUrl: string | null;
   participants: Array<{
-    id: string
-    seed: number | null
-    userId: string
+    id: string;
+    seed: number | null;
+    userId: string;
     user: {
-      id: string
-      name: string
+      id: string;
+      name: string;
       profile?: {
-        bladerName?: string
-        avatarUrl?: string
-      }
+        bladerName?: string;
+        avatarUrl?: string;
+      };
       decks?: Array<{
-        id: string
-        name: string
-        isActive: boolean
-      }>
-    }
-  }>
+        id: string;
+        name: string;
+        isActive: boolean;
+      }>;
+    };
+  }>;
   matches: Array<{
-    id: string
-    round: number
-    state: string
-    score: string | null
+    id: string;
+    round: number;
+    state: string;
+    score: string | null;
     player1: {
-      id: string
-      name: string
+      id: string;
+      name: string;
       profile?: {
-        bladerName?: string
-        avatarUrl?: string
-      }
-    } | null
+        bladerName?: string;
+        avatarUrl?: string;
+      };
+    } | null;
     player2: {
-      id: string
-      name: string
+      id: string;
+      name: string;
       profile?: {
-        bladerName?: string
-        avatarUrl?: string
-      }
-    } | null
+        bladerName?: string;
+        avatarUrl?: string;
+      };
+    } | null;
     winner: {
-      id: string
-      name: string
+      id: string;
+      name: string;
       profile?: {
-        bladerName?: string
-        avatarUrl?: string
-      }
-    } | null
-  }>
+        bladerName?: string;
+        avatarUrl?: string;
+      };
+    } | null;
+  }>;
 }
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json())
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 function getStatusColor(status: string) {
   switch (status) {
     case 'UPCOMING':
-      return 'info'
+      return 'info';
     case 'ONGOING':
-      return 'warning'
+      return 'warning';
     case 'COMPLETED':
-      return 'success'
+      return 'success';
     case 'CANCELLED':
-      return 'error'
+      return 'error';
     default:
-      return 'default'
+      return 'default';
   }
 }
 
 function getStatusLabel(status: string) {
   switch (status) {
     case 'UPCOMING':
-      return 'À venir'
+      return 'À venir';
     case 'ONGOING':
-      return 'En cours'
+      return 'En cours';
     case 'COMPLETED':
-      return 'Terminé'
+      return 'Terminé';
     case 'CANCELLED':
-      return 'Annulé'
+      return 'Annulé';
     default:
-      return status
+      return status;
   }
 }
 
-export default function TournamentDetailPage({ params }: TournamentDetailPageProps) {
-  const { id } = use(params)
-  const [tab, setTab] = useState(0)
-  const [actionLoading, setActionLoading] = useState<string | null>(null)
+export default function TournamentDetailPage({
+  params,
+}: TournamentDetailPageProps) {
+  const { id } = use(params);
+  const [tab, setTab] = useState(0);
+  const [actionLoading, setActionLoading] = useState<string | null>(null);
 
   const { data, isLoading, error } = useSWR<{ data: Tournament }>(
     `/api/tournaments/${id}`,
-    fetcher
-  )
+    fetcher,
+  );
 
-  const tournament = data?.data
+  const tournament = data?.data;
 
-  const handleReportMatch = async (matchId: string, reportData: { winnerId: string; score: string }) => {
+  const handleReportMatch = async (
+    matchId: string,
+    reportData: { winnerId: string; score: string },
+  ) => {
     try {
-      const result = await reportChallongeMatch(id, matchId, reportData)
+      const result = await reportChallongeMatch(id, matchId, reportData);
       if (result.success) {
-        mutate(`/api/tournaments/${id}`)
+        mutate(`/api/tournaments/${id}`);
       } else {
-        alert('Erreur report: ' + result.error)
+        alert(`Erreur report: ${result.error}`);
       }
     } catch (err) {
-      console.error('Failed to report:', err)
+      console.error('Failed to report:', err);
     }
-  }
+  };
 
-
-  const handleAction = async (action: 'start' | 'finalize' | 'sync' | 'sync_participants') => {
-    setActionLoading(action)
+  const handleAction = async (
+    action: 'start' | 'finalize' | 'sync' | 'sync_participants',
+  ) => {
+    setActionLoading(action);
     try {
       const response = await fetch(`/api/tournaments/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action }),
-      })
+      });
 
       if (response.ok) {
-        mutate(`/api/tournaments/${id}`)
+        mutate(`/api/tournaments/${id}`);
       } else {
-        const err = await response.json()
-        alert('Erreur: ' + (err.error || 'Action échouée'))
+        const err = await response.json();
+        alert(`Erreur: ${err.error || 'Action échouée'}`);
       }
     } catch (err) {
-      console.error('Action failed:', err)
+      console.error('Action failed:', err);
     } finally {
-      setActionLoading(null)
+      setActionLoading(null);
     }
-  }
+  };
 
   const handleRemoveParticipant = async (userId: string) => {
-    if (!confirm('Retirer ce participant ?')) return
+    if (!confirm('Retirer ce participant ?')) return;
 
     try {
       await fetch(`/api/tournaments/${id}/participants?userId=${userId}`, {
         method: 'DELETE',
-      })
-      mutate(`/api/tournaments/${id}`)
+      });
+      mutate(`/api/tournaments/${id}`);
     } catch (err) {
-      console.error('Failed to remove participant:', err)
+      console.error('Failed to remove participant:', err);
     }
-  }
+  };
 
   const handleExport = async () => {
-    setActionLoading('export')
+    setActionLoading('export');
     try {
-      const result = await exportTournamentToSheets(id)
-      
+      const result = await exportTournamentToSheets(id);
+
       if (result.error === 'NO_GOOGLE_ACCOUNT') {
         const { error } = await authClient.signIn.social({
           provider: 'google',
           callbackURL: window.location.href,
-        })
-        if (error) alert('Erreur lors de la connexion Google')
-        return
+        });
+        if (error) alert('Erreur lors de la connexion Google');
+        return;
       }
 
       if (result.error) {
-        alert('Erreur export: ' + result.error)
-        return
+        alert(`Erreur export: ${result.error}`);
+        return;
       }
 
       if (result.url) {
-        window.open(result.url, '_blank')
+        window.open(result.url, '_blank');
       }
     } catch (err) {
-      console.error('Export error:', err)
-      alert('Une erreur est survenue')
+      console.error('Export error:', err);
+      alert('Une erreur est survenue');
     } finally {
-      setActionLoading(null)
+      setActionLoading(null);
     }
-  }
+  };
 
   if (isLoading) {
     return (
       <Container maxWidth="xl" sx={{ py: 4 }}>
-        <Skeleton variant="rectangular" height={200} sx={{ borderRadius: 2, mb: 3 }} />
+        <Skeleton
+          variant="rectangular"
+          height={200}
+          sx={{ borderRadius: 2, mb: 3 }}
+        />
         <Skeleton variant="rectangular" height={400} sx={{ borderRadius: 2 }} />
       </Container>
-    )
+    );
   }
 
   if (error || !tournament) {
@@ -237,17 +247,23 @@ export default function TournamentDetailPage({ params }: TournamentDetailPagePro
       <Container maxWidth="xl" sx={{ py: 4 }}>
         <Alert severity="error">Tournoi introuvable</Alert>
       </Container>
-    )
+    );
   }
 
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
       {/* Breadcrumbs */}
       <Breadcrumbs sx={{ mb: 2 }}>
-        <Link href="/admin" style={{ textDecoration: 'none', color: 'inherit' }}>
+        <Link
+          href="/admin"
+          style={{ textDecoration: 'none', color: 'inherit' }}
+        >
           Admin
         </Link>
-        <Link href="/admin/tournaments" style={{ textDecoration: 'none', color: 'inherit' }}>
+        <Link
+          href="/admin/tournaments"
+          style={{ textDecoration: 'none', color: 'inherit' }}
+        >
           Tournois
         </Link>
         <Typography color="text.primary">{tournament.name}</Typography>
@@ -256,20 +272,38 @@ export default function TournamentDetailPage({ params }: TournamentDetailPagePro
       {/* Header Card */}
       <Card sx={{ mb: 3 }}>
         <CardContent>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 2 }}>
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              flexWrap: 'wrap',
+              gap: 2,
+            }}
+          >
             <Box>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
+              <Box
+                sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}
+              >
                 <Typography variant="h4" fontWeight="bold">
                   {tournament.name}
                 </Typography>
                 <Chip
                   label={getStatusLabel(tournament.status)}
-                  color={getStatusColor(tournament.status) as 'info' | 'warning' | 'success' | 'error'}
+                  color={
+                    getStatusColor(tournament.status) as
+                      | 'info'
+                      | 'warning'
+                      | 'success'
+                      | 'error'
+                  }
                 />
               </Box>
 
               {tournament.description && (
-                <Typography color="text.secondary" sx={{ mb: 2, maxWidth: 600 }}>
+                <Typography
+                  color="text.secondary"
+                  sx={{ mb: 2, maxWidth: 600 }}
+                >
                   {tournament.description}
                 </Typography>
               )}
@@ -292,18 +326,25 @@ export default function TournamentDetailPage({ params }: TournamentDetailPagePro
                 {tournament.location && (
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <LocationOnIcon fontSize="small" color="action" />
-                    <Typography variant="body2">{tournament.location}</Typography>
+                    <Typography variant="body2">
+                      {tournament.location}
+                    </Typography>
                   </Box>
                 )}
 
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <PeopleIcon fontSize="small" color="action" />
                   <Typography variant="body2">
-                    {tournament.participants.length} / {tournament.maxPlayers} participants
+                    {tournament.participants.length} / {tournament.maxPlayers}{' '}
+                    participants
                   </Typography>
                 </Box>
 
-                <Chip label={tournament.format} size="small" variant="outlined" />
+                <Chip
+                  label={tournament.format}
+                  size="small"
+                  variant="outlined"
+                />
               </Box>
             </Box>
 
@@ -327,7 +368,9 @@ export default function TournamentDetailPage({ params }: TournamentDetailPagePro
                     disabled={actionLoading !== null}
                     color="primary"
                   >
-                    {actionLoading === 'finalize' ? 'Finalisation...' : 'Finaliser'}
+                    {actionLoading === 'finalize'
+                      ? 'Finalisation...'
+                      : 'Finaliser'}
                   </Button>
                 )}
                 {tournament.challongeId && (
@@ -347,7 +390,9 @@ export default function TournamentDetailPage({ params }: TournamentDetailPagePro
                     disabled={actionLoading !== null}
                     title="Sync Participants"
                   >
-                    {actionLoading === 'sync_participants' ? 'Sync...' : 'Sync Part.'}
+                    {actionLoading === 'sync_participants'
+                      ? 'Sync...'
+                      : 'Sync Part.'}
                   </Button>
                 )}
               </ButtonGroup>
@@ -389,8 +434,8 @@ export default function TournamentDetailPage({ params }: TournamentDetailPagePro
       {tab === 0 && (
         <Card>
           <CardContent>
-            <TournamentBracket 
-              matches={tournament.matches} 
+            <TournamentBracket
+              matches={tournament.matches}
               canReport={tournament.status === 'ONGOING'}
               onReportMatch={handleReportMatch}
             />
@@ -411,5 +456,5 @@ export default function TournamentDetailPage({ params }: TournamentDetailPagePro
         </Grid>
       )}
     </Container>
-  )
+  );
 }

@@ -1,12 +1,16 @@
-import React from 'react';
-import { TextField, InputAdornment, type TextFieldProps } from '@mui/material';
 import { Search as SearchIcon } from '@mui/icons-material';
+import { InputAdornment, TextField, type TextFieldProps } from '@mui/material';
+import type React from 'react';
 
 type SearchInputProps = TextFieldProps & {
   onSearch?: (value: string) => void;
 };
 
-export const SearchInput: React.FC<SearchInputProps> = ({ onSearch, onChange, ...props }) => {
+export const SearchInput: React.FC<SearchInputProps> = ({
+  onSearch,
+  onChange,
+  ...props
+}) => {
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (onChange) {
       onChange(event);

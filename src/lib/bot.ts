@@ -1,13 +1,13 @@
-import { createClient } from './standard-api';
-import type { BotStatus } from '@/types/api';
 import type { BotMember } from '@/types';
+import type { BotStatus } from '@/types/api';
+import { createClient } from './standard-api';
 
 // Singleton instance for bot communication
 export const botClient = createClient(
   process.env.BOT_API_URL || 'http://localhost:3001',
   {
     'x-api-key': process.env.BOT_API_KEY || '',
-  }
+  },
 );
 
 // Logging interceptor in development
@@ -18,7 +18,10 @@ if (process.env.NODE_ENV === 'development') {
       return options;
     },
     onError: (error) => {
-      console.error(`[BotAPI] Error ${error.status}: ${error.message}`, error.data);
+      console.error(
+        `[BotAPI] Error ${error.status}: ${error.message}`,
+        error.data,
+      );
     },
   });
 }
@@ -36,10 +39,13 @@ export async function getBotStatus(): Promise<BotStatus | null> {
 
 export async function getMembersByRole(roleId: string): Promise<BotMember[]> {
   try {
-    const data = await botClient.get<{ members: BotMember[] }>('/api/members-by-role', {
-      params: { roleId },
-      revalidate: 300, // Cache for 5 minutes
-    });
+    const data = await botClient.get<{ members: BotMember[] }>(
+      '/api/members-by-role',
+      {
+        params: { roleId },
+        revalidate: 300, // Cache for 5 minutes
+      },
+    );
     return data.members;
   } catch {
     return [];

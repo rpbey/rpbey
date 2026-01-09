@@ -1,22 +1,22 @@
-'use client'
+'use client';
 
-import { useState, useEffect, useCallback } from 'react'
 import {
-  TextField,
-  MenuItem,
-  FormControlLabel,
-  Switch,
-  Box,
-  Typography,
   Avatar,
+  Box,
   CircularProgress,
   Divider,
+  FormControlLabel,
   Grid,
-} from '@mui/material'
-import { FormDialog } from '@/components/ui'
-import type { StaffMemberInput, DiscordRole, DiscordMember } from './actions'
-import { getDiscordRoles, getMembersByRole } from './actions'
-import type { StaffMember } from '@prisma/client'
+  MenuItem,
+  Switch,
+  TextField,
+  Typography,
+} from '@mui/material';
+import type { StaffMember } from '@prisma/client';
+import { useCallback, useEffect, useState } from 'react';
+import { FormDialog } from '@/components/ui';
+import type { DiscordMember, DiscordRole, StaffMemberInput } from './actions';
+import { getDiscordRoles, getMembersByRole } from './actions';
 
 const TEAMS = [
   { value: 'admin', label: 'Administration' },
@@ -26,14 +26,14 @@ const TEAMS = [
   { value: 'dev', label: 'Développement' },
   { value: 'event', label: 'Événementiel' },
   { value: 'media', label: 'Média / Design' },
-]
+];
 
 interface StaffDialogProps {
-  open: boolean
-  onClose: () => void
-  onSubmit: (data: StaffMemberInput) => Promise<void>
-  initialData?: StaffMember | null
-  loading?: boolean
+  open: boolean;
+  onClose: () => void;
+  onSubmit: (data: StaffMemberInput) => Promise<void>;
+  initialData?: StaffMember | null;
+  loading?: boolean;
 }
 
 export function StaffDialog({
@@ -51,34 +51,34 @@ export function StaffDialog({
     discordId: '',
     displayIndex: 0,
     isActive: true,
-  })
+  });
 
-  const [roles, setRoles] = useState<DiscordRole[]>([])
-  const [selectedRoleId, setSelectedRoleId] = useState<string>('')
-  const [discordMembers, setDiscordMembers] = useState<DiscordMember[]>([])
-  const [loadingRoles, setLoadingRoles] = useState(false)
-  const [loadingMembers, setLoadingMembers] = useState(false)
+  const [roles, setRoles] = useState<DiscordRole[]>([]);
+  const [selectedRoleId, setSelectedRoleId] = useState<string>('');
+  const [discordMembers, setDiscordMembers] = useState<DiscordMember[]>([]);
+  const [loadingRoles, setLoadingRoles] = useState(false);
+  const [loadingMembers, setLoadingMembers] = useState(false);
 
   const fetchRoles = useCallback(async () => {
-    setLoadingRoles(true)
-    const data = await getDiscordRoles()
-    setRoles(data)
-    setLoadingRoles(false)
-  }, [])
+    setLoadingRoles(true);
+    const data = await getDiscordRoles();
+    setRoles(data);
+    setLoadingRoles(false);
+  }, []);
 
   useEffect(() => {
     if (open) {
-      fetchRoles()
+      fetchRoles();
     }
-  }, [open, fetchRoles])
+  }, [open, fetchRoles]);
 
   const handleRoleChange = async (roleId: string) => {
-    setSelectedRoleId(roleId)
-    setLoadingMembers(true)
-    const data = await getMembersByRole(roleId)
-    setDiscordMembers(data)
-    setLoadingMembers(false)
-  }
+    setSelectedRoleId(roleId);
+    setLoadingMembers(true);
+    const data = await getMembersByRole(roleId);
+    setDiscordMembers(data);
+    setLoadingMembers(false);
+  };
 
   const handleSelectDiscordMember = (member: DiscordMember) => {
     setFormData({
@@ -86,8 +86,8 @@ export function StaffDialog({
       name: member.displayName || member.username,
       discordId: member.id,
       imageUrl: member.avatar,
-    })
-  }
+    });
+  };
 
   useEffect(() => {
     if (initialData) {
@@ -99,7 +99,7 @@ export function StaffDialog({
         discordId: initialData.discordId || '',
         displayIndex: initialData.displayIndex || 0,
         isActive: initialData.isActive ?? true,
-      })
+      });
     } else {
       setFormData({
         name: '',
@@ -109,13 +109,13 @@ export function StaffDialog({
         discordId: '',
         displayIndex: 0,
         isActive: true,
-      })
+      });
     }
-  }, [initialData, open])
+  }, [initialData]);
 
   const handleSubmit = async () => {
-    await onSubmit(formData)
-  }
+    await onSubmit(formData);
+  };
 
   return (
     <FormDialog
@@ -130,7 +130,15 @@ export function StaffDialog({
         {/* Discord Sync Section */}
         {!initialData && (
           <Grid size={{ xs: 12 }}>
-            <Box sx={{ p: 2, bgcolor: 'action.hover', borderRadius: 2, border: '1px dashed', borderColor: 'divider' }}>
+            <Box
+              sx={{
+                p: 2,
+                bgcolor: 'action.hover',
+                borderRadius: 2,
+                border: '1px dashed',
+                borderColor: 'divider',
+              }}
+            >
               <Typography variant="subtitle2" fontWeight="bold" gutterBottom>
                 Synchronisation Discord (Optionnel)
               </Typography>
@@ -146,11 +154,22 @@ export function StaffDialog({
                     disabled={loadingRoles}
                   >
                     {loadingRoles ? (
-                      <MenuItem disabled><CircularProgress size={20} sx={{ mr: 1 }} /> Chargement...</MenuItem>
+                      <MenuItem disabled>
+                        <CircularProgress size={20} sx={{ mr: 1 }} />{' '}
+                        Chargement...
+                      </MenuItem>
                     ) : (
                       roles.map((role) => (
                         <MenuItem key={role.id} value={role.id}>
-                          <Box sx={{ width: 12, height: 12, borderRadius: '50%', bgcolor: role.color, mr: 1 }} />
+                          <Box
+                            sx={{
+                              width: 12,
+                              height: 12,
+                              borderRadius: '50%',
+                              bgcolor: role.color,
+                              mr: 1,
+                            }}
+                          />
                           {role.name}
                         </MenuItem>
                       ))
@@ -165,16 +184,24 @@ export function StaffDialog({
                     label="Sélectionner un membre"
                     disabled={!selectedRoleId || loadingMembers}
                     onChange={(e) => {
-                      const member = discordMembers.find(m => m.id === e.target.value)
-                      if (member) handleSelectDiscordMember(member)
+                      const member = discordMembers.find(
+                        (m) => m.id === e.target.value,
+                      );
+                      if (member) handleSelectDiscordMember(member);
                     }}
                   >
                     {loadingMembers ? (
-                      <MenuItem disabled><CircularProgress size={20} sx={{ mr: 1 }} /> Chargement...</MenuItem>
+                      <MenuItem disabled>
+                        <CircularProgress size={20} sx={{ mr: 1 }} />{' '}
+                        Chargement...
+                      </MenuItem>
                     ) : (
                       discordMembers.map((member) => (
                         <MenuItem key={member.id} value={member.id}>
-                          <Avatar src={member.avatar} sx={{ width: 20, height: 20, mr: 1 }} />
+                          <Avatar
+                            src={member.avatar}
+                            sx={{ width: 20, height: 20, mr: 1 }}
+                          />
                           {member.displayName}
                         </MenuItem>
                       ))
@@ -186,7 +213,9 @@ export function StaffDialog({
           </Grid>
         )}
 
-        <Grid size={{ xs: 12 }}><Divider /></Grid>
+        <Grid size={{ xs: 12 }}>
+          <Divider />
+        </Grid>
 
         <Grid size={{ xs: 12, sm: 6 }}>
           <TextField
@@ -213,7 +242,9 @@ export function StaffDialog({
             select
             label="Équipe"
             value={formData.teamId}
-            onChange={(e) => setFormData({ ...formData, teamId: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, teamId: e.target.value })
+            }
             required
           >
             {TEAMS.map((option) => (
@@ -229,7 +260,12 @@ export function StaffDialog({
             type="number"
             label="Ordre d'affichage"
             value={formData.displayIndex}
-            onChange={(e) => setFormData({ ...formData, displayIndex: parseInt(e.target.value) || 0 })}
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                displayIndex: parseInt(e.target.value, 10) || 0,
+              })
+            }
           />
         </Grid>
         <Grid size={{ xs: 12 }}>
@@ -237,7 +273,9 @@ export function StaffDialog({
             fullWidth
             label="URL de l'image"
             value={formData.imageUrl}
-            onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, imageUrl: e.target.value })
+            }
             placeholder="https://..."
             helperText="L'avatar Discord sera utilisé si synchronisé"
           />
@@ -247,7 +285,9 @@ export function StaffDialog({
             fullWidth
             label="ID Discord"
             value={formData.discordId}
-            onChange={(e) => setFormData({ ...formData, discordId: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, discordId: e.target.value })
+            }
           />
         </Grid>
         <Grid size={{ xs: 12 }}>
@@ -255,7 +295,9 @@ export function StaffDialog({
             control={
               <Switch
                 checked={formData.isActive}
-                onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
+                onChange={(e) =>
+                  setFormData({ ...formData, isActive: e.target.checked })
+                }
               />
             }
             label="Actif (Affiché sur le site)"
@@ -263,5 +305,5 @@ export function StaffDialog({
         </Grid>
       </Grid>
     </FormDialog>
-  )
+  );
 }

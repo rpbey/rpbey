@@ -1,17 +1,24 @@
-'use client'
+'use client';
 
-import { Container, Typography, Box, Breadcrumbs, useTheme, alpha } from '@mui/material'
-import Grid from '@mui/material/Grid'
-import Link from 'next/link'
-import Image from 'next/image'
-import { NavigateNext } from '@mui/icons-material'
-import { StaffCard } from '@/components/cards'
-import type { StaffMember } from '@prisma/client'
+import { NavigateNext } from '@mui/icons-material';
+import {
+  alpha,
+  Box,
+  Breadcrumbs,
+  Container,
+  Typography,
+  useTheme,
+} from '@mui/material';
+import Grid from '@mui/material/Grid';
+import type { StaffMember } from '@prisma/client';
+import Image from 'next/image';
+import Link from 'next/link';
+import { StaffCard } from '@/components/cards';
 
 interface TeamClientContentProps {
-  groupedMembers: Record<string, StaffMember[]>
-  teamLabels: Record<string, string>
-  teamOrder: string[]
+  groupedMembers: Record<string, StaffMember[]>;
+  teamLabels: Record<string, string>;
+  teamOrder: string[];
 }
 
 const TEAM_LOGOS: Record<string, string> = {
@@ -19,12 +26,16 @@ const TEAM_LOGOS: Record<string, string> = {
   rh: '/logo-rh.svg',
   modo: '/logo-modo.svg',
   staff: '/logo-staff.svg',
-}
+};
 
-export function TeamClientContent({ groupedMembers, teamLabels, teamOrder }: TeamClientContentProps) {
-  const theme = useTheme()
-  const primaryColor = theme.palette.primary.main
-  const secondaryColor = theme.palette.secondary.main
+export function TeamClientContent({
+  groupedMembers,
+  teamLabels,
+  teamOrder,
+}: TeamClientContentProps) {
+  const theme = useTheme();
+  const primaryColor = theme.palette.primary.main;
+  const secondaryColor = theme.palette.secondary.main;
 
   return (
     <Box sx={{ bgcolor: 'background.default', minHeight: '100vh' }}>
@@ -51,8 +62,8 @@ export function TeamClientContent({ groupedMembers, teamLabels, teamOrder }: Tea
           }}
         />
         <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
-          <Breadcrumbs 
-            separator={<NavigateNext fontSize="small" />} 
+          <Breadcrumbs
+            separator={<NavigateNext fontSize="small" />}
             sx={{ color: 'rgba(255,255,255,0.7)', mb: 4 }}
           >
             <Link href="/" style={{ color: 'inherit', textDecoration: 'none' }}>
@@ -63,34 +74,42 @@ export function TeamClientContent({ groupedMembers, teamLabels, teamOrder }: Tea
 
           <Typography
             variant="h1"
-            sx={{ 
-              fontSize: { xs: '2.5rem', md: '4rem' }, 
-              fontWeight: 900, 
+            sx={{
+              fontSize: { xs: '2.5rem', md: '4rem' },
+              fontWeight: 900,
               mb: 2,
-              textShadow: '0 4px 12px rgba(0,0,0,0.2)'
+              textShadow: '0 4px 12px rgba(0,0,0,0.2)',
             }}
           >
             Nos Équipes
           </Typography>
           <Typography
             variant="h5"
-            sx={{ opacity: 0.9, maxWidth: 700, lineHeight: 1.6, fontWeight: 400 }}
+            sx={{
+              opacity: 0.9,
+              maxWidth: 700,
+              lineHeight: 1.6,
+              fontWeight: 400,
+            }}
           >
-            Découvrez les talents et les passionnés qui donnent vie à l'univers de la République Populaire du Beyblade.
+            Découvrez les talents et les passionnés qui donnent vie à l'univers
+            de la République Populaire du Beyblade.
           </Typography>
         </Container>
       </Box>
 
       <Container maxWidth="lg" sx={{ py: { xs: 6, md: 10 } }}>
         {teamOrder.map((teamId) => {
-          const teamMembers = groupedMembers[teamId]
-          if (!teamMembers || teamMembers.length === 0) return null
+          const teamMembers = groupedMembers[teamId];
+          if (!teamMembers || teamMembers.length === 0) return null;
 
-          const logoPath = TEAM_LOGOS[teamId]
+          const logoPath = TEAM_LOGOS[teamId];
 
           return (
             <Box key={teamId} sx={{ mb: { xs: 8, md: 12 } }}>
-              <Box sx={{ mb: 5, display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Box
+                sx={{ mb: 5, display: 'flex', alignItems: 'center', gap: 2 }}
+              >
                 {logoPath && (
                   <Image
                     src={logoPath}
@@ -100,10 +119,21 @@ export function TeamClientContent({ groupedMembers, teamLabels, teamOrder }: Tea
                     style={{ width: 'auto', height: '3rem' }}
                   />
                 )}
-                <Typography variant="h3" fontWeight="800" sx={{ fontSize: { xs: '1.75rem', md: '2.5rem' } }}>
+                <Typography
+                  variant="h3"
+                  fontWeight="800"
+                  sx={{ fontSize: { xs: '1.75rem', md: '2.5rem' } }}
+                >
                   {teamLabels[teamId] || teamId}
                 </Typography>
-                <Box sx={{ flexGrow: 1, height: '2px', bgcolor: 'divider', opacity: 0.5 }} />
+                <Box
+                  sx={{
+                    flexGrow: 1,
+                    height: '2px',
+                    bgcolor: 'divider',
+                    opacity: 0.5,
+                  }}
+                />
               </Box>
 
               <Grid container spacing={4}>
@@ -114,20 +144,20 @@ export function TeamClientContent({ groupedMembers, teamLabels, teamOrder }: Tea
                 ))}
               </Grid>
             </Box>
-          )
+          );
         })}
 
-        <Box 
-          sx={{ 
-            textAlign: 'center', 
-            mt: 4, 
-            p: { xs: 4, md: 8 }, 
-            bgcolor: 'background.paper', 
-            borderRadius: 8, 
-            border: '1px solid', 
+        <Box
+          sx={{
+            textAlign: 'center',
+            mt: 4,
+            p: { xs: 4, md: 8 },
+            bgcolor: 'background.paper',
+            borderRadius: 8,
+            border: '1px solid',
             borderColor: 'divider',
             position: 'relative',
-            overflow: 'hidden'
+            overflow: 'hidden',
           }}
         >
           <Box
@@ -143,8 +173,13 @@ export function TeamClientContent({ groupedMembers, teamLabels, teamOrder }: Tea
           <Typography variant="h4" fontWeight="bold" gutterBottom>
             Envie de nous rejoindre ?
           </Typography>
-          <Typography variant="body1" color="text.secondary" sx={{ mb: 4, maxWidth: 600, mx: 'auto' }}>
-            La RPB est une communauté gérée par des bénévoles. Si vous souhaitez apporter votre pierre à l'édifice, n'hésitez pas !
+          <Typography
+            variant="body1"
+            color="text.secondary"
+            sx={{ mb: 4, maxWidth: 600, mx: 'auto' }}
+          >
+            La RPB est une communauté gérée par des bénévoles. Si vous souhaitez
+            apporter votre pierre à l'édifice, n'hésitez pas !
           </Typography>
           <Box
             component="a"
@@ -174,5 +209,5 @@ export function TeamClientContent({ groupedMembers, teamLabels, teamOrder }: Tea
         </Box>
       </Container>
     </Box>
-  )
+  );
 }

@@ -1,7 +1,6 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import Link from 'next/link'
+import { Close, Menu as MenuIcon } from '@mui/icons-material';
 import {
   AppBar,
   Box,
@@ -15,10 +14,11 @@ import {
   ListItemText,
   Toolbar,
   Typography,
-} from '@mui/material'
-import { Menu as MenuIcon, Close } from '@mui/icons-material'
-import { useSession } from '@/lib/auth-client'
-import { motion, useScroll, useMotionValueEvent } from 'framer-motion'
+} from '@mui/material';
+import { motion, useMotionValueEvent, useScroll } from 'framer-motion';
+import Link from 'next/link';
+import { useState } from 'react';
+import { useSession } from '@/lib/auth-client';
 
 const navItems: { label: string; href: string; external?: boolean }[] = [
   { label: 'Accueil', href: '/' },
@@ -26,29 +26,29 @@ const navItems: { label: string; href: string; external?: boolean }[] = [
   { label: 'Tournois', href: '/tournaments' },
   { label: 'À Propos', href: '/a-propos' },
   { label: 'Classements', href: '/rankings' },
-]
+];
 
 export function MarketingHeader() {
-  const { data: session } = useSession()
-  const [mobileOpen, setMobileOpen] = useState(false)
-  const [hidden, setHidden] = useState(false)
-  const [scrolled, setScrolled] = useState(false)
-  
-  const { scrollY } = useScroll()
+  const { data: session } = useSession();
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [hidden, setHidden] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
-  useMotionValueEvent(scrollY, "change", (latest) => {
-    const previous = scrollY.getPrevious() ?? 0
+  const { scrollY } = useScroll();
+
+  useMotionValueEvent(scrollY, 'change', (latest) => {
+    const previous = scrollY.getPrevious() ?? 0;
     if (latest > previous && latest > 150) {
-      setHidden(true)
+      setHidden(true);
     } else {
-      setHidden(false)
+      setHidden(false);
     }
-    setScrolled(latest > 20)
-  })
+    setScrolled(latest > 20);
+  });
 
   const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen)
-  }
+    setMobileOpen(!mobileOpen);
+  };
 
   return (
     <>
@@ -88,7 +88,14 @@ export function MarketingHeader() {
             </Typography>
 
             {/* Desktop nav */}
-            <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' }, gap: 1, ml: 4 }}>
+            <Box
+              sx={{
+                flexGrow: 1,
+                display: { xs: 'none', md: 'flex' },
+                gap: 1,
+                ml: 4,
+              }}
+            >
               {navItems.map((item) => (
                 <Button
                   key={item.href}
@@ -168,7 +175,14 @@ export function MarketingHeader() {
           },
         }}
       >
-        <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Box
+          sx={{
+            p: 2,
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
+        >
           <Typography variant="h6" fontWeight="bold" color="primary.main">
             RPB
           </Typography>
@@ -229,5 +243,5 @@ export function MarketingHeader() {
       {/* Toolbar spacer */}
       <Toolbar />
     </>
-  )
+  );
 }

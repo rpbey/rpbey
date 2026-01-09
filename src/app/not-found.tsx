@@ -1,12 +1,12 @@
-'use client'
+'use client';
 
-import Link from 'next/link'
-import { Box, Button, Container, Typography } from '@mui/material'
-import SearchOffIcon from '@mui/icons-material/SearchOff'
-import { useThemeMode } from '@/components/theme/ThemeRegistry'
+import SearchOffIcon from '@mui/icons-material/SearchOff';
+import { Box, Button, Container, Typography } from '@mui/material';
+import Link from 'next/link';
+import { useThemeMode } from '@/components/theme/ThemeRegistry';
 
 export default function NotFound() {
-  const { backgroundImage } = useThemeMode()
+  const { backgroundImage } = useThemeMode();
 
   return (
     <Box
@@ -35,27 +35,27 @@ export default function NotFound() {
             p: 6,
           }}
         >
-        <SearchOffIcon sx={{ fontSize: 80, color: 'text.disabled' }} />
-        <Typography variant="h2" component="h1" fontWeight="bold">
-          404
-        </Typography>
-        <Typography variant="h5" gutterBottom>
-          Page introuvable
-        </Typography>
-        <Typography variant="body1" color="text.secondary">
-          La page que tu cherches n&apos;existe pas ou a été déplacée.
-        </Typography>
-        <Button
-          component={Link}
-          href="/"
-          variant="contained"
-          color="primary"
-          size="large"
-        >
-          Retour à l&apos;accueil
-        </Button>
+          <SearchOffIcon sx={{ fontSize: 80, color: 'text.disabled' }} />
+          <Typography variant="h2" component="h1" fontWeight="bold">
+            404
+          </Typography>
+          <Typography variant="h5" gutterBottom>
+            Page introuvable
+          </Typography>
+          <Typography variant="body1" color="text.secondary">
+            La page que tu cherches n&apos;existe pas ou a été déplacée.
+          </Typography>
+          <Button
+            component={Link}
+            href="/"
+            variant="contained"
+            color="primary"
+            size="large"
+          >
+            Retour à l&apos;accueil
+          </Button>
         </Box>
       </Container>
     </Box>
-  )
+  );
 }

@@ -2,24 +2,24 @@
  * RPB - My Profile Page (redirect to dynamic route)
  */
 
-'use client'
+'use client';
 
-import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import Box from '@mui/material/Box'
-import Container from '@mui/material/Container'
-import CircularProgress from '@mui/material/CircularProgress'
-import { useAuth } from '@/hooks'
+import Box from '@mui/material/Box';
+import CircularProgress from '@mui/material/CircularProgress';
+import Container from '@mui/material/Container';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+import { useAuth } from '@/hooks';
 
 export default function MyProfilePage() {
-  const router = useRouter()
-  const { user, isLoading } = useAuth()
+  const router = useRouter();
+  const { user, isLoading } = useAuth();
 
   useEffect(() => {
     if (!isLoading && user) {
-      router.replace(`/dashboard/profile/${user.id}`)
+      router.replace(`/dashboard/profile/${user.id}`);
     }
-  }, [user, isLoading, router])
+  }, [user, isLoading, router]);
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
@@ -34,5 +34,5 @@ export default function MyProfilePage() {
         <CircularProgress />
       </Box>
     </Container>
-  )
+  );
 }

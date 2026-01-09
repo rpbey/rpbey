@@ -1,9 +1,10 @@
-"use client";
+'use client';
 
-import React, { createContext, useContext, useState, useEffect, useMemo } from "react";
-import { ThemeProvider as MuiThemeProvider } from "@mui/material/styles";
-import { CssBaseline } from "@mui/material";
-import { getTheme, type ThemeMode } from "@/lib/theme";
+import { CssBaseline } from '@mui/material';
+import { ThemeProvider as MuiThemeProvider } from '@mui/material/styles';
+import type React from 'react';
+import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { getTheme, type ThemeMode } from '@/lib/theme';
 
 interface ThemeContextType {
   mode: ThemeMode;

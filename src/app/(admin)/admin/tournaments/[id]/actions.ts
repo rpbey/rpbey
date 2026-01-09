@@ -1,59 +1,73 @@
-'use server'
+'use server';
 
-import { auth } from '@/lib/auth'
-import { prisma } from '@/lib/prisma'
-import { google } from 'googleapis'
-import { headers } from 'next/headers'
+import { google } from 'googleapis';
+import { headers } from 'next/headers';
+import { auth } from '@/lib/auth';
+import { getChallongeService } from '@/lib/challonge';
+import { prisma } from '@/lib/prisma';
 
-import { getChallongeService } from '@/lib/challonge'
-
-export async function reportChallongeMatch(tournamentId: string, matchId: string, data: { winnerId: string; score: string }) {
+export async function reportChallongeMatch(
+  tournamentId: string,
+  matchId: string,
+  data: { winnerId: string; score: string },
+) {
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
-    })
+    });
 
-    if (!session?.user || (session.user.role !== 'admin' && session.user.role !== 'moderator')) {
-      return { error: 'Unauthorized' }
+    if (
+      !session?.user ||
+      (session.user.role !== 'admin' && session.user.role !== 'moderator')
+    ) {
+      return { error: 'Unauthorized' };
     }
 
     const tournament = await prisma.tournament.findUnique({
       where: { id: tournamentId },
-      include: { participants: true }
-    })
+      include: { participants: true },
+    });
 
-    if (!tournament?.challongeId) return { error: 'Tournament not linked' }
+    if (!tournament?.challongeId) return { error: 'Tournament not linked' };
 
     // Find Challonge Participant ID for the winner
-    const participant = tournament.participants.find(p => p.userId === data.winnerId)
-    if (!participant?.challongeParticipantId) return { error: 'Winner not synced with Challonge' }
+    const participant = tournament.participants.find(
+      (p) => p.userId === data.winnerId,
+    );
+    if (!participant?.challongeParticipantId)
+      return { error: 'Winner not synced with Challonge' };
 
     // Try to get Admin's Challonge Token
     const account = await prisma.account.findFirst({
-      where: { userId: session.user.id, providerId: 'challonge' }
-    })
+      where: { userId: session.user.id, providerId: 'challonge' },
+    });
 
-    const challonge = getChallongeService()
+    const challonge = getChallongeService();
     await challonge.reportMatchScore(tournament.challongeId, matchId, {
       winnerId: participant.challongeParticipantId,
       scoresCsv: data.score,
-      userToken: account?.accessToken ?? undefined
-    })
+      userToken: account?.accessToken ?? undefined,
+    });
 
     // Also update local DB for immediate feedback
     await prisma.tournamentMatch.update({
-      where: { tournamentId_challongeMatchId: { tournamentId, challongeMatchId: matchId } },
+      where: {
+        tournamentId_challongeMatchId: {
+          tournamentId,
+          challongeMatchId: matchId,
+        },
+      },
       data: {
         winnerId: data.winnerId,
         score: data.score,
-        state: 'complete'
-      }
-    })
+        state: 'complete',
+      },
+    });
 
-    return { success: true }
+    return { success: true };
   } catch (error) {
-    console.error('Report failed:', error)
-    return { error: 'Failed to report score to Challonge' }
+    console.error('Report failed:', error);
+    return { error: 'Failed to report score to Challonge' };
   }
 }
 
@@ -61,10 +75,13 @@ export async function exportTournamentToSheets(tournamentId: string) {
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
-    })
+    });
 
-    if (!session?.user || (session.user.role !== 'admin' && session.user.role !== 'moderator')) {
-      return { error: 'Unauthorized' }
+    if (
+      !session?.user ||
+      (session.user.role !== 'admin' && session.user.role !== 'moderator')
+    ) {
+      return { error: 'Unauthorized' };
     }
 
     // Get Google Account token
@@ -73,10 +90,10 @@ export async function exportTournamentToSheets(tournamentId: string) {
         userId: session.user.id,
         providerId: 'google',
       },
-    })
+    });
 
     if (!account || !account.accessToken) {
-      return { error: 'NO_GOOGLE_ACCOUNT' }
+      return { error: 'NO_GOOGLE_ACCOUNT' };
     }
 
     // Fetch Tournament Data
@@ -114,24 +131,24 @@ export async function exportTournamentToSheets(tournamentId: string) {
           orderBy: [{ round: 'asc' }, { createdAt: 'asc' }],
         },
       },
-    })
+    });
 
     if (!tournament) {
-      return { error: 'Tournament not found' }
+      return { error: 'Tournament not found' };
     }
 
     // Initialize Google Sheets API
     const authClient = new google.auth.OAuth2(
       process.env.GOOGLE_CLIENT_ID,
-      process.env.GOOGLE_CLIENT_SECRET
-    )
+      process.env.GOOGLE_CLIENT_SECRET,
+    );
 
     authClient.setCredentials({
       access_token: account.accessToken,
       refresh_token: account.refreshToken, // Google API client handles refresh if provided
-    })
+    });
 
-    const sheets = google.sheets({ version: 'v4', auth: authClient })
+    const sheets = google.sheets({ version: 'v4', auth: authClient });
 
     // Create Spreadsheet
     const spreadsheet = await sheets.spreadsheets.create({
@@ -140,41 +157,49 @@ export async function exportTournamentToSheets(tournamentId: string) {
           title: `RPB Tournament - ${tournament.name}`,
         },
       },
-    })
+    });
 
-    const spreadsheetId = spreadsheet.data.spreadsheetId!
+    const spreadsheetId = spreadsheet.data.spreadsheetId!;
 
     // Prepare Data
     // Sheet 1: Participants
-    const participantHeader = ['Seed', 'Pseudo', 'Discord', 'Deck', 'Bey 1', 'Bey 2', 'Bey 3']
+    const participantHeader = [
+      'Seed',
+      'Pseudo',
+      'Discord',
+      'Deck',
+      'Bey 1',
+      'Bey 2',
+      'Bey 3',
+    ];
     const participantRows = tournament.participants.map((p) => {
-      const deck = p.user.decks?.[0]
-      const beys = deck?.beys || []
-      
-      const beyStrings = [0, 1, 2].map(i => {
-        const bey = beys.find(b => b.position === i + 1)
-        if (!bey) return '-'
-        return `${bey.blade.name} ${bey.ratchet.height}-${bey.ratchet.protrusions || '?'} ${bey.bit.name}`
-      })
+      const deck = p.user.decks?.[0];
+      const beys = deck?.beys || [];
+
+      const beyStrings = [0, 1, 2].map((i) => {
+        const bey = beys.find((b) => b.position === i + 1);
+        if (!bey) return '-';
+        return `${bey.blade.name} ${bey.ratchet.height}-${bey.ratchet.protrusions || '?'} ${bey.bit.name}`;
+      });
 
       return [
         p.seed || '-',
         p.user.name || p.user.email,
         p.user.discordTag || '-',
         deck?.name || 'Aucun deck',
-        ...beyStrings
-      ]
-    })
+        ...beyStrings,
+      ];
+    });
 
     // Sheet 2: Matches
-    const matchHeader = ['Round', 'Joueur 1', 'Joueur 2', 'Score', 'Vainqueur']
+    const matchHeader = ['Round', 'Joueur 1', 'Joueur 2', 'Score', 'Vainqueur'];
     const matchRows = tournament.matches.map((m) => [
       m.round,
       m.player1?.name || 'TBD',
       m.player2?.name || 'TBD',
       m.score || '-',
-      m.winner?.name || '-'
-    ])
+      m.winner?.name || '-',
+    ]);
 
     // Write Data
     await sheets.spreadsheets.values.update({
@@ -184,7 +209,7 @@ export async function exportTournamentToSheets(tournamentId: string) {
       requestBody: {
         values: [participantHeader, ...participantRows],
       },
-    })
+    });
 
     // Add Matches Sheet
     await sheets.spreadsheets.batchUpdate({
@@ -200,7 +225,7 @@ export async function exportTournamentToSheets(tournamentId: string) {
           },
         ],
       },
-    })
+    });
 
     await sheets.spreadsheets.values.update({
       spreadsheetId,
@@ -209,11 +234,11 @@ export async function exportTournamentToSheets(tournamentId: string) {
       requestBody: {
         values: [matchHeader, ...matchRows],
       },
-    })
+    });
 
-    return { success: true, url: spreadsheet.data.spreadsheetUrl }
+    return { success: true, url: spreadsheet.data.spreadsheetUrl };
   } catch (error) {
-    console.error('Export failed:', error)
-    return { error: 'Failed to export to Sheets' }
+    console.error('Export failed:', error);
+    return { error: 'Failed to export to Sheets' };
   }
 }

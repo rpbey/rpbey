@@ -1,74 +1,70 @@
-'use client'
+'use client';
 
-import { useState, useEffect, useCallback } from 'react'
 import {
-  Box,
-  IconButton,
-  Tooltip,
-  Typography,
-  Button,
-} from '@mui/material'
-import {
-  Edit as EditIcon,
   Delete as DeleteIcon,
+  Edit as EditIcon,
   Sync as SyncIcon,
-} from '@mui/icons-material'
+} from '@mui/icons-material';
+import { Box, Button, IconButton, Tooltip, Typography } from '@mui/material';
+import CircularProgress from '@mui/material/CircularProgress';
+import type { BotCommand } from '@prisma/client';
+import { useCallback, useEffect, useState } from 'react';
 import {
-  PageHeader,
   DataTable,
+  PageHeader,
+  StatusChip,
   useConfirmDialog,
   useToast,
-  StatusChip,
-} from '@/components/ui'
-import type { Column } from '@/components/ui/DataTable'
+} from '@/components/ui';
+import type { Column } from '@/components/ui/DataTable';
+import type { BotCommandInput } from './actions';
 import {
-  getBotCommands,
   createBotCommand,
-  updateBotCommand,
   deleteBotCommand,
+  getBotCommands,
   syncBotCommands,
-} from './actions'
-import type { BotCommandInput } from './actions'
-import { CommandDialog } from './CommandDialog'
-import CircularProgress from '@mui/material/CircularProgress'
-import type { BotCommand } from '@prisma/client'
+  updateBotCommand,
+} from './actions';
+import { CommandDialog } from './CommandDialog';
 
 export default function AdminBotCommandsPage() {
-  const [commands, setCommands] = useState<BotCommand[]>([])
-  const [loading, setLoading] = useState(true)
-  const [syncing, setSyncing] = useState(false)
-  const [dialogOpen, setDialogOpen] = useState(false)
-  const [selectedCommand, setSelectedCommand] = useState<BotCommand | null>(null)
-  const [submitting, setSubmitting] = useState(false)
+  const [commands, setCommands] = useState<BotCommand[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [syncing, setSyncing] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectedCommand, setSelectedCommand] = useState<BotCommand | null>(
+    null,
+  );
+  const [submitting, setSubmitting] = useState(false);
 
-  const { confirm } = useConfirmDialog()
-  const { showToast } = useToast()
+  const { confirm } = useConfirmDialog();
+  const { showToast } = useToast();
 
   const fetchCommands = useCallback(async () => {
-    setLoading(true)
+    setLoading(true);
     try {
-      const data = await getBotCommands()
-      setCommands(data)
+      const data = await getBotCommands();
+      setCommands(data);
     } catch {
-      showToast('Erreur lors de la récupération des commandes', 'error')
+      showToast('Erreur lors de la récupération des commandes', 'error');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [showToast])
+  }, [showToast]);
 
   useEffect(() => {
-    fetchCommands()
-  }, [fetchCommands])
+    fetchCommands();
+  }, [fetchCommands]);
 
   const handleAdd = () => {
-    setSelectedCommand(null)
-    setDialogOpen(true)
-  }
+    setSelectedCommand(null);
+    setDialogOpen(true);
+  };
 
   const handleEdit = (command: BotCommand) => {
-    setSelectedCommand(command)
-    setDialogOpen(true)
-  }
+    setSelectedCommand(command);
+    setDialogOpen(true);
+  };
 
   const handleDelete = async (command: BotCommand) => {
     const confirmed = await confirm({
@@ -76,64 +72,64 @@ export default function AdminBotCommandsPage() {
       message: `Êtes-vous sûr de vouloir supprimer la commande "${command.name}" ?`,
       confirmText: 'Supprimer',
       confirmColor: 'error',
-    })
+    });
 
     if (confirmed) {
       try {
-        await deleteBotCommand(command.id)
-        showToast('Commande supprimée avec succès', 'success')
-        fetchCommands()
+        await deleteBotCommand(command.id);
+        showToast('Commande supprimée avec succès', 'success');
+        fetchCommands();
       } catch {
-        showToast('Erreur lors de la suppression', 'error')
+        showToast('Erreur lors de la suppression', 'error');
       }
     }
-  }
+  };
 
   const handleSubmit = async (data: BotCommandInput) => {
-    setSubmitting(true)
+    setSubmitting(true);
     try {
       // Validate JSON response if needed
       try {
         if (data.response.trim().startsWith('{')) {
-           JSON.parse(data.response)
+          JSON.parse(data.response);
         }
       } catch {
-        showToast('JSON invalide dans la réponse', 'error')
-        setSubmitting(false)
-        return
+        showToast('JSON invalide dans la réponse', 'error');
+        setSubmitting(false);
+        return;
       }
 
       if (selectedCommand) {
-        await updateBotCommand(selectedCommand.id, data)
-        showToast('Commande mise à jour', 'success')
+        await updateBotCommand(selectedCommand.id, data);
+        showToast('Commande mise à jour', 'success');
       } else {
-        await createBotCommand(data)
-        showToast('Commande créée', 'success')
+        await createBotCommand(data);
+        showToast('Commande créée', 'success');
       }
-      setDialogOpen(false)
-      fetchCommands()
+      setDialogOpen(false);
+      fetchCommands();
     } catch {
-      showToast('Erreur lors de l\'enregistrement', 'error')
+      showToast("Erreur lors de l'enregistrement", 'error');
     } finally {
-      setSubmitting(false)
+      setSubmitting(false);
     }
-  }
+  };
 
   const handleSync = async () => {
-    setSyncing(true)
+    setSyncing(true);
     try {
-      const result = await syncBotCommands()
+      const result = await syncBotCommands();
       if (result.success) {
-        showToast('Commandes synchronisées avec le bot', 'success')
+        showToast('Commandes synchronisées avec le bot', 'success');
       } else {
-        showToast(result.error || 'Erreur lors de la synchronisation', 'error')
+        showToast(result.error || 'Erreur lors de la synchronisation', 'error');
       }
     } catch {
-      showToast('Erreur de communication avec le bot', 'error')
+      showToast('Erreur de communication avec le bot', 'error');
     } finally {
-      setSyncing(false)
+      setSyncing(false);
     }
-  }
+  };
 
   const columns: Column<BotCommand>[] = [
     {
@@ -164,7 +160,7 @@ export default function AdminBotCommandsPage() {
     {
       id: 'cooldown',
       label: 'Cooldown',
-      render: (row) => row.cooldown > 0 ? `${row.cooldown}s` : '-',
+      render: (row) => (row.cooldown > 0 ? `${row.cooldown}s` : '-'),
     },
     {
       id: 'actions',
@@ -172,23 +168,23 @@ export default function AdminBotCommandsPage() {
       render: (row) => (
         <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
           <Tooltip title="Modifier">
-            <IconButton 
+            <IconButton
               onClick={(e) => {
-                e.stopPropagation()
-                handleEdit(row)
-              }} 
+                e.stopPropagation();
+                handleEdit(row);
+              }}
               size="small"
             >
               <EditIcon fontSize="small" />
             </IconButton>
           </Tooltip>
           <Tooltip title="Supprimer">
-            <IconButton 
+            <IconButton
               onClick={(e) => {
-                e.stopPropagation()
-                handleDelete(row)
-              }} 
-              size="small" 
+                e.stopPropagation();
+                handleDelete(row);
+              }}
+              size="small"
               color="error"
             >
               <DeleteIcon fontSize="small" />
@@ -197,7 +193,7 @@ export default function AdminBotCommandsPage() {
         </Box>
       ),
     },
-  ]
+  ];
 
   return (
     <Box>
@@ -237,5 +233,5 @@ export default function AdminBotCommandsPage() {
         loading={submitting}
       />
     </Box>
-  )
+  );
 }

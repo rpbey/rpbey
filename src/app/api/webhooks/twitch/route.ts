@@ -1,9 +1,11 @@
+import crypto from 'node:crypto';
 import { NextResponse } from 'next/server';
-import crypto from 'crypto';
 
 const TWITCH_MESSAGE_ID = 'Twitch-Eventsub-Message-Id'.toLowerCase();
-const TWITCH_MESSAGE_TIMESTAMP = 'Twitch-Eventsub-Message-Timestamp'.toLowerCase();
-const TWITCH_MESSAGE_SIGNATURE = 'Twitch-Eventsub-Message-Signature'.toLowerCase();
+const TWITCH_MESSAGE_TIMESTAMP =
+  'Twitch-Eventsub-Message-Timestamp'.toLowerCase();
+const TWITCH_MESSAGE_SIGNATURE =
+  'Twitch-Eventsub-Message-Signature'.toLowerCase();
 const MESSAGE_TYPE = 'Twitch-Eventsub-Message-Type'.toLowerCase();
 
 const MESSAGE_TYPE_VERIFICATION = 'webhook_callback_verification';
@@ -29,7 +31,9 @@ export async function POST(req: Request) {
   const secret = process.env.TWITCH_WEBHOOK_SECRET;
   if (secret) {
     const message = messageId + messageTimestamp + body;
-    const hmac = HMAC_PREFIX + crypto.createHmac('sha256', secret).update(message).digest('hex');
+    const hmac =
+      HMAC_PREFIX +
+      crypto.createHmac('sha256', secret).update(message).digest('hex');
 
     if (messageSignature !== hmac) {
       return new NextResponse('Invalid signature', { status: 403 });
@@ -47,7 +51,7 @@ export async function POST(req: Request) {
 
     if (subscription.type === 'stream.online') {
       console.log(`Stream online event for ${event.broadcaster_user_name}`);
-      
+
       // Notify the bot
       try {
         const botApiUrl = process.env.BOT_API_URL || 'http://10.0.1.9:3001';

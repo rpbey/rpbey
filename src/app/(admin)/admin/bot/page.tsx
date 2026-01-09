@@ -1,90 +1,100 @@
-'use client'
+'use client';
 
-import { useState, useEffect, useCallback } from 'react'
 import {
+  Settings as ConfigIcon,
+  Groups as GuildsIcon,
+  Terminal as LogsIcon,
+  Memory as MemoryIcon,
+  Error as OfflineIcon,
+  CheckCircle as OnlineIcon,
+  Speed as PingIcon,
+  Refresh as RefreshIcon,
+  Timer as UptimeIcon,
+  People as UsersIcon,
+} from '@mui/icons-material';
+import {
+  Alert,
   Box,
-  Paper,
-  Typography,
-  Stack,
+  Button,
   Card,
   CardContent,
-  CircularProgress,
-  Alert,
   Chip,
+  CircularProgress,
   IconButton,
+  Paper,
+  Stack,
   Tooltip,
-  Button,
-} from '@mui/material'
-import Grid from '@mui/material/Grid'
-import {
-  Refresh as RefreshIcon,
-  Memory as MemoryIcon,
-  Timer as UptimeIcon,
-  Speed as PingIcon,
-  Groups as GuildsIcon,
-  People as UsersIcon,
-  CheckCircle as OnlineIcon,
-  Error as OfflineIcon,
-  Settings as ConfigIcon,
-  Terminal as LogsIcon,
-} from '@mui/icons-material'
-import Link from 'next/link'
+  Typography,
+} from '@mui/material';
+import Grid from '@mui/material/Grid';
+import Link from 'next/link';
+import { useCallback, useEffect, useState } from 'react';
 
 interface BotStatus {
-  status: 'running' | 'starting' | 'offline'
-  uptime: number
-  uptimeFormatted: string
-  guilds: number
-  users: number
-  ping: number
-  memoryUsage: string
-  nodeVersion: string
-  error?: string
+  status: 'running' | 'starting' | 'offline';
+  uptime: number;
+  uptimeFormatted: string;
+  guilds: number;
+  users: number;
+  ping: number;
+  memoryUsage: string;
+  nodeVersion: string;
+  error?: string;
 }
 
 export default function BotStatusPage() {
-  const [status, setStatus] = useState<BotStatus | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const [status, setStatus] = useState<BotStatus | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchStatus = useCallback(async () => {
     try {
-      const response = await fetch('/api/bot/status')
-      if (!response.ok) throw new Error('Failed to fetch status')
-      
-      const data = await response.json()
-      setStatus(data)
-      setError(null)
+      const response = await fetch('/api/bot/status');
+      if (!response.ok) throw new Error('Failed to fetch status');
+
+      const data = await response.json();
+      setStatus(data);
+      setError(null);
     } catch (err) {
-      setError(String(err))
+      setError(String(err));
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
-    fetchStatus()
-    const interval = setInterval(fetchStatus, 10000)
-    return () => clearInterval(interval)
-  }, [fetchStatus])
+    fetchStatus();
+    const interval = setInterval(fetchStatus, 10000);
+    return () => clearInterval(interval);
+  }, [fetchStatus]);
 
   if (loading && !status) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="50vh">
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        minHeight="50vh"
+      >
         <CircularProgress />
       </Box>
-    )
+    );
   }
 
-  const isOnline = status?.status === 'running'
+  const isOnline = status?.status === 'running';
 
   return (
     <Box sx={{ p: 3 }}>
-      <Stack direction="row" justifyContent="space-between" alignItems="center" mb={3}>
+      <Stack
+        direction="row"
+        justifyContent="space-between"
+        alignItems="center"
+        mb={3}
+      >
         <Typography variant="h4" fontWeight={600}>
           🤖 Status du Bot
         </Typography>
-        
+
         <Stack direction="row" spacing={1}>
           <Button
             component={Link}
@@ -126,7 +136,11 @@ export default function BotStatusPage() {
         <>
           {/* Main Status Card */}
           <Paper sx={{ p: 3, mb: 3 }}>
-            <Stack direction="row" justifyContent="space-between" alignItems="center">
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+            >
               <Stack direction="row" spacing={2} alignItems="center">
                 <Box
                   sx={{
@@ -150,7 +164,7 @@ export default function BotStatusPage() {
                     <OfflineIcon sx={{ fontSize: 32, color: 'white' }} />
                   )}
                 </Box>
-                
+
                 <Box>
                   <Typography variant="h5" fontWeight={600}>
                     RPB Bot
@@ -269,5 +283,5 @@ export default function BotStatusPage() {
         </>
       )}
     </Box>
-  )
+  );
 }

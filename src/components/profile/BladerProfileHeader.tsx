@@ -3,38 +3,50 @@
  * Main profile header with avatar and basic info
  */
 
-'use client'
+'use client';
 
-import { alpha, Card, CardContent, Box, Avatar, Typography, Tooltip, IconButton, Stack, Chip, Button } from '@mui/material'
-import ShareIcon from '@mui/icons-material/Share'
-import DownloadIcon from '@mui/icons-material/Download'
-import EditIcon from '@mui/icons-material/Edit'
-import EmojiEventsIcon from '@mui/icons-material/EmojiEvents'
-import type { UserStats } from '@/lib/stats'
-import Link from 'next/link'
+import DownloadIcon from '@mui/icons-material/Download';
+import EditIcon from '@mui/icons-material/Edit';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import ShareIcon from '@mui/icons-material/Share';
+import {
+  Avatar,
+  alpha,
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Chip,
+  IconButton,
+  Stack,
+  Tooltip,
+  Typography,
+} from '@mui/material';
+import Link from 'next/link';
+import type { UserStats } from '@/lib/stats';
 
 interface BladerProfileHeaderProps {
-  stats: UserStats
-  avatarUrl?: string
-  joinDate?: string
-  bio?: string
-  onDownloadCard?: () => void
-  isOwnProfile?: boolean
+  stats: UserStats;
+  avatarUrl?: string;
+  joinDate?: string;
+  bio?: string;
+  onDownloadCard?: () => void;
+  isOwnProfile?: boolean;
 }
 
 function getRankColor(rank: number): string {
-  if (rank === 1) return '#FFD700' // Gold
-  if (rank === 2) return '#C0C0C0' // Silver
-  if (rank === 3) return '#CD7F32' // Bronze
-  return '#666'
+  if (rank === 1) return '#FFD700'; // Gold
+  if (rank === 2) return '#C0C0C0'; // Silver
+  if (rank === 3) return '#CD7F32'; // Bronze
+  return '#666';
 }
 
-function getRankTitle(rank: number, elo: number): string {
-  if (elo >= 1500) return 'Champion'
-  if (elo >= 1300) return 'Expert'
-  if (elo >= 1150) return 'Confirmé'
-  if (elo >= 1000) return 'Intermédiaire'
-  return 'Débutant'
+function getRankTitle(_rank: number, elo: number): string {
+  if (elo >= 1500) return 'Champion';
+  if (elo >= 1300) return 'Expert';
+  if (elo >= 1150) return 'Confirmé';
+  if (elo >= 1000) return 'Intermédiaire';
+  return 'Débutant';
 }
 
 export function BladerProfileHeader({
@@ -46,22 +58,23 @@ export function BladerProfileHeader({
   isOwnProfile = false,
 }: BladerProfileHeaderProps) {
   const handleShare = async () => {
-    const url = window.location.href
+    const url = window.location.href;
     if (navigator.share) {
       await navigator.share({
         title: `Profil de ${stats.bladerName} - RPB`,
         url,
-      })
+      });
     } else {
-      await navigator.clipboard.writeText(url)
-      alert("Lien copié dans le presse-papier !")
+      await navigator.clipboard.writeText(url);
+      alert('Lien copié dans le presse-papier !');
     }
-  }
+  };
 
   return (
     <Card
       sx={{
-        background: (theme) => `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.1)} 0%, ${alpha(theme.palette.warning.main, 0.1)} 100%)`,
+        background: (theme) =>
+          `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.1)} 0%, ${alpha(theme.palette.warning.main, 0.1)} 100%)`,
         position: 'relative',
         overflow: 'visible',
         borderRadius: 6,
@@ -70,9 +83,21 @@ export function BladerProfileHeader({
       }}
     >
       <CardContent sx={{ pt: 4, pb: 4 }}>
-        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 4 }}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: { xs: 'column', sm: 'row' },
+            gap: 4,
+          }}
+        >
           {/* Avatar Area */}
-          <Box sx={{ display: 'flex', justifyContent: 'center', position: 'relative' }}>
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              position: 'relative',
+            }}
+          >
             <Avatar
               src={avatarUrl}
               sx={{
@@ -107,15 +132,27 @@ export function BladerProfileHeader({
 
           {/* Info Area */}
           <Box sx={{ flex: 1, textAlign: { xs: 'center', sm: 'left' } }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, justifyContent: { xs: 'center', sm: 'flex-start' }, mb: 1 }}>
-              <Typography variant="h3" fontWeight="bold" sx={{ letterSpacing: '-0.02em' }}>
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 2,
+                justifyContent: { xs: 'center', sm: 'flex-start' },
+                mb: 1,
+              }}
+            >
+              <Typography
+                variant="h3"
+                fontWeight="bold"
+                sx={{ letterSpacing: '-0.02em' }}
+              >
                 {stats.bladerName}
               </Typography>
               {isOwnProfile && (
                 <Tooltip title="Modifier le profil">
-                  <IconButton 
-                    component={Link} 
-                    href="/profile" 
+                  <IconButton
+                    component={Link}
+                    href="/profile"
                     size="small"
                     sx={{ bgcolor: 'action.hover' }}
                   >
@@ -128,74 +165,106 @@ export function BladerProfileHeader({
             <Stack
               direction="row"
               spacing={1}
-              sx={{ mt: 1, justifyContent: { xs: 'center', sm: 'flex-start' }, mb: 3 }}
+              sx={{
+                mt: 1,
+                justifyContent: { xs: 'center', sm: 'flex-start' },
+                mb: 3,
+              }}
             >
               <Chip
                 label={`RANG #${stats.rank}`}
                 size="small"
                 sx={{
                   bgcolor: getRankColor(stats.rank),
-                  color: (stats.rank <= 3) ? 'black' : 'white',
+                  color: stats.rank <= 3 ? 'black' : 'white',
                   fontWeight: 900,
                   fontSize: '0.7rem',
                 }}
               />
-              <Chip 
-                label={getRankTitle(stats.rank, stats.elo)} 
-                size="small" 
-                color="primary" 
+              <Chip
+                label={getRankTitle(stats.rank, stats.elo)}
+                size="small"
+                color="primary"
                 sx={{ fontWeight: 'bold' }}
               />
-              <Chip 
-                label={`${stats.elo} ELO`} 
-                size="small" 
-                variant="outlined" 
+              <Chip
+                label={`${stats.elo} ELO`}
+                size="small"
+                variant="outlined"
                 sx={{ fontWeight: 'bold' }}
               />
             </Stack>
 
             {bio ? (
-              <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 600, fontStyle: 'italic' }}>
+              <Typography
+                variant="body1"
+                color="text.secondary"
+                sx={{ maxWidth: 600, fontStyle: 'italic' }}
+              >
                 "{bio}"
               </Typography>
             ) : (
-                <Typography variant="body1" color="text.disabled" sx={{ fontStyle: 'italic' }}>
-                    Pas de bio renseignée.
-                </Typography>
+              <Typography
+                variant="body1"
+                color="text.disabled"
+                sx={{ fontStyle: 'italic' }}
+              >
+                Pas de bio renseignée.
+              </Typography>
             )}
 
             {joinDate && (
-              <Typography variant="caption" color="text.disabled" sx={{ mt: 2, display: 'block', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                MAÎTRE BLADER DEPUIS {new Date(joinDate).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })}
+              <Typography
+                variant="caption"
+                color="text.disabled"
+                sx={{
+                  mt: 2,
+                  display: 'block',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.1em',
+                }}
+              >
+                MAÎTRE BLADER DEPUIS{' '}
+                {new Date(joinDate).toLocaleDateString('fr-FR', {
+                  month: 'long',
+                  year: 'numeric',
+                })}
               </Typography>
             )}
           </Box>
 
           {/* Actions Column */}
-          <Box sx={{ display: 'flex', flexDirection: { xs: 'row', sm: 'column' }, gap: 1, justifyContent: 'center' }}>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: { xs: 'row', sm: 'column' },
+              gap: 1,
+              justifyContent: 'center',
+            }}
+          >
             <Button
-                variant="outlined"
-                startIcon={<ShareIcon />}
-                onClick={handleShare}
-                fullWidth
-                sx={{ borderRadius: 3 }}
+              variant="outlined"
+              startIcon={<ShareIcon />}
+              onClick={handleShare}
+              fullWidth
+              sx={{ borderRadius: 3 }}
             >
-                Partager
+              Partager
             </Button>
             {onDownloadCard && (
-                <Button
-                    variant="contained"
-                    startIcon={<DownloadIcon />}
-                    onClick={onDownloadCard}
-                    fullWidth
-                    sx={{ borderRadius: 3 }}
-                >
-                    Carte Blader
-                </Button>
+              <Button
+                variant="contained"
+                startIcon={<DownloadIcon />}
+                onClick={onDownloadCard}
+                fullWidth
+                sx={{ borderRadius: 3 }}
+              >
+                Carte Blader
+              </Button>
             )}
           </Box>
         </Box>
       </CardContent>
     </Card>
-  )
+  );
 }
