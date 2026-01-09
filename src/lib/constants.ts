@@ -21,7 +21,7 @@ export const ROUTES = {
   // Public
   TOURNAMENTS: '/tournaments',
   RANKINGS: '/rankings',
-  PROFILE: '/profile',
+  PROFILE: '/dashboard/profile',
 } as const;
 
 export const RPB_COLORS = {

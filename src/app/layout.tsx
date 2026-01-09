@@ -1,5 +1,5 @@
-import type { Metadata, Viewport } from 'next';
 import InitColorSchemeScript from '@mui/material/InitColorSchemeScript';
+import type { Metadata, Viewport } from 'next';
 import { JsonLd } from '@/components/seo/JsonLd';
 import ThemeRegistry from '@/components/theme/ThemeRegistry';
 import { SmoothScroll } from '@/components/ui/SmoothScroll';

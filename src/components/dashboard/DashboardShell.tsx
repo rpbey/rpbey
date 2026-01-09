@@ -36,8 +36,8 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useThemeMode } from '@/components/theme/ThemeRegistry';
-import { signOut, useSession } from '@/lib/auth-client';
 import { RpbLogo } from '@/components/ui/RpbLogo';
+import { signOut, useSession } from '@/lib/auth-client';
 
 const DRAWER_WIDTH = 280;
 const RAIL_WIDTH = 80;
@@ -71,36 +71,10 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const pathname = usePathname();
   const router = useRouter();
-  const { data: session, isPending } = useSession();
+  const { data: session } = useSession();
   const { toggleTheme, mode } = useThemeMode();
 
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
-
-  // Auth Guard
-  useEffect(() => {
-    if (!isPending && !session) {
-      router.replace('/sign-in');
-    }
-  }, [session, isPending, router]);
-
-  if (isPending) {
-    return (
-      <Box
-        sx={{
-          display: 'flex',
-          height: '100vh',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <CircularProgress />
-      </Box>
-    );
-  }
-
-  if (!session) {
-    return null; // Will redirect
-  }
 
   // Derive active tab from pathname
   // For BottomNav (Mobile)
