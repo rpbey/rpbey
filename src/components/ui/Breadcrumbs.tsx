@@ -31,7 +31,7 @@ export const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ items }) => {
         if (isLast || !item.href) {
           return (
             <Typography
-              key={index}
+              key={item.label}
               color="text.primary"
               fontWeight={isLast ? 'medium' : 'regular'}
             >
@@ -42,7 +42,7 @@ export const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ items }) => {
 
         return (
           <MuiLink
-            key={index}
+            key={item.label}
             component={Link}
             href={item.href}
             underline="hover"

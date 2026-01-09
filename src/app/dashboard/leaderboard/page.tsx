@@ -76,6 +76,7 @@ export default function LeaderboardPage() {
             <TableBody>
               {isLoading ? (
                 [...Array(10)].map((_, i) => (
+                  // biome-ignore lint/suspicious/noArrayIndexKey: Static skeleton list
                   <TableRow key={i}>
                     <TableCell>
                       <Skeleton width={30} />

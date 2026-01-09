@@ -38,16 +38,16 @@ export const auth = betterAuth({
   // Social providers (Discord OAuth)
   socialProviders: {
     discord: {
-      clientId: process.env.DISCORD_CLIENT_ID!,
-      clientSecret: process.env.DISCORD_CLIENT_SECRET!,
+      clientId: process.env.DISCORD_CLIENT_ID || '',
+      clientSecret: process.env.DISCORD_CLIENT_SECRET || '',
     },
     twitch: {
-      clientId: process.env.TWITCH_CLIENT_ID!,
-      clientSecret: process.env.TWITCH_CLIENT_SECRET!,
+      clientId: process.env.TWITCH_CLIENT_ID || '',
+      clientSecret: process.env.TWITCH_CLIENT_SECRET || '',
     },
     google: {
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      clientId: process.env.GOOGLE_CLIENT_ID || '',
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
       scope: ['https://www.googleapis.com/auth/spreadsheets'],
     },
   },

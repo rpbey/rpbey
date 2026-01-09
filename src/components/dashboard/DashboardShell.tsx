@@ -70,7 +70,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   // Derive active tab from pathname
   // For BottomNav (Mobile)
   const activeNavItem =
-    NAV_ITEMS.find((item) => pathname.startsWith(item.path)) || NAV_ITEMS[0]!;
+    NAV_ITEMS.find((item) => pathname.startsWith(item.path)) ?? NAV_ITEMS[0];
   const bottomNavValue = activeNavItem.path;
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {

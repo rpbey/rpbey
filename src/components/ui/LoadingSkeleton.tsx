@@ -17,6 +17,7 @@ export function LoadingSkeleton({
         <Stack spacing={2}>
           {Array.from({ length: count }).map((_, i) => (
             <Box
+              // biome-ignore lint/suspicious/noArrayIndexKey: Static skeleton
               key={i}
               sx={{ p: 2, borderRadius: 2, bgcolor: 'background.paper' }}
             >
@@ -37,6 +38,7 @@ export function LoadingSkeleton({
         <Stack spacing={1}>
           {Array.from({ length: count }).map((_, i) => (
             <Box
+              // biome-ignore lint/suspicious/noArrayIndexKey: Static skeleton
               key={i}
               sx={{ display: 'flex', alignItems: 'center', gap: 2, p: 1 }}
             >
@@ -80,6 +82,7 @@ export function LoadingSkeleton({
           <Skeleton variant="rectangular" height={48} sx={{ mb: 1 }} />
           {Array.from({ length: count }).map((_, i) => (
             <Skeleton
+              // biome-ignore lint/suspicious/noArrayIndexKey: Static skeleton
               key={i}
               variant="rectangular"
               height={52}

@@ -162,13 +162,19 @@ export default async function AboutPage() {
   const renderIntro = (text: string) => {
     return text.split('\n\n').map((paragraph, i) => (
       <Typography
+        // biome-ignore lint/suspicious/noArrayIndexKey: Static content
         key={i}
         variant="body1"
         sx={{ mb: 2, fontSize: '1.1rem', lineHeight: 1.8 }}
-        dangerouslySetInnerHTML={{
-          __html: paragraph.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'),
-        }}
-      />
+      >
+        {paragraph.split(/(\*\*.*?\*\*)/).map((part, j) => {
+          if (part.startsWith('**') && part.endsWith('**')) {
+            // biome-ignore lint/suspicious/noArrayIndexKey: Static formatting
+            return <strong key={j}>{part.slice(2, -2)}</strong>;
+          }
+          return part;
+        })}
+      </Typography>
     ));
   };
 

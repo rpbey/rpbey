@@ -20,20 +20,20 @@ export async function GET() {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-    let data: BotConfig;
-    try {
-      data = await botClient.get<BotConfig>('/api/config', {
-        cache: 'no-store',
-      });
-    } catch {
-      console.warn('Bot offline, returning default config');
-      data = {
-         prefix: '!',
-         language: 'fr',
-         ownerIds: [],
-         // Add other minimal default fields if necessary based on BotConfig type
-      } as unknown as BotConfig;
-    }
+  let data: BotConfig;
+  try {
+    data = await botClient.get<BotConfig>('/api/config', {
+      cache: 'no-store',
+    });
+  } catch {
+    console.warn('Bot offline, returning default config');
+    data = {
+      prefix: '!',
+      language: 'fr',
+      ownerIds: [],
+      // Add other minimal default fields if necessary based on BotConfig type
+    } as unknown as BotConfig;
+  }
 
-    return NextResponse.json(data);
+  return NextResponse.json(data);
 }

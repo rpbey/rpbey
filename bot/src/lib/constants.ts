@@ -6,6 +6,11 @@ export const Colors = {
   Error: 0xef4444, // Red
   Info: 0x3b82f6, // Blue
   Beyblade: 0x8b5cf6, // Purple for Beyblade
+  // Role Colors
+  Admin: 0x27a169,
+  Rh: 0x3498db,
+  Modo: 0x9b59b6,
+  Staff: 0x206694,
 } as const;
 
 export const Emojis = {
@@ -50,7 +55,19 @@ export const RPB = {
   },
   // Role IDs
   Roles: {
+    Admin: '1319720685714804809',
+    Modo: '1331256093434712095',
+    Rh: '1446871643753418793',
+    Staff: '1448458421702754474',
     Partenaires: '1457835411052298411',
+  },
+  // Role Icons (External URLs)
+  RoleIcons: {
+    Admin: 'https://rpbey.fr/logo-admin.png',
+    Modo: 'https://rpbey.fr/logo-modo.png',
+    Rh: 'https://rpbey.fr/logo-rh.png',
+    Staff: 'https://rpbey.fr/logo-staff.png',
+    Default: 'https://rpbey.fr/logo.png',
   },
   // Partners
   Partners: {

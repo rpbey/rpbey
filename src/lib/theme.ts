@@ -3,6 +3,10 @@
 import { createTheme, type ThemeOptions } from '@mui/material/styles';
 import { fontFamily } from './fonts';
 
+// ----------------------------------------------------------------------
+// Type Augmentation
+// ----------------------------------------------------------------------
+
 declare module '@mui/material/styles' {
   interface Palette {
     surface: {
@@ -21,10 +25,6 @@ declare module '@mui/material/styles' {
       high: string;
       highest: string;
     };
-  }
-  interface PaletteColor {
-    container?: string;
-    onContainer?: string;
   }
   interface SimplePaletteColorOptions {
     container?: string;
@@ -49,23 +49,35 @@ declare module '@mui/material/Paper' {
   }
 }
 
-// RPB Colors - Extracted from Image
-// const RPB_RED = '#E31C25'; // Rouge vif du logo RPB (Licorne/Texte)
-// const RPB_YELLOW = '#FFD700'; // Jaune/Or de la crinière
-// const TOURNAMENT_SKY = '#60A5FA'; // Bleu ciel du fond (Sky 400 approx)
-// const TOURNAMENT_WHITE = '#FFFFFF'; // Blanc du texte
+// ----------------------------------------------------------------------
+// Constants (Material Design 3 & Brand Colors)
+// ----------------------------------------------------------------------
 
-// M3 Surface tones (dark theme with warm tint)
-const surfaceContainerLowest = '#0F0F0F';
-const surfaceContainerLow = '#1D1B1B';
-const surfaceContainer = '#211F1F';
-// const surfaceContainerHigh = '#2B2929';
-// const surfaceContainerHighest = '#363434';
+const RPB_RED = '#dc2626'; // Brand Primary
+const RPB_GOLD = '#fbbf24'; // Brand Secondary
+
+// M3 Dark Surface Tones
+const SURFACE_DARK = {
+  lowest: '#0F0F0F',
+  low: '#1D1B1B',
+  main: '#211F1F',
+  high: '#2B2929',
+  highest: '#363434',
+};
+
+// Tournament Mode Colors
+const TOURNAMENT_SKY = '#60A5FA';
+const TOURNAMENT_WHITE = '#FFFFFF';
+const TOURNAMENT_BG = '#0f172a';
+const TOURNAMENT_PAPER = '#1e293b';
+
+// ----------------------------------------------------------------------
+// Base Theme Options
+// ----------------------------------------------------------------------
 
 const commonOptions: ThemeOptions = {
   typography: {
     fontFamily,
-    // M3 Expressive Type Scale
     h1: {
       fontSize: '4rem',
       fontWeight: 800,
@@ -152,16 +164,16 @@ const commonOptions: ThemeOptions = {
     },
   },
   shape: {
-    borderRadius: 8, // Reduced from 16
+    borderRadius: 8,
   },
   components: {
     MuiButton: {
       styleOverrides: {
         root: {
-          borderRadius: 8, // Reduced from 24
+          borderRadius: 8,
           padding: '10px 24px',
           fontWeight: 600,
-          minHeight: 44, // Reduced from 48
+          minHeight: 44,
         },
         contained: {
           boxShadow: 'none',
@@ -189,7 +201,8 @@ const commonOptions: ThemeOptions = {
         {
           props: { variant: 'elevated' },
           style: {
-            backgroundColor: surfaceContainerLow,
+            // We use CSS variables for these specific colors to adapt to the scheme
+            backgroundColor: 'var(--mui-palette-surface-low)',
             boxShadow:
               '0px 1px 3px 1px rgba(0, 0, 0, 0.15), 0px 1px 2px rgba(0, 0, 0, 0.3)',
             border: 'none',
@@ -198,7 +211,7 @@ const commonOptions: ThemeOptions = {
         {
           props: { variant: 'filled' },
           style: {
-            backgroundColor: surfaceContainer,
+            backgroundColor: 'var(--mui-palette-surface-main)',
             boxShadow: 'none',
             border: 'none',
           },
@@ -206,7 +219,7 @@ const commonOptions: ThemeOptions = {
         {
           props: { variant: 'outlined' },
           style: {
-            backgroundColor: surfaceContainerLowest,
+            backgroundColor: 'var(--mui-palette-surface-lowest)',
             boxShadow: 'none',
             border: '1px solid',
             borderColor: 'rgba(255, 255, 255, 0.12)',
@@ -215,7 +228,7 @@ const commonOptions: ThemeOptions = {
       ],
       styleOverrides: {
         root: {
-          borderRadius: 16, // Reduced from 28
+          borderRadius: 16,
           backgroundImage: 'none',
           transition: 'all 0.2s ease-in-out',
         },
@@ -243,9 +256,9 @@ const commonOptions: ThemeOptions = {
     MuiBottomNavigation: {
       styleOverrides: {
         root: {
-          backgroundColor: surfaceContainer,
+          backgroundColor: 'var(--mui-palette-surface-main)',
           height: 80,
-          borderRadius: '16px 16px 0 0', // Reduced from 24px
+          borderRadius: '16px 16px 0 0',
         },
       },
     },
@@ -257,10 +270,75 @@ const commonOptions: ThemeOptions = {
   },
 };
 
+// ----------------------------------------------------------------------
+// Theme Creation
+// ----------------------------------------------------------------------
+
 export const theme = createTheme({
   ...commonOptions,
-  palette: {
-    mode: 'dark',
+  cssVariables: {
+    colorSchemeSelector: 'class', // Adds .dark / .tournament classes to html
+  },
+  colorSchemes: {
+    dark: {
+      palette: {
+        primary: {
+          main: RPB_RED,
+          container: '#8C0009',
+          onContainer: '#FFDAD9',
+          contrastText: '#FFFFFF',
+        },
+        secondary: {
+          main: RPB_GOLD,
+          container: '#534600',
+          onContainer: '#FFE135',
+          contrastText: '#000000',
+        },
+        background: {
+          default: SURFACE_DARK.lowest,
+          paper: SURFACE_DARK.main,
+        },
+        surface: SURFACE_DARK,
+        text: {
+          primary: '#F5F2F2',
+          secondary: '#D1C4C4',
+        },
+        divider: 'rgba(255, 255, 255, 0.08)',
+      },
+    },
+    tournament: {
+      palette: {
+        primary: {
+          main: TOURNAMENT_SKY,
+          light: '#93c5fd',
+          dark: '#2563eb',
+          contrastText: '#000000',
+        },
+        secondary: {
+          main: TOURNAMENT_WHITE,
+          light: '#ffffff',
+          dark: '#cccccc',
+          contrastText: '#000000',
+        },
+        background: {
+          default: TOURNAMENT_BG,
+          paper: TOURNAMENT_PAPER,
+        },
+        surface: {
+          // Mapping for tournament mode (can be tweaked)
+          lowest: '#020617',
+          low: '#0f172a',
+          main: '#1e293b',
+          high: '#334155',
+          highest: '#475569',
+        },
+        text: {
+          primary: TOURNAMENT_WHITE,
+          secondary: '#94a3b8',
+        },
+        divider: 'rgba(255, 255, 255, 0.1)',
+      },
+    },
   },
 });
 

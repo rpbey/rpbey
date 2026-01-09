@@ -23,7 +23,7 @@ import { useEffect, useState } from 'react';
 import { ChallongeBracket } from '@/components/tournaments';
 import { type TournamentStatus, TournamentStatusChip } from '@/components/ui';
 
-const Map = dynamic(() => import('@/components/ui/Map'), {
+const TournamentMap = dynamic(() => import('@/components/ui/Map'), {
   ssr: false,
   loading: () => <Skeleton variant="rectangular" height="100%" />,
 });
@@ -174,7 +174,7 @@ export default function TournamentDetailPage() {
                 borderColor: 'divider',
               }}
             >
-              <Map
+              <TournamentMap
                 position={mapPosition}
                 popupText={tournament.location || 'Lieu du tournoi'}
               />

@@ -248,10 +248,13 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse) {
       }
 
       case '/api/agent/dispatch': {
-        if (req.method !== 'POST') return sendError(res, 'Method not allowed', 405);
+        if (req.method !== 'POST')
+          return sendError(res, 'Method not allowed', 405);
 
         let body = '';
-        req.on('data', (chunk) => body += chunk);
+        req.on('data', (chunk) => {
+          body += chunk;
+        });
         req.on('end', async () => {
           try {
             const { action, params } = JSON.parse(body);
@@ -262,32 +265,39 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse) {
 
             switch (action) {
               case 'send_message': {
-                if (!params?.channelId || !params?.content) return sendError(res, 'Missing params');
+                if (!params?.channelId || !params?.content)
+                  return sendError(res, 'Missing params');
                 const channel = await client.channels.fetch(params.channelId);
-                if (!channel || !channel.isTextBased()) return sendError(res, 'Invalid channel');
-                const msg = await (channel as GuildTextBasedChannel).send(params.content);
+                if (!channel || !channel.isTextBased())
+                  return sendError(res, 'Invalid channel');
+                const msg = await (channel as GuildTextBasedChannel).send(
+                  params.content,
+                );
                 return sendJSON(res, { success: true, id: msg.id });
               }
-              
+
               case 'send_dm': {
-                if (!params?.userId || !params?.content) return sendError(res, 'Missing params');
+                if (!params?.userId || !params?.content)
+                  return sendError(res, 'Missing params');
                 const user = await client.users.fetch(params.userId);
                 const msg = await user.send(params.content);
                 return sendJSON(res, { success: true, id: msg.id });
               }
 
               case 'add_role': {
-                 if (!params?.userId || !params?.roleId) return sendError(res, 'Missing params');
-                 const member = await guild.members.fetch(params.userId);
-                 await member.roles.add(params.roleId);
-                 return sendJSON(res, { success: true });
+                if (!params?.userId || !params?.roleId)
+                  return sendError(res, 'Missing params');
+                const member = await guild.members.fetch(params.userId);
+                await member.roles.add(params.roleId);
+                return sendJSON(res, { success: true });
               }
 
               case 'remove_role': {
-                 if (!params?.userId || !params?.roleId) return sendError(res, 'Missing params');
-                 const member = await guild.members.fetch(params.userId);
-                 await member.roles.remove(params.roleId);
-                 return sendJSON(res, { success: true });
+                if (!params?.userId || !params?.roleId)
+                  return sendError(res, 'Missing params');
+                const member = await guild.members.fetch(params.userId);
+                await member.roles.remove(params.roleId);
+                return sendJSON(res, { success: true });
               }
 
               default:

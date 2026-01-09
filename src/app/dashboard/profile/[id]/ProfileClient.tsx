@@ -119,7 +119,7 @@ export default function ProfilePage({ params }: ProfilePageProps) {
         <Grid size={{ xs: 12, md: 8 }}>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
             <UserProfileStatsCard stats={stats} />
-            <MatchHistory userId={userId!} />
+            <MatchHistory userId={stats.userId} />
           </Box>
         </Grid>
 

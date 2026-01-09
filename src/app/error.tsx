@@ -5,7 +5,7 @@ import { Box, Button, Container, Typography } from '@mui/material';
 import { useEffect } from 'react';
 import { useThemeMode } from '@/components/theme/ThemeRegistry';
 
-export default function Error({
+export default function ErrorPage({
   error,
   reset,
 }: {

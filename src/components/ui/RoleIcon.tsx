@@ -1,10 +1,10 @@
 'use client';
 
 import Box from '@mui/material/Box';
-import { motion, type Variants } from 'framer-motion';
+import { motion } from 'framer-motion';
+import Image from 'next/image';
 import type React from 'react';
-import { RoleColors, type RoleType } from '@/lib/role-colors';
-import { RolePaths } from '@/lib/role-paths';
+import type { RoleType } from '@/lib/role-colors';
 
 export interface RoleIconProps {
   /**
@@ -18,7 +18,7 @@ export interface RoleIconProps {
   size?: number;
   /**
    * Animation duration in seconds
-   * @default 2
+   * @default 0.5
    */
   duration?: number;
   /**
@@ -27,64 +27,27 @@ export interface RoleIconProps {
    */
   animate?: boolean;
   /**
-   * Whether to loop the animation
-   * @default false
-   */
-  loop?: boolean;
-  /**
    * Additional className
    */
   className?: string;
-  /**
-   * Stroke width override
-   */
-  strokeWidth?: number;
 }
+
+const ROLE_IMAGES: Record<RoleType, string> = {
+  ADMIN: '/logo-admin.png',
+  MODO: '/logo-modo.png',
+  RH: '/logo-rh.png',
+  STAFF: '/logo-staff.png',
+  DEFAULT: '/logo.png',
+};
 
 export const RoleIcon: React.FC<RoleIconProps> = ({
   role,
   size = 48,
-  duration = 2,
+  duration = 0.5,
   animate = true,
-  loop = false,
   className,
-  strokeWidth = 2,
 }) => {
-  const config = RoleColors[role] || RoleColors.DEFAULT;
-  const color = 'hex' in config ? config.hex : config.secondary;
-  const paths = RolePaths[role] || RolePaths.DEFAULT;
-
-  const pathVariants: Variants = {
-    initial: {
-      pathLength: 0,
-      opacity: 0,
-    },
-    animate: {
-      pathLength: 1,
-      opacity: 1,
-      transition: {
-        pathLength: {
-          duration: duration,
-          ease: 'easeInOut',
-          repeat: loop ? Infinity : 0,
-          repeatType: 'loop',
-          repeatDelay: 1,
-        },
-        opacity: { duration: 0.2 },
-      },
-    },
-  };
-
-  const fillVariants: Variants = {
-    initial: { opacity: 0 },
-    animate: {
-      opacity: 1,
-      transition: {
-        delay: duration * 0.8, // Start filling when drawing is mostly done
-        duration: 0.5,
-      },
-    },
-  };
+  const src = ROLE_IMAGES[role] || ROLE_IMAGES.DEFAULT;
 
   return (
     <Box
@@ -95,38 +58,31 @@ export const RoleIcon: React.FC<RoleIconProps> = ({
         display: 'inline-flex',
         alignItems: 'center',
         justifyContent: 'center',
+        position: 'relative',
       }}
     >
-      <svg
-        viewBox="0 0 500 500"
-        width="100%"
-        height="100%"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
+      <motion.div
+        initial={animate ? { scale: 0.8, opacity: 0 } : false}
+        animate={animate ? { scale: 1, opacity: 1 } : false}
+        transition={{
+          duration: duration,
+          ease: [0.34, 1.56, 0.64, 1], // Bouncy easeOutBack
+        }}
+        style={{ width: '100%', height: '100%' }}
       >
-        <g stroke={color} strokeWidth={strokeWidth} strokeLinecap="round">
-          {paths.strokePaths.map((d: string, i: number) => (
-            <motion.path
-              key={`stroke-${i}`}
-              d={d}
-              variants={pathVariants}
-              initial="initial"
-              animate={animate ? 'animate' : 'initial'}
-            />
-          ))}
-        </g>
-        <g fill={color}>
-          {paths.fillPaths.map((d: string, i: number) => (
-            <motion.path
-              key={`fill-${i}`}
-              d={d}
-              variants={fillVariants}
-              initial="initial"
-              animate={animate ? 'animate' : 'initial'}
-            />
-          ))}
-        </g>
-      </svg>
+        <Image
+          src={src}
+          alt={role}
+          width={size}
+          height={size}
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'contain',
+          }}
+          priority={role === 'ADMIN' || role === 'DEFAULT'}
+        />
+      </motion.div>
     </Box>
   );
 };

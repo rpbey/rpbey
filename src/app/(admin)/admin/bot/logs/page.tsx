@@ -244,7 +244,7 @@ export default function BotLogsPage() {
           <>
             {filteredLogs.map((log, index) => (
               <Box
-                key={index}
+                key={`${log.timestamp}-${index}`}
                 sx={{
                   py: 0.5,
                   px: 1,

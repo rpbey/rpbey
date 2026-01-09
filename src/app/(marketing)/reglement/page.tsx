@@ -155,7 +155,7 @@ export default function RulesPage() {
         >
           <Grid container spacing={4}>
             {RULES.map((rule, index) => (
-              <Grid key={index} size={{ xs: 12, md: 6 }}>
+              <Grid key={rule.title} size={{ xs: 12, md: 6 }}>
                 <Stack direction="row" spacing={3}>
                   <Avatar
                     sx={{

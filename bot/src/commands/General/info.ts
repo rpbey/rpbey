@@ -88,7 +88,7 @@ export class InfoCommand extends Command {
     const embed = new EmbedBuilder()
       .setTitle('🤖 RPB Bot')
       .setColor(Colors.Primary)
-      .setThumbnail(client.user?.displayAvatarURL() ?? null)
+      .setThumbnail(RPB.RoleIcons.Default)
       .addFields(
         {
           name: '📊 Serveurs',
@@ -288,7 +288,7 @@ export class InfoCommand extends Command {
             'Retrouvez plus de détails sur [notre site](https://rpbey.fr/notre-equipe) !',
         )
         .setColor(Colors.Primary)
-        .setThumbnail(interaction.guild?.iconURL() ?? null)
+        .setThumbnail(RPB.RoleIcons.Staff)
         .setFooter({ text: RPB.FullName })
         .setTimestamp();
 

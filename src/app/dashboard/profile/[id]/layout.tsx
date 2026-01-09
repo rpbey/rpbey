@@ -1,5 +1,5 @@
+import { Box, CircularProgress } from '@mui/material';
 import { Suspense } from 'react';
-import { CircularProgress, Box } from '@mui/material';
 
 export default function ProfileLayout({
   children,

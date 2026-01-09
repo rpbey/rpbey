@@ -3,7 +3,6 @@
 import { Send as SendIcon } from '@mui/icons-material';
 import {
   Alert,
-  Box,
   Button,
   Card,
   CardContent,
@@ -24,7 +23,7 @@ const CHANNELS = [
 ];
 
 export function BotMessenger() {
-  const [channelId, setChannelId] = useState(CHANNELS[0]!.id);
+  const [channelId, setChannelId] = useState(CHANNELS[0]?.id ?? '');
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -49,7 +48,7 @@ export function BotMessenger() {
         setContent('');
       } else {
         const data = await response.json();
-        setError(data.error || 'Erreur lors de l\'envoi');
+        setError(data.error || "Erreur lors de l'envoi");
       }
     } catch {
       setError('Erreur réseau');
@@ -95,15 +94,9 @@ export function BotMessenger() {
             onChange={(e) => setContent(e.target.value)}
           />
 
-          {error && (
-            <Alert severity="error" size="small">
-              {error}
-            </Alert>
-          )}
+          {error && <Alert severity="error">{error}</Alert>}
           {success && (
-            <Alert severity="success" size="small">
-              Message envoyé avec succès !
-            </Alert>
+            <Alert severity="success">Message envoyé avec succès !</Alert>
           )}
 
           <Button

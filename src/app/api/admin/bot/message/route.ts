@@ -14,7 +14,10 @@ export async function POST(req: Request) {
   const { channelId, content } = await req.json();
 
   if (!channelId || !content) {
-    return NextResponse.json({ error: 'Missing channelId or content' }, { status: 400 });
+    return NextResponse.json(
+      { error: 'Missing channelId or content' },
+      { status: 400 },
+    );
   }
 
   const botUrl = process.env.BOT_API_URL || 'http://localhost:3001';
@@ -29,7 +32,7 @@ export async function POST(req: Request) {
       },
       body: JSON.stringify({
         action: 'send_message',
-        params: { channelId, content }
+        params: { channelId, content },
       }),
     });
 

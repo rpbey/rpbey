@@ -175,6 +175,7 @@ export function DeckBuilderModal({
 
           {beys.map((bey, index) => (
             <BeyBuilder
+              // biome-ignore lint/suspicious/noArrayIndexKey: Fixed slots
               key={index}
               position={index + 1}
               data={bey}

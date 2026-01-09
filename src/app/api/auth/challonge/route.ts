@@ -1,6 +1,6 @@
 import crypto from 'node:crypto';
 import { headers } from 'next/headers';
-import { NextResponse, connection } from 'next/server';
+import { connection, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { getChallongeService } from '@/lib/challonge';
 

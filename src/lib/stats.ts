@@ -188,16 +188,19 @@ export async function getUserStats(userId: string): Promise<UserStats | null> {
       if (bey.blade) {
         if (!bladeUsage[bey.bladeId])
           bladeUsage[bey.bladeId] = { name: bey.blade.name, count: 0 };
+        // biome-ignore lint/style/noNonNullAssertion: Initialized above
         bladeUsage[bey.bladeId]!.count++;
       }
       if (bey.ratchet) {
         if (!ratchetUsage[bey.ratchetId])
           ratchetUsage[bey.ratchetId] = { name: bey.ratchet.name, count: 0 };
+        // biome-ignore lint/style/noNonNullAssertion: Initialized above
         ratchetUsage[bey.ratchetId]!.count++;
       }
       if (bey.bit) {
         if (!bitUsage[bey.bitId])
           bitUsage[bey.bitId] = { name: bey.bit.name, count: 0 };
+        // biome-ignore lint/style/noNonNullAssertion: Initialized above
         bitUsage[bey.bitId]!.count++;
       }
     }

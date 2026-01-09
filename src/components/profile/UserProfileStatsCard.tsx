@@ -160,7 +160,7 @@ export function UserProfileStatsCard({ stats }: StatsCardProps) {
                 {stats.recentForm.length > 0 ? (
                   stats.recentForm.map((result, i) => (
                     <Box
-                      key={i}
+                      key={`${i}-${result}`}
                       sx={{
                         width: 24,
                         height: 24,

@@ -82,6 +82,7 @@ export default async function TVPage() {
       >
         <iframe
           src={playerSrc}
+          title="Twitch Player"
           height="100%"
           width="100%"
           allowFullScreen

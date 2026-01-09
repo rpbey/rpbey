@@ -5,7 +5,7 @@ import {
 } from 'discord-interactions';
 import { type NextRequest, NextResponse } from 'next/server';
 
-const DISCORD_PUBLIC_KEY = process.env.DISCORD_PUBLIC_KEY!;
+const DISCORD_PUBLIC_KEY = process.env.DISCORD_PUBLIC_KEY ?? '';
 
 export async function POST(request: NextRequest) {
   const signature = request.headers.get('x-signature-ed25519');

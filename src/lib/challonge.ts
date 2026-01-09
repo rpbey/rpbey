@@ -100,14 +100,18 @@ class ChallongeService {
     const clientSecret = process.env.CHALLONGE_CLIENT_SECRET;
     const redirectUri = `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/callback/challonge`;
 
+    if (!clientId || !clientSecret) {
+      throw new Error('Missing Challonge credentials');
+    }
+
     const response = await fetch(`${OAUTH_BASE}/oauth/token`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: new URLSearchParams({
         grant_type: 'authorization_code',
         code,
-        client_id: clientId!,
-        client_secret: clientSecret!,
+        client_id: clientId,
+        client_secret: clientSecret,
         redirect_uri: redirectUri,
       }).toString(),
     });
@@ -129,14 +133,18 @@ class ChallongeService {
     const clientId = process.env.CHALLONGE_CLIENT_ID;
     const clientSecret = process.env.CHALLONGE_CLIENT_SECRET;
 
+    if (!clientId || !clientSecret) {
+      throw new Error('Missing Challonge credentials');
+    }
+
     const response = await fetch(`${OAUTH_BASE}/oauth/token`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: new URLSearchParams({
         grant_type: 'refresh_token',
         refresh_token: refreshToken,
-        client_id: clientId!,
-        client_secret: clientSecret!,
+        client_id: clientId,
+        client_secret: clientSecret,
       }).toString(),
     });
 

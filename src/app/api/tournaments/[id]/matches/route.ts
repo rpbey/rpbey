@@ -148,10 +148,14 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
         const challonge = getChallongeService();
 
         // Get participant IDs
+        if (!match.player1Id || !match.player2Id) {
+          throw new Error('Match participants missing');
+        }
+
         const participants = await prisma.tournamentParticipant.findMany({
           where: {
             tournamentId: id,
-            userId: { in: [match.player1Id!, match.player2Id!] },
+            userId: { in: [match.player1Id, match.player2Id] },
           },
         });
 

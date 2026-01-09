@@ -117,6 +117,7 @@ export function ChallongeBracket({
 
         <iframe
           key={key}
+          title={title || 'Challonge Bracket'}
           src={moduleUrl.toString()}
           width="100%"
           height="100%"

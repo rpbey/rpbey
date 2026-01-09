@@ -33,7 +33,10 @@ export async function getBotStatus(): Promise<BotStatus | null> {
     });
   } catch (error) {
     if (process.env.NODE_ENV === 'development') {
-       console.warn('[BotAPI] Failed to fetch status (Bot likely offline):', (error as Error).message);
+      console.warn(
+        '[BotAPI] Failed to fetch status (Bot likely offline):',
+        (error as Error).message,
+      );
     }
     return null;
   }

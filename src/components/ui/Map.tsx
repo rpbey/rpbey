@@ -22,7 +22,7 @@ interface MapProps {
   height?: number | string;
 }
 
-export default function Map({
+export default function LeafletMap({
   position,
   popupText,
   height = '100%',

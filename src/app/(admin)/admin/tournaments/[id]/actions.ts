@@ -159,7 +159,10 @@ export async function exportTournamentToSheets(tournamentId: string) {
       },
     });
 
-    const spreadsheetId = spreadsheet.data.spreadsheetId!;
+    if (!spreadsheet.data.spreadsheetId) {
+      throw new Error('Failed to create spreadsheet');
+    }
+    const spreadsheetId = spreadsheet.data.spreadsheetId;
 
     // Prepare Data
     // Sheet 1: Participants
