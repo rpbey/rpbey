@@ -32,7 +32,7 @@ export class MemberUpdateListener extends Listener<Events.GuildMemberUpdate> {
       this.container.logger.debug(
         `Synced role for ${newMember.user.tag}: ${role}`,
       );
-    } catch (_error) {
+    } catch {
       // User might not be in DB yet, ignore
     }
   }

@@ -18,6 +18,7 @@
     "bot:dev": "tsx bot/src/index.ts",
     "bot:build": "tsc -p bot/tsconfig.build.json",
     "bot:start": "node bot/dist/index.js",
+    "scrape:products": "tsx scripts/sync-products.ts",
     "mcp": "tsx src/server/mcp/stdio.ts"
   },
   "keywords": [],
@@ -94,6 +95,7 @@
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.1",
+    "google-auth-library": "^10.5.0",
     "prisma": "^7.2.0",
     "schema-dts": "^1.1.5",
     "tsx": "^4.21.0",

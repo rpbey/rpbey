@@ -83,6 +83,14 @@ export interface ApiError {
   statusCode: number
 }
 
+export interface BotMember {
+  id: string;
+  username: string;
+  displayName: string;
+  avatar: string | null;
+  roles: string[];
+}
+
 export interface PaginatedResponse<T> {
   data: T[]
   total: number

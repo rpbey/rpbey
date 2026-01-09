@@ -1,8 +1,6 @@
 import { NextResponse } from 'next/server'
-import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { getChallongeService } from '@/lib/challonge'
-import { headers } from 'next/headers'
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)

@@ -26,15 +26,6 @@ export function ChallongeBracket({
   const [loading, setLoading] = useState(true)
   const [key, setKey] = useState(0)
 
-  // Extraction propre de l'ID à partir de l'URL fournie (supporte les sous-domaines)
-  // Ex: https://challonge.com/fr/B_TS1 -> B_TS1
-  const getTournamentId = (url: string) => {
-    const parts = url.split('/')
-    return parts[parts.length - 1]
-  }
-
-  const tournamentId = getTournamentId(challongeUrl)
-  
   // Construction de l'URL du module avec les bons paramètres pour la transparence
   // On force le mode module et on ajoute les paramètres d'affichage
   const moduleUrl = new URL(`${challongeUrl}/module`)

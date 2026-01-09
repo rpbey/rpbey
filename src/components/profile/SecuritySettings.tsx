@@ -20,8 +20,6 @@ import {
 } from '@mui/material'
 import {
   Security as SecurityIcon,
-  Smartphone as SmartphoneIcon,
-  Lock as LockIcon,
 } from '@mui/icons-material'
 import { authClient } from '@/lib/auth-client'
 import { useToast } from '@/components/ui'
@@ -43,7 +41,7 @@ export default function SecuritySettings() {
   // For now, we rely on session.user.twoFactorEnabled if available, or we might need to fetch it.
   // Since we just updated the schema, the session might not have it yet unless we re-login or Better Auth syncs it.
   // We'll trust the session property if it exists.
-  const is2FAEnabled = (session?.user as any)?.twoFactorEnabled || false
+  const is2FAEnabled = ((session?.user as unknown) as { twoFactorEnabled: boolean })?.twoFactorEnabled || false
 
   const handleEnableStart = () => {
     setStep('password')
@@ -64,7 +62,7 @@ export default function SecuritySettings() {
         setBackupCodes(res.data.backupCodes)
         setStep('qr')
       }
-    } catch (e) {
+    } catch {
       showToast('Une erreur est survenue', 'error')
     } finally {
       setLoading(false)
@@ -84,7 +82,7 @@ export default function SecuritySettings() {
         showToast('A2F activée avec succès', 'success')
         setStep('backup')
       }
-    } catch (e) {
+    } catch {
       showToast('Une erreur est survenue', 'error')
     } finally {
       setLoading(false)
@@ -106,7 +104,7 @@ export default function SecuritySettings() {
         // Optionally refresh session
         window.location.reload()
       }
-    } catch (e) {
+    } catch {
       showToast('Une erreur est survenue', 'error')
     } finally {
       setLoading(false)

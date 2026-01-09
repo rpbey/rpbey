@@ -54,3 +54,55 @@ export async function getRPBStreamInfo(): Promise<StreamInfo | null> {
     return null;
   }
 }
+
+export interface VideoInfo {
+  id: string;
+  title: string;
+  url: string;
+  thumbnailUrl: string;
+  duration: string;
+  publishedAt: Date;
+  viewCount: number;
+}
+
+export async function getLatestRPBVideo(): Promise<VideoInfo | null> {
+  if (!clientId || !clientSecret) {
+    return null;
+  }
+
+  try {
+    const user = await twitchClient.users.getUserByName(channelName);
+    
+    if (!user) {
+      return null;
+    }
+
+    const videos = await twitchClient.videos.getVideosByUser(user.id, {
+      limit: 1,
+      type: 'archive', // Only past broadcasts
+    });
+
+    if (videos.data.length === 0) {
+      return null;
+    }
+
+    const video = videos.data[0];
+
+    if (!video) {
+      return null;
+    }
+
+    return {
+      id: video.id,
+      title: video.title,
+      url: video.url,
+      thumbnailUrl: video.thumbnailUrl.replace('%{width}', '640').replace('%{height}', '360'),
+      duration: video.duration,
+      publishedAt: video.publishDate,
+      viewCount: video.views,
+    };
+  } catch (error) {
+    console.error('Error fetching Twitch video:', error);
+    return null;
+  }
+}

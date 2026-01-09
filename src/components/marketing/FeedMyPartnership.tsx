@@ -5,17 +5,24 @@ import Card from '@mui/material/Card'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 import Stack from '@mui/material/Stack'
+import Grid from '@mui/material/Grid'
 import { alpha, useTheme } from '@mui/material/styles'
 import LocalOfferIcon from '@mui/icons-material/LocalOffer'
 import LaunchIcon from '@mui/icons-material/Launch'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import { useState } from 'react'
+import useSWR from 'swr'
+import type { FeedMyProduct } from '@/lib/feedmy'
+
+const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
 export function FeedMyPartnership() {
   const theme = useTheme()
   const [copied, setCopied] = useState(false)
   const discountCode = 'RPB10'
   const discountUrl = 'https://feedmy.fr/discount/RPB10'
+
+  const { data: products } = useSWR<FeedMyProduct[]>('/api/marketing/feedmy', fetcher)
 
   const handleCopyCode = () => {
     navigator.clipboard.writeText(discountCode)
@@ -131,6 +138,65 @@ export function FeedMyPartnership() {
           </Stack>
         </Box>
       </Stack>
+
+      {products && products.length > 0 && (
+        <Box sx={{ mt: 4, pt: 3, borderTop: `1px solid ${alpha(theme.palette.divider, 0.1)}` }}>
+             <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+                <LocalOfferIcon fontSize="small" />
+                Derniers arrivages Beyblade
+             </Typography>
+             <Grid container spacing={2}>
+               {products.map((product) => (
+                 <Grid size={{ xs: 6, md: 3 }} key={product.id}>
+                    <Box 
+                      component="a"
+                      href={`https://feedmy.fr/products/${product.handle}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      sx={{ 
+                        display: 'block', 
+                        textDecoration: 'none',
+                        transition: 'transform 0.2s',
+                        '&:hover': { transform: 'translateY(-4px)' }
+                      }}
+                    >
+                      <Box sx={{ 
+                        position: 'relative', 
+                        paddingTop: '100%', 
+                        bgcolor: 'background.default',
+                        borderRadius: 2,
+                        overflow: 'hidden',
+                        mb: 1,
+                        border: `1px solid ${alpha(theme.palette.divider, 0.1)}`
+                      }}>
+                        {product.images[0] && (
+                           <Box
+                             component="img"
+                             src={product.images[0].src}
+                             alt={product.title}
+                             sx={{
+                               position: 'absolute',
+                               top: 0,
+                               left: 0,
+                               width: '100%',
+                               height: '100%',
+                               objectFit: 'cover'
+                             }}
+                           />
+                        )}
+                      </Box>
+                      <Typography variant="caption" color="text.primary" fontWeight="bold" display="block" noWrap title={product.title}>
+                        {product.title}
+                      </Typography>
+                       <Typography variant="caption" color="primary" fontWeight="bold">
+                        {product.variants[0]?.price} €
+                      </Typography>
+                    </Box>
+                 </Grid>
+               ))}
+             </Grid>
+        </Box>
+      )}
     </Card>
   )
 }

@@ -10,6 +10,9 @@ const nextConfig: NextConfig = {
   // Cache Components (Next.js 16+)
   cacheComponents: true,
 
+  // External packages for server (Puppeteer/Crawlee)
+  serverExternalPackages: ['puppeteer', 'crawlee', 'turndown'],
+
   // Experimental features
   experimental: {
     // Enable PPR for faster page loads

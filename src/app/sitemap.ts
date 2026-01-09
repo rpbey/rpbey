@@ -2,8 +2,7 @@ import type { MetadataRoute } from 'next'
 import prisma from '@/lib/prisma'
 import fs from 'fs'
 import path from 'path'
-
-export const revalidate = 3600 // Revalidate every hour
+import { cacheLife } from 'next/cache'
 
 const STATIC_ROUTES = {
   '': 'src/app/(marketing)/page.tsx',
@@ -17,6 +16,8 @@ const STATIC_ROUTES = {
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  'use cache'
+  cacheLife('hours')
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://rpbey.fr'
   const cwd = process.cwd()
 
@@ -27,7 +28,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       const fullPath = path.join(cwd, filePath)
       const stats = fs.statSync(fullPath)
       lastModified = stats.mtime
-    } catch (e) {
+    } catch {
       console.warn(`Could not get stats for ${filePath}, using current date.`)
     }
 

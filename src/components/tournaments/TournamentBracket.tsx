@@ -31,6 +31,7 @@ interface Match {
   player1: Player | null
   player2: Player | null
   winner: Player | null
+  challongeMatchId?: string | null
 }
 
 import { ScoreReportDialog } from './ScoreReportDialog'
@@ -190,12 +191,7 @@ export function TournamentBracket({ matches, canReport, onReportMatch }: Tournam
     
     try {
       // Find the match's challonge ID if we have it, or its internal ID
-      // Matches passed here should have challongeMatchId if possible, or we use match.id
-      // For now we assume match.id is what we need or we need to extend the type
-      // The actions.ts expects challongeMatchId. Let's check the type.
-      // The Match interface here doesn't have challongeMatchId.
-      // I'll cast it for now or fix the interface.
-      const matchId = (selectedMatch as any).challongeMatchId || selectedMatch.id
+      const matchId = selectedMatch.challongeMatchId || selectedMatch.id
       await onReportMatch(matchId, data)
       setSelectedMatch(null)
     } catch (err) {

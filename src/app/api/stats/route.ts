@@ -6,9 +6,11 @@
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
 import { getUserStats, getLeaderboard } from '@/lib/stats'
+import { connection } from 'next/server'
 
 // GET - Get stats for a specific user or leaderboard
 export async function GET(request: NextRequest) {
+  await connection()
   try {
     const { searchParams } = new URL(request.url)
     const userId = searchParams.get('userId')

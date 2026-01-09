@@ -11,7 +11,6 @@ import {
   Stack,
   Typography,
   Avatar,
-  Box,
   RadioGroup,
   FormControlLabel,
   Radio,

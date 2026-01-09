@@ -3,6 +3,7 @@
 import prisma from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
 import type { TournamentStatus } from '@prisma/client'
+import { getChallongeService } from '@/lib/challonge'
 
 export type TournamentInput = {
   name: string
@@ -13,6 +14,63 @@ export type TournamentInput = {
   maxPlayers: number
   status: TournamentStatus
   challongeUrl?: string | null
+}
+
+export async function syncCommunityTournaments() {
+  const communityId = process.env.CHALLONGE_COMMUNITY_ID
+  if (!communityId) {
+    throw new Error('CHALLONGE_COMMUNITY_ID is not configured')
+  }
+
+  const service = getChallongeService()
+  
+  // Fetch tournaments from Challonge (pending and in_progress)
+  // We fetch multiple pages if needed, but for now let's just get the first page of 25
+  const response = await service.listCommunityTournaments(communityId, {
+    perPage: 25
+  })
+
+  const challongeTournaments = response.data
+
+  // Get existing tournaments to avoid duplicates
+  const existingTournaments = await prisma.tournament.findMany({
+    where: {
+      challongeId: { in: challongeTournaments.map(t => t.id) }
+    },
+    select: { challongeId: true }
+  })
+
+  const existingIds = new Set(existingTournaments.map(t => t.challongeId))
+  const newTournaments = challongeTournaments.filter(t => !existingIds.has(t.id))
+
+  return newTournaments
+}
+
+export async function importTournamentFromChallonge(challongeId: string) {
+  const service = getChallongeService()
+  const response = await service.getTournament(challongeId)
+  const t = response.data.attributes
+
+  // Map Challonge state to our status
+  let status: TournamentStatus = 'UPCOMING'
+  if (t.state === 'pending') status = 'REGISTRATION_OPEN'
+  if (t.state === 'in_progress' || t.state === 'underway') status = 'UNDERWAY'
+  if (t.state === 'complete' || t.state === 'ended') status = 'COMPLETE'
+
+  await prisma.tournament.create({
+    data: {
+      name: t.name,
+      description: t.description,
+      date: t.startAt ? new Date(t.startAt) : new Date(),
+      format: t.tournamentType,
+      maxPlayers: 64, // Default
+      status,
+      challongeId: response.data.id,
+      challongeUrl: t.url, // Usually just the slug
+    }
+  })
+
+  revalidatePath('/admin/tournaments')
 }
 
 export async function getTournaments(page = 1, pageSize = 10, search = '') {

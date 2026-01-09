@@ -227,7 +227,7 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse) {
               }
             }
             sendJSON(res, { ok: true });
-          } catch (_e) {
+          } catch {
             sendError(res, 'Invalid JSON', 400);
           }
         });

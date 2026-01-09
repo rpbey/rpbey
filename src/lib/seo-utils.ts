@@ -1,4 +1,4 @@
-import type { WithContext, TechArticle, Person, Organization, WebSite, BreadcrumbList } from 'schema-dts'
+import type { WithContext, TechArticle, WebSite, BreadcrumbList } from 'schema-dts'
 
 const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://rpbey.fr'
 

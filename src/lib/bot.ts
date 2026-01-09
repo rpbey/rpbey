@@ -1,5 +1,6 @@
 import { createClient } from './standard-api';
 import type { BotStatus } from '@/types/api';
+import type { BotMember } from '@/types';
 
 // Singleton instance for bot communication
 export const botClient = createClient(
@@ -30,5 +31,17 @@ export async function getBotStatus(): Promise<BotStatus | null> {
   } catch {
     // Error is already logged by interceptor in dev
     return null;
+  }
+}
+
+export async function getMembersByRole(roleId: string): Promise<BotMember[]> {
+  try {
+    const data = await botClient.get<{ members: BotMember[] }>('/api/members-by-role', {
+      params: { roleId },
+      revalidate: 300, // Cache for 5 minutes
+    });
+    return data.members;
+  } catch {
+    return [];
   }
 }

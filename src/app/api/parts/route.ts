@@ -7,8 +7,10 @@ import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { PartType, BeyType } from '@prisma/client'
+import { connection } from 'next/server'
 
 export async function GET(request: NextRequest) {
+  await connection()
   try {
     const { searchParams } = new URL(request.url)
 

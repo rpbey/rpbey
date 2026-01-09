@@ -246,6 +246,30 @@ class ChallongeService {
     )
   }
 
+  async listCommunityTournaments(
+    communityId: string,
+    params?: {
+      state?: 'pending' | 'in_progress' | 'ended'
+      page?: number
+      perPage?: number
+      userToken?: string
+    }
+  ): Promise<ApiResponse<ChallongeTournament[]>> {
+    const query = new URLSearchParams()
+    query.set('community_id', communityId)
+    if (params?.state) query.set('state', params.state)
+    if (params?.page) query.set('page', params.page.toString())
+    if (params?.perPage) query.set('per_page', params.perPage.toString())
+
+    const queryString = query.toString() ? `?${query.toString()}` : ''
+    return this.request<ApiResponse<ChallongeTournament[]>>(
+      'GET',
+      `/tournaments${queryString}`,
+      undefined,
+      params?.userToken
+    )
+  }
+
   async getTournament(
     tournamentId: string,
     userToken?: string
@@ -279,7 +303,7 @@ class ChallongeService {
     }
     userToken?: string
   }): Promise<ApiResponse<ChallongeTournament>> {
-    const attributes: any = {
+    const attributes: Record<string, unknown> = {
       name: data.name,
       url: data.url,
       tournament_type: data.tournamentType ?? 'double elimination',

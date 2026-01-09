@@ -68,8 +68,8 @@ export class ScraperService {
       'footer',
       'header',
       'aside',
-    ] as any);
-    this.turndown.remove('svg' as any);
+      'svg' as unknown as keyof HTMLElementTagNameMap,
+    ]);
 
     this.translator = new TranslatorService();
   }
@@ -212,12 +212,12 @@ export class ScraperService {
       }
 
       // Basic product detection
-      let product: any = null;
+      let product: ScrapedPage['product'] | undefined;
       const productMatch = title.match(/((?:BX|UX|CX)-\d{2,3})/);
       if (productMatch) {
         const parts = title.split('|');
         product = {
-          code: productMatch[1],
+          code: productMatch[1] || '',
           name: (parts[0] || 'Unknown').trim(),
           isLimited: html.includes('限定'),
           type: html.includes('スターター') ? 'STARTER' : 'BOOSTER',
@@ -244,13 +244,15 @@ export class ScraperService {
     return {
       useChrome: true,
       launchOptions: {
-        headless: this.options.headless,
-        executablePath: this.options.executablePath,
+        headless: true, // Defaults to 'new' in Puppeteer >= 22
+        executablePath: this.options.executablePath || '/usr/bin/google-chrome',
         args: [
           '--no-sandbox',
           '--disable-setuid-sandbox',
-          '--disable-dev-shm-usage',
-          '--disable-gpu',
+          '--disable-dev-shm-usage', // Critical for Docker/VPS
+          '--disable-gpu', // Critical for non-GPU VPS
+          '--disable-accelerated-2d-canvas',
+          '--disable-gpu-sandbox',
           '--lang=ja-JP', // Emulate a Japanese browser for Takara Tomy
         ],
       },
@@ -267,57 +269,17 @@ export class ScraperService {
       // 1. Wait for content
       await page.waitForSelector('body', { timeout: 30000 });
 
-      // 2. Extract Data
-      const data = await page.evaluate(() => {
-        const getMeta = (name: string) =>
-          document
-            .querySelector(`meta[name="${name}"], meta[property="${name}"]`)
-            ?.getAttribute('content') || '';
-
-        // Extract clean links for navigation
-        const links = Array.from(document.querySelectorAll('a'))
-          .map((a) => a.href)
-          .filter((href) => href.startsWith('http'));
-
-        // Basic product info extraction
-        let product: any = null;
-        if (document.body.innerText.match(/((?:BX|UX|CX)-\d{2,3})/)) {
-          const codeMatch = document.body.innerText.match(
-            /((?:BX|UX|CX)-\d{2,3})/,
-          );
-          if (codeMatch) {
-            product = {
-              code: codeMatch[1],
-              name: document.title.split('|')[0]?.trim() || 'Unknown',
-              isLimited: document.body.innerText.includes('限定'),
-              type: document.body.innerText.includes('スターター')
-                ? 'STARTER'
-                : 'BOOSTER',
-            };
-          }
-        }
-
-        return {
-          title: document.title,
-          html: document.body.innerHTML,
-          lang: document.documentElement.lang || 'ja',
-          links: [...new Set(links)], // Deduplicate
-          product,
-          metadata: {
-            description: getMeta('description') || getMeta('og:description'),
-            image: getMeta('og:image'),
-            siteName: getMeta('og:site_name'),
-            type: getMeta('og:type'),
-          },
-        };
-      });
+      // 2. Extract HTML only (Safe)
+      const html = await page.content();
+      const title = await page.title();
+      const lang = await page.evaluate(() => document.documentElement.lang || 'ja');
 
       // 3. Convert to Markdown
-      const markdown = this.turndown.turndown(data.html);
+      const markdown = this.turndown.turndown(html);
 
       // 4. Translate if needed
       let translatedMarkdown = markdown;
-      if (targetLang !== data.lang && data.lang.startsWith('ja')) {
+      if (targetLang !== lang && lang.startsWith('ja')) {
         translatedMarkdown = await this.translator.translate(
           markdown,
           targetLang,
@@ -326,16 +288,13 @@ export class ScraperService {
 
       return {
         url: request.url,
-        title: data.title,
-        language: data.lang,
+        title,
+        language: lang,
         markdown,
         translatedMarkdown,
-        links: data.links,
-        product: data.product,
-        metadata: {
-          ...data.metadata,
-          scrapedAt: new Date().toISOString(),
-        },
+        links: [], // Links are not needed for single page sync
+        html, // Important: We return raw HTML for the parser
+        metadata: {},
       };
     } catch (error) {
       log.error(`Error processing ${request.url}: ${(error as Error).message}`);

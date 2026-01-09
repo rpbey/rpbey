@@ -1,6 +1,7 @@
 import type { PrismaClient } from '@prisma/client';
 import { PartType, ProductLine, ProductType } from '@prisma/client';
 import { log } from 'crawlee';
+import { ScraperService } from './index';
 
 export interface OfficialProduct {
   code: string;
@@ -18,11 +19,17 @@ export interface OfficialProduct {
 
 export class TakaraTomyScraper {
   private prisma: PrismaClient;
+  private scraper: ScraperService;
   private readonly LINEUP_URL =
     'https://beyblade.takaratomy.co.jp/beyblade-x/lineup/';
 
   constructor(prisma: PrismaClient) {
     this.prisma = prisma;
+    // Reuse the optimized ScraperService (Headless: true, No GPU)
+    this.scraper = new ScraperService({
+      headless: true,
+      maxRequestsPerCrawl: 1, // We only need the main lineup page for now
+    });
   }
 
   /**
@@ -50,13 +57,19 @@ export class TakaraTomyScraper {
   }
 
   /**
-   * Scrape and sync the entire lineup
+   * Scrape and sync the entire lineup using Puppeteer
    */
   public async syncLineup() {
-    log.info('📥 Fetching Takara Tomy lineup...');
-    const response = await fetch(this.LINEUP_URL);
-    const html = await response.text();
+    log.info('📥 Fetching Takara Tomy lineup via Puppeteer...');
+    
+    // Use ScraperService to get the page content safely (handles JS rendering)
+    const pages = await this.scraper.scrape([this.LINEUP_URL]);
+    
+    if (pages.length === 0 || !pages[0]?.html) {
+      throw new Error('Failed to retrieve content from Takara Tomy website.');
+    }
 
+    const html = pages[0].html; // Use raw HTML from Puppeteer
     const products: OfficialProduct[] = this.extractProductsFromHtml(html);
     log.info(`📊 Found ${products.length} products to sync.`);
 
@@ -79,7 +92,7 @@ export class TakaraTomyScraper {
     const products: OfficialProduct[] = [];
 
     // Pattern based on actual HTML structure (Jan 2026)
-    // <a href="bx01.html"> ... <b>BX-01<span>Name</span></b> ... <p class="category"><span>Type</span></p> ... <i>¥1,980...</i> ... <i class="red">Date...</i>
+    // Adjusted for robustness
     const productPattern =
       /<a href="([^"]+)">[\s\S]*?<b>((?:BX|UX|CX)-\d{2,3})<span>([^<]+)<\/span><\/b>[\s\S]*?<p class="category"><span>([^<]+)<\/span><\/p>[\s\S]*?<i>¥([\d,]+)[^<]*<\/i>[\s\S]*?<i class="red">([\d.]+)[^<]*<\/i>/g;
 

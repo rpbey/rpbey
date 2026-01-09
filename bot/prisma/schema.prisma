@@ -540,3 +540,22 @@ model BotCommand {
 
   @@map("bot_commands")
 }
+
+// ============================================================================
+// RPB - Discord Sync
+// ============================================================================
+
+model DiscordRole {
+  id          String   @id // Discord Role ID
+  name        String
+  color       String   // Hex color
+  position    Int
+  icon        String?  // Icon URL
+  permissions String   // Bitfield
+  managed     Boolean  @default(false)
+  hoist       Boolean  @default(false)
+  
+  updatedAt   DateTime @updatedAt
+  
+  @@map("discord_roles")
+}

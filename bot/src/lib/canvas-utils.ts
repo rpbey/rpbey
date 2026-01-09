@@ -22,7 +22,7 @@ export async function generateWelcomeImage(
   try {
     const background = await loadImage(bgPath);
     ctx.drawImage(background, 0, 0, width, height);
-  } catch (_e) {
+  } catch {
     // Fallback if image fails to load
     ctx.fillStyle = '#dc2626'; // RPB Red
     ctx.fillRect(0, 0, width, height);
@@ -42,7 +42,7 @@ export async function generateWelcomeImage(
   try {
     const avatar = await loadImage(avatarUrl);
     ctx.drawImage(avatar, 50, 100, 200, 200);
-  } catch (_e) {
+  } catch {
     ctx.fillStyle = '#ffffff';
     ctx.fill();
   }

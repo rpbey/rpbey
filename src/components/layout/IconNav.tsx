@@ -15,6 +15,7 @@ import {
   People,
   BarChart,
   Settings,
+  LiveTv,
 } from '@mui/icons-material'
 import { useSession, signOut } from '@/lib/auth-client'
 import { TrophyIcon } from '@/components/ui/Icons'
@@ -29,7 +30,9 @@ export const ICON_NAV_WIDTH = 80
 const navItems = [
   { icon: Home, label: 'Accueil', href: '/' },
   { icon: TrophyIcon, label: 'Tournois', href: '/tournaments' },
-  { icon: People, label: 'Notre Équipe', href: '/notre-equipe' },
+  { icon: BarChart, label: 'Classements', href: '/rankings' },
+  { icon: LiveTv, label: 'TV', href: '/tv' },
+  { icon: People, label: 'L’Équipe', href: '/notre-equipe' },
 ]
 
 export function IconNav() {
@@ -258,7 +261,20 @@ export function MobileNav() {
   const trigger = useScrollTrigger()
 
   const isAdmin = session?.user?.role === 'admin' || (session?.user as { role: string } | undefined)?.role === 'superadmin'
-  const activeValue = pathname === '/' ? '/' : `/${pathname.split('/')[1]}`
+  
+  const getActiveValue = () => {
+    if (pathname === '/') return '/'
+    if (pathname.startsWith('/tournaments')) return '/tournaments'
+    if (pathname.startsWith('/tv')) return '/tv'
+    if (pathname.startsWith('/rankings')) return '/rankings'
+    if (pathname.startsWith('/admin')) return '/admin'
+    if (pathname.startsWith('/dashboard') || pathname.startsWith('/sign-in') || pathname.startsWith('/sign-up')) {
+      return isAdmin ? '/admin' : '/account'
+    }
+    return '/'
+  }
+
+  const activeValue = getActiveValue()
 
   return (
     <Slide appear={false} direction="up" in={!trigger}>
@@ -284,7 +300,17 @@ export function MobileNav() {
         <BottomNavigation
           showLabels
           value={activeValue}
-          onChange={(_, newValue) => router.push(newValue)}
+          onChange={(_, newValue) => {
+            if (newValue === '/account') {
+              if (session?.user) {
+                router.push(`/dashboard/profile/${session.user.id}`)
+              } else {
+                router.push('/sign-in')
+              }
+            } else {
+              router.push(newValue)
+            }
+          }}
           sx={{ 
             height: 80, // M3 Navigation Bar Height
             bgcolor: 'transparent',
@@ -313,13 +339,16 @@ export function MobileNav() {
               '& .MuiBottomNavigationAction-label': {
                 mt: 0.5,
                 fontWeight: 600,
-                fontSize: '0.75rem',
+                fontSize: '0.65rem',
+                '&.Mui-selected': {
+                  fontSize: '0.7rem',
+                }
               }
             }
           }}
         >
           <BottomNavigationAction
-            label="Home"
+            label="Accueil"
             value="/"
             icon={<Home />}
           />
@@ -328,14 +357,19 @@ export function MobileNav() {
             value="/tournaments"
             icon={<TrophyIcon />}
           />
+          <BottomNavigationAction
+            label="TV"
+            value="/tv"
+            icon={<LiveTv />}
+          />
            <BottomNavigationAction
-            label="Stats"
+            label="Classements"
             value="/rankings"
             icon={<BarChart />}
           />
           <BottomNavigationAction
             label={isAdmin ? 'Admin' : (session?.user ? 'Profil' : 'Compte')}
-            value={isAdmin ? '/admin' : (session?.user ? `/dashboard/profile/${session.user.id}` : '/sign-in')}
+            value={isAdmin ? '/admin' : '/account'}
             icon={isAdmin ? <AdminPanelSettings /> : (session?.user ? <AccountCircle /> : <Login />)}
           />
         </BottomNavigation>

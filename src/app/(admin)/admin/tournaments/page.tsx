@@ -19,17 +19,20 @@ import {
   Tooltip,
   TextField,
   InputAdornment,
+  Button, // Add Button here
 } from '@mui/material'
-import { Edit, Delete, Link as LinkIcon, Search } from '@mui/icons-material'
+import { Edit, Delete, Link as LinkIcon, Search, CloudDownload } from '@mui/icons-material'
 import TablePagination from '@mui/material/TablePagination'
 import {
   PageHeader,
   useConfirmDialog,
   useToast,
+  // Remove Button from here
 } from '@/components/ui'
 import { getTournaments, createTournament, updateTournament, deleteTournament } from './actions'
 import type { TournamentInput } from './actions'
 import { TournamentDialog } from './TournamentDialog'
+import { CommunitySyncDialog } from './CommunitySyncDialog'
 import { formatDateShort } from '@/lib/utils'
 import type { Tournament } from '@prisma/client'
 import { useDebounce } from '@/hooks/use-debounce'
@@ -38,6 +41,7 @@ export default function AdminTournamentsPage() {
   const [tournaments, setTournaments] = useState<(Tournament & { _count: { participants: number } })[]>([])
   const [loading, setLoading] = useState(true)
   const [dialogOpen, setDialogOpen] = useState(false)
+  const [syncDialogOpen, setSyncDialogOpen] = useState(false)
   const [selectedTournament, setSelectedTournament] = useState<Tournament | null>(null)
   const [submitting, setSubmitting] = useState(false)
   const [search, setSearch] = useState('')
@@ -85,6 +89,10 @@ export default function AdminTournamentsPage() {
   const handleAdd = () => {
     setSelectedTournament(null)
     setDialogOpen(true)
+  }
+
+  const handleSyncCommunity = () => {
+    setSyncDialogOpen(true)
   }
 
   const handleEdit = (tournament: Tournament) => {
@@ -152,12 +160,28 @@ export default function AdminTournamentsPage() {
 
   return (
     <Box>
-      <PageHeader
-        title="Tournois"
-        description="Gérez les tournois Beyblade et les participants"
-        actionLabel="Nouveau tournoi"
-        onAction={handleAdd}
-      />
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <PageHeader
+          title="Tournois"
+          description="Gérez les tournois Beyblade et les participants"
+          actionLabel=""
+        />
+        <Box sx={{ display: 'flex', gap: 2 }}>
+          <Button
+            variant="outlined"
+            startIcon={<CloudDownload />}
+            onClick={handleSyncCommunity}
+          >
+            Sync Challonge
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handleAdd}
+          >
+            Nouveau tournoi
+          </Button>
+        </Box>
+      </Box>
 
       {/* Stats */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
@@ -328,6 +352,13 @@ export default function AdminTournamentsPage() {
         initialData={selectedTournament}
         loading={submitting}
       />
+
+      <CommunitySyncDialog
+        open={syncDialogOpen}
+        onClose={() => setSyncDialogOpen(false)}
+        onSuccess={fetchTournaments}
+      />
+
       {ConfirmDialogComponent}
     </Box>
   )
