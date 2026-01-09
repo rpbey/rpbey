@@ -16,6 +16,7 @@ import Stack from '@mui/material/Stack';
 import Switch from '@mui/material/Switch';
 import TextField from '@mui/material/TextField';
 import { useEffect, useState } from 'react';
+import { validateDeck } from '@/lib/tournament-logic';
 import type { BeyData } from './BeyBuilder';
 import { BeyBuilder } from './BeyBuilder';
 import type { Deck } from './DeckCard';
@@ -49,6 +50,7 @@ export function DeckBuilderModal({
   ]);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [validationErrors, setValidationErrors] = useState<string[]>([]);
 
   // Reset form when modal opens/closes or deck changes
   useEffect(() => {
@@ -85,8 +87,57 @@ export function DeckBuilderModal({
         setBeys([{ ...emptyBey }, { ...emptyBey }, { ...emptyBey }]);
       }
       setError(null);
+      setValidationErrors([]);
     }
   }, [open, deck]);
+
+  // Real-time validation
+  useEffect(() => {
+    // Only validate if we have at least some parts to avoid noise on empty deck
+    const hasParts = beys.some((b) => b.blade || b.ratchet || b.bit);
+    if (!hasParts) {
+      setValidationErrors([]);
+      return;
+    }
+
+    const deckToValidate = {
+      beys: beys.map((b) => ({
+        bladeId: b.blade?.id || '',
+        ratchetId: b.ratchet?.id || '',
+        bitId: b.bit?.id || '',
+        bladeName: b.blade?.name,
+      })),
+    };
+
+    // Only run full validation if all slots are filled, otherwise just check duplicates so far?
+    // actually validateDeck checks full deck size too.
+    // Let's filter out completely empty beys for partial validation if needed,
+    // but the rules require 3 beys.
+    // For the UI, we might want to show errors only when the user thinks they are done
+    // OR we can show them as warnings.
+    // For now, let's just validate what we have.
+
+    // We pass empty strings for missing parts, which validateDeck will flag as duplicates if multiple missing
+    // We should probably only validate fully defined beys or adjust the validator?
+    // The validator checks for duplicates. '' == '' is a duplicate.
+    // Let's only validate if all 3 beys have at least one part?
+    // Or better: Let's run validation but ignore "missing part" errors from the logic
+    // and rely on the UI "isValid" check for completeness.
+    // Our validateDeck primarily checks UNIQUNESS and BANNED parts.
+
+    // BUT: validateDeck treats "" as a ID. If multiple beys have missing parts, it will say "Blade is duplicated".
+    // We should map missing parts to unique temporary IDs to avoid false duplicate errors on empty slots?
+    // No, easier to just check if isComplete before validating full rules.
+
+    const isFullDeck = beys.every((b) => b.blade && b.ratchet && b.bit);
+
+    if (isFullDeck) {
+      const result = validateDeck(deckToValidate);
+      setValidationErrors(result.isValid ? [] : result.errors);
+    } else {
+      setValidationErrors([]);
+    }
+  }, [beys]);
 
   const handleBeyChange = (index: number, data: BeyData) => {
     const newBeys = [...beys] as [BeyData, BeyData, BeyData];
@@ -99,8 +150,8 @@ export function DeckBuilderModal({
     [bey.blade?.id, bey.ratchet?.id, bey.bit?.id].filter(Boolean),
   ) as string[];
 
-  const isValid =
-    name.trim() && beys.every((bey) => bey.blade && bey.ratchet && bey.bit);
+  const isComplete = beys.every((bey) => bey.blade && bey.ratchet && bey.bit);
+  const isValid = name.trim() && isComplete && validationErrors.length === 0;
 
   const handleSave = async () => {
     if (!isValid) return;
@@ -153,6 +204,15 @@ export function DeckBuilderModal({
       <DialogContent dividers>
         <Stack spacing={3}>
           {error && <Alert severity="error">{error}</Alert>}
+          {validationErrors.length > 0 && (
+            <Alert severity="warning">
+              <ul style={{ margin: 0, paddingLeft: '1.5rem' }}>
+                {validationErrors.map((err, i) => (
+                  <li key={`${err}-${i}`}>{err}</li>
+                ))}
+              </ul>
+            </Alert>
+          )}
 
           <TextField
             label="Nom du Deck"

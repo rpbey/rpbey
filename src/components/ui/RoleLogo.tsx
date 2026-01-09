@@ -29,6 +29,7 @@ export function RoleLogo({
         viewBox="0 0 800 800"
         width={size}
         height={size}
+        aria-hidden="true"
         aria-label="Logo RPB"
         className="object-contain"
       >

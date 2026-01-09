@@ -66,10 +66,10 @@ const SURFACE_DARK = {
 };
 
 // Tournament Mode Colors
-const TOURNAMENT_SKY = '#60A5FA';
-const TOURNAMENT_WHITE = '#FFFFFF';
-const TOURNAMENT_BG = '#0f172a';
-const TOURNAMENT_PAPER = '#1e293b';
+// const TOURNAMENT_SKY = '#60A5FA';
+// const TOURNAMENT_WHITE = '#FFFFFF';
+// const TOURNAMENT_BG = '#0f172a';
+// const TOURNAMENT_PAPER = '#1e293b';
 
 // ----------------------------------------------------------------------
 // Base Theme Options
@@ -201,8 +201,7 @@ const commonOptions: ThemeOptions = {
         {
           props: { variant: 'elevated' },
           style: {
-            // We use CSS variables for these specific colors to adapt to the scheme
-            backgroundColor: 'var(--mui-palette-surface-low)',
+            backgroundColor: SURFACE_DARK.low,
             boxShadow:
               '0px 1px 3px 1px rgba(0, 0, 0, 0.15), 0px 1px 2px rgba(0, 0, 0, 0.3)',
             border: 'none',
@@ -211,7 +210,7 @@ const commonOptions: ThemeOptions = {
         {
           props: { variant: 'filled' },
           style: {
-            backgroundColor: 'var(--mui-palette-surface-main)',
+            backgroundColor: SURFACE_DARK.main,
             boxShadow: 'none',
             border: 'none',
           },
@@ -219,7 +218,7 @@ const commonOptions: ThemeOptions = {
         {
           props: { variant: 'outlined' },
           style: {
-            backgroundColor: 'var(--mui-palette-surface-lowest)',
+            backgroundColor: SURFACE_DARK.lowest,
             boxShadow: 'none',
             border: '1px solid',
             borderColor: 'rgba(255, 255, 255, 0.12)',
@@ -256,7 +255,7 @@ const commonOptions: ThemeOptions = {
     MuiBottomNavigation: {
       styleOverrides: {
         root: {
-          backgroundColor: 'var(--mui-palette-surface-main)',
+          backgroundColor: SURFACE_DARK.main,
           height: 80,
           borderRadius: '16px 16px 0 0',
         },
@@ -274,71 +273,33 @@ const commonOptions: ThemeOptions = {
 // Theme Creation
 // ----------------------------------------------------------------------
 
+// Standard MUI Theme (No CSS Variables for now to avoid build crash)
 export const theme = createTheme({
   ...commonOptions,
-  cssVariables: {
-    colorSchemeSelector: 'class', // Adds .dark / .tournament classes to html
-  },
-  colorSchemes: {
-    dark: {
-      palette: {
-        primary: {
-          main: RPB_RED,
-          container: '#8C0009',
-          onContainer: '#FFDAD9',
-          contrastText: '#FFFFFF',
-        },
-        secondary: {
-          main: RPB_GOLD,
-          container: '#534600',
-          onContainer: '#FFE135',
-          contrastText: '#000000',
-        },
-        background: {
-          default: SURFACE_DARK.lowest,
-          paper: SURFACE_DARK.main,
-        },
-        surface: SURFACE_DARK,
-        text: {
-          primary: '#F5F2F2',
-          secondary: '#D1C4C4',
-        },
-        divider: 'rgba(255, 255, 255, 0.08)',
-      },
+  palette: {
+    mode: 'dark',
+    primary: {
+      main: RPB_RED,
+      container: '#8C0009',
+      onContainer: '#FFDAD9',
+      contrastText: '#FFFFFF',
     },
-    tournament: {
-      palette: {
-        primary: {
-          main: TOURNAMENT_SKY,
-          light: '#93c5fd',
-          dark: '#2563eb',
-          contrastText: '#000000',
-        },
-        secondary: {
-          main: TOURNAMENT_WHITE,
-          light: '#ffffff',
-          dark: '#cccccc',
-          contrastText: '#000000',
-        },
-        background: {
-          default: TOURNAMENT_BG,
-          paper: TOURNAMENT_PAPER,
-        },
-        surface: {
-          // Mapping for tournament mode (can be tweaked)
-          lowest: '#020617',
-          low: '#0f172a',
-          main: '#1e293b',
-          high: '#334155',
-          highest: '#475569',
-        },
-        text: {
-          primary: TOURNAMENT_WHITE,
-          secondary: '#94a3b8',
-        },
-        divider: 'rgba(255, 255, 255, 0.1)',
-      },
+    secondary: {
+      main: RPB_GOLD,
+      container: '#534600',
+      onContainer: '#FFE135',
+      contrastText: '#000000',
     },
+    background: {
+      default: SURFACE_DARK.lowest,
+      paper: SURFACE_DARK.main,
+    },
+    surface: SURFACE_DARK,
+    text: {
+      primary: '#F5F2F2',
+      secondary: '#D1C4C4',
+    },
+    divider: 'rgba(255, 255, 255, 0.08)',
   },
 });
 

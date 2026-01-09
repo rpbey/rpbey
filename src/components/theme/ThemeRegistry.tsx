@@ -1,7 +1,6 @@
 'use client';
 
 import { CssBaseline, ThemeProvider } from '@mui/material';
-import { useColorScheme } from '@mui/material/styles';
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v16-appRouter';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -13,20 +12,16 @@ import { theme } from '@/lib/theme';
 export type ThemeMode = 'dark' | 'tournament';
 
 export function useThemeMode() {
-  const { colorScheme, setColorScheme } = useColorScheme();
-
-  const mode = (colorScheme as ThemeMode) || 'dark';
+  // Temporary mock since cssVariables are disabled to fix build crash
+  const mode = 'dark' as ThemeMode;
 
   const toggleTheme = React.useCallback(() => {
-    setColorScheme(mode === 'dark' ? 'tournament' : 'dark');
-  }, [mode, setColorScheme]);
+    console.log('Theme toggling is temporarily disabled');
+  }, []);
 
-  const setTheme = React.useCallback(
-    (newMode: ThemeMode) => {
-      setColorScheme(newMode);
-    },
-    [setColorScheme],
-  );
+  const setTheme = React.useCallback((_newMode: ThemeMode) => {
+    console.log('Theme setting is temporarily disabled');
+  }, []);
 
   const backgroundImage = mode === 'tournament' ? '/blue.jpeg' : '/red.jpeg';
 
@@ -45,7 +40,7 @@ export default function ThemeRegistry({
 }) {
   return (
     <AppRouterCacheProvider>
-      <ThemeProvider theme={theme} defaultMode="dark">
+      <ThemeProvider theme={theme}>
         <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="fr">
           <ToastProvider>
             <CssBaseline />

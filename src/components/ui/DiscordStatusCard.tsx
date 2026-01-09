@@ -10,35 +10,27 @@ import Stack from '@mui/material/Stack';
 import { alpha } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import { AnimatePresence, motion } from 'framer-motion';
+import Image from 'next/image';
 import { useEffect, useState } from 'react';
-import type { RoleType } from '@/lib/role-colors';
 import { api } from '@/lib/standard-api';
-import type { BotMember } from '@/types/api';
+import type { DiscordStats, TeamGroup } from '@/lib/discord-data';
 import { DiscordRoleBadge } from './DiscordRoleBadge';
-import { DiscordIcon } from './Icons';
 
-interface TeamGroup {
-  roleId: string;
-  roleType: RoleType;
-  members: BotMember[];
+interface DiscordStatusCardProps {
+  initialStats?: DiscordStats | null;
+  initialTeam?: TeamGroup[];
 }
 
-export function DiscordStatusCard() {
-  const [stats, setStats] = useState<{
-    onlineCount: number;
-    memberCount: number;
-  } | null>(null);
-  const [team, setTeam] = useState<TeamGroup[]>([]);
-  const [loading, setLoading] = useState(true);
+export function DiscordStatusCard({ initialStats, initialTeam }: DiscordStatusCardProps) {
+  const [stats, setStats] = useState<DiscordStats | null>(initialStats || null);
+  const [team, setTeam] = useState<TeamGroup[]>(initialTeam || []);
+  const [loading, setLoading] = useState(!initialStats);
 
   useEffect(() => {
     async function fetchData() {
       try {
         const [statsData, teamData] = await Promise.all([
-          api.get<{ onlineCount: number; memberCount: number }>(
-            '/api/discord/stats',
-            { cache: 'no-store' },
-          ),
+          api.get<DiscordStats>('/api/discord/stats', { cache: 'no-store' }),
           api.get<{ team: TeamGroup[] }>('/api/discord/team', {
             cache: 'no-store',
           }),
@@ -52,10 +44,14 @@ export function DiscordStatusCard() {
       }
     }
 
-    fetchData();
+    if (!initialStats) {
+      fetchData();
+    }
+    
+    // Poll for updates every minute
     const interval = setInterval(fetchData, 60000);
     return () => clearInterval(interval);
-  }, []);
+  }, [initialStats]);
 
   if (loading) {
     return (
@@ -70,6 +66,7 @@ export function DiscordStatusCard() {
 
   const onlineCount = stats?.onlineCount || 0;
   const totalCount = stats?.memberCount || 0;
+  const serverName = stats?.serverName || 'RPB Community';
 
   return (
     <Card
@@ -88,8 +85,8 @@ export function DiscordStatusCard() {
         boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
         transition: 'all 0.3s ease',
         '&:hover': {
-          borderColor: '#5865F2',
-          boxShadow: '0 12px 48px rgba(88, 101, 242, 0.15)',
+          borderColor: '#dc2626', // RPB Red
+          boxShadow: '0 12px 48px rgba(220, 38, 38, 0.15)',
         },
       }}
     >
@@ -104,29 +101,41 @@ export function DiscordStatusCard() {
         <Stack direction="row" spacing={2} alignItems="center">
           <Box
             sx={{
-              p: 1.2,
-              borderRadius: 2.5,
-              bgcolor: '#5865F2',
-              color: 'white',
+              position: 'relative',
+              width: 48,
+              height: 48,
               display: 'flex',
-              boxShadow: '0 4px 12px rgba(88, 101, 242, 0.3)',
+              alignItems: 'center',
+              justifyContent: 'center',
             }}
           >
-            <DiscordIcon size={28} />
+            {/* Animated Staff Logo */}
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ repeat: Number.POSITIVE_INFINITY, duration: 20, ease: "linear" }}
+              style={{ width: '100%', height: '100%', display: 'flex' }}
+            >
+               <Image 
+                 src="/logo-staff.png" 
+                 alt="RPB Staff Logo" 
+                 width={48} 
+                 height={48} 
+                 style={{ objectFit: 'contain' }}
+               />
+            </motion.div>
           </Box>
           <Box sx={{ flex: 1 }}>
             <Typography
               variant="subtitle1"
               fontWeight={800}
-              sx={{ color: 'text.primary', lineHeight: 1.2 }}
+              sx={{ color: 'text.primary', lineHeight: 1.2, mb: 0.5 }}
             >
-              RPB OFFICIAL
+              {serverName.toUpperCase()}
             </Typography>
             <Stack
               direction="row"
               spacing={1.5}
               alignItems="center"
-              sx={{ mt: 0.5 }}
             >
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                 <Box
@@ -143,7 +152,7 @@ export function DiscordStatusCard() {
                   color="text.secondary"
                   fontWeight={600}
                 >
-                  {onlineCount.toLocaleString()} ONLINE
+                  {onlineCount.toLocaleString()} EN LIGNE
                 </Typography>
               </Box>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
@@ -160,7 +169,7 @@ export function DiscordStatusCard() {
                   color="text.secondary"
                   fontWeight={600}
                 >
-                  {totalCount.toLocaleString()} MEMBERS
+                  {totalCount.toLocaleString()} MEMBRES
                 </Typography>
               </Box>
             </Stack>
@@ -218,7 +227,7 @@ export function DiscordStatusCard() {
                       }}
                     >
                       <Avatar
-                        src={member.avatar}
+                        src={member.avatar || undefined}
                         sx={{
                           width: 32,
                           height: 32,
@@ -234,9 +243,14 @@ export function DiscordStatusCard() {
                       >
                         {member.displayName}
                       </Typography>
+                      {/* Removed username to reduce clutter/basic info feel, kept display name only? 
+                          Or keep username but maybe style it differently? 
+                          The user said "no discord basic info", maybe they mean the 'status' text?
+                          I'll keep username as it's useful identity. 
+                      */}
                       <Typography
                         variant="caption"
-                        sx={{ color: 'text.disabled', opacity: 0.7 }}
+                        sx={{ color: 'text.disabled', opacity: 0.7, ml: 'auto' }}
                       >
                         @{member.username}
                       </Typography>

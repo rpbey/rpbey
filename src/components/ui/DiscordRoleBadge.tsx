@@ -54,11 +54,6 @@ export interface DiscordRoleBadgeProps {
    */
   duration?: number;
   /**
-   * Whether to loop the icon animation
-   * @default false
-   */
-  loop?: boolean;
-  /**
    * Additional className
    */
   className?: string;
@@ -72,7 +67,6 @@ export const DiscordRoleBadge: React.FC<DiscordRoleBadgeProps> = ({
   label,
   variant = 'filled',
   duration = 1.5,
-  loop = false,
   className,
 }) => {
   // Determine Role Type
@@ -146,12 +140,7 @@ export const DiscordRoleBadge: React.FC<DiscordRoleBadgeProps> = ({
               ml: -0.5,
             }}
           >
-            <RoleIcon
-              role={type}
-              size={iconSize}
-              duration={duration}
-              loop={loop}
-            />
+            <RoleIcon role={type} size={iconSize} duration={duration} />
           </Box>
         )}
         <Typography

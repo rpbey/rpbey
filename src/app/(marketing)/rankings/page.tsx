@@ -75,39 +75,40 @@ export default async function RankingsPage() {
                       </Typography>
                     </TableCell>
                     <TableCell>
-                      <Box
-                        component={Link}
+                      <Link
                         href={`/profile/${profile.userId}`}
-                        sx={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 2,
-                          textDecoration: 'none',
-                          color: 'inherit',
-                          '&:hover': {
-                            '& .MuiTypography-root': {
-                              color: 'primary.main',
-                            },
-                          },
-                        }}
+                        style={{ textDecoration: 'none', color: 'inherit' }}
                       >
-                        <Avatar src={profile.user.image || undefined}>
-                          {getInitials(profile.bladerName || profile.user.name)}
-                        </Avatar>
-                        <Box>
-                          <Typography
-                            fontWeight="medium"
-                            sx={{ transition: 'color 0.2s' }}
-                          >
-                            {profile.bladerName ||
-                              profile.user.name ||
-                              'Anonyme'}
-                          </Typography>
-                          <Typography variant="caption" color="text.secondary">
-                            {profile.favoriteType || 'Type inconnu'}
-                          </Typography>
+                        <Box
+                          sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 2,
+                            '&:hover': {
+                              '& .MuiTypography-root': {
+                                color: 'primary.main',
+                              },
+                            },
+                          }}
+                        >
+                          <Avatar src={profile.user.image || undefined}>
+                            {getInitials(profile.bladerName || profile.user.name)}
+                          </Avatar>
+                          <Box>
+                            <Typography
+                              fontWeight="medium"
+                              sx={{ transition: 'color 0.2s' }}
+                            >
+                              {profile.bladerName ||
+                                profile.user.name ||
+                                'Anonyme'}
+                            </Typography>
+                            <Typography variant="caption" color="text.secondary">
+                              {profile.favoriteType || 'Type inconnu'}
+                            </Typography>
+                          </Box>
                         </Box>
-                      </Box>
+                      </Link>
                     </TableCell>
                     <TableCell align="center">
                       <Typography fontWeight="bold">

@@ -21,7 +21,7 @@ COPY package.json pnpm-lock.yaml ./
 FROM base AS deps
 
 # Install dependencies
-RUN pnpm install --frozen-lockfile
+RUN --mount=type=cache,target=/root/.local/share/pnpm/store pnpm install --frozen-lockfile
 
 # ============================================
 # Production Dependencies stage
@@ -29,7 +29,7 @@ RUN pnpm install --frozen-lockfile
 FROM base AS prod-deps
 
 COPY package.json pnpm-lock.yaml ./
-RUN pnpm install --prod --frozen-lockfile
+RUN --mount=type=cache,target=/root/.local/share/pnpm/store pnpm install --prod --frozen-lockfile
 
 # ============================================
 # Builder stage
@@ -44,7 +44,8 @@ COPY . .
 RUN node --experimental-require-module ./node_modules/prisma/build/index.js generate
 
 # Build Next.js
-RUN pnpm run build
+# Mount the .next/cache directory to speed up subsequent builds
+RUN --mount=type=cache,target=/app/.next/cache pnpm run build
 
 # ============================================
 # Production stage
@@ -82,5 +83,9 @@ EXPOSE 3000
 
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
+
+# Health check to allow Coolify/Docker to detect unhealthy containers
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+  CMD node -e "fetch('http://localhost:3000/api/health').then(r => {if(!r.ok) throw new Error(r.statusText)})"
 
 CMD ["node", "server.js"]

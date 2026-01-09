@@ -41,6 +41,7 @@ interface OfficialProduct {
   price: number // 1980 (税込)
   releaseDate: string // 2023.7.15
   url: string
+  imageUrl: string
   isLimited: boolean
   limitedType?: string
   // Parsed components
@@ -94,50 +95,41 @@ async function parseLineupPage(): Promise<OfficialProduct[]> {
 
   const products: OfficialProduct[] = []
 
-  // Pattern to match product entries from the lineup page
-  // Example: "BX-01 ドランソード3-60F スターター ¥1,980（税込） 2023.7.15発売"
-  // The HTML structure uses links like: [CODE NAME TYPE ¥PRICE（税込） DATE発売](url)
-
-  // Match product blocks - they appear as link text content
-  // Format: CODE NAME TYPE ¥PRICE（税込） DATE発売
-  const productPattern =
-    /\[((?:BX|UX|CX)-\d{2})\s+(?:【([^】]+)】\s*)?([^\]¥]+?)\s+(スターター|ブースター|ランダムブースター|ダブルスターター|セット|ツール)\s+¥([\d,]+)（税込）\s*(\d{4}\.\d{1,2}\.\d{1,2})発売[^\]]*\]\(([^)]+)\)/g
+  // Regex to match the HTML structure:
+  // <a href="bx01.html"> <img src="_image/BX01_list.png" alt="BX-01"> <b>BX-01<span>ドランソード3-60F</span></b>
+  // <p class="category"><span>スターター</span></p>
+  // <i>¥1,980（税込）</i> <i class="red">2023.7.15発売</i>
+  
+  const productPattern = /<a href="([^"]+)">[\s\S]*?<img\s+src="([^"]+)"[^>]*?>\s*<b>((?:BX|UX|CX|BXG)-\d{2,3}|(?:BX|UX|CX|BXG)-00)<span>([^<]+)<\/span><\/b>[\s\S]*?<p class="category"><span>([^<]+)<\/span><\/p>[\s\S]*?<i>¥([\d,]+)[^<]*<\/i>[\s\S]*?<i class="red">([\d.]+)[^<]*<\/i>/g;
 
   let match
   while ((match = productPattern.exec(html)) !== null) {
-    const code = match[1]
-    const limitedInfo = match[2]
-    const rawName = match[3]
-    const productType = match[4]
-    const priceStr = match[5]
-    const releaseDate = match[6]
-    const url = match[7]
+    const detailUrlRelative = match[1]
+    const imgUrlRelative = match[2]
+    const code = match[3]
+    const rawName = match[4]
+    const productType = match[5]
+    const priceStr = match[6]
+    const releaseDate = match[7]
 
-    if (!code || !rawName || !productType || !priceStr || !releaseDate || !url) {
-      continue
-    }
+    if (!code || !rawName || !priceStr || !detailUrlRelative || !imgUrlRelative || !productType || !releaseDate) continue
 
     const name = rawName.trim()
     const price = parseInt(priceStr.replace(',', ''), 10)
+    
+    // Construct absolute URLs
+    const url = new URL(detailUrlRelative, LINEUP_URL).toString()
+    const imageUrl = new URL(imgUrlRelative, LINEUP_URL).toString()
 
-    // Determine limited type
-    let isLimited = false
+    // Determine limited type (basic heuristic based on name or if missing from standard types)
+    // The HTML structure for limited items might be slightly different or use the same structure
+    // We'll check if the name contains '限定'
+    const isLimited = name.includes('限定')
     let limitedType: string | undefined
-
-    if (limitedInfo) {
-      isLimited = true
-      if (limitedInfo.includes('イベント限定')) limitedType = 'イベント限定'
-      else if (limitedInfo.includes('タカラトミーモール限定'))
-        limitedType = 'タカラトミーモール限定'
-      else if (limitedInfo.includes('アプリ・イベント限定'))
-        limitedType = 'アプリ・イベント限定'
-      else if (limitedInfo.includes('B4ストア限定')) limitedType = 'B4ストア限定'
-      else if (limitedInfo.includes('タカラトミーモール先行販売'))
-        limitedType = 'タカラトミーモール先行'
-      else limitedType = limitedInfo
+    if (isLimited) {
+       limitedType = 'Limited'
     }
 
-    // Parse bey components
     const { blade, ratchet, bit } = parseBeyName(name)
 
     products.push({
@@ -147,6 +139,7 @@ async function parseLineupPage(): Promise<OfficialProduct[]> {
       price,
       releaseDate,
       url,
+      imageUrl,
       isLimited,
       limitedType,
       bladeName: blade,
@@ -154,8 +147,11 @@ async function parseLineupPage(): Promise<OfficialProduct[]> {
       bit,
     })
   }
-
-  // If regex didn't match, try a simpler line-by-line approach
+  
+  // Fallback for limited items which might have slightly different HTML (e.g. BX-00)
+  // The grep showed: <b>BX-00<span>【タカラトミーモール限定】...
+  // Let's try a secondary pattern for these if the first one misses them
+  
   if (products.length === 0) {
     console.log('  ⚠️ Regex pattern failed, trying alternative parsing...')
 
@@ -192,7 +188,11 @@ async function parseLineupPage(): Promise<OfficialProduct[]> {
 
       // Extract URL
       const urlMatch = line.match(/\]\(([^)]+\.html)\)/)
-      const url = urlMatch?.[1] ?? ''
+      const url = urlMatch?.[1] ? new URL(urlMatch[1], LINEUP_URL).toString() : ''
+
+      // Extract Image URL
+      const imgMatch = line.match(/src="([^"]+)"/)
+      const imageUrl = imgMatch?.[1] ? new URL(imgMatch[1], LINEUP_URL).toString() : ''
 
       // Limited check
       const isLimited = line.includes('限定')
@@ -214,6 +214,7 @@ async function parseLineupPage(): Promise<OfficialProduct[]> {
           price,
           releaseDate,
           url,
+          imageUrl,
           isLimited,
           limitedType,
           bladeName: blade,

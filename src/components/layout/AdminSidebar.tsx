@@ -3,6 +3,7 @@
 import {
   Article,
   BarChart,
+  Cloud,
   Code,
   Dashboard,
   Logout,
@@ -43,6 +44,7 @@ const navItems = [
   { label: 'Statut du Bot', href: '/admin/bot', icon: Code },
   { label: 'Logs du Bot', href: '/admin/bot/logs', icon: Terminal },
   { label: 'Contenu du Site', href: '/admin/content', icon: Article },
+  { label: 'Google Drive', href: '/admin/drive', icon: Cloud },
   { label: 'Tournois', href: '/admin/tournaments', icon: TrophyIcon },
   { label: 'Équipe', href: '/admin/staff', icon: People },
   { label: 'Utilisateurs', href: '/admin/users', icon: People },
