@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next';
+import InitColorSchemeScript from '@mui/material/InitColorSchemeScript';
 import { JsonLd } from '@/components/seo/JsonLd';
 import ThemeRegistry from '@/components/theme/ThemeRegistry';
 import { SmoothScroll } from '@/components/ui/SmoothScroll';
@@ -72,8 +73,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fr" className={googleSansFlex.variable}>
+    <html
+      lang="fr"
+      className={googleSansFlex.variable}
+      suppressHydrationWarning
+    >
       <body>
+        <InitColorSchemeScript attribute="class" defaultMode="dark" />
         <JsonLd data={generateWebsiteJsonLd()} />
         <ThemeRegistry>
           <SmoothScroll />

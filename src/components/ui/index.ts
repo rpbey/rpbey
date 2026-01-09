@@ -22,7 +22,8 @@ export { LoadingSkeleton } from './LoadingSkeleton';
 export { NextTournamentButton } from './NextTournamentButton';
 export { PageHeader } from './PageHeader';
 export { RoleIcon } from './RoleIcon';
-export { SearchInput } from './SearchInput';
+export * from './RpbLogo';
+export * from './SearchInput';
 export { SmoothScroll } from './SmoothScroll';
 export { StatsCard } from './StatsCard';
 export {

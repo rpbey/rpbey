@@ -20,7 +20,7 @@ export default function DashboardRedirect() {
           router.replace('/admin');
         } else {
           // Regular users go to their own profile by default
-          router.replace('/profile');
+          router.replace('/dashboard/profile');
         }
       } else {
         // Not logged in, redirect to sign-in

@@ -30,6 +30,9 @@ declare module '@mui/material/styles' {
     container?: string;
     onContainer?: string;
   }
+  interface ColorSchemeOverrides {
+    tournament: true;
+  }
 }
 
 declare module '@mui/material/Card' {
@@ -149,16 +152,16 @@ const commonOptions: ThemeOptions = {
     },
   },
   shape: {
-    borderRadius: 16, // Default for M3 Medium rounded
+    borderRadius: 8, // Reduced from 16
   },
   components: {
     MuiButton: {
       styleOverrides: {
         root: {
-          borderRadius: 24, // M3 Pill shape for buttons
+          borderRadius: 8, // Reduced from 24
           padding: '10px 24px',
           fontWeight: 600,
-          minHeight: 48, // Touch target size
+          minHeight: 44, // Reduced from 48
         },
         contained: {
           boxShadow: 'none',
@@ -212,7 +215,7 @@ const commonOptions: ThemeOptions = {
       ],
       styleOverrides: {
         root: {
-          borderRadius: 28, // M3 Extra Large rounding
+          borderRadius: 16, // Reduced from 28
           backgroundImage: 'none',
           transition: 'all 0.2s ease-in-out',
         },
@@ -242,7 +245,7 @@ const commonOptions: ThemeOptions = {
         root: {
           backgroundColor: surfaceContainer,
           height: 80,
-          borderRadius: '24px 24px 0 0',
+          borderRadius: '16px 16px 0 0', // Reduced from 24px
         },
       },
     },
@@ -254,73 +257,77 @@ const commonOptions: ThemeOptions = {
   },
 };
 
-export const rpbTheme = createTheme({
+export const theme = createTheme({
   ...commonOptions,
-  palette: {
-    mode: 'dark',
-    primary: {
-      main: RPB_RED,
-      container: '#8C0009', // M3 Primary Container
-      onContainer: '#FFDAD9', // M3 On Primary Container
-      contrastText: '#FFFFFF',
-    },
-    secondary: {
-      main: RPB_YELLOW,
-      container: '#534600',
-      onContainer: '#FFE135',
-      contrastText: '#000000',
-    },
-    background: {
-      default: surfaceContainerLowest,
-      paper: surfaceContainer,
-    },
-    surface: {
-      lowest: surfaceContainerLowest,
-      low: surfaceContainerLow,
-      main: surfaceContainer,
-      high: surfaceContainerHigh,
-      highest: surfaceContainerHighest,
-    },
-    text: {
-      primary: '#F5F2F2',
-      secondary: '#D1C4C4',
-    },
-    divider: 'rgba(255, 255, 255, 0.08)',
+  cssVariables: {
+    colorSchemeSelector: 'class',
   },
-}); // Type cast for M3 custom palette extensions removed via module augmentation
-
-export const tournamentTheme = createTheme({
-  ...commonOptions,
-  palette: {
-    mode: 'dark',
-    primary: {
-      main: TOURNAMENT_SKY,
-      light: '#93c5fd',
-      dark: '#2563eb',
-      contrastText: '#000000',
+  colorSchemes: {
+    light: {
+      palette: {
+        mode: 'light',
+      },
     },
-    secondary: {
-      main: TOURNAMENT_WHITE,
-      light: '#ffffff',
-      dark: '#cccccc',
-      contrastText: '#000000',
+    dark: {
+      palette: {
+        mode: 'dark',
+        primary: {
+          main: RPB_RED,
+          container: '#8C0009',
+          onContainer: '#FFDAD9',
+          contrastText: '#FFFFFF',
+        },
+        secondary: {
+          main: RPB_YELLOW,
+          container: '#534600',
+          onContainer: '#FFE135',
+          contrastText: '#000000',
+        },
+        background: {
+          default: surfaceContainerLowest,
+          paper: surfaceContainer,
+        },
+        surface: {
+          lowest: surfaceContainerLowest,
+          low: surfaceContainerLow,
+          main: surfaceContainer,
+          high: surfaceContainerHigh,
+          highest: surfaceContainerHighest,
+        },
+        text: {
+          primary: '#F5F2F2',
+          secondary: '#D1C4C4',
+        },
+        divider: 'rgba(255, 255, 255, 0.08)',
+      },
     },
-    background: {
-      default: '#0f172a', // Slate 900 for tournament feel
-      paper: '#1e293b', // Slate 800
+    tournament: {
+      palette: {
+        mode: 'dark',
+        primary: {
+          main: TOURNAMENT_SKY,
+          light: '#93c5fd',
+          dark: '#2563eb',
+          contrastText: '#000000',
+        },
+        secondary: {
+          main: TOURNAMENT_WHITE,
+          light: '#ffffff',
+          dark: '#cccccc',
+          contrastText: '#000000',
+        },
+        background: {
+          default: '#0f172a',
+          paper: '#1e293b',
+        },
+        text: {
+          primary: TOURNAMENT_WHITE,
+          secondary: '#94a3b8',
+        },
+        divider: 'rgba(255, 255, 255, 0.1)',
+      },
     },
-    text: {
-      primary: TOURNAMENT_WHITE,
-      secondary: '#94a3b8', // Slate 400
-    },
-    divider: 'rgba(255, 255, 255, 0.1)',
   },
 });
 
-export type ThemeMode = 'rpb' | 'tournament';
-
-export const getTheme = (mode: ThemeMode) => {
-  return mode === 'tournament' ? tournamentTheme : rpbTheme;
-};
-
-export default rpbTheme;
+export type ThemeMode = 'dark' | 'tournament';

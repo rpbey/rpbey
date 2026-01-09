@@ -201,8 +201,21 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse) {
             },
             Colors: colorsFormatted,
             Channels: RPB.Channels,
+            Roles: RPB.Roles,
+            Partners: RPB.Partners,
           },
         });
+      }
+
+      case '/api/commands': {
+        const commands = container.stores.get('commands');
+        const list = commands.map((cmd) => ({
+          name: cmd.name,
+          description: cmd.description,
+          category: cmd.category,
+          enabled: cmd.enabled,
+        }));
+        return sendJSON(res, { commands: list });
       }
 
       case '/api/webhook/twitch': {

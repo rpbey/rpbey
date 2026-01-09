@@ -9,7 +9,7 @@ export function ThemeSwitcher() {
 
   return (
     <Tooltip
-      title={mode === 'rpb' ? 'Mode Tournoi' : 'Mode RPB'}
+      title={mode === 'dark' ? 'Mode Tournoi' : 'Mode RPB'}
       placement="right"
     >
       <IconButton
@@ -17,14 +17,14 @@ export function ThemeSwitcher() {
         sx={{
           width: 48,
           height: 48,
-          color: mode === 'rpb' ? 'primary.main' : 'secondary.main',
+          color: mode === 'dark' ? 'primary.main' : 'secondary.main',
           bgcolor: (theme) => alpha(theme.palette.background.paper, 0.5),
           '&:hover': {
             bgcolor: (theme) => alpha(theme.palette.action.active, 0.1),
           },
         }}
       >
-        {mode === 'rpb' ? <Palette /> : <SportsEsports />}
+        {mode === 'dark' ? <Palette /> : <SportsEsports />}
       </IconButton>
     </Tooltip>
   );

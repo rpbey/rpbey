@@ -124,9 +124,9 @@ export function AdminSidebar({ mobileOpen, onMobileClose }: AdminSidebarProps) {
                 selected={isActive}
                 onClick={isMobile ? onMobileClose : undefined}
                 sx={{
-                  borderRadius: 32, // Pill shape
-                  height: 56, // M3 Navigation Drawer Item Height
-                  px: 3,
+                  borderRadius: 2, // Reduced from 32
+                  height: 48, // Reduced height slightly
+                  px: 2,
                   '&.Mui-selected': {
                     bgcolor: (theme) => alpha(theme.palette.primary.main, 0.1),
                     color: 'primary.main',
@@ -221,7 +221,7 @@ export function AdminSidebar({ mobileOpen, onMobileClose }: AdminSidebarProps) {
             width: DRAWER_WIDTH - 32, // Accommodate margin
             m: 2,
             height: 'calc(100% - 32px)',
-            borderRadius: 6, // 24px
+            borderRadius: 3, // Reduced from 6 (24px) to 3 (12px)
             bgcolor: 'background.paper',
             border: '1px solid',
             borderColor: 'divider',
