@@ -1,10 +1,11 @@
 import crypto from 'node:crypto';
 import { headers } from 'next/headers';
-import { NextResponse } from 'next/server';
+import { NextResponse, connection } from 'next/server';
 import { auth } from '@/lib/auth';
 import { getChallongeService } from '@/lib/challonge';
 
 export async function GET() {
+  await connection();
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
