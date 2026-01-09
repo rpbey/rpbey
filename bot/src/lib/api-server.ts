@@ -247,6 +247,60 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse) {
         return;
       }
 
+      case '/api/agent/dispatch': {
+        if (req.method !== 'POST') return sendError(res, 'Method not allowed', 405);
+
+        let body = '';
+        req.on('data', (chunk) => body += chunk);
+        req.on('end', async () => {
+          try {
+            const { action, params } = JSON.parse(body);
+            const client = container.client;
+            const guild = client.guilds.cache.get(process.env.GUILD_ID ?? '');
+
+            if (!guild) return sendError(res, 'Guild not found', 500);
+
+            switch (action) {
+              case 'send_message': {
+                if (!params?.channelId || !params?.content) return sendError(res, 'Missing params');
+                const channel = await client.channels.fetch(params.channelId);
+                if (!channel || !channel.isTextBased()) return sendError(res, 'Invalid channel');
+                const msg = await (channel as GuildTextBasedChannel).send(params.content);
+                return sendJSON(res, { success: true, id: msg.id });
+              }
+              
+              case 'send_dm': {
+                if (!params?.userId || !params?.content) return sendError(res, 'Missing params');
+                const user = await client.users.fetch(params.userId);
+                const msg = await user.send(params.content);
+                return sendJSON(res, { success: true, id: msg.id });
+              }
+
+              case 'add_role': {
+                 if (!params?.userId || !params?.roleId) return sendError(res, 'Missing params');
+                 const member = await guild.members.fetch(params.userId);
+                 await member.roles.add(params.roleId);
+                 return sendJSON(res, { success: true });
+              }
+
+              case 'remove_role': {
+                 if (!params?.userId || !params?.roleId) return sendError(res, 'Missing params');
+                 const member = await guild.members.fetch(params.userId);
+                 await member.roles.remove(params.roleId);
+                 return sendJSON(res, { success: true });
+              }
+
+              default:
+                return sendError(res, `Unknown action: ${action}`, 400);
+            }
+          } catch (e) {
+            container.logger.error('[AgentDispatch] Error:', e);
+            sendError(res, String(e), 500);
+          }
+        });
+        return;
+      }
+
       default:
         return sendError(res, 'Not found', 404);
     }

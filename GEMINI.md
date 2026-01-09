@@ -48,3 +48,12 @@ Always use these Library IDs when querying for updated documentation:
 - Material UI 7: `/mui/material-ui`
 - discord.js: `/discordjs/discord.js`
 - Sapphire: `/sapphiredev/framework`
+
+## Recent Updates (Jan 2026)
+- **Infrastructure**: Optimized for Next.js 16.1 with Turbopack and Cache Components.
+- **Security**: Patched ReDoS vulnerability in `@modelcontextprotocol/sdk` (v1.25.2).
+- **Admin**: 
+  - Created Gemini Agent admin user.
+  - Added Discord Messenger tool in the admin panel to send messages via the bot.
+  - Stabilized dynamic routes (Profile, OAuth) for production builds.
+- **Code Quality**: Resolved all linting warnings and build errors.

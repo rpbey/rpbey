@@ -1,0 +1,37 @@
+# RPB Project Documentation
+
+> Official documentation index for the RPB (République Populaire du Beyblade) project, including Dashboard, Discord Bot, and Beyblade resources.
+
+This project is a monorepo containing a Next.js 16 Dashboard and a Sapphire (Discord.js) Bot, managing a French Beyblade X community.
+
+## RPB Internal Documentation
+
+- [Project Overview](GEMINI.md): General architecture, tech stack, and deployment details.
+- [Bot Documentation](bot/GEMINI.md): Specific context and guidelines for the RPB Discord Bot.
+- [Implementation Plan](docs/IMPLEMENTATION_PLAN.md): Current roadmap and status of features.
+- [Database Schema](prisma/schema.prisma): Prisma schema defining User, Profile, Tournament, Beyblade, and Part models.
+- [API Reference](/api/gemini): Admin Agent API for system status and insights (Requires X-Gemini-Token).
+- [Bot Agent API](/api/agent/dispatch): Direct control over Discord Bot actions (Send Message, Manage Roles). Requires X-API-KEY.
+
+## Key Entities & Models
+
+- **User**: Core identity with roles (user, admin) and Discord integration.
+- **Tournament**: Managed via Challonge API integration, handles registrations and matches.
+- **Beyblade & Parts**: Extensive database of Beyblade X parts (Blade, Ratchet, Bit) scraped from official sources.
+- **Deck**: User-created collections of 3 Beyblades for competitive play.
+
+## Tech Stack Reference
+
+- [Next.js Documentation](https://nextjs.org/docs): Framework for the Dashboard (App Router).
+- [Prisma Documentation](https://www.prisma.io/docs): ORM for Database access.
+- [MUI Core](https://mui.com/material-ui/getting-started/): UI Component Library (v6/v7).
+- [Sapphire Framework](https://www.sapphirejs.dev/docs/Guide/getting-started/getting-started-with-sapphire): Framework used for the Discord Bot.
+- [Discord.js](https://discord.js.org/docs/packages/discord.js/main): Core library for Discord interactions.
+- [Better Auth](https://www.better-auth.com/docs): Authentication library used for the Dashboard.
+
+## Beyblade Resources
+
+- [WBO (World Beyblade Organization)](https://worldbeyblade.org/): International competitive standard and resources.
+- [Beyblade X Wiki](https://beyblade.fandom.com/wiki/Beyblade_X): Comprehensive wiki for parts and products.
+- [Takara Tomy Official](https://beyblade.takaratomy.co.jp/): Official Japanese source for product news.
+- [Challonge API](https://api.challonge.com/v1): Documentation for the Tournament management API used.

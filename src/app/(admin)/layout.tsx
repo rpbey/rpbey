@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { connection } from 'next/server';
 import { auth } from '@/lib/auth';
 import { AdminLayoutClient } from './AdminLayoutClient';
 
@@ -18,6 +19,8 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
+  await connection();
+
   // Check authentication
   const session = await auth.api.getSession({
     headers: await headers(),

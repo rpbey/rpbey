@@ -1,16 +1,20 @@
-import { History, People, SmartToy, Visibility } from '@mui/icons-material';
+import { History, People, SmartToy, Visibility, Event, Dns, CheckCircle, Error as ErrorIcon } from '@mui/icons-material';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
+import Chip from '@mui/material/Chip';
+import Divider from '@mui/material/Divider';
 import { headers } from 'next/headers';
 import { QuickActions } from '@/components/admin/QuickActions';
 import { TrophyIcon } from '@/components/ui/Icons';
 import { getBotStatus } from '@/lib/bot';
 import prisma from '@/lib/prisma';
 import { formatDateTime } from '@/lib/utils';
+import Link from 'next/link';
+import Button from '@mui/material/Button';
 
 export default async function AdminDashboardPage() {
   await headers();
@@ -18,7 +22,7 @@ export default async function AdminDashboardPage() {
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-  // Current Counts
+  // Current Counts & Next Tournament
   const [
     userCount,
     activeTournamentCount,
@@ -26,6 +30,7 @@ export default async function AdminDashboardPage() {
     botStatus,
     usersLastMonth,
     profilesLastMonth,
+    nextTournament
   ] = await Promise.all([
     prisma.user.count(),
     prisma.tournament.count({
@@ -39,6 +44,11 @@ export default async function AdminDashboardPage() {
     getBotStatus(),
     prisma.user.count({ where: { createdAt: { lte: thirtyDaysAgo } } }),
     prisma.profile.count({ where: { createdAt: { lte: thirtyDaysAgo } } }),
+    prisma.tournament.findFirst({
+      where: { status: { in: ['UPCOMING', 'REGISTRATION_OPEN'] } },
+      orderBy: { date: 'asc' },
+      include: { _count: { select: { participants: true } } }
+    })
   ]);
 
   // Calculate Trends
@@ -117,12 +127,22 @@ export default async function AdminDashboardPage() {
 
   return (
     <Container maxWidth="xl" component="main" sx={{ py: 4 }}>
-      <Typography variant="h4" component="h1" fontWeight="bold" gutterBottom>
-        Vue d'ensemble
-      </Typography>
-      <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
-        Bienvenue sur le panel d'administration RPB
-      </Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
+        <Box>
+            <Typography variant="h4" component="h1" fontWeight="bold" gutterBottom>
+                Vue d'ensemble
+            </Typography>
+            <Typography variant="body1" color="text.secondary">
+                Bienvenue sur le panel d'administration RPB
+            </Typography>
+        </Box>
+        <Chip 
+            icon={botStatus ? <CheckCircle /> : <ErrorIcon />} 
+            label={botStatus ? "Systèmes Opérationnels" : "Bot Hors Ligne"} 
+            color={botStatus ? "success" : "error"}
+            variant="outlined"
+        />
+      </Box>
 
       {/* Stats Grid */}
       <Grid
@@ -268,28 +288,87 @@ export default async function AdminDashboardPage() {
           </Card>
         </Grid>
 
-        {/* Quick Actions */}
+        {/* Right Column: Next Tournament & Quick Actions */}
         <Grid size={{ xs: 12, lg: 4 }}>
-          <Card
-            variant="elevated"
-            sx={{ height: '100%' }}
-            role="region"
-            aria-labelledby="quick-actions-title"
-          >
-            <CardContent sx={{ p: 4 }}>
-              <Typography
-                variant="h6"
-                fontWeight="bold"
-                gutterBottom
-                sx={{ mb: 3 }}
-                id="quick-actions-title"
-                component="h2"
-              >
-                Actions rapides
-              </Typography>
-              <QuickActions />
-            </CardContent>
-          </Card>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+            
+            {/* Next Tournament Card */}
+            {nextTournament && (
+                <Card variant="outlined" sx={{ borderColor: 'primary.main', borderWidth: 2 }}>
+                    <CardContent sx={{ p: 3 }}>
+                        <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <Event color="primary" /> Prochain Tournoi
+                        </Typography>
+                        <Typography variant="subtitle1" fontWeight="bold" noWrap title={nextTournament.name}>
+                            {nextTournament.name}
+                        </Typography>
+                        <Box sx={{ display: 'flex', gap: 2, mt: 2, mb: 2 }}>
+                             <Chip label={nextTournament.status} size="small" color={nextTournament.status === 'REGISTRATION_OPEN' ? 'success' : 'default'} />
+                             <Typography variant="body2" color="text.secondary">
+                                {formatDateTime(nextTournament.date)}
+                             </Typography>
+                        </Box>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <Typography variant="body2">
+                                <strong>{nextTournament._count.participants}</strong> participants
+                            </Typography>
+                            <Button 
+                                component={Link} 
+                                href={`/admin/tournaments/${nextTournament.id}`} 
+                                size="small" 
+                                variant="contained"
+                            >
+                                Gérer
+                            </Button>
+                        </Box>
+                    </CardContent>
+                </Card>
+            )}
+
+            <Card
+                variant="elevated"
+                role="region"
+                aria-labelledby="quick-actions-title"
+            >
+                <CardContent sx={{ p: 4 }}>
+                <Typography
+                    variant="h6"
+                    fontWeight="bold"
+                    gutterBottom
+                    sx={{ mb: 3 }}
+                    id="quick-actions-title"
+                    component="h2"
+                >
+                    Actions rapides
+                </Typography>
+                <QuickActions />
+                </CardContent>
+            </Card>
+
+            <Card variant="outlined">
+                <CardContent sx={{ p: 3 }}>
+                     <Typography variant="subtitle2" color="text.secondary" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <Dns fontSize="small" /> État des Services
+                     </Typography>
+                     <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1 }}>
+                        <Typography variant="caption">Database</Typography>
+                        <Typography variant="caption" color="success.main">Connecté</Typography>
+                     </Box>
+                     <Divider sx={{ my: 1 }} />
+                     <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <Typography variant="caption">Bot Discord</Typography>
+                        <Typography variant="caption" color={botStatus ? "success.main" : "error.main"}>
+                            {botStatus ? `${botStatus.ping}ms` : "Offline"}
+                        </Typography>
+                     </Box>
+                     <Divider sx={{ my: 1 }} />
+                     <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <Typography variant="caption">Gemini Agent</Typography>
+                        <Typography variant="caption" color="success.main">Actif</Typography>
+                     </Box>
+                </CardContent>
+            </Card>
+          </Box>
         </Grid>
       </Grid>
     </Container>

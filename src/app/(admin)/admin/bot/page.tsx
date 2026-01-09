@@ -29,6 +29,7 @@ import {
 import Grid from '@mui/material/Grid';
 import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
+import { BotMessenger } from '@/components/admin/BotMessenger';
 
 interface BotStatus {
   status: 'running' | 'starting' | 'offline';
@@ -280,6 +281,18 @@ export default function BotStatusPage() {
               </Card>
             </Grid>
           </Grid>
+
+          {/* New Admin Features */}
+          <Box sx={{ mt: 4 }}>
+            <Typography variant="h5" fontWeight={600} mb={3}>
+              Outils d'administration
+            </Typography>
+            <Grid container spacing={3}>
+              <Grid size={{ xs: 12, md: 8 }}>
+                <BotMessenger />
+              </Grid>
+            </Grid>
+          </Box>
         </>
       )}
     </Box>
