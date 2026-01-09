@@ -53,6 +53,7 @@ function BeyLine({ bey }: { bey: DeckBey }) {
     attack: parseStat(bey.blade.attack),
     defense: parseStat(bey.blade.defense),
     stamina: parseStat(bey.blade.stamina),
+    dash: parseStat(bey.blade.dash),
   };
 
   return (
@@ -101,6 +102,17 @@ function BeyLine({ bey }: { bey: DeckBey }) {
             fontSize: '0.7rem',
           }}
         />
+        <Chip
+          size="small"
+          label={`X ${stats.dash}`}
+          sx={{
+            bgcolor: 'warning.main',
+            color: 'black',
+            minWidth: 28,
+            height: 20,
+            fontSize: '0.7rem',
+          }}
+        />
       </Box>
     </Box>
   );
@@ -120,8 +132,9 @@ export function DeckCard({
       attack: acc.attack + parseStat(bey.blade.attack),
       defense: acc.defense + parseStat(bey.blade.defense),
       stamina: acc.stamina + parseStat(bey.blade.stamina),
+      dash: acc.dash + parseStat(bey.blade.dash),
     }),
-    { attack: 0, defense: 0, stamina: 0 },
+    { attack: 0, defense: 0, stamina: 0, dash: 0 },
   );
 
   return (
@@ -185,10 +198,10 @@ export function DeckCard({
 
         <Divider sx={{ my: 1.5 }} />
 
-        <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1.5 }}>
           <Box sx={{ textAlign: 'center' }}>
             <Typography variant="caption" color="text.secondary">
-              Total ATK
+              ATK
             </Typography>
             <Typography variant="body2" fontWeight="bold" color="error.main">
               {totalStats.attack}
@@ -196,7 +209,7 @@ export function DeckCard({
           </Box>
           <Box sx={{ textAlign: 'center' }}>
             <Typography variant="caption" color="text.secondary">
-              Total DEF
+              DEF
             </Typography>
             <Typography variant="body2" fontWeight="bold" color="info.main">
               {totalStats.defense}
@@ -204,10 +217,18 @@ export function DeckCard({
           </Box>
           <Box sx={{ textAlign: 'center' }}>
             <Typography variant="caption" color="text.secondary">
-              Total STA
+              STA
             </Typography>
             <Typography variant="body2" fontWeight="bold" color="success.main">
               {totalStats.stamina}
+            </Typography>
+          </Box>
+          <Box sx={{ textAlign: 'center' }}>
+            <Typography variant="caption" color="text.secondary">
+              X
+            </Typography>
+            <Typography variant="body2" fontWeight="bold" color="warning.main">
+              {totalStats.dash}
             </Typography>
           </Box>
         </Box>

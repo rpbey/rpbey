@@ -39,12 +39,14 @@ function calculateStats(blade: Part | null): {
   attack: number;
   defense: number;
   stamina: number;
+  dash: number;
 } | null {
   if (!blade) return null;
   return {
     attack: parseStat(blade.attack),
     defense: parseStat(blade.defense),
     stamina: parseStat(blade.stamina),
+    dash: parseStat(blade.dash),
   };
 }
 
@@ -150,6 +152,7 @@ export function BeyBuilder({
               pt: 1,
               borderTop: 1,
               borderColor: 'divider',
+              flexWrap: 'wrap',
             }}
           >
             <Chip
@@ -166,6 +169,11 @@ export function BeyBuilder({
               size="small"
               label={`STA ${stats.stamina}`}
               sx={{ bgcolor: 'success.main', color: 'white' }}
+            />
+            <Chip
+              size="small"
+              label={`X ${stats.dash}`}
+              sx={{ bgcolor: 'warning.main', color: 'black' }}
             />
           </Box>
         )}
