@@ -1,6 +1,9 @@
+'use client'
+
 import { useThemeMode } from '@/components/theme/ThemeRegistry'
 import { ChallongeBracket } from '@/components/tournaments'
 import { DiscordStatusCard } from '@/components/ui'
+import { FeedMyPartnership } from '@/components/marketing'
 import { useMediaQuery, useTheme } from '@mui/material'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
@@ -220,6 +223,19 @@ export default function HomePage() {
           </Box>
         </Container>
       </Box>
+
+      {/* Partnership Section */}
+      <Container maxWidth="lg" sx={{ py: 4 }}>
+        <Box
+          component={motion.div}
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+        >
+          <FeedMyPartnership />
+        </Box>
+      </Container>
 
       {/* CTA Section */}
       {/* CTA Section */}

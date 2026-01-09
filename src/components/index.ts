@@ -18,3 +18,6 @@ export * from './deck'
 
 // Tournament Components
 export * from './tournaments'
+
+// Marketing Components
+export * from './marketing'
