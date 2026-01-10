@@ -43,7 +43,7 @@ export const RPB = {
   GoldColor: 0xfbbf24,
   // Channel names for auto-detection
   Channels: {
-    Welcome: 'bienvenue',
+    Welcome: '1323816742262145105',
     Rules: 'règlement',
     Roles: 'rôles',
     Announcements: 'annonces',
