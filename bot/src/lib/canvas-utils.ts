@@ -1,8 +1,7 @@
 import { createCanvas, GlobalFonts, loadImage } from '@napi-rs/canvas';
 
 // Register fonts
-const fontPath =
-  '/root/rpb-dashboard/public/Google_Sans_Flex/static/GoogleSansFlex_72pt-Bold.ttf';
+const fontPath = './public/Google_Sans_Flex/static/GoogleSansFlex_72pt-Bold.ttf';
 GlobalFonts.registerFromPath(fontPath, 'GoogleSans');
 
 export async function generateWelcomeImage(
@@ -17,7 +16,7 @@ export async function generateWelcomeImage(
   const ctx = canvas.getContext('2d');
 
   // Background path
-  const bgPath = '/root/rpb-dashboard/public/banner.png';
+  const bgPath = './public/banner.png';
 
   try {
     const background = await loadImage(bgPath);
