@@ -141,9 +141,9 @@ model Part {
   beyBits      Beyblade[] @relation("BeyBitRelation")
   beyBlades    Beyblade[] @relation("BeyBladeRelation")
   beyRatchets  Beyblade[] @relation("BeyRatchetRelation")
-  deckBits     DeckBey[]  @relation("BitRelation")
-  deckBlades   DeckBey[]  @relation("BladeRelation")
-  deckRatchets DeckBey[]  @relation("RatchetRelation")
+  deckBits     DeckItem[] @relation("BitRelation")
+  deckBlades   DeckItem[] @relation("BladeRelation")
+  deckRatchets DeckItem[] @relation("RatchetRelation")
 
   @@index([type])
   @@index([beyType])
@@ -151,8 +151,8 @@ model Part {
 }
 
 model Beyblade {
-  id           String   @id @default(cuid())
-  code         String   @unique
+  id           String     @id @default(cuid())
+  code         String     @unique
   name         String
   nameEn       String?
   nameFr       String?
@@ -168,12 +168,13 @@ model Beyblade {
   totalWeight  Float?
   imageUrl     String?
   productId    String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  bit          Part     @relation("BeyBitRelation", fields: [bitId], references: [id])
-  blade        Part     @relation("BeyBladeRelation", fields: [bladeId], references: [id])
-  product      Product? @relation(fields: [productId], references: [id])
-  ratchet      Part     @relation("BeyRatchetRelation", fields: [ratchetId], references: [id])
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  bit          Part       @relation("BeyBitRelation", fields: [bitId], references: [id])
+  blade        Part       @relation("BeyBladeRelation", fields: [bladeId], references: [id])
+  product      Product?   @relation(fields: [productId], references: [id])
+  ratchet      Part       @relation("BeyRatchetRelation", fields: [ratchetId], references: [id])
+  deckItems    DeckItem[]
 
   @@index([beyType])
   @@map("beyblades")
@@ -186,7 +187,7 @@ model Deck {
   userId                 String
   createdAt              DateTime                @default(now())
   updatedAt              DateTime                @updatedAt
-  beys                   DeckBey[]
+  items                  DeckItem[]
   user                   User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
   tournamentParticipants TournamentParticipant[]
 
@@ -194,22 +195,26 @@ model Deck {
   @@map("decks")
 }
 
-model DeckBey {
+model DeckItem {
   id        String  @id @default(cuid())
   position  Int
-  nickname  String?
   deckId    String
-  bladeId   String
-  ratchetId String
-  bitId     String
-  bit       Part    @relation("BitRelation", fields: [bitId], references: [id])
-  blade     Part    @relation("BladeRelation", fields: [bladeId], references: [id])
-  deck      Deck    @relation(fields: [deckId], references: [id], onDelete: Cascade)
-  ratchet   Part    @relation("RatchetRelation", fields: [ratchetId], references: [id])
+  // Option 1: Link to a pre-built Beyblade
+  beyId     String?
+  // Option 2: Custom build (Blade + Ratchet + Bit)
+  bladeId   String?
+  ratchetId String?
+  bitId     String?
+
+  deck    Deck      @relation(fields: [deckId], references: [id], onDelete: Cascade)
+  bey     Beyblade? @relation(fields: [beyId], references: [id])
+  blade   Part?     @relation("BladeRelation", fields: [bladeId], references: [id])
+  ratchet Part?     @relation("RatchetRelation", fields: [ratchetId], references: [id])
+  bit     Part?     @relation("BitRelation", fields: [bitId], references: [id])
 
   @@unique([deckId, position])
   @@index([deckId])
-  @@map("deck_beys")
+  @@map("deck_items")
 }
 
 model Tournament {

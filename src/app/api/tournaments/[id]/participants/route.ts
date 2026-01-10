@@ -3,12 +3,12 @@
  * Manage tournament registration with Challonge sync
  */
 
-import { headers } from 'next/headers';
-import type { NextRequest } from 'next/server';
-import { NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
-import { getChallongeService } from '@/lib/challonge';
-import { prisma } from '@/lib/prisma';
+import { auth } from "@/lib/auth";
+import { getChallongeService } from "@/lib/challonge";
+import { prisma } from "@/lib/prisma";
+import { headers } from "next/headers";
+import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -28,8 +28,9 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
             decks: {
               where: { isActive: true },
               include: {
-                beys: {
+                items: {
                   include: {
+                    bey: true,
                     blade: true,
                     ratchet: true,
                     bit: true,
@@ -40,16 +41,13 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
           },
         },
       },
-      orderBy: [{ seed: 'asc' }, { createdAt: 'asc' }],
+      orderBy: [{ seed: "asc" }, { createdAt: "asc" }],
     });
 
     return NextResponse.json({ data: participants });
   } catch (error) {
-    console.error('Error fetching participants:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch participants' },
-      { status: 500 },
-    );
+    console.error("Error fetching participants:", error);
+    return NextResponse.json({ error: "Failed to fetch participants" }, { status: 500 });
   }
 }
 
@@ -61,7 +59,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     });
 
     if (!session?.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { id } = await params;
@@ -70,14 +68,10 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
     // Admin can register anyone, users can only register themselves
     const targetUserId = userId ?? session.user.id;
-    const isAdmin =
-      session.user.role === 'admin' || session.user.role === 'moderator';
+    const isAdmin = session.user.role === "admin" || session.user.role === "moderator";
 
     if (targetUserId !== session.user.id && !isAdmin) {
-      return NextResponse.json(
-        { error: 'Cannot register other users' },
-        { status: 403 },
-      );
+      return NextResponse.json({ error: "Cannot register other users" }, { status: 403 });
     }
 
     const tournament = await prisma.tournament.findUnique({
@@ -86,24 +80,18 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     });
 
     if (!tournament) {
-      return NextResponse.json(
-        { error: 'Tournament not found' },
-        { status: 404 },
-      );
+      return NextResponse.json({ error: "Tournament not found" }, { status: 404 });
     }
 
-    if (tournament.status !== 'UPCOMING') {
+    if (tournament.status !== "UPCOMING") {
       return NextResponse.json(
-        { error: 'Tournament is not open for registration' },
+        { error: "Tournament is not open for registration" },
         { status: 400 },
       );
     }
 
     if (tournament._count.participants >= tournament.maxPlayers) {
-      return NextResponse.json(
-        { error: 'Tournament is full' },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: "Tournament is full" }, { status: 400 });
     }
 
     // Check if already registered
@@ -118,7 +106,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
     if (existing) {
       return NextResponse.json(
-        { error: 'Already registered for this tournament' },
+        { error: "Already registered for this tournament" },
         { status: 409 },
       );
     }
@@ -130,7 +118,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     });
 
     if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
     let challongeParticipantId: string | undefined;
@@ -139,16 +127,13 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     if (tournament.challongeId) {
       try {
         const challonge = getChallongeService();
-        const result = await challonge.createParticipant(
-          tournament.challongeId,
-          {
-            name: user.profile?.bladerName ?? user.name ?? 'Unknown',
-            seed,
-          },
-        );
+        const result = await challonge.createParticipant(tournament.challongeId, {
+          name: user.profile?.bladerName ?? user.name ?? "Unknown",
+          seed,
+        });
         challongeParticipantId = result.data.id;
       } catch (err) {
-        console.error('Failed to add participant to Challonge:', err);
+        console.error("Failed to add participant to Challonge:", err);
       }
     }
 
@@ -168,8 +153,8 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
     return NextResponse.json({ data: participant }, { status: 201 });
   } catch (error) {
-    console.error('Error registering participant:', error);
-    return NextResponse.json({ error: 'Failed to register' }, { status: 500 });
+    console.error("Error registering participant:", error);
+    return NextResponse.json({ error: "Failed to register" }, { status: 500 });
   }
 }
 
@@ -181,21 +166,17 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
     });
 
     if (!session?.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { id } = await params;
     const { searchParams } = new URL(request.url);
-    const targetUserId = searchParams.get('userId') ?? session.user.id;
+    const targetUserId = searchParams.get("userId") ?? session.user.id;
 
-    const isAdmin =
-      session.user.role === 'admin' || session.user.role === 'moderator';
+    const isAdmin = session.user.role === "admin" || session.user.role === "moderator";
 
     if (targetUserId !== session.user.id && !isAdmin) {
-      return NextResponse.json(
-        { error: 'Cannot unregister other users' },
-        { status: 403 },
-      );
+      return NextResponse.json({ error: "Cannot unregister other users" }, { status: 403 });
     }
 
     const participant = await prisma.tournamentParticipant.findUnique({
@@ -209,24 +190,18 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
     });
 
     if (!participant) {
-      return NextResponse.json(
-        { error: 'Not registered for this tournament' },
-        { status: 404 },
-      );
+      return NextResponse.json({ error: "Not registered for this tournament" }, { status: 404 });
     }
 
-    if (participant.tournament.status !== 'UPCOMING') {
+    if (participant.tournament.status !== "UPCOMING") {
       return NextResponse.json(
-        { error: 'Cannot unregister from started tournament' },
+        { error: "Cannot unregister from started tournament" },
         { status: 400 },
       );
     }
 
     // Remove from Challonge if linked
-    if (
-      participant.tournament.challongeId &&
-      participant.challongeParticipantId
-    ) {
+    if (participant.tournament.challongeId && participant.challongeParticipantId) {
       try {
         const challonge = getChallongeService();
         await challonge.deleteParticipant(
@@ -234,7 +209,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
           participant.challongeParticipantId,
         );
       } catch (err) {
-        console.error('Failed to remove participant from Challonge:', err);
+        console.error("Failed to remove participant from Challonge:", err);
       }
     }
 
@@ -249,10 +224,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Error unregistering participant:', error);
-    return NextResponse.json(
-      { error: 'Failed to unregister' },
-      { status: 500 },
-    );
+    console.error("Error unregistering participant:", error);
+    return NextResponse.json({ error: "Failed to unregister" }, { status: 500 });
   }
 }

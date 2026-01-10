@@ -77,12 +77,22 @@ COPY --from=builder --chown=nextjs:nodejs /app/bot/dist ./bot/dist
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
+# Install Chromium for Puppeteer
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    chromium \
+    fonts-liberation \
+    && rm -rf /var/lib/apt/lists/*
+
 USER nextjs
 
 EXPOSE 3000
 
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
+
+# Puppeteer config
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 
 # Health check to allow Coolify/Docker to detect unhealthy containers
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \

@@ -14,6 +14,7 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { api } from '@/lib/standard-api';
 import type { DiscordStats, TeamGroup } from '@/lib/discord-data';
+import { LOGO_VARIANTS } from '@/lib/role-colors';
 import { DiscordRoleBadge } from './DiscordRoleBadge';
 
 interface DiscordStatusCardProps {
@@ -25,6 +26,14 @@ export function DiscordStatusCard({ initialStats, initialTeam }: DiscordStatusCa
   const [stats, setStats] = useState<DiscordStats | null>(initialStats || null);
   const [team, setTeam] = useState<TeamGroup[]>(initialTeam || []);
   const [loading, setLoading] = useState(!initialStats);
+  const [currentLogoIndex, setCurrentLogoIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentLogoIndex((prev) => (prev + 1) % LOGO_VARIANTS.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     async function fetchData() {
@@ -109,20 +118,33 @@ export function DiscordStatusCard({ initialStats, initialTeam }: DiscordStatusCa
               justifyContent: 'center',
             }}
           >
-            {/* Animated Staff Logo */}
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ repeat: Number.POSITIVE_INFINITY, duration: 20, ease: "linear" }}
-              style={{ width: '100%', height: '100%', display: 'flex' }}
-            >
-               <Image 
-                 src="/logo-staff.png" 
-                 alt="RPB Staff Logo" 
-                 width={48} 
-                 height={48} 
-                 style={{ objectFit: 'contain' }}
-               />
-            </motion.div>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={LOGO_VARIANTS[currentLogoIndex]?.src}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                transition={{ duration: 0.5 }}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <Image
+                  src={LOGO_VARIANTS[currentLogoIndex]?.src || '/logo.png'}
+                  alt={`${LOGO_VARIANTS[currentLogoIndex]?.role || 'RPB'} Logo`}
+                  width={48}
+                  height={48}
+                  style={{
+                    objectFit: 'contain',
+                    filter: `drop-shadow(0 0 8px ${alpha(LOGO_VARIANTS[currentLogoIndex]?.color || '#dc2626', 0.6)})`,
+                  }}
+                />
+              </motion.div>
+            </AnimatePresence>
           </Box>
           <Box sx={{ flex: 1 }}>
             <Typography

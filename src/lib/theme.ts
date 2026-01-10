@@ -2,6 +2,7 @@
 
 import { createTheme, type ThemeOptions } from '@mui/material/styles';
 import { fontFamily } from './fonts';
+import { RoleColors } from './role-colors';
 
 // ----------------------------------------------------------------------
 // Type Augmentation
@@ -53,8 +54,8 @@ declare module '@mui/material/Paper' {
 // Constants (Material Design 3 & Brand Colors)
 // ----------------------------------------------------------------------
 
-const RPB_RED = '#dc2626'; // Brand Primary
-const RPB_GOLD = '#fbbf24'; // Brand Secondary
+const RPB_RED = RoleColors.DEFAULT.primary; // Brand Primary
+const RPB_GOLD = RoleColors.DEFAULT.secondary; // Brand Secondary
 
 // M3 Dark Surface Tones
 const SURFACE_DARK = {

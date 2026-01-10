@@ -72,3 +72,14 @@ export const DiscordRoleMapping: Record<string, RoleType> = {
 export function getRoleTypeFromDiscordId(roleId: string): RoleType {
   return DiscordRoleMapping[roleId] ?? 'DEFAULT';
 }
+
+/**
+ * Standard logo variants used for animations and role-based displays
+ */
+export const LOGO_VARIANTS = [
+  { src: '/logo.png', color: '#dc2626', role: 'RPB' },
+  { src: '/logo-admin.png', color: '#27a169', role: 'ADMIN' },
+  { src: '/logo-rh.png', color: '#3498db', role: 'RH' },
+  { src: '/logo-modo.png', color: '#9b59b6', role: 'MODO' },
+  { src: '/logo-staff.png', color: '#206694', role: 'STAFF' },
+] as const;

@@ -5,24 +5,21 @@
  * DELETE /api/decks/[id] - Delete a deck
  */
 
-import { headers } from 'next/headers';
-import type { NextRequest } from 'next/server';
-import { NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
-import { prisma } from '@/lib/prisma';
+import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import { headers } from "next/headers";
+import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 
 // GET - Get a deck
-export async function GET(
-  _request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
-) {
+export async function GET(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
     });
 
     if (!session?.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { id } = await params;
@@ -30,43 +27,38 @@ export async function GET(
     const deck = await prisma.deck.findFirst({
       where: { id, userId: session.user.id },
       include: {
-        beys: {
+        items: {
           include: {
+            bey: true,
             blade: true,
             ratchet: true,
             bit: true,
           },
-          orderBy: { position: 'asc' },
+          orderBy: { position: "asc" },
         },
       },
     });
 
     if (!deck) {
-      return NextResponse.json({ error: 'Deck not found' }, { status: 404 });
+      return NextResponse.json({ error: "Deck not found" }, { status: 404 });
     }
 
     return NextResponse.json({ data: deck });
   } catch (error) {
-    console.error('Error fetching deck:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch deck' },
-      { status: 500 },
-    );
+    console.error("Error fetching deck:", error);
+    return NextResponse.json({ error: "Failed to fetch deck" }, { status: 500 });
   }
 }
 
 // PUT - Update a deck
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
-) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
     });
 
     if (!session?.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { id } = await params;
@@ -89,14 +81,14 @@ export async function PUT(
     });
 
     if (!existingDeck) {
-      return NextResponse.json({ error: 'Deck not found' }, { status: 404 });
+      return NextResponse.json({ error: "Deck not found" }, { status: 404 });
     }
 
     // If updating beys, validate them
     if (beys) {
       if (beys.length !== 3) {
         return NextResponse.json(
-          { error: 'Invalid deck: exactly 3 beys required' },
+          { error: "Invalid deck: exactly 3 beys required" },
           { status: 400 },
         );
       }
@@ -105,7 +97,7 @@ export async function PUT(
       const uniquePartIds = new Set(allPartIds);
       if (uniquePartIds.size !== allPartIds.length) {
         return NextResponse.json(
-          { error: 'Invalid deck: each part can only be used once' },
+          { error: "Invalid deck: each part can only be used once" },
           { status: 400 },
         );
       }
@@ -121,23 +113,17 @@ export async function PUT(
         const ratchet = partMap.get(bey.ratchetId);
         const bit = partMap.get(bey.bitId);
 
-        if (!blade || blade.type !== 'BLADE') {
-          return NextResponse.json(
-            { error: `Invalid blade ID: ${bey.bladeId}` },
-            { status: 400 },
-          );
+        if (!blade || blade.type !== "BLADE") {
+          return NextResponse.json({ error: `Invalid blade ID: ${bey.bladeId}` }, { status: 400 });
         }
-        if (!ratchet || ratchet.type !== 'RATCHET') {
+        if (!ratchet || ratchet.type !== "RATCHET") {
           return NextResponse.json(
             { error: `Invalid ratchet ID: ${bey.ratchetId}` },
             { status: 400 },
           );
         }
-        if (!bit || bit.type !== 'BIT') {
-          return NextResponse.json(
-            { error: `Invalid bit ID: ${bey.bitId}` },
-            { status: 400 },
-          );
+        if (!bit || bit.type !== "BIT") {
+          return NextResponse.json({ error: `Invalid bit ID: ${bey.bitId}` }, { status: 400 });
         }
       }
     }
@@ -157,11 +143,11 @@ export async function PUT(
         ...(name && { name }),
         ...(isActive !== undefined && { isActive }),
         ...(beys && {
-          beys: {
+          items: {
             deleteMany: {},
             create: beys.map((bey) => ({
               position: bey.position,
-              nickname: bey.nickname,
+              // nickname: bey.nickname, // removed from schema?
               bladeId: bey.bladeId,
               ratchetId: bey.ratchetId,
               bitId: bey.bitId,
@@ -170,24 +156,22 @@ export async function PUT(
         }),
       },
       include: {
-        beys: {
+        items: {
           include: {
+            bey: true,
             blade: true,
             ratchet: true,
             bit: true,
           },
-          orderBy: { position: 'asc' },
+          orderBy: { position: "asc" },
         },
       },
     });
 
     return NextResponse.json({ data: deck });
   } catch (error) {
-    console.error('Error updating deck:', error);
-    return NextResponse.json(
-      { error: 'Failed to update deck' },
-      { status: 500 },
-    );
+    console.error("Error updating deck:", error);
+    return NextResponse.json({ error: "Failed to update deck" }, { status: 500 });
   }
 }
 
@@ -202,7 +186,7 @@ export async function DELETE(
     });
 
     if (!session?.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { id } = await params;
@@ -213,17 +197,14 @@ export async function DELETE(
     });
 
     if (!existingDeck) {
-      return NextResponse.json({ error: 'Deck not found' }, { status: 404 });
+      return NextResponse.json({ error: "Deck not found" }, { status: 404 });
     }
 
     await prisma.deck.delete({ where: { id } });
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Error deleting deck:', error);
-    return NextResponse.json(
-      { error: 'Failed to delete deck' },
-      { status: 500 },
-    );
+    console.error("Error deleting deck:", error);
+    return NextResponse.json({ error: "Failed to delete deck" }, { status: 500 });
   }
 }

@@ -6,12 +6,12 @@ const nextConfig: NextConfig = {
 
   // Output standalone for Docker deployment
   output: "standalone",
-  
+
   // Cache Components (Next.js 16+)
   cacheComponents: true,
 
   // External packages for server (Puppeteer/Crawlee)
-  serverExternalPackages: ['puppeteer', 'crawlee', 'turndown'],
+  serverExternalPackages: ["puppeteer", "crawlee", "turndown", "@napi-rs/canvas"],
 
   // Experimental features
   experimental: {
@@ -21,7 +21,7 @@ const nextConfig: NextConfig = {
       allowedOrigins: ["46.224.145.55:3000", "rpbey.fr", "localhost:3000"],
     },
   },
-  
+
   // Dev origins
   allowedDevOrigins: ["46.224.145.55", "rpbey.fr"],
 
@@ -34,7 +34,15 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
+        hostname: "media.discordapp.net",
+      },
+      {
+        protocol: "https",
         hostname: "avatars.githubusercontent.com",
+      },
+      {
+        protocol: "https",
+        hostname: "lh3.googleusercontent.com",
       },
     ],
   },

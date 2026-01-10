@@ -33,8 +33,8 @@ export const metadata: Metadata = {
   authors: [{ name: 'RPB' }],
   creator: 'République Populaire du Beyblade',
   icons: {
-    icon: '/logo.svg',
-    apple: '/logo.svg',
+    icon: '/logo.png',
+    apple: '/logo.png',
   },
   manifest: '/manifest.json',
   openGraph: {

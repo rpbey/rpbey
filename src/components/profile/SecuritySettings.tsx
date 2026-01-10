@@ -1,8 +1,11 @@
-'use client';
+"use client";
 
-import { Security as SecurityIcon } from '@mui/icons-material';
+import { useToast } from "@/components/ui";
+import { authClient } from "@/lib/auth-client";
+import LockIcon from "@mui/icons-material/Lock";
 import {
   Alert,
+  alpha,
   Box,
   Button,
   Card,
@@ -17,20 +20,20 @@ import {
   Stack,
   TextField,
   Typography,
-} from '@mui/material';
-import { useState } from 'react';
-import { useToast } from '@/components/ui';
-import { authClient } from '@/lib/auth-client';
+  useTheme,
+} from "@mui/material";
+import { useState } from "react";
 
 export default function SecuritySettings() {
   const { data: session } = authClient.useSession();
+  const theme = useTheme();
   const [openEnable, setOpenEnable] = useState(false);
   const [openDisable, setOpenDisable] = useState(false);
-  const [step, setStep] = useState<'password' | 'qr' | 'backup'>('password');
-  const [password, setPassword] = useState('');
-  const [code, setCode] = useState('');
+  const [step, setStep] = useState<"password" | "qr" | "backup">("password");
+  const [password, setPassword] = useState("");
+  const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
-  const [totpURI, setTotpURI] = useState('');
+  const [totpURI, setTotpURI] = useState("");
   const [backupCodes, setBackupCodes] = useState<string[]>([]);
   const { showToast } = useToast();
 
@@ -40,12 +43,11 @@ export default function SecuritySettings() {
   // Since we just updated the schema, the session might not have it yet unless we re-login or Better Auth syncs it.
   // We'll trust the session property if it exists.
   const is2FAEnabled =
-    (session?.user as unknown as { twoFactorEnabled: boolean })
-      ?.twoFactorEnabled || false;
+    (session?.user as unknown as { twoFactorEnabled: boolean })?.twoFactorEnabled || false;
 
   const handleEnableStart = () => {
-    setStep('password');
-    setPassword('');
+    setStep("password");
+    setPassword("");
     setOpenEnable(true);
   };
 
@@ -56,14 +58,14 @@ export default function SecuritySettings() {
         password,
       });
       if (res.error) {
-        showToast(res.error.message || 'Mot de passe incorrect', 'error');
+        showToast(res.error.message || "Mot de passe incorrect", "error");
       } else {
         setTotpURI(res.data.totpURI);
         setBackupCodes(res.data.backupCodes);
-        setStep('qr');
+        setStep("qr");
       }
     } catch {
-      showToast('Une erreur est survenue', 'error');
+      showToast("Une erreur est survenue", "error");
     } finally {
       setLoading(false);
     }
@@ -77,13 +79,13 @@ export default function SecuritySettings() {
         trustDevice: true,
       });
       if (res.error) {
-        showToast(res.error.message || 'Code invalide', 'error');
+        showToast(res.error.message || "Code invalide", "error");
       } else {
-        showToast('A2F activée avec succès', 'success');
-        setStep('backup');
+        showToast("A2F activée avec succès", "success");
+        setStep("backup");
       }
     } catch {
-      showToast('Une erreur est survenue', 'error');
+      showToast("Une erreur est survenue", "error");
     } finally {
       setLoading(false);
     }
@@ -96,16 +98,16 @@ export default function SecuritySettings() {
         password,
       });
       if (res.error) {
-        showToast(res.error.message || 'Mot de passe incorrect', 'error');
+        showToast(res.error.message || "Mot de passe incorrect", "error");
       } else {
-        showToast('A2F désactivée', 'success');
+        showToast("A2F désactivée", "success");
         setOpenDisable(false);
-        setPassword('');
+        setPassword("");
         // Optionally refresh session
         window.location.reload();
       }
     } catch {
-      showToast('Une erreur est survenue', 'error');
+      showToast("Une erreur est survenue", "error");
     } finally {
       setLoading(false);
     }
@@ -115,48 +117,67 @@ export default function SecuritySettings() {
     <Card
       elevation={0}
       sx={{
-        borderRadius: 4,
-        border: '1px solid',
-        borderColor: 'divider',
+        borderRadius: 5,
+        border: "1px solid",
+        borderColor: "divider",
         mt: 4,
+        background: `linear-gradient(180deg, ${alpha(
+          theme.palette.background.paper,
+          0.9,
+        )} 0%, ${alpha(theme.palette.background.default, 0.5)} 100%)`,
+        backdropFilter: "blur(20px)",
       }}
     >
       <CardContent sx={{ p: 4 }}>
-        <Typography
-          variant="h6"
-          fontWeight="bold"
-          gutterBottom
-          sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
-        >
-          <SecurityIcon color="primary" /> Sécurité
-        </Typography>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 3 }}>
+          <LockIcon color="primary" sx={{ fontSize: 28 }} />
+          <Typography variant="h5" fontWeight="800">
+            Sécurité
+          </Typography>
+        </Box>
 
         <Stack spacing={3} sx={{ mt: 2 }}>
           <Box
             sx={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              flexWrap: 'wrap',
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              flexWrap: "wrap",
               gap: 2,
+              p: 2,
+              borderRadius: 3,
+              border: "1px solid",
+              borderColor: "divider",
+              bgcolor: alpha(theme.palette.background.default, 0.5),
             }}
           >
             <Box>
               <Typography
                 variant="subtitle1"
                 fontWeight="bold"
-                sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
+                sx={{ display: "flex", alignItems: "center", gap: 1 }}
               >
                 Authentification à deux facteurs (A2F)
                 {is2FAEnabled ? (
-                  <Chip label="Activé" color="success" size="small" />
+                  <Chip
+                    label="Activé"
+                    color="success"
+                    size="small"
+                    variant="filled"
+                    sx={{ fontWeight: "bold", height: 20 }}
+                  />
                 ) : (
-                  <Chip label="Désactivé" color="default" size="small" />
+                  <Chip
+                    label="Désactivé"
+                    color="default"
+                    size="small"
+                    variant="outlined"
+                    sx={{ height: 20 }}
+                  />
                 )}
               </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Protégez votre compte avec une couche de sécurité
-                supplémentaire.
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                Protégez votre compte avec une couche de sécurité supplémentaire.
               </Typography>
             </Box>
 
@@ -165,11 +186,16 @@ export default function SecuritySettings() {
                 variant="outlined"
                 color="error"
                 onClick={() => setOpenDisable(true)}
+                sx={{ borderRadius: 2 }}
               >
                 Désactiver l'A2F
               </Button>
             ) : (
-              <Button variant="contained" onClick={handleEnableStart}>
+              <Button
+                variant="contained"
+                onClick={handleEnableStart}
+                sx={{ borderRadius: 2, boxShadow: "none" }}
+              >
                 Activer l'A2F
               </Button>
             )}
@@ -183,19 +209,21 @@ export default function SecuritySettings() {
         onClose={() => setOpenEnable(false)}
         maxWidth="sm"
         fullWidth
+        PaperProps={{
+          sx: { borderRadius: 4, p: 1 },
+        }}
       >
-        <DialogTitle>Configuration de l'A2F</DialogTitle>
+        <DialogTitle sx={{ fontWeight: "bold" }}>Configuration de l'A2F</DialogTitle>
         <DialogContent>
-          {step === 'password' && (
+          {step === "password" && (
             <Stack spacing={2} sx={{ pt: 1 }}>
-              <Typography>
-                Pour activer l'authentification à deux facteurs, veuillez
-                confirmer votre mot de passe.
+              <Typography color="text.secondary">
+                Pour activer l'authentification à deux facteurs, veuillez confirmer votre mot de
+                passe.
               </Typography>
-              <Alert severity="info">
-                Si vous vous connectez uniquement via Discord, vous devez
-                d'abord définir un mot de passe pour utiliser cette
-                fonctionnalité.
+              <Alert severity="info" sx={{ borderRadius: 2 }}>
+                Si vous vous connectez uniquement via Discord, vous devez d'abord définir un mot de
+                passe pour utiliser cette fonctionnalité.
               </Alert>
               <TextField
                 type="password"
@@ -203,26 +231,32 @@ export default function SecuritySettings() {
                 fullWidth
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                sx={{ mt: 2 }}
               />
             </Stack>
           )}
 
-          {step === 'qr' && (
-            <Stack spacing={3} sx={{ pt: 1, alignItems: 'center' }}>
-              <Typography align="center">
-                Scannez ce QR Code avec votre application d'authentification
-                (Google Authenticator, Authy, etc.).
+          {step === "qr" && (
+            <Stack spacing={3} sx={{ pt: 1, alignItems: "center" }}>
+              <Typography align="center" color="text.secondary">
+                Scannez ce QR Code avec votre application d'authentification (Google Authenticator,
+                Authy, etc.).
               </Typography>
 
               <Box
                 component="img"
-                src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(totpURI)}`}
+                src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(
+                  totpURI,
+                )}`}
                 alt="QR Code A2F"
                 sx={{
                   width: 200,
                   height: 200,
-                  border: '1px solid #eee',
-                  borderRadius: 2,
+                  border: "1px solid",
+                  borderColor: "divider",
+                  borderRadius: 4,
+                  p: 1,
+                  bgcolor: "white",
                 }}
               />
 
@@ -234,73 +268,76 @@ export default function SecuritySettings() {
                 slotProps={{
                   htmlInput: {
                     maxLength: 6,
-                    inputMode: 'numeric',
-                    pattern: '[0-9]*',
+                    inputMode: "numeric",
+                    pattern: "[0-9]*",
+                    style: { textAlign: "center", fontSize: "1.5rem", letterSpacing: "0.5em" },
                   },
                 }}
               />
             </Stack>
           )}
 
-          {step === 'backup' && (
+          {step === "backup" && (
             <Stack spacing={2} sx={{ pt: 1 }}>
-              <Alert severity="warning">
-                IMPORTANT : Sauvegardez ces codes de secours en lieu sûr. Ils
-                vous permettront d'accéder à votre compte si vous perdez votre
-                appareil d'authentification.
+              <Alert severity="warning" sx={{ borderRadius: 2 }}>
+                IMPORTANT : Sauvegardez ces codes de secours en lieu sûr. Ils vous permettront
+                d'accéder à votre compte si vous perdez votre appareil d'authentification.
               </Alert>
               <Box
                 sx={{
-                  bgcolor: 'action.hover',
-                  p: 2,
-                  borderRadius: 2,
-                  fontFamily: 'monospace',
+                  bgcolor: "action.hover",
+                  p: 3,
+                  borderRadius: 3,
+                  fontFamily: "monospace",
+                  border: "1px solid",
+                  borderColor: "divider",
                 }}
               >
-                <Grid container spacing={1}>
-                  {/* Need to import Grid from MUI or use Box */}
+                <Grid container spacing={2}>
                   {backupCodes.map((code) => (
-                    <Box
-                      key={code}
-                      component="span"
-                      sx={{ display: 'block', width: '50%', float: 'left' }}
-                    >
-                      {code}
-                    </Box>
+                    <Grid size={6} key={code} sx={{ display: "flex", justifyContent: "center" }}>
+                      <Box component="span" sx={{ fontWeight: "bold" }}>
+                        {code}
+                      </Box>
+                    </Grid>
                   ))}
-                  <Box sx={{ clear: 'both' }} />
                 </Grid>
               </Box>
             </Stack>
           )}
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenEnable(false)}>Annuler</Button>
-          {step === 'password' && (
+        <DialogActions sx={{ px: 3, pb: 3 }}>
+          <Button onClick={() => setOpenEnable(false)} variant="outlined" sx={{ borderRadius: 2 }}>
+            Annuler
+          </Button>
+          {step === "password" && (
             <Button
               onClick={handlePasswordSubmit}
               variant="contained"
               disabled={loading || !password}
+              sx={{ borderRadius: 2 }}
             >
-              {loading ? <CircularProgress size={24} /> : 'Continuer'}
+              {loading ? <CircularProgress size={24} /> : "Continuer"}
             </Button>
           )}
-          {step === 'qr' && (
+          {step === "qr" && (
             <Button
               onClick={handleVerifyTOTP}
               variant="contained"
               disabled={loading || code.length < 6}
+              sx={{ borderRadius: 2 }}
             >
-              {loading ? <CircularProgress size={24} /> : 'Vérifier'}
+              {loading ? <CircularProgress size={24} /> : "Vérifier"}
             </Button>
           )}
-          {step === 'backup' && (
+          {step === "backup" && (
             <Button
               onClick={() => {
                 setOpenEnable(false);
                 window.location.reload();
               }}
               variant="contained"
+              sx={{ borderRadius: 2 }}
             >
               J'ai sauvegardé mes codes
             </Button>
@@ -309,13 +346,17 @@ export default function SecuritySettings() {
       </Dialog>
 
       {/* Disable 2FA Dialog */}
-      <Dialog open={openDisable} onClose={() => setOpenDisable(false)}>
-        <DialogTitle>Désactiver l'A2F</DialogTitle>
+      <Dialog
+        open={openDisable}
+        onClose={() => setOpenDisable(false)}
+        PaperProps={{ sx: { borderRadius: 4, p: 1 } }}
+      >
+        <DialogTitle sx={{ fontWeight: "bold" }}>Désactiver l'A2F</DialogTitle>
         <DialogContent>
           <Stack spacing={2} sx={{ pt: 1 }}>
-            <Typography>
-              Êtes-vous sûr de vouloir désactiver l'authentification à deux
-              facteurs ? Votre compte sera moins sécurisé.
+            <Typography color="text.secondary">
+              Êtes-vous sûr de vouloir désactiver l'authentification à deux facteurs ? Votre compte
+              sera moins sécurisé.
             </Typography>
             <TextField
               type="password"
@@ -323,18 +364,22 @@ export default function SecuritySettings() {
               fullWidth
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              sx={{ mt: 2 }}
             />
           </Stack>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenDisable(false)}>Annuler</Button>
+        <DialogActions sx={{ px: 3, pb: 3 }}>
+          <Button onClick={() => setOpenDisable(false)} variant="outlined" sx={{ borderRadius: 2 }}>
+            Annuler
+          </Button>
           <Button
             onClick={handleDisable}
             color="error"
             variant="contained"
             disabled={loading || !password}
+            sx={{ borderRadius: 2 }}
           >
-            {loading ? <CircularProgress size={24} /> : 'Désactiver'}
+            {loading ? <CircularProgress size={24} /> : "Désactiver"}
           </Button>
         </DialogActions>
       </Dialog>

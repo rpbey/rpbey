@@ -13,12 +13,13 @@ import {
   ListItemButton,
   ListItemText,
   Toolbar,
-  Typography,
 } from '@mui/material';
 import { motion, useMotionValueEvent, useScroll } from 'framer-motion';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useState } from 'react';
 import { useSession } from '@/lib/auth-client';
+import { LOGO_VARIANTS } from '@/lib/role-colors';
 
 const navItems: { label: string; href: string; external?: boolean }[] = [
   { label: 'Accueil', href: '/' },
@@ -73,19 +74,22 @@ export function MarketingHeader() {
         <Container maxWidth="xl">
           <Toolbar disableGutters sx={{ gap: 2 }}>
             {/* Logo */}
-            <Typography
-              variant="h5"
+            <Box
               component={Link}
               href="/"
               sx={{
-                fontWeight: 800,
-                color: 'primary.main',
-                textDecoration: 'none',
-                letterSpacing: '-0.02em',
+                display: 'flex',
+                alignItems: 'center',
               }}
             >
-              RPB
-            </Typography>
+              <Image
+                src={LOGO_VARIANTS[0].src}
+                alt="RPB Logo"
+                width={48}
+                height={48}
+                style={{ objectFit: 'contain' }}
+              />
+            </Box>
 
             {/* Desktop nav */}
             <Box
@@ -183,9 +187,13 @@ export function MarketingHeader() {
             alignItems: 'center',
           }}
         >
-          <Typography variant="h6" fontWeight="bold" color="primary.main">
-            RPB
-          </Typography>
+          <Image
+            src={LOGO_VARIANTS[0].src}
+            alt="RPB Logo"
+            width={40}
+            height={40}
+            style={{ objectFit: 'contain' }}
+          />
           <IconButton onClick={handleDrawerToggle}>
             <Close />
           </IconButton>

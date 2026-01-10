@@ -1,10 +1,10 @@
-'use server';
+"use server";
 
-import { google } from 'googleapis';
-import { headers } from 'next/headers';
-import { auth } from '@/lib/auth';
-import { getChallongeService } from '@/lib/challonge';
-import { prisma } from '@/lib/prisma';
+import { auth } from "@/lib/auth";
+import { getChallongeService } from "@/lib/challonge";
+import { prisma } from "@/lib/prisma";
+import { google } from "googleapis";
+import { headers } from "next/headers";
 
 export async function reportChallongeMatch(
   tournamentId: string,
@@ -16,11 +16,8 @@ export async function reportChallongeMatch(
       headers: await headers(),
     });
 
-    if (
-      !session?.user ||
-      (session.user.role !== 'admin' && session.user.role !== 'moderator')
-    ) {
-      return { error: 'Unauthorized' };
+    if (!session?.user || (session.user.role !== "admin" && session.user.role !== "moderator")) {
+      return { error: "Unauthorized" };
     }
 
     const tournament = await prisma.tournament.findUnique({
@@ -28,18 +25,15 @@ export async function reportChallongeMatch(
       include: { participants: true },
     });
 
-    if (!tournament?.challongeId) return { error: 'Tournament not linked' };
+    if (!tournament?.challongeId) return { error: "Tournament not linked" };
 
     // Find Challonge Participant ID for the winner
-    const participant = tournament.participants.find(
-      (p) => p.userId === data.winnerId,
-    );
-    if (!participant?.challongeParticipantId)
-      return { error: 'Winner not synced with Challonge' };
+    const participant = tournament.participants.find((p) => p.userId === data.winnerId);
+    if (!participant?.challongeParticipantId) return { error: "Winner not synced with Challonge" };
 
     // Try to get Admin's Challonge Token
     const account = await prisma.account.findFirst({
-      where: { userId: session.user.id, providerId: 'challonge' },
+      where: { userId: session.user.id, providerId: "challonge" },
     });
 
     const challonge = getChallongeService();
@@ -60,14 +54,14 @@ export async function reportChallongeMatch(
       data: {
         winnerId: data.winnerId,
         score: data.score,
-        state: 'complete',
+        state: "complete",
       },
     });
 
     return { success: true };
   } catch (error) {
-    console.error('Report failed:', error);
-    return { error: 'Failed to report score to Challonge' };
+    console.error("Report failed:", error);
+    return { error: "Failed to report score to Challonge" };
   }
 }
 
@@ -77,23 +71,20 @@ export async function exportTournamentToSheets(tournamentId: string) {
       headers: await headers(),
     });
 
-    if (
-      !session?.user ||
-      (session.user.role !== 'admin' && session.user.role !== 'moderator')
-    ) {
-      return { error: 'Unauthorized' };
+    if (!session?.user || (session.user.role !== "admin" && session.user.role !== "moderator")) {
+      return { error: "Unauthorized" };
     }
 
     // Get Google Account token
     const account = await prisma.account.findFirst({
       where: {
         userId: session.user.id,
-        providerId: 'google',
+        providerId: "google",
       },
     });
 
     if (!account || !account.accessToken) {
-      return { error: 'NO_GOOGLE_ACCOUNT' };
+      return { error: "NO_GOOGLE_ACCOUNT" };
     }
 
     // Fetch Tournament Data
@@ -108,8 +99,9 @@ export async function exportTournamentToSheets(tournamentId: string) {
                 decks: {
                   where: { isActive: true },
                   include: {
-                    beys: {
+                    items: {
                       include: {
+                        bey: true,
                         blade: true,
                         ratchet: true,
                         bit: true,
@@ -120,7 +112,7 @@ export async function exportTournamentToSheets(tournamentId: string) {
               },
             },
           },
-          orderBy: { seed: 'asc' },
+          orderBy: { seed: "asc" },
         },
         matches: {
           include: {
@@ -128,13 +120,13 @@ export async function exportTournamentToSheets(tournamentId: string) {
             player2: { include: { profile: true } },
             winner: { include: { profile: true } },
           },
-          orderBy: [{ round: 'asc' }, { createdAt: 'asc' }],
+          orderBy: [{ round: "asc" }, { createdAt: "asc" }],
         },
       },
     });
 
     if (!tournament) {
-      return { error: 'Tournament not found' };
+      return { error: "Tournament not found" };
     }
 
     // Initialize Google Sheets API
@@ -148,7 +140,7 @@ export async function exportTournamentToSheets(tournamentId: string) {
       refresh_token: account.refreshToken, // Google API client handles refresh if provided
     });
 
-    const sheets = google.sheets({ version: 'v4', auth: authClient });
+    const sheets = google.sheets({ version: "v4", auth: authClient });
 
     // Create Spreadsheet
     const spreadsheet = await sheets.spreadsheets.create({
@@ -160,55 +152,58 @@ export async function exportTournamentToSheets(tournamentId: string) {
     });
 
     if (!spreadsheet.data.spreadsheetId) {
-      throw new Error('Failed to create spreadsheet');
+      throw new Error("Failed to create spreadsheet");
     }
     const spreadsheetId = spreadsheet.data.spreadsheetId;
 
     // Prepare Data
     // Sheet 1: Participants
-    const participantHeader = [
-      'Seed',
-      'Pseudo',
-      'Discord',
-      'Deck',
-      'Bey 1',
-      'Bey 2',
-      'Bey 3',
-    ];
+    const participantHeader = ["Seed", "Pseudo", "Discord", "Deck", "Bey 1", "Bey 2", "Bey 3"];
     const participantRows = tournament.participants.map((p) => {
       const deck = p.user.decks?.[0];
-      const beys = deck?.beys || [];
+      const items = deck?.items || [];
 
       const beyStrings = [0, 1, 2].map((i) => {
-        const bey = beys.find((b) => b.position === i + 1);
-        if (!bey) return '-';
-        return `${bey.blade.name} ${bey.ratchet.height}-${bey.ratchet.protrusions || '?'} ${bey.bit.name}`;
+        const item = items.find((b) => b.position === i + 1);
+        if (!item) return "-";
+
+        // Custom build
+        if (item.blade && item.ratchet && item.bit) {
+          return `${item.blade.name} ${item.ratchet.height}-${item.ratchet.protrusions || "?"} ${
+            item.bit.name
+          }`;
+        }
+        // Pre-built
+        if (item.bey) {
+          return item.bey.name;
+        }
+        return "-";
       });
 
       return [
-        p.seed || '-',
+        p.seed || "-",
         p.user.name || p.user.email,
-        p.user.discordTag || '-',
-        deck?.name || 'Aucun deck',
+        p.user.discordTag || "-",
+        deck?.name || "Aucun deck",
         ...beyStrings,
       ];
     });
 
     // Sheet 2: Matches
-    const matchHeader = ['Round', 'Joueur 1', 'Joueur 2', 'Score', 'Vainqueur'];
+    const matchHeader = ["Round", "Joueur 1", "Joueur 2", "Score", "Vainqueur"];
     const matchRows = tournament.matches.map((m) => [
       m.round,
-      m.player1?.name || 'TBD',
-      m.player2?.name || 'TBD',
-      m.score || '-',
-      m.winner?.name || '-',
+      m.player1?.name || "TBD",
+      m.player2?.name || "TBD",
+      m.score || "-",
+      m.winner?.name || "-",
     ]);
 
     // Write Data
     await sheets.spreadsheets.values.update({
       spreadsheetId,
-      range: 'Sheet1!A1',
-      valueInputOption: 'RAW',
+      range: "Sheet1!A1",
+      valueInputOption: "RAW",
       requestBody: {
         values: [participantHeader, ...participantRows],
       },
@@ -222,7 +217,7 @@ export async function exportTournamentToSheets(tournamentId: string) {
           {
             addSheet: {
               properties: {
-                title: 'Matchs',
+                title: "Matchs",
               },
             },
           },
@@ -232,8 +227,8 @@ export async function exportTournamentToSheets(tournamentId: string) {
 
     await sheets.spreadsheets.values.update({
       spreadsheetId,
-      range: 'Matchs!A1',
-      valueInputOption: 'RAW',
+      range: "Matchs!A1",
+      valueInputOption: "RAW",
       requestBody: {
         values: [matchHeader, ...matchRows],
       },
@@ -241,7 +236,7 @@ export async function exportTournamentToSheets(tournamentId: string) {
 
     return { success: true, url: spreadsheet.data.spreadsheetUrl };
   } catch (error) {
-    console.error('Export failed:', error);
-    return { error: 'Failed to export to Sheets' };
+    console.error("Export failed:", error);
+    return { error: "Failed to export to Sheets" };
   }
 }

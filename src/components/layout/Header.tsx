@@ -11,11 +11,12 @@ import {
   Menu,
   MenuItem,
   Toolbar,
-  Typography,
 } from '@mui/material';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useState } from 'react';
 import { signOut, useSession } from '@/lib/auth-client';
+import { LOGO_VARIANTS } from '@/lib/role-colors';
 
 const pages = [
   { label: 'Dashboard', href: '/dashboard' },
@@ -54,20 +55,23 @@ export function Header() {
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           {/* Logo - Desktop */}
-          <Typography
-            variant="h6"
+          <Box
             component={Link}
             href="/"
             sx={{
               mr: 2,
               display: { xs: 'none', md: 'flex' },
-              fontWeight: 700,
-              color: 'primary.main',
-              textDecoration: 'none',
+              alignItems: 'center',
             }}
           >
-            RPB
-          </Typography>
+            <Image
+              src={LOGO_VARIANTS[0].src}
+              alt="RPB Logo"
+              width={40}
+              height={40}
+              style={{ objectFit: 'contain' }}
+            />
+          </Box>
 
           {/* Mobile menu */}
           <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
@@ -98,20 +102,23 @@ export function Header() {
           </Box>
 
           {/* Logo - Mobile */}
-          <Typography
-            variant="h6"
+          <Box
             component={Link}
             href="/"
             sx={{
               flexGrow: 1,
               display: { xs: 'flex', md: 'none' },
-              fontWeight: 700,
-              color: 'primary.main',
-              textDecoration: 'none',
+              alignItems: 'center',
             }}
           >
-            RPB
-          </Typography>
+            <Image
+              src={LOGO_VARIANTS[0].src}
+              alt="RPB Logo"
+              width={32}
+              height={32}
+              style={{ objectFit: 'contain' }}
+            />
+          </Box>
 
           {/* Desktop menu */}
           <Box

@@ -31,26 +31,35 @@ export async function proxy(request: NextRequest) {
     },
   });
 
+  let response = NextResponse.next();
+
   if (!sessionData) {
     if (isPrivateRoute || isAdminRoute) {
       return NextResponse.redirect(new URL('/sign-in', request.url));
     }
-    return NextResponse.next();
+  } else {
+    if (isAuthRoute || isPasswordRoute) {
+      return NextResponse.redirect(new URL('/dashboard', request.url));
+    }
+
+    if (
+      isAdminRoute &&
+      sessionData.user.role !== 'admin' &&
+      sessionData.user.role !== 'superadmin'
+    ) {
+      return NextResponse.redirect(new URL('/dashboard', request.url));
+    }
   }
 
-  if (isAuthRoute || isPasswordRoute) {
-    return NextResponse.redirect(new URL('/dashboard', request.url));
+  // Force no-cache for homepage to ensure full refresh on deployment
+  if (pathName === '/') {
+    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    response.headers.set('Pragma', 'no-cache');
+    response.headers.set('Expires', '0');
+    response.headers.set('Surrogate-Control', 'no-store');
   }
 
-  if (
-    isAdminRoute &&
-    sessionData.user.role !== 'admin' &&
-    sessionData.user.role !== 'superadmin'
-  ) {
-    return NextResponse.redirect(new URL('/dashboard', request.url));
-  }
-
-  return NextResponse.next();
+  return response;
 }
 
 export const config = {
