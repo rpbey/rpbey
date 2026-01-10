@@ -4,6 +4,7 @@ import {
   EmbedBuilder,
   Events,
   type GuildMember,
+  type TextChannel,
 } from 'discord.js';
 import { generateWelcomeImage } from '../../lib/canvas-utils.js';
 import { Colors, RPB } from '../../lib/constants.js';
@@ -21,35 +22,59 @@ export class MemberJoinListener extends Listener<typeof Events.GuildMemberAdd> {
       `Nouveau membre: ${member.user.tag} sur ${member.guild.name}`,
     );
 
-    // Fetch all channels to ensure cache is complete (API usage)
-    await member.guild.channels.fetch();
+    // 1. Image Generation (Safe Mode)
+    let attachmentItems: AttachmentBuilder[] = [];
+    let hasImage = false;
 
-    // Generate welcome image
-    const avatarUrl = member.displayAvatarURL({ extension: 'png', size: 256 });
-    const imageBuffer = await generateWelcomeImage(
-      member.displayName,
-      avatarUrl,
-      member.guild.memberCount,
-    );
-    const attachmentItems = [
-      new AttachmentBuilder(imageBuffer, { name: 'welcome.png' }),
-    ];
-
-    // Helper to find channels robustly
-    const findChannel = (search: string) =>
-      member.guild.channels.cache.find((c) => {
-        if (c.id === search) return true; // Direct ID match
-        const name = c.name.toLowerCase().replace(/[^a-z0-9]/g, ''); // Normalize: remove emojis, spaces, dashes
-        const query = search.toLowerCase().replace(/[^a-z0-9]/g, '');
-        return name.includes(query);
+    try {
+      const avatarUrl = member.displayAvatarURL({
+        extension: 'png',
+        size: 256,
+        forceStatic: true,
       });
+      const imageBuffer = await generateWelcomeImage(
+        member.displayName,
+        avatarUrl,
+        member.guild.memberCount,
+      );
+      attachmentItems = [
+        new AttachmentBuilder(imageBuffer, { name: 'welcome.png' }),
+      ];
+      hasImage = true;
+    } catch (err) {
+      this.container.logger.error(
+        'Failed to generate welcome image, falling back to text:',
+        err,
+      );
+      // Continue execution without image
+    }
 
-    // Find the "bienvenue" channel
-    const welcomeChannel = findChannel(RPB.Channels.Welcome);
+    // 2. Channel Resolution (Robust Mode)
+    const findChannel = (search: string) =>
+      member.guild.channels.cache.find(
+        (c) =>
+          c.id === search ||
+          (c.name &&
+            c.name.toLowerCase().replace(/[^a-z0-9]/g, '') ===
+              search.toLowerCase().replace(/[^a-z0-9]/g, '')),
+      ) as TextChannel | undefined;
 
-    if (!welcomeChannel?.isTextBased()) return;
+    let welcomeChannel = findChannel(RPB.Channels.Welcome);
 
-    // Find other channels for mentions
+    // Ultimate fallback: System Channel (where Discord sends default welcome messages)
+    if (!welcomeChannel?.isTextBased()) {
+      welcomeChannel = member.guild.systemChannel as TextChannel;
+    }
+
+    // If absolutely no channel is found (rare), abort
+    if (!welcomeChannel?.isTextBased()) {
+      this.container.logger.warn(
+        `No welcome channel found for ${member.guild.name}`,
+      );
+      return;
+    }
+
+    // 3. Helper for channel mentions
     const rulesChannel = findChannel(RPB.Channels.Rules);
     const rolesChannel = findChannel(RPB.Channels.Roles);
     const generalChannel = findChannel(RPB.Channels.GeneralChat);
@@ -57,11 +82,9 @@ export class MemberJoinListener extends Listener<typeof Events.GuildMemberAdd> {
     const getMention = (
       channel: { id: string } | undefined,
       fallback: string,
-    ) => {
-      if (channel?.id) return `<#${channel.id}>`;
-      return fallback;
-    };
+    ) => (channel?.id ? `<#${channel.id}>` : fallback);
 
+    // 4. Build Embed
     const embed = new EmbedBuilder()
       .setTitle('🌀 Bienvenue à la RPB !')
       .setDescription(
@@ -72,7 +95,6 @@ export class MemberJoinListener extends Listener<typeof Events.GuildMemberAdd> {
           `**Let it rip !** 🌀`,
       )
       .setColor(Colors.Primary)
-      .setImage('attachment://welcome.png')
       .addFields(
         { name: '👤 Membre', value: member.user.tag, inline: true },
         {
@@ -87,10 +109,23 @@ export class MemberJoinListener extends Listener<typeof Events.GuildMemberAdd> {
       })
       .setTimestamp();
 
+    // Attach image only if generation succeeded
+    if (hasImage) {
+      embed.setImage('attachment://welcome.png');
+    }
+
+    // 5. Send Message (Safe Send)
     try {
-      await welcomeChannel.send({ embeds: [embed], files: attachmentItems });
+      await welcomeChannel.send({
+        content: `Bienvenue ${member.toString()} !`, // Ping user
+        embeds: [embed],
+        files: attachmentItems,
+      });
+      this.container.logger.info(
+        `Welcome message sent to ${welcomeChannel.name} for ${member.user.tag}`,
+      );
     } catch (error) {
-      this.container.logger.error('Erreur envoi message bienvenue:', error);
+      this.container.logger.error('CRITICAL: Failed to send welcome message:', error);
     }
   }
 }
