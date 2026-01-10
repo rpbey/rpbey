@@ -208,7 +208,8 @@ export function DeckBuilderModal({
             <Alert severity="warning">
               <ul style={{ margin: 0, paddingLeft: '1.5rem' }}>
                 {validationErrors.map((err, i) => (
-                  <li key={`${err}-${i}`}>{err}</li>
+                  // biome-ignore lint/suspicious/noArrayIndexKey: Order is stable for validation errors
+                  <li key={i}>{err}</li>
                 ))}
               </ul>
             </Alert>

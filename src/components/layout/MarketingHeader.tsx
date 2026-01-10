@@ -15,8 +15,8 @@ import {
   Toolbar,
 } from '@mui/material';
 import { motion, useMotionValueEvent, useScroll } from 'framer-motion';
-import Link from 'next/link';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useState } from 'react';
 import { useSession } from '@/lib/auth-client';
 import { LOGO_VARIANTS } from '@/lib/role-colors';

@@ -3,13 +3,13 @@
  * GET, PUT, DELETE operations with Challonge sync
  */
 
-import { auth } from "@/lib/auth";
-import { getChallongeService } from "@/lib/challonge";
-import { prisma } from "@/lib/prisma";
-import type { TournamentStatus } from "@prisma/client";
-import { headers } from "next/headers";
-import type { NextRequest } from "next/server";
-import { NextResponse } from "next/server";
+import type { TournamentStatus } from '@prisma/client';
+import { headers } from 'next/headers';
+import type { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
+import { auth } from '@/lib/auth';
+import { getChallongeService } from '@/lib/challonge';
+import { prisma } from '@/lib/prisma';
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -44,7 +44,7 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
               },
             },
           },
-          orderBy: { seed: "asc" },
+          orderBy: { seed: 'asc' },
         },
         matches: {
           include: {
@@ -52,19 +52,25 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
             player2: { include: { profile: true } },
             winner: { include: { profile: true } },
           },
-          orderBy: [{ round: "asc" }, { createdAt: "asc" }],
+          orderBy: [{ round: 'asc' }, { createdAt: 'asc' }],
         },
       },
     });
 
     if (!tournament) {
-      return NextResponse.json({ error: "Tournament not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: 'Tournament not found' },
+        { status: 404 },
+      );
     }
 
     return NextResponse.json({ data: tournament });
   } catch (error) {
-    console.error("Error fetching tournament:", error);
-    return NextResponse.json({ error: "Failed to fetch tournament" }, { status: 500 });
+    console.error('Error fetching tournament:', error);
+    return NextResponse.json(
+      { error: 'Failed to fetch tournament' },
+      { status: 500 },
+    );
   }
 }
 
@@ -75,25 +81,32 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       headers: await headers(),
     });
 
-    if (!session?.user || (session.user.role !== "admin" && session.user.role !== "moderator")) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (
+      !session?.user ||
+      (session.user.role !== 'admin' && session.user.role !== 'moderator')
+    ) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const { id } = await params;
     const body = await request.json();
-    const { name, description, date, location, format, maxPlayers, status } = body as {
-      name?: string;
-      description?: string;
-      date?: string;
-      location?: string;
-      format?: string;
-      maxPlayers?: number;
-      status?: string;
-    };
+    const { name, description, date, location, format, maxPlayers, status } =
+      body as {
+        name?: string;
+        description?: string;
+        date?: string;
+        location?: string;
+        format?: string;
+        maxPlayers?: number;
+        status?: string;
+      };
 
     const existing = await prisma.tournament.findUnique({ where: { id } });
     if (!existing) {
-      return NextResponse.json({ error: "Tournament not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: 'Tournament not found' },
+        { status: 404 },
+      );
     }
 
     // Update on Challonge if linked
@@ -102,11 +115,11 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
         const challonge = getChallongeService();
         await challonge.updateTournament(existing.challongeId, {
           name: name ?? existing.name,
-          description: description ?? existing.description ?? "",
+          description: description ?? existing.description ?? '',
           startAt: date ? new Date(date).toISOString() : undefined,
         });
       } catch (err) {
-        console.error("Failed to update Challonge tournament:", err);
+        console.error('Failed to update Challonge tournament:', err);
       }
     }
 
@@ -125,8 +138,11 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 
     return NextResponse.json({ data: tournament });
   } catch (error) {
-    console.error("Error updating tournament:", error);
-    return NextResponse.json({ error: "Failed to update tournament" }, { status: 500 });
+    console.error('Error updating tournament:', error);
+    return NextResponse.json(
+      { error: 'Failed to update tournament' },
+      { status: 500 },
+    );
   }
 }
 
@@ -137,15 +153,18 @@ export async function DELETE(_request: NextRequest, { params }: RouteParams) {
       headers: await headers(),
     });
 
-    if (!session?.user || session.user.role !== "admin") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!session?.user || session.user.role !== 'admin') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const { id } = await params;
 
     const tournament = await prisma.tournament.findUnique({ where: { id } });
     if (!tournament) {
-      return NextResponse.json({ error: "Tournament not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: 'Tournament not found' },
+        { status: 404 },
+      );
     }
 
     // Delete from Challonge if linked
@@ -154,7 +173,7 @@ export async function DELETE(_request: NextRequest, { params }: RouteParams) {
         const challonge = getChallongeService();
         await challonge.deleteTournament(tournament.challongeId);
       } catch (err) {
-        console.error("Failed to delete Challonge tournament:", err);
+        console.error('Failed to delete Challonge tournament:', err);
       }
     }
 
@@ -167,8 +186,11 @@ export async function DELETE(_request: NextRequest, { params }: RouteParams) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Error deleting tournament:", error);
-    return NextResponse.json({ error: "Failed to delete tournament" }, { status: 500 });
+    console.error('Error deleting tournament:', error);
+    return NextResponse.json(
+      { error: 'Failed to delete tournament' },
+      { status: 500 },
+    );
   }
 }
 
@@ -179,14 +201,17 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
       headers: await headers(),
     });
 
-    if (!session?.user || (session.user.role !== "admin" && session.user.role !== "moderator")) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (
+      !session?.user ||
+      (session.user.role !== 'admin' && session.user.role !== 'moderator')
+    ) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const { id } = await params;
     const body = await request.json();
     const { action } = body as {
-      action: "start" | "finalize" | "sync" | "sync_participants";
+      action: 'start' | 'finalize' | 'sync' | 'sync_participants';
     };
 
     const tournament = await prisma.tournament.findUnique({
@@ -198,24 +223,31 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     });
 
     if (!tournament) {
-      return NextResponse.json({ error: "Tournament not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: 'Tournament not found' },
+        { status: 404 },
+      );
     }
 
     if (!tournament.challongeId) {
-      return NextResponse.json({ error: "Tournament not linked to Challonge" }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Tournament not linked to Challonge' },
+        { status: 400 },
+      );
     }
 
     const challonge = getChallongeService();
 
     switch (action) {
-      case "sync_participants": {
-        const { data: challongeParticipants } = await challonge.listParticipants(
-          tournament.challongeId,
-        );
+      case 'sync_participants': {
+        const { data: challongeParticipants } =
+          await challonge.listParticipants(tournament.challongeId);
 
         const participantsToCreate = [];
         const alreadySyncedLocalIds = new Set(
-          tournament.participants.filter((p) => p.challongeParticipantId).map((p) => p.id),
+          tournament.participants
+            .filter((p) => p.challongeParticipantId)
+            .map((p) => p.id),
         );
 
         for (const localParticipant of tournament.participants) {
@@ -224,7 +256,8 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
           const existingInChallonge = challongeParticipants.find(
             (p) =>
               p.attributes.misc === localParticipant.userId ||
-              p.attributes.name === (localParticipant.user.name || localParticipant.user.email),
+              p.attributes.name ===
+                (localParticipant.user.name || localParticipant.user.email),
           );
 
           if (existingInChallonge) {
@@ -242,10 +275,11 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
         }
 
         if (participantsToCreate.length > 0) {
-          const { data: createdParticipants } = await challonge.bulkCreateParticipants(
-            tournament.challongeId,
-            participantsToCreate,
-          );
+          const { data: createdParticipants } =
+            await challonge.bulkCreateParticipants(
+              tournament.challongeId,
+              participantsToCreate,
+            );
 
           // Map created participants back to local records
           for (const created of createdParticipants) {
@@ -263,27 +297,29 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
         break;
       }
 
-      case "start": {
+      case 'start': {
         await challonge.startTournament(tournament.challongeId);
         await prisma.tournament.update({
           where: { id },
-          data: { status: "UNDERWAY" },
+          data: { status: 'UNDERWAY' },
         });
         break;
       }
 
-      case "finalize": {
+      case 'finalize': {
         await challonge.finalizeTournament(tournament.challongeId);
         await prisma.tournament.update({
           where: { id },
-          data: { status: "COMPLETE" },
+          data: { status: 'COMPLETE' },
         });
         break;
       }
 
-      case "sync": {
+      case 'sync': {
         // Sync matches from Challonge
-        const { data: matches } = await challonge.listMatches(tournament.challongeId);
+        const { data: matches } = await challonge.listMatches(
+          tournament.challongeId,
+        );
 
         for (const match of matches) {
           const attrs = match.attributes;
@@ -331,12 +367,15 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
       }
 
       default:
-        return NextResponse.json({ error: "Invalid action" }, { status: 400 });
+        return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
     }
 
     return NextResponse.json({ success: true, action });
   } catch (error) {
-    console.error("Error performing tournament action:", error);
-    return NextResponse.json({ error: "Failed to perform action" }, { status: 500 });
+    console.error('Error performing tournament action:', error);
+    return NextResponse.json(
+      { error: 'Failed to perform action' },
+      { status: 500 },
+    );
   }
 }

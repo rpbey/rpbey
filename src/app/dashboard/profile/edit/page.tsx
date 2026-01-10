@@ -1,11 +1,8 @@
-"use client";
+'use client';
 
-import { SecuritySettings } from "@/components/profile";
-import { useToast } from "@/components/ui";
-import { useAuth } from "@/hooks";
-import BoltIcon from "@mui/icons-material/Bolt";
-import PersonIcon from "@mui/icons-material/Person";
-import StarIcon from "@mui/icons-material/Star";
+import BoltIcon from '@mui/icons-material/Bolt';
+import PersonIcon from '@mui/icons-material/Person';
+import StarIcon from '@mui/icons-material/Star';
 import {
   Alert,
   alpha,
@@ -21,11 +18,14 @@ import {
   TextField,
   Typography,
   useTheme,
-} from "@mui/material";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import useSWR from "swr";
+} from '@mui/material';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import useSWR from 'swr';
+import { SecuritySettings } from '@/components/profile';
+import { useToast } from '@/components/ui';
+import { useAuth } from '@/hooks';
 
 interface ProfileFormData {
   bladerName: string;
@@ -35,17 +35,17 @@ interface ProfileFormData {
 }
 
 const BEYBLADE_TYPES = [
-  { value: "ATTACK", label: "Attaque" },
-  { value: "DEFENSE", label: "Défense" },
-  { value: "STAMINA", label: "Endurance" },
-  { value: "BALANCE", label: "Équilibre" },
+  { value: 'ATTACK', label: 'Attaque' },
+  { value: 'DEFENSE', label: 'Défense' },
+  { value: 'STAMINA', label: 'Endurance' },
+  { value: 'BALANCE', label: 'Équilibre' },
 ];
 
 const EXPERIENCE_LEVELS = [
-  { value: "BEGINNER", label: "Débutant (0-1 ans)" },
-  { value: "INTERMEDIATE", label: "Intermédiaire (1-3 ans)" },
-  { value: "ADVANCED", label: "Avancé (3+ ans)" },
-  { value: "COMPETITIVE", label: "Compétiteur" },
+  { value: 'BEGINNER', label: 'Débutant (0-1 ans)' },
+  { value: 'INTERMEDIATE', label: 'Intermédiaire (1-3 ans)' },
+  { value: 'ADVANCED', label: 'Avancé (3+ ans)' },
+  { value: 'COMPETITIVE', label: 'Compétiteur' },
 ];
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
@@ -58,7 +58,10 @@ export default function EditProfilePage() {
   const [isSaving, setIsSaving] = useState(false);
 
   // Fetch current profile data
-  const { data: profileData, isLoading: isProfileLoading } = useSWR("/api/profile", fetcher);
+  const { data: profileData, isLoading: isProfileLoading } = useSWR(
+    '/api/profile',
+    fetcher,
+  );
 
   const {
     register,
@@ -69,30 +72,30 @@ export default function EditProfilePage() {
 
   useEffect(() => {
     if (profileData) {
-      setValue("bladerName", profileData.bladerName || "");
-      setValue("bio", profileData.bio || "");
-      setValue("experience", profileData.experience || "BEGINNER");
-      setValue("favoriteType", profileData.favoriteType || "BALANCE");
+      setValue('bladerName', profileData.bladerName || '');
+      setValue('bio', profileData.bio || '');
+      setValue('experience', profileData.experience || 'BEGINNER');
+      setValue('favoriteType', profileData.favoriteType || 'BALANCE');
     }
   }, [profileData, setValue]);
 
   const onSubmit = async (data: ProfileFormData) => {
     setIsSaving(true);
     try {
-      const res = await fetch("/api/profile", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+      const res = await fetch('/api/profile', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       });
 
-      if (!res.ok) throw new Error("Failed to update profile");
+      if (!res.ok) throw new Error('Failed to update profile');
 
-      showToast("Profil mis à jour avec succès", "success");
+      showToast('Profil mis à jour avec succès', 'success');
       router.refresh();
-      router.push("/dashboard/profile");
+      router.push('/dashboard/profile');
     } catch (error) {
       console.error(error);
-      showToast("Erreur lors de la mise à jour", "error");
+      showToast('Erreur lors de la mise à jour', 'error');
     } finally {
       setIsSaving(false);
     }
@@ -100,16 +103,28 @@ export default function EditProfilePage() {
 
   if (isProfileLoading) {
     return (
-      <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "50vh" }}>
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '50vh',
+        }}
+      >
         <CircularProgress />
       </Box>
     );
   }
 
   return (
-    <Box sx={{ maxWidth: 1200, mx: "auto" }}>
+    <Box sx={{ maxWidth: 1200, mx: 'auto' }}>
       <Box mb={5}>
-        <Typography variant="h3" fontWeight="900" gutterBottom sx={{ letterSpacing: "-0.03em" }}>
+        <Typography
+          variant="h3"
+          fontWeight="900"
+          gutterBottom
+          sx={{ letterSpacing: '-0.03em' }}
+        >
           Modifier mon profil
         </Typography>
         <Typography color="text.secondary" variant="h6" fontWeight="normal">
@@ -126,19 +141,26 @@ export default function EditProfilePage() {
               sx={{
                 borderRadius: 5,
                 mb: 4,
-                border: "1px solid",
-                borderColor: "divider",
+                border: '1px solid',
+                borderColor: 'divider',
                 background: `linear-gradient(180deg, ${alpha(
                   theme.palette.background.paper,
                   0.9,
                 )} 0%, ${alpha(theme.palette.background.default, 0.5)} 100%)`,
-                backdropFilter: "blur(20px)",
+                backdropFilter: 'blur(20px)',
               }}
             >
               <CardContent sx={{ p: 4 }}>
                 <Stack spacing={4}>
                   <Box>
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 3 }}>
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 1.5,
+                        mb: 3,
+                      }}
+                    >
                       <PersonIcon color="primary" sx={{ fontSize: 28 }} />
                       <Typography variant="h5" fontWeight="800">
                         Identité Blader
@@ -151,14 +173,17 @@ export default function EditProfilePage() {
                           fullWidth
                           label="Nom de Blader"
                           variant="outlined"
-                          {...register("bladerName", {
-                            required: "Le nom est requis",
-                            minLength: { value: 3, message: "Minimum 3 caractères" },
+                          {...register('bladerName', {
+                            required: 'Le nom est requis',
+                            minLength: {
+                              value: 3,
+                              message: 'Minimum 3 caractères',
+                            },
                           })}
                           error={!!errors.bladerName}
                           helperText={errors.bladerName?.message}
                           sx={{
-                            "& .MuiOutlinedInput-root": { borderRadius: 3 },
+                            '& .MuiOutlinedInput-root': { borderRadius: 3 },
                           }}
                         />
                       </Grid>
@@ -168,8 +193,10 @@ export default function EditProfilePage() {
                           fullWidth
                           label="Type Favori"
                           defaultValue=""
-                          {...register("favoriteType")}
-                          sx={{ "& .MuiOutlinedInput-root": { borderRadius: 3 } }}
+                          {...register('favoriteType')}
+                          sx={{
+                            '& .MuiOutlinedInput-root': { borderRadius: 3 },
+                          }}
                         >
                           {BEYBLADE_TYPES.map((option) => (
                             <MenuItem key={option.value} value={option.value}>
@@ -184,8 +211,10 @@ export default function EditProfilePage() {
                           fullWidth
                           label="Expérience"
                           defaultValue=""
-                          {...register("experience")}
-                          sx={{ "& .MuiOutlinedInput-root": { borderRadius: 3 } }}
+                          {...register('experience')}
+                          sx={{
+                            '& .MuiOutlinedInput-root': { borderRadius: 3 },
+                          }}
                         >
                           {EXPERIENCE_LEVELS.map((option) => (
                             <MenuItem key={option.value} value={option.value}>
@@ -201,8 +230,10 @@ export default function EditProfilePage() {
                           rows={4}
                           label="Biographie"
                           placeholder="Dis-nous en plus sur ton style de jeu..."
-                          {...register("bio")}
-                          sx={{ "& .MuiOutlinedInput-root": { borderRadius: 3 } }}
+                          {...register('bio')}
+                          sx={{
+                            '& .MuiOutlinedInput-root': { borderRadius: 3 },
+                          }}
                         />
                       </Grid>
                     </Grid>
@@ -210,7 +241,9 @@ export default function EditProfilePage() {
 
                   <Divider />
 
-                  <Box sx={{ display: "flex", gap: 2, justifyContent: "flex-end" }}>
+                  <Box
+                    sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}
+                  >
                     <Button
                       variant="text"
                       onClick={() => router.back()}
@@ -227,11 +260,13 @@ export default function EditProfilePage() {
                         borderRadius: 3,
                         px: 4,
                         py: 1,
-                        fontWeight: "bold",
+                        fontWeight: 'bold',
                         boxShadow: `0 8px 16px ${alpha(theme.palette.primary.main, 0.25)}`,
                       }}
                     >
-                      {isSaving ? "Enregistrement..." : "Sauvegarder les modifications"}
+                      {isSaving
+                        ? 'Enregistrement...'
+                        : 'Sauvegarder les modifications'}
                     </Button>
                   </Box>
                 </Stack>
@@ -252,37 +287,48 @@ export default function EditProfilePage() {
               sx={{
                 borderRadius: 4,
                 bgcolor: alpha(theme.palette.info.main, 0.1),
-                border: "1px solid",
+                border: '1px solid',
                 borderColor: alpha(theme.palette.info.main, 0.2),
-                "& .MuiAlert-icon": { color: "info.main" },
+                '& .MuiAlert-icon': { color: 'info.main' },
               }}
             >
               <Typography variant="subtitle2" fontWeight="bold" gutterBottom>
                 Le savais-tu ?
               </Typography>
-              Ton nom de Blader est unique et sera affiché sur les classements et lors des tournois.
-              Choisis-le bien !
+              Ton nom de Blader est unique et sera affiché sur les classements
+              et lors des tournois. Choisis-le bien !
             </Alert>
 
             <Box
               sx={{
                 p: 3,
                 borderRadius: 4,
-                bgcolor: "background.paper",
-                border: "1px solid",
-                borderColor: "divider",
+                bgcolor: 'background.paper',
+                border: '1px solid',
+                borderColor: 'divider',
               }}
             >
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
+              <Box
+                sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}
+              >
                 <BoltIcon color="warning" fontSize="small" />
                 <Typography variant="subtitle2" fontWeight="bold">
                   Infos du compte
                 </Typography>
               </Box>
-              <Typography variant="caption" color="text.secondary" display="block">
-                Inscrit le {user ? new Date(user.createdAt).toLocaleDateString() : "-"}
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                display="block"
+              >
+                Inscrit le{' '}
+                {user ? new Date(user.createdAt).toLocaleDateString() : '-'}
               </Typography>
-              <Typography variant="caption" color="text.secondary" display="block">
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                display="block"
+              >
                 ID: {user?.id}
               </Typography>
             </Box>

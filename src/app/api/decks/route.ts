@@ -4,11 +4,11 @@
  * POST /api/decks - Create a new deck
  */
 
-import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
-import { headers } from "next/headers";
-import type { NextRequest } from "next/server";
-import { NextResponse } from "next/server";
+import { headers } from 'next/headers';
+import type { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
+import { auth } from '@/lib/auth';
+import { prisma } from '@/lib/prisma';
 
 // GET - List user's decks
 export async function GET() {
@@ -18,7 +18,7 @@ export async function GET() {
     });
 
     if (!session?.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const decks = await prisma.deck.findMany({
@@ -31,16 +31,19 @@ export async function GET() {
             ratchet: true,
             bit: true,
           },
-          orderBy: { position: "asc" },
+          orderBy: { position: 'asc' },
         },
       },
-      orderBy: [{ isActive: "desc" }, { updatedAt: "desc" }],
+      orderBy: [{ isActive: 'desc' }, { updatedAt: 'desc' }],
     });
 
     return NextResponse.json({ data: decks });
   } catch (error) {
-    console.error("Error fetching decks:", error);
-    return NextResponse.json({ error: "Failed to fetch decks" }, { status: 500 });
+    console.error('Error fetching decks:', error);
+    return NextResponse.json(
+      { error: 'Failed to fetch decks' },
+      { status: 500 },
+    );
   }
 }
 
@@ -52,7 +55,7 @@ export async function POST(request: NextRequest) {
     });
 
     if (!session?.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const body = await request.json();
@@ -71,7 +74,7 @@ export async function POST(request: NextRequest) {
     // Validate input
     if (!name || !beys || beys.length !== 3) {
       return NextResponse.json(
-        { error: "Invalid deck: name and exactly 3 beys required" },
+        { error: 'Invalid deck: name and exactly 3 beys required' },
         { status: 400 },
       );
     }
@@ -81,7 +84,7 @@ export async function POST(request: NextRequest) {
     const uniquePartIds = new Set(allPartIds);
     if (uniquePartIds.size !== allPartIds.length) {
       return NextResponse.json(
-        { error: "Invalid deck: each part can only be used once" },
+        { error: 'Invalid deck: each part can only be used once' },
         { status: 400 },
       );
     }
@@ -98,17 +101,23 @@ export async function POST(request: NextRequest) {
       const ratchet = partMap.get(bey.ratchetId);
       const bit = partMap.get(bey.bitId);
 
-      if (!blade || blade.type !== "BLADE") {
-        return NextResponse.json({ error: `Invalid blade ID: ${bey.bladeId}` }, { status: 400 });
+      if (!blade || blade.type !== 'BLADE') {
+        return NextResponse.json(
+          { error: `Invalid blade ID: ${bey.bladeId}` },
+          { status: 400 },
+        );
       }
-      if (!ratchet || ratchet.type !== "RATCHET") {
+      if (!ratchet || ratchet.type !== 'RATCHET') {
         return NextResponse.json(
           { error: `Invalid ratchet ID: ${bey.ratchetId}` },
           { status: 400 },
         );
       }
-      if (!bit || bit.type !== "BIT") {
-        return NextResponse.json({ error: `Invalid bit ID: ${bey.bitId}` }, { status: 400 });
+      if (!bit || bit.type !== 'BIT') {
+        return NextResponse.json(
+          { error: `Invalid bit ID: ${bey.bitId}` },
+          { status: 400 },
+        );
       }
     }
 
@@ -144,14 +153,17 @@ export async function POST(request: NextRequest) {
             ratchet: true,
             bit: true,
           },
-          orderBy: { position: "asc" },
+          orderBy: { position: 'asc' },
         },
       },
     });
 
     return NextResponse.json({ data: deck }, { status: 201 });
   } catch (error) {
-    console.error("Error creating deck:", error);
-    return NextResponse.json({ error: "Failed to create deck" }, { status: 500 });
+    console.error('Error creating deck:', error);
+    return NextResponse.json(
+      { error: 'Failed to create deck' },
+      { status: 500 },
+    );
   }
 }

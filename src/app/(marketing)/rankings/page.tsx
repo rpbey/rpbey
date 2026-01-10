@@ -92,7 +92,9 @@ export default async function RankingsPage() {
                           }}
                         >
                           <Avatar src={profile.user.image || undefined}>
-                            {getInitials(profile.bladerName || profile.user.name)}
+                            {getInitials(
+                              profile.bladerName || profile.user.name,
+                            )}
                           </Avatar>
                           <Box>
                             <Typography
@@ -103,7 +105,10 @@ export default async function RankingsPage() {
                                 profile.user.name ||
                                 'Anonyme'}
                             </Typography>
-                            <Typography variant="caption" color="text.secondary">
+                            <Typography
+                              variant="caption"
+                              color="text.secondary"
+                            >
                               {profile.favoriteType || 'Type inconnu'}
                             </Typography>
                           </Box>

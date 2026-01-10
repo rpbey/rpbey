@@ -25,7 +25,9 @@ export async function getDiscordStats(): Promise<DiscordStats> {
 
   try {
     // 1. Fetch Invite API for accurate server name and fallback counts
-    const inviteRes = await fetch(DISCORD_INVITE_URL, { next: { revalidate: 60 } });
+    const inviteRes = await fetch(DISCORD_INVITE_URL, {
+      next: { revalidate: 60 },
+    });
     if (inviteRes.ok) {
       const inviteData = await inviteRes.json();
       serverName = inviteData.guild?.name || fallbackName;
@@ -51,21 +53,21 @@ export async function getDiscordStats(): Promise<DiscordStats> {
 }
 
 export async function getDiscordTeam(): Promise<TeamGroup[]> {
-    try {
-        const roles = Object.keys(DiscordRoleMapping);
-        const teamData = await Promise.all(
-          roles.map(async (roleId) => {
-            const members = await getMembersByRole(roleId);
-            return {
-              roleId,
-              roleType: DiscordRoleMapping[roleId] || 'DEFAULT',
-              members: members.slice(0, 5),
-            };
-          }),
-        );
-        return teamData.filter((t) => t.members.length > 0);
-    } catch (error) {
-        console.error('Failed to fetch Discord team:', error);
-        return [];
-    }
+  try {
+    const roles = Object.keys(DiscordRoleMapping);
+    const teamData = await Promise.all(
+      roles.map(async (roleId) => {
+        const members = await getMembersByRole(roleId);
+        return {
+          roleId,
+          roleType: DiscordRoleMapping[roleId] || 'DEFAULT',
+          members: members.slice(0, 5),
+        };
+      }),
+    );
+    return teamData.filter((t) => t.members.length > 0);
+  } catch (error) {
+    console.error('Failed to fetch Discord team:', error);
+    return [];
+  }
 }

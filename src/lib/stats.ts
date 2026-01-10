@@ -3,7 +3,7 @@
  * Computes and caches user statistics from tournament data
  */
 
-import { prisma } from "@/lib/prisma";
+import { prisma } from '@/lib/prisma';
 
 export interface UserStats {
   userId: string;
@@ -16,7 +16,7 @@ export interface UserStats {
   tournamentsWon: number;
   currentStreak: number;
   bestStreak: number;
-  recentForm: ("W" | "L")[];
+  recentForm: ('W' | 'L')[];
   rank: number;
   elo: number;
   mostUsedBlades: { partId: string; name: string; count: number }[];
@@ -88,14 +88,14 @@ export async function getUserStats(userId: string): Promise<UserStats | null> {
   const matches = await prisma.tournamentMatch.findMany({
     where: {
       OR: [{ player1Id: userId }, { player2Id: userId }],
-      state: "complete",
+      state: 'complete',
     },
     include: {
       tournament: true,
       player1: { include: { profile: true } },
       player2: { include: { profile: true } },
     },
-    orderBy: { createdAt: "asc" },
+    orderBy: { createdAt: 'asc' },
   });
 
   // Get tournament participations
@@ -105,7 +105,7 @@ export async function getUserStats(userId: string): Promise<UserStats | null> {
       tournament: {
         include: {
           participants: {
-            orderBy: { finalPlacement: "asc" },
+            orderBy: { finalPlacement: 'asc' },
           },
         },
       },
@@ -121,11 +121,11 @@ export async function getUserStats(userId: string): Promise<UserStats | null> {
   let currentStreak = 0;
   let bestStreak = 0;
   let tempStreak = 0;
-  const recentForm: ("W" | "L")[] = [];
+  const recentForm: ('W' | 'L')[] = [];
 
   for (const match of matches.slice(-10).reverse()) {
     const won = match.winnerId === userId;
-    recentForm.push(won ? "W" : "L");
+    recentForm.push(won ? 'W' : 'L');
   }
 
   for (const match of [...matches].reverse()) {
@@ -141,7 +141,9 @@ export async function getUserStats(userId: string): Promise<UserStats | null> {
   if (currentStreak === 0) currentStreak = tempStreak;
 
   // Count tournament wins
-  const tournamentsWon = participations.filter((p) => p.finalPlacement === 1).length;
+  const tournamentsWon = participations.filter(
+    (p) => p.finalPlacement === 1,
+  ).length;
 
   // Calculate ELO (simplified - would need full history)
   const eloChange = wins * 15 - losses * 15;
@@ -157,14 +159,14 @@ export async function getUserStats(userId: string): Promise<UserStats | null> {
       const userMatches = await prisma.tournamentMatch.count({
         where: {
           winnerId: u.id,
-          state: "complete",
+          state: 'complete',
         },
       });
       const userLosses = await prisma.tournamentMatch.count({
         where: {
           OR: [{ player1Id: u.id }, { player2Id: u.id }],
           NOT: { winnerId: u.id },
-          state: "complete",
+          state: 'complete',
         },
       });
       return {
@@ -188,16 +190,20 @@ export async function getUserStats(userId: string): Promise<UserStats | null> {
       if (item.bladeId && item.blade) {
         if (!bladeUsage[item.bladeId])
           bladeUsage[item.bladeId] = { name: item.blade.name, count: 0 };
-        bladeUsage[item.bladeId]!.count++;
+        const entry = bladeUsage[item.bladeId];
+        if (entry) entry.count++;
       }
       if (item.ratchetId && item.ratchet) {
         if (!ratchetUsage[item.ratchetId])
           ratchetUsage[item.ratchetId] = { name: item.ratchet.name, count: 0 };
-        ratchetUsage[item.ratchetId]!.count++;
+        const entry = ratchetUsage[item.ratchetId];
+        if (entry) entry.count++;
       }
       if (item.bitId && item.bit) {
-        if (!bitUsage[item.bitId]) bitUsage[item.bitId] = { name: item.bit.name, count: 0 };
-        bitUsage[item.bitId]!.count++;
+        if (!bitUsage[item.bitId])
+          bitUsage[item.bitId] = { name: item.bit.name, count: 0 };
+        const entry = bitUsage[item.bitId];
+        if (entry) entry.count++;
       }
 
       // Check for pre-built bey (stock combo)
@@ -225,14 +231,19 @@ export async function getUserStats(userId: string): Promise<UserStats | null> {
     .slice(0, 3);
 
   // Calculate rivalries
-  const opponentStats: Record<string, { name: string; wins: number; losses: number }> = {};
+  const opponentStats: Record<
+    string,
+    { name: string; wins: number; losses: number }
+  > = {};
 
   for (const match of matches) {
-    const opponentId = match.player1Id === userId ? match.player2Id : match.player1Id;
+    const opponentId =
+      match.player1Id === userId ? match.player2Id : match.player1Id;
     if (!opponentId) continue;
 
     const opponent = match.player1Id === userId ? match.player2 : match.player1;
-    const opponentName = opponent?.profile?.bladerName ?? opponent?.name ?? "Unknown";
+    const opponentName =
+      opponent?.profile?.bladerName ?? opponent?.name ?? 'Unknown';
 
     if (!opponentStats[opponentId]) {
       opponentStats[opponentId] = { name: opponentName, wins: 0, losses: 0 };
@@ -257,7 +268,7 @@ export async function getUserStats(userId: string): Promise<UserStats | null> {
 
   return {
     userId,
-    bladerName: user.profile?.bladerName ?? user.name ?? "Unknown",
+    bladerName: user.profile?.bladerName ?? user.name ?? 'Unknown',
     totalMatches: matches.length,
     wins,
     losses,
@@ -284,10 +295,10 @@ export async function getLeaderboard(limit = 50): Promise<LeaderboardEntry[]> {
     include: {
       profile: true,
       player1Matches: {
-        where: { state: "complete" },
+        where: { state: 'complete' },
       },
       player2Matches: {
-        where: { state: "complete" },
+        where: { state: 'complete' },
       },
     },
   });
@@ -297,12 +308,13 @@ export async function getLeaderboard(limit = 50): Promise<LeaderboardEntry[]> {
       const allMatches = [...user.player1Matches, ...user.player2Matches];
       const wins = allMatches.filter((m) => m.winnerId === user.id).length;
       const losses = allMatches.length - wins;
-      const winRate = allMatches.length > 0 ? (wins / allMatches.length) * 100 : 0;
+      const winRate =
+        allMatches.length > 0 ? (wins / allMatches.length) * 100 : 0;
       const elo = STARTING_ELO + wins * 15 - losses * 15;
 
       return {
         userId: user.id,
-        bladerName: user.profile?.bladerName ?? user.name ?? "Unknown",
+        bladerName: user.profile?.bladerName ?? user.name ?? 'Unknown',
         elo,
         wins,
         losses,
@@ -339,14 +351,14 @@ export async function getHeadToHead(
         { player1Id: userId1, player2Id: userId2 },
         { player1Id: userId2, player2Id: userId1 },
       ],
-      state: "complete",
+      state: 'complete',
     },
     include: {
       tournament: true,
       player1: { include: { profile: true } },
       player2: { include: { profile: true } },
     },
-    orderBy: { createdAt: "desc" },
+    orderBy: { createdAt: 'desc' },
   });
 
   const user1Wins = matches.filter((m) => m.winnerId === userId1).length;

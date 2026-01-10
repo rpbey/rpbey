@@ -1,10 +1,9 @@
-"use client";
+'use client';
 
-import type { UserStats } from "@/lib/stats";
-import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
-import SportsMmaIcon from "@mui/icons-material/SportsMma";
-import TrendingUpIcon from "@mui/icons-material/TrendingUp";
-import WhatshotIcon from "@mui/icons-material/Whatshot";
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import SportsMmaIcon from '@mui/icons-material/SportsMma';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import WhatshotIcon from '@mui/icons-material/Whatshot';
 import {
   alpha,
   Box,
@@ -15,7 +14,8 @@ import {
   Stack,
   Typography,
   useTheme,
-} from "@mui/material";
+} from '@mui/material';
+import type { UserStats } from '@/lib/stats';
 
 interface StatsCardProps {
   stats: UserStats;
@@ -29,31 +29,43 @@ interface StatItemProps {
   color?: string;
 }
 
-function StatItem({ icon, label, value, subValue, color = "primary.main" }: StatItemProps) {
+function StatItem({
+  icon,
+  label,
+  value,
+  subValue,
+  color = 'primary.main',
+}: StatItemProps) {
   const theme = useTheme();
 
   // Extract main color from theme if possible, or use string
-  const mainColor = color.includes(".")
+  let mainColor = color;
+  if (color.includes('.')) {
+    const parts = color.split('.');
+    const [scope, shade] = parts;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ? (color.split(".").reduce((o: any, i) => o[i], theme.palette) as string)
-    : color;
+    const palette: any = theme.palette;
+    if (scope && shade && palette[scope] && palette[scope][shade]) {
+      mainColor = palette[scope][shade] as string;
+    }
+  }
 
   return (
     <Box
       sx={{
-        display: "flex",
-        alignItems: "center",
+        display: 'flex',
+        alignItems: 'center',
         gap: 2.5,
         p: 2,
         borderRadius: 4,
-        border: "1px solid",
+        border: '1px solid',
         borderColor: alpha(theme.palette.divider, 0.1),
         bgcolor: alpha(theme.palette.background.paper, 0.4),
-        transition: "all 0.2s ease-in-out",
-        "&:hover": {
+        transition: 'all 0.2s ease-in-out',
+        '&:hover': {
           bgcolor: alpha(mainColor, 0.05),
           borderColor: alpha(mainColor, 0.2),
-          transform: "translateY(-2px)",
+          transform: 'translateY(-2px)',
           boxShadow: `0 4px 12px ${alpha(mainColor, 0.1)}`,
         },
       }}
@@ -64,7 +76,7 @@ function StatItem({ icon, label, value, subValue, color = "primary.main" }: Stat
           borderRadius: 3,
           background: `linear-gradient(135deg, ${alpha(mainColor, 0.2)}, ${alpha(mainColor, 0.1)})`,
           color: mainColor,
-          display: "flex",
+          display: 'flex',
           boxShadow: `0 2px 8px ${alpha(mainColor, 0.15)}`,
         }}
       >
@@ -74,14 +86,19 @@ function StatItem({ icon, label, value, subValue, color = "primary.main" }: Stat
         <Typography variant="h5" fontWeight="900" sx={{ lineHeight: 1 }}>
           {value}
         </Typography>
-        <Typography variant="body2" color="text.secondary" fontWeight="500" sx={{ mt: 0.5 }}>
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          fontWeight="500"
+          sx={{ mt: 0.5 }}
+        >
           {label}
         </Typography>
         {subValue && (
           <Typography
             variant="caption"
             color="text.secondary"
-            sx={{ display: "block", mt: 0.2, opacity: 0.8 }}
+            sx={{ display: 'block', mt: 0.2, opacity: 0.8 }}
           >
             {subValue}
           </Typography>
@@ -99,13 +116,13 @@ export function UserProfileStatsCard({ stats }: StatsCardProps) {
       elevation={0}
       sx={{
         borderRadius: 6,
-        border: "1px solid",
-        borderColor: "divider",
+        border: '1px solid',
+        borderColor: 'divider',
         background: `linear-gradient(180deg, ${alpha(
           theme.palette.background.paper,
           0.8,
         )} 0%, ${alpha(theme.palette.background.default, 0.5)} 100%)`,
-        backdropFilter: "blur(10px)",
+        backdropFilter: 'blur(10px)',
       }}
     >
       <CardContent sx={{ p: 4 }}>
@@ -114,7 +131,7 @@ export function UserProfileStatsCard({ stats }: StatsCardProps) {
             sx={{
               width: 4,
               height: 24,
-              bgcolor: "primary.main",
+              bgcolor: 'primary.main',
               borderRadius: 2,
             }}
           />
@@ -141,26 +158,34 @@ export function UserProfileStatsCard({ stats }: StatsCardProps) {
               sx={{
                 p: 2,
                 borderRadius: 4,
-                border: "1px solid",
+                border: '1px solid',
                 borderColor: alpha(theme.palette.divider, 0.1),
                 bgcolor: alpha(theme.palette.background.paper, 0.4),
-                height: "100%",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
                 gap: 1.5,
               }}
             >
               <Box
-                sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'flex-end',
+                }}
               >
-                <Typography variant="body2" color="text.secondary" fontWeight="bold">
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  fontWeight="bold"
+                >
                   Taux de victoire
                 </Typography>
                 <Typography
                   variant="h5"
                   fontWeight="900"
-                  color={stats.winRate >= 50 ? "success.main" : "warning.main"}
+                  color={stats.winRate >= 50 ? 'success.main' : 'warning.main'}
                 >
                   {stats.winRate.toFixed(1)}%
                 </Typography>
@@ -172,7 +197,7 @@ export function UserProfileStatsCard({ stats }: StatsCardProps) {
                   height: 10,
                   borderRadius: 5,
                   bgcolor: alpha(theme.palette.text.disabled, 0.1),
-                  "& .MuiLinearProgress-bar": {
+                  '& .MuiLinearProgress-bar': {
                     background: `linear-gradient(90deg, ${theme.palette.success.main}, ${theme.palette.info.main})`,
                     borderRadius: 5,
                   },
@@ -213,7 +238,9 @@ export function UserProfileStatsCard({ stats }: StatsCardProps) {
               label="Série actuelle"
               value={stats.currentStreak}
               subValue={`Record: ${stats.bestStreak}`}
-              color={stats.currentStreak > 0 ? "success.main" : "text.secondary"}
+              color={
+                stats.currentStreak > 0 ? 'success.main' : 'text.secondary'
+              }
             />
           </Grid>
 
@@ -223,20 +250,25 @@ export function UserProfileStatsCard({ stats }: StatsCardProps) {
               sx={{
                 p: 2,
                 borderRadius: 4,
-                border: "1px solid",
+                border: '1px solid',
                 borderColor: alpha(theme.palette.divider, 0.1),
                 bgcolor: alpha(theme.palette.background.paper, 0.4),
-                height: "100%",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
+                height: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
               }}
             >
               <Box>
-                <Typography variant="body2" color="text.secondary" fontWeight="bold" gutterBottom>
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  fontWeight="bold"
+                  gutterBottom
+                >
                   Forme récente
                 </Typography>
-                <Box sx={{ display: "flex", gap: 0.5 }}>
+                <Box sx={{ display: 'flex', gap: 0.5 }}>
                   {stats.recentForm.length > 0 ? (
                     stats.recentForm.map((result, i) => (
                       <Box
@@ -245,19 +277,19 @@ export function UserProfileStatsCard({ stats }: StatsCardProps) {
                           width: 28,
                           height: 28,
                           borderRadius: 1.5,
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          fontSize: "0.7rem",
-                          fontWeight: "bold",
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '0.7rem',
+                          fontWeight: 'bold',
                           bgcolor:
-                            result === "W"
+                            result === 'W'
                               ? alpha(theme.palette.success.main, 0.2)
                               : alpha(theme.palette.error.main, 0.2),
-                          color: result === "W" ? "success.main" : "error.main",
-                          border: "1px solid",
+                          color: result === 'W' ? 'success.main' : 'error.main',
+                          border: '1px solid',
                           borderColor:
-                            result === "W"
+                            result === 'W'
                               ? alpha(theme.palette.success.main, 0.3)
                               : alpha(theme.palette.error.main, 0.3),
                         }}

@@ -22,7 +22,10 @@ interface HomeClientProps {
   discordTeam: TeamGroup[];
 }
 
-export default function HomeClient({ discordStats, discordTeam }: HomeClientProps) {
+export default function HomeClient({
+  discordStats,
+  discordTeam,
+}: HomeClientProps) {
   const { backgroundImage, mode } = useThemeMode();
   const { scrollY } = useScroll();
   const { data: session } = useSession();
@@ -156,7 +159,10 @@ export default function HomeClient({ discordStats, discordTeam }: HomeClientProp
                   transition={{ delay: 0.6, duration: 0.8 }}
                   sx={{ maxWidth: 400, mt: 4 }}
                 >
-                  <DiscordStatusCard initialStats={discordStats} initialTeam={discordTeam} />
+                  <DiscordStatusCard
+                    initialStats={discordStats}
+                    initialTeam={discordTeam}
+                  />
                 </Box>
               </Box>
             </Grid>
@@ -393,7 +399,7 @@ export default function HomeClient({ discordStats, discordTeam }: HomeClientProp
                 {session?.user?.role === 'admin' ? (
                   <Button
                     component={Link}
-                    href="/admin"
+                    href="/dashboard"
                     variant="contained"
                     size="large"
                     startIcon={<AdminPanelSettings />}

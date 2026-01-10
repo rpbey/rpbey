@@ -1,25 +1,37 @@
 'use client';
 
 import {
-  AdminPanelSettings,
+  Article,
+  BarChart,
+  Cloud,
+  Code,
+  Dashboard,
   Inventory2,
   Leaderboard,
   Logout,
+  Menu as MenuIcon,
+  People,
   Person,
+  Settings,
+  SmartToy,
+  Terminal,
 } from '@mui/icons-material';
 import {
   AppBar,
   Avatar,
+  alpha,
   Box,
+  Divider,
+  Drawer,
   IconButton,
   List,
   ListItem,
   ListItemButton,
   ListItemIcon,
+  ListItemText,
   Menu,
   MenuItem,
   Toolbar,
-  Tooltip,
   Typography,
   useMediaQuery,
   useTheme,
@@ -29,32 +41,77 @@ import BottomNavigationAction from '@mui/material/BottomNavigationAction';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { TrophyIcon } from '@/components/ui/Icons';
 import { RpbLogo } from '@/components/ui/RpbLogo';
 import { signOut, useSession } from '@/lib/auth-client';
 
-const RAIL_WIDTH = 80;
+const RAIL_WIDTH = 280; // Expanded to full drawer width for native feel
 
 interface NavItem {
   label: string;
-  icon: React.ReactNode;
+  icon: React.ElementType;
   path: string;
+  adminOnly?: boolean;
 }
 
 const NAV_ITEMS: NavItem[] = [
+  // User Links
   {
     label: 'Mon Profil',
-    icon: <Person />,
+    icon: Person,
     path: '/dashboard/profile',
   },
   {
     label: 'Mes Decks',
-    icon: <Inventory2 />,
+    icon: Inventory2,
     path: '/dashboard/deck',
   },
   {
     label: 'Classement',
-    icon: <Leaderboard />,
+    icon: Leaderboard,
     path: '/dashboard/leaderboard',
+  },
+  // Admin Links
+  { label: "Vue d'ensemble", path: '/admin', icon: Dashboard, adminOnly: true },
+  {
+    label: 'Bot Discord',
+    path: '/admin/discord',
+    icon: SmartToy,
+    adminOnly: true,
+  },
+  { label: 'Statut du Bot', path: '/admin/bot', icon: Code, adminOnly: true },
+  {
+    label: 'Logs du Bot',
+    path: '/admin/bot/logs',
+    icon: Terminal,
+    adminOnly: true,
+  },
+  { label: 'Contenu', path: '/admin/content', icon: Article, adminOnly: true },
+  { label: 'Drive', path: '/admin/drive', icon: Cloud, adminOnly: true },
+  {
+    label: 'Tournois',
+    path: '/admin/tournaments',
+    icon: TrophyIcon,
+    adminOnly: true,
+  },
+  { label: 'Équipe', path: '/admin/staff', icon: People, adminOnly: true },
+  {
+    label: 'Utilisateurs',
+    path: '/admin/users',
+    icon: People,
+    adminOnly: true,
+  },
+  {
+    label: 'Statistiques',
+    path: '/admin/stats',
+    icon: BarChart,
+    adminOnly: true,
+  },
+  {
+    label: 'Paramètres',
+    path: '/admin/settings',
+    icon: Settings,
+    adminOnly: true,
   },
 ];
 
@@ -64,16 +121,29 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const { data: session } = useSession();
-
+  const [mobileOpen, setMobileOpen] = useState(false);
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
 
-  // Derive active tab from pathname
-  // For BottomNav (Mobile)
-  const activeNavItem = NAV_ITEMS.find((item) =>
-    pathname.startsWith(item.path),
-  ) ??
-    NAV_ITEMS[0] ?? { path: '' };
-  const bottomNavValue = activeNavItem.path;
+  const isAdmin =
+    session?.user?.role === 'admin' || session?.user?.role === 'superadmin';
+
+  // Filter items based on role
+  const visibleItems = NAV_ITEMS.filter((item) => !item.adminOnly || isAdmin);
+
+  // Split items for sidebar grouping
+  const userItems = visibleItems.filter((item) => !item.adminOnly);
+  const adminItems = visibleItems.filter((item) => item.adminOnly);
+
+  const activeNavItem = visibleItems.find((item) =>
+    item.path !== '/admin'
+      ? pathname.startsWith(item.path)
+      : pathname === '/admin',
+  );
+  const bottomNavValue = activeNavItem?.path || '';
+
+  const handleDrawerToggle = () => {
+    setMobileOpen(!mobileOpen);
+  };
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
@@ -89,6 +159,171 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
     router.push('/');
   };
 
+  const drawerContent = (
+    <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+      <Box sx={{ p: 3, display: 'flex', alignItems: 'center', gap: 2 }}>
+        <RpbLogo size={32} />
+        <Typography variant="h6" fontWeight="800" letterSpacing="-0.02em">
+          RPB Dashboard
+        </Typography>
+      </Box>
+
+      {session?.user && (
+        <Box sx={{ px: 3, pb: 2 }}>
+          <Box
+            sx={{
+              p: 2,
+              borderRadius: 3,
+              bgcolor: 'background.paper',
+              border: '1px solid',
+              borderColor: 'divider',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 2,
+            }}
+          >
+            <Avatar
+              alt={session.user.name || 'User'}
+              src={session.user.image || undefined}
+              sx={{ width: 40, height: 40, borderRadius: 2 }}
+            />
+            <Box sx={{ minWidth: 0 }}>
+              <Typography variant="subtitle2" fontWeight="bold" noWrap>
+                {session.user.name}
+              </Typography>
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                noWrap
+                display="block"
+              >
+                {isAdmin ? 'Administrateur' : 'Blader'}
+              </Typography>
+            </Box>
+          </Box>
+        </Box>
+      )}
+
+      <Box sx={{ flex: 1, overflowY: 'auto', px: 2 }}>
+        <List
+          subheader={
+            <Typography
+              variant="overline"
+              color="text.secondary"
+              sx={{ px: 2 }}
+            >
+              Menu Principal
+            </Typography>
+          }
+        >
+          {userItems.map((item) => {
+            const isActive = pathname.startsWith(item.path);
+            const Icon = item.icon;
+            return (
+              <ListItem key={item.path} disablePadding sx={{ mb: 0.5 }}>
+                <ListItemButton
+                  component={Link}
+                  href={item.path}
+                  selected={isActive}
+                  onClick={() => setMobileOpen(false)}
+                  sx={{
+                    borderRadius: 2,
+                    '&.Mui-selected': {
+                      bgcolor: alpha(theme.palette.primary.main, 0.1),
+                      color: 'primary.main',
+                      '& .MuiListItemIcon-root': { color: 'primary.main' },
+                    },
+                  }}
+                >
+                  <ListItemIcon sx={{ minWidth: 40 }}>
+                    <Icon fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={item.label}
+                    primaryTypographyProps={{
+                      fontWeight: isActive ? 700 : 500,
+                    }}
+                  />
+                </ListItemButton>
+              </ListItem>
+            );
+          })}
+        </List>
+
+        {isAdmin && adminItems.length > 0 && (
+          <>
+            <Divider sx={{ my: 2 }} />
+            <List
+              subheader={
+                <Typography
+                  variant="overline"
+                  color="text.secondary"
+                  sx={{ px: 2 }}
+                >
+                  Administration
+                </Typography>
+              }
+            >
+              {adminItems.map((item) => {
+                const isActive =
+                  item.path === '/admin'
+                    ? pathname === '/admin'
+                    : pathname.startsWith(item.path);
+                const Icon = item.icon;
+                return (
+                  <ListItem key={item.path} disablePadding sx={{ mb: 0.5 }}>
+                    <ListItemButton
+                      component={Link}
+                      href={item.path}
+                      selected={isActive}
+                      onClick={() => setMobileOpen(false)}
+                      sx={{
+                        borderRadius: 2,
+                        '&.Mui-selected': {
+                          bgcolor: alpha(theme.palette.secondary.main, 0.1),
+                          color: 'secondary.main',
+                          '& .MuiListItemIcon-root': {
+                            color: 'secondary.main',
+                          },
+                        },
+                      }}
+                    >
+                      <ListItemIcon sx={{ minWidth: 40 }}>
+                        <Icon fontSize="small" />
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={item.label}
+                        primaryTypographyProps={{
+                          fontWeight: isActive ? 700 : 500,
+                        }}
+                      />
+                    </ListItemButton>
+                  </ListItem>
+                );
+              })}
+            </List>
+          </>
+        )}
+      </Box>
+
+      <Box sx={{ p: 2 }}>
+        <ListItemButton
+          onClick={handleSignOut}
+          sx={{
+            borderRadius: 2,
+            color: 'error.main',
+            '&:hover': { bgcolor: alpha(theme.palette.error.main, 0.1) },
+          }}
+        >
+          <ListItemIcon sx={{ minWidth: 40, color: 'inherit' }}>
+            <Logout fontSize="small" />
+          </ListItemIcon>
+          <ListItemText primary="Déconnexion" />
+        </ListItemButton>
+      </Box>
+    </Box>
+  );
+
   return (
     <Box
       sx={{
@@ -97,166 +332,102 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         bgcolor: 'background.default',
       }}
     >
-      {/* Desktop Navigation Rail / Drawer */}
-      {!isMobile && (
-        <Box
-          component="nav"
+      {/* Desktop Sidebar */}
+      <Box
+        component="nav"
+        sx={{
+          width: { md: RAIL_WIDTH },
+          flexShrink: { md: 0 },
+          display: { xs: 'none', md: 'block' },
+        }}
+      >
+        <Drawer
+          variant="permanent"
           sx={{
-            width: RAIL_WIDTH,
-            flexShrink: 0,
-            borderRight: '1px solid',
-            borderColor: 'divider',
-            bgcolor: 'surface.main',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            py: 3,
-            position: 'fixed',
-            height: '100vh',
-            zIndex: 1200,
+            '& .MuiDrawer-paper': {
+              boxSizing: 'border-box',
+              width: RAIL_WIDTH,
+              bgcolor: 'background.default', // Matches main background for blending
+              borderRight: '1px solid',
+              borderColor: 'divider',
+            },
           }}
+          open
         >
-          <Box sx={{ mb: 4 }}>
-            <RpbLogo size={40} />
-          </Box>
+          {drawerContent}
+        </Drawer>
+      </Box>
 
-          <List
-            sx={{
-              width: '100%',
-              px: 1,
-              gap: 2,
-              display: 'flex',
-              flexDirection: 'column',
-            }}
-          >
-            {NAV_ITEMS.map((item) => {
-              const isActive = pathname.startsWith(item.path);
-              return (
-                <ListItem key={item.path} disablePadding>
-                  <Tooltip title={item.label} placement="right" arrow>
-                    <ListItemButton
-                      component={Link}
-                      href={item.path}
-                      sx={{
-                        justifyContent: 'center',
-                        borderRadius: 4,
-                        py: 1.5,
-                        minHeight: 56,
-                        flexDirection: 'column',
-                        gap: 0.5,
-                        bgcolor: isActive
-                          ? 'secondary.container'
-                          : 'transparent',
-                        color: isActive
-                          ? 'secondary.onContainer'
-                          : 'text.secondary',
-                        '&:hover': {
-                          bgcolor: isActive
-                            ? 'secondary.container'
-                            : 'action.hover',
-                        },
-                      }}
-                    >
-                      <ListItemIcon
-                        sx={{
-                          minWidth: 0,
-                          color: 'inherit',
-                          '& .MuiSvgIcon-root': { fontSize: 24 },
-                        }}
-                      >
-                        {item.icon}
-                      </ListItemIcon>
-                      <Typography
-                        variant="caption"
-                        sx={{
-                          fontWeight: isActive ? 700 : 500,
-                          fontSize: '0.7rem',
-                          textAlign: 'center',
-                          lineHeight: 1,
-                        }}
-                      >
-                        {item.label}
-                      </Typography>
-                    </ListItemButton>
-                  </Tooltip>
-                </ListItem>
-              );
-            })}
-          </List>
+      {/* Mobile Drawer */}
+      <Drawer
+        variant="temporary"
+        open={mobileOpen}
+        onClose={handleDrawerToggle}
+        ModalProps={{ keepMounted: true }}
+        sx={{
+          display: { xs: 'block', md: 'none' },
+          '& .MuiDrawer-paper': {
+            boxSizing: 'border-box',
+            width: RAIL_WIDTH,
+            bgcolor: 'background.paper',
+          },
+        }}
+      >
+        {drawerContent}
+      </Drawer>
 
-          <Box
-            sx={{
-              mt: 'auto',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 2,
-              alignItems: 'center',
-            }}
-          >
-            {/* User Avatar / Menu */}
-            <Tooltip title="Paramètres">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar
-                  alt={session?.user?.name || 'User'}
-                  src={session?.user?.image || undefined}
-                  sx={{ width: 40, height: 40 }}
-                />
-              </IconButton>
-            </Tooltip>
-          </Box>
-        </Box>
-      )}
-
-      {/* Main Content Area */}
+      {/* Main Content */}
       <Box
         component="main"
         sx={{
           flexGrow: 1,
-          ml: { md: `${RAIL_WIDTH}px` },
           width: { md: `calc(100% - ${RAIL_WIDTH}px)` },
+          minHeight: '100vh',
           display: 'flex',
           flexDirection: 'column',
-          pb: { xs: '80px', md: 0 }, // Space for BottomNav on mobile
+          pb: { xs: 7, md: 0 }, // Space for bottom nav
         }}
       >
-        {/* Mobile Top Bar */}
-        {isMobile && (
-          <AppBar
-            position="sticky"
-            color="transparent"
-            elevation={0}
-            sx={{
-              bgcolor: 'rgba(15, 15, 15, 0.8)',
-              backdropFilter: 'blur(10px)',
-              borderBottom: '1px solid',
-              borderColor: 'divider',
-            }}
-          >
-            <Toolbar>
-              <RpbLogo size={32} />
-              <Typography
-                variant="h6"
-                component="div"
-                sx={{ flexGrow: 1, ml: 2, fontWeight: 700 }}
-              >
-                RPB Dashboard
+        {/* Mobile Header */}
+        <AppBar
+          position="sticky"
+          elevation={0}
+          sx={{
+            display: { md: 'none' },
+            bgcolor: 'background/80',
+            backdropFilter: 'blur(12px)',
+            borderBottom: '1px solid',
+            borderColor: 'divider',
+          }}
+        >
+          <Toolbar>
+            <IconButton
+              color="inherit"
+              edge="start"
+              onClick={handleDrawerToggle}
+            >
+              <MenuIcon />
+            </IconButton>
+            <Box sx={{ ml: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+              <RpbLogo size={24} />
+              <Typography variant="h6" fontWeight="bold">
+                RPB
               </Typography>
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar
-                  alt={session?.user?.name || 'User'}
-                  src={session?.user?.image || undefined}
-                  sx={{ width: 32, height: 32 }}
-                />
-              </IconButton>
-            </Toolbar>
-          </AppBar>
-        )}
+            </Box>
+            <Box sx={{ flexGrow: 1 }} />
+            <IconButton onClick={handleOpenUserMenu}>
+              <Avatar
+                src={session?.user?.image || undefined}
+                sx={{ width: 32, height: 32 }}
+              />
+            </IconButton>
+          </Toolbar>
+        </AppBar>
 
-        {/* Page Content */}
         <Box
           sx={{
             p: { xs: 2, md: 4 },
-            maxWidth: 1200,
+            maxWidth: 1600,
             mx: 'auto',
             width: '100%',
           }}
@@ -265,8 +436,8 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         </Box>
       </Box>
 
-      {/* Mobile Bottom Navigation */}
-      {isMobile && (
+      {/* Mobile Bottom Nav */}
+      {isMobile && !isAdmin && (
         <Box
           sx={{
             position: 'fixed',
@@ -274,37 +445,28 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             left: 0,
             right: 0,
             zIndex: 1100,
-            pb: 'env(safe-area-inset-bottom)',
-            bgcolor: 'surface.main',
             borderTop: '1px solid',
             borderColor: 'divider',
+            bgcolor: 'background.paper',
+            pb: 'env(safe-area-inset-bottom)',
           }}
         >
           <BottomNavigation
             showLabels
             value={bottomNavValue}
-            onChange={(_, newValue) => {
-              router.push(newValue);
-            }}
-            sx={{
-              height: 64, // MD3 specs usually 80, but 64 is often better for space
-              bgcolor: 'transparent',
-            }}
+            onChange={(_, newValue) => router.push(newValue)}
           >
-            {NAV_ITEMS.map((item) => (
-              <BottomNavigationAction
-                key={item.path}
-                value={item.path}
-                label={item.label}
-                icon={item.icon}
-                sx={{
-                  color: 'text.secondary',
-                  '&.Mui-selected': {
-                    color: 'primary.main',
-                  },
-                }}
-              />
-            ))}
+            {userItems.map((item) => {
+              const Icon = item.icon;
+              return (
+                <BottomNavigationAction
+                  key={item.path}
+                  label={item.label}
+                  value={item.path}
+                  icon={<Icon />}
+                />
+              );
+            })}
           </BottomNavigation>
         </Box>
       )}
@@ -314,31 +476,17 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         sx={{ mt: '45px' }}
         id="menu-appbar"
         anchorEl={anchorElUser}
-        anchorOrigin={{
-          vertical: 'top',
-          horizontal: 'right',
-        }}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
         keepMounted
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'right',
-        }}
+        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
         open={Boolean(anchorElUser)}
         onClose={handleCloseUserMenu}
       >
-        {session?.user?.role === 'admin' && (
-          <MenuItem onClick={() => router.push('/admin')}>
-            <ListItemIcon>
-              <AdminPanelSettings fontSize="small" />
-            </ListItemIcon>
-            <Typography textAlign="center">Admin</Typography>
-          </MenuItem>
-        )}
         <MenuItem onClick={handleSignOut}>
           <ListItemIcon>
             <Logout fontSize="small" />
           </ListItemIcon>
-          <Typography textAlign="center">Déconnexion</Typography>
+          <Typography>Déconnexion</Typography>
         </MenuItem>
       </Menu>
     </Box>

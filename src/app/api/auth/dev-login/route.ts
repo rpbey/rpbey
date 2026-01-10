@@ -1,9 +1,12 @@
-import prisma from "@/lib/prisma";
-import { NextResponse, type NextRequest } from "next/server";
+import { type NextRequest, NextResponse } from 'next/server';
+import prisma from '@/lib/prisma';
 
 export async function POST(req: NextRequest) {
-  if (process.env.NODE_ENV === "production") {
-    return NextResponse.json({ error: "Not allowed in production" }, { status: 403 });
+  if (process.env.NODE_ENV === 'production') {
+    return NextResponse.json(
+      { error: 'Not allowed in production' },
+      { status: 403 },
+    );
   }
 
   const { email } = await req.json();
@@ -13,7 +16,7 @@ export async function POST(req: NextRequest) {
   });
 
   if (!user) {
-    return NextResponse.json({ error: "User not found" }, { status: 404 });
+    return NextResponse.json({ error: 'User not found' }, { status: 404 });
   }
 
   // Set session using Better Auth API
@@ -33,7 +36,7 @@ export async function POST(req: NextRequest) {
   // }
 
   return NextResponse.json(
-    { error: "dev-login not implemented for this auth version" },
+    { error: 'dev-login not implemented for this auth version' },
     { status: 501 },
   );
   // return NextResponse.json({ success: true, user });

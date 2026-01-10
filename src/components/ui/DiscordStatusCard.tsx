@@ -12,9 +12,9 @@ import Typography from '@mui/material/Typography';
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
-import { api } from '@/lib/standard-api';
 import type { DiscordStats, TeamGroup } from '@/lib/discord-data';
 import { LOGO_VARIANTS } from '@/lib/role-colors';
+import { api } from '@/lib/standard-api';
 import { DiscordRoleBadge } from './DiscordRoleBadge';
 
 interface DiscordStatusCardProps {
@@ -22,7 +22,10 @@ interface DiscordStatusCardProps {
   initialTeam?: TeamGroup[];
 }
 
-export function DiscordStatusCard({ initialStats, initialTeam }: DiscordStatusCardProps) {
+export function DiscordStatusCard({
+  initialStats,
+  initialTeam,
+}: DiscordStatusCardProps) {
   const [stats, setStats] = useState<DiscordStats | null>(initialStats || null);
   const [team, setTeam] = useState<TeamGroup[]>(initialTeam || []);
   const [loading, setLoading] = useState(!initialStats);
@@ -56,7 +59,7 @@ export function DiscordStatusCard({ initialStats, initialTeam }: DiscordStatusCa
     if (!initialStats) {
       fetchData();
     }
-    
+
     // Poll for updates every minute
     const interval = setInterval(fetchData, 60000);
     return () => clearInterval(interval);
@@ -154,11 +157,7 @@ export function DiscordStatusCard({ initialStats, initialTeam }: DiscordStatusCa
             >
               {serverName.toUpperCase()}
             </Typography>
-            <Stack
-              direction="row"
-              spacing={1.5}
-              alignItems="center"
-            >
+            <Stack direction="row" spacing={1.5} alignItems="center">
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                 <Box
                   sx={{
@@ -272,7 +271,11 @@ export function DiscordStatusCard({ initialStats, initialTeam }: DiscordStatusCa
                       */}
                       <Typography
                         variant="caption"
-                        sx={{ color: 'text.disabled', opacity: 0.7, ml: 'auto' }}
+                        sx={{
+                          color: 'text.disabled',
+                          opacity: 0.7,
+                          ml: 'auto',
+                        }}
                       >
                         @{member.username}
                       </Typography>

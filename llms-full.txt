@@ -10,7 +10,7 @@ This file provides a comprehensive technical overview for AI agents interacting 
 - **UI**: MUI 7 with MD3 principles
 
 ## Core API Endpoints
-- `POST /api/gemini`: Agent interface. Action: `status`, `get_schema`. Header: `x-gemini-token`.
+
 - `GET /api/auth/*`: Better Auth endpoints.
 - `GET/POST /api/tournaments`: Tournament lifecycle management.
 

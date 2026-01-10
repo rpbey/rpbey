@@ -11,7 +11,7 @@ const authRoutes = ['/sign-in', '/sign-up'];
 const passwordRoutes = ['/reset-password', '/forgot-password'];
 const privateRoutes = ['/dashboard'];
 
-export async function proxy(request: NextRequest) {
+export default async function proxy(request: NextRequest) {
   const pathName = request.nextUrl.pathname;
   const isAuthRoute = authRoutes.includes(pathName);
   const isPasswordRoute = passwordRoutes.includes(pathName);
@@ -20,18 +20,26 @@ export async function proxy(request: NextRequest) {
     pathName.startsWith(route),
   );
 
-  const { data: sessionData } = await betterFetch<{
-    session: Session;
-    user: UserWithRole;
-  }>('/api/auth/get-session', {
-    baseURL: process.env.BETTER_AUTH_URL || 'http://localhost:3000',
-    headers: {
-      // get the cookie from the request
-      cookie: request.headers.get('cookie') || '',
-    },
-  });
+  let sessionData: { session: Session; user: UserWithRole } | null = null;
 
-  let response = NextResponse.next();
+  try {
+    const { data } = await betterFetch<{
+      session: Session;
+      user: UserWithRole;
+    }>('/api/auth/get-session', {
+      baseURL: process.env.BETTER_AUTH_URL || 'http://localhost:3000',
+      headers: {
+        // get the cookie from the request
+        cookie: request.headers.get('cookie') || '',
+      },
+    });
+    sessionData = data;
+  } catch (error) {
+    // Fail silently/gracefully - treat as no session
+    console.error('Middleware auth check failed:', error);
+  }
+
+  const response = NextResponse.next();
 
   if (!sessionData) {
     if (isPrivateRoute || isAdminRoute) {
@@ -53,7 +61,10 @@ export async function proxy(request: NextRequest) {
 
   // Force no-cache for homepage to ensure full refresh on deployment
   if (pathName === '/') {
-    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    response.headers.set(
+      'Cache-Control',
+      'no-store, no-cache, must-revalidate, proxy-revalidate',
+    );
     response.headers.set('Pragma', 'no-cache');
     response.headers.set('Expires', '0');
     response.headers.set('Surrogate-Control', 'no-store');

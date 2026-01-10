@@ -10,7 +10,7 @@ This project is a monorepo containing a Next.js 16 Dashboard and a Sapphire (Dis
 - [Bot Documentation](bot/GEMINI.md): Specific context and guidelines for the RPB Discord Bot.
 - [Implementation Plan](docs/IMPLEMENTATION_PLAN.md): Current roadmap and status of features.
 - [Database Schema](prisma/schema.prisma): Prisma schema defining User, Profile, Tournament, Beyblade, and Part models.
-- [API Reference](/api/gemini): Admin Agent API for system status and insights (Requires X-Gemini-Token).
+
 - [Bot Agent API](/api/agent/dispatch): Direct control over Discord Bot actions (Send Message, Manage Roles). Requires X-API-KEY.
 
 ## Key Entities & Models

@@ -12,8 +12,8 @@ import {
   MenuItem,
   Toolbar,
 } from '@mui/material';
-import Link from 'next/link';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useState } from 'react';
 import { signOut, useSession } from '@/lib/auth-client';
 import { LOGO_VARIANTS } from '@/lib/role-colors';

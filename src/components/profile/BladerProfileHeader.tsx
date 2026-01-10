@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import type { UserStats } from "@/lib/stats";
-import DownloadIcon from "@mui/icons-material/Download";
-import EditIcon from "@mui/icons-material/Edit";
-import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
-import ShareIcon from "@mui/icons-material/Share";
+import DownloadIcon from '@mui/icons-material/Download';
+import EditIcon from '@mui/icons-material/Edit';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import ShareIcon from '@mui/icons-material/Share';
 import {
   Avatar,
+  alpha,
   Box,
   Button,
   Card,
@@ -16,10 +16,10 @@ import {
   Stack,
   Tooltip,
   Typography,
-  alpha,
   useTheme,
-} from "@mui/material";
-import Link from "next/link";
+} from '@mui/material';
+import Link from 'next/link';
+import type { UserStats } from '@/lib/stats';
 
 interface BladerProfileHeaderProps {
   stats: UserStats;
@@ -31,18 +31,18 @@ interface BladerProfileHeaderProps {
 }
 
 function getRankColor(rank: number): string {
-  if (rank === 1) return "#FFD700"; // Gold
-  if (rank === 2) return "#C0C0C0"; // Silver
-  if (rank === 3) return "#CD7F32"; // Bronze
-  return "#666";
+  if (rank === 1) return '#FFD700'; // Gold
+  if (rank === 2) return '#C0C0C0'; // Silver
+  if (rank === 3) return '#CD7F32'; // Bronze
+  return '#666';
 }
 
 function getRankTitle(_rank: number, elo: number): string {
-  if (elo >= 1500) return "Champion";
-  if (elo >= 1300) return "Expert";
-  if (elo >= 1150) return "Confirmé";
-  if (elo >= 1000) return "Intermédiaire";
-  return "Débutant";
+  if (elo >= 1500) return 'Champion';
+  if (elo >= 1300) return 'Expert';
+  if (elo >= 1150) return 'Confirmé';
+  if (elo >= 1000) return 'Intermédiaire';
+  return 'Débutant';
 }
 
 export function BladerProfileHeader({
@@ -64,7 +64,7 @@ export function BladerProfileHeader({
       });
     } else {
       await navigator.clipboard.writeText(url);
-      alert("Lien copié dans le presse-papier !");
+      alert('Lien copié dans le presse-papier !');
     }
   };
 
@@ -76,70 +76,70 @@ export function BladerProfileHeader({
           theme.palette.background.paper,
           0.95,
         )} 100%)`,
-        position: "relative",
-        overflow: "hidden",
+        position: 'relative',
+        overflow: 'hidden',
         borderRadius: 6,
-        border: "1px solid",
-        borderColor: "divider",
-        backdropFilter: "blur(20px)",
-        boxShadow: "0 8px 32px rgba(0,0,0,0.1)",
+        border: '1px solid',
+        borderColor: 'divider',
+        backdropFilter: 'blur(20px)',
+        boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
       }}
     >
       {/* Decorative background accent */}
       <Box
         sx={{
-          position: "absolute",
+          position: 'absolute',
           top: -100,
           right: -100,
           width: 300,
           height: 300,
-          borderRadius: "50%",
+          borderRadius: '50%',
           background: `radial-gradient(circle, ${alpha(
             theme.palette.primary.main,
             0.3,
           )} 0%, transparent 70%)`,
-          filter: "blur(40px)",
+          filter: 'blur(40px)',
           zIndex: 0,
         }}
       />
       <Box
         sx={{
-          position: "absolute",
+          position: 'absolute',
           bottom: -50,
           left: -50,
           width: 200,
           height: 200,
-          borderRadius: "50%",
+          borderRadius: '50%',
           background: `radial-gradient(circle, ${alpha(
             theme.palette.secondary.main,
             0.2,
           )} 0%, transparent 70%)`,
-          filter: "blur(40px)",
+          filter: 'blur(40px)',
           zIndex: 0,
         }}
       />
 
-      <CardContent sx={{ pt: 5, pb: 5, position: "relative", zIndex: 1 }}>
+      <CardContent sx={{ pt: 5, pb: 5, position: 'relative', zIndex: 1 }}>
         <Box
           sx={{
-            display: "flex",
-            flexDirection: { xs: "column", md: "row" },
-            alignItems: { xs: "center", md: "flex-start" },
+            display: 'flex',
+            flexDirection: { xs: 'column', md: 'row' },
+            alignItems: { xs: 'center', md: 'flex-start' },
             gap: 4,
           }}
         >
           {/* Avatar Area */}
           <Box
             sx={{
-              display: "flex",
-              justifyContent: "center",
-              position: "relative",
+              display: 'flex',
+              justifyContent: 'center',
+              position: 'relative',
             }}
           >
             <Box
               sx={{
-                position: "relative",
-                borderRadius: "50%",
+                position: 'relative',
+                borderRadius: '50%',
                 p: 0.5,
                 background: `linear-gradient(135deg, ${getRankColor(stats.rank)}, ${alpha(
                   getRankColor(stats.rank),
@@ -152,11 +152,11 @@ export function BladerProfileHeader({
                 sx={{
                   width: { xs: 120, md: 160 },
                   height: { xs: 120, md: 160 },
-                  border: "4px solid",
-                  borderColor: "background.paper",
-                  boxShadow: "0 8px 32px rgba(0,0,0,0.2)",
-                  fontSize: "4rem",
-                  bgcolor: "primary.main",
+                  border: '4px solid',
+                  borderColor: 'background.paper',
+                  boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
+                  fontSize: '4rem',
+                  bgcolor: 'primary.main',
                 }}
               >
                 {stats.bladerName[0]}
@@ -166,35 +166,35 @@ export function BladerProfileHeader({
             {stats.rank <= 3 && (
               <Box
                 sx={{
-                  position: "absolute",
+                  position: 'absolute',
                   top: 0,
                   right: 0,
                   bgcolor: getRankColor(stats.rank),
-                  borderRadius: "50%",
+                  borderRadius: '50%',
                   width: 40,
                   height: 40,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
                   boxShadow: 3,
-                  border: "2px solid white",
+                  border: '2px solid white',
                   zIndex: 2,
                 }}
               >
-                <EmojiEventsIcon sx={{ color: "black", fontSize: 24 }} />
+                <EmojiEventsIcon sx={{ color: 'black', fontSize: 24 }} />
               </Box>
             )}
           </Box>
 
           {/* Info Area */}
-          <Box sx={{ flex: 1, textAlign: { xs: "center", md: "left" } }}>
+          <Box sx={{ flex: 1, textAlign: { xs: 'center', md: 'left' } }}>
             <Box
               sx={{
-                display: "flex",
-                alignItems: "center",
+                display: 'flex',
+                alignItems: 'center',
                 gap: 2,
-                justifyContent: { xs: "center", md: "flex-start" },
-                flexWrap: "wrap",
+                justifyContent: { xs: 'center', md: 'flex-start' },
+                flexWrap: 'wrap',
                 mb: 1.5,
               }}
             >
@@ -202,10 +202,10 @@ export function BladerProfileHeader({
                 variant="h3"
                 fontWeight="900"
                 sx={{
-                  letterSpacing: "-0.03em",
+                  letterSpacing: '-0.03em',
                   background: `linear-gradient(90deg, ${theme.palette.text.primary}, ${theme.palette.text.secondary})`,
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
                 }}
               >
                 {stats.bladerName}
@@ -217,9 +217,9 @@ export function BladerProfileHeader({
                     href="/dashboard/profile/edit"
                     size="small"
                     sx={{
-                      bgcolor: "action.hover",
-                      border: "1px solid",
-                      borderColor: "divider",
+                      bgcolor: 'action.hover',
+                      border: '1px solid',
+                      borderColor: 'divider',
                     }}
                   >
                     <EditIcon fontSize="small" />
@@ -233,9 +233,9 @@ export function BladerProfileHeader({
               spacing={1}
               sx={{
                 mt: 1,
-                justifyContent: { xs: "center", md: "flex-start" },
+                justifyContent: { xs: 'center', md: 'flex-start' },
                 mb: 3,
-                flexWrap: "wrap",
+                flexWrap: 'wrap',
                 gap: 1,
               }}
             >
@@ -244,9 +244,9 @@ export function BladerProfileHeader({
                 size="medium"
                 sx={{
                   bgcolor: getRankColor(stats.rank),
-                  color: stats.rank <= 3 ? "black" : "white",
+                  color: stats.rank <= 3 ? 'black' : 'white',
                   fontWeight: 800,
-                  fontSize: "0.75rem",
+                  fontSize: '0.75rem',
                   boxShadow: `0 0 15px ${alpha(getRankColor(stats.rank), 0.4)}`,
                 }}
               />
@@ -255,13 +255,17 @@ export function BladerProfileHeader({
                 size="medium"
                 color="secondary"
                 variant="filled"
-                sx={{ fontWeight: "bold" }}
+                sx={{ fontWeight: 'bold' }}
               />
               <Chip
                 label={`${stats.elo} ELO`}
                 size="medium"
                 variant="outlined"
-                sx={{ fontWeight: "bold", borderColor: "divider", bgcolor: "background.paper" }}
+                sx={{
+                  fontWeight: 'bold',
+                  borderColor: 'divider',
+                  bgcolor: 'background.paper',
+                }}
               />
             </Stack>
 
@@ -272,18 +276,22 @@ export function BladerProfileHeader({
                 sx={{
                   maxWidth: 600,
                   lineHeight: 1.6,
-                  borderLeft: "2px solid",
-                  borderColor: "primary.light",
+                  borderLeft: '2px solid',
+                  borderColor: 'primary.light',
                   pl: 2,
-                  ml: { xs: "auto", md: 0 },
-                  mr: { xs: "auto", md: 0 },
-                  textAlign: "left",
+                  ml: { xs: 'auto', md: 0 },
+                  mr: { xs: 'auto', md: 0 },
+                  textAlign: 'left',
                 }}
               >
                 {bio}
               </Typography>
             ) : (
-              <Typography variant="body1" color="text.disabled" sx={{ fontStyle: "italic" }}>
+              <Typography
+                variant="body1"
+                color="text.disabled"
+                sx={{ fontStyle: 'italic' }}
+              >
                 Pas de bio renseignée.
               </Typography>
             )}
@@ -294,16 +302,16 @@ export function BladerProfileHeader({
                 color="text.disabled"
                 sx={{
                   mt: 3,
-                  display: "block",
-                  textTransform: "uppercase",
-                  letterSpacing: "0.1em",
+                  display: 'block',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.1em',
                   fontWeight: 600,
                 }}
               >
-                MAÎTRE BLADER DEPUIS{" "}
-                {new Date(joinDate).toLocaleDateString("fr-FR", {
-                  month: "long",
-                  year: "numeric",
+                MAÎTRE BLADER DEPUIS{' '}
+                {new Date(joinDate).toLocaleDateString('fr-FR', {
+                  month: 'long',
+                  year: 'numeric',
                 })}
               </Typography>
             )}
@@ -312,10 +320,10 @@ export function BladerProfileHeader({
           {/* Actions Column */}
           <Box
             sx={{
-              display: "flex",
-              flexDirection: { xs: "row", md: "column" },
+              display: 'flex',
+              flexDirection: { xs: 'row', md: 'column' },
               gap: 1.5,
-              justifyContent: "center",
+              justifyContent: 'center',
               minWidth: { md: 200 },
             }}
           >
@@ -326,12 +334,12 @@ export function BladerProfileHeader({
               fullWidth
               sx={{
                 borderRadius: 4,
-                textTransform: "none",
+                textTransform: 'none',
                 fontWeight: 600,
-                borderColor: "divider",
-                color: "text.primary",
-                "&:hover": {
-                  borderColor: "primary.main",
+                borderColor: 'divider',
+                color: 'text.primary',
+                '&:hover': {
+                  borderColor: 'primary.main',
                   bgcolor: alpha(theme.palette.primary.main, 0.05),
                 },
               }}
@@ -346,10 +354,10 @@ export function BladerProfileHeader({
                 fullWidth
                 sx={{
                   borderRadius: 4,
-                  textTransform: "none",
+                  textTransform: 'none',
                   fontWeight: 600,
                   background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
-                  boxShadow: "0 4px 12px rgba(220, 38, 38, 0.3)",
+                  boxShadow: '0 4px 12px rgba(220, 38, 38, 0.3)',
                 }}
               >
                 Carte Blader

@@ -1,7 +1,7 @@
-import type { Prisma } from "@prisma/client";
+import type { Prisma } from '@prisma/client';
 
 // Re-export full Prisma types
-export * from "@prisma/client";
+export * from '@prisma/client';
 
 // === Extended Types ===
 
@@ -29,7 +29,7 @@ export type DeckWithItems = Prisma.DeckGetPayload<{
         ratchet: true;
         bit: true;
       };
-      orderBy: { position: "asc" };
+      orderBy: { position: 'asc' };
     };
   };
 }>;
@@ -61,7 +61,7 @@ export type TournamentFull = Prisma.TournamentGetPayload<{
                 ratchet: true;
                 bit: true;
               };
-              orderBy: { position: "asc" };
+              orderBy: { position: 'asc' };
             };
           };
         };

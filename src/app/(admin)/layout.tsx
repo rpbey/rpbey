@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { connection } from 'next/server';
+import { DashboardShell } from '@/components/dashboard/DashboardShell';
 import { auth } from '@/lib/auth';
-import { AdminLayoutClient } from './AdminLayoutClient';
 
 export const metadata: Metadata = {
   title: {
@@ -32,8 +32,8 @@ export default async function AdminLayout({
 
   // Check admin role
   if (session.user.role !== 'admin' && session.user.role !== 'superadmin') {
-    redirect('/');
+    redirect('/dashboard');
   }
 
-  return <AdminLayoutClient>{children}</AdminLayoutClient>;
+  return <DashboardShell>{children}</DashboardShell>;
 }
