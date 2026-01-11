@@ -1,5 +1,12 @@
-const COOLIFY_API_URL =
-  process.env.COOLIFY_API_URL || 'http://localhost:8000/api/v1';
+const getCoolifyApiUrl = () => {
+  const url = process.env.COOLIFY_API_URL || 'http://localhost:8000/api/v1';
+  if (process.env.NODE_ENV === 'production' && (url.includes('localhost') || url.includes('127.0.0.1'))) {
+    return 'http://coolify:8000/api/v1';
+  }
+  return url;
+};
+
+const COOLIFY_API_URL = getCoolifyApiUrl();
 const COOLIFY_API_TOKEN = process.env.COOLIFY_API_TOKEN;
 
 // Application UUIDs from GEMINI.md
