@@ -4,7 +4,7 @@ import { admin, twoFactor, username } from 'better-auth/plugins';
 import prisma from '@/lib/prisma';
 
 const isProduction = process.env.NODE_ENV === 'production';
-const baseURL = process.env.BETTER_AUTH_URL || (isProduction ? 'https://rpbey.fr' : 'http://localhost:3000');
+const baseURL = process.env.BETTER_AUTH_URL || process.env.NEXT_PUBLIC_APP_URL || (isProduction ? 'https://rpbey.fr' : 'http://localhost:3000');
 
 export const auth = betterAuth({
   baseURL,
