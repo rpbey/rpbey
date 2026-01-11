@@ -14,11 +14,5 @@ if [ -n "$GOOGLE_SERVICE_ACCOUNT_JSON" ]; then
   echo ">>> Google credentials written to $GOOGLE_APPLICATION_CREDENTIALS"
 fi
 
-if [ "$RUN_BOT" = "true" ]; then
-  echo ">>> STARTING BOT SERVICE..."
-  # Ensure we use the correct port if provided
-  exec node bot/dist/index.js
-else
-  echo ">>> STARTING DASHBOARD SERVICE (Next.js)..."
-  exec node server.js
-fi
+echo ">>> STARTING DASHBOARD SERVICE (Next.js)..."
+exec node server.js

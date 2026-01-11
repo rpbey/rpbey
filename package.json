@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "next dev",
     "dev:all": "pnpm run bot:dev & next dev",
-    "build": "next build && pnpm run bot:build",
+    "build": "next build",
     "start": "next start",
     "lint": "eslint .",
     "format": "biome format --write .",

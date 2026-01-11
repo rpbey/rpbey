@@ -66,11 +66,8 @@ WORKDIR /app
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/package.json ./package.json
 
-# Copy production dependencies (needed for Bot and full Next.js support)
+# Copy production dependencies (needed for full Next.js support)
 COPY --from=prod-deps /app/node_modules ./node_modules
-
-# Copy Bot build artifacts
-COPY --from=builder --chown=nextjs:nodejs /app/bot/dist ./bot/dist
 
 # Automatically leverage output traces to reduce image size
 # https://nextjs.org/docs/advanced-features/output-file-tracing

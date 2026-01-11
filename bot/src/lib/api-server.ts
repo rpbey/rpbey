@@ -163,21 +163,28 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse) {
         if (!roleId || !guildId)
           return sendError(res, 'Missing roleId or GUILD_ID');
 
-        const guild = container.client.guilds.cache.get(guildId);
-        if (!guild) return sendError(res, 'Guild not found', 404);
+        try {
+          const guild = container.client.guilds.cache.get(guildId);
+          if (!guild) return sendError(res, 'Guild not found', 404);
 
-        const role = await guild.roles.fetch(roleId);
-        if (!role) return sendError(res, 'Role not found', 404);
+          // Ensure members are cached
+          await guild.members.fetch();
 
-        await guild.members.fetch();
-        const members = role.members.map((m) => ({
-          id: m.id,
-          username: m.user.username,
-          displayName: m.displayName,
-          avatar: m.user.displayAvatarURL({ extension: 'png', size: 256 }),
-        }));
+          const role = guild.roles.cache.get(roleId);
+          if (!role) return sendError(res, 'Role not found', 404);
 
-        return sendJSON(res, { members });
+          const members = role.members.map((m) => ({
+            id: m.id,
+            username: m.user.username,
+            displayName: m.displayName,
+            avatar: m.user.displayAvatarURL({ extension: 'png', size: 256 }),
+          }));
+
+          return sendJSON(res, { members });
+        } catch (e) {
+          container.logger.error(`Error in members-by-role for role ${roleId}:`, e);
+          return sendError(res, `Internal error: ${String(e)}`, 500);
+        }
       }
 
       case '/api/config': {
@@ -317,7 +324,7 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse) {
     }
   } catch (error) {
     container.logger.error('API Server Error:', error);
-    return sendError(res, 'Internal server error', 500);
+    return sendError(res, `Internal server error: ${String(error)}`, 500);
   }
 }
 
