@@ -3,7 +3,7 @@
   "retiredSessionsCount": 0,
   "sessions": [
     {
-      "id": "session_57VMqYZpzh",
+      "id": "session_DZ7tRoZUrd",
       "cookieJar": {
         "version": "tough-cookie@6.0.0",
         "storeType": "MemoryCookieStore",
@@ -16,14 +16,14 @@
       "userData": {},
       "maxErrorScore": 3,
       "errorScoreDecrement": 0.5,
-      "expiresAt": "2026-01-09T16:11:17.050Z",
-      "createdAt": "2026-01-09T15:21:17.050Z",
+      "expiresAt": "2026-01-11T17:13:50.466Z",
+      "createdAt": "2026-01-11T16:23:50.466Z",
       "usageCount": 0,
       "maxUsageCount": 50,
       "errorScore": 0
     },
     {
-      "id": "session_kntQ3e7buW",
+      "id": "session_Z4m24IbRee",
       "cookieJar": {
         "version": "tough-cookie@6.0.0",
         "storeType": "MemoryCookieStore",
@@ -33,83 +33,84 @@
         "prefixSecurity": "silent",
         "cookies": [
           {
-            "key": "_gat",
-            "value": "1",
-            "expires": "2026-01-09T15:22:18.000Z",
-            "domain": "worldbeyblade.org",
+            "key": "ncmp.domain",
+            "value": "challonge.com",
+            "expires": "2027-01-11T16:23:54.000Z",
+            "domain": "challonge.com",
             "path": "/",
             "hostOnly": false,
-            "creation": "2026-01-09T15:21:18.473Z",
-            "lastAccessed": "2026-01-09T15:21:18.473Z"
+            "creation": "2026-01-11T16:23:55.296Z",
+            "lastAccessed": "2026-01-11T16:23:55.296Z"
+          },
+          {
+            "key": "cf_clearance",
+            "value": "90jLgR06V5FpIUIOPKLiNZFf1bLitwunhFKyu5OdXzo-1768148633-1.2.1.1-qYDDh7.bxlnv0KkJArFtdOJRCdmJ6FqK1gjqxtp7na8Yg1L4PqlDYWXswMnJNqRU7ZmDQ1ZgsyAvNwzbYfFkRKu7gI7W1JuDoYisUCACfTZZ6YrDFN4C72q5snTDCTy689mxrZ1SRGw4CjEYnEyDKrviH0L9xr8vhLIzmqSu5j6A3PTYVtMSipPTtY0aB4SCACy71f9n7KvURCmJ60N2Vj.oHwlIxlD_u8XjsEXgcBo",
+            "expires": "2027-01-11T16:23:53.629Z",
+            "domain": "challonge.com",
+            "path": "/",
+            "secure": true,
+            "httpOnly": true,
+            "hostOnly": false,
+            "creation": "2026-01-11T16:23:55.297Z",
+            "lastAccessed": "2026-01-11T16:23:55.297Z"
           },
           {
             "key": "_ga",
-            "value": "GA1.2.486010049.1767972078",
-            "expires": "2027-02-13T15:21:18.451Z",
-            "domain": "worldbeyblade.org",
+            "value": "GA1.1.341815054.1768148632",
+            "expires": "2027-02-15T16:23:51.726Z",
+            "domain": "challonge.com",
             "path": "/",
             "hostOnly": false,
-            "creation": "2026-01-09T15:21:18.474Z",
-            "lastAccessed": "2026-01-09T15:21:18.474Z"
+            "creation": "2026-01-11T16:23:55.298Z",
+            "lastAccessed": "2026-01-11T16:23:55.298Z"
           },
           {
-            "key": "mybb[threadread]",
-            "value": "a%3A1%3A%7Bi%3A115799%3Bi%3A1767972077%3B%7D",
-            "expires": "2026-01-09T16:11:18.470Z",
-            "domain": "worldbeyblade.org",
+            "key": "_nitroID",
+            "value": "e9b1bfec03c4ea7b9120e49e71fe0fea",
+            "expires": "2027-01-11T16:23:53.000Z",
+            "domain": "challonge.com",
             "path": "/",
             "hostOnly": false,
-            "creation": "2026-01-09T15:21:18.474Z",
-            "lastAccessed": "2026-01-09T15:21:18.474Z"
+            "creation": "2026-01-11T16:23:55.298Z",
+            "lastAccessed": "2026-01-11T16:23:55.298Z"
           },
           {
-            "key": "sid",
-            "value": "9121a7c05d5168c9618dda3379c05470",
-            "expires": "2026-01-09T16:11:18.470Z",
-            "domain": "worldbeyblade.org",
+            "key": "_ga_1EEPZLM6JC",
+            "value": "GS2.1.s1768148631$o1$g0$t1768148631$j60$l0$h0",
+            "expires": "2027-02-15T16:23:51.725Z",
+            "domain": "challonge.com",
             "path": "/",
-            "httpOnly": true,
             "hostOnly": false,
-            "creation": "2026-01-09T15:21:18.474Z",
-            "lastAccessed": "2026-01-09T15:21:18.474Z"
+            "creation": "2026-01-11T16:23:55.298Z",
+            "lastAccessed": "2026-01-11T16:23:55.298Z"
           },
           {
-            "key": "mybb[lastactive]",
-            "value": "1767972077",
-            "expires": "2027-01-09T15:21:17.941Z",
-            "domain": "worldbeyblade.org",
+            "key": "_gat",
+            "value": "1",
+            "expires": "2026-01-11T16:24:51.000Z",
+            "domain": "challonge.com",
             "path": "/",
             "hostOnly": false,
-            "creation": "2026-01-09T15:21:18.474Z",
-            "lastAccessed": "2026-01-09T15:21:18.474Z"
+            "creation": "2026-01-11T16:23:55.298Z",
+            "lastAccessed": "2026-01-11T16:23:55.298Z"
           },
           {
             "key": "_gid",
-            "value": "GA1.2.22253104.1767972078",
-            "expires": "2026-01-10T15:21:18.000Z",
-            "domain": "worldbeyblade.org",
+            "value": "GA1.2.1521813262.1768148632",
+            "expires": "2026-01-12T16:23:51.000Z",
+            "domain": "challonge.com",
             "path": "/",
             "hostOnly": false,
-            "creation": "2026-01-09T15:21:18.474Z",
-            "lastAccessed": "2026-01-09T15:21:18.474Z"
-          },
-          {
-            "key": "mybb[lastvisit]",
-            "value": "1767972077",
-            "expires": "2027-01-09T15:21:17.940Z",
-            "domain": "worldbeyblade.org",
-            "path": "/",
-            "hostOnly": false,
-            "creation": "2026-01-09T15:21:18.474Z",
-            "lastAccessed": "2026-01-09T15:21:18.474Z"
+            "creation": "2026-01-11T16:23:55.298Z",
+            "lastAccessed": "2026-01-11T16:23:55.298Z"
           }
         ]
       },
       "userData": {},
       "maxErrorScore": 3,
       "errorScoreDecrement": 0.5,
-      "expiresAt": "2026-01-09T16:11:17.056Z",
-      "createdAt": "2026-01-09T15:21:17.056Z",
+      "expiresAt": "2026-01-11T17:13:50.472Z",
+      "createdAt": "2026-01-11T16:23:50.472Z",
       "usageCount": 1,
       "maxUsageCount": 50,
       "errorScore": 0
