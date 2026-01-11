@@ -1,6 +1,8 @@
 import { getDiscordStats, getDiscordTeam } from '@/lib/discord-data';
 import HomeClient from './HomeClient';
 
+export const revalidate = 60;
+
 export default async function HomePage() {
   const stats = await getDiscordStats();
   const team = await getDiscordTeam();
