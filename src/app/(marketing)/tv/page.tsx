@@ -1,25 +1,24 @@
-import { Container } from '@mui/material';
-import Grid from '@mui/material/Grid2';
-import { headers } from 'next/headers';
-import { getLatestRPBVideo, getRPBStreamInfo } from '@/lib/twitch';
-import StreamStatus from './_components/StreamStatus';
-import TvHeader from './_components/TvHeader';
-import TwitchPlayer from './_components/TwitchPlayer';
-import ViewerCount from './_components/ViewerCount';
-import YoutubeSection from './_components/YoutubeSection';
+import { Container } from "@mui/material";
+import Grid from "@mui/material/Grid";
+import { headers } from "next/headers";
+import { getLatestRPBVideo, getRPBStreamInfo } from "@/lib/twitch";
+import StreamStatus from "./_components/StreamStatus";
+import TvHeader from "./_components/TvHeader";
+import TwitchPlayer from "./_components/TwitchPlayer";
+import ViewerCount from "./_components/ViewerCount";
+import YoutubeSection from "./_components/YoutubeSection";
 
 export const metadata = {
-  title: 'RPB TV | Direct',
-  description:
-    'Suivez les tournois RPB en direct sur Twitch et retrouvez nos replays sur YouTube.',
+  title: "RPB TV | Direct",
+  description: "Suivez les tournois RPB en direct sur Twitch et retrouvez nos replays sur YouTube.",
 };
 
 export default async function TVPage() {
   await headers();
   const streamInfo = await getRPBStreamInfo();
-  const channelName = process.env.NEXT_PUBLIC_TWITCH_CHANNEL || 'tv_rpb';
-  const youtubeChannelId = 'UCHiDwWI-2uQrsUiJhXt6rng';
-  const domain = process.env.NEXT_PUBLIC_DOMAIN || 'rpbey.fr';
+  const channelName = process.env.NEXT_PUBLIC_TWITCH_CHANNEL || "tv_rpb";
+  const youtubeChannelId = "UCHiDwWI-2uQrsUiJhXt6rng";
+  const domain = process.env.NEXT_PUBLIC_DOMAIN || "rpbey.fr";
 
   let videoId = null;
   let latestVideo = null;
