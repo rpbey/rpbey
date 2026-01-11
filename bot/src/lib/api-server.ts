@@ -112,6 +112,7 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse) {
   try {
     switch (url.pathname) {
       case '/health':
+      case '/api/health':
         return sendJSON(res, { ok: true });
 
       case '/api/status':
