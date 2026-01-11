@@ -1,9 +1,9 @@
 import { getDiscordStats, getDiscordTeam } from '@/lib/discord-data';
+import { connection } from 'next/server';
 import HomeClient from './HomeClient';
 
-export const revalidate = 60;
-
 export default async function HomePage() {
+  await connection();
   const stats = await getDiscordStats();
   const team = await getDiscordTeam();
 
