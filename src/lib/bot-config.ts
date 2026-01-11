@@ -12,13 +12,12 @@ export function getBotApiUrl() {
 
   // Fallbacks
   if (process.env.NODE_ENV === 'production') {
-    // In production, we expect the ENV var to be set.
-    // If not, we can't guess the Host IP easily, but we'll try localhost
-    // in case the container uses host networking (unlikely but possible).
+    // In production (Docker), localhost refers to the container itself.
+    // Use the host IP to reach the bot service running on the host.
     console.warn(
-      'Warning: BOT_API_URL is not set in production. Defaulting to http://localhost:3001',
+      'Warning: BOT_API_URL is not set in production. Defaulting to http://46.224.145.55:3001',
     );
-    return 'http://localhost:3001';
+    return 'http://46.224.145.55:3001';
   }
 
   return 'http://localhost:3001';
