@@ -1,13 +1,25 @@
-import type { Collection, Guild, GuildMember, GuildTextBasedChannel } from "discord.js";
-import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
-import { Colors, RPB } from "./constants.js";
+import {
+  createServer,
+  type IncomingMessage,
+  type ServerResponse,
+} from 'node:http';
+import type {
+  Collection,
+  Guild,
+  GuildMember,
+  GuildTextBasedChannel,
+} from 'discord.js';
+import { Colors, RPB } from './constants.js';
 
 const logs: { timestamp: string; level: string; message: string }[] = [];
 const MAX_LOGS = 1000;
 
 // Member fetch throttling
+
 let lastMemberFetch = 0;
-let memberFetchPromise: Promise<Collection<string, GuildMember> | void> | null = null;
+
+let memberFetchPromise: Promise<Collection<string, GuildMember> | undefined> | null = null;
+
 const MEMBER_FETCH_COOLDOWN = 5 * 60 * 1000; // 5 minutes
 
 async function ensureMembers(guild: Guild) {

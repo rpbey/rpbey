@@ -2,6 +2,14 @@ import { Command } from '@sapphire/framework';
 import { EmbedBuilder } from 'discord.js';
 import { Colors, RPB } from '../../lib/constants.js';
 
+interface PartnerInfo {
+  Name: string;
+  Invite: string;
+  Challonge?: string;
+  Linktree?: string;
+  Website?: string;
+}
+
 export class PartnerCommand extends Command {
   constructor(context: Command.LoaderContext, options: Command.Options) {
     super(context, {
@@ -37,7 +45,8 @@ export class PartnerCommand extends Command {
       'nom',
       true,
     ) as keyof typeof RPB.Partners;
-    const partner = RPB.Partners[partnerKey];
+    // Cast to unknown first then PartnerInfo to satisfy TS if RPB.Partners types are too strict/literal
+    const partner = RPB.Partners[partnerKey] as unknown as PartnerInfo;
 
     if (!partner) {
       return interaction.reply({
@@ -83,45 +92,45 @@ export class PartnerCommand extends Command {
 
         let description = `**${guild.name}**\n\n${desc}\n\n🔗 **[Clique ici pour rejoindre !](${partner.Invite})**`;
 
-        // Add Challonge link if available (casted as any to avoid TS error if property missing in type def)
-        if ((partner as any).Challonge) {
-          description += `\n🏆 **[Page Challonge](${(partner as any).Challonge})**`;
+        // Add Challonge link if available
+        if (partner.Challonge) {
+          description += `\n🏆 **[Page Challonge](${partner.Challonge})**`;
         }
 
-        if ((partner as any).Linktree) {
-          description += `\n🌳 **[Linktree](${(partner as any).Linktree})**`;
+        if (partner.Linktree) {
+          description += `\n🌳 **[Linktree](${partner.Linktree})**`;
         }
 
-        if ((partner as any).Website) {
-          description += `\n🌐 **[Site Web](${(partner as any).Website})**`;
+        if (partner.Website) {
+          description += `\n🌐 **[Site Web](${partner.Website})**`;
         }
 
         embed.setDescription(description);
       } else {
         // Fallback if guild info missing in invite
         let description = `Serveur Partenaire : ${partner.Name}\n\n🔗 **[Rejoindre le serveur](${partner.Invite})**`;
-        if ((partner as any).Challonge) {
-          description += `\n🏆 **[Page Challonge](${(partner as any).Challonge})**`;
+        if (partner.Challonge) {
+          description += `\n🏆 **[Page Challonge](${partner.Challonge})**`;
         }
-        if ((partner as any).Linktree) {
-          description += `\n🌳 **[Linktree](${(partner as any).Linktree})**`;
+        if (partner.Linktree) {
+          description += `\n🌳 **[Linktree](${partner.Linktree})**`;
         }
-        if ((partner as any).Website) {
-          description += `\n🌐 **[Site Web](${(partner as any).Website})**`;
+        if (partner.Website) {
+          description += `\n🌐 **[Site Web](${partner.Website})**`;
         }
         embed.setDescription(description);
       }
-    } catch (e) {
+    } catch (_e) {
       // Fallback if invite fetch fails
       let description = `Serveur Partenaire : ${partner.Name}\n\n🔗 **[Rejoindre le serveur](${partner.Invite})**`;
-      if ((partner as any).Challonge) {
-        description += `\n🏆 **[Page Challonge](${(partner as any).Challonge})**`;
+      if (partner.Challonge) {
+        description += `\n🏆 **[Page Challonge](${partner.Challonge})**`;
       }
-      if ((partner as any).Linktree) {
-        description += `\n🌳 **[Linktree](${(partner as any).Linktree})**`;
+      if (partner.Linktree) {
+        description += `\n🌳 **[Linktree](${partner.Linktree})**`;
       }
-      if ((partner as any).Website) {
-        description += `\n🌐 **[Site Web](${(partner as any).Website})**`;
+      if (partner.Website) {
+        description += `\n🌐 **[Site Web](${partner.Website})**`;
       }
       embed.setDescription(description);
     }
