@@ -67,7 +67,9 @@ COPY --from=builder /app/public ./public
 COPY --from=builder /app/package.json ./package.json
 
 # Copy production dependencies (needed for full Next.js support)
-COPY --from=prod-deps /app/node_modules ./node_modules
+# OPTIMIZATION: In standalone mode, node_modules are already included in .next/standalone
+# We comment this out to reduce image size and avoid conflicts.
+# COPY --from=prod-deps /app/node_modules ./node_modules
 
 # Automatically leverage output traces to reduce image size
 # https://nextjs.org/docs/advanced-features/output-file-tracing
