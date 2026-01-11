@@ -25,9 +25,9 @@ export interface DeckBey {
   id: string;
   position: number;
   nickname: string | null;
-  blade: Part;
-  ratchet: Part;
-  bit: Part;
+  blade: Part | null;
+  ratchet: Part | null;
+  bit: Part | null;
 }
 
 export interface Deck {
@@ -47,14 +47,21 @@ interface DeckCardProps {
 }
 
 function BeyLine({ bey }: { bey: DeckBey }) {
+  const partsAvailable = bey.blade && bey.ratchet && bey.bit;
   const name =
-    bey.nickname || `${bey.blade.name} ${bey.ratchet.name} ${bey.bit.name}`;
-  const stats = {
-    attack: parseStat(bey.blade.attack),
-    defense: parseStat(bey.blade.defense),
-    stamina: parseStat(bey.blade.stamina),
-    dash: parseStat(bey.blade.dash),
-  };
+    bey.nickname ||
+    (partsAvailable
+      ? `${bey.blade?.name} ${bey.ratchet?.name} ${bey.bit?.name}`
+      : 'Bey incomplet');
+
+  const stats = partsAvailable
+    ? {
+        attack: parseStat(bey.blade?.attack),
+        defense: parseStat(bey.blade?.defense),
+        stamina: parseStat(bey.blade?.stamina),
+        dash: parseStat(bey.blade?.dash),
+      }
+    : { attack: 0, defense: 0, stamina: 0, dash: 0 };
 
   return (
     <Box
@@ -65,55 +72,60 @@ function BeyLine({ bey }: { bey: DeckBey }) {
         py: 0.5,
       }}
     >
-      <Typography variant="body2" sx={{ fontWeight: 500 }}>
+      <Typography
+        variant="body2"
+        sx={{ fontWeight: 500, color: partsAvailable ? 'text.primary' : 'text.secondary' }}
+      >
         {bey.position}. {name}
       </Typography>
-      <Box sx={{ display: 'flex', gap: 0.5 }}>
-        <Chip
-          size="small"
-          label={stats.attack}
-          sx={{
-            bgcolor: 'error.main',
-            color: 'white',
-            minWidth: 28,
-            height: 20,
-            fontSize: '0.7rem',
-          }}
-        />
-        <Chip
-          size="small"
-          label={stats.defense}
-          sx={{
-            bgcolor: 'info.main',
-            color: 'white',
-            minWidth: 28,
-            height: 20,
-            fontSize: '0.7rem',
-          }}
-        />
-        <Chip
-          size="small"
-          label={stats.stamina}
-          sx={{
-            bgcolor: 'success.main',
-            color: 'white',
-            minWidth: 28,
-            height: 20,
-            fontSize: '0.7rem',
-          }}
-        />
-        <Chip
-          size="small"
-          label={`X ${stats.dash}`}
-          sx={{
-            bgcolor: 'warning.main',
-            color: 'black',
-            minWidth: 28,
-            height: 20,
-            fontSize: '0.7rem',
-          }}
-        />
-      </Box>
+      {partsAvailable && (
+        <Box sx={{ display: 'flex', gap: 0.5 }}>
+          <Chip
+            size="small"
+            label={stats.attack}
+            sx={{
+              bgcolor: 'error.main',
+              color: 'white',
+              minWidth: 28,
+              height: 20,
+              fontSize: '0.7rem',
+            }}
+          />
+          <Chip
+            size="small"
+            label={stats.defense}
+            sx={{
+              bgcolor: 'info.main',
+              color: 'white',
+              minWidth: 28,
+              height: 20,
+              fontSize: '0.7rem',
+            }}
+          />
+          <Chip
+            size="small"
+            label={stats.stamina}
+            sx={{
+              bgcolor: 'success.main',
+              color: 'white',
+              minWidth: 28,
+              height: 20,
+              fontSize: '0.7rem',
+            }}
+          />
+          <Chip
+            size="small"
+            label={`X ${stats.dash}`}
+            sx={{
+              bgcolor: 'warning.main',
+              color: 'black',
+              minWidth: 28,
+              height: 20,
+              fontSize: '0.7rem',
+            }}
+          />
+        </Box>
+      )}
     </Box>
   );
 }
@@ -129,10 +141,10 @@ export function DeckCard({
   // Calculate total stats
   const totalStats = sortedBeys.reduce(
     (acc, bey) => ({
-      attack: acc.attack + parseStat(bey.blade.attack),
-      defense: acc.defense + parseStat(bey.blade.defense),
-      stamina: acc.stamina + parseStat(bey.blade.stamina),
-      dash: acc.dash + parseStat(bey.blade.dash),
+      attack: acc.attack + (bey.blade ? parseStat(bey.blade.attack) : 0),
+      defense: acc.defense + (bey.blade ? parseStat(bey.blade.defense) : 0),
+      stamina: acc.stamina + (bey.blade ? parseStat(bey.blade.stamina) : 0),
+      dash: acc.dash + (bey.blade ? parseStat(bey.blade.dash) : 0),
     }),
     { attack: 0, defense: 0, stamina: 0, dash: 0 },
   );
