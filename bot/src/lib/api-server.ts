@@ -1,3 +1,4 @@
+import { container } from '@sapphire/framework';
 import {
   createServer,
   type IncomingMessage,
@@ -39,12 +40,14 @@ async function ensureMembers(guild: Guild) {
   // Start a new fetch
   memberFetchPromise = guild.members
     .fetch()
-    .then(() => {
+    .then((members) => {
       lastMemberFetch = Date.now();
+      return members;
     })
     .catch((err) => {
-      container.logger.error('Failed to fetch members:', err);
+      container.logger.error("Failed to fetch members:", err);
       // Don't update lastMemberFetch so we retry next time (or maybe cooldown on error too?)
+      return undefined;
     })
     .finally(() => {
       memberFetchPromise = null;

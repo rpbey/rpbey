@@ -1,14 +1,7 @@
-import { cacheLife } from 'next/cache';
-import { NextResponse } from 'next/server';
-import { fetchLatestBeyblades } from '@/lib/feedmy';
-
-async function getCachedProducts() {
-  'use cache';
-  cacheLife('hours');
-  return await fetchLatestBeyblades();
-}
+import { NextResponse } from "next/server";
+import { fetchLatestBeyblades } from "@/lib/feedmy";
 
 export async function GET() {
-  const products = await getCachedProducts();
+  const products = await fetchLatestBeyblades();
   return NextResponse.json(products);
 }
