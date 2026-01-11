@@ -96,6 +96,10 @@ ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 
 # Health check to allow Coolify/Docker to detect unhealthy containers
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-  CMD node -e "fetch('http://localhost:3000/api/health').then(r => {if(!r.ok) throw new Error(r.statusText)})"
+  CMD node -e "const port = process.env.BOT_API_PORT || process.env.PORT || 3000; const path = process.env.HEALTHCHECK_PATH || '/api/health'; fetch('http://localhost:' + port + path).then(r => {if(!r.ok) throw new Error(r.statusText)})"
 
-CMD ["node", "server.js"]
+# Use start script to handle conditional startup
+COPY scripts/start-entrypoint.sh ./start-entrypoint.sh
+RUN chmod +x ./start-entrypoint.sh
+
+CMD ["./start-entrypoint.sh"]
