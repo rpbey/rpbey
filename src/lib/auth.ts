@@ -3,7 +3,11 @@ import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { admin, twoFactor, username } from 'better-auth/plugins';
 import prisma from '@/lib/prisma';
 
+const isProduction = process.env.NODE_ENV === 'production';
+const baseURL = process.env.BETTER_AUTH_URL || (isProduction ? 'https://rpbey.fr' : 'http://localhost:3000');
+
 export const auth = betterAuth({
+  baseURL,
   database: prismaAdapter(prisma, {
     provider: 'postgresql',
   }),
