@@ -1,7 +1,8 @@
 import { createCanvas, GlobalFonts, loadImage } from '@napi-rs/canvas';
 
 // Register fonts
-const fontPath = './public/Google_Sans_Flex/static/GoogleSansFlex_72pt-Bold.ttf';
+const fontPath =
+  './public/Google_Sans_Flex/static/GoogleSansFlex_72pt-Bold.ttf';
 GlobalFonts.registerFromPath(fontPath, 'GoogleSans');
 
 export async function generateWelcomeImage(

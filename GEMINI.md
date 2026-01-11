@@ -24,10 +24,11 @@ The application is divided into three main domains:
 
 ## Infrastructure (Hetzner)
 - **IP**: `46.224.145.55` (Ubuntu 24.04 LTS)
-- **Deployment**: Coolify (http://46.224.145.55:8000)
+- **Deployment**: 
+  - **Dashboard**: Coolify (http://46.224.145.55:8000)
+  - **Bot**: Native Node.js process (PM2/Systemd)
 - **Coolify CLI**: Use `coolify` for deployment and status monitoring.
   - Dashboard UUID: `l8goc4scgcgwk0ookoc0k8c0`
-  - Bot UUID: `d8g4cgkocw40sgkwsscckks8`
   - Command: `coolify deploy uuid <uuid>` to trigger deployment.
   - Command: `coolify deploy list` or `coolify deploy get <deployment_uuid>` for status.
 - **Domain**: `rpbey.fr` (managed via OVH)

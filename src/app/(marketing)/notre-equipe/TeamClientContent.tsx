@@ -22,10 +22,13 @@ interface TeamClientContentProps {
 }
 
 const TEAM_LOGOS: Record<string, string> = {
-  admin: '/logo-admin.svg',
-  rh: '/logo-rh.svg',
-  modo: '/logo-modo.svg',
-  staff: '/logo-staff.svg',
+  admin: '/logo-admin.png',
+  rh: '/logo-rh.png',
+  modo: '/logo-modo.png',
+  staff: '/logo-staff.png',
+  dev: '/logo-staff.png',
+  event: '/logo-staff.png',
+  media: '/logo-staff.png',
 };
 
 export function TeamClientContent({

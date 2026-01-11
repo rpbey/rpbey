@@ -103,11 +103,19 @@ export default function ProfilePage({ params }: ProfilePageProps) {
       <Box sx={{ mb: 4 }}>
         <BladerProfileHeader
           stats={stats}
-          avatarUrl={user?.profile?.avatarUrl ?? user?.image}
+          avatarUrl={
+            user?.serverAvatar ?? user?.profile?.avatarUrl ?? user?.image
+          }
           joinDate={user?.createdAt}
           bio={user?.profile?.bio}
           onDownloadCard={handleDownloadCard}
           isOwnProfile={currentUser?.id === userId}
+          socials={{
+            twitter: user?.profile?.twitterHandle,
+            tiktok: user?.profile?.tiktokHandle,
+          }}
+          discordRoles={user?.roles}
+          userId={userId ?? undefined}
         />
       </Box>
 

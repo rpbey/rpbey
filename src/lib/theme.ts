@@ -67,10 +67,9 @@ const SURFACE_DARK = {
 };
 
 // Tournament Mode Colors
-// const TOURNAMENT_SKY = '#60A5FA';
-// const TOURNAMENT_WHITE = '#FFFFFF';
-// const TOURNAMENT_BG = '#0f172a';
-// const TOURNAMENT_PAPER = '#1e293b';
+const TOURNAMENT_SKY = '#60A5FA';
+const TOURNAMENT_BG = '#0f172a';
+const TOURNAMENT_PAPER = '#1e293b';
 
 // ----------------------------------------------------------------------
 // Base Theme Options
@@ -274,8 +273,7 @@ const commonOptions: ThemeOptions = {
 // Theme Creation
 // ----------------------------------------------------------------------
 
-// Standard MUI Theme (No CSS Variables for now to avoid build crash)
-export const theme = createTheme({
+export const darkTheme = createTheme({
   ...commonOptions,
   palette: {
     mode: 'dark',
@@ -304,4 +302,42 @@ export const theme = createTheme({
   },
 });
 
-export type ThemeMode = 'dark' | 'tournament';
+export const tournamentTheme = createTheme({
+  ...commonOptions,
+  palette: {
+    mode: 'dark',
+    primary: {
+      main: TOURNAMENT_SKY,
+      container: '#1e3a8a',
+      onContainer: '#dbeafe',
+      contrastText: '#FFFFFF',
+    },
+    secondary: {
+      main: '#93c5fd',
+      container: '#1e40af',
+      onContainer: '#eff6ff',
+      contrastText: '#FFFFFF',
+    },
+    background: {
+      default: TOURNAMENT_BG,
+      paper: TOURNAMENT_PAPER,
+    },
+    surface: {
+      lowest: '#020617',
+      low: '#0f172a',
+      main: '#1e293b',
+      high: '#334155',
+      highest: '#475569',
+    },
+    text: {
+      primary: '#f8fafc',
+      secondary: '#94a3b8',
+    },
+    divider: 'rgba(255, 255, 255, 0.1)',
+  },
+});
+
+// For backward compatibility if needed, though we should prefer the exports above
+export const theme = darkTheme;
+
+export type { ThemeMode } from '@/components/theme/ThemeRegistry';

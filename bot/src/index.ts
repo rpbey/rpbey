@@ -13,6 +13,7 @@ import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { startApiServer } from './lib/api-server.js';
 import { generateCustomCommands } from './lib/command-generator.js';
+import { setupLogCapture } from './lib/log-capture.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -21,9 +22,9 @@ ApplicationCommandRegistries.setDefaultBehaviorWhenNotIdentical(
   RegisterBehavior.BulkOverwrite,
 );
 
-// If GUILD_ID is provided in .env, set it as default for faster command registration during development
-// We only do this in development to avoid duplicate commands in production (global + guild)
-if (process.env.NODE_ENV !== 'production' && process.env.GUILD_ID) {
+// If GUILD_ID is provided in .env, set it as default for faster command registration
+// We do this even in production for this specific community bot to ensure instant updates
+if (process.env.GUILD_ID) {
   ApplicationCommandRegistries.setDefaultGuildIds([process.env.GUILD_ID]);
 }
 
@@ -56,6 +57,9 @@ try {
       },
     },
   });
+
+  // Setup log capture for API/Dashboard
+  setupLogCapture();
 
   await client.login(process.env.DISCORD_TOKEN);
 

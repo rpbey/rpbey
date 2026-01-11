@@ -125,7 +125,10 @@ export class MemberJoinListener extends Listener<typeof Events.GuildMemberAdd> {
         `Welcome message sent to ${welcomeChannel.name} for ${member.user.tag}`,
       );
     } catch (error) {
-      this.container.logger.error('CRITICAL: Failed to send welcome message:', error);
+      this.container.logger.error(
+        'CRITICAL: Failed to send welcome message:',
+        error,
+      );
     }
   }
 }

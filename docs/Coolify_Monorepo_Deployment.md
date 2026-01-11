@@ -1,6 +1,6 @@
-# Coolify Monorepo Deployment Guide (Next.js + Bot)
+# Coolify Monorepo Deployment Guide (Dashboard Only)
 
-Since we have merged the Bot and Dashboard into a single repository, the deployment strategy on Coolify changes slightly. We will deploy **two separate services** from the **same repository**.
+This guide covers the deployment of the RPB Dashboard on Coolify. The Bot is managed natively on the host server.
 
 ## 1. Database Service (PostgreSQL)
 Ensure you have a PostgreSQL database deployed in Coolify.
@@ -24,33 +24,20 @@ This service runs the web interface.
 4.  **Health Check**:
     *   Path: `/api/health` (or `/`)
 
-## 3. Bot Service (Worker)
-This service runs the Discord bot in the background.
+## 3. Bot Service (Native Ubuntu)
+The Bot is **NOT** deployed via Coolify. It runs natively on the Ubuntu server using PM2 or systemd.
 
-1.  **Create New Application** -> **Private Repository** (select `rpb-dashboard` **AGAIN**).
-2.  **Configuration**:
-    *   **Name**: `rpb-bot`
-    *   **Build Pack**: Dockerfile (It will build the same image as dashboard)
-    *   **Docker Image**: `node:24-slim`
-    *   **Ports Exposes**: `3001` (Bot API)
-    *   **Custom Start Command**: `npm run bot:start`  <-- **CRITICAL**
-3.  **Environment Variables**:
-    *   `DATABASE_URL`: (Same Internal DB URL)
-    *   `DISCORD_TOKEN`: (Bot Token)
-    *   `BOT_API_KEY`: (Secure Key shared with Dashboard)
-    *   `GUILD_ID`: (Your Server ID)
-4.  **Health Check**:
-    *   Path: `/health` (Bot API Health check)
-    *   Port: `3001`
+*   **Location**: `/root/rpb-dashboard/bot` (or similar on host)
+*   **Management**: Managed manually or via system scripts.
+*   **Connection**: It connects to the same PostgreSQL database (ensure firewall allows connection if not local).
+*   **Communication**: The Dashboard communicates with the Bot via the `BOT_API_URL`.
 
 ## How it works
-*   **Unified Build**: Coolify builds the Docker image once (or twice depending on cache). The `Dockerfile` compiles *both* the Next.js app and the Bot TypeScript code.
-*   **Runtime Separation**:
-    *   Service A runs `npm start` -> Starts Next.js server.
-    *   Service B runs `npm run bot:start` -> Starts Bot process (`dist/bot/index.js`).
-*   **Communication**: The Dashboard talks to the Bot API via the internal network (e.g., `http://rpb-bot:3001` if they are in the same network, or via Public IP if needed, but internal is better).
+*   **Dashboard**: Deployed via Coolify (Docker container).
+*   **Bot**: Runs as a native Node.js process on the host server.
+*   **Communication**: The Dashboard talks to the Bot API via its local address (e.g., `http://172.17.0.1:3001` or Host IP).
 
 ## Bot API Configuration
 In the Dashboard service env vars:
-*   `BOT_API_URL`: `http://<coolify-container-name-of-bot>:3001` (e.g., `http://rpb-bot:3001`)
-*   `BOT_API_KEY`: (Must match the one in Bot service)
+*   `BOT_API_URL`: `http://<HOST_IP>:3001` (Replace with actual IP/Hostname of the bot)
+*   `BOT_API_KEY`: (Secure Key shared with Dashboard)

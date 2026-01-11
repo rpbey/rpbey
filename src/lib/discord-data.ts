@@ -1,4 +1,5 @@
-import { getBotStatus, getMembersByRole } from '@/lib/bot';
+import { getBotStatus } from '@/lib/bot';
+import prisma from '@/lib/prisma';
 import { DiscordRoleMapping, type RoleType } from '@/lib/role-colors';
 import type { BotMember } from '@/types';
 
@@ -36,10 +37,15 @@ export async function getDiscordStats(): Promise<DiscordStats> {
     }
 
     // 2. Try internal bot API for potentially more accurate realtime counts
-    const status = await getBotStatus();
-    if (status && status.memberCount > 0) {
-      onlineCount = status.onlineCount;
-      memberCount = status.memberCount;
+    // (Only if available, avoiding critical failure if bot is ratelimited)
+    try {
+      const status = await getBotStatus();
+      if (status && status.memberCount > 0) {
+        onlineCount = status.onlineCount;
+        memberCount = status.memberCount;
+      }
+    } catch (e) {
+      // Ignore bot status error
     }
   } catch (error) {
     console.error('Failed to fetch Discord stats:', error);
@@ -54,17 +60,46 @@ export async function getDiscordStats(): Promise<DiscordStats> {
 
 export async function getDiscordTeam(): Promise<TeamGroup[]> {
   try {
-    const roles = Object.keys(DiscordRoleMapping);
-    const teamData = await Promise.all(
-      roles.map(async (roleId) => {
-        const members = await getMembersByRole(roleId);
-        return {
-          roleId,
-          roleType: DiscordRoleMapping[roleId] || 'DEFAULT',
-          members: members.slice(0, 5),
-        };
-      }),
-    );
+    // Fetch from Database (Source of Truth via /sync command)
+    const staffMembers = await prisma.staffMember.findMany({
+      where: { isActive: true },
+      orderBy: [{ displayIndex: 'asc' }, { createdAt: 'desc' }],
+    });
+
+    const roles = Object.entries(DiscordRoleMapping);
+
+    // Group by Role
+    const teamData = roles.map(([roleId, roleType]) => {
+      // Filter members who have this role assigned in DB
+      // Note: member.role in DB is the RoleType key (e.g. "ADMIN")
+      const members = staffMembers
+        .filter((m) => m.role === roleType)
+        .map((m) => {
+          // Map Prisma model to BotMember interface
+          return {
+            id: m.discordId || m.id,
+            username: m.name,
+            displayName: m.nickname || m.name,
+            avatar: m.imageUrl,
+            nickname: m.nickname || undefined,
+            joinedAt: m.joinedAt?.toISOString(),
+            premiumSince: m.premiumSince?.toISOString() || null,
+            roles: (m.roles as any[]) || [],
+            status: m.status || undefined,
+            activities: (m.activities as any[]) || [],
+            serverAvatar: m.serverAvatar || null,
+            globalName: m.globalName || null,
+            createdAt: m.accountCreatedAt?.toISOString(),
+          } as BotMember;
+        });
+
+      return {
+        roleId,
+        roleType: roleType as RoleType,
+        members,
+      };
+    });
+
     return teamData.filter((t) => t.members.length > 0);
   } catch (error) {
     console.error('Failed to fetch Discord team:', error);

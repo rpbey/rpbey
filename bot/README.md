@@ -7,7 +7,7 @@ Bot Discord pour le serveur **RPB** - [Rejoindre le serveur](https://discord.gg/
 - **Runtime**: Node.js 24+ avec pnpm
 - **Framework**: [Sapphire](https://sapphirejs.dev/) + discord.js
 - **Language**: TypeScript (ESM)
-- **Deployment**: Docker / Coolify
+- **Deployment**: Native (PM2/Systemd)
 
 ## Installation
 
@@ -53,16 +53,6 @@ export class MaCommande extends Command {
     return interaction.reply("Hello!");
   }
 }
-```
-
-## Déploiement Docker
-
-```bash
-# Build
-docker build -t rpb-bot .
-
-# Run
-docker run -dt -e DISCORD_TOKEN=$DISCORD_TOKEN rpb-bot
 ```
 
 ## Structure

@@ -360,11 +360,11 @@ export default async function AdminDashboardPage() {
                       <strong>{nextTournament._count.participants}</strong>{' '}
                       participants
                     </Typography>
-                    <Link href={`/admin/tournaments/${nextTournament.id}`} style={{ textDecoration: 'none' }}>
-                      <Button
-                        size="small"
-                        variant="contained"
-                      >
+                    <Link
+                      href={`/admin/tournaments/${nextTournament.id}`}
+                      style={{ textDecoration: 'none' }}
+                    >
+                      <Button size="small" variant="contained">
                         Gérer
                       </Button>
                     </Link>

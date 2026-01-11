@@ -1,14 +1,45 @@
-import {
-  createServer,
-  type IncomingMessage,
-  type ServerResponse,
-} from 'node:http';
-import { container } from '@sapphire/framework';
-import type { GuildTextBasedChannel } from 'discord.js';
-import { Colors, RPB } from './constants.js';
+import type { Collection, Guild, GuildMember, GuildTextBasedChannel } from "discord.js";
+import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
+import { Colors, RPB } from "./constants.js";
 
 const logs: { timestamp: string; level: string; message: string }[] = [];
 const MAX_LOGS = 1000;
+
+// Member fetch throttling
+let lastMemberFetch = 0;
+let memberFetchPromise: Promise<Collection<string, GuildMember> | void> | null = null;
+const MEMBER_FETCH_COOLDOWN = 5 * 60 * 1000; // 5 minutes
+
+async function ensureMembers(guild: Guild) {
+  // If a fetch is already in progress, wait for it
+  if (memberFetchPromise) {
+    return memberFetchPromise;
+  }
+
+  // If we fetched recently, rely on cache
+  if (Date.now() - lastMemberFetch < MEMBER_FETCH_COOLDOWN) {
+    // Check if cache seems reasonable (e.g. > 90% of member count)
+    // If cache is empty or very low, we might force fetch regardless of cooldown?
+    // For now, trust the cooldown.
+    return;
+  }
+
+  // Start a new fetch
+  memberFetchPromise = guild.members
+    .fetch()
+    .then(() => {
+      lastMemberFetch = Date.now();
+    })
+    .catch((err) => {
+      container.logger.error('Failed to fetch members:', err);
+      // Don't update lastMemberFetch so we retry next time (or maybe cooldown on error too?)
+    })
+    .finally(() => {
+      memberFetchPromise = null;
+    });
+
+  return memberFetchPromise;
+}
 
 export function addLog(level: string, message: string) {
   logs.push({
@@ -156,6 +187,54 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse) {
         return sendJSON(res, { roles });
       }
 
+      case '/api/member': {
+        // Handle /api/members/:id via logic since switch match is exact path usually?
+        // Actually the current router is basic switch(url.pathname).
+        // I will add a check for prefix or query param.
+        // Let's use /api/member?userId=<id>
+        const userId = url.searchParams.get('userId');
+        const guildId = process.env.GUILD_ID;
+
+        if (!userId || !guildId)
+          return sendError(res, 'Missing userId or GUILD_ID');
+
+        try {
+          const guild = container.client.guilds.cache.get(guildId);
+          if (!guild) return sendError(res, 'Guild not found', 404);
+
+          const member = await guild.members.fetch(userId).catch(() => null);
+          if (!member) return sendError(res, 'Member not found', 404);
+
+          return sendJSON(res, {
+            member: {
+              id: member.id,
+              username: member.user.username,
+              displayName: member.displayName,
+              avatar: member.user.displayAvatarURL({
+                extension: 'png',
+                size: 256,
+              }),
+              nickname: member.nickname,
+              joinedAt: member.joinedAt,
+              premiumSince: member.premiumSince,
+              roles: member.roles.cache.map((r) => ({
+                name: r.name,
+                color: r.hexColor,
+                id: r.id,
+              })),
+              status: member.presence?.status,
+              activities: member.presence?.activities,
+              serverAvatar: member.avatarURL({ extension: 'png', size: 256 }),
+              globalName: member.user.globalName,
+              createdAt: member.user.createdAt,
+            },
+          });
+        } catch (e) {
+          container.logger.error(`Error in member fetch for ${userId}:`, e);
+          return sendError(res, `Internal error: ${String(e)}`, 500);
+        }
+      }
+
       case '/api/members-by-role': {
         const roleId = url.searchParams.get('roleId');
         const guildId = process.env.GUILD_ID;
@@ -167,8 +246,8 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse) {
           const guild = container.client.guilds.cache.get(guildId);
           if (!guild) return sendError(res, 'Guild not found', 404);
 
-          // Ensure members are cached
-          await guild.members.fetch();
+          // Ensure members are cached (throttled)
+          await ensureMembers(guild);
 
           const role = guild.roles.cache.get(roleId);
           if (!role) return sendError(res, 'Role not found', 404);
@@ -178,11 +257,27 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse) {
             username: m.user.username,
             displayName: m.displayName,
             avatar: m.user.displayAvatarURL({ extension: 'png', size: 256 }),
+            nickname: m.nickname,
+            joinedAt: m.joinedAt,
+            premiumSince: m.premiumSince,
+            roles: m.roles.cache.map((r) => ({
+              name: r.name,
+              color: r.hexColor,
+              id: r.id,
+            })),
+            status: m.presence?.status,
+            activities: m.presence?.activities,
+            serverAvatar: m.avatarURL({ extension: 'png', size: 256 }),
+            globalName: m.user.globalName,
+            createdAt: m.user.createdAt,
           }));
 
           return sendJSON(res, { members });
         } catch (e) {
-          container.logger.error(`Error in members-by-role for role ${roleId}:`, e);
+          container.logger.error(
+            `Error in members-by-role for role ${roleId}:`,
+            e,
+          );
           return sendError(res, `Internal error: ${String(e)}`, 500);
         }
       }
@@ -220,7 +315,7 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse) {
         const list = commands.map((cmd) => ({
           name: cmd.name,
           description: cmd.description,
-          category: cmd.category,
+          category: cmd.category ?? 'Uncategorized',
           enabled: cmd.enabled,
         }));
         return sendJSON(res, { commands: list });
@@ -253,6 +348,21 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse) {
           }
         });
         return;
+      }
+
+      case '/api/webhook/twitch/verify': {
+        if (req.method !== 'GET')
+          return sendError(res, 'Method not allowed', 405);
+        const challenge = url.searchParams.get('hub.challenge');
+        container.logger.info(
+          `[TwitchVerify] Received challenge: ${challenge}`,
+        );
+        if (challenge) {
+          res.writeHead(200, { 'Content-Type': 'text/plain' });
+          res.end(challenge);
+          return;
+        }
+        return sendError(res, 'No challenge provided', 400);
       }
 
       case '/api/agent/dispatch': {

@@ -87,12 +87,28 @@ export interface ApiError {
   statusCode: number;
 }
 
+export interface BotRole {
+  id: string;
+  name: string;
+  color: string;
+  position?: number;
+  managed?: boolean;
+}
+
 export interface BotMember {
   id: string;
   username: string;
   displayName: string;
   avatar: string | null;
-  roles: string[];
+  nickname?: string;
+  joinedAt?: string;
+  premiumSince?: string | null;
+  roles: { id: string; name: string; color: string }[];
+  status?: string;
+  activities?: any[];
+  serverAvatar?: string | null;
+  globalName?: string | null;
+  createdAt?: string;
 }
 
 export interface PaginatedResponse<T> {

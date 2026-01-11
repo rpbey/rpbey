@@ -64,11 +64,55 @@ export async function generateCustomCommands() {
       where: { enabled: true },
     });
 
+    // Get list of existing hardcoded commands to avoid duplicates
+    // We check other directories in src/commands/
+    const hardcodedDirs = ['Beyblade', 'General', 'Moderation'];
+    const hardcodedCommands = new Set<string>();
+
+    for (const dir of hardcodedDirs) {
+      try {
+        const dirPath = path.join(__dirname, '../commands', dir);
+        const files = await fs.readdir(dirPath);
+        for (const file of files) {
+          if (file.endsWith('.ts') || file.endsWith('.js')) {
+            const content = await fs.readFile(path.join(dirPath, file), 'utf8');
+            // Try to find .setName('commandName') in the file content
+            const match = content.match(/\.setName\(['"]([^'"]+)['"]\)/);
+            if (match && match[1]) {
+              hardcodedCommands.add(match[1].toLowerCase());
+            } else {
+              // Fallback to filename if .setName is not found
+              const filename = file.split('.')[0];
+              if (filename) {
+                hardcodedCommands.add(filename.toLowerCase());
+              }
+            }
+          }
+        }
+      } catch {
+        // Directory might not exist or be inaccessible
+      }
+    }
+
     for (const cmd of commands) {
+      // Sanitize name: lowercase, only alphanumeric and dashes
+      const sanitizedName = cmd.name
+        .toLowerCase()
+        .replace(/[^a-z0-9-]/g, '-')
+        .replace(/-+/g, '-') // replace multiple dashes with one
+        .replace(/^-|-$/g, ''); // remove leading/trailing dashes
+
+      if (hardcodedCommands.has(sanitizedName)) {
+        console.log(
+          `Skipping custom command "${cmd.name}" (sanitized: "${sanitizedName}") because it conflicts with a hardcoded command.`,
+        );
+        continue;
+      }
+
       const filePath = path.join(CUSTOM_COMMANDS_DIR, `${cmd.name}.ts`);
       await fs.writeFile(
         filePath,
-        COMMAND_TEMPLATE(cmd.name, cmd.description, cmd.response),
+        COMMAND_TEMPLATE(sanitizedName, cmd.description, cmd.response),
       );
     }
 

@@ -25,11 +25,15 @@ export function StatsCharts({
           sx={{
             border: '1px solid',
             borderColor: 'divider',
-            borderRadius: 3,
+            borderRadius: 4,
             height: '100%',
+            transition: 'box-shadow 0.2s',
+            '&:hover': {
+              boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+            },
           }}
         >
-          <CardContent>
+          <CardContent sx={{ p: 3 }}>
             <Typography variant="h6" fontWeight="bold" gutterBottom>
               Croissance Utilisateurs & Tournois
             </Typography>
@@ -54,6 +58,11 @@ export function StatsCharts({
                   },
                 ]}
                 height={300}
+                sx={
+                  {
+                    // Optional: Customize chart aesthetics if needed
+                  }
+                }
               />
             </Box>
           </CardContent>
@@ -67,11 +76,15 @@ export function StatsCharts({
           sx={{
             border: '1px solid',
             borderColor: 'divider',
-            borderRadius: 3,
+            borderRadius: 4,
             height: '100%',
+            transition: 'box-shadow 0.2s',
+            '&:hover': {
+              boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+            },
           }}
         >
-          <CardContent>
+          <CardContent sx={{ p: 3 }}>
             <Typography variant="h6" fontWeight="bold" gutterBottom>
               État des Matchs
             </Typography>
@@ -97,15 +110,26 @@ export function StatsCharts({
                             ? '#3b82f6'
                             : '#94a3b8',
                     })),
-                    innerRadius: 30,
+                    innerRadius: 40,
                     outerRadius: 100,
-                    paddingAngle: 5,
-                    cornerRadius: 5,
+                    paddingAngle: 4,
+                    cornerRadius: 6,
+                    highlightScope: { fade: 'global', highlight: 'item' },
+                    faded: {
+                      innerRadius: 30,
+                      additionalRadius: -30,
+                      color: 'gray',
+                    },
                   },
                 ]}
-                hideLegend
-                height={300}
                 margin={{ right: 5 }}
+                height={300}
+                slotProps={{
+                  legend: {
+                    // hidden: true, // Moved to prop
+                  },
+                }}
+                hideLegend
               />
             </Box>
           </CardContent>

@@ -15,7 +15,8 @@ import {
 import type { StaffMember } from '@prisma/client';
 import { useCallback, useEffect, useState } from 'react';
 import { FormDialog } from '@/components/ui';
-import type { DiscordMember, DiscordRole, StaffMemberInput } from './actions';
+import type { BotMember, BotRole } from '@/types';
+import type { StaffMemberInput } from './actions';
 import { getDiscordRoles, getMembersByRole } from './actions';
 
 const TEAMS = [
@@ -53,9 +54,9 @@ export function StaffDialog({
     isActive: true,
   });
 
-  const [roles, setRoles] = useState<DiscordRole[]>([]);
+  const [roles, setRoles] = useState<BotRole[]>([]);
   const [selectedRoleId, setSelectedRoleId] = useState<string>('');
-  const [discordMembers, setDiscordMembers] = useState<DiscordMember[]>([]);
+  const [discordMembers, setDiscordMembers] = useState<BotMember[]>([]);
   const [loadingRoles, setLoadingRoles] = useState(false);
   const [loadingMembers, setLoadingMembers] = useState(false);
 
@@ -80,12 +81,12 @@ export function StaffDialog({
     setLoadingMembers(false);
   };
 
-  const handleSelectDiscordMember = (member: DiscordMember) => {
+  const handleSelectDiscordMember = (member: BotMember) => {
     setFormData({
       ...formData,
       name: member.displayName || member.username,
       discordId: member.id,
-      imageUrl: member.avatar,
+      imageUrl: member.avatar || '',
     });
   };
 
@@ -199,7 +200,7 @@ export function StaffDialog({
                       discordMembers.map((member) => (
                         <MenuItem key={member.id} value={member.id}>
                           <Avatar
-                            src={member.avatar}
+                            src={member.avatar || undefined}
                             sx={{ width: 20, height: 20, mr: 1 }}
                           />
                           {member.displayName}

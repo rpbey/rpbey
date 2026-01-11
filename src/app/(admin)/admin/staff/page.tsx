@@ -8,6 +8,7 @@ import {
 } from '@mui/icons-material';
 import {
   Avatar,
+  alpha,
   Box,
   Button,
   ButtonGroup,
@@ -29,7 +30,6 @@ import {
   useConfirmDialog,
   useToast,
 } from '@/components/ui';
-import { RoleLogo } from '@/components/ui/RoleLogo';
 import { RoleColors } from '@/lib/role-colors';
 import type { StaffMemberInput } from './actions';
 import {
@@ -235,29 +235,22 @@ export default function AdminStaffPage() {
                               gap: 2,
                             }}
                           >
-                            {member.role &&
-                            (member.role === 'ADMIN' ||
-                              member.role === 'RH' ||
-                              member.role === 'MODO' ||
-                              member.role === 'STAFF') ? (
-                              <RoleLogo
-                                role={
-                                  member.role as
-                                    | 'ADMIN'
-                                    | 'RH'
-                                    | 'MODO'
-                                    | 'STAFF'
-                                }
-                                size={48}
-                              />
-                            ) : (
-                              <Avatar
-                                src={member.imageUrl || undefined}
-                                sx={{ width: 48, height: 48 }}
-                              >
-                                {member.name.charAt(0)}
-                              </Avatar>
-                            )}
+                            <Avatar
+                              src={member.imageUrl || undefined}
+                              sx={{
+                                width: 48,
+                                height: 48,
+                                border: `2px solid ${alpha(TEAM_COLORS[teamId] || '#000', 0.1)}`,
+                                bgcolor: alpha(
+                                  TEAM_COLORS[teamId] || '#000',
+                                  0.05,
+                                ),
+                                color: TEAM_COLORS[teamId],
+                                fontWeight: 'bold',
+                              }}
+                            >
+                              {member.name.charAt(0)}
+                            </Avatar>
                             <Box sx={{ flex: 1, minWidth: 0 }}>
                               <Typography
                                 variant="subtitle1"

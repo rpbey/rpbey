@@ -18,7 +18,9 @@ interface ThemeContextType {
   backgroundImage: string;
 }
 
-const ThemeContext = React.createContext<ThemeContextType | undefined>(undefined);
+const ThemeContext = React.createContext<ThemeContextType | undefined>(
+  undefined,
+);
 
 export function useThemeMode() {
   const context = React.useContext(ThemeContext);
@@ -66,7 +68,7 @@ export default function ThemeRegistry({
       setTheme,
       backgroundImage,
     }),
-    [mode, toggleTheme, setTheme, backgroundImage]
+    [mode, toggleTheme, setTheme, backgroundImage],
   );
 
   // Prevent hydration mismatch by rendering a basic wrapper until mounted
@@ -111,6 +113,12 @@ export default function ThemeRegistry({
 }
 
 // Internal helper for the loading state
-function Box({ children, sx }: { children: React.ReactNode, sx?: any }) {
-    return <div style={sx}>{children}</div>;
+function Box({
+  children,
+  sx,
+}: {
+  children: React.ReactNode;
+  sx?: React.CSSProperties;
+}) {
+  return <div style={sx}>{children}</div>;
 }

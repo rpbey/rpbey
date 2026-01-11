@@ -62,8 +62,8 @@ export function getRoleFilter(role: RoleType): string {
 export const DiscordRoleMapping: Record<string, RoleType> = {
   '1319720685714804809': 'ADMIN',
   '1446871643753418793': 'RH',
-  '1331256093434712095': 'MODO',
-  '1448458421702754474': 'STAFF',
+  '1448458421702754474': 'MODO',
+  '1331256093434712095': 'STAFF',
 };
 
 /**

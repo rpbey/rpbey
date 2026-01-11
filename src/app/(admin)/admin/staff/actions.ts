@@ -6,6 +6,7 @@ import { auth } from '@/lib/auth';
 import prisma from '@/lib/prisma';
 
 import { DiscordRoleMapping } from '@/lib/role-colors';
+import type { BotMember } from '@/types';
 
 export type StaffMemberInput = {
   name: string;
@@ -16,19 +17,6 @@ export type StaffMemberInput = {
   displayIndex?: number;
   isActive?: boolean;
 };
-
-export interface DiscordMember {
-  id: string;
-  username: string;
-  displayName?: string;
-  avatar?: string;
-}
-
-export interface DiscordRole {
-  id: string;
-  name: string;
-  color: string;
-}
 
 async function checkAdmin() {
   const session = await auth.api.getSession({
@@ -88,47 +76,16 @@ export async function deleteStaffMember(id: string) {
   return { success: true };
 }
 
-export async function getDiscordRoles(): Promise<DiscordRole[]> {
+export async function getDiscordRoles() {
   await checkAdmin();
-  const { getBotApiUrl, BOT_API_KEY } = await import('@/lib/bot-config');
-  const botUrl = getBotApiUrl();
-
-  try {
-    const response = await fetch(`${botUrl}/api/roles`, {
-      headers: { 'x-api-key': BOT_API_KEY },
-      cache: 'no-store',
-    });
-    if (!response.ok) return [];
-    const data = await response.json();
-    return (data.roles as DiscordRole[]) || [];
-  } catch (error) {
-    console.error('Failed to fetch roles:', error);
-    return [];
-  }
+  const { getDiscordRoles } = await import('@/lib/bot');
+  return await getDiscordRoles();
 }
 
-export async function getMembersByRole(
-  roleId: string,
-): Promise<DiscordMember[]> {
+export async function getMembersByRole(roleId: string) {
   await checkAdmin();
-  const { getBotApiUrl, BOT_API_KEY } = await import('@/lib/bot-config');
-  const botUrl = getBotApiUrl();
-
-  try {
-    const response = await fetch(
-      `${botUrl}/api/members-by-role?roleId=${roleId}`,
-      {
-        headers: { 'x-api-key': BOT_API_KEY },
-        cache: 'no-store',
-      },
-    );
-    if (!response.ok) return [];
-    const data = await response.json();
-    return (data.members as DiscordMember[]) || [];
-  } catch (error) {
-    console.error('Failed to fetch members by role:', error);
-    return [];
-  }
+  const { getMembersByRole } = await import('@/lib/bot');
+  return await getMembersByRole(roleId);
 }
 
 export async function syncStaffFromDiscord() {
@@ -151,7 +108,7 @@ export async function syncStaffFromDiscord() {
   const staffMap = new Map<
     string,
     {
-      member: DiscordMember;
+      member: BotMember;
       roleType: string;
       priority: number;
     }
@@ -199,6 +156,18 @@ export async function syncStaffFromDiscord() {
         imageUrl: member.avatar,
         discordId: member.id,
         isActive: true,
+        // Extended fields
+        nickname: member.nickname,
+        joinedAt: member.joinedAt ? new Date(member.joinedAt) : null,
+        premiumSince: member.premiumSince
+          ? new Date(member.premiumSince)
+          : null,
+        roles: member.roles || [],
+        status: member.status,
+        activities: member.activities || [],
+        serverAvatar: member.serverAvatar,
+        globalName: member.globalName,
+        accountCreatedAt: member.createdAt ? new Date(member.createdAt) : null,
       };
 
       if (existing) {

@@ -31,6 +31,7 @@ import {
   ListItemText,
   Menu,
   MenuItem,
+  Stack,
   Toolbar,
   Typography,
   useMediaQuery,
@@ -204,13 +205,21 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         </Box>
       )}
 
-      <Box sx={{ flex: 1, overflowY: 'auto', px: 2 }}>
+      <Box sx={{ flex: 1, overflowY: 'auto', py: 2 }}>
         <List
+          disablePadding
           subheader={
             <Typography
-              variant="overline"
+              variant="caption"
+              fontWeight="bold"
               color="text.secondary"
-              sx={{ px: 2 }}
+              sx={{
+                px: 3,
+                mb: 1,
+                display: 'block',
+                textTransform: 'uppercase',
+                letterSpacing: '0.1em',
+              }}
             >
               Menu Principal
             </Typography>
@@ -220,28 +229,51 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             const isActive = pathname.startsWith(item.path);
             const Icon = item.icon;
             return (
-              <ListItem key={item.path} disablePadding sx={{ mb: 0.5 }}>
+              <ListItem key={item.path} disablePadding>
                 <ListItemButton
                   component={Link}
                   href={item.path}
                   selected={isActive}
                   onClick={() => setMobileOpen(false)}
                   sx={{
-                    borderRadius: 2,
-                    '&.Mui-selected': {
-                      bgcolor: alpha(theme.palette.primary.main, 0.1),
-                      color: 'primary.main',
-                      '& .MuiListItemIcon-root': { color: 'primary.main' },
+                    mx: 1.5,
+                    mb: 0.5,
+                    px: 3,
+                    py: 1.5,
+                    minHeight: 56, // M3 Spec: 56dp height
+                    borderRadius: '28px', // M3 Spec: Stadium shape (height/2)
+                    gap: 1.5, // M3 Spec: 12dp gap between icon and text
+                    bgcolor: isActive
+                      ? alpha(theme.palette.primary.main, 0.12)
+                      : 'transparent',
+                    color: isActive ? 'primary.main' : 'text.primary',
+                    '&:hover': {
+                      bgcolor: alpha(theme.palette.primary.main, 0.08),
                     },
+                    '&.Mui-selected': {
+                      bgcolor: alpha(theme.palette.primary.main, 0.12),
+                      '&:hover': {
+                        bgcolor: alpha(theme.palette.primary.main, 0.16),
+                      },
+                    },
+                    transition:
+                      'background-color 200ms cubic-bezier(0.2, 0, 0, 1), color 200ms cubic-bezier(0.2, 0, 0, 1)',
                   }}
                 >
-                  <ListItemIcon sx={{ minWidth: 40 }}>
-                    <Icon fontSize="small" />
+                  <ListItemIcon
+                    sx={{
+                      minWidth: 'auto',
+                      color: isActive ? 'primary.main' : 'text.secondary',
+                    }}
+                  >
+                    <Icon fontSize="24px" />
                   </ListItemIcon>
                   <ListItemText
                     primary={item.label}
                     primaryTypographyProps={{
+                      fontSize: '0.9rem',
                       fontWeight: isActive ? 700 : 500,
+                      letterSpacing: '0.01em',
                     }}
                   />
                 </ListItemButton>
@@ -252,13 +284,21 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
 
         {isAdmin && adminItems.length > 0 && (
           <>
-            <Divider sx={{ my: 2 }} />
+            <Divider sx={{ my: 2, opacity: 0.5 }} />
             <List
+              disablePadding
               subheader={
                 <Typography
-                  variant="overline"
+                  variant="caption"
+                  fontWeight="bold"
                   color="text.secondary"
-                  sx={{ px: 2 }}
+                  sx={{
+                    px: 3,
+                    mb: 1,
+                    display: 'block',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.1em',
+                  }}
                 >
                   Administration
                 </Typography>
@@ -271,30 +311,51 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                     : pathname.startsWith(item.path);
                 const Icon = item.icon;
                 return (
-                  <ListItem key={item.path} disablePadding sx={{ mb: 0.5 }}>
+                  <ListItem key={item.path} disablePadding>
                     <ListItemButton
                       component={Link}
                       href={item.path}
                       selected={isActive}
                       onClick={() => setMobileOpen(false)}
                       sx={{
-                        borderRadius: 2,
+                        mx: 1.5,
+                        mb: 0.5,
+                        px: 3,
+                        py: 1.5,
+                        minHeight: 56, // M3 Spec: 56dp
+                        borderRadius: '28px', // M3 Spec: Stadium
+                        gap: 1.5, // M3 Spec: 12dp gap
+                        bgcolor: isActive
+                          ? alpha(theme.palette.secondary.main, 0.12)
+                          : 'transparent',
+                        color: isActive ? 'secondary.main' : 'text.primary',
+                        '&:hover': {
+                          bgcolor: alpha(theme.palette.secondary.main, 0.08),
+                        },
                         '&.Mui-selected': {
-                          bgcolor: alpha(theme.palette.secondary.main, 0.1),
-                          color: 'secondary.main',
-                          '& .MuiListItemIcon-root': {
-                            color: 'secondary.main',
+                          bgcolor: alpha(theme.palette.secondary.main, 0.12),
+                          '&:hover': {
+                            bgcolor: alpha(theme.palette.secondary.main, 0.16),
                           },
                         },
+                        transition:
+                          'background-color 200ms cubic-bezier(0.2, 0, 0, 1), color 200ms cubic-bezier(0.2, 0, 0, 1)',
                       }}
                     >
-                      <ListItemIcon sx={{ minWidth: 40 }}>
-                        <Icon fontSize="small" />
+                      <ListItemIcon
+                        sx={{
+                          minWidth: 'auto',
+                          color: isActive ? 'secondary.main' : 'text.secondary',
+                        }}
+                      >
+                        <Icon fontSize="24px" />
                       </ListItemIcon>
                       <ListItemText
                         primary={item.label}
                         primaryTypographyProps={{
+                          fontSize: '0.9rem',
                           fontWeight: isActive ? 700 : 500,
+                          letterSpacing: '0.01em',
                         }}
                       />
                     </ListItemButton>
@@ -306,19 +367,24 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         )}
       </Box>
 
-      <Box sx={{ p: 2 }}>
+      <Box sx={{ p: 2, borderTop: '1px solid', borderColor: 'divider' }}>
         <ListItemButton
           onClick={handleSignOut}
           sx={{
             borderRadius: 2,
             color: 'error.main',
-            '&:hover': { bgcolor: alpha(theme.palette.error.main, 0.1) },
+            py: 1.5,
+            px: 2,
+            '&:hover': { bgcolor: alpha(theme.palette.error.main, 0.05) },
           }}
         >
-          <ListItemIcon sx={{ minWidth: 40, color: 'inherit' }}>
+          <ListItemIcon sx={{ minWidth: 40, color: 'error.main' }}>
             <Logout fontSize="small" />
           </ListItemIcon>
-          <ListItemText primary="Déconnexion" />
+          <ListItemText
+            primary="Déconnexion"
+            primaryTypographyProps={{ fontWeight: 600 }}
+          />
         </ListItemButton>
       </Box>
     </Box>
@@ -347,8 +413,8 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             '& .MuiDrawer-paper': {
               boxSizing: 'border-box',
               width: RAIL_WIDTH,
-              bgcolor: 'background.default', // Matches main background for blending
-              borderRight: '1px solid',
+              bgcolor: 'background.paper', // Changed to paper for distinction
+              borderRight: '1px dashed', // Lighter, dashed border for modern look
               borderColor: 'divider',
             },
           }}
@@ -388,39 +454,65 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           pb: { xs: 7, md: 0 }, // Space for bottom nav
         }}
       >
-        {/* Mobile Header */}
+        {/* Header App Bar */}
         <AppBar
           position="sticky"
           elevation={0}
           sx={{
-            display: { md: 'none' },
-            bgcolor: 'background/80',
-            backdropFilter: 'blur(12px)',
-            borderBottom: '1px solid',
-            borderColor: 'divider',
+            bgcolor: 'background.default', // M3: Matches surface color
+            borderBottom: 'none', // M3: No border, separation via color/scrolling (or subtle tonal change if implemented)
+            color: 'text.primary',
+            // In a real M3 app, we might use useScrollTrigger to change color to 'surfaceContainer' on scroll.
+            // For now, flat surface is cleaner.
           }}
         >
           <Toolbar>
+            {/* Mobile Menu Button */}
             <IconButton
               color="inherit"
               edge="start"
               onClick={handleDrawerToggle}
+              sx={{ mr: 2, display: { md: 'none' } }}
             >
               <MenuIcon />
             </IconButton>
-            <Box sx={{ ml: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+
+            {/* Mobile Logo */}
+            <Box
+              sx={{
+                display: { xs: 'flex', md: 'none' },
+                alignItems: 'center',
+                gap: 1,
+              }}
+            >
               <RpbLogo size={24} />
               <Typography variant="h6" fontWeight="bold">
                 RPB
               </Typography>
             </Box>
+
+            {/* Desktop Page Title (Placeholder for now, could be dynamic) */}
+            <Box
+              sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center' }}
+            >
+              <Typography variant="h6" fontWeight="700" color="text.primary">
+                {/* We could map pathname to title here or use a context */}
+                Dashboard
+              </Typography>
+            </Box>
+
             <Box sx={{ flexGrow: 1 }} />
-            <IconButton onClick={handleOpenUserMenu}>
-              <Avatar
-                src={session?.user?.image || undefined}
-                sx={{ width: 32, height: 32 }}
-              />
-            </IconButton>
+
+            {/* User Actions (Desktop & Mobile) */}
+            <Stack direction="row" spacing={1} alignItems="center">
+              {/* Add notification bell here later? */}
+              <IconButton onClick={handleOpenUserMenu}>
+                <Avatar
+                  src={session?.user?.image || undefined}
+                  sx={{ width: 32, height: 32 }}
+                />
+              </IconButton>
+            </Stack>
           </Toolbar>
         </AppBar>
 

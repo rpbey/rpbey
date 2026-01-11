@@ -1,6 +1,9 @@
 const getCoolifyApiUrl = () => {
   const url = process.env.COOLIFY_API_URL || 'http://localhost:8000/api/v1';
-  if (process.env.NODE_ENV === 'production' && (url.includes('localhost') || url.includes('127.0.0.1'))) {
+  if (
+    process.env.NODE_ENV === 'production' &&
+    (url.includes('localhost') || url.includes('127.0.0.1'))
+  ) {
     return 'http://coolify:8000/api/v1';
   }
   return url;

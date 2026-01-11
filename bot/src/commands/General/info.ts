@@ -228,36 +228,102 @@ export class InfoCommand extends Command {
     const target = interaction.options.getUser('cible') ?? interaction.user;
     const member = interaction.guild?.members.cache.get(target.id);
 
+    // Fetch user to get banner (force fetch to ensure banner is available)
+    const fetchedUser = await this.container.client.users.fetch(target.id, {
+      force: true,
+    });
+
     const embed = new EmbedBuilder()
-      .setTitle(`👤 ${target.displayName}`)
+      .setTitle(`👤 ${member?.nickname ?? target.displayName}`)
       .setColor(member?.displayColor ?? Colors.Primary)
-      .setThumbnail(target.displayAvatarURL({ size: 256 }))
+      .setThumbnail(
+        member?.displayAvatarURL({ size: 256 }) ??
+          target.displayAvatarURL({ size: 256 }),
+      )
       .addFields(
-        { name: '🏷️ Pseudo', value: target.username, inline: true },
+        { name: '🏷️ Pseudo', value: target.tag, inline: true },
         { name: '🆔 ID', value: target.id, inline: true },
         { name: '🤖 Bot', value: target.bot ? 'Oui' : 'Non', inline: true },
         {
           name: '📅 Compte créé',
-          value: `<t:${Math.floor(target.createdTimestamp / 1000)}:R>`,
+          value: `<t:${Math.floor(target.createdTimestamp / 1000)}:f> (<t:${Math.floor(target.createdTimestamp / 1000)}:R>)`,
+          inline: false,
+        },
+      );
+
+    const bannerUrl = fetchedUser.bannerURL({ size: 512 });
+    if (bannerUrl) {
+      embed.setImage(bannerUrl);
+    }
+
+    if (member) {
+      // Status
+      const statusMap: Record<string, string> = {
+        online: '🟢 En ligne',
+        idle: '🌙 Absent',
+        dnd: '⛔ Ne pas déranger',
+        offline: '⚫ Hors ligne',
+        invisible: '⚫ Hors ligne',
+      };
+
+      const status =
+        (member.presence?.status && statusMap[member.presence.status]) ||
+        '⚫ Hors ligne';
+
+      // Activity
+      const activity = member.presence?.activities[0];
+      let activityText = 'Aucune activité';
+      if (activity) {
+        if (activity.type === 4 && activity.state) {
+          // Custom Status
+          activityText = `${activity.emoji ? activity.emoji.name + ' ' : ''}${activity.state}`;
+        } else {
+          activityText = `${activity.name} ${activity.details ? `(${activity.details})` : ''}`;
+        }
+      }
+
+      embed.addFields(
+        {
+          name: '📥 A rejoint le serveur',
+          value: member.joinedAt
+            ? `<t:${Math.floor(member.joinedAt.getTime() / 1000)}:f> (<t:${Math.floor(member.joinedAt.getTime() / 1000)}:R>)`
+            : 'Inconnu',
+          inline: false,
+        },
+        {
+          name: '✨ Statut',
+          value: status,
+          inline: true,
+        },
+        {
+          name: '🎮 Activité',
+          value: activityText,
           inline: true,
         },
       );
 
-    if (member) {
-      embed.addFields(
-        {
-          name: '📥 A rejoint',
-          value: member.joinedAt
-            ? `<t:${Math.floor(member.joinedAt.getTime() / 1000)}:R>`
-            : 'Inconnu',
+      if (member.premiumSince) {
+        embed.addFields({
+          name: '🚀 Server Booster',
+          value: `Depuis <t:${Math.floor(member.premiumSince.getTime() / 1000)}:R>`,
           inline: true,
-        },
-        {
-          name: '🎭 Rôles',
-          value: `${member.roles.cache.size - 1}`,
-          inline: true,
-        },
-      );
+        });
+      }
+
+      // Roles (exclude everyone)
+      const roles = member.roles.cache
+        .filter((r) => r.name !== '@everyone')
+        .sort((a, b) => b.position - a.position)
+        .map((r) => r.toString())
+        .slice(0, 10); // Limit to top 10 roles
+
+      if (roles.length > 0) {
+        embed.addFields({
+          name: `🎭 Rôles (${member.roles.cache.size - 1})`,
+          value: roles.join(' ') || 'Aucun rôle affichable',
+          inline: false,
+        });
+      }
     }
 
     embed.setFooter({ text: RPB.FullName }).setTimestamp();

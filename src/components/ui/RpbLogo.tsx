@@ -8,7 +8,7 @@ interface RpbLogoProps {
 export function RpbLogo({ size = 40, className }: RpbLogoProps) {
   return (
     <Image
-      src="/logo.svg"
+      src="/logo.png"
       alt="RPB Logo"
       width={size}
       height={size}

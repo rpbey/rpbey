@@ -23,6 +23,17 @@ model User {
   username         String?                 @unique
   displayUsername  String?
   twoFactorEnabled Boolean                 @default(false)
+  
+  // Extended Discord Info (Synced)
+  nickname         String?
+  joinedAt         DateTime?
+  premiumSince     DateTime?
+  roles            Json?     @default("[]")
+  status           String?
+  activities       Json?     @default("[]")
+  serverAvatar     String?
+  globalName       String?
+
   accounts         Account[]
   decks            Deck[]
   profile          Profile?
@@ -285,16 +296,28 @@ model TournamentMatch {
 }
 
 model StaffMember {
-  id           String   @id @default(cuid())
-  name         String
-  role         String
-  teamId       String
-  imageUrl     String?
-  discordId    String?
-  displayIndex Int      @default(0)
-  isActive     Boolean  @default(true)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id               String    @id @default(cuid())
+  name             String
+  role             String
+  teamId           String
+  imageUrl         String?
+  discordId        String?
+  displayIndex     Int       @default(0)
+  isActive         Boolean   @default(true)
+  
+  // Extended Discord Info
+  nickname         String?
+  joinedAt         DateTime?
+  premiumSince     DateTime?
+  roles            Json?     @default("[]")
+  status           String?
+  activities       Json?     @default("[]")
+  serverAvatar     String?
+  globalName       String?
+  accountCreatedAt DateTime?
+
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 
   @@map("staff_members")
 }

@@ -1,7 +1,7 @@
 import { headers } from 'next/headers';
 import { type NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
-import { getBotApiUrl, BOT_API_KEY } from '@/lib/bot-config';
+import { BOT_API_KEY, getBotApiUrl } from '@/lib/bot-config';
 
 interface LogEntry {
   timestamp: string;

@@ -3,7 +3,10 @@
 import DownloadIcon from '@mui/icons-material/Download';
 import EditIcon from '@mui/icons-material/Edit';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import MusicNoteIcon from '@mui/icons-material/MusicNote'; // For TikTok substitute
 import ShareIcon from '@mui/icons-material/Share';
+import SyncIcon from '@mui/icons-material/Sync';
+import TwitterIcon from '@mui/icons-material/Twitter';
 import {
   Avatar,
   alpha,
@@ -12,6 +15,7 @@ import {
   Card,
   CardContent,
   Chip,
+  CircularProgress,
   IconButton,
   Stack,
   Tooltip,
@@ -19,6 +23,7 @@ import {
   useTheme,
 } from '@mui/material';
 import Link from 'next/link';
+import { useState } from 'react';
 import type { UserStats } from '@/lib/stats';
 
 interface BladerProfileHeaderProps {
@@ -28,6 +33,12 @@ interface BladerProfileHeaderProps {
   bio?: string;
   onDownloadCard?: () => void;
   isOwnProfile?: boolean;
+  socials?: {
+    twitter?: string | null;
+    tiktok?: string | null;
+  };
+  discordRoles?: { id: string; name: string; color: string }[];
+  userId?: string; // Needed for sync
 }
 
 function getRankColor(rank: number): string {
@@ -37,7 +48,7 @@ function getRankColor(rank: number): string {
   return '#666';
 }
 
-function getRankTitle(_rank: number, elo: number): string {
+function getRankTitle(rank: number, elo: number): string {
   if (elo >= 1500) return 'Champion';
   if (elo >= 1300) return 'Expert';
   if (elo >= 1150) return 'Confirmé';
@@ -52,8 +63,12 @@ export function BladerProfileHeader({
   bio,
   onDownloadCard,
   isOwnProfile = false,
+  socials,
+  discordRoles,
+  userId,
 }: BladerProfileHeaderProps) {
   const theme = useTheme();
+  const [isSyncing, setIsSyncing] = useState(false);
 
   const handleShare = async () => {
     const url = window.location.href;
@@ -67,6 +82,29 @@ export function BladerProfileHeader({
       alert('Lien copié dans le presse-papier !');
     }
   };
+
+  const handleSync = async () => {
+    if (!userId) return;
+    setIsSyncing(true);
+    try {
+      const res = await fetch(`/api/users/${userId}/sync`, { method: 'POST' });
+      if (res.ok) {
+        window.location.reload();
+      } else {
+        alert('Erreur lors de la synchronisation avec Discord');
+      }
+    } catch (e) {
+      console.error(e);
+      alert('Erreur réseau');
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
+  // Filter relevant roles to display (exclude @everyone, etc if needed, but bot sends clean list usually)
+  // We prioritize high-level roles.
+  const displayRoles =
+    discordRoles?.filter((r) => r.name !== '@everyone').slice(0, 3) || [];
 
   return (
     <Card
@@ -211,22 +249,71 @@ export function BladerProfileHeader({
                 {stats.bladerName}
               </Typography>
               {isOwnProfile && (
-                <Tooltip title="Modifier le profil">
-                  <IconButton
-                    component={Link}
-                    href="/dashboard/profile/edit"
-                    size="small"
-                    sx={{
-                      bgcolor: 'action.hover',
-                      border: '1px solid',
-                      borderColor: 'divider',
-                    }}
-                  >
-                    <EditIcon fontSize="small" />
-                  </IconButton>
-                </Tooltip>
+                <>
+                  <Tooltip title="Modifier le profil">
+                    <IconButton
+                      component={Link}
+                      href="/dashboard/profile/edit"
+                      size="small"
+                      sx={{
+                        bgcolor: 'action.hover',
+                        border: '1px solid',
+                        borderColor: 'divider',
+                      }}
+                    >
+                      <EditIcon fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title="Synchroniser avec Discord">
+                    <IconButton
+                      onClick={handleSync}
+                      disabled={isSyncing}
+                      size="small"
+                      sx={{
+                        bgcolor: 'action.hover',
+                        border: '1px solid',
+                        borderColor: 'divider',
+                      }}
+                    >
+                      {isSyncing ? (
+                        <CircularProgress size={20} />
+                      ) : (
+                        <SyncIcon fontSize="small" />
+                      )}
+                    </IconButton>
+                  </Tooltip>
+                </>
               )}
             </Box>
+
+            {/* Discord Role Badges */}
+            {displayRoles.length > 0 && (
+              <Stack
+                direction="row"
+                spacing={1}
+                sx={{
+                  mb: 2,
+                  justifyContent: { xs: 'center', md: 'flex-start' },
+                }}
+              >
+                {displayRoles.map((role) => (
+                  <Chip
+                    key={role.id}
+                    label={role.name.toUpperCase()}
+                    size="small"
+                    sx={{
+                      bgcolor:
+                        role.color === '#000000' ? '#99aab5' : role.color, // Fallback for default black
+                      color: '#fff',
+                      fontWeight: 700,
+                      fontSize: '0.65rem',
+                      height: 20,
+                      border: '1px solid rgba(255,255,255,0.2)',
+                    }}
+                  />
+                ))}
+              </Stack>
+            )}
 
             <Stack
               direction="row"
@@ -296,12 +383,50 @@ export function BladerProfileHeader({
               </Typography>
             )}
 
+            {/* Social Links & Date */}
+            <Box
+              sx={{
+                mt: 3,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 2,
+                justifyContent: { xs: 'center', md: 'flex-start' },
+              }}
+            >
+              {socials?.twitter && (
+                <Button
+                  component="a"
+                  href={`https://twitter.com/${socials.twitter}`}
+                  target="_blank"
+                  startIcon={<TwitterIcon />}
+                  size="small"
+                  sx={{ color: '#1DA1F2', borderColor: alpha('#1DA1F2', 0.3) }}
+                  variant="outlined"
+                >
+                  @{socials.twitter}
+                </Button>
+              )}
+              {socials?.tiktok && (
+                <Button
+                  component="a"
+                  href={`https://tiktok.com/@${socials.tiktok}`}
+                  target="_blank"
+                  startIcon={<MusicNoteIcon />}
+                  size="small"
+                  sx={{ color: '#ff0050', borderColor: alpha('#ff0050', 0.3) }}
+                  variant="outlined"
+                >
+                  @{socials.tiktok}
+                </Button>
+              )}
+            </Box>
+
             {joinDate && (
               <Typography
                 variant="caption"
                 color="text.disabled"
                 sx={{
-                  mt: 3,
+                  mt: 2,
                   display: 'block',
                   textTransform: 'uppercase',
                   letterSpacing: '0.1em',

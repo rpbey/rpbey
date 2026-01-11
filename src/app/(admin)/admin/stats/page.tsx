@@ -97,36 +97,42 @@ export default async function AdminStatsPage() {
       label: 'Utilisateurs total',
       value: userCount,
       icon: People,
-      color: 'primary.main',
+      color: '#3b82f6', // Blue
+      bgColor: '#eff6ff',
     },
     {
       label: 'Profils Bladers',
       value: profileCount,
       icon: AccountCircle,
-      color: 'secondary.main',
+      color: '#dc2626', // RPB Red
+      bgColor: '#fef2f2',
     },
     {
       label: 'Tournois organisés',
       value: tournamentCount,
       icon: EmojiEvents,
-      color: 'warning.main',
+      color: '#fbbf24', // RPB Gold
+      bgColor: '#fffbeb',
     },
     {
       label: 'Matchs joués',
       value: matchCount,
       icon: PlayCircle,
-      color: 'success.main',
+      color: '#22c55e', // Green
+      bgColor: '#f0fdf4',
     },
   ];
 
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
-      <Typography variant="h4" fontWeight="bold" gutterBottom>
-        Statistiques
-      </Typography>
-      <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
-        Analytics et métriques réelles de la plateforme
-      </Typography>
+      <Stack spacing={1} sx={{ mb: 5 }}>
+        <Typography variant="h4" fontWeight="800" sx={{ letterSpacing: -0.5 }}>
+          Statistiques
+        </Typography>
+        <Typography variant="body1" color="text.secondary">
+          Analytics et métriques réelles de la plateforme RPB
+        </Typography>
+      </Stack>
 
       <Grid container spacing={3}>
         {stats.map((stat) => {
@@ -136,28 +142,39 @@ export default async function AdminStatsPage() {
               <Card
                 elevation={0}
                 sx={{
-                  borderRadius: 3,
+                  borderRadius: 4,
                   border: '1px solid',
                   borderColor: 'divider',
                   height: '100%',
+                  transition: 'transform 0.2s, box-shadow 0.2s',
+                  '&:hover': {
+                    transform: 'translateY(-4px)',
+                    boxShadow: '0 12px 24px -10px rgba(0, 0, 0, 0.1)',
+                  },
                 }}
               >
-                <CardContent>
-                  <Stack direction="row" spacing={2} alignItems="center">
+                <CardContent sx={{ p: 3 }}>
+                  <Stack direction="row" spacing={3} alignItems="center">
                     <Box
                       sx={{
-                        p: 1.5,
-                        borderRadius: 2,
-                        bgcolor: `${stat.color}15`,
+                        p: 2,
+                        borderRadius: 3,
+                        bgcolor: stat.bgColor,
+                        display: 'flex',
+                        boxShadow: '0 4px 6px -4px rgba(0,0,0,0.1)',
                       }}
                     >
-                      <Icon sx={{ color: stat.color }} />
+                      <Icon sx={{ color: stat.color, fontSize: 32 }} />
                     </Box>
                     <Box>
-                      <Typography variant="h4" fontWeight="bold">
+                      <Typography variant="h4" fontWeight="800">
                         {stat.value}
                       </Typography>
-                      <Typography variant="body2" color="text.secondary">
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        fontWeight="500"
+                      >
                         {stat.label}
                       </Typography>
                     </Box>

@@ -198,8 +198,6 @@ export default async function AboutPage() {
             left: 0,
             right: 0,
             bottom: 0,
-            background: 'url("/pattern.svg")',
-            opacity: 0.1,
           }}
         />
         <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>

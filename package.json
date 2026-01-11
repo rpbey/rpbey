@@ -18,7 +18,7 @@
     "db:seed": "tsx prisma/seed.ts",
     "bot:dev": "tsx bot/src/index.ts",
     "bot:build": "tsc -p bot/tsconfig.build.json",
-    "bot:start": "node bot/dist/index.js",
+    "bot:start": "cd bot && node dist/index.js",
     "scrape:products": "tsx scripts/sync-products.ts",
     "mcp": "tsx src/server/mcp/stdio.ts"
   },

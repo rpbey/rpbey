@@ -56,9 +56,9 @@ export const RPB = {
   // Role IDs
   Roles: {
     Admin: '1319720685714804809',
-    Modo: '1331256093434712095',
     Rh: '1446871643753418793',
-    Staff: '1448458421702754474',
+    Modo: '1448458421702754474',
+    Staff: '1331256093434712095',
     Partenaires: '1457835411052298411',
   },
   // Role Icons (External URLs)
@@ -74,15 +74,16 @@ export const RPB = {
     SATR: {
       Id: '1221611301332193371',
       Name: 'SATR',
-      Description:
-        'Un serveur partenaire dédié aux tournois et à la communauté Beyblade.',
       Invite: 'https://discord.gg/afEvCBF9XR',
+      Website: 'https://sunafterthereign.carrd.co/',
+      Challonge: 'https://challonge.com/fr/communities/sunafterthereign',
     },
     WB: {
       Id: '1295379706564055155',
       Name: 'WB',
-      Description: 'Un serveur partenaire pour les passionnés de Beyblade.',
       Invite: 'https://discord.gg/AcuSPdb2HQ',
+      Challonge: 'https://challonge.com/fr/users/wild_breakers',
+      Linktree: 'https://linktr.ee/wildbreakers#431784549',
     },
   },
   // Beyblade series

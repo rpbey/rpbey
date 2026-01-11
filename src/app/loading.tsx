@@ -33,7 +33,7 @@ export default function Loading() {
           p: 4,
         }}
       >
-        <Image src="/logo.svg" alt="RPB Logo" width={80} height={80} priority />
+        <Image src="/logo.png" alt="RPB Logo" width={80} height={80} priority />
         <CircularProgress color="primary" size={48} />
         <Typography variant="body1" color="text.secondary">
           Chargement...

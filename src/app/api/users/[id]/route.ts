@@ -36,6 +36,12 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
             tiktokHandle: true,
           },
         },
+        // Discord sync fields
+        nickname: true,
+        serverAvatar: true,
+        globalName: true,
+        roles: true,
+
         decks: {
           where: { isActive: true },
           include: {
