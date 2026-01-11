@@ -40,32 +40,42 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   });
 
   // Dynamic Tournaments
-  const tournaments = await prisma.tournament.findMany({
-    select: { id: true, updatedAt: true },
-    orderBy: { updatedAt: "desc" },
-    take: 1000,
-  });
+  let tournamentRoutes: MetadataRoute.Sitemap = [];
+  try {
+    const tournaments = await prisma.tournament.findMany({
+      select: { id: true, updatedAt: true },
+      orderBy: { updatedAt: "desc" },
+      take: 1000,
+    });
 
-  const tournamentRoutes = tournaments.map((tournament) => ({
-    url: `${baseUrl}/tournaments/${tournament.id}`,
-    lastModified: tournament.updatedAt,
-    changeFrequency: "weekly" as const,
-    priority: 0.7,
-  }));
+    tournamentRoutes = tournaments.map((tournament) => ({
+      url: `${baseUrl}/tournaments/${tournament.id}`,
+      lastModified: tournament.updatedAt,
+      changeFrequency: "weekly" as const,
+      priority: 0.7,
+    }));
+  } catch (error) {
+    console.warn("Failed to fetch tournaments for sitemap:", error);
+  }
 
   // Dynamic Profiles (Publicly visible)
-  const profiles = await prisma.profile.findMany({
-    select: { userId: true, updatedAt: true },
-    orderBy: { updatedAt: "desc" },
-    take: 1000,
-  });
+  let profileRoutes: MetadataRoute.Sitemap = [];
+  try {
+    const profiles = await prisma.profile.findMany({
+      select: { userId: true, updatedAt: true },
+      orderBy: { updatedAt: "desc" },
+      take: 1000,
+    });
 
-  const profileRoutes = profiles.map((profile) => ({
-    url: `${baseUrl}/profile/${profile.userId}`,
-    lastModified: profile.updatedAt,
-    changeFrequency: "weekly" as const,
-    priority: 0.5,
-  }));
+    profileRoutes = profiles.map((profile) => ({
+      url: `${baseUrl}/profile/${profile.userId}`,
+      lastModified: profile.updatedAt,
+      changeFrequency: "weekly" as const,
+      priority: 0.5,
+    }));
+  } catch (error) {
+    console.warn("Failed to fetch profiles for sitemap:", error);
+  }
 
   return [...routes, ...tournamentRoutes, ...profileRoutes];
 }
