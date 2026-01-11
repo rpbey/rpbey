@@ -1,9 +1,7 @@
 import { headers } from 'next/headers';
 import { type NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
-
-const BOT_API_URL = process.env.BOT_API_URL || 'http://bot.rpbey.fr:3001';
-const BOT_API_KEY = process.env.BOT_API_KEY;
+import { getBotApiUrl, BOT_API_KEY } from '@/lib/bot-config';
 
 interface LogEntry {
   timestamp: string;
@@ -23,9 +21,10 @@ export async function GET(request: NextRequest) {
   const tail = parseInt(searchParams.get('tail') || '100', 10);
 
   try {
-    const response = await fetch(`${BOT_API_URL}/api/logs?tail=${tail}`, {
+    const botUrl = getBotApiUrl();
+    const response = await fetch(`${botUrl}/api/logs?tail=${tail}`, {
       headers: {
-        'X-API-Key': BOT_API_KEY || '',
+        'X-API-Key': BOT_API_KEY,
       },
       cache: 'no-store',
     });

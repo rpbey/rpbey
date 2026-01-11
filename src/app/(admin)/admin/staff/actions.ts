@@ -90,12 +90,12 @@ export async function deleteStaffMember(id: string) {
 
 export async function getDiscordRoles(): Promise<DiscordRole[]> {
   await checkAdmin();
-  const botUrl = process.env.BOT_API_URL || 'http://localhost:3001';
-  const apiKey = process.env.BOT_API_KEY;
+  const { getBotApiUrl, BOT_API_KEY } = await import('@/lib/bot-config');
+  const botUrl = getBotApiUrl();
 
   try {
     const response = await fetch(`${botUrl}/api/roles`, {
-      headers: { 'x-api-key': apiKey || '' },
+      headers: { 'x-api-key': BOT_API_KEY },
       cache: 'no-store',
     });
     if (!response.ok) return [];
@@ -111,14 +111,14 @@ export async function getMembersByRole(
   roleId: string,
 ): Promise<DiscordMember[]> {
   await checkAdmin();
-  const botUrl = process.env.BOT_API_URL || 'http://localhost:3001';
-  const apiKey = process.env.BOT_API_KEY;
+  const { getBotApiUrl, BOT_API_KEY } = await import('@/lib/bot-config');
+  const botUrl = getBotApiUrl();
 
   try {
     const response = await fetch(
       `${botUrl}/api/members-by-role?roleId=${roleId}`,
       {
-        headers: { 'x-api-key': apiKey || '' },
+        headers: { 'x-api-key': BOT_API_KEY },
         cache: 'no-store',
       },
     );

@@ -54,14 +54,14 @@ export async function POST(req: Request) {
 
       // Notify the bot
       try {
-        const botApiUrl = process.env.BOT_API_URL || 'http://10.0.1.9:3001';
-        const botApiKey = process.env.BOT_API_KEY;
+        const { getBotApiUrl, BOT_API_KEY } = await import('@/lib/bot-config');
+        const botApiUrl = getBotApiUrl();
 
         await fetch(`${botApiUrl}/api/webhook/twitch`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'x-api-key': botApiKey || '',
+            'x-api-key': BOT_API_KEY,
           },
           body: JSON.stringify({ event }),
         });

@@ -1,12 +1,13 @@
 import type { BotMember } from '@/types';
 import type { BotStatus } from '@/types/api';
 import { createClient } from './standard-api';
+import { getBotApiUrl, BOT_API_KEY } from './bot-config';
 
 // Singleton instance for bot communication
 export const botClient = createClient(
-  process.env.BOT_API_URL || 'http://localhost:3001',
+  getBotApiUrl(),
   {
-    'x-api-key': process.env.BOT_API_KEY || '',
+    'x-api-key': BOT_API_KEY,
   },
 );
 

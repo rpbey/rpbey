@@ -360,14 +360,14 @@ export default async function AdminDashboardPage() {
                       <strong>{nextTournament._count.participants}</strong>{' '}
                       participants
                     </Typography>
-                    <Button
-                      component={Link}
-                      href={`/admin/tournaments/${nextTournament.id}`}
-                      size="small"
-                      variant="contained"
-                    >
-                      Gérer
-                    </Button>
+                    <Link href={`/admin/tournaments/${nextTournament.id}`} style={{ textDecoration: 'none' }}>
+                      <Button
+                        size="small"
+                        variant="contained"
+                      >
+                        Gérer
+                      </Button>
+                    </Link>
                   </Box>
                 </CardContent>
               </Card>

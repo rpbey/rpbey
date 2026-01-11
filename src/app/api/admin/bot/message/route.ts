@@ -20,14 +20,14 @@ export async function POST(req: Request) {
     );
   }
 
-  const botUrl = process.env.BOT_API_URL || 'http://localhost:3001';
-  const apiKey = process.env.BOT_API_KEY;
+  const { getBotApiUrl, BOT_API_KEY } = await import('@/lib/bot-config');
+  const botUrl = getBotApiUrl();
 
   try {
     const response = await fetch(`${botUrl}/api/agent/dispatch`, {
       method: 'POST',
       headers: {
-        'x-api-key': apiKey || '',
+        'x-api-key': BOT_API_KEY,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
