@@ -14,5 +14,9 @@ if [ -n "$GOOGLE_SERVICE_ACCOUNT_JSON" ]; then
   echo ">>> Google credentials written to $GOOGLE_APPLICATION_CREDENTIALS"
 fi
 
+# Run database migrations
+echo ">>> RUNNING DATABASE MIGRATIONS..."
+npx prisma migrate deploy || echo ">>> WARNING: Migrations failed or not needed."
+
 echo ">>> STARTING DASHBOARD SERVICE (Next.js)..."
 exec node server.js
