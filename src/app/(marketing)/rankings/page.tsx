@@ -23,7 +23,7 @@ export const metadata = {
 export default async function RankingsPage() {
   await headers();
   const profiles = await prisma.profile.findMany({
-    orderBy: [{ tournamentWins: 'desc' }, { wins: 'desc' }],
+    orderBy: [{ rankingPoints: 'desc' }, { tournamentWins: 'desc' }, { wins: 'desc' }],
     include: {
       user: true,
     },
@@ -49,9 +49,9 @@ export default async function RankingsPage() {
                 Rang
               </TableCell>
               <TableCell>Blader</TableCell>
+              <TableCell align="center">Points</TableCell>
               <TableCell align="center">Victoires Tournois</TableCell>
               <TableCell align="center">Victoires</TableCell>
-              <TableCell align="center">Défaites</TableCell>
               <TableCell align="center">Ratio</TableCell>
             </TableRow>
           </TableHead>
@@ -116,12 +116,16 @@ export default async function RankingsPage() {
                       </Link>
                     </TableCell>
                     <TableCell align="center">
-                      <Typography fontWeight="bold">
+                      <Typography fontWeight="900" color="primary.main" fontSize="1.1rem">
+                        {profile.rankingPoints} pts
+                      </Typography>
+                    </TableCell>
+                    <TableCell align="center">
+                      <Typography fontWeight="medium">
                         {profile.tournamentWins}
                       </Typography>
                     </TableCell>
                     <TableCell align="center">{profile.wins}</TableCell>
-                    <TableCell align="center">{profile.losses}</TableCell>
                     <TableCell align="center">
                       <Typography variant="body2" color="text.secondary">
                         {winRate}%

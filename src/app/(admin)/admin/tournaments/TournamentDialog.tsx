@@ -27,24 +27,16 @@ interface TournamentDialogProps {
   onSubmit: (data: TournamentInput) => Promise<void>;
   initialData: Tournament | null;
   loading: boolean;
+  categories: { id: string, name: string }[];
 }
-
-const TOURNAMENT_STATUSES: { value: TournamentStatus; label: string }[] = [
-  { value: 'UPCOMING', label: 'À venir' },
-  { value: 'REGISTRATION_OPEN', label: 'Inscriptions ouvertes' },
-  { value: 'REGISTRATION_CLOSED', label: 'Inscriptions closes' },
-  { value: 'CHECKIN', label: 'Check-in' },
-  { value: 'UNDERWAY', label: 'En cours' },
-  { value: 'COMPLETE', label: 'Terminé' },
-  { value: 'CANCELLED', label: 'Annulé' },
-];
-
+// ...
 export function TournamentDialog({
   open,
   onClose,
   onSubmit,
   initialData,
   loading,
+  categories,
 }: TournamentDialogProps) {
   const [formData, setFormData] = useState<
     Omit<TournamentInput, 'date'> & { date: Dayjs | null }
@@ -57,6 +49,8 @@ export function TournamentDialog({
     maxPlayers: 64,
     status: 'UPCOMING',
     challongeUrl: '',
+    categoryId: '',
+    weight: 1.0,
   });
 
   useEffect(() => {
@@ -70,6 +64,8 @@ export function TournamentDialog({
         maxPlayers: initialData.maxPlayers,
         status: initialData.status,
         challongeUrl: initialData.challongeUrl || '',
+        categoryId: initialData.categoryId || '',
+        weight: initialData.weight || 1.0,
       });
     } else {
       setFormData({
@@ -81,38 +77,12 @@ export function TournamentDialog({
         maxPlayers: 64,
         status: 'UPCOMING',
         challongeUrl: '',
+        categoryId: '',
+        weight: 1.0,
       });
     }
   }, [initialData]);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!formData.date) return;
-
-    onSubmit({
-      ...formData,
-      date: formData.date.toDate(),
-    } as TournamentInput);
-  };
-
-  return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-      <form onSubmit={handleSubmit}>
-        <DialogTitle>
-          {initialData ? 'Modifier le tournoi' : 'Nouveau tournoi'}
-        </DialogTitle>
-        <DialogContent dividers>
-          <Stack spacing={3} sx={{ mt: 1 }}>
-            <TextField
-              label="Nom du tournoi"
-              value={formData.name}
-              onChange={(e) =>
-                setFormData({ ...formData, name: e.target.value })
-              }
-              fullWidth
-              required
-            />
-
+// ...
             <Grid container spacing={2}>
               <Grid size={{ xs: 12, sm: 6 }}>
                 <DatePicker
@@ -145,6 +115,50 @@ export function TournamentDialog({
                 </FormControl>
               </Grid>
             </Grid>
+
+            <Grid container spacing={2}>
+              <Grid size={{ xs: 12, sm: 6 }}>
+                <FormControl fullWidth size="small">
+                  <InputLabel>Catégorie</InputLabel>
+                  <Select
+                    value={formData.categoryId || ''}
+                    label="Catégorie"
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        categoryId: e.target.value as string,
+                      })
+                    }
+                  >
+                    <MenuItem value="">Aucune (Poids manuel)</MenuItem>
+                    {categories.map((cat) => (
+                      <MenuItem key={cat.id} value={cat.id}>
+                        {cat.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid size={{ xs: 12, sm: 6 }}>
+                <TextField
+                  label="Poids (Multiplicateur)"
+                  type="number"
+                  disabled={!!formData.categoryId}
+                  value={formData.weight}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      weight: parseFloat(e.target.value) || 1.0,
+                    })
+                  }
+                  fullWidth
+                  size="small"
+                  helperText={formData.categoryId ? "Géré par la catégorie" : "Multiplicateur manuel"}
+                />
+              </Grid>
+            </Grid>
+
+
 
             <Grid container spacing={2}>
               <Grid size={{ xs: 12, sm: 6 }}>

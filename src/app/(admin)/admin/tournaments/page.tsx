@@ -45,6 +45,7 @@ import {
   getTournaments,
   updateTournament,
 } from './actions';
+import { getTournamentCategories } from '@/server/actions/ranking';
 import { CommunitySyncDialog } from './CommunitySyncDialog';
 import { TournamentDialog } from './TournamentDialog';
 
@@ -52,6 +53,7 @@ export default function AdminTournamentsPage() {
   const [tournaments, setTournaments] = useState<
     (Tournament & { _count: { participants: number } })[]
   >([]);
+  const [categories, setCategories] = useState<{ id: string, name: string }[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [syncDialogOpen, setSyncDialogOpen] = useState(false);
@@ -76,11 +78,15 @@ export default function AdminTournamentsPage() {
   const fetchTournaments = useCallback(async () => {
     setLoading(true);
     try {
-      const {
+      const [{
         tournaments: data,
         total: totalCount,
         summary: stats,
-      } = await getTournaments(page + 1, rowsPerPage, debouncedSearch);
+      }, cats] = await Promise.all([
+        getTournaments(page + 1, rowsPerPage, debouncedSearch),
+        getTournamentCategories()
+      ]);
+      
       setTournaments(
         data as unknown as (Tournament & {
           _count: { participants: number };
@@ -88,6 +94,7 @@ export default function AdminTournamentsPage() {
       );
       setTotal(totalCount);
       setSummary(stats);
+      setCategories(cats);
     } catch {
       showToast('Erreur lors de la récupération des tournois', 'error');
     } finally {
@@ -139,7 +146,7 @@ export default function AdminTournamentsPage() {
         fetchTournaments();
       } catch {
         showToast('Erreur lors de la suppression', 'error');
-      }
+      } 
     }
   };
 
@@ -409,8 +416,8 @@ export default function AdminTournamentsPage() {
         onSubmit={handleSubmit}
         initialData={selectedTournament}
         loading={submitting}
+        categories={categories}
       />
-
       <CommunitySyncDialog
         open={syncDialogOpen}
         onClose={() => setSyncDialogOpen(false)}

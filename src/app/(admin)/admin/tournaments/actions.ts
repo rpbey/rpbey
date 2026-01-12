@@ -14,6 +14,8 @@ export type TournamentInput = {
   maxPlayers: number;
   status: TournamentStatus;
   challongeUrl?: string | null;
+  categoryId?: string | null;
+  weight?: number;
 };
 
 export async function syncCommunityTournaments() {
@@ -133,6 +135,8 @@ export async function createTournament(data: TournamentInput) {
     maxPlayers,
     status,
     challongeUrl,
+    categoryId,
+    weight,
   } = data;
 
   await prisma.tournament.create({
@@ -145,6 +149,8 @@ export async function createTournament(data: TournamentInput) {
       maxPlayers,
       status,
       challongeUrl,
+      categoryId,
+      weight: weight || 1.0,
     },
   });
 
@@ -161,6 +167,8 @@ export async function updateTournament(id: string, data: TournamentInput) {
     maxPlayers,
     status,
     challongeUrl,
+    categoryId,
+    weight,
   } = data;
 
   await prisma.tournament.update({
@@ -174,6 +182,8 @@ export async function updateTournament(id: string, data: TournamentInput) {
       maxPlayers,
       status,
       challongeUrl,
+      categoryId,
+      weight: weight || 1.0,
     },
   });
 
