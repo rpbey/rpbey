@@ -23,6 +23,7 @@ const TEAMS = [
   { value: 'admin', label: 'Administration' },
   { value: 'rh', label: 'Ressources Humaines' },
   { value: 'modo', label: 'Modération' },
+  { value: 'arbitre', label: 'Arbitrage' },
   { value: 'staff', label: 'Staff' },
   { value: 'dev', label: 'Développement' },
   { value: 'event', label: 'Événementiel' },

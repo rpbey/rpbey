@@ -13,13 +13,14 @@ const TEAM_LABELS: Record<string, string> = {
   admin: 'Administration',
   rh: 'Ressources Humaines',
   modo: 'Modération',
+  arbitre: 'Arbitrage',
   staff: 'Staff',
   dev: 'Développement',
   event: 'Événementiel',
   media: 'Média / Design',
 };
 
-const TEAM_ORDER = ['admin', 'rh', 'modo', 'staff', 'dev', 'event', 'media'];
+const TEAM_ORDER = ['admin', 'rh', 'modo', 'arbitre', 'staff', 'dev', 'event', 'media'];
 
 export default async function TeamPage() {
   await headers();

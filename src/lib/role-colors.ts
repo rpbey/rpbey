@@ -28,6 +28,12 @@ export const RoleColors = {
     rgb: 'rgb(52, 152, 219)',
     name: 'Ressources Humaines',
   },
+  // Arbitre - Amber
+  ARBITRE: {
+    hex: '#f59e0b',
+    rgb: 'rgb(245, 158, 11)',
+    name: 'Arbitre',
+  },
   // Default RPB Colors (from constants)
   DEFAULT: {
     primary: '#dc2626', // RPB Red
@@ -51,6 +57,8 @@ export function getRoleFilter(role: RoleType): string {
     ADMIN:
       'brightness(0) saturate(100%) invert(48%) sepia(69%) saturate(419%) hue-rotate(109deg) brightness(94%) contrast(87%)',
     RH: 'brightness(0) saturate(100%) invert(55%) sepia(57%) saturate(525%) hue-rotate(176deg) brightness(97%) contrast(89%)',
+    ARBITRE:
+      'brightness(0) saturate(100%) invert(67%) sepia(34%) saturate(4675%) hue-rotate(1deg) brightness(103%) contrast(96%)',
     DEFAULT: 'none',
   };
   return filters[role];
@@ -64,6 +72,7 @@ export const DiscordRoleMapping: Record<string, RoleType> = {
   '1446871643753418793': 'RH',
   '1448458421702754474': 'MODO',
   '1331256093434712095': 'STAFF',
+  '1460095694151876869': 'ARBITRE',
 };
 
 /**

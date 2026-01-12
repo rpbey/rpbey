@@ -37,6 +37,7 @@ const ROLE_IMAGES: Record<RoleType, string> = {
   MODO: '/logo-modo.png',
   RH: '/logo-rh.png',
   STAFF: '/logo-staff.png',
+  ARBITRE: '/logo.png',
   DEFAULT: '/logo.png',
 };
 
