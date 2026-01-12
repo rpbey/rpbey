@@ -15,29 +15,25 @@ interface ChallongeBracketProps {
   height?: number | string;
   title?: string;
   themeId?: string;
+  svgPath?: string; // Optionnel: chemin vers un fichier SVG local stylisé
 }
 
 export function ChallongeBracket({
   challongeUrl,
   height = 600,
   title,
-  themeId = '7792', // ID d'un thème transparent ou thème par défaut RPB si existant
+  themeId = '7792',
+  svgPath,
 }: ChallongeBracketProps) {
   const [loading, setLoading] = useState(true);
   const [key, setKey] = useState(0);
-
-  // Construction de l'URL du module avec les bons paramètres pour la transparence
-  // On force le mode module et on ajoute les paramètres d'affichage
-  const moduleUrl = new URL(`${challongeUrl}/module`);
-  moduleUrl.searchParams.set('theme', themeId);
-  moduleUrl.searchParams.set('multiplier', '0.9');
-  moduleUrl.searchParams.set('match_width_multiplier', '1.2');
-  moduleUrl.searchParams.set('show_final_results', '1');
 
   const handleRefresh = () => {
     setLoading(true);
     setKey((prev) => prev + 1);
   };
+
+  const isSvgMode = !!svgPath;
 
   return (
     <Paper
@@ -48,8 +44,7 @@ export function ChallongeBracket({
         overflow: 'hidden',
         border: '1px solid',
         borderColor: 'divider',
-        // Fond semi-transparent pour le conteneur
-        bgcolor: (theme) =>
+        bgcolor: isSvgMode ? '#1a1a1a' : (theme) =>
           theme.palette.mode === 'dark'
             ? 'rgba(0, 0, 0, 0.2)'
             : 'rgba(255, 255, 255, 0.4)',
@@ -65,24 +60,25 @@ export function ChallongeBracket({
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          // Header transparent
-          bgcolor: 'transparent',
+          bgcolor: isSvgMode ? 'rgba(0,0,0,0.3)' : 'transparent',
         }}
       >
-        <Typography variant="subtitle1" fontWeight="bold">
+        <Typography variant="subtitle1" fontWeight="bold" color={isSvgMode ? 'white' : 'inherit'}>
           {title || 'Arbre du Tournoi'}
         </Typography>
         <Box>
-          <Tooltip title="Rafraîchir">
-            <IconButton size="small" onClick={handleRefresh} sx={{ mr: 1 }}>
-              <RefreshIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Ouvrir sur Challonge">
+          {!isSvgMode && (
+            <Tooltip title="Rafraîchir">
+              <IconButton size="small" onClick={handleRefresh} sx={{ mr: 1 }}>
+                <RefreshIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
+          )}
+          <Tooltip title={isSvgMode ? "Voir en plein écran" : "Ouvrir sur Challonge"}>
             <IconButton
               size="small"
               component="a"
-              href={challongeUrl}
+              href={isSvgMode ? svgPath : challongeUrl}
               target="_blank"
               rel="noopener noreferrer"
               color="primary"
@@ -93,43 +89,59 @@ export function ChallongeBracket({
         </Box>
       </Box>
 
-      <Box sx={{ position: 'relative', width: '100%', height }}>
-        {loading && (
+      <Box sx={{ 
+        position: 'relative', 
+        width: '100%', 
+        height,
+        overflow: isSvgMode ? 'auto' : 'hidden',
+        cursor: isSvgMode ? 'grab' : 'default',
+        '&:active': { cursor: isSvgMode ? 'grabbing' : 'default' },
+        display: isSvgMode ? 'flex' : 'block',
+        justifyContent: 'center',
+        p: isSvgMode ? 4 : 0
+      }}>
+        {isSvgMode ? (
           <Box
-            sx={{
-              position: 'absolute',
-              inset: 0,
-              p: 2,
-              zIndex: 1,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <Skeleton
-              variant="rectangular"
+            component="img"
+            src={svgPath}
+            alt={title || "Tournament Bracket"}
+            sx={{ maxWidth: 'none', height: 'auto' }}
+            onLoad={() => setLoading(false)}
+          />
+        ) : (
+          <>
+            {loading && (
+              <Box
+                sx={{
+                  position: 'absolute',
+                  inset: 0,
+                  p: 2,
+                  zIndex: 1,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <Skeleton
+                  variant="rectangular"
+                  width="100%"
+                  height="100%"
+                  sx={{ borderRadius: 2, opacity: 0.5 }}
+                />
+              </Box>
+            )}
+            <iframe
+              key={key}
+              title={title || 'Challonge Bracket'}
+              src={`${challongeUrl}/module?theme=${themeId}&multiplier=0.9&match_width_multiplier=1.2&show_final_results=1`}
               width="100%"
               height="100%"
-              sx={{ borderRadius: 2, opacity: 0.5 }}
+              scrolling="auto"
+              onLoad={() => setLoading(false)}
+              style={{ border: 'none', display: 'block' }}
             />
-          </Box>
+          </>
         )}
-
-        <iframe
-          key={key}
-          title={title || 'Challonge Bracket'}
-          src={moduleUrl.toString()}
-          width="100%"
-          height="100%"
-          scrolling="auto"
-          onLoad={() => setLoading(false)}
-          style={{
-            border: 'none',
-            display: 'block',
-            // Astuce CSS pour forcer la transparence si le thème le permet
-            colorScheme: 'auto',
-          }}
-        />
       </Box>
     </Paper>
   );

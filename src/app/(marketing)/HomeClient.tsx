@@ -219,27 +219,12 @@ export default function HomeClient({
             </Typography>
           </Box>
 
-          <Box
-            component={motion.div}
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            sx={{
-              borderRadius: 7, // 28px approx (7 * 4px)
-              overflow: 'hidden',
-              bgcolor: 'surface.main',
-              border: '1px solid',
-              borderColor: 'divider',
-              boxShadow: '0 4px 40px rgba(0,0,0,0.2)',
-            }}
-          >
-            <ChallongeBracket
-              challongeUrl="https://challonge.com/fr/B_TS1"
-              height={700}
-              title="Arbre Officiel - BEY-TAMASHII SERIES #1"
-            />
-          </Box>
+          <ChallongeBracket
+            challongeUrl="https://challonge.com/fr/B_TS1"
+            height={700}
+            title="Arbre Officiel - BEY-TAMASHII SERIES #1"
+            svgPath="/tournaments/B_TS1.svg"
+          />
         </Container>
       </Box>
 

@@ -66,7 +66,7 @@ export async function recalculateRankings() {
   // 2. Parcourir chaque tournoi pour calculer les points
   for (const tournament of tournaments) {
     // Utiliser le multiplicateur de la catégorie si présent, sinon le weight du tournoi
-    const multiplier = tournament.category?.multiplier ?? tournament.weight || 1.0;
+    const multiplier = (tournament.category?.multiplier ?? tournament.weight) || 1.0;
 
     for (const participant of tournament.participants) {
       if (!participant.user.profile) continue;

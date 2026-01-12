@@ -210,6 +210,7 @@ export default function TournamentDetailPage() {
             <ChallongeBracket
               challongeUrl={tournament.challongeUrl}
               title={`Arbre: ${tournament.name}`}
+              svgPath={tournament.name.includes('BEY-TAMASHII SERIES #1') ? '/tournaments/B_TS1.svg' : undefined}
             />
           )}
         </Grid>
