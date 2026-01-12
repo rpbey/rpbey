@@ -38,8 +38,9 @@ export function FeedMyPartnership() {
       variant="elevated"
       sx={{
         p: { xs: 3, md: 4 },
-        background: `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.05)} 0%, ${alpha(theme.palette.background.paper, 1)} 100%)`,
-        border: `1px solid ${alpha(theme.palette.primary.main, 0.1)}`,
+        background: `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.08)} 0%, ${alpha(theme.palette.background.paper, 1)} 100%)`,
+        border: `2px solid ${alpha(theme.palette.primary.main, 0.2)}`,
+        boxShadow: `0 20px 40px ${alpha(theme.palette.primary.main, 0.15)}`,
         position: 'relative',
         overflow: 'hidden',
         '&::before': {
@@ -47,38 +48,59 @@ export function FeedMyPartnership() {
           position: 'absolute',
           top: 0,
           right: 0,
-          width: '150px',
-          height: '150px',
-          background: `radial-gradient(circle at center, ${alpha(theme.palette.primary.main, 0.15)} 0%, transparent 70%)`,
+          width: '200px',
+          height: '200px',
+          background: `radial-gradient(circle at center, ${alpha(theme.palette.primary.main, 0.2)} 0%, transparent 70%)`,
           transform: 'translate(30%, -30%)',
           pointerEvents: 'none',
         },
       }}
     >
+      <Box
+        sx={{
+          position: 'absolute',
+          top: 20,
+          right: -35,
+          bgcolor: '#fbbf24',
+          color: '#000',
+          px: 6,
+          py: 0.5,
+          transform: 'rotate(45deg)',
+          fontWeight: 'bold',
+          fontSize: '0.75rem',
+          boxShadow: '0 2px 10px rgba(0,0,0,0.2)',
+          zIndex: 1,
+          display: { xs: 'none', sm: 'block' }
+        }}
+      >
+        SPONSOR
+      </Box>
       <Stack
-        direction={{ xs: 'column', sm: 'row' }}
-        spacing={3}
+        direction={{ xs: 'column', md: 'row' }}
+        spacing={4}
         alignItems="center"
       >
         <Box
+          component="img"
+          src="/partners/feedmy-announcement.png"
+          alt="FeedMy x RPB Annonce"
           sx={{
-            width: 80,
-            height: 80,
-            borderRadius: 4,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            bgcolor: alpha(theme.palette.primary.main, 0.1),
-            color: theme.palette.primary.main,
+            width: { xs: '100%', sm: 300, md: 250 },
+            height: 'auto',
+            borderRadius: 2,
+            boxShadow: theme.shadows[4],
             flexShrink: 0,
+            transform: { md: 'rotate(-3deg)' },
+            transition: 'transform 0.3s',
+            '&:hover': {
+              transform: { md: 'rotate(0deg) scale(1.05)' },
+            },
           }}
-        >
-          <LocalOfferIcon sx={{ fontSize: 40 }} />
-        </Box>
+        />
 
-        <Box sx={{ flexGrow: 1, textAlign: { xs: 'center', sm: 'left' } }}>
+        <Box sx={{ flexGrow: 1, textAlign: { xs: 'center', md: 'left' } }}>
           <Typography variant="overline" color="primary" fontWeight="bold">
-            Partenaire Officiel
+            Sponsor Officiel
           </Typography>
           <Typography variant="h4" gutterBottom fontWeight="bold">
             FeedMy x RPB
@@ -86,11 +108,11 @@ export function FeedMyPartnership() {
           <Typography
             variant="body1"
             color="text.secondary"
-            sx={{ maxWidth: 500, mb: 2 }}
+            sx={{ maxWidth: 600, mb: 3 }}
           >
-            Profitez de <strong>10% de réduction</strong> sur votre commande
-            chez FeedMy, le spécialiste de l'importation japonaise, avec notre
-            code exclusif.
+            FeedMy devient le sponsor attitré de la RPB ! Profitez de <strong>lots et concours de QUALITÉ</strong> lors de nos événements.
+            <br />
+            Utilisez le code <strong>{discountCode}</strong> pour <strong>-10% sur tout le site</strong> et bénéficiez de la <strong>livraison offerte dès 100€ d'achats</strong>.
           </Typography>
 
           <Stack

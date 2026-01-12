@@ -6,6 +6,7 @@ import {
   IconNav,
   MobileNav,
 } from '@/components/layout';
+import { SponsorBanner } from '@/components/marketing';
 
 export const metadata: Metadata = {
   title: {
@@ -39,6 +40,7 @@ export default function MarketingLayout({
           bgcolor: 'background.default',
         }}
       >
+        <SponsorBanner />
         <Box sx={{ flex: 1 }}>{children}</Box>
         <IconFooter />
       </Box>

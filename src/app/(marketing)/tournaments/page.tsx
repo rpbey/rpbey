@@ -42,7 +42,7 @@ export default function TournamentsPage() {
     <Container maxWidth="lg" sx={{ py: 8 }}>
       <PageHeader
         title="Tournois"
-        description="Découvrez et inscrivez-vous aux prochains tournois Beyblade X."
+        description="Découvrez et inscrivez-vous aux prochains tournois Beyblade X. Lots et concours de qualité grâce à notre sponsor officiel FeedMy !"
       />
 
       {loading ? (
