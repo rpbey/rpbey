@@ -9,7 +9,6 @@ import {
   CardContent,
   CardMedia,
   CircularProgress,
-  Container,
   IconButton,
   Typography,
 } from '@mui/material';

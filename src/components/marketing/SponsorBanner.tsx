@@ -5,10 +5,10 @@ import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
 import { alpha, useTheme } from '@mui/material/styles';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import Typography from '@mui/material/Typography';
+import { AnimatePresence, motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
 
 export function SponsorBanner() {
   const theme = useTheme();
@@ -70,7 +70,14 @@ export function SponsorBanner() {
                 fontWeight="bold"
                 sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}
               >
-                ÉNORME ANNONCE : FeedMy devient notre sponsor officiel ! -10% avec le code <Box component="span" sx={{ color: '#fbbf24', textDecoration: 'underline' }}>RPB10</Box>
+                ÉNORME ANNONCE : FeedMy devient notre sponsor officiel ! -10%
+                avec le code{' '}
+                <Box
+                  component="span"
+                  sx={{ color: '#fbbf24', textDecoration: 'underline' }}
+                >
+                  RPB10
+                </Box>
               </Typography>
             </Stack>
 

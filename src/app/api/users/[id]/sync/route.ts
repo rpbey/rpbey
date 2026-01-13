@@ -5,7 +5,7 @@ import { getBotMember } from '@/lib/bot';
 import { prisma } from '@/lib/prisma';
 
 export async function POST(
-  request: Request,
+  _request: Request,
   props: { params: Promise<{ id: string }> },
 ) {
   const params = await props.params;

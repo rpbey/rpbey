@@ -1,0 +1,9 @@
+{
+	"id": "J3IypM2WN9vJNje",
+	"json": "{\"id\":\"J3IypM2WN9vJNje\",\"url\":\"https://beyblade.takaratomy.co.jp/beyblade-x/lineup/\",\"loadedUrl\":\"https://beyblade.takaratomy.co.jp/beyblade-x/lineup/\",\"uniqueKey\":\"https://beyblade.takaratomy.co.jp/beyblade-x/lineup\",\"method\":\"GET\",\"noRetry\":false,\"retryCount\":0,\"errorMessages\":[],\"headers\":{},\"userData\":{\"__crawlee\":{\"state\":4}},\"handledAt\":\"2026-01-12T17:43:35.463Z\"}",
+	"method": "GET",
+	"orderNo": null,
+	"retryCount": 0,
+	"uniqueKey": "https://beyblade.takaratomy.co.jp/beyblade-x/lineup",
+	"url": "https://beyblade.takaratomy.co.jp/beyblade-x/lineup/"
+}

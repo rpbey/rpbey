@@ -78,7 +78,7 @@ export async function generateCustomCommands() {
             const content = await fs.readFile(path.join(dirPath, file), 'utf8');
             // Try to find .setName('commandName') in the file content
             const match = content.match(/\.setName\(['"]([^'"]+)['"]\)/);
-            if (match && match[1]) {
+            if (match?.[1]) {
               hardcodedCommands.add(match[1].toLowerCase());
             } else {
               // Fallback to filename if .setName is not found

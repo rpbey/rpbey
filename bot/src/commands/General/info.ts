@@ -276,7 +276,7 @@ export class InfoCommand extends Command {
       if (activity) {
         if (activity.type === 4 && activity.state) {
           // Custom Status
-          activityText = `${activity.emoji ? activity.emoji.name + ' ' : ''}${activity.state}`;
+          activityText = `${activity.emoji ? `${activity.emoji.name} ` : ''}${activity.state}`;
         } else {
           activityText = `${activity.name} ${activity.details ? `(${activity.details})` : ''}`;
         }

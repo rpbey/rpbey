@@ -74,7 +74,10 @@ function BeyLine({ bey }: { bey: DeckBey }) {
     >
       <Typography
         variant="body2"
-        sx={{ fontWeight: 500, color: partsAvailable ? 'text.primary' : 'text.secondary' }}
+        sx={{
+          fontWeight: 500,
+          color: partsAvailable ? 'text.primary' : 'text.secondary',
+        }}
       >
         {bey.position}. {name}
       </Typography>

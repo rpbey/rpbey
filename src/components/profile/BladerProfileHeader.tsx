@@ -48,7 +48,7 @@ function getRankColor(rank: number): string {
   return '#666';
 }
 
-function getRankTitle(rank: number, elo: number): string {
+function getRankTitle(_rank: number, elo: number): string {
   if (elo >= 1500) return 'Champion';
   if (elo >= 1300) return 'Expert';
   if (elo >= 1150) return 'Confirmé';

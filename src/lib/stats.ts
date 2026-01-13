@@ -150,7 +150,7 @@ export async function getUserStats(userId: string): Promise<UserStats | null> {
   const profileLosses = user.profile?.losses || 0;
   const totalWins = profileWins + wins;
   const totalLosses = profileLosses + losses;
-  
+
   const eloChange = totalWins * 15 - totalLosses * 15;
   const elo = STARTING_ELO + eloChange;
 
@@ -174,10 +174,10 @@ export async function getUserStats(userId: string): Promise<UserStats | null> {
           state: 'complete',
         },
       });
-      
+
       const uWins = (u.profile?.wins || 0) + userMatches;
       const uLosses = (u.profile?.losses || 0) + userLossesCount;
-      
+
       return {
         id: u.id,
         elo: STARTING_ELO + uWins * 15 - uLosses * 15,
@@ -317,12 +317,14 @@ export async function getLeaderboard(limit = 50): Promise<LeaderboardEntry[]> {
       const allMatches = [...user.player1Matches, ...user.player2Matches];
       const matchWins = allMatches.filter((m) => m.winnerId === user.id).length;
       const matchLosses = allMatches.length - matchWins;
-      
+
       const totalWins = (user.profile?.wins || 0) + matchWins;
       const totalLosses = (user.profile?.losses || 0) + matchLosses;
-      
+
       const winRate =
-        (totalWins + totalLosses) > 0 ? (totalWins / (totalWins + totalLosses)) * 100 : 0;
+        totalWins + totalLosses > 0
+          ? (totalWins / (totalWins + totalLosses)) * 100
+          : 0;
       const elo = STARTING_ELO + totalWins * 15 - totalLosses * 15;
 
       return {

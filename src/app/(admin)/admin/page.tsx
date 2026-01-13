@@ -13,7 +13,6 @@ import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Chip from '@mui/material/Chip';
-import Container from '@mui/material/Container';
 import Divider from '@mui/material/Divider';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
@@ -437,6 +436,6 @@ export default async function AdminDashboardPage() {
           </Box>
         </Grid>
       </Grid>
-    </Container>
+    </Box>
   );
 }

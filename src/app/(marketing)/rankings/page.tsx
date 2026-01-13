@@ -23,7 +23,11 @@ export const metadata = {
 export default async function RankingsPage() {
   await headers();
   const profiles = await prisma.profile.findMany({
-    orderBy: [{ rankingPoints: 'desc' }, { tournamentWins: 'desc' }, { wins: 'desc' }],
+    orderBy: [
+      { rankingPoints: 'desc' },
+      { tournamentWins: 'desc' },
+      { wins: 'desc' },
+    ],
     include: {
       user: true,
     },
@@ -116,7 +120,11 @@ export default async function RankingsPage() {
                       </Link>
                     </TableCell>
                     <TableCell align="center">
-                      <Typography fontWeight="900" color="primary.main" fontSize="1.1rem">
+                      <Typography
+                        fontWeight="900"
+                        color="primary.main"
+                        fontSize="1.1rem"
+                      >
                         {profile.rankingPoints} pts
                       </Typography>
                     </TableCell>

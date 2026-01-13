@@ -1,5 +1,5 @@
-import { getDiscordStats, getDiscordTeam } from '@/lib/discord-data';
 import { connection } from 'next/server';
+import { getDiscordStats, getDiscordTeam } from '@/lib/discord-data';
 import HomeClient from './HomeClient';
 
 export default async function HomePage() {

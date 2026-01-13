@@ -70,7 +70,7 @@ export function FeedMyPartnership() {
           fontSize: '0.75rem',
           boxShadow: '0 2px 10px rgba(0,0,0,0.2)',
           zIndex: 1,
-          display: { xs: 'none', sm: 'block' }
+          display: { xs: 'none', sm: 'block' },
         }}
       >
         SPONSOR
@@ -110,9 +110,12 @@ export function FeedMyPartnership() {
             color="text.secondary"
             sx={{ maxWidth: 600, mb: 3 }}
           >
-            FeedMy devient le sponsor attitré de la RPB ! Profitez de <strong>lots et concours de QUALITÉ</strong> lors de nos événements.
+            FeedMy devient le sponsor attitré de la RPB ! Profitez de{' '}
+            <strong>lots et concours de QUALITÉ</strong> lors de nos événements.
             <br />
-            Utilisez le code <strong>{discountCode}</strong> pour <strong>-10% sur tout le site</strong> et bénéficiez de la <strong>livraison offerte dès 100€ d'achats</strong>.
+            Utilisez le code <strong>{discountCode}</strong> pour{' '}
+            <strong>-10% sur tout le site</strong> et bénéficiez de la{' '}
+            <strong>livraison offerte dès 100€ d'achats</strong>.
           </Typography>
 
           <Stack

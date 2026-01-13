@@ -39,7 +39,11 @@ Offerte dès **100€** d'achats.
 En commandant chez FeedMy, vous soutenez directement la RPB et nous permettez de vous proposer des lots et tournois de qualité !
       `,
       )
-      .addFields({ name: '🔗 Accéder à la boutique', value: '[Cliquez ici pour profiter du code promo !](https://feedmy.fr/discount/RPB10)' })
+      .addFields({
+        name: '🔗 Accéder à la boutique',
+        value:
+          '[Cliquez ici pour profiter du code promo !](https://feedmy.fr/discount/RPB10)',
+      })
       .setImage(
         'https://media.discordapp.net/attachments/1323816859337752626/1460340266518052887/IMG_2856.png?ex=69668f5b&is=69653ddb&hm=83ebfd2a353f5a265c8e3fc5603ea2145e8a32cac3b23c722008938cefcc17ed&=&format=webp&quality=lossless&width=1039&height=1469',
       )

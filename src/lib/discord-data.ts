@@ -44,7 +44,7 @@ export async function getDiscordStats(): Promise<DiscordStats> {
         onlineCount = status.onlineCount;
         memberCount = status.memberCount;
       }
-    } catch (e) {
+    } catch (_e) {
       // Ignore bot status error
     }
   } catch (error) {

@@ -1,9 +1,9 @@
-import { container } from '@sapphire/framework';
 import {
   createServer,
   type IncomingMessage,
   type ServerResponse,
 } from 'node:http';
+import { container } from '@sapphire/framework';
 import type {
   Collection,
   Guild,
@@ -19,7 +19,9 @@ const MAX_LOGS = 1000;
 
 let lastMemberFetch = 0;
 
-let memberFetchPromise: Promise<Collection<string, GuildMember> | undefined> | null = null;
+let memberFetchPromise: Promise<
+  Collection<string, GuildMember> | undefined
+> | null = null;
 
 const MEMBER_FETCH_COOLDOWN = 5 * 60 * 1000; // 5 minutes
 
@@ -45,7 +47,7 @@ async function ensureMembers(guild: Guild) {
       return members;
     })
     .catch((err) => {
-      container.logger.error("Failed to fetch members:", err);
+      container.logger.error('Failed to fetch members:', err);
       // Don't update lastMemberFetch so we retry next time (or maybe cooldown on error too?)
       return undefined;
     })

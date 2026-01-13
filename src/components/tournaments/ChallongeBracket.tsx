@@ -44,10 +44,12 @@ export function ChallongeBracket({
         overflow: 'hidden',
         border: '1px solid',
         borderColor: 'divider',
-        bgcolor: isSvgMode ? '#1a1a1a' : (theme) =>
-          theme.palette.mode === 'dark'
-            ? 'rgba(0, 0, 0, 0.2)'
-            : 'rgba(255, 255, 255, 0.4)',
+        bgcolor: isSvgMode
+          ? '#1a1a1a'
+          : (theme) =>
+              theme.palette.mode === 'dark'
+                ? 'rgba(0, 0, 0, 0.2)'
+                : 'rgba(255, 255, 255, 0.4)',
         backdropFilter: 'blur(10px)',
       }}
     >
@@ -63,7 +65,11 @@ export function ChallongeBracket({
           bgcolor: isSvgMode ? 'rgba(0,0,0,0.3)' : 'transparent',
         }}
       >
-        <Typography variant="subtitle1" fontWeight="bold" color={isSvgMode ? 'white' : 'inherit'}>
+        <Typography
+          variant="subtitle1"
+          fontWeight="bold"
+          color={isSvgMode ? 'white' : 'inherit'}
+        >
           {title || 'Arbre du Tournoi'}
         </Typography>
         <Box>
@@ -74,7 +80,9 @@ export function ChallongeBracket({
               </IconButton>
             </Tooltip>
           )}
-          <Tooltip title={isSvgMode ? "Voir en plein écran" : "Ouvrir sur Challonge"}>
+          <Tooltip
+            title={isSvgMode ? 'Voir en plein écran' : 'Ouvrir sur Challonge'}
+          >
             <IconButton
               size="small"
               component="a"
@@ -89,22 +97,24 @@ export function ChallongeBracket({
         </Box>
       </Box>
 
-      <Box sx={{ 
-        position: 'relative', 
-        width: '100%', 
-        height,
-        overflow: isSvgMode ? 'auto' : 'hidden',
-        cursor: isSvgMode ? 'grab' : 'default',
-        '&:active': { cursor: isSvgMode ? 'grabbing' : 'default' },
-        display: isSvgMode ? 'flex' : 'block',
-        justifyContent: 'center',
-        p: isSvgMode ? 4 : 0
-      }}>
+      <Box
+        sx={{
+          position: 'relative',
+          width: '100%',
+          height,
+          overflow: isSvgMode ? 'auto' : 'hidden',
+          cursor: isSvgMode ? 'grab' : 'default',
+          '&:active': { cursor: isSvgMode ? 'grabbing' : 'default' },
+          display: isSvgMode ? 'flex' : 'block',
+          justifyContent: 'center',
+          p: isSvgMode ? 4 : 0,
+        }}
+      >
         {isSvgMode ? (
           <Box
             component="img"
             src={svgPath}
-            alt={title || "Tournament Bracket"}
+            alt={title || 'Tournament Bracket'}
             sx={{ maxWidth: 'none', height: 'auto' }}
             onLoad={() => setLoading(false)}
           />

@@ -67,7 +67,7 @@ export default function RankingSettingsForm({
     const { name, value } = e.target;
     setConfig((prev) => ({
       ...prev,
-      [name]: parseInt(value) || 0,
+      [name]: parseInt(value, 10) || 0,
     }));
   };
 
@@ -81,7 +81,7 @@ export default function RankingSettingsForm({
         type: 'success',
         text: 'Configuration enregistrée avec succès.',
       });
-    } catch (error) {
+    } catch (_error) {
       setMessage({ type: 'error', text: "Erreur lors de l'enregistrement." });
     } finally {
       setLoading(false);
@@ -101,7 +101,7 @@ export default function RankingSettingsForm({
     try {
       const res = await recalculateRankings();
       setMessage({ type: 'success', text: res.message });
-    } catch (error) {
+    } catch (_error) {
       setMessage({ type: 'error', text: 'Erreur lors du recalcul.' });
     } finally {
       setRecalcLoading(false);
@@ -115,7 +115,7 @@ export default function RankingSettingsForm({
       setCategories([...categories, res]);
       setNewCat({ name: '', multiplier: 1.0 });
       setMessage({ type: 'success', text: 'Catégorie ajoutée.' });
-    } catch (error) {
+    } catch (_error) {
       setMessage({
         type: 'error',
         text: "Erreur lors de l'ajout de la catégorie.",

@@ -20,7 +20,16 @@ const TEAM_LABELS: Record<string, string> = {
   media: 'Média / Design',
 };
 
-const TEAM_ORDER = ['admin', 'rh', 'modo', 'arbitre', 'staff', 'dev', 'event', 'media'];
+const TEAM_ORDER = [
+  'admin',
+  'rh',
+  'modo',
+  'arbitre',
+  'staff',
+  'dev',
+  'event',
+  'media',
+];
 
 export default async function TeamPage() {
   await headers();
