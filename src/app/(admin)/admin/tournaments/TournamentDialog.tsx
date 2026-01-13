@@ -29,7 +29,17 @@ interface TournamentDialogProps {
   loading: boolean;
   categories: { id: string, name: string }[];
 }
-// ...
+
+const TOURNAMENT_STATUSES: { value: TournamentStatus; label: string }[] = [
+  { value: 'UPCOMING', label: 'À venir' },
+  { value: 'REGISTRATION_OPEN', label: 'Inscriptions ouvertes' },
+  { value: 'REGISTRATION_CLOSED', label: 'Inscriptions fermées' },
+  { value: 'CHECKIN', label: 'Check-in en cours' },
+  { value: 'UNDERWAY', label: 'En cours' },
+  { value: 'COMPLETE', label: 'Terminé' },
+  { value: 'CANCELLED', label: 'Annulé' },
+];
+
 export function TournamentDialog({
   open,
   onClose,
@@ -82,7 +92,25 @@ export function TournamentDialog({
       });
     }
   }, [initialData]);
-// ...
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.date) return;
+
+    await onSubmit({
+      ...formData,
+      date: formData.date.toDate(),
+    } as TournamentInput);
+  };
+
+  return (
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
+      <DialogTitle>
+        {initialData ? 'Modifier le tournoi' : 'Nouveau tournoi'}
+      </DialogTitle>
+      <form onSubmit={handleSubmit}>
+        <DialogContent>
+          <Stack spacing={3} sx={{ mt: 1 }}>
             <Grid container spacing={2}>
               <Grid size={{ xs: 12, sm: 6 }}>
                 <DatePicker
