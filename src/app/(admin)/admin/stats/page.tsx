@@ -124,7 +124,7 @@ export default async function AdminStatsPage() {
   ];
 
   return (
-    <Container maxWidth="xl" sx={{ py: 4 }}>
+    <Box sx={{ py: 4 }}>
       <Stack spacing={1} sx={{ mb: 5 }}>
         <Typography variant="h4" fontWeight="800" sx={{ letterSpacing: -0.5 }}>
           Statistiques
@@ -191,6 +191,6 @@ export default async function AdminStatsPage() {
         tournaments={tournamentsData}
         matchesStatus={matchesStatusData}
       />
-    </Container>
+    </Box>
   );
 }

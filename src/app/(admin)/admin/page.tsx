@@ -135,7 +135,7 @@ export default async function AdminDashboardPage() {
     .slice(0, 8);
 
   return (
-    <Container maxWidth="xl" component="main" sx={{ py: 4 }}>
+    <Box component="main" sx={{ py: 4 }}>
       <Box
         sx={{
           display: 'flex',

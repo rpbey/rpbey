@@ -75,7 +75,7 @@ export default function AdminUsersPage() {
   };
 
   return (
-    <Container maxWidth="xl" sx={{ py: 4 }}>
+    <Box sx={{ py: 4 }}>
       <Typography variant="h4" fontWeight="bold" gutterBottom>
         Utilisateurs
       </Typography>
@@ -187,6 +187,6 @@ export default function AdminUsersPage() {
           labelRowsPerPage="Lignes par page:"
         />
       </Card>
-    </Container>
+    </Box>
   );
 }

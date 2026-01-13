@@ -13,11 +13,11 @@ export default async function RankingAdminPage() {
   const categories = await getTournamentCategories();
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
+    <Box sx={{ py: 4 }}>
       <RankingSettingsForm
         initialConfig={config}
         initialCategories={categories}
       />
-    </Container>
+    </Box>
   );
 }

@@ -23,7 +23,7 @@ export default async function AdminDiscordPage() {
   const isOnline = !!status;
 
   return (
-    <Container maxWidth="xl" sx={{ py: 4 }}>
+    <Box sx={{ py: 4 }}>
       <Box
         sx={{
           display: 'flex',
@@ -159,7 +159,7 @@ export default async function AdminDiscordPage() {
           <BotActions />
         </Grid>
       </Grid>
-    </Container>
+    </Box>
   );
 }
 

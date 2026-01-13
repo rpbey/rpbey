@@ -98,7 +98,7 @@ export default function AdminSettingsPage() {
   }, [fetchConfig]);
 
   return (
-    <Container maxWidth="xl" sx={{ py: 4 }}>
+    <Box sx={{ py: 4 }}>
       <Stack
         direction="row"
         justifyContent="space-between"
@@ -258,6 +258,6 @@ export default function AdminSettingsPage() {
           ) : null}
         </Grid>
       </Grid>
-    </Container>
+    </Box>
   );
 }

@@ -31,7 +31,7 @@ export default async function AdminTwitchPage() {
 
   if (!isConfigured) {
     return (
-      <Container maxWidth="xl" sx={{ py: 4 }}>
+      <Box sx={{ py: 4 }}>
         <Typography variant="h4" fontWeight="bold" gutterBottom>
           Twitch
         </Typography>
@@ -39,13 +39,13 @@ export default async function AdminTwitchPage() {
           L'intégration Twitch n'est pas configurée. Veuillez ajouter
           TWITCH_CLIENT_ID et TWITCH_CLIENT_SECRET dans votre fichier .env.
         </Alert>
-      </Container>
+      </Box>
     );
   }
 
   if (!streamInfo) {
     return (
-      <Container maxWidth="xl" sx={{ py: 4 }}>
+      <Box sx={{ py: 4 }}>
         <Typography variant="h4" fontWeight="bold" gutterBottom>
           Twitch
         </Typography>
@@ -53,12 +53,12 @@ export default async function AdminTwitchPage() {
           Impossible de récupérer les informations de la chaîne. Vérifiez le nom
           de la chaîne et vos identifiants.
         </Alert>
-      </Container>
+      </Box>
     );
   }
 
   return (
-    <Container maxWidth="xl" sx={{ py: 4 }}>
+    <Box sx={{ py: 4 }}>
       <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', gap: 2 }}>
         <Typography variant="h4" fontWeight="bold">
           Twitch: {streamInfo.userName}
@@ -221,6 +221,6 @@ export default async function AdminTwitchPage() {
           </Stack>
         </Grid>
       </Grid>
-    </Container>
+    </Box>
   );
 }

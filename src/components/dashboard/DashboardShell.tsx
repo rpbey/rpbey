@@ -519,8 +519,6 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         <Box
           sx={{
             p: { xs: 2, md: 4 },
-            maxWidth: 1600,
-            mx: 'auto',
             width: '100%',
           }}
         >

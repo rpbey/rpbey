@@ -56,7 +56,7 @@ export default function AdminDrivePage() {
   };
 
   return (
-    <Container maxWidth="xl" sx={{ py: 4 }}>
+    <Box sx={{ py: 4 }}>
       <PageHeader
         title="Google Drive Manager"
         description="Manage images and files in the configured Drive folder."
@@ -146,6 +146,6 @@ export default function AdminDrivePage() {
           ))}
         </Grid>
       )}
-    </Container>
+    </Box>
   );
 }

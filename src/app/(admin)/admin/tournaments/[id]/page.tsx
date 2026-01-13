@@ -231,27 +231,27 @@ export default function TournamentDetailPage({
 
   if (isLoading) {
     return (
-      <Container maxWidth="xl" sx={{ py: 4 }}>
+      <Box sx={{ py: 4 }}>
         <Skeleton
           variant="rectangular"
           height={200}
           sx={{ borderRadius: 2, mb: 3 }}
         />
         <Skeleton variant="rectangular" height={400} sx={{ borderRadius: 2 }} />
-      </Container>
+      </Box>
     );
   }
 
   if (error || !tournament) {
     return (
-      <Container maxWidth="xl" sx={{ py: 4 }}>
+      <Box sx={{ py: 4 }}>
         <Alert severity="error">Tournoi introuvable</Alert>
-      </Container>
+      </Box>
     );
   }
 
   return (
-    <Container maxWidth="xl" sx={{ py: 4 }}>
+    <Box sx={{ py: 4 }}>
       {/* Breadcrumbs */}
       <Breadcrumbs sx={{ mb: 2 }}>
         <Link
@@ -455,6 +455,6 @@ export default function TournamentDetailPage({
           </Grid>
         </Grid>
       )}
-    </Container>
+    </Box>
   );
 }
