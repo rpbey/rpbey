@@ -7,13 +7,13 @@ import {
   DialogContent,
   DialogTitle,
   FormControl,
-  Grid,
   InputLabel,
   MenuItem,
   Select,
   Stack,
   TextField,
 } from '@mui/material';
+import Grid from '@mui/material/Grid2';
 import type { Tournament, TournamentStatus } from '@prisma/client';
 import type { Dayjs } from 'dayjs';
 import dayjs from 'dayjs';
@@ -27,7 +27,7 @@ interface TournamentDialogProps {
   onSubmit: (data: TournamentInput) => Promise<void>;
   initialData: Tournament | null;
   loading: boolean;
-  categories: { id: string, name: string }[];
+  categories: { id: string; name: string }[];
 }
 
 const TOURNAMENT_STATUSES: { value: TournamentStatus; label: string }[] = [
@@ -181,12 +181,14 @@ export function TournamentDialog({
                   }
                   fullWidth
                   size="small"
-                  helperText={formData.categoryId ? "Géré par la catégorie" : "Multiplicateur manuel"}
+                  helperText={
+                    formData.categoryId
+                      ? 'Géré par la catégorie'
+                      : 'Multiplicateur manuel'
+                  }
                 />
               </Grid>
             </Grid>
-
-
 
             <Grid container spacing={2}>
               <Grid size={{ xs: 12, sm: 6 }}>

@@ -1,34 +1,34 @@
 'use client';
 
+import { Add, Delete, Refresh, Save } from '@mui/icons-material';
 import {
+  Alert,
   Box,
   Button,
   Card,
   CardContent,
   CardHeader,
-  Grid,
-  TextField,
-  Typography,
-  Divider,
-  Alert,
   CircularProgress,
+  Divider,
+  Grid,
+  IconButton,
+  Paper,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  IconButton,
-  Paper
+  TextField,
+  Typography,
 } from '@mui/material';
 import { useState } from 'react';
-import { 
-  updateRankingConfig, 
-  recalculateRankings, 
-  createTournamentCategory, 
-  deleteTournamentCategory 
+import {
+  createTournamentCategory,
+  deleteTournamentCategory,
+  recalculateRankings,
+  updateRankingConfig,
 } from '@/server/actions/ranking';
-import { Save, Refresh, Add, Delete } from '@mui/icons-material';
 
 interface RankingConfig {
   participation: number;
@@ -46,25 +46,28 @@ interface Category {
   color?: string | null;
 }
 
-export default function RankingSettingsForm({ 
-  initialConfig, 
-  initialCategories 
-}: { 
-  initialConfig: RankingConfig,
-  initialCategories: Category[]
+export default function RankingSettingsForm({
+  initialConfig,
+  initialCategories,
+}: {
+  initialConfig: RankingConfig;
+  initialCategories: Category[];
 }) {
   const [config, setConfig] = useState(initialConfig);
   const [categories, setCategories] = useState(initialCategories);
   const [newCat, setNewCat] = useState({ name: '', multiplier: 1.0 });
   const [loading, setLoading] = useState(false);
   const [recalcLoading, setRecalcLoading] = useState(false);
-  const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+  const [message, setMessage] = useState<{
+    type: 'success' | 'error';
+    text: string;
+  } | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setConfig(prev => ({
+    setConfig((prev) => ({
       ...prev,
-      [name]: parseInt(value) || 0
+      [name]: parseInt(value) || 0,
     }));
   };
 
@@ -74,17 +77,25 @@ export default function RankingSettingsForm({
     setMessage(null);
     try {
       await updateRankingConfig(config);
-      setMessage({ type: 'success', text: 'Configuration enregistrée avec succès.' });
+      setMessage({
+        type: 'success',
+        text: 'Configuration enregistrée avec succès.',
+      });
     } catch (error) {
-      setMessage({ type: 'error', text: 'Erreur lors de l\'enregistrement.' });
+      setMessage({ type: 'error', text: "Erreur lors de l'enregistrement." });
     } finally {
       setLoading(false);
     }
   };
 
   const handleRecalculate = async () => {
-    if (!confirm('Êtes-vous sûr de vouloir recalculer tous les points de classement ? Cette opération peut prendre quelques secondes.')) return; 
-    
+    if (
+      !confirm(
+        'Êtes-vous sûr de vouloir recalculer tous les points de classement ? Cette opération peut prendre quelques secondes.',
+      )
+    )
+      return;
+
     setRecalcLoading(true);
     setMessage(null);
     try {
@@ -105,14 +116,17 @@ export default function RankingSettingsForm({
       setNewCat({ name: '', multiplier: 1.0 });
       setMessage({ type: 'success', text: 'Catégorie ajoutée.' });
     } catch (error) {
-      setMessage({ type: 'error', text: 'Erreur lors de l\'ajout de la catégorie.' });
+      setMessage({
+        type: 'error',
+        text: "Erreur lors de l'ajout de la catégorie.",
+      });
     }
   };
 
   const handleDeleteCategory = async (id: string) => {
     try {
       await deleteTournamentCategory(id);
-      setCategories(categories.filter(c => id !== c.id));
+      setCategories(categories.filter((c) => id !== c.id));
       setMessage({ type: 'success', text: 'Catégorie supprimée.' });
     } catch (error: any) {
       setMessage({ type: 'error', text: error.message });
@@ -122,7 +136,11 @@ export default function RankingSettingsForm({
   return (
     <Box>
       {message && (
-        <Alert severity={message.type} sx={{ mb: 3 }} onClose={() => setMessage(null)}>
+        <Alert
+          severity={message.type}
+          sx={{ mb: 3 }}
+          onClose={() => setMessage(null)}
+        >
           {message.text}
         </Alert>
       )}
@@ -131,8 +149,8 @@ export default function RankingSettingsForm({
         <Grid item xs={12} md={8}>
           <form onSubmit={handleSubmit}>
             <Card>
-              <CardHeader 
-                title="Configuration des Points de Base" 
+              <CardHeader
+                title="Configuration des Points de Base"
                 subheader="Définissez les points attribués pour chaque action."
               />
               <Divider />
@@ -160,9 +178,12 @@ export default function RankingSettingsForm({
                       helperText="Points par match gagné (dans le bracket)"
                     />
                   </Grid>
-                  
+
                   <Grid item xs={12}>
-                    <Typography variant="subtitle2" sx={{ mb: 1, mt: 1, color: 'text.secondary' }}>
+                    <Typography
+                      variant="subtitle2"
+                      sx={{ mb: 1, mt: 1, color: 'text.secondary' }}
+                    >
                       Bonus de Placement
                     </Typography>
                   </Grid>
@@ -211,11 +232,24 @@ export default function RankingSettingsForm({
                 </Grid>
               </CardContent>
               <Divider />
-              <Box sx={{ p: 2, display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
-                <Button 
-                  variant="contained" 
-                  type="submit" 
-                  startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <Save />}
+              <Box
+                sx={{
+                  p: 2,
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                  gap: 2,
+                }}
+              >
+                <Button
+                  variant="contained"
+                  type="submit"
+                  startIcon={
+                    loading ? (
+                      <CircularProgress size={20} color="inherit" />
+                    ) : (
+                      <Save />
+                    )
+                  }
                   disabled={loading || recalcLoading}
                 >
                   Enregistrer
@@ -225,13 +259,17 @@ export default function RankingSettingsForm({
           </form>
 
           <Card sx={{ mt: 3 }}>
-            <CardHeader 
-              title="Catégories de Tournois" 
+            <CardHeader
+              title="Catégories de Tournois"
               subheader="Définissez des multiplicateurs par type de tournoi (ex: Major x1.5)."
             />
             <Divider />
             <CardContent>
-              <TableContainer component={Paper} variant="outlined" sx={{ mb: 2 }}>
+              <TableContainer
+                component={Paper}
+                variant="outlined"
+                sx={{ mb: 2 }}
+              >
                 <Table size="small">
                   <TableHead>
                     <TableRow>
@@ -244,9 +282,15 @@ export default function RankingSettingsForm({
                     {categories.map((cat) => (
                       <TableRow key={cat.id}>
                         <TableCell>{cat.name}</TableCell>
-                        <TableCell align="right">x{cat.multiplier.toFixed(1)}</TableCell>
                         <TableCell align="right">
-                          <IconButton size="small" color="error" onClick={() => handleDeleteCategory(cat.id)}>
+                          x{cat.multiplier.toFixed(1)}
+                        </TableCell>
+                        <TableCell align="right">
+                          <IconButton
+                            size="small"
+                            color="error"
+                            onClick={() => handleDeleteCategory(cat.id)}
+                          >
                             <Delete fontSize="small" />
                           </IconButton>
                         </TableCell>
@@ -259,7 +303,9 @@ export default function RankingSettingsForm({
                           placeholder="Nouvelle catégorie..."
                           fullWidth
                           value={newCat.name}
-                          onChange={(e) => setNewCat({ ...newCat, name: e.target.value })}
+                          onChange={(e) =>
+                            setNewCat({ ...newCat, name: e.target.value })
+                          }
                         />
                       </TableCell>
                       <TableCell align="right">
@@ -268,11 +314,18 @@ export default function RankingSettingsForm({
                           type="number"
                           sx={{ width: 100 }}
                           value={newCat.multiplier}
-                          onChange={(e) => setNewCat({ ...newCat, multiplier: parseFloat(e.target.value) || 1 })}
+                          onChange={(e) =>
+                            setNewCat({
+                              ...newCat,
+                              multiplier: parseFloat(e.target.value) || 1,
+                            })
+                          }
                         />
                       </TableCell>
                       <TableCell align="right">
-                        <Button startIcon={<Add />} onClick={handleAddCategory}>Ajouter</Button>
+                        <Button startIcon={<Add />} onClick={handleAddCategory}>
+                          Ajouter
+                        </Button>
                       </TableCell>
                     </TableRow>
                   </TableBody>
@@ -284,21 +337,22 @@ export default function RankingSettingsForm({
 
         <Grid item xs={12} md={4}>
           <Card>
-            <CardHeader 
-              title="Actions" 
-              subheader="Opérations de maintenance"
-            />
+            <CardHeader title="Actions" subheader="Opérations de maintenance" />
             <Divider />
             <CardContent>
               <Typography variant="body2" color="text.secondary" paragraph>
-                Si vous changez les règles de points ou si vous modifiez manuellement des résultats de tournoi, vous devez relancer le calcul des points pour que le classement soit mis à jour.
+                Si vous changez les règles de points ou si vous modifiez
+                manuellement des résultats de tournoi, vous devez relancer le
+                calcul des points pour que le classement soit mis à jour.
               </Typography>
-              <Button 
-                fullWidth 
-                variant="outlined" 
-                color="warning" 
+              <Button
+                fullWidth
+                variant="outlined"
+                color="warning"
                 onClick={handleRecalculate}
-                startIcon={recalcLoading ? <CircularProgress size={20} /> : <Refresh />}
+                startIcon={
+                  recalcLoading ? <CircularProgress size={20} /> : <Refresh />
+                }
                 disabled={loading || recalcLoading}
               >
                 Recalculer les classements

@@ -38,6 +38,7 @@ import {
 } from '@/components/ui';
 import { useDebounce } from '@/hooks/use-debounce';
 import { formatDateShort } from '@/lib/utils';
+import { getTournamentCategories } from '@/server/actions/ranking';
 import type { TournamentInput } from './actions';
 import {
   createTournament,
@@ -45,7 +46,6 @@ import {
   getTournaments,
   updateTournament,
 } from './actions';
-import { getTournamentCategories } from '@/server/actions/ranking';
 import { CommunitySyncDialog } from './CommunitySyncDialog';
 import { TournamentDialog } from './TournamentDialog';
 
@@ -53,7 +53,9 @@ export default function AdminTournamentsPage() {
   const [tournaments, setTournaments] = useState<
     (Tournament & { _count: { participants: number } })[]
   >([]);
-  const [categories, setCategories] = useState<{ id: string, name: string }[]>([]);
+  const [categories, setCategories] = useState<{ id: string; name: string }[]>(
+    [],
+  );
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [syncDialogOpen, setSyncDialogOpen] = useState(false);
@@ -78,15 +80,12 @@ export default function AdminTournamentsPage() {
   const fetchTournaments = useCallback(async () => {
     setLoading(true);
     try {
-      const [{
-        tournaments: data,
-        total: totalCount,
-        summary: stats,
-      }, cats] = await Promise.all([
-        getTournaments(page + 1, rowsPerPage, debouncedSearch),
-        getTournamentCategories()
-      ]);
-      
+      const [{ tournaments: data, total: totalCount, summary: stats }, cats] =
+        await Promise.all([
+          getTournaments(page + 1, rowsPerPage, debouncedSearch),
+          getTournamentCategories(),
+        ]);
+
       setTournaments(
         data as unknown as (Tournament & {
           _count: { participants: number };
@@ -146,7 +145,7 @@ export default function AdminTournamentsPage() {
         fetchTournaments();
       } catch {
         showToast('Erreur lors de la suppression', 'error');
-      } 
+      }
     }
   };
 

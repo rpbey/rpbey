@@ -1,4 +1,7 @@
-import { getRankingConfig, getTournamentCategories } from '@/server/actions/ranking';
+import {
+  getRankingConfig,
+  getTournamentCategories,
+} from '@/server/actions/ranking';
 import RankingSettingsForm from './RankingSettingsForm';
 
 export const metadata = {
@@ -11,8 +14,10 @@ export default async function RankingAdminPage() {
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
-// ...
-      <RankingSettingsForm initialConfig={config} initialCategories={categories} />
+      <RankingSettingsForm
+        initialConfig={config}
+        initialCategories={categories}
+      />
     </Container>
   );
 }
