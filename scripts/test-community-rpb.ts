@@ -7,20 +7,21 @@ dotenv.config();
 async function testCommunity() {
   const service = getChallongeService();
   try {
-    console.log("Testing listCommunityTournaments with 'RPB'...");
+    console.log("Trying with community ID 'RPB'...");
     const res = await service.listCommunityTournaments('RPB');
-    console.log(`✅ Success! Found ${res.data.length} tournaments.`);
-    res.data.forEach(t => console.log(`- ${t.attributes.name} (${t.id})`));
-  } catch (error: any) {
-    console.log(`❌ Failed with 'RPB': ${error.message}`);
+    console.log(`✅ Success 'RPB': ${res.data.length} tournaments.`);
+  } catch (error) {
+    const msg = error instanceof Error ? error.message : String(error);
+    console.log(`❌ Failed with 'RPB': ${msg}`);
   }
 
   try {
-    console.log("\nTesting listCommunityTournaments with 'rpb' (lowercase)...");
+    console.log("\nTrying with community ID 'rpb'...");
     const res = await service.listCommunityTournaments('rpb');
-    console.log(`✅ Success! Found ${res.data.length} tournaments.`);
-  } catch (error: any) {
-    console.log(`❌ Failed with 'rpb': ${error.message}`);
+    console.log(`✅ Success 'rpb': ${res.data.length} tournaments.`);
+  } catch (error) {
+    const msg = error instanceof Error ? error.message : String(error);
+    console.log(`❌ Failed with 'rpb': ${msg}`);
   }
 }
 

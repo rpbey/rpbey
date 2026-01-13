@@ -120,7 +120,7 @@ export class PartnerCommand extends Command {
         }
         embed.setDescription(description);
       }
-    } catch (_e) {
+    } catch {
       // Fallback if invite fetch fails
       let description = `Serveur Partenaire : ${partner.Name}\n\n🔗 **[Rejoindre le serveur](${partner.Invite})**`;
       if (partner.Challonge) {

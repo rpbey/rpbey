@@ -11,7 +11,8 @@ async function checkMe() {
     // But listTournaments should work if credentials are good.
     
     console.log("Checking API via direct fetch to /me...");
-    const token = await (service as any).getOAuthToken();
+    const serviceInternal = service as unknown as { getOAuthToken: () => Promise<string> };
+    const token = await serviceInternal.getOAuthToken();
     const response = await fetch('https://api.challonge.com/v2.1/me', {
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -27,8 +28,9 @@ async function checkMe() {
     } else {
         console.log("FAILED to get /me:", response.status, await response.text());
     }
-  } catch (error: any) {
-    console.error("Error:", error.message);
+  } catch (error) {
+    const msg = error instanceof Error ? error.message : String(error);
+    console.error("Error:", msg);
   }
 }
 

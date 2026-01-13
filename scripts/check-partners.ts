@@ -4,6 +4,7 @@ import { config } from 'dotenv';
 
 config();
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const client = new Client({ intents: [GatewayIntentBits.Guilds] } as any);
 
 const partners = [
@@ -28,8 +29,9 @@ client.once('ready', async () => {
       } else {
         console.log(`⚠️  Invite valid but no guild info found for ${p.name}`);
       }
-    } catch (error: any) {
-      console.error(`❌ Error fetching ${p.name}:`, error.message);
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : String(error);
+      console.error(`❌ Error fetching ${p.name}:`, msg);
     }
   }
   

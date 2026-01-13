@@ -27,12 +27,11 @@ async function checkTournament() {
     if (tournament.attributes.startAt) {
       console.log(`- Start At: ${tournament.attributes.startAt}`);
     }
+    console.log(`✅ Tournament found: ${tournament.attributes.name}`);
+    console.log(`   State: ${tournament.attributes.state}`);
   } catch (error) {
-    if (error instanceof Error) {
-      console.error(`❌ Error fetching tournament: ${error.message}`);
-    } else {
-      console.error("❌ Unknown error occurred", error);
-    }
+    const msg = error instanceof Error ? error.message : String(error);
+    console.error(`❌ Error fetching tournament: ${msg}`);
   }
 }
 

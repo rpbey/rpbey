@@ -117,6 +117,7 @@ model Profile {
   wins           Int             @default(0)
   losses         Int             @default(0)
   tournamentWins Int             @default(0)
+  rankingPoints  Int             @default(0)
   twitterHandle  String?
   tiktokHandle   String?
   createdAt      DateTime        @default(now())
@@ -124,6 +125,19 @@ model Profile {
   user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("profiles")
+}
+
+model RankingSystem {
+  id            String   @id @default(cuid())
+  participation Int      @default(5)
+  firstPlace    Int      @default(20)
+  secondPlace   Int      @default(15)
+  thirdPlace    Int      @default(10)
+  top8          Int      @default(5)
+  matchWin      Int      @default(2)
+  updatedAt     DateTime @updatedAt
+
+  @@map("ranking_system")
 }
 
 model Part {
@@ -244,12 +258,25 @@ model Tournament {
   announcementMessageId String?
   channelId             String?
   status                TournamentStatus        @default(UPCOMING)
+  weight                Float                   @default(1.0)
+  categoryId            String?
+  category              TournamentCategory?     @relation(fields: [categoryId], references: [id])
   createdAt             DateTime                @default(now())
   updatedAt             DateTime                @updatedAt
   matches               TournamentMatch[]
   participants          TournamentParticipant[]
 
   @@map("tournaments")
+}
+
+model TournamentCategory {
+  id          String       @id @default(cuid())
+  name        String       @unique
+  multiplier  Float        @default(1.0)
+  color       String?      // Pour l'affichage (ex: Or pour Major)
+  tournaments Tournament[]
+
+  @@map("tournament_categories")
 }
 
 model TournamentParticipant {

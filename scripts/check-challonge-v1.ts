@@ -32,12 +32,14 @@ async function checkV1() {
     try {
         const t = await client.getTournament('B_TS1');
         console.log(`✅ Trouvé B_TS1: ${t.data.attributes.name}`);
-    } catch (e: any) {
-        console.log(`❌ B_TS1 non trouvé via v1: ${e.message}`);
+    } catch (e) {
+        const msg = e instanceof Error ? e.message : String(e);
+        console.log(`❌ B_TS1 non trouvé via v1: ${msg}`);
     }
 
-  } catch (error: any) {
-    console.error("❌ Erreur API v1:", error.message);
+  } catch (error) {
+    const msg = error instanceof Error ? error.message : String(error);
+    console.error("❌ Erreur API v1:", msg);
   }
 }
 

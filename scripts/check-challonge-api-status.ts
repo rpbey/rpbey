@@ -34,8 +34,9 @@ async function checkStatus() {
           try {
             const ct = await service.getTournament(slug);
             console.log(`   └─ ✅ Trouvé sur Challonge (ID: ${ct.data.id}, State: ${ct.data.attributes.state})`);
-          } catch (e: any) {
-            console.log(`   └─ ❌ Non trouvé ou Erreur sur Challonge (${e.message})`);
+          } catch (e) {
+            const msg = e instanceof Error ? e.message : String(e);
+            console.log(`   └─ ❌ Non trouvé ou Erreur sur Challonge (${msg})`);
           }
         }
       }
@@ -46,16 +47,18 @@ async function checkStatus() {
       try {
         const commTournaments = await service.listCommunityTournaments(process.env.CHALLONGE_COMMUNITY_ID);
         console.log(`✅ ${commTournaments.data.length} tournois trouvés dans la communauté.`);
-      } catch (e: any) {
-        console.log(`❌ Erreur communauté: ${e.message}`);
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : String(e);
+        console.log(`❌ Erreur communauté: ${msg}`);
       }
     } else {
       console.log("\n3. CHALLONGE_COMMUNITY_ID non défini dans .env");
     }
 
-  } catch (error: any) {
+  } catch (error) {
     console.error("\n❌ Erreur Globale API Challonge:");
-    console.error(error.message);
+    const msg = error instanceof Error ? error.message : String(error);
+    console.error(msg);
   } finally {
     await prisma.$disconnect();
   }

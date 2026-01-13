@@ -44,7 +44,7 @@ export async function getDiscordStats(): Promise<DiscordStats> {
         onlineCount = status.onlineCount;
         memberCount = status.memberCount;
       }
-    } catch (_e) {
+    } catch {
       // Ignore bot status error
     }
   } catch (error) {
@@ -84,9 +84,9 @@ export async function getDiscordTeam(): Promise<TeamGroup[]> {
             nickname: m.nickname || undefined,
             joinedAt: m.joinedAt?.toISOString(),
             premiumSince: m.premiumSince?.toISOString() || null,
-            roles: (m.roles as any[]) || [],
+            roles: (m.roles as unknown[]) || [],
             status: m.status || undefined,
-            activities: (m.activities as any[]) || [],
+            activities: (m.activities as unknown[]) || [],
             serverAvatar: m.serverAvatar || null,
             globalName: m.globalName || null,
             createdAt: m.accountCreatedAt?.toISOString(),

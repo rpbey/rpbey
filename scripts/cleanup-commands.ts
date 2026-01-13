@@ -37,12 +37,12 @@ async function main() {
   try {
     // 1. Fetch Global Commands
     console.log('Fetching Global Commands...');
-    const globalCommands = await rest.get(Routes.applicationCommands(clientId)) as any[];
+    const globalCommands = await rest.get(Routes.applicationCommands(clientId)) as unknown[];
     console.log(`Found ${globalCommands.length} Global commands.`);
 
     // 2. Fetch Guild Commands
     console.log(`Fetching Guild Commands for ${guildId}...`);
-    const guildCommands = await rest.get(Routes.applicationGuildCommands(clientId, guildId)) as any[];
+    const guildCommands = await rest.get(Routes.applicationGuildCommands(clientId, guildId)) as unknown[];
     console.log(`Found ${guildCommands.length} Guild commands.`);
 
     // 3. Delete ALL Global commands (to remove duplicates)

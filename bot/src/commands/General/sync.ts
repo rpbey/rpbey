@@ -87,7 +87,7 @@ export class SyncCommand extends Command {
                         details: a.details,
                         url: a.url,
                       }),
-                    ) as any, // Cast to any for Prisma Json compatibility
+                    ),
                     serverAvatar: member.avatarURL({
                       extension: 'png',
                       size: 256,

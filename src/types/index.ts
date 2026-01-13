@@ -95,6 +95,14 @@ export interface BotRole {
   managed?: boolean;
 }
 
+export type JsonValue =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: JsonValue }
+  | JsonValue[];
+
 export interface BotMember {
   id: string;
   username: string;
@@ -105,7 +113,7 @@ export interface BotMember {
   premiumSince?: string | null;
   roles: { id: string; name: string; color: string }[];
   status?: string;
-  activities?: any[];
+  activities?: JsonValue[];
   serverAvatar?: string | null;
   globalName?: string | null;
   createdAt?: string;

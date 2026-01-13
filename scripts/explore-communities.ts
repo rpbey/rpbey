@@ -10,8 +10,8 @@ async function exploreCommunities() {
     // Attempt to list communities or find 'RPB'
     console.log("Exploring API for communities...");
     
-    // We'll use the 'request' method directly if we can access it (it's private, so we cast to any)
-    const client = service as any;
+    // We'll use the 'request' method directly if we can access it
+    const client = service as unknown as { request: (method: string, endpoint: string) => Promise<unknown> };
     
     // Try listing communities (guess endpoint)
     // Challonge v2 API documentation isn't fully clear on 'list communities' endpoint in the code
@@ -29,13 +29,15 @@ async function exploreCommunities() {
             console.log(`Trying GET ${ep}...`);
             const res = await client.request('GET', ep);
             console.log(`✅ Success ${ep}:`, JSON.stringify(res, null, 2).substring(0, 500));
-        } catch (e: any) {
-            console.log(`❌ Failed ${ep}: ${e.message}`);
+        } catch (e) {
+            const msg = e instanceof Error ? e.message : String(e);
+            console.log(`❌ Failed ${ep}: ${msg}`);
         }
     }
 
-  } catch (error: any) {
-    console.error("Error:", error.message);
+  } catch (error) {
+    const msg = error instanceof Error ? error.message : String(error);
+    console.error("Error:", msg);
   }
 }
 

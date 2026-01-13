@@ -18,9 +18,10 @@ async function listSubs() {
     const subs = await apiClient.eventSub.getSubscriptions();
     console.log("Active Subscriptions:", subs.data.length);
     subs.data.forEach((sub) => {
+      const transport = (sub as unknown as { _transport?: { callback?: string } })._transport;
       console.log(
         `- Type: ${sub.type}, Status: ${sub.status}, Callback: ${
-          (sub as any)._transport?.callback
+          transport?.callback ?? 'N/A'
         }`,
       );
     });

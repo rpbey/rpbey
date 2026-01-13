@@ -81,7 +81,7 @@ export default function RankingSettingsForm({
         type: 'success',
         text: 'Configuration enregistrée avec succès.',
       });
-    } catch (_error) {
+    } catch {
       setMessage({ type: 'error', text: "Erreur lors de l'enregistrement." });
     } finally {
       setLoading(false);
@@ -101,7 +101,7 @@ export default function RankingSettingsForm({
     try {
       const res = await recalculateRankings();
       setMessage({ type: 'success', text: res.message });
-    } catch (_error) {
+    } catch {
       setMessage({ type: 'error', text: 'Erreur lors du recalcul.' });
     } finally {
       setRecalcLoading(false);
@@ -115,7 +115,7 @@ export default function RankingSettingsForm({
       setCategories([...categories, res]);
       setNewCat({ name: '', multiplier: 1.0 });
       setMessage({ type: 'success', text: 'Catégorie ajoutée.' });
-    } catch (_error) {
+    } catch {
       setMessage({
         type: 'error',
         text: "Erreur lors de l'ajout de la catégorie.",
@@ -128,8 +128,9 @@ export default function RankingSettingsForm({
       await deleteTournamentCategory(id);
       setCategories(categories.filter((c) => id !== c.id));
       setMessage({ type: 'success', text: 'Catégorie supprimée.' });
-    } catch (error: any) {
-      setMessage({ type: 'error', text: error.message });
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : "Une erreur est survenue lors de la suppression.";
+      setMessage({ type: 'error', text: msg });
     }
   };
 
@@ -146,7 +147,7 @@ export default function RankingSettingsForm({
       )}
 
       <Grid container spacing={3}>
-        <Grid item xs={12} md={8}>
+        <Grid size={{ xs: 12, md: 8 }}>
           <form onSubmit={handleSubmit}>
             <Card>
               <CardHeader
@@ -156,7 +157,7 @@ export default function RankingSettingsForm({
               <Divider />
               <CardContent>
                 <Grid container spacing={3}>
-                  <Grid item xs={12} sm={6}>
+                  <Grid size={{ xs: 12, sm: 6 }}>
                     <TextField
                       fullWidth
                       label="Participation"
@@ -167,7 +168,7 @@ export default function RankingSettingsForm({
                       helperText="Points attribués pour la participation à un tournoi"
                     />
                   </Grid>
-                  <Grid item xs={12} sm={6}>
+                  <Grid size={{ xs: 12, sm: 6 }}>
                     <TextField
                       fullWidth
                       label="Victoire de Match"
@@ -179,7 +180,7 @@ export default function RankingSettingsForm({
                     />
                   </Grid>
 
-                  <Grid item xs={12}>
+                  <Grid size={12}>
                     <Typography
                       variant="subtitle2"
                       sx={{ mb: 1, mt: 1, color: 'text.secondary' }}
@@ -188,7 +189,7 @@ export default function RankingSettingsForm({
                     </Typography>
                   </Grid>
 
-                  <Grid item xs={12} sm={4}>
+                  <Grid size={{ xs: 12, sm: 4 }}>
                     <TextField
                       fullWidth
                       label="1ère Place"
@@ -198,7 +199,7 @@ export default function RankingSettingsForm({
                       onChange={handleChange}
                     />
                   </Grid>
-                  <Grid item xs={12} sm={4}>
+                  <Grid size={{ xs: 12, sm: 4 }}>
                     <TextField
                       fullWidth
                       label="2ème Place"
@@ -208,7 +209,7 @@ export default function RankingSettingsForm({
                       onChange={handleChange}
                     />
                   </Grid>
-                  <Grid item xs={12} sm={4}>
+                  <Grid size={{ xs: 12, sm: 4 }}>
                     <TextField
                       fullWidth
                       label="3ème Place"
@@ -218,7 +219,7 @@ export default function RankingSettingsForm({
                       onChange={handleChange}
                     />
                   </Grid>
-                  <Grid item xs={12} sm={6}>
+                  <Grid size={{ xs: 12, sm: 6 }}>
                     <TextField
                       fullWidth
                       label="Top 8"
@@ -335,7 +336,7 @@ export default function RankingSettingsForm({
           </Card>
         </Grid>
 
-        <Grid item xs={12} md={4}>
+        <Grid size={{ xs: 12, md: 4 }}>
           <Card>
             <CardHeader title="Actions" subheader="Opérations de maintenance" />
             <Divider />

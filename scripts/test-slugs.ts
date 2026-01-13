@@ -12,11 +12,11 @@ async function testSlugs() {
   
   for (const slug of slugs) {
     try {
-      const t = await service.getTournament(slug);
-      console.log(`✅ FOUND with slug "${slug}": ${t.data.attributes.name}`);
-      return;
-    } catch (e: any) {
-      console.log(`❌ Slug "${slug}" failed: ${e.message}`);
+      const ct = await service.getTournament(slug);
+      console.log(`✅ Slug "${slug}" found! ID: ${ct.data.id}`);
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e);
+      console.log(`❌ Slug "${slug}" failed: ${msg}`);
     }
   }
 }

@@ -7,13 +7,13 @@ import {
   DialogContent,
   DialogTitle,
   FormControl,
+  Grid,
   InputLabel,
   MenuItem,
   Select,
   Stack,
   TextField,
 } from '@mui/material';
-import Grid from '@mui/material/Grid2';
 import type { Tournament, TournamentStatus } from '@prisma/client';
 import type { Dayjs } from 'dayjs';
 import dayjs from 'dayjs';
