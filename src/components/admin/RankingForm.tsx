@@ -62,7 +62,7 @@ export function RankingForm({ initialRules }: { initialRules: RankingRules }) {
       {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
 
       <Grid container spacing={3}>
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Card elevation={0} sx={{ border: '1px solid', borderColor: 'divider' }}>
             <CardContent>
               <Typography variant="h6" gutterBottom color="primary">
@@ -98,7 +98,7 @@ export function RankingForm({ initialRules }: { initialRules: RankingRules }) {
           </Card>
         </Grid>
 
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Card elevation={0} sx={{ border: '1px solid', borderColor: 'divider' }}>
             <CardContent>
               <Typography variant="h6" gutterBottom color="secondary">

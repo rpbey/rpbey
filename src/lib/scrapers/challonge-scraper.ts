@@ -1,6 +1,6 @@
 
 import puppeteer from 'puppeteer-extra';
-import type { Browser, Page } from 'puppeteer-extra';
+import type { Browser, Page } from 'puppeteer';
 import StealthPlugin from 'puppeteer-extra-plugin-stealth';
 
 // Types pour structurer le retour

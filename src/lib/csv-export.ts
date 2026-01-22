@@ -1,7 +1,10 @@
 export function jsonToCsv(data: Record<string, any>[]): string {
   if (data.length === 0) return '';
 
-  const headers = Object.keys(data[0]);
+  const firstRow = data[0];
+  if (!firstRow) return '';
+
+  const headers = Object.keys(firstRow);
   const csvRows = [headers.join(',')];
 
   for (const row of data) {

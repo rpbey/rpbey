@@ -198,6 +198,7 @@ export default function TournamentDetailPage({
   };
 
   const handleExport = async () => {
+    if (!tournament) return;
     setActionLoading('export');
     try {
       // Use the new CSV Export API

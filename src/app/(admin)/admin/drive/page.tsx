@@ -12,7 +12,7 @@ import {
   IconButton,
   Typography,
 } from '@mui/material';
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 import { useCallback, useEffect, useState } from 'react';
 import { PageHeader } from '@/components/ui';
 import type { DriveFile } from '@/lib/google-drive';

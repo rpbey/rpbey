@@ -10,7 +10,7 @@ export interface OfficialProduct {
   name: string;
   productType: string;
   price: number;
-  releaseDate: string;
+  releaseDate?: string;
   url: string;
   isLimited: boolean;
   limitedType?: string;
@@ -169,7 +169,7 @@ export class TakaraTomyScraper {
       'ツール': ProductType.TOOL,
     };
 
-    let line = ProductLine.BX;
+    let line: ProductLine = ProductLine.BX;
     if (item.code.startsWith('UX')) line = ProductLine.UX;
     if (item.code.startsWith('CX')) line = ProductLine.CX;
 
@@ -180,7 +180,7 @@ export class TakaraTomyScraper {
       update: {
         name: item.name,
         price: item.price,
-        releaseDate: isValidDate ? new Date(item.releaseDate) : undefined,
+        releaseDate: isValidDate ? new Date(item.releaseDate!) : undefined,
         isLimited: item.isLimited,
         limitedNote: item.limitedType,
         imageUrl: item.imageUrl,
@@ -192,7 +192,7 @@ export class TakaraTomyScraper {
         productType: typeMapping[item.productType] || ProductType.BOOSTER,
         productLine: line,
         price: item.price,
-        releaseDate: isValidDate ? new Date(item.releaseDate) : undefined,
+        releaseDate: isValidDate ? new Date(item.releaseDate!) : undefined,
         isLimited: item.isLimited,
         limitedNote: item.limitedType,
         imageUrl: item.imageUrl,
