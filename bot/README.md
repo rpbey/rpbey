@@ -1,6 +1,6 @@
 # RPB Bot
 
-Bot Discord pour le serveur **RPB** - [Rejoindre le serveur](https://discord.gg/twdVfesrRj)
+Bot Discord pour le serveur **RPB** - [Rejoindre le serveur](https://discord.gg/rpb)
 
 ## Tech Stack
 

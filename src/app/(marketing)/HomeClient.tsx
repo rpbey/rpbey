@@ -12,7 +12,7 @@ import { motion, useScroll, useSpring, useTransform } from 'framer-motion';
 import Link from 'next/link';
 import { FeedMyPartnership, TournamentVideo } from '@/components/marketing';
 import { useThemeMode } from '@/components/theme/ThemeRegistry';
-import { ChallongeBracket } from '@/components/tournaments';
+import { NativeBracket } from '@/components/tournaments/NativeBracket';
 import { OnlineMembersCounter } from '@/components/ui/OnlineMembersCounter';
 import { useSession } from '@/lib/auth-client';
 import type { DiscordStats, TeamGroup } from '@/lib/discord-data';
@@ -216,12 +216,7 @@ export default function HomeClient({
             </Typography>
           </Box>
 
-          <ChallongeBracket
-            challongeUrl="https://challonge.com/fr/B_TS1"
-            height={500}
-            title="Arbre Officiel - BEY-TAMASHII SERIES #1"
-            svgPath="/tournaments/B_TS1.svg"
-          />
+          <NativeBracket />
         </Container>
       </Box>
 

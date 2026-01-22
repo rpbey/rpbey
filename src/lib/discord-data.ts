@@ -3,7 +3,7 @@ import prisma from '@/lib/prisma';
 import { DiscordRoleMapping, type RoleType } from '@/lib/role-colors';
 import type { BotMember } from '@/types';
 
-const DISCORD_INVITE_CODE = 'twdVfesrRj';
+const DISCORD_INVITE_CODE = 'rpb';
 const DISCORD_INVITE_URL = `https://discord.com/api/v9/invites/${DISCORD_INVITE_CODE}?with_counts=true`;
 
 export interface DiscordStats {

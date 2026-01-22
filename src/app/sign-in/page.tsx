@@ -123,7 +123,7 @@ function SignInContent() {
             >
               Pas encore membre ?{' '}
               <Link
-                href="https://discord.gg/twdVfesrRj"
+                href="https://discord.gg/rpb"
                 style={{
                   color: 'inherit',
                   fontWeight: 'bold',

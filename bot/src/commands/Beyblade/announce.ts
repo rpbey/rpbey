@@ -636,7 +636,7 @@ export class AnnounceCommand extends Command {
       `---`,
       ``,
       `📱 **Suivez-nous :**`,
-      `> 💬 Discord : https://discord.gg/twdVfesrRj`,
+      `> 💬 Discord : https://discord.gg/rpb`,
       `> 🎵 TikTok : @rpb_beyblade`,
       `> 🐦 X/Twitter : @RPB_Beyblade`,
       ``,

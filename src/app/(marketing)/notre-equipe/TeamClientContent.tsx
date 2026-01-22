@@ -186,7 +186,7 @@ export function TeamClientContent({
           </Typography>
           <Box
             component="a"
-            href="https://discord.gg/twdVfesrRj"
+            href="https://discord.gg/rpb"
             target="_blank"
             sx={{
               display: 'inline-flex',

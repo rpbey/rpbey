@@ -32,7 +32,7 @@ Nous avons l'immense plaisir de vous annoncer notre tout premier tournoi compét
 
 ## 📱 Réseaux Sociaux
 
-- **Discord** : https://discord.gg/twdVfesrRj
+- **Discord** : https://discord.gg/rpb
 - **TikTok** : https://www.tiktok.com/@rpbeyblade1
 - **Twitter/X** : https://x.com/i/communities/1809671339109658814
 

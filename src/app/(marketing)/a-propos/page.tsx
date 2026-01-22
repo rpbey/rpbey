@@ -415,7 +415,7 @@ export default async function AboutPage() {
           >
             <Button
               component="a"
-              href="https://discord.gg/twdVfesrRj"
+              href="https://discord.gg/rpb"
               target="_blank"
               rel="noopener noreferrer"
               variant="contained"

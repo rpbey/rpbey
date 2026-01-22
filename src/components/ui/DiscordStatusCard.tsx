@@ -274,7 +274,7 @@ export function DiscordStatusCard({
       <Box sx={{ p: 2, pt: 1 }}>
         <Button
           component="a"
-          href="https://discord.gg/twdVfesrRj"
+          href="https://discord.gg/rpb"
           target="_blank"
           rel="noopener noreferrer"
           variant="contained"

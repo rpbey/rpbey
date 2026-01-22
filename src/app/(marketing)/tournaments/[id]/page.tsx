@@ -260,7 +260,7 @@ export default function TournamentDetailPage() {
                 variant="outlined"
                 fullWidth
                 size="large"
-                href="https://discord.gg/twdVfesrRj"
+                href="https://discord.gg/rpb"
                 target="_blank"
                 rel="noopener noreferrer"
                 sx={{ borderRadius: 2 }}

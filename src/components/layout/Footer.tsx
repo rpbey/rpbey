@@ -37,7 +37,7 @@ export function Footer() {
             </Link>
             <IconButton
               component={Link}
-              href="https://discord.gg/twdVfesrRj"
+              href="https://discord.gg/rpb"
               target="_blank"
               rel="noopener"
               size="small"
