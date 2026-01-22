@@ -12,7 +12,7 @@ import {
   IconButton,
   Typography,
 } from '@mui/material';
-import Grid from '@mui/material/Grid';
+import Grid from '@mui/material/Grid2';
 import { useCallback, useEffect, useState } from 'react';
 import { PageHeader } from '@/components/ui';
 import type { DriveFile } from '@/lib/google-drive';
@@ -74,7 +74,17 @@ export default function AdminDrivePage() {
           <CircularProgress />
         </Box>
       ) : error ? (
-        <Typography color="error">{error}</Typography>
+        <Box sx={{ py: 4 }}>
+          <Typography color="error" variant="h6" gutterBottom>
+            Error loading files
+          </Typography>
+          <Typography color="error">{error}</Typography>
+          {error.includes('credentials') && (
+            <Typography sx={{ mt: 2 }} color="text.secondary">
+              Please ensure <code>GOOGLE_APPLICATION_CREDENTIALS</code> is set in your environment variables.
+            </Typography>
+          )}
+        </Box>
       ) : files.length === 0 ? (
         <Typography>No files found.</Typography>
       ) : (

@@ -1,7 +1,9 @@
 import type { PrismaClient } from '@prisma/client';
 import { PartType, ProductLine, ProductType } from '@prisma/client';
 import { log } from 'crawlee';
-import { ScraperService } from './index';
+import * as cheerio from 'cheerio';
+import puppeteer from 'puppeteer-extra';
+import StealthPlugin from 'puppeteer-extra-plugin-stealth';
 
 export interface OfficialProduct {
   code: string;
@@ -15,21 +17,16 @@ export interface OfficialProduct {
   bladeName?: string;
   ratchet?: string;
   bit?: string;
+  imageUrl?: string;
 }
 
 export class TakaraTomyScraper {
   private prisma: PrismaClient;
-  private scraper: ScraperService;
-  private readonly LINEUP_URL =
-    'https://beyblade.takaratomy.co.jp/beyblade-x/lineup/';
+  private readonly LINEUP_URL = 'https://beyblade.takaratomy.co.jp/beyblade-x/lineup/';
 
   constructor(prisma: PrismaClient) {
     this.prisma = prisma;
-    // Reuse the optimized ScraperService (Headless: true, No GPU)
-    this.scraper = new ScraperService({
-      headless: true,
-      maxRequestsPerCrawl: 1, // We only need the main lineup page for now
-    });
+    puppeteer.use(StealthPlugin());
   }
 
   /**
@@ -57,66 +54,90 @@ export class TakaraTomyScraper {
   }
 
   /**
-   * Scrape and sync the entire lineup using Puppeteer
+   * Scrape and sync the entire lineup using Puppeteer + Cheerio
    */
   public async syncLineup() {
-    log.info('📥 Fetching Takara Tomy lineup via Puppeteer...');
+    log.info('📥 Fetching Takara Tomy lineup via Puppeteer Stealth...');
 
-    // Use ScraperService to get the page content safely (handles JS rendering)
-    const pages = await this.scraper.scrape([this.LINEUP_URL]);
+    const browser = await puppeteer.launch({
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    });
 
-    if (pages.length === 0 || !pages[0]?.html) {
-      throw new Error('Failed to retrieve content from Takara Tomy website.');
-    }
+    try {
+      const page = await browser.newPage();
+      await page.goto(this.LINEUP_URL, { waitUntil: 'networkidle2', timeout: 60000 });
+      
+      // Wait for content to load - "mix" class seems to be the product item
+      await page.waitForSelector('.mix');
 
-    const html = pages[0].html; // Use raw HTML from Puppeteer
-    const products: OfficialProduct[] = this.extractProductsFromHtml(html);
-    log.info(`📊 Found ${products.length} products to sync.`);
+      const html = await page.content();
+      const products: OfficialProduct[] = this.extractProductsFromHtml(html);
+      log.info(`📊 Found ${products.length} products to sync.`);
 
-    let updated = 0;
-    for (const product of products) {
-      try {
-        await this.syncProduct(product);
-        updated++;
-      } catch (error) {
-        log.error(
-          `Failed to sync ${product.code}: ${(error as Error).message}`,
-        );
+      let updated = 0;
+      for (const product of products) {
+        try {
+          await this.syncProduct(product);
+          updated++;
+        } catch (error) {
+          log.error(`Failed to sync ${product.code}: ${(error as Error).message}`);
+        }
       }
-    }
 
-    return { total: products.length, updated };
+      return { total: products.length, updated };
+    } finally {
+      await browser.close();
+    }
   }
 
   private extractProductsFromHtml(html: string): OfficialProduct[] {
+    const $ = cheerio.load(html);
     const products: OfficialProduct[] = [];
 
-    // Pattern based on actual HTML structure (Jan 2026)
-    // Adjusted for robustness
-    const productPattern =
-      /<a href="([^"]+)">[\s\S]*?<b>((?:BX|UX|CX)-\d{2,3})<span>([^<]+)<\/span><\/b>[\s\S]*?<p class="category"><span>([^<]+)<\/span><\/p>[\s\S]*?<i>¥([\d,]+)[^<]*<\/i>[\s\S]*?<i class="red">([\d.]+)[^<]*<\/i>/g;
+    $('li.mix').each((_, el) => {
+      const $el = $(el);
+      const $link = $el.find('a').first(); // Le lien principal
+      const url = $link.attr('href') || '';
+      
+      // b contient "BX-01<span>Nom</span>"
+      // On clone pour retirer le span et avoir juste le code
+      const $b = $link.find('b').clone();
+      const name = $b.find('span').text().trim();
+      $b.find('span').remove();
+      const code = $b.text().trim(); 
+      
+      const productTypeStr = $link.find('.category span').text().trim();
+      
+      // Price parsing
+      const priceText = $link.find('i').first().text().replace(/[^\d]/g, '');
+      const price = parseInt(priceText, 10) || 0;
 
-    let match: RegExpExecArray | null;
-    while (true) {
-      match = productPattern.exec(html);
-      if (match === null) break;
+      // Date parsing: Handle YYYY.M.D and YYYY年M月D日
+      let releaseDate = undefined;
+      const dateText = $link.find('.red').text().replace(/発売/g, '').trim();
+      
+      // Format 1: 2023.7.15
+      if (dateText.includes('.')) {
+        releaseDate = dateText.replace(/\./g, '-');
+      } 
+      // Format 2: 2025年12月12日
+      else if (dateText.includes('年')) {
+        const y = dateText.match(/(\d{4})年/)?.[1];
+        const m = dateText.match(/(\d{1,2})月/)?.[1];
+        const d = dateText.match(/(\d{1,2})日/)?.[1];
+        if (y && m && d) {
+            releaseDate = `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
+        }
+      }
 
-      const url = match[1];
-      const code = match[2];
-      const name = match[3]?.trim();
-      const productTypeStr = match[4]?.trim();
-      const priceStr = match[5];
-      const releaseDateStr = match[6];
+      // Image
+      const imageUrl = $link.find('img').attr('src');
 
-      if (!code || !name || !productTypeStr || !releaseDateStr) continue;
+      if (!code || !name) return;
 
-      const price = parseInt((priceStr || '0').replace(',', ''), 10);
-      const isLimited =
-        name.includes('限定') || productTypeStr.includes('限定');
+      const isLimited = name.includes('限定') || productTypeStr.includes('限定');
       const { blade, ratchet, bit } = this.parseBeyName(name);
-
-      // Normalize date (2023.7.15 -> 2023-07-15)
-      const releaseDate = releaseDateStr.replace(/\./g, '-');
 
       products.push({
         code,
@@ -124,48 +145,46 @@ export class TakaraTomyScraper {
         productType: productTypeStr || 'OTHER',
         price,
         releaseDate,
-        url: url || '',
+        url,
         isLimited,
         limitedType: isLimited ? 'Limited' : undefined,
         bladeName: blade,
         ratchet,
         bit,
+        imageUrl: imageUrl ? (imageUrl.startsWith('http') ? imageUrl : `https://beyblade.takaratomy.co.jp${imageUrl}`) : undefined
       });
-    }
+    });
 
     return products;
   }
 
   private async syncProduct(item: OfficialProduct) {
-    // 1. Map product type
     const typeMapping: Record<string, ProductType> = {
-      スターター: ProductType.STARTER,
-      ブースター: ProductType.BOOSTER,
-      ランダムブースター: ProductType.RANDOM_BOOSTER,
-      セット: ProductType.SET,
-      カスタマイズセット: ProductType.SET,
-      ダブルスターター: ProductType.DOUBLE_STARTER,
-      ツール: ProductType.TOOL,
+      'スターター': ProductType.STARTER,
+      'ブースター': ProductType.BOOSTER,
+      'ランダムブースター': ProductType.RANDOM_BOOSTER,
+      'セット': ProductType.SET,
+      'カスタマイズセット': ProductType.SET,
+      'ダブルスターター': ProductType.DOUBLE_STARTER,
+      'ツール': ProductType.TOOL,
     };
 
-    const line = item.code.startsWith('BX')
-      ? ProductLine.BX
-      : item.code.startsWith('UX')
-        ? ProductLine.UX
-        : ProductLine.CX;
+    let line = ProductLine.BX;
+    if (item.code.startsWith('UX')) line = ProductLine.UX;
+    if (item.code.startsWith('CX')) line = ProductLine.CX;
 
-    // 2. Upsert Product
+    const isValidDate = item.releaseDate && !isNaN(new Date(item.releaseDate).getTime());
+
     await this.prisma.product.upsert({
       where: { code: item.code },
       update: {
         name: item.name,
         price: item.price,
-        releaseDate: item.releaseDate ? new Date(item.releaseDate) : undefined,
+        releaseDate: isValidDate ? new Date(item.releaseDate) : undefined,
         isLimited: item.isLimited,
         limitedNote: item.limitedType,
-        productUrl: item.url.startsWith('http')
-          ? item.url
-          : `https://beyblade.takaratomy.co.jp${item.url}`,
+        imageUrl: item.imageUrl,
+        productUrl: item.url.startsWith('http') ? item.url : `https://beyblade.takaratomy.co.jp${item.url}`,
       },
       create: {
         code: item.code,
@@ -173,26 +192,12 @@ export class TakaraTomyScraper {
         productType: typeMapping[item.productType] || ProductType.BOOSTER,
         productLine: line,
         price: item.price,
-        releaseDate: item.releaseDate ? new Date(item.releaseDate) : undefined,
+        releaseDate: isValidDate ? new Date(item.releaseDate) : undefined,
         isLimited: item.isLimited,
         limitedNote: item.limitedType,
-        productUrl: item.url.startsWith('http')
-          ? item.url
-          : `https://beyblade.takaratomy.co.jp${item.url}`,
+        imageUrl: item.imageUrl,
+        productUrl: item.url.startsWith('http') ? item.url : `https://beyblade.takaratomy.co.jp${item.url}`,
       },
     });
-
-    // 3. Update related Part rarity if it's a blade
-    if (item.bladeName) {
-      await this.prisma.part.updateMany({
-        where: {
-          type: PartType.BLADE,
-          name: { contains: item.bladeName, mode: 'insensitive' },
-        },
-        data: {
-          rarity: item.isLimited ? item.limitedType || 'Limited' : 'Standard',
-        },
-      });
-    }
   }
 }

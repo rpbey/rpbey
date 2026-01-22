@@ -10,9 +10,10 @@ export async function listDriveFiles(): Promise<{
   try {
     const files = await googleDriveService.listFiles();
     return { data: files };
-  } catch (error) {
-    console.error('Failed to list drive files:', error);
-    return { error: 'Failed to fetch files from Google Drive.' };
+  } catch (error: unknown) {
+    const err = error as Error;
+    console.error('Failed to list drive files:', err);
+    return { error: err.message || 'Failed to fetch files from Google Drive.' };
   }
 }
 

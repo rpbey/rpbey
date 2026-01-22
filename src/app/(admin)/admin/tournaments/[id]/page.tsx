@@ -31,8 +31,7 @@ import Link from 'next/link';
 import { use, useState } from 'react';
 import useSWR, { mutate } from 'swr';
 import { ParticipantList, TournamentBracket } from '@/components/tournaments';
-import { authClient } from '@/lib/auth-client';
-import { exportTournamentToSheets, reportChallongeMatch } from './actions';
+import { reportChallongeMatch } from './actions';
 
 interface TournamentDetailPageProps {
   params: Promise<{ id: string }>;
@@ -201,28 +200,20 @@ export default function TournamentDetailPage({
   const handleExport = async () => {
     setActionLoading('export');
     try {
-      const result = await exportTournamentToSheets(id);
+      // Use the new CSV Export API
+      const url = `/api/admin/export/tournament/${id}`;
+      
+      // Create a temporary link to trigger download
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `RPB_Export_${tournament.name.replace(/[^a-z0-9]/gi, '_')}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
 
-      if (result.error === 'NO_GOOGLE_ACCOUNT') {
-        const { error } = await authClient.signIn.social({
-          provider: 'google',
-          callbackURL: window.location.href,
-        });
-        if (error) alert('Erreur lors de la connexion Google');
-        return;
-      }
-
-      if (result.error) {
-        alert(`Erreur export: ${result.error}`);
-        return;
-      }
-
-      if (result.url) {
-        window.open(result.url, '_blank');
-      }
     } catch (err) {
       console.error('Export error:', err);
-      alert('Une erreur est survenue');
+      alert('Une erreur est survenue lors de l\'export');
     } finally {
       setActionLoading(null);
     }

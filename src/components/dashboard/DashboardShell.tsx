@@ -10,11 +10,13 @@ import {
   Leaderboard,
   Logout,
   Menu as MenuIcon,
+  ArrowBack,
   People,
   Person,
   Settings,
   SmartToy,
   Terminal,
+  Launch,
 } from '@mui/icons-material';
 import {
   AppBar,
@@ -36,6 +38,8 @@ import {
   Typography,
   useMediaQuery,
   useTheme,
+  Tooltip,
+  Button,
 } from '@mui/material';
 import BottomNavigation from '@mui/material/BottomNavigation';
 import BottomNavigationAction from '@mui/material/BottomNavigationAction';
@@ -142,6 +146,8 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   );
   const bottomNavValue = activeNavItem?.path || '';
 
+  const showBackButton = pathname !== '/admin' && pathname !== '/dashboard/profile';
+
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
@@ -163,10 +169,12 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   const drawerContent = (
     <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
       <Box sx={{ p: 3, display: 'flex', alignItems: 'center', gap: 2 }}>
-        <RpbLogo size={32} />
-        <Typography variant="h6" fontWeight="800" letterSpacing="-0.02em">
-          RPB Dashboard
-        </Typography>
+        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 16, textDecoration: 'none', color: 'inherit' }}>
+          <RpbLogo size={32} />
+          <Typography variant="h6" fontWeight="800" letterSpacing="-0.02em">
+            RPB Dashboard
+          </Typography>
+        </Link>
       </Box>
 
       {session?.user && (
@@ -487,19 +495,34 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                 gap: 1,
               }}
             >
-              <RpbLogo size={24} />
-              <Typography variant="h6" fontWeight="bold">
-                RPB
-              </Typography>
+              <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none', color: 'inherit' }}>
+                <RpbLogo size={24} />
+                <Typography variant="h6" fontWeight="bold">
+                  RPB
+                </Typography>
+              </Link>
             </Box>
 
-            {/* Desktop Page Title (Placeholder for now, could be dynamic) */}
+            {/* Page Title & Back Button */}
             <Box
-              sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center' }}
+              sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
             >
+              {showBackButton && (
+                <Tooltip title="Retour">
+                  <IconButton 
+                    onClick={() => router.back()}
+                    size="small"
+                    sx={{ 
+                      bgcolor: alpha(theme.palette.text.primary, 0.05),
+                      '&:hover': { bgcolor: alpha(theme.palette.text.primary, 0.1) }
+                    }}
+                  >
+                    <ArrowBack fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+              )}
               <Typography variant="h6" fontWeight="700" color="text.primary">
-                {/* We could map pathname to title here or use a context */}
-                Dashboard
+                {activeNavItem?.label || 'Dashboard'}
               </Typography>
             </Box>
 
@@ -507,7 +530,26 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
 
             {/* User Actions (Desktop & Mobile) */}
             <Stack direction="row" spacing={1} alignItems="center">
-              {/* Add notification bell here later? */}
+              {/* View Site Button (Admin Only) */}
+              {isAdmin && (
+                <Tooltip title="Voir le site public">
+                  <Button
+                    component={Link}
+                    href="/"
+                    variant="text"
+                    size="small"
+                    startIcon={<Launch fontSize="small" />}
+                    sx={{ 
+                      display: { xs: 'none', sm: 'inline-flex' },
+                      fontWeight: 600,
+                      borderRadius: 2
+                    }}
+                  >
+                    Voir le site
+                  </Button>
+                </Tooltip>
+              )}
+
               <IconButton onClick={handleOpenUserMenu}>
                 <Avatar
                   src={session?.user?.image || undefined}

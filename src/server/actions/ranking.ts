@@ -2,6 +2,8 @@
 
 import { revalidatePath } from 'next/cache';
 import prisma from '@/lib/prisma';
+import { auth } from '@/lib/auth'; // Assuming auth helper is here, check import path
+import { headers } from 'next/headers';
 
 export async function getRankingConfig() {
   let config = await prisma.rankingSystem.findFirst();
@@ -97,21 +99,41 @@ export async function recalculateRankings() {
     }
   }
 
-  // 3. Mettre à jour les profils en masse (ou un par un pour l'instant)
-  // Pour l'optimisation, on pourrait faire des updateMany transactionnels,
-  // mais une boucle update est acceptable pour quelques centaines de joueurs.
+  // 3. Ajouter les ajustements manuels
+  const adjustments = await prisma.pointAdjustment.findMany();
+  for (const adj of adjustments) {
+    const currentPoints = playerPoints.get(adj.userId) || 0;
+    playerPoints.set(adj.userId, currentPoints + adj.points);
+  }
 
+  // 4. Mettre à jour les profils en masse
+  
   // D'abord, on remet tout le monde à 0 pour gérer ceux qui n'ont plus de points
+  // Attention : cela réinitialise aussi ceux qui n'ont QUE des ajustements manuels si on ne les a pas ajoutés à la map
+  // C'est pourquoi on itère sur la map qui contient TOUS les ids concernés (tournois + ajustements)
+  
   await prisma.profile.updateMany({
     data: { rankingPoints: 0 },
   });
 
   // Ensuite on met à jour ceux qui ont des points
   for (const [userId, points] of playerPoints.entries()) {
-    await prisma.profile.update({
-      where: { userId },
-      data: { rankingPoints: points },
-    });
+    // S'assurer que le profil existe (normalement oui via la logique précédente, mais au cas où pour les ajustements isolés)
+    const profile = await prisma.profile.findUnique({ where: { userId } });
+    if (profile) {
+       await prisma.profile.update({
+        where: { userId },
+        data: { rankingPoints: points },
+      });
+    } else {
+      // Créer le profil si inexistant (cas rare)
+      await prisma.profile.create({
+        data: {
+          userId,
+          rankingPoints: points,
+        }
+      });
+    }
   }
 
   revalidatePath('/rankings');
@@ -168,4 +190,97 @@ export async function deleteTournamentCategory(id: string) {
   });
   revalidatePath('/admin/rankings');
   return { success: true };
+}
+
+// --- GESTION DES AJUSTEMENTS MANUELS ---
+
+export async function getPointAdjustments(limit = 20) {
+  return await prisma.pointAdjustment.findMany({
+    take: limit,
+    orderBy: { createdAt: 'desc' },
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+          image: true,
+        }
+      },
+      admin: {
+        select: {
+          name: true,
+        }
+      }
+    }
+  });
+}
+
+export async function addPointAdjustment(userId: string, points: number, reason: string) {
+  const session = await auth.api.getSession({
+    headers: await headers()
+  });
+  
+  if (!session?.user) throw new Error("Unauthorized");
+
+  const adjustment = await prisma.pointAdjustment.create({
+    data: {
+      userId,
+      points,
+      reason,
+      adminId: session.user.id
+    }
+  });
+
+  // Mise à jour incrémentale immédiate
+  await prisma.profile.update({
+    where: { userId },
+    data: {
+      rankingPoints: {
+        increment: points
+      }
+    }
+  });
+
+  revalidatePath('/admin/rankings');
+  return adjustment;
+}
+
+export async function deletePointAdjustment(id: string) {
+  const adjustment = await prisma.pointAdjustment.findUnique({ where: { id } });
+  if (!adjustment) throw new Error("Ajustement introuvable");
+
+  await prisma.pointAdjustment.delete({ where: { id } });
+
+  // Mise à jour décrémentale immédiate (on retire les points ajoutés, ou on ajoute les points retirés)
+  await prisma.profile.update({
+    where: { userId: adjustment.userId },
+    data: {
+      rankingPoints: {
+        decrement: adjustment.points 
+      }
+    }
+  });
+
+  revalidatePath('/admin/rankings');
+}
+
+export async function searchUsers(query: string) {
+  if (query.length < 2) return [];
+  
+  return await prisma.user.findMany({
+    where: {
+      OR: [
+        { name: { contains: query, mode: 'insensitive' } },
+        { email: { contains: query, mode: 'insensitive' } },
+        { discordTag: { contains: query, mode: 'insensitive' } },
+      ]
+    },
+    take: 5,
+    select: {
+      id: true,
+      name: true,
+      image: true,
+      email: true
+    }
+  });
 }

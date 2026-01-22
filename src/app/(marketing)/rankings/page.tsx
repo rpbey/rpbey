@@ -1,159 +1,56 @@
-import Avatar from '@mui/material/Avatar';
-import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
-import Paper from '@mui/material/Paper';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Typography from '@mui/material/Typography';
-import { headers } from 'next/headers';
-import Link from 'next/link';
 import { PageHeader } from '@/components/ui';
 import prisma from '@/lib/prisma';
-import { getInitials } from '@/lib/utils';
+import { RankingsTable } from '@/components/rankings/RankingsTable';
 
 export const metadata = {
-  title: 'Classements',
-  description: 'Les meilleurs bladers de la République Populaire du Beyblade.',
+  title: 'Classements | RPB',
+  description: 'Les meilleurs bladers de la République Populaire du Beyblade. Classement officiel mis à jour en temps réel.',
 };
 
-export default async function RankingsPage() {
-  await headers();
-  const profiles = await prisma.profile.findMany({
-    orderBy: [
-      { rankingPoints: 'desc' },
-      { tournamentWins: 'desc' },
-      { wins: 'desc' },
-    ],
-    include: {
-      user: true,
-    },
-    take: 50,
-  });
+export const dynamic = 'force-dynamic'; // Pour être sûr que la pagination est fraîche
+
+interface RankingsPageProps {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}
+
+export default async function RankingsPage({ searchParams }: RankingsPageProps) {
+  const resolvedSearchParams = await searchParams;
+  const page = Number(resolvedSearchParams.page) || 1;
+  const pageSize = 20;
+
+  // 1. Récupération optimisée avec pagination
+  const [profiles, totalCount] = await Promise.all([
+    prisma.profile.findMany({
+      take: pageSize,
+      skip: (page - 1) * pageSize,
+      orderBy: [
+        { rankingPoints: 'desc' },
+        { tournamentWins: 'desc' },
+        { wins: 'desc' },
+      ],
+      include: {
+        user: true,
+      },
+    }),
+    prisma.profile.count(),
+  ]);
+
+  const totalPages = Math.ceil(totalCount / pageSize);
 
   return (
     <Container maxWidth="lg" sx={{ py: 8 }}>
       <PageHeader
-        title="Classements"
-        description="Découvrez les meilleurs bladers de la communauté."
+        title="Classements Officiels"
+        description={`Les ${totalCount} meilleurs bladers de la République Populaire du Beyblade.`}
       />
 
-      <TableContainer
-        component={Paper}
-        elevation={0}
-        sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 3 }}
-      >
-        <Table>
-          <TableHead>
-            <TableRow sx={{ bgcolor: 'background.default' }}>
-              <TableCell width={80} align="center">
-                Rang
-              </TableCell>
-              <TableCell>Blader</TableCell>
-              <TableCell align="center">Points</TableCell>
-              <TableCell align="center">Victoires Tournois</TableCell>
-              <TableCell align="center">Victoires</TableCell>
-              <TableCell align="center">Ratio</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {profiles.length > 0 ? (
-              profiles.map((profile, index) => {
-                const totalMatches = profile.wins + profile.losses;
-                const winRate =
-                  totalMatches > 0
-                    ? ((profile.wins / totalMatches) * 100).toFixed(1)
-                    : '0';
-
-                return (
-                  <TableRow key={profile.id} hover>
-                    <TableCell align="center">
-                      <Typography
-                        fontWeight="bold"
-                        color={index < 3 ? 'primary.main' : 'text.primary'}
-                      >
-                        #{index + 1}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Link
-                        href={`/profile/${profile.userId}`}
-                        style={{ textDecoration: 'none', color: 'inherit' }}
-                      >
-                        <Box
-                          sx={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 2,
-                            '&:hover': {
-                              '& .MuiTypography-root': {
-                                color: 'primary.main',
-                              },
-                            },
-                          }}
-                        >
-                          <Avatar src={profile.user.image || undefined}>
-                            {getInitials(
-                              profile.bladerName || profile.user.name,
-                            )}
-                          </Avatar>
-                          <Box>
-                            <Typography
-                              fontWeight="medium"
-                              sx={{ transition: 'color 0.2s' }}
-                            >
-                              {profile.bladerName ||
-                                profile.user.name ||
-                                'Anonyme'}
-                            </Typography>
-                            <Typography
-                              variant="caption"
-                              color="text.secondary"
-                            >
-                              {profile.favoriteType || 'Type inconnu'}
-                            </Typography>
-                          </Box>
-                        </Box>
-                      </Link>
-                    </TableCell>
-                    <TableCell align="center">
-                      <Typography
-                        fontWeight="900"
-                        color="primary.main"
-                        fontSize="1.1rem"
-                      >
-                        {profile.rankingPoints} pts
-                      </Typography>
-                    </TableCell>
-                    <TableCell align="center">
-                      <Typography fontWeight="medium">
-                        {profile.tournamentWins}
-                      </Typography>
-                    </TableCell>
-                    <TableCell align="center">{profile.wins}</TableCell>
-                    <TableCell align="center">
-                      <Typography variant="body2" color="text.secondary">
-                        {winRate}%
-                      </Typography>
-                    </TableCell>
-                  </TableRow>
-                );
-              })
-            ) : (
-              <TableRow>
-                <TableCell colSpan={6} align="center" sx={{ py: 4 }}>
-                  <Typography color="text.secondary">
-                    Aucun blader n'est encore classé.
-                  </Typography>
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
+      <RankingsTable 
+        profiles={profiles} 
+        totalPages={totalPages} 
+        currentPage={page}
+        totalCount={totalCount}
+      />
     </Container>
   );
 }

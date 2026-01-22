@@ -1,9 +1,10 @@
-import { Box } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import {
   getRankingConfig,
   getTournamentCategories,
 } from '@/server/actions/ranking';
 import RankingSettingsForm from './RankingSettingsForm';
+import PointAdjustmentList from './PointAdjustmentList';
 
 export const metadata = {
   title: 'Admin - Classements',
@@ -15,10 +16,21 @@ export default async function RankingAdminPage() {
 
   return (
     <Box sx={{ py: 4 }}>
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h4" fontWeight="bold" gutterBottom>
+          Gestion des Classements
+        </Typography>
+        <Typography color="text.secondary">
+          Configurez le barème des points, les catégories de tournois et gérez les ajustements manuels.
+        </Typography>
+      </Box>
+
       <RankingSettingsForm
         initialConfig={config}
         initialCategories={categories}
       />
+      
+      <PointAdjustmentList />
     </Box>
   );
 }
