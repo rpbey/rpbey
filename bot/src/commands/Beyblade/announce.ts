@@ -538,6 +538,8 @@ export class AnnounceCommand extends Command {
     const colorHex = interaction.options.getString('couleur') ?? 'dc2626';
     const image = interaction.options.getAttachment('image');
 
+    await interaction.deferReply({ ephemeral: true });
+
     const embed = new EmbedBuilder()
       .setTitle(`📢 ${title}`)
       .setDescription(message)
@@ -573,10 +575,7 @@ export class AnnounceCommand extends Command {
       }
     }
 
-    return interaction.reply({
-      content: `✅ Annonce envoyée dans ${channel} !`,
-      ephemeral: true,
-    });
+    return interaction.editReply(`✅ Annonce envoyée dans ${channel} !`);
   }
 
   private async generateAnnouncement(
