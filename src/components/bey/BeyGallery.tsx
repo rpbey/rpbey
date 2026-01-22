@@ -2,6 +2,7 @@
 
 import CategoryIcon from '@mui/icons-material/Category';
 import SearchIcon from '@mui/icons-material/Search';
+import InfoIcon from '@mui/icons-material/Info';
 import {
   Box,
   Card,
@@ -15,16 +16,38 @@ import {
   Tabs,
   TextField,
   Typography,
+  Divider,
 } from '@mui/material';
 import { useMemo, useState } from 'react';
 import type { BeyFile, BeyManifest } from '@/types/bey';
 import { ModelViewer } from './ModelViewer';
 
-interface BeyGalleryProps {
-  manifest: BeyManifest;
+// Loose type for BBX Data
+interface BBXData {
+  "Pic Bank"?: Array<{
+    Blade?: string;
+    Type?: string;
+    System?: string;
+    Brand?: string;
+    Rotation?: string;
+    Ref?: string;
+    Ratchet?: string;
+    Bit?: string;
+    [key: string]: any;
+  }>;
+  [key: string]: any;
 }
 
-export function BeyGallery({ manifest }: BeyGalleryProps) {
+interface BeyGalleryProps {
+  manifest: BeyManifest;
+  bbxData?: BBXData;
+}
+
+function normalize(str: string): string {
+  return str.toLowerCase().replace(/[^a-z0-9]/g, '');
+}
+
+export function BeyGallery({ manifest, bbxData }: BeyGalleryProps) {
   const [selectedCategory, setSelectedCategory] = useState(
     manifest.categories[0],
   );
@@ -40,6 +63,22 @@ export function BeyGallery({ manifest }: BeyGalleryProps) {
     );
   }, [manifest]);
 
+  // Find stats for selected model
+  const selectedStats = useMemo(() => {
+    if (!selectedModel || !bbxData || !bbxData['Pic Bank']) return null;
+    
+    const normName = normalize(selectedModel.name);
+    
+    // Try to find in Pic Bank
+    return bbxData['Pic Bank'].find(row => {
+      // Check Blade column
+      if (row.Blade && normalize(row.Blade).includes(normName)) return true;
+      // Check Ref column (e.g. BX-01 DranSword)
+      if (row.Ref && normalize(row.Ref).includes(normName)) return true;
+      return false;
+    });
+  }, [selectedModel, bbxData]);
+
   // Filter models
   const filteredModels = useMemo(() => {
     return manifest.models.filter((model) => {
@@ -51,11 +90,6 @@ export function BeyGallery({ manifest }: BeyGalleryProps) {
       return matchesCategory && matchesSearch;
     });
   }, [manifest.models, selectedCategory, searchQuery]);
-
-  // Filter textures (show all for now, maybe filter by name similarity later?)
-  // For simplicity, we list all textures in a separate tab or section?
-  // Or just auto-select one?
-  // Let's allow picking a texture.
 
   const currentTexture = selectedTexture || defaultTexture;
 
@@ -170,7 +204,7 @@ export function BeyGallery({ manifest }: BeyGalleryProps) {
         </Paper>
       </Grid>
 
-      {/* Right Panel: 3D Viewer */}
+      {/* Right Panel: 3D Viewer & Stats */}
       <Grid size={{ xs: 12, md: 8, lg: 9 }} sx={{ height: '100%' }}>
         <Paper
           sx={{
@@ -194,21 +228,88 @@ export function BeyGallery({ manifest }: BeyGalleryProps) {
                 <Typography variant="h5" fontWeight="bold">
                   {selectedModel.name}
                 </Typography>
-                <Chip
-                  label={selectedModel.category}
-                  color="primary"
-                  size="small"
-                />
+                <Stack direction="row" spacing={1}>
+                  {selectedStats && selectedStats.Type && (
+                    <Chip 
+                      label={selectedStats.Type} 
+                      size="small"
+                      sx={{ 
+                        bgcolor: selectedStats.Type === 'Attack' ? '#ef4444' : 
+                                 selectedStats.Type === 'Defense' ? '#3b82f6' : 
+                                 selectedStats.Type === 'Stamina' ? '#22c55e' : 
+                                 selectedStats.Type === 'Balance' ? '#eab308' : 'grey.500',
+                        color: 'white',
+                        fontWeight: 'bold'
+                      }}
+                    />
+                  )}
+                  <Chip
+                    label={selectedModel.category}
+                    color="primary"
+                    variant="outlined"
+                    size="small"
+                  />
+                </Stack>
               </Box>
 
-              <Box sx={{ flexGrow: 1, minHeight: 0 }}>
+              <Box sx={{ flexGrow: 1, minHeight: 0, position: 'relative' }}>
                 <ModelViewer
                   modelUrl={selectedModel.path}
                   textureUrl={currentTexture?.path}
                 />
+                
+                {/* Stats Overlay */}
+                {selectedStats && (
+                  <Paper 
+                    elevation={3}
+                    sx={{
+                      position: 'absolute',
+                      bottom: 16,
+                      right: 16,
+                      width: 280,
+                      p: 2,
+                      bgcolor: 'background.paper',
+                      borderRadius: 2,
+                      opacity: 0.9,
+                      backdropFilter: 'blur(10px)'
+                    }}
+                  >
+                    <Typography variant="subtitle2" fontWeight="bold" gutterBottom display="flex" alignItems="center" gap={1}>
+                      <InfoIcon fontSize="small" color="primary" />
+                      Informations
+                    </Typography>
+                    <Divider sx={{ mb: 1.5 }} />
+                    <Stack spacing={1}>
+                      {selectedStats.Ref && (
+                        <Box display="flex" justifyContent="space-between">
+                          <Typography variant="caption" color="text.secondary">Ref</Typography>
+                          <Typography variant="body2" fontWeight="medium">{selectedStats.Ref.split(' ')[0]}</Typography>
+                        </Box>
+                      )}
+                      {selectedStats.System && (
+                        <Box display="flex" justifyContent="space-between">
+                          <Typography variant="caption" color="text.secondary">Système</Typography>
+                          <Typography variant="body2">{selectedStats.System}</Typography>
+                        </Box>
+                      )}
+                      {selectedStats.Brand && (
+                        <Box display="flex" justifyContent="space-between">
+                          <Typography variant="caption" color="text.secondary">Marque</Typography>
+                          <Typography variant="body2">{selectedStats.Brand}</Typography>
+                        </Box>
+                      )}
+                      {selectedStats.Rotation && (
+                        <Box display="flex" justifyContent="space-between">
+                          <Typography variant="caption" color="text.secondary">Rotation</Typography>
+                          <Typography variant="body2">{selectedStats.Rotation}</Typography>
+                        </Box>
+                      )}
+                    </Stack>
+                  </Paper>
+                )}
               </Box>
 
-              {/* Texture Selector (Mini scrollable strip) */}
+              {/* Texture Selector */}
               <Box>
                 <Typography
                   variant="caption"
@@ -243,6 +344,7 @@ export function BeyGallery({ manifest }: BeyGalleryProps) {
                         '&:hover': { opacity: 0.8 },
                       }}
                     >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={tex.path}
                         alt={tex.name}

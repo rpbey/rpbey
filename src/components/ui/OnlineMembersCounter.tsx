@@ -1,6 +1,6 @@
 'use client';
 
-import { Box, Skeleton, Typography } from '@mui/material';
+import { Box, keyframes, Skeleton, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 
 const pulse = keyframes`

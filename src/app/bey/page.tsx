@@ -2,19 +2,24 @@ import { Box, Container, Typography } from '@mui/material';
 import { BeyGallery } from '@/components/bey/BeyGallery';
 import type { BeyManifest } from '@/types/bey';
 import manifest from '../../../public/bey-manifest.json';
+import fs from 'fs';
+import path from 'path';
 
-// Force dynamic because we are importing a JSON that might change?
-// No, standard import is fine for static data.
-// But to ensure types matching we cast it.
-
-const data = manifest as unknown as BeyManifest;
+const manifestData = manifest as unknown as BeyManifest;
 
 export const metadata = {
   title: 'BeyLab 3D | RPB',
   description: 'Explorateur de pièces Beyblade X en 3D.',
 };
 
-export default function BeyPage() {
+export default async function BeyPage() {
+  const bbxDataPath = path.join(process.cwd(), 'public/data/bbx_data.json');
+  let bbxData = null;
+  
+  if (fs.existsSync(bbxDataPath)) {
+    bbxData = JSON.parse(fs.readFileSync(bbxDataPath, 'utf-8'));
+  }
+
   return (
     <Box
       sx={{
@@ -40,11 +45,11 @@ export default function BeyPage() {
             </Box>
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            {data.stats.models} modèles • {data.stats.textures} textures
+            {manifestData.stats.models} modèles • {manifestData.stats.textures} textures
           </Typography>
         </Box>
 
-        <BeyGallery manifest={data} />
+        <BeyGallery manifest={manifestData} bbxData={bbxData} />
       </Container>
     </Box>
   );

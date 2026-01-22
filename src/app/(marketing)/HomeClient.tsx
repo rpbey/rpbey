@@ -23,8 +23,8 @@ interface HomeClientProps {
 }
 
 export default function HomeClient({
-  _discordStats,
-  _discordTeam,
+  discordStats: _discordStats,
+  discordTeam: _discordTeam,
 }: HomeClientProps) {
   const { backgroundImage, mode } = useThemeMode();
   const { scrollY } = useScroll();
