@@ -14,9 +14,10 @@ export class MessageLogger extends Listener {
 
     // Check conditions: DM or Mention
     const isDM = message.channel.type === ChannelType.DM;
-    const isMention =
-      message.mentions.has(this.container.client.user?.id) &&
-      !message.mentions.everyone;
+    const botId = this.container.client.user?.id;
+    const isMention = botId
+      ? message.mentions.has(botId) && !message.mentions.everyone
+      : false;
 
     if (isDM || isMention) {
       const logEntry = {

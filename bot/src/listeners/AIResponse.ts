@@ -20,9 +20,10 @@ export class AIResponse extends Listener {
     if (message.author.bot || !message.content) return;
 
     const isDM = message.channel.type === ChannelType.DM;
-    const isMention =
-      message.mentions.has(this.container.client.user?.id) &&
-      !message.mentions.everyone;
+    const botId = this.container.client.user?.id;
+    const isMention = botId
+      ? message.mentions.has(botId) && !message.mentions.everyone
+      : false;
 
     // We only respond automatically to direct mentions or DMs
     if (!isMention && !isDM) return;
@@ -107,7 +108,7 @@ export class AIResponse extends Listener {
             inline: true,
           },
         )
-        .setThumbnail(this.container.client.user?.displayAvatarURL())
+        .setThumbnail(this.container.client.user?.displayAvatarURL() ?? null)
         .setFooter({ text: 'Données certifiées par la RPB' })
         .setTimestamp();
 

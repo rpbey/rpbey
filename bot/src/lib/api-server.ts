@@ -11,7 +11,7 @@ import type {
   GuildMember,
   GuildTextBasedChannel,
 } from 'discord.js';
-import { WebSocket, WebSocketServer } from 'ws';
+import { WebSocket, WebSocketServer, type RawData } from 'ws';
 import { Colors, RPB } from './constants.js';
 
 const logs: { timestamp: string; level: string; message: string }[] = [];
@@ -58,7 +58,7 @@ export function addLog(level: string, message: string) {
   // Broadcast to WS clients
   if (wss) {
     const payload = JSON.stringify({ type: 'log', data: logEntry });
-    wss.clients.forEach((client) => {
+    wss.clients.forEach((client: WebSocket) => {
       if (client.readyState === WebSocket.OPEN) {
         client.send(payload);
       }
@@ -442,14 +442,14 @@ export function startApiServer(port = 3001) {
   // Initialize WebSocket Server
   wss = new WebSocketServer({ server });
 
-  wss.on('connection', (ws) => {
+  wss.on('connection', (ws: WebSocket) => {
     container.logger.info('[WS] Client connected');
     ws.send(JSON.stringify({ type: 'info', message: 'Connected to RPB Bot' }));
 
     // Send recent logs
     ws.send(JSON.stringify({ type: 'logs_history', data: getLogs(20) }));
 
-    ws.on('message', async (message) => {
+    ws.on('message', async (message: RawData) => {
       try {
         const raw = message.toString();
         const payload = JSON.parse(raw);
