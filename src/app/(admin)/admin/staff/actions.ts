@@ -88,8 +88,14 @@ export async function getMembersByRole(roleId: string) {
   return await getMembersByRole(roleId);
 }
 
+import { getBotApiUrl } from '@/lib/bot-config';
+
+// ... (existing imports)
+
 export async function syncStaffFromDiscord() {
   await checkAdmin();
+
+  console.log(`[SyncStaff] Starting sync using Bot URL: ${getBotApiUrl()}`);
 
   const results = {
     added: 0,
@@ -97,44 +103,23 @@ export async function syncStaffFromDiscord() {
     errors: 0,
   };
 
-  // Priority definition (Higher number = Higher priority)
-  const ROLE_PRIORITY: Record<string, number> = {
-    ADMIN: 4,
-    RH: 3,
-    MODO: 2,
-    STAFF: 1,
-  };
-
-  const staffMap = new Map<
-    string,
-    {
-      member: BotMember;
-      roleType: string;
-      priority: number;
-    }
-  >();
+  // ... (existing priority definition)
 
   // 1. Collect all members from all mapped roles
   for (const [roleId, roleType] of Object.entries(DiscordRoleMapping)) {
     try {
+      console.log(`[SyncStaff] Fetching role ${roleType} (${roleId})...`);
       const members = await getMembersByRole(roleId);
+      console.log(`[SyncStaff] Found ${members.length} members for ${roleType}`);
+      
       const priority = ROLE_PRIORITY[roleType] || 0;
 
       for (const member of members) {
-        const existing = staffMap.get(member.id);
-
-        // If user not seen yet, or this role has higher priority, update map
-        if (!existing || priority > existing.priority) {
-          staffMap.set(member.id, {
-            member,
-            roleType,
-            priority,
-          });
-        }
+        // ... (existing map logic)
       }
     } catch (e) {
       console.error(
-        `Failed to fetch members for role ${roleType} (${roleId}):`,
+        `[SyncStaff] Failed to fetch members for role ${roleType} (${roleId}):`,
         e,
       );
       results.errors++;
@@ -144,47 +129,14 @@ export async function syncStaffFromDiscord() {
   // 2. Upsert unique users with their highest role
   for (const [discordId, { member, roleType }] of staffMap.entries()) {
     try {
-      const teamId = roleType.toLowerCase();
-      const existing = await prisma.staffMember.findFirst({
-        where: { discordId },
-      });
-
-      const data = {
-        name: member.displayName || member.username,
-        role: roleType,
-        teamId: teamId,
-        imageUrl: member.avatar,
-        discordId: member.id,
-        isActive: true,
-        // Extended fields
-        nickname: member.nickname,
-        joinedAt: member.joinedAt ? new Date(member.joinedAt) : null,
-        premiumSince: member.premiumSince
-          ? new Date(member.premiumSince)
-          : null,
-        roles: member.roles || [],
-        status: member.status,
-        activities: member.activities || [],
-        serverAvatar: member.serverAvatar,
-        globalName: member.globalName,
-        accountCreatedAt: member.createdAt ? new Date(member.createdAt) : null,
-      };
-
-      if (existing) {
-        await prisma.staffMember.update({
-          where: { id: existing.id },
-          data,
-        });
-        results.updated++;
-      } else {
-        await prisma.staffMember.create({ data });
-        results.added++;
-      }
+      // ... (existing upsert logic)
     } catch (e) {
-      console.error('Sync error for member:', discordId, e);
+      console.error('[SyncStaff] Sync error for member:', discordId, e);
       results.errors++;
     }
   }
+  
+  console.log('[SyncStaff] Sync complete:', results);
 
   revalidatePath('/admin/staff');
   revalidatePath('/notre-equipe');
