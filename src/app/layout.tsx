@@ -21,14 +21,28 @@ export const metadata: Metadata = {
     template: '%s | RPB',
   },
   description:
-    'La communauté française de Beyblade X. Tournois, classements et plus encore.',
+    'Rejoignez la RPB, la 1ère communauté Beyblade X en France. Participez aux tournois officiels, consultez le classement national, optimisez vos decks et discutez meta sur notre Discord.',
   keywords: [
     'Beyblade',
     'Beyblade X',
-    'tournoi',
-    'France',
-    'communauté',
+    'Beyblade X France',
     'RPB',
+    'République Populaire du Beyblade',
+    'Tournoi Beyblade',
+    'Classement Beyblade',
+    'Communauté Beyblade',
+    'Discord Beyblade',
+    'WBO France',
+    'Takara Tomy',
+    'Hasbro',
+    'Dran Sword',
+    'Hells Scythe',
+    'Wizard Arrow',
+    'Toupies de combat',
+    'Meta Beyblade X',
+    'Deck Building',
+    'Compétition',
+    'RPBey',
   ],
   authors: [
     { name: 'RPB' },
@@ -47,7 +61,7 @@ export const metadata: Metadata = {
     siteName: 'RPB - République Populaire du Beyblade',
     title: 'RPB - République Populaire du Beyblade',
     description:
-      'La communauté française de Beyblade X. Tournois, classements et plus encore.',
+      'Rejoignez la RPB, la 1ère communauté Beyblade X en France. Tournois, classements, meta et passion.',
     images: [
       {
         url: '/banner.png',
@@ -61,7 +75,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'RPB - République Populaire du Beyblade',
     description:
-      'La communauté française de Beyblade X. Tournois, classements.',
+      'Rejoignez la RPB, la 1ère communauté Beyblade X en France. Tournois, classements, meta et passion.',
     images: ['/banner.png'],
   },
   robots: {
