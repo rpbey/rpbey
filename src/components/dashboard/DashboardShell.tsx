@@ -451,7 +451,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           minHeight: '100vh',
           display: 'flex',
           flexDirection: 'column',
-          pb: { xs: 7, md: 0 }, // Space for bottom nav
+          pb: { xs: 'calc(80px + env(safe-area-inset-bottom))', md: 0 }, // Space for bottom nav
         }}
       >
         {/* Header App Bar */}
@@ -527,7 +527,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
       </Box>
 
       {/* Mobile Bottom Nav */}
-      {isMobile && !isAdmin && (
+      {isMobile && (
         <Box
           sx={{
             position: 'fixed',
@@ -546,7 +546,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             value={bottomNavValue}
             onChange={(_, newValue) => router.push(newValue)}
           >
-            {userItems.map((item) => {
+            {userItems.slice(0, 3).map((item) => {
               const Icon = item.icon;
               return (
                 <BottomNavigationAction
@@ -557,6 +557,13 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                 />
               );
             })}
+            {isAdmin && (
+              <BottomNavigationAction
+                label="Admin"
+                value="/admin"
+                icon={<Settings />}
+              />
+            )}
           </BottomNavigation>
         </Box>
       )}
