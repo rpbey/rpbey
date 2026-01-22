@@ -175,3 +175,252 @@ mcpServer.tool(
     };
   },
 );
+
+// 4. Discord Speak (Action)
+mcpServer.tool(
+  'discord-speak',
+  {
+    channelId: z.string().describe('The Discord channel ID to send the message to'),
+    content: z.string().describe('The content of the message to send'),
+  },
+  async ({ channelId, content }) => {
+    const botApiUrl = process.env.BOT_API_URL || 'http://localhost:3001';
+    const botApiKey = process.env.BOT_API_KEY;
+
+    try {
+      const response = await fetch(`${botApiUrl}/api/agent/dispatch`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': botApiKey || '',
+        },
+        body: JSON.stringify({
+          action: 'send_message',
+          params: { channelId, content },
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Bot API error: ${response.statusText}`);
+      }
+
+      const result = await response.json();
+      return {
+        content: [
+          {
+            type: 'text',
+            text: `Successfully sent message to Discord: ${JSON.stringify(result)}`,
+          },
+        ],
+      };
+    } catch (error) {
+      return {
+        content: [
+          {
+            type: 'text',
+            text: `Failed to send message to Discord: ${String(error)}`,
+          },
+        ],
+        isError: true,
+      };
+    }
+  },
+);
+
+// === PROMPTS ===
+// Pre-defined prompts for common tasks
+
+mcpServer.prompt(
+  'draft-tournament-announcement',
+  {
+    tournamentId: z.string().describe('The ID of the tournament'),
+  },
+  async ({ tournamentId }) => {
+    const tournament = await prisma.tournament.findUnique({
+      where: { id: tournamentId },
+    });
+
+    if (!tournament) {
+      return {
+        messages: [
+          {
+            role: 'user',
+            content: {
+              type: 'text',
+              text: `Tournament with ID ${tournamentId} not found.`,
+            },
+          },
+        ],
+      };
+    }
+
+    return {
+      messages: [
+        {
+          role: 'user',
+          content: {
+            type: 'text',
+            text: `Please draft an announcement for the following Beyblade tournament:\nName: ${tournament.name}\nDate: ${tournament.date.toDateString()}\nFormat: ${tournament.format}\nStatus: ${tournament.status}\n\nMake it exciting and ready to post on Discord!`,
+          },
+        },
+      ],
+    };
+  },
+);
+
+// === SAMPLING (LLM) ===
+// Tools that use the connected LLM to perform tasks
+
+mcpServer.tool(
+  'summarize-bot-logs',
+  {
+    tail: z.number().optional().default(20).describe('Number of lines to summarize'),
+  },
+  async ({ tail }) => {
+    // 1. Fetch Logs
+    const botApiUrl = process.env.BOT_API_URL || 'http://localhost:3001';
+    const botApiKey = process.env.BOT_API_KEY;
+    let logsText = '';
+
+    try {
+      const response = await fetch(`${botApiUrl}/api/logs?tail=${tail}`, {
+        headers: { 'x-api-key': botApiKey || '' },
+      });
+      if (response.ok) {
+        const { logs } = await response.json();
+        logsText = logs.map((l: any) => `[${l.level}] ${l.message}`).join('\n');
+      }
+    } catch (e) {
+      logsText = 'Failed to fetch logs.';
+    }
+
+    // 2. Use Sampling to Summarize
+    try {
+      const result = await mcpServer.server.createMessage({
+        messages: [
+          {
+            role: 'user',
+            content: {
+              type: 'text',
+              text: `Summarize the following bot logs, highlighting any errors or warnings:\n\n${logsText}`,
+            },
+          },
+        ],
+        maxTokens: 300,
+      });
+
+      const summary =
+        result.content.type === 'text' ? result.content.text : 'No summary generated.';
+
+      return {
+        content: [
+          {
+            type: 'text',
+            text: summary,
+          },
+        ],
+      };
+    } catch (error) {
+      return {
+        content: [
+          {
+            type: 'text',
+            text: `Failed to sample LLM: ${String(error)}`,
+          },
+        ],
+        isError: true,
+      };
+    }
+  },
+);
+
+// === ADVANCED RESOURCES (COMPLETION) ===
+// Resource with argument completion
+
+mcpServer.resource(
+  'tournament-matches',
+  new ResourceTemplate('tournaments://{id}/matches', {
+    list: undefined,
+    complete: {
+      id: async (value) => {
+        // Find tournaments starting with the value
+        const tournaments = await prisma.tournament.findMany({
+          where: { id: { startsWith: value } },
+          take: 10,
+          select: { id: true },
+        });
+        return tournaments.map((t) => t.id);
+      },
+    },
+  }),
+  async (uri, { id }) => {
+    const matches = await prisma.tournamentMatch.findMany({
+      where: { tournamentId: typeof id === 'string' ? id : '' },
+      take: 20,
+      include: {
+        player1: { select: { name: true } },
+        player2: { select: { name: true } },
+      },
+    });
+
+    return {
+      contents: [
+        {
+          uri: uri.href,
+          text: JSON.stringify(matches, null, 2),
+        },
+      ],
+    };
+  },
+);
+
+
+// 6. Run Gemini -p
+mcpServer.tool(
+  'run-gemini-p',
+  {
+    prompt: z.string().describe('The prompt to pass to gemini -p'),
+  },
+  async ({ prompt }) => {
+    const botApiUrl = process.env.BOT_API_URL || 'http://localhost:3001';
+    const botApiKey = process.env.BOT_API_KEY;
+
+    try {
+      const response = await fetch(`${botApiUrl}/api/agent/dispatch`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': botApiKey || '',
+        },
+        body: JSON.stringify({
+          action: 'run_gemini',
+          params: { args: ['-p', prompt] },
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Bot API error: ${response.statusText}`);
+      }
+
+      const result = await response.json();
+      return {
+        content: [
+          {
+            type: 'text',
+            text: `Gemini command triggered: ${JSON.stringify(result)}`,
+          },
+        ],
+      };
+    } catch (error) {
+      return {
+        content: [
+          {
+            type: 'text',
+            text: `Failed to trigger Gemini command: ${String(error)}`,
+          },
+        ],
+        isError: true,
+      };
+    }
+  },
+);

@@ -60,6 +60,14 @@ export const RPB = {
     Modo: '1448458421702754474',
     Staff: '1331256093434712095',
     Partenaires: '1457835411052298411',
+    // Role Reaction Roles
+    Participant: '1463903915920724041',
+    Spectateur: '1463903917346656378',
+    Reseaux: '1456751013741592678',
+    Events: '1456751317342224525',
+    Leaks: '1456768275731058708',
+    // Notification Roles
+    TournoiNotification: '1451549606608371814',
   },
   // Role Icons (External URLs)
   RoleIcons: {
