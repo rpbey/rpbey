@@ -160,6 +160,8 @@ model Part {
   tipType      String?
   releaseDate  DateTime?
   imageUrl     String?
+  modelUrl     String?
+  textureUrl   String?
   rarity       String?
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt

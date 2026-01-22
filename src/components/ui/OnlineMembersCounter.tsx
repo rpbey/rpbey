@@ -1,6 +1,6 @@
 'use client';
 
-import { Box, Chip, Skeleton, Typography, keyframes } from '@mui/material';
+import { Box, Skeleton, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 
 const pulse = keyframes`
@@ -83,7 +83,8 @@ export function OnlineMembersCounter() {
         fontWeight={700}
         sx={{ color: 'white', letterSpacing: '0.05em' }}
       >
-        {onlineCount.toLocaleString()} <span style={{ opacity: 0.7, fontWeight: 400 }}>EN LIGNE</span>
+        {onlineCount.toLocaleString()}{' '}
+        <span style={{ opacity: 0.7, fontWeight: 400 }}>EN LIGNE</span>
       </Typography>
     </Box>
   );

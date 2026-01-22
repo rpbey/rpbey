@@ -1,9 +1,9 @@
-import { Container, Typography, Box } from '@mui/material';
+import { Box, Container, Typography } from '@mui/material';
 import { BeyGallery } from '@/components/bey/BeyGallery';
-import manifest from '../../../public/bey-manifest.json';
 import type { BeyManifest } from '@/types/bey';
+import manifest from '../../../public/bey-manifest.json';
 
-// Force dynamic because we are importing a JSON that might change? 
+// Force dynamic because we are importing a JSON that might change?
 // No, standard import is fine for static data.
 // But to ensure types matching we cast it.
 
@@ -16,17 +16,34 @@ export const metadata = {
 
 export default function BeyPage() {
   return (
-    <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-      <Container maxWidth={false} sx={{ py: 2, flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+    <Box
+      sx={{
+        height: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden',
+      }}
+    >
+      <Container
+        maxWidth={false}
+        sx={{ py: 2, flexGrow: 1, display: 'flex', flexDirection: 'column' }}
+      >
         <Box sx={{ mb: 2 }}>
-          <Typography variant="h4" fontWeight="900" sx={{ letterSpacing: '-0.02em' }}>
-            BEYLAB <Box component="span" color="primary.main">3D</Box>
+          <Typography
+            variant="h4"
+            fontWeight="900"
+            sx={{ letterSpacing: '-0.02em' }}
+          >
+            BEYLAB{' '}
+            <Box component="span" color="primary.main">
+              3D
+            </Box>
           </Typography>
           <Typography variant="body2" color="text.secondary">
             {data.stats.models} modèles • {data.stats.textures} textures
           </Typography>
         </Box>
-        
+
         <BeyGallery manifest={data} />
       </Container>
     </Box>

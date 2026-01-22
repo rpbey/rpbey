@@ -11,7 +11,7 @@ import type {
   GuildMember,
   GuildTextBasedChannel,
 } from 'discord.js';
-import { WebSocket, WebSocketServer, type RawData } from 'ws';
+import { type RawData, WebSocket, WebSocketServer } from 'ws';
 import { Colors, RPB } from './constants.js';
 
 const logs: { timestamp: string; level: string; message: string }[] = [];

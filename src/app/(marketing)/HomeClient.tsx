@@ -10,10 +10,7 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { motion, useScroll, useSpring, useTransform } from 'framer-motion';
 import Link from 'next/link';
-import {
-  FeedMyPartnership,
-  TournamentVideo,
-} from '@/components/marketing';
+import { FeedMyPartnership, TournamentVideo } from '@/components/marketing';
 import { useThemeMode } from '@/components/theme/ThemeRegistry';
 import { ChallongeBracket } from '@/components/tournaments';
 import { OnlineMembersCounter } from '@/components/ui/OnlineMembersCounter';
@@ -26,8 +23,8 @@ interface HomeClientProps {
 }
 
 export default function HomeClient({
-  discordStats,
-  discordTeam,
+  _discordStats,
+  _discordTeam,
 }: HomeClientProps) {
   const { backgroundImage, mode } = useThemeMode();
   const { scrollY } = useScroll();

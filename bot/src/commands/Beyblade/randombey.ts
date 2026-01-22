@@ -27,22 +27,39 @@ export class RandomBeyCommand extends Command {
 
     // Fetch parts from DB
     const [blades, ratchets, bits] = await Promise.all([
-      prisma.part.findMany({ where: { type: 'BLADE' }, select: { name: true } }),
-      prisma.part.findMany({ where: { type: 'RATCHET' }, select: { name: true } }),
+      prisma.part.findMany({
+        where: { type: 'BLADE' },
+        select: { name: true },
+      }),
+      prisma.part.findMany({
+        where: { type: 'RATCHET' },
+        select: { name: true },
+      }),
       prisma.part.findMany({ where: { type: 'BIT' }, select: { name: true } }),
     ]);
 
     // Fallback if DB is empty
-    const bladeList = blades.length > 0 ? blades.map(p => p.name) : [
-      'Dran Sword', 'Hells Scythe', 'Wizard Arrow', 'Knight Shield', 
-      'Leon Claw', 'Phoenix Wing', 'Shark Edge', 'Unicorn Sting'
-    ];
-    const ratchetList = ratchets.length > 0 ? ratchets.map(p => p.name) : [
-      '3-60', '4-60', '5-60', '3-80', '4-80', '5-80'
-    ];
-    const bitList = bits.length > 0 ? bits.map(p => p.name) : [
-      'Flat', 'Ball', 'Point', 'Needle', 'Taper', 'Rush'
-    ];
+    const bladeList =
+      blades.length > 0
+        ? blades.map((p) => p.name)
+        : [
+            'Dran Sword',
+            'Hells Scythe',
+            'Wizard Arrow',
+            'Knight Shield',
+            'Leon Claw',
+            'Phoenix Wing',
+            'Shark Edge',
+            'Unicorn Sting',
+          ];
+    const ratchetList =
+      ratchets.length > 0
+        ? ratchets.map((p) => p.name)
+        : ['3-60', '4-60', '5-60', '3-80', '4-80', '5-80'];
+    const bitList =
+      bits.length > 0
+        ? bits.map((p) => p.name)
+        : ['Flat', 'Ball', 'Point', 'Needle', 'Taper', 'Rush'];
 
     const types = [
       { name: 'Attaque', emoji: '⚔️', color: 0xef4444 },

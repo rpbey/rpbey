@@ -4,6 +4,7 @@
  * DeckBuilderModal - Modal for creating/editing decks
  */
 
+import { useMediaQuery, useTheme } from '@mui/material';
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -15,7 +16,6 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Stack from '@mui/material/Stack';
 import Switch from '@mui/material/Switch';
 import TextField from '@mui/material/TextField';
-import { useMediaQuery, useTheme } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { validateDeck } from '@/lib/tournament-logic';
 import type { BeyData } from './BeyBuilder';
