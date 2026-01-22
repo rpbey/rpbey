@@ -10,7 +10,10 @@ import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
+import { Skeleton } from '@mui/material';
 import type { Part } from '@prisma/client';
+import { useEffect, useState } from 'react';
+import { ModelViewer } from '../bey/ModelViewer';
 import { PartSelector } from './PartSelector';
 
 export interface BeyData {
@@ -65,9 +68,28 @@ export function BeyBuilder({
   usedPartIds,
   disabled = false,
 }: BeyBuilderProps) {
+  const [modelMapping, setModelMapping] = useState<Record<string, { model?: string; texture?: string }>>({});
+  const [loadingMap, setLoadingMap] = useState(true);
+
+  useEffect(() => {
+    fetch('/data/part-model-map.json')
+      .then(res => res.json())
+      .then(mapping => {
+        setModelMapping(mapping);
+        setLoadingMap(false);
+      })
+      .catch(err => {
+        console.error('Failed to load model mapping', err);
+        setLoadingMap(false);
+      });
+  }, []);
+
   const stats = calculateStats(data.blade);
   const beyName = getBeyName(data);
   const isComplete = data.blade && data.ratchet && data.bit;
+
+  // Find 3D model for current blade
+  const bladeModel = data.blade ? modelMapping[data.blade.id] : null;
 
   // Filter out current bey's parts from usedPartIds
   const currentPartIds = [
@@ -106,6 +128,23 @@ export function BeyBuilder({
             color="success"
             variant="outlined"
           />
+        )}
+      </Box>
+
+      {/* 3D Preview */}
+      <Box sx={{ height: 180, mb: 2, borderRadius: 2, overflow: 'hidden', border: '1px solid', borderColor: 'divider' }}>
+        {data.blade ? (
+          bladeModel?.model ? (
+            <ModelViewer modelUrl={bladeModel.model} textureUrl={bladeModel.texture} />
+          ) : (
+            <Box sx={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: 'action.hover' }}>
+              <Typography variant="caption" color="text.secondary">Aperçu 3D indisponible</Typography>
+            </Box>
+          )
+        ) : (
+          <Box sx={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: 'action.hover' }}>
+            <Typography variant="caption" color="text.secondary">Choisissez une lame pour l'aperçu</Typography>
+          </Box>
         )}
       </Box>
 
