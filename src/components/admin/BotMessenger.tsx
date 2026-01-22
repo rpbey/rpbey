@@ -43,7 +43,7 @@ export function BotMessenger() {
           );
           setChannels(channelList);
           if (channelList.length > 0) {
-            setChannelId(channelList[0].id);
+            setChannelId(channelList[0]?.id || '');
           }
         }
       } catch (err) {

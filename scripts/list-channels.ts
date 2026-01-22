@@ -2,7 +2,10 @@ import { Client, GatewayIntentBits } from 'discord.js';
 import 'dotenv/config';
 
 async function main() {
-  const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+  const client = new Client({
+    intents: [GatewayIntentBits.Guilds],
+    tasks: {} as any,
+  });
   await client.login(process.env.DISCORD_TOKEN);
   const guild = await client.guilds.fetch(process.env.GUILD_ID!);
   const channels = await guild.channels.fetch();

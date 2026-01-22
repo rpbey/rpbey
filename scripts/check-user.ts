@@ -17,6 +17,7 @@ if (!userId) {
 
 const client = new Client({
   intents: [GatewayIntentBits.Guilds], // Minimal intents to fetch user
+  tasks: {} as any,
 });
 
 async function checkUser() {

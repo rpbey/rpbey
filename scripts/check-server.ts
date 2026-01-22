@@ -16,6 +16,7 @@ if (!guildId) {
 
 const client = new Client({
   intents: [GatewayIntentBits.Guilds],
+  tasks: {} as any,
 });
 
 async function checkServer() {

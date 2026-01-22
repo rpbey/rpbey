@@ -58,6 +58,10 @@
   ],
   "exclude": [
     "node_modules",
-    "src/generated"
+    "src/generated",
+    "scripts",
+    "bot",
+    "data",
+    "docs"
   ]
 }
