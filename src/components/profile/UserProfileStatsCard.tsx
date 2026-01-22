@@ -125,7 +125,7 @@ export function UserProfileStatsCard({ stats }: StatsCardProps) {
         backdropFilter: 'blur(10px)',
       }}
     >
-      <CardContent sx={{ p: 4 }}>
+      <CardContent sx={{ p: { xs: 2, sm: 4 } }}>
         <Stack direction="row" alignItems="center" spacing={2} mb={3}>
           <Box
             sx={{

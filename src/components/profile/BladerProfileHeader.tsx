@@ -240,6 +240,7 @@ export function BladerProfileHeader({
                 variant="h3"
                 fontWeight="900"
                 sx={{
+                  fontSize: { xs: '2rem', md: '3rem' },
                   letterSpacing: '-0.03em',
                   background: `linear-gradient(90deg, ${theme.palette.text.primary}, ${theme.palette.text.secondary})`,
                   WebkitBackgroundClip: 'text',

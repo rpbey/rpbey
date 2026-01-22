@@ -69,7 +69,12 @@ export default function LeaderboardPage() {
                 <TableCell width={80}>Rang</TableCell>
                 <TableCell>Blader</TableCell>
                 <TableCell align="right">ELO</TableCell>
-                <TableCell align="right">V/D</TableCell>
+                <TableCell
+                  align="right"
+                  sx={{ display: { xs: 'none', sm: 'table-cell' } }}
+                >
+                  V/D
+                </TableCell>
                 <TableCell align="right">Winrate</TableCell>
               </TableRow>
             </TableHead>
@@ -92,7 +97,9 @@ export default function LeaderboardPage() {
                     <TableCell>
                       <Skeleton width={60} />
                     </TableCell>
-                    <TableCell>
+                    <TableCell
+                      sx={{ display: { xs: 'none', sm: 'table-cell' } }}
+                    >
                       <Skeleton width={60} />
                     </TableCell>
                     <TableCell>
@@ -155,7 +162,10 @@ export default function LeaderboardPage() {
                         variant="outlined"
                       />
                     </TableCell>
-                    <TableCell align="right">
+                    <TableCell
+                      align="right"
+                      sx={{ display: { xs: 'none', sm: 'table-cell' } }}
+                    >
                       <Typography>
                         <Box
                           component="span"

@@ -25,6 +25,9 @@ export function FeatureCard({
   color,
   external,
 }: FeatureCardProps) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const IconAny = Icon as any;
+
   return (
     <Card
       elevation={0}
@@ -58,7 +61,7 @@ export function FeatureCard({
             mb: 2,
           }}
         >
-          <Icon size={28} style={{ width: 28, height: 28 }} />
+          <IconAny size={28} style={{ width: 28, height: 28 }} />
         </Box>
         <Typography variant="h6" fontWeight="bold" gutterBottom>
           {title}

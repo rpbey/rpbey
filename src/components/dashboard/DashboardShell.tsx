@@ -227,7 +227,8 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         >
           {userItems.map((item) => {
             const isActive = pathname.startsWith(item.path);
-            const Icon = item.icon;
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const Icon = item.icon as any;
             return (
               <ListItem key={item.path} disablePadding>
                 <ListItemButton
@@ -309,7 +310,8 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                   item.path === '/admin'
                     ? pathname === '/admin'
                     : pathname.startsWith(item.path);
-                const Icon = item.icon;
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const Icon = item.icon as any;
                 return (
                   <ListItem key={item.path} disablePadding>
                     <ListItemButton
@@ -547,7 +549,8 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             onChange={(_, newValue) => router.push(newValue)}
           >
             {userItems.slice(0, 3).map((item) => {
-              const Icon = item.icon;
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              const Icon = item.icon as any;
               return (
                 <BottomNavigationAction
                   key={item.path}

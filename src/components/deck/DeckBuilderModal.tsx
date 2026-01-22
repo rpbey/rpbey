@@ -15,6 +15,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Stack from '@mui/material/Stack';
 import Switch from '@mui/material/Switch';
 import TextField from '@mui/material/TextField';
+import { useMediaQuery, useTheme } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { validateDeck } from '@/lib/tournament-logic';
 import type { BeyData } from './BeyBuilder';
@@ -51,6 +52,8 @@ export function DeckBuilderModal({
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   // Reset form when modal opens/closes or deck changes
   useEffect(() => {
@@ -196,7 +199,13 @@ export function DeckBuilderModal({
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth="md"
+      fullWidth
+      fullScreen={isMobile}
+    >
       <DialogTitle>
         {deck ? 'Modifier le Deck' : 'Créer un nouveau Deck'}
       </DialogTitle>

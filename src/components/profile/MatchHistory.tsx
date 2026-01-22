@@ -104,7 +104,7 @@ export function MatchHistory({ userId }: MatchHistoryProps) {
         backdropFilter: 'blur(10px)',
       }}
     >
-      <CardContent sx={{ p: 4 }}>
+      <CardContent sx={{ p: { xs: 2, sm: 4 } }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 3 }}>
           <SportsMmaIcon color="primary" />
           <Typography variant="h6" fontWeight="bold">

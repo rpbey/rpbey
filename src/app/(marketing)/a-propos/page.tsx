@@ -270,7 +270,8 @@ export default async function AboutPage() {
           </Typography>
           <Grid container spacing={3}>
             {values.map((value: ValueItem) => {
-              const Icon = ICON_MAP[value.icon] || Groups;
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              const Icon = (ICON_MAP[value.icon] || Groups) as any;
               return (
                 <Grid key={value.title} size={{ xs: 12, sm: 6, md: 3 }}>
                   <Card
