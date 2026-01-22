@@ -69,6 +69,16 @@ export function generateWebsiteJsonLd(): WithContext<WebSite> {
     '@type': 'WebSite',
     name: 'RPB - République Populaire du Beyblade',
     url: baseUrl,
+    author: {
+      '@type': 'Person',
+      name: 'Yoyo',
+      url: 'https://twitter.com/yoyo__goat',
+    },
+    creator: {
+      '@type': 'Person',
+      name: 'Yoyo',
+      url: 'https://twitter.com/yoyo__goat',
+    },
     potentialAction: {
       '@type': 'SearchAction',
       target: {

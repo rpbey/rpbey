@@ -30,8 +30,11 @@ export const metadata: Metadata = {
     'communauté',
     'RPB',
   ],
-  authors: [{ name: 'RPB' }],
-  creator: 'République Populaire du Beyblade',
+  authors: [
+    { name: 'RPB' },
+    { name: 'Yoyo', url: 'https://twitter.com/yoyo__goat' },
+  ],
+  creator: 'Yoyo',
   icons: {
     icon: '/logo.png',
     apple: '/logo.png',
