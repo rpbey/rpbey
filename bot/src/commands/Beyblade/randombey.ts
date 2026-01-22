@@ -2,43 +2,7 @@ import { Command } from '@sapphire/framework';
 import { AttachmentBuilder, EmbedBuilder } from 'discord.js';
 import { generateComboCard } from '../../lib/canvas-utils.js';
 import { RPB } from '../../lib/constants.js';
-
-// Beyblade parts database
-const parts = {
-  blades: [
-    'Dran Sword',
-    'Hells Scythe',
-    'Wizard Arrow',
-    'Knight Shield',
-    'Leon Claw',
-    'Phoenix Wing',
-    'Shark Edge',
-    'Unicorn Sting',
-    'Cobalt Drake',
-    'Viper Tail',
-  ],
-  ratchets: ['3-60', '4-60', '5-60', '3-80', '4-80', '5-80', '9-60', '9-80'],
-  bits: [
-    'Flat',
-    'Ball',
-    'Point',
-    'Needle',
-    'Accel',
-    'Rush',
-    'High Needle',
-    'Low Flat',
-    'Gear Point',
-    'Gear Flat',
-    'Taper',
-    'Orb',
-  ],
-  types: [
-    { name: 'Attaque', emoji: '⚔️', color: 0xef4444 },
-    { name: 'Défense', emoji: '🛡️', color: 0x3b82f6 },
-    { name: 'Endurance', emoji: '🌀', color: 0x22c55e },
-    { name: 'Équilibre', emoji: '⚖️', color: 0xfbbf24 },
-  ],
-};
+import prisma from '../../lib/prisma.js';
 
 export class RandomBeyCommand extends Command {
   constructor(context: Command.LoaderContext, options: Command.Options) {
@@ -61,14 +25,40 @@ export class RandomBeyCommand extends Command {
   ) {
     await interaction.deferReply();
 
-    const blade = this.random(parts.blades);
-    const ratchet = this.random(parts.ratchets);
-    const bit = this.random(parts.bits);
-    const type = this.random(parts.types);
+    // Fetch parts from DB
+    const [blades, ratchets, bits] = await Promise.all([
+      prisma.part.findMany({ where: { type: 'BLADE' }, select: { name: true } }),
+      prisma.part.findMany({ where: { type: 'RATCHET' }, select: { name: true } }),
+      prisma.part.findMany({ where: { type: 'BIT' }, select: { name: true } }),
+    ]);
 
-    const combo = `${blade} ${ratchet}${bit}`;
+    // Fallback if DB is empty
+    const bladeList = blades.length > 0 ? blades.map(p => p.name) : [
+      'Dran Sword', 'Hells Scythe', 'Wizard Arrow', 'Knight Shield', 
+      'Leon Claw', 'Phoenix Wing', 'Shark Edge', 'Unicorn Sting'
+    ];
+    const ratchetList = ratchets.length > 0 ? ratchets.map(p => p.name) : [
+      '3-60', '4-60', '5-60', '3-80', '4-80', '5-80'
+    ];
+    const bitList = bits.length > 0 ? bits.map(p => p.name) : [
+      'Flat', 'Ball', 'Point', 'Needle', 'Taper', 'Rush'
+    ];
 
-    // Generate random stats
+    const types = [
+      { name: 'Attaque', emoji: '⚔️', color: 0xef4444 },
+      { name: 'Défense', emoji: '🛡️', color: 0x3b82f6 },
+      { name: 'Endurance', emoji: '🌀', color: 0x22c55e },
+      { name: 'Équilibre', emoji: '⚖️', color: 0xfbbf24 },
+    ];
+
+    const blade = this.random(bladeList);
+    const ratchet = this.random(ratchetList);
+    const bit = this.random(bitList);
+    const type = this.random(types);
+
+    const combo = `${blade} ${ratchet} ${bit}`;
+
+    // Generate random stats (placeholder)
     const attack = this.randomStat();
     const defense = this.randomStat();
     const stamina = this.randomStat();
