@@ -417,6 +417,17 @@ model DiscordRole {
   @@map("discord_roles")
 }
 
+model DiscordChannel {
+  id        String   @id
+  name      String
+  type      String
+  parentId  String?
+  position  Int
+  updatedAt DateTime @updatedAt
+
+  @@map("discord_channels")
+}
+
 enum BeyType {
   ATTACK
   DEFENSE

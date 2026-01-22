@@ -1,8 +1,8 @@
-import * as qna from '@tensorflow-models/qna';
 import * as tf from '@tensorflow/tfjs';
+import * as qna from '@tensorflow-models/qna';
 import '@tensorflow/tfjs-node'; // Register the Node.js backend
-import * as fs from 'fs';
-import * as path from 'path';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 import { container } from '@sapphire/framework';
 
 export class AIService {
@@ -25,15 +25,19 @@ export class AIService {
     try {
       // Enable production mode for performance
       tf.enableProdMode();
-      
+
       // Wait for the backend to be ready
       await tf.ready();
 
       const backendName = tf.getBackend();
-      container.logger.info(`[AI] TensorFlow.js initialized. Backend: ${backendName}`);
+      container.logger.info(
+        `[AI] TensorFlow.js initialized. Backend: ${backendName}`,
+      );
 
       if (backendName !== 'tensorflow') {
-        container.logger.warn(`[AI] Warning: Not using the native 'tensorflow' Node.js backend. Performance may be degraded. Current: ${backendName}`);
+        container.logger.warn(
+          `[AI] Warning: Not using the native 'tensorflow' Node.js backend. Performance may be degraded. Current: ${backendName}`,
+        );
       }
 
       // Load QnA Model
@@ -72,7 +76,9 @@ export class AIService {
   /**
    * Loads training data from the JSONL file.
    */
-  public async loadTrainingData(filePath = 'data/training_data.jsonl'): Promise<unknown[]> {
+  public async loadTrainingData(
+    filePath = 'data/training_data.jsonl',
+  ): Promise<unknown[]> {
     const fullPath = path.resolve(process.cwd(), filePath);
     if (!fs.existsSync(fullPath)) {
       container.logger.warn(`[AI] Training data file not found at ${fullPath}`);
@@ -104,22 +110,26 @@ export class AIService {
    */
   public createModel(inputShape: number, outputClasses: number): tf.Sequential {
     const model = tf.sequential();
-    
-    model.add(tf.layers.dense({
-      inputShape: [inputShape],
-      units: 16,
-      activation: 'relu'
-    }));
-    
-    model.add(tf.layers.dense({
-      units: outputClasses,
-      activation: 'softmax'
-    }));
+
+    model.add(
+      tf.layers.dense({
+        inputShape: [inputShape],
+        units: 16,
+        activation: 'relu',
+      }),
+    );
+
+    model.add(
+      tf.layers.dense({
+        units: outputClasses,
+        activation: 'softmax',
+      }),
+    );
 
     model.compile({
       optimizer: 'adam',
       loss: 'categoricalCrossentropy',
-      metrics: ['accuracy']
+      metrics: ['accuracy'],
     });
 
     return model;

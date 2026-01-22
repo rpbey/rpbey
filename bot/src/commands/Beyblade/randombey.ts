@@ -1,5 +1,6 @@
 import { Command } from '@sapphire/framework';
-import { EmbedBuilder } from 'discord.js';
+import { AttachmentBuilder, EmbedBuilder } from 'discord.js';
+import { generateComboCard } from '../../lib/canvas-utils.js';
 import { RPB } from '../../lib/constants.js';
 
 // Beyblade parts database
@@ -58,6 +59,8 @@ export class RandomBeyCommand extends Command {
   override async chatInputRun(
     interaction: Command.ChatInputCommandInteraction,
   ) {
+    await interaction.deferReply();
+
     const blade = this.random(parts.blades);
     const ratchet = this.random(parts.ratchets);
     const bit = this.random(parts.bits);
@@ -71,42 +74,34 @@ export class RandomBeyCommand extends Command {
     const stamina = this.randomStat();
     const weight = (Math.random() * 20 + 40).toFixed(1);
 
-    const statsBar = (value: number) => {
-      const filled = Math.round(value / 10);
-      return '█'.repeat(filled) + '░'.repeat(10 - filled);
-    };
+    // Generate visual combo card
+    const cardBuffer = await generateComboCard({
+      name: combo,
+      blade,
+      ratchet,
+      bit,
+      type: type.name,
+      attack,
+      defense,
+      stamina,
+      weight,
+      color: type.color,
+    });
+
+    const attachment = new AttachmentBuilder(cardBuffer, {
+      name: `combo-${interaction.id}.png`,
+    });
 
     const embed = new EmbedBuilder()
-      .setTitle('🎲 Combo Beyblade Aléatoire')
-      .setDescription(`**${combo}**`)
       .setColor(type.color)
-      .addFields(
-        { name: '🔄 Blade', value: blade, inline: true },
-        { name: '⚙️ Ratchet', value: ratchet, inline: true },
-        { name: '💠 Bit', value: bit, inline: true },
-        { name: `${type.emoji} Type`, value: type.name, inline: true },
-        { name: '⚖️ Poids', value: `${weight}g`, inline: true },
-        { name: '\u200B', value: '\u200B', inline: true },
-        {
-          name: '⚔️ Attaque',
-          value: `${statsBar(attack)} ${attack}`,
-          inline: false,
-        },
-        {
-          name: '🛡️ Défense',
-          value: `${statsBar(defense)} ${defense}`,
-          inline: false,
-        },
-        {
-          name: '🌀 Endurance',
-          value: `${statsBar(stamina)} ${stamina}`,
-          inline: false,
-        },
-      )
+      .setImage(`attachment://combo-${interaction.id}.png`)
       .setFooter({ text: `${RPB.FullName} | Let it rip!` })
       .setTimestamp();
 
-    return interaction.reply({ embeds: [embed] });
+    return interaction.editReply({
+      embeds: [embed],
+      files: [attachment],
+    });
   }
 
   private random<T>(array: readonly T[]): T {

@@ -221,9 +221,8 @@ export default function HomeClient({
 
           <ChallongeBracket
             challongeUrl="https://challonge.com/fr/B_TS1"
-            height={700}
+            height={500}
             title="Arbre Officiel - BEY-TAMASHII SERIES #1"
-            svgPath="/tournaments/B_TS1.svg"
           />
         </Container>
       </Box>

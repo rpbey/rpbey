@@ -3,7 +3,7 @@
   "retiredSessionsCount": 0,
   "sessions": [
     {
-      "id": "session_JNtUdOomfV",
+      "id": "session_N01WtPmaY3",
       "cookieJar": {
         "version": "tough-cookie@6.0.0",
         "storeType": "MemoryCookieStore",
@@ -16,14 +16,14 @@
       "userData": {},
       "maxErrorScore": 3,
       "errorScoreDecrement": 0.5,
-      "expiresAt": "2026-01-12T18:33:21.271Z",
-      "createdAt": "2026-01-12T17:43:21.271Z",
+      "expiresAt": "2026-01-22T14:18:58.614Z",
+      "createdAt": "2026-01-22T13:28:58.614Z",
       "usageCount": 0,
       "maxUsageCount": 50,
       "errorScore": 0
     },
     {
-      "id": "session_Gs4aSXxVhW",
+      "id": "session_he7H7qfjej",
       "cookieJar": {
         "version": "tough-cookie@6.0.0",
         "storeType": "MemoryCookieStore",
@@ -33,114 +33,115 @@
         "prefixSecurity": "silent",
         "cookies": [
           {
-            "key": "_ga_QYYHLZZDGR",
-            "value": "GS2.1.s1768239807$o1$g0$t1768239807$j60$l0$h0",
-            "expires": "2027-02-16T17:43:27.078Z",
-            "domain": "takaratomy.co.jp",
-            "path": "/",
-            "hostOnly": false,
-            "creation": "2026-01-12T17:43:35.287Z",
-            "lastAccessed": "2026-01-12T17:43:35.287Z"
-          },
-          {
-            "key": "_yjsu_yjad",
-            "value": "1768239807.d50c7a8a-4781-4258-bb5e-5117228bf6c2",
-            "expires": "2027-01-12T17:43:27.000Z",
-            "domain": "takaratomy.co.jp",
-            "path": "/",
-            "hostOnly": false,
-            "creation": "2026-01-12T17:43:35.296Z",
-            "lastAccessed": "2026-01-12T17:43:35.296Z"
-          },
-          {
-            "key": "_ga",
-            "value": "GA1.1.866393728.1768239807",
-            "expires": "2027-02-16T17:43:26.957Z",
-            "domain": "takaratomy.co.jp",
-            "path": "/",
-            "hostOnly": false,
-            "creation": "2026-01-12T17:43:35.298Z",
-            "lastAccessed": "2026-01-12T17:43:35.298Z"
-          },
-          {
-            "key": "_td_ssc_id",
-            "value": "01KESMWEAF3834Z2J73QG18FTP",
-            "expires": "2027-02-16T17:43:26.806Z",
-            "domain": "takaratomy.co.jp",
-            "path": "/",
-            "secure": true,
-            "hostOnly": false,
-            "creation": "2026-01-12T17:43:35.298Z",
-            "lastAccessed": "2026-01-12T17:43:35.298Z"
-          },
-          {
-            "key": "_gcl_au",
-            "value": "1.1.2059638519.1768239806",
-            "expires": "2026-04-12T17:43:26.000Z",
-            "domain": "takaratomy.co.jp",
-            "path": "/",
-            "hostOnly": false,
-            "creation": "2026-01-12T17:43:35.298Z",
-            "lastAccessed": "2026-01-12T17:43:35.298Z"
-          },
-          {
-            "key": "__lt__sid",
-            "value": "42c59cc6-2fe87ec0",
-            "expires": "2026-01-12T18:13:26.000Z",
-            "domain": "beyblade.takaratomy.co.jp",
-            "path": "/",
-            "hostOnly": false,
-            "creation": "2026-01-12T17:43:35.298Z",
-            "lastAccessed": "2026-01-12T17:43:35.298Z"
-          },
-          {
-            "key": "_ga_NKBQEML43B",
-            "value": "GS2.1.s1768239806$o1$g0$t1768239806$j60$l0$h0",
-            "expires": "2027-02-16T17:43:26.956Z",
-            "domain": "takaratomy.co.jp",
-            "path": "/",
-            "hostOnly": false,
-            "creation": "2026-01-12T17:43:35.298Z",
-            "lastAccessed": "2026-01-12T17:43:35.298Z"
-          },
-          {
-            "key": "access",
-            "value": "onece",
-            "expires": "2026-01-13T17:43:26.000Z",
-            "domain": "beyblade.takaratomy.co.jp",
+            "key": "pbjs_unifiedid_cst",
+            "value": "zix7LPQsHA%3D%3D",
+            "expires": "2026-02-21T13:29:01.000Z",
+            "domain": "beyblade.fandom.com",
             "path": "/",
             "hostOnly": true,
-            "creation": "2026-01-12T17:43:35.298Z",
-            "lastAccessed": "2026-01-12T17:43:35.298Z"
+            "creation": "2026-01-22T13:29:02.108Z",
+            "lastAccessed": "2026-01-22T13:29:02.108Z"
           },
           {
-            "key": "__lt__cid",
-            "value": "4a0c427f-ac61-4cab-9299-1b561d0ee7e9",
-            "expires": "2027-02-16T17:43:26.374Z",
-            "domain": "beyblade.takaratomy.co.jp",
+            "key": "pbjs_unifiedid",
+            "value": "%7B%22TDID_LOOKUP%22%3A%22FALSE%22%2C%22TDID_CREATED_AT%22%3A%222026-01-22T13%3A29%3A01%22%7D",
+            "expires": "2026-02-21T13:29:01.000Z",
+            "domain": "beyblade.fandom.com",
+            "path": "/",
+            "hostOnly": true,
+            "creation": "2026-01-22T13:29:02.108Z",
+            "lastAccessed": "2026-01-22T13:29:02.108Z"
+          },
+          {
+            "key": "_pubcid_cst",
+            "value": "zix7LPQsHA%3D%3D",
+            "expires": "2027-01-22T13:29:01.000Z",
+            "domain": "fandom.com",
             "path": "/",
             "hostOnly": false,
-            "creation": "2026-01-12T17:43:35.298Z",
-            "lastAccessed": "2026-01-12T17:43:35.298Z"
+            "creation": "2026-01-22T13:29:02.109Z",
+            "lastAccessed": "2026-01-22T13:29:02.109Z"
           },
           {
-            "key": "_td",
-            "value": "2b37c334-2745-4819-9ef6-d07c0b7bc8e0",
-            "expires": "2027-02-16T17:43:26.420Z",
-            "domain": "takaratomy.co.jp",
+            "key": "_pubcid",
+            "value": "022546bd-57cd-4e71-9244-442bd5aca923",
+            "expires": "2027-01-22T13:29:01.000Z",
+            "domain": "fandom.com",
+            "path": "/",
+            "hostOnly": false,
+            "creation": "2026-01-22T13:29:02.117Z",
+            "lastAccessed": "2026-01-22T13:29:02.117Z"
+          },
+          {
+            "key": "exp_bucket_2",
+            "value": "v5-70",
+            "expires": "2027-02-26T13:28:59.112Z",
+            "domain": "fandom.com",
+            "path": "/",
+            "hostOnly": false,
+            "creation": "2026-01-22T13:29:02.120Z",
+            "lastAccessed": "2026-01-22T13:29:02.120Z"
+          },
+          {
+            "key": "exp_bucket",
+            "value": "v8-64",
+            "expires": "2027-02-26T13:28:59.111Z",
+            "domain": "fandom.com",
+            "path": "/",
+            "hostOnly": false,
+            "creation": "2026-01-22T13:29:02.120Z",
+            "lastAccessed": "2026-01-22T13:29:02.120Z"
+          },
+          {
+            "key": "OptanonConsent",
+            "value": "isGpcEnabled=0&datestamp=Thu+Jan+22+2026+13%3A29%3A02+GMT%2B0000+(Coordinated+Universal+Time)&version=202505.1.0&browserGpcFlag=0&isIABGlobal=false&hosts=&landingPath=https%3A%2F%2Fbeyblade.fandom.com%2Fwiki%2FList_of_Beyblade_X_products_(Takara_Tomy)&groups=C0005%3A0%2CC0004%3A0%2CC0001%3A1%2CC0003%3A0%2CC0002%3A0%2CV2STACK42%3A0",
+            "expires": "2027-01-22T13:29:02.000Z",
+            "domain": "fandom.com",
+            "path": "/",
+            "hostOnly": false,
+            "creation": "2026-01-22T13:29:02.120Z",
+            "lastAccessed": "2026-01-22T13:29:02.120Z"
+          },
+          {
+            "key": "_fs_cd_cp_pRdRgnTnF68pCV2F",
+            "value": "Ac8tCB1lZct-NVCJsYHEihOoIUT3e3I94ZXe1dDdCxHILgNs98DLd4kYqK6Hoe2tAlR6-lUkbOZvruwz-4TZSwIdCgPnypNMZ4JwZqsQ4fI1UPmeViuEE_Ea8mhmImdY0bWD4Svo4IBOuw2CX-Lj7In8bw==",
+            "expires": "2026-01-22T14:29:01.304Z",
+            "domain": "fandom.com",
+            "path": "/",
+            "secure": true,
+            "httpOnly": true,
+            "hostOnly": false,
+            "creation": "2026-01-22T13:29:02.120Z",
+            "lastAccessed": "2026-01-22T13:29:02.120Z"
+          },
+          {
+            "key": "Geo",
+            "value": "{%22region%22:%22BY%22%2C%22city%22:%22nuremberg%22%2C%22country_name%22:%22germany%22%2C%22country%22:%22DE%22%2C%22continent%22:%22EU%22}",
+            "expires": "2026-01-22T14:19:02.104Z",
+            "domain": "fandom.com",
             "path": "/",
             "secure": true,
             "hostOnly": false,
-            "creation": "2026-01-12T17:43:35.299Z",
-            "lastAccessed": "2026-01-12T17:43:35.299Z"
+            "creation": "2026-01-22T13:29:02.120Z",
+            "lastAccessed": "2026-01-22T13:29:02.120Z"
+          },
+          {
+            "key": "playerImpressionsInWiki",
+            "value": "1",
+            "expires": "2026-01-22T13:59:00.000Z",
+            "domain": "beyblade.fandom.com",
+            "path": "/wiki",
+            "hostOnly": false,
+            "creation": "2026-01-22T13:29:02.120Z",
+            "lastAccessed": "2026-01-22T13:29:02.120Z"
           }
         ]
       },
       "userData": {},
       "maxErrorScore": 3,
       "errorScoreDecrement": 0.5,
-      "expiresAt": "2026-01-12T18:33:21.276Z",
-      "createdAt": "2026-01-12T17:43:21.276Z",
+      "expiresAt": "2026-01-22T14:18:58.617Z",
+      "createdAt": "2026-01-22T13:28:58.617Z",
       "usageCount": 1,
       "maxUsageCount": 50,
       "errorScore": 0

@@ -1,5 +1,5 @@
 import { Command } from '@sapphire/framework';
-import { PermissionFlagsBits } from 'discord.js';
+import { ChannelType, PermissionFlagsBits } from 'discord.js';
 import prisma from '../../lib/prisma.js';
 
 export class SyncCommand extends Command {
@@ -8,7 +8,7 @@ export class SyncCommand extends Command {
       ...options,
       name: 'sync',
       description:
-        'Synchronise tous les membres du serveur avec la base de données',
+        'Synchronise rôles, salons et membres avec la base de données',
       requiredUserPermissions: [PermissionFlagsBits.Administrator],
     });
   }
@@ -35,23 +35,81 @@ export class SyncCommand extends Command {
     }
 
     await interaction.reply({
-      content: '🔄 Synchronisation en cours... Récupération des membres...',
+      content: '🔄 Démarrage de la synchronisation globale...',
       ephemeral: true,
     });
 
     try {
-      // 1. Fetch all members
+      // --- 1. Sync Roles ---
+      await interaction.editReply('🔄 Synchronisation des Rôles...');
+      const roles = await guild.roles.fetch();
+      let rolesSynced = 0;
+
+      for (const role of roles.values()) {
+        await prisma.discordRole.upsert({
+          where: { id: role.id },
+          create: {
+            id: role.id,
+            name: role.name,
+            color: role.hexColor,
+            position: role.position,
+            icon: role.iconURL(),
+            permissions: role.permissions.bitfield.toString(),
+            managed: role.managed,
+            hoist: role.hoist,
+          },
+          update: {
+            name: role.name,
+            color: role.hexColor,
+            position: role.position,
+            icon: role.iconURL(),
+            permissions: role.permissions.bitfield.toString(),
+            managed: role.managed,
+            hoist: role.hoist,
+          },
+        });
+        rolesSynced++;
+      }
+
+      // --- 2. Sync Channels ---
+      await interaction.editReply(
+        `✅ ${rolesSynced} Rôles synchronisés.\n🔄 Synchronisation des Salons...`,
+      );
+      const channels = await guild.channels.fetch();
+      let channelsSynced = 0;
+
+      for (const channel of channels.values()) {
+        if (!channel) continue;
+
+        await prisma.discordChannel.upsert({
+          where: { id: channel.id },
+          create: {
+            id: channel.id,
+            name: channel.name,
+            type: ChannelType[channel.type] || 'UNKNOWN',
+            parentId: channel.parentId,
+            position: channel.position,
+          },
+          update: {
+            name: channel.name,
+            type: ChannelType[channel.type] || 'UNKNOWN',
+            parentId: channel.parentId,
+            position: channel.position,
+          },
+        });
+        channelsSynced++;
+      }
+
+      // --- 3. Sync Members ---
+      await interaction.editReply(
+        `✅ ${rolesSynced} Rôles, ${channelsSynced} Salons synchronisés.\n🔄 Synchronisation des Membres...`,
+      );
+
       const members = await guild.members.fetch();
-      const total = members.size;
-
-      await interaction.editReply({
-        content: `🔄 Traitement de ${total} membres...`,
-      });
-
-      let updated = 0;
+      const totalMembers = members.size;
+      let membersUpdated = 0;
       let errors = 0;
 
-      // 2. Process members in chunks to avoid blocking too long
       const BATCH_SIZE = 50;
       const memberChunks = Array.from(members.values());
 
@@ -61,7 +119,6 @@ export class SyncCommand extends Command {
         await Promise.all(
           chunk.map(async (member) => {
             try {
-              // Find existing user by Discord ID
               const existingUser = await prisma.user.findUnique({
                 where: { discordId: member.id },
               });
@@ -100,11 +157,8 @@ export class SyncCommand extends Command {
                     }),
                   },
                 });
-                updated++;
+                membersUpdated++;
               }
-              // Note: We do NOT create new users automatically to avoiding spamming the DB
-              // with users who haven't signed up on the site.
-              // Only syncing existing linked accounts.
             } catch (e) {
               console.error(`Error syncing member ${member.user.tag}:`, e);
               errors++;
@@ -112,26 +166,26 @@ export class SyncCommand extends Command {
           }),
         );
 
-        // Update progress every 100 members
         if ((i + BATCH_SIZE) % 100 === 0) {
           await interaction.editReply({
-            content: `🔄 Traitement... ${Math.min(i + BATCH_SIZE, total)}/${total} (${updated} mis à jour)`,
+            content: `🔄 Membres : ${Math.min(i + BATCH_SIZE, totalMembers)}/${totalMembers} traités...`,
           });
         }
       }
 
       return interaction.editReply({
         content:
-          `✅ **Synchronisation terminée !**\n\n` +
-          `👥 Total membres scannés : ${total}\n` +
-          `📝 Profils mis à jour : ${updated}\n` +
+          `✅ **Synchronisation Globale Terminée !**\n\n` +
+          `🎭 Rôles : ${rolesSynced}\n` +
+          `📺 Salons : ${channelsSynced}\n` +
+          `👥 Membres (liés) : ${membersUpdated}/${totalMembers}\n` +
           `⚠️ Erreurs : ${errors}\n\n` +
-          `*Note : Seuls les utilisateurs ayant déjà un compte sur le site sont mis à jour.*`,
+          `*Les données sont maintenant à jour dans la base de données.*`,
       });
     } catch (error) {
       console.error('Sync command error:', error);
       return interaction.editReply({
-        content: `❌ Une erreur est survenue lors de la synchronisation : ${error}`,
+        content: `❌ Une erreur majeure est survenue : ${error}`,
       });
     }
   }

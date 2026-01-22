@@ -180,7 +180,9 @@ mcpServer.tool(
 mcpServer.tool(
   'discord-speak',
   {
-    channelId: z.string().describe('The Discord channel ID to send the message to'),
+    channelId: z
+      .string()
+      .describe('The Discord channel ID to send the message to'),
     content: z.string().describe('The content of the message to send'),
   },
   async ({ channelId, content }) => {
@@ -274,7 +276,11 @@ mcpServer.prompt(
 mcpServer.tool(
   'summarize-bot-logs',
   {
-    tail: z.number().optional().default(20).describe('Number of lines to summarize'),
+    tail: z
+      .number()
+      .optional()
+      .default(20)
+      .describe('Number of lines to summarize'),
   },
   async ({ tail }) => {
     // 1. Fetch Logs
@@ -288,9 +294,10 @@ mcpServer.tool(
       });
       if (response.ok) {
         const { logs } = await response.json();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         logsText = logs.map((l: any) => `[${l.level}] ${l.message}`).join('\n');
       }
-    } catch (e) {
+    } catch {
       logsText = 'Failed to fetch logs.';
     }
 
@@ -310,7 +317,9 @@ mcpServer.tool(
       });
 
       const summary =
-        result.content.type === 'text' ? result.content.text : 'No summary generated.';
+        result.content.type === 'text'
+          ? result.content.text
+          : 'No summary generated.';
 
       return {
         content: [
@@ -373,7 +382,6 @@ mcpServer.resource(
     };
   },
 );
-
 
 // 6. Run Gemini -p
 mcpServer.tool(

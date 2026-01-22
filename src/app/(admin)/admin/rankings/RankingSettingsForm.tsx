@@ -129,7 +129,10 @@ export default function RankingSettingsForm({
       setCategories(categories.filter((c) => id !== c.id));
       setMessage({ type: 'success', text: 'Catégorie supprimée.' });
     } catch (error) {
-      const msg = error instanceof Error ? error.message : "Une erreur est survenue lors de la suppression.";
+      const msg =
+        error instanceof Error
+          ? error.message
+          : 'Une erreur est survenue lors de la suppression.';
       setMessage({ type: 'error', text: msg });
     }
   };

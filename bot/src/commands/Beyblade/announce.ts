@@ -45,6 +45,11 @@ export class AnnounceCommand extends Command {
             )
             .addRoleOption((opt) =>
               opt.setName('mention').setDescription('Rôle à mentionner'),
+            )
+            .addAttachmentOption((opt) =>
+              opt
+                .setName('image')
+                .setDescription("Image à ajouter à l'annonce"),
             ),
         )
         .addSubcommand((sub) =>
@@ -70,6 +75,9 @@ export class AnnounceCommand extends Command {
                   ChannelType.GuildText,
                   ChannelType.GuildAnnouncement,
                 ),
+            )
+            .addAttachmentOption((opt) =>
+              opt.setName('image').setDescription('Image à ajouter au rappel'),
             ),
         )
         .addSubcommand((sub) =>
@@ -90,6 +98,11 @@ export class AnnounceCommand extends Command {
                   ChannelType.GuildText,
                   ChannelType.GuildAnnouncement,
                 ),
+            )
+            .addAttachmentOption((opt) =>
+              opt
+                .setName('image')
+                .setDescription('Image à ajouter aux résultats'),
             ),
         )
         .addSubcommand((sub) =>
@@ -131,6 +144,11 @@ export class AnnounceCommand extends Command {
                   { name: '🔵 Info', value: '3b82f6' },
                   { name: '🟣 Beyblade', value: '8b5cf6' },
                 ),
+            )
+            .addAttachmentOption((opt) =>
+              opt
+                .setName('image')
+                .setDescription("Image à ajouter à l'annonce"),
             ),
         )
         .addSubcommand((sub) =>
@@ -219,6 +237,11 @@ export class AnnounceCommand extends Command {
               opt
                 .setName('preview')
                 .setDescription('Aperçu sans envoyer (défaut: true)'),
+            )
+            .addAttachmentOption((opt) =>
+              opt
+                .setName('image')
+                .setDescription("Image à ajouter à l'annonce"),
             ),
         ),
     );
@@ -255,6 +278,7 @@ export class AnnounceCommand extends Command {
     const channel = (interaction.options.getChannel('salon') ??
       interaction.channel) as TextChannel | NewsChannel;
     const mentionRole = interaction.options.getRole('mention');
+    const image = interaction.options.getAttachment('image');
 
     await interaction.deferReply({ ephemeral: true });
 
@@ -311,9 +335,22 @@ export class AnnounceCommand extends Command {
         inline: false,
       });
 
-      const content = mentionRole ? `${mentionRole}` : undefined;
+      if (image) {
+        embed.setImage(image.url);
+      }
 
-      await channel.send({ content, embeds: [embed] });
+      const content = mentionRole
+        ? `${mentionRole}`
+        : `<@&${RPB.Roles.TournoiNotification}>`;
+
+      const sentMessage = await channel.send({ content, embeds: [embed] });
+
+      // Add reactions for interaction
+      await Promise.allSettled([
+        sentMessage.react('✅'),
+        sentMessage.react('❌'),
+        sentMessage.react('❓'),
+      ]);
 
       // If it's an announcement channel, try to publish
       if ('type' in channel && channel.type === ChannelType.GuildAnnouncement) {
@@ -342,6 +379,7 @@ export class AnnounceCommand extends Command {
     const customMessage = interaction.options.getString('message');
     const channel = (interaction.options.getChannel('salon') ??
       interaction.channel) as TextChannel | NewsChannel;
+    const image = interaction.options.getAttachment('image');
 
     await interaction.deferReply({ ephemeral: true });
 
@@ -389,7 +427,18 @@ export class AnnounceCommand extends Command {
         inline: false,
       });
 
-      await channel.send({ embeds: [embed] });
+      if (image) {
+        embed.setImage(image.url);
+      }
+
+      const sentMessage = await channel.send({ embeds: [embed] });
+
+      // Add reactions for interaction
+      await Promise.allSettled([
+        sentMessage.react('✅'),
+        sentMessage.react('❌'),
+        sentMessage.react('❓'),
+      ]);
 
       return interaction.editReply(`✅ Rappel envoyé dans ${channel} !`);
     } catch (error) {
@@ -404,6 +453,7 @@ export class AnnounceCommand extends Command {
     const tournamentId = interaction.options.getString('id', true);
     const channel = (interaction.options.getChannel('salon') ??
       interaction.channel) as TextChannel | NewsChannel;
+    const image = interaction.options.getAttachment('image');
 
     await interaction.deferReply({ ephemeral: true });
 
@@ -464,6 +514,10 @@ export class AnnounceCommand extends Command {
         inline: false,
       });
 
+      if (image) {
+        embed.setImage(image.url);
+      }
+
       await channel.send({ embeds: [embed] });
 
       return interaction.editReply(`✅ Résultats envoyés dans ${channel} !`);
@@ -482,6 +536,7 @@ export class AnnounceCommand extends Command {
       interaction.channel) as TextChannel | NewsChannel;
     const mentionRole = interaction.options.getRole('mention');
     const colorHex = interaction.options.getString('couleur') ?? 'dc2626';
+    const image = interaction.options.getAttachment('image');
 
     const embed = new EmbedBuilder()
       .setTitle(`📢 ${title}`)
@@ -490,9 +545,20 @@ export class AnnounceCommand extends Command {
       .setFooter({ text: RPB.FullName })
       .setTimestamp();
 
+    if (image) {
+      embed.setImage(image.url);
+    }
+
     const content = mentionRole ? `${mentionRole}` : undefined;
 
-    await channel.send({ content, embeds: [embed] });
+    const sentMessage = await channel.send({ content, embeds: [embed] });
+
+    // Add reactions for interaction
+    await Promise.allSettled([
+      sentMessage.react('✅'),
+      sentMessage.react('❌'),
+      sentMessage.react('❓'),
+    ]);
 
     // Try to publish if announcement channel
     if ('type' in channel && channel.type === ChannelType.GuildAnnouncement) {
@@ -530,6 +596,7 @@ export class AnnounceCommand extends Command {
     const channel = (interaction.options.getChannel('salon') ??
       interaction.channel) as TextChannel | NewsChannel;
     const preview = interaction.options.getBoolean('preview') ?? true;
+    const image = interaction.options.getAttachment('image');
 
     // Générer le lien Challonge complet
     const challongeUrl = challonge.startsWith('http')
@@ -546,6 +613,8 @@ export class AnnounceCommand extends Command {
 
     // Construction du message style RPB
     const announcement = [
+      `<@&${RPB.Roles.TournoiNotification}>`,
+      ``,
       `# 🚨 ANNONCE OFFICIELLE 🚨`,
       ``,
       intro,
@@ -599,6 +668,11 @@ export class AnnounceCommand extends Command {
       .setFooter({ text: RPB.FullName })
       .setTimestamp();
 
+    const files = image ? [image.url] : [];
+    if (image) {
+      embed.setImage(image.url);
+    }
+
     if (preview) {
       // Envoyer l'aperçu en éphémère
       await interaction.reply({
@@ -613,7 +687,14 @@ export class AnnounceCommand extends Command {
     await interaction.deferReply({ ephemeral: true });
 
     try {
-      const sentMessage = await channel.send({ content: announcement });
+      const sentMessage = await channel.send({ content: announcement, files });
+
+      // Add reactions for interaction
+      await Promise.allSettled([
+        sentMessage.react('✅'),
+        sentMessage.react('❌'),
+        sentMessage.react('❓'),
+      ]);
 
       // Publier si c'est un salon d'annonces
       if (

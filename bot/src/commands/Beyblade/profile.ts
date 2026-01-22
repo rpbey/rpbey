@@ -1,10 +1,12 @@
 import { Command } from '@sapphire/framework';
 import {
   ActionRowBuilder,
+  AttachmentBuilder,
   ButtonBuilder,
   ButtonStyle,
   EmbedBuilder,
 } from 'discord.js';
+import { generateProfileCard } from '../../lib/canvas-utils.js';
 import { Colors, RPB } from '../../lib/constants.js';
 import prisma from '../../lib/prisma.js';
 
@@ -69,91 +71,75 @@ export class ProfileCommand extends Command {
       }
 
       const profile = user.profile;
-      const winRate =
-        profile.wins + profile.losses > 0
-          ? Math.round((profile.wins / (profile.wins + profile.losses)) * 100)
-          : 0;
+
+      // Generate visual profile card
+      const cardBuffer = await generateProfileCard({
+        bladerName: profile.bladerName || targetUser.displayName,
+        avatarUrl: targetUser.displayAvatarURL({ extension: 'png', size: 512 }),
+        experience: profile.experience,
+        favoriteType: profile.favoriteType || 'Inconnu',
+        wins: profile.wins,
+        losses: profile.losses,
+        tournamentWins: profile.tournamentWins,
+        rankingPoints: profile.rankingPoints,
+        joinedAt: user.createdAt.toLocaleDateString('fr-FR'),
+      });
+
+      const attachment = new AttachmentBuilder(cardBuffer, {
+        name: `profile-${targetUser.id}.png`,
+      });
 
       const embed = new EmbedBuilder()
-        .setTitle(`🌀 ${profile.bladerName ?? targetUser.displayName}`)
-        .setDescription(profile.bio || 'Pas de bio définie.')
         .setColor(Colors.Primary)
-        .setThumbnail(targetUser.displayAvatarURL({ size: 256 }))
-        .addFields(
-          {
-            name: '🎮 Type favori',
-            value: profile.favoriteType ?? 'Non défini',
-            inline: true,
-          },
-          {
-            name: '⭐ Niveau',
-            value: profile.experience ?? 'Non défini',
-            inline: true,
-          },
-          {
-            name: '📊 Statistiques',
-            value:
-              `✅ Victoires: ${profile.wins}\n` +
-              `❌ Défaites: ${profile.losses}\n` +
-              `📈 Win Rate: ${winRate}%`,
-            inline: true,
-          },
-          {
-            name: '🏆 Tournois gagnés',
-            value: profile.tournamentWins.toString(),
-            inline: true,
-          },
-        );
+        .setImage(`attachment://profile-${targetUser.id}.png`);
 
-      // Add recent tournaments
+      // Add recent tournaments to the embed description or fields if needed
       if (user.tournaments.length > 0) {
         const recentTournaments = user.tournaments
           .map(
             (tp) =>
-              `• ${tp.tournament.name} ${tp.checkedIn ? '✅' : '⏳'} ${tp.finalPlacement ? `#${tp.finalPlacement}` : ''}`,
+              `• **${tp.tournament.name}** : ${tp.finalPlacement ? `Rang #${tp.finalPlacement}` : 'Inscrit'}${tp.checkedIn ? ' ✅' : ''}`,
           )
+          .slice(0, 3)
           .join('\n');
 
         embed.addFields({
-          name: '🎯 Tournois récents',
-          value: recentTournaments,
-          inline: false,
+          name: '🎯 Derniers Tournois',
+          value: recentTournaments || 'Aucun tournoi récent.',
         });
       }
 
-      // Add social links
-      const socials: string[] = [];
-      if (profile.twitterHandle)
-        socials.push(`[Twitter](https://twitter.com/${profile.twitterHandle})`);
-      if (profile.tiktokHandle)
-        socials.push(`[TikTok](https://tiktok.com/@${profile.tiktokHandle})`);
-      if (socials.length > 0) {
-        embed.addFields({
-          name: '📱 Réseaux sociaux',
-          value: socials.join(' | '),
-          inline: false,
-        });
+      if (profile.bio) {
+        embed.setDescription(profile.bio);
       }
-
-      embed
-        .setFooter({
-          text: `${RPB.FullName} | Membre depuis ${user.createdAt.toLocaleDateString('fr-FR')}`,
-        })
-        .setTimestamp();
 
       const components: ActionRowBuilder<ButtonBuilder>[] = [];
+      const row = new ActionRowBuilder<ButtonBuilder>();
+
       if (targetUser.id !== interaction.user.id) {
-        const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
+        row.addComponents(
           new ButtonBuilder()
             .setCustomId(`battle-challenge-${targetUser.id}`)
-            .setLabel('Défier en combat')
+            .setLabel('Défier')
             .setStyle(ButtonStyle.Primary)
             .setEmoji('⚔️'),
         );
-        components.push(row);
       }
 
-      return interaction.editReply({ embeds: [embed], components });
+      row.addComponents(
+        new ButtonBuilder()
+          .setLabel('Voir sur le site')
+          .setURL(`https://rpbey.fr/profile/${user.id}`)
+          .setStyle(ButtonStyle.Link),
+      );
+
+      components.push(row);
+
+      return interaction.editReply({
+        embeds: [embed],
+        files: [attachment],
+        components,
+      });
     } catch (error) {
       this.container.logger.error('Profile command error:', error);
       return interaction.editReply({

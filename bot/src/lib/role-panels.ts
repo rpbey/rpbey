@@ -1,0 +1,82 @@
+import { ButtonStyle } from 'discord.js';
+import { RPB } from './constants.js';
+
+export interface RoleButtonConfig {
+  customId: string;
+  label: string;
+  emoji: string;
+  style: ButtonStyle;
+  roleKey: keyof typeof RPB.Roles;
+  description?: string; // For the success message
+}
+
+export interface RolePanelConfig {
+  title: string;
+  description: string;
+  image?: string;
+  color: number;
+  buttons: RoleButtonConfig[];
+}
+
+export const ROLE_PANELS: RolePanelConfig[] = [
+  {
+    title: 'Souhaitez-vous assister aux tournois RPB ?',
+    description:
+      'Choisissez votre rôle pour être notifié des tournois en tant que participant ou spectateur.',
+    image: 'https://rpbey.fr/tournoi.png',
+    color: RPB.Color, // Primary Red
+    buttons: [
+      {
+        customId: 'role-participant',
+        label: 'Participant',
+        emoji: '⚔️',
+        style: ButtonStyle.Success,
+        roleKey: 'Participant',
+        description:
+          'Vous serez notifié des inscriptions et débuts de tournois.',
+      },
+      {
+        customId: 'role-spectateur',
+        label: 'Spectateur',
+        emoji: '👀',
+        style: ButtonStyle.Secondary,
+        roleKey: 'Spectateur',
+        description: 'Vous serez notifié des streams et résultats de tournois.',
+      },
+    ],
+  },
+  {
+    title: "Souhaitez-vous être informé de toute l'actualité ?",
+    description:
+      'Sélectionnez les notifications que vous souhaitez recevoir sur les différents canaux de la RPB.',
+    color: RPB.GoldColor, // Secondary Gold
+    buttons: [
+      {
+        customId: 'role-reseaux',
+        label: 'Youtube, TikTok & X',
+        emoji: '📱',
+        style: ButtonStyle.Primary,
+        roleKey: 'Reseaux',
+        description:
+          'Notifications pour les nouvelles vidéos et posts réseaux sociaux.',
+      },
+      {
+        customId: 'role-events',
+        label: 'Live Twitch & Évents',
+        emoji: '📺',
+        style: ButtonStyle.Primary,
+        roleKey: 'Events',
+        description:
+          'Notifications pour les lives Twitch et événements spéciaux.',
+      },
+      {
+        customId: 'role-leaks',
+        label: 'Leaks Beyblade',
+        emoji: '🔍',
+        style: ButtonStyle.Danger,
+        roleKey: 'Leaks',
+        description: 'Accès aux channels de leaks et spoilers Beyblade X.',
+      },
+    ],
+  },
+];

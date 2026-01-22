@@ -44,14 +44,14 @@ export const RPB = {
   // Channel names for auto-detection
   Channels: {
     Welcome: '1323816742262145105',
-    Rules: 'règlement',
-    Roles: 'rôles',
-    Announcements: 'annonces',
-    Tournaments: 'annonce-tournois',
+    Rules: '1323817313782337536',
+    Roles: '1323817223911116872',
+    Announcements: '1323816859337752626',
+    Tournaments: '1448476446724063252',
     Social: '1333203623471087708',
-    GeneralChat: 'chat-general',
-    Suggestions: 'suggestions',
-    Media: 'média',
+    GeneralChat: '1319715782820892768',
+    Suggestions: '1333200281416237132',
+    Media: '1357709692603732119',
   },
   // Role IDs
   Roles: {
@@ -61,7 +61,7 @@ export const RPB = {
     Staff: '1331256093434712095',
     Partenaires: '1457835411052298411',
     // Role Reaction Roles
-    Participant: '1463903915920724041',
+    Participant: '1451549606608371814', // Rôle "Tournois"
     Spectateur: '1463903917346656378',
     Reseaux: '1456751013741592678',
     Events: '1456751317342224525',

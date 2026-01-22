@@ -1,0 +1,95 @@
+# RPB - RÉPUBLIQUE POPULAIRE DU BEYBLADE (KNOWLEDGE BASE)
+Site Officiel : https://rpbey.fr
+Discord : https://discord.gg/twdVfesrRj
+
+## RÈGLES OFFICIELLES BEYBLADE X (WBO)
+Source : https://worldbeyblade.org/Thread-Beyblade-X-Rules
+
+### Objectif et Déroulement
+Le but est de gagner suffisamment de points (généralement 4, 5 ou 7 selon le tournoi) en lançant des toupies dans l'Xtreme Stadium.
+
+### Types de Finitions et Points
+- Extreme Finish (3 points) : Le Bey adverse entre dans l'Xtreme Zone (rail denté) et ne peut plus revenir.
+- Burst Finish (2 points) : Le Bey adverse se désassemble en plein combat.
+- Over Finish (2 points) : Le Bey adverse sort du stadium par une des poches latérales.
+- Spin Finish (1 point) : Le Bey s'arrête de tourner après celui de l'adversaire.
+
+### Procédure de Match
+1. Choix de la position de lancement (gauche ou droite) tiré au sort.
+2. Choix des Beys et de l'ordre du deck (1 minute secrète).
+3. Vérification par le juge.
+4. Lancement au cri de "3, 2, 1, Go Shoot !" ou "Let it Rip !".
+5. Une erreur de lancement (trop haut, hors zone) entraîne une pénalité. À la 2ème erreur, l'adversaire gagne 1 point.
+
+---
+
+## PRODUITS ET MATÉRIEL (TAKARA TOMY)
+Source : https://beyblade.fandom.com/wiki/List_of_Beyblade_X_products_(Takara_Tomy)
+
+### Basic Line (BX)
+- BX-01 : Starter DranSword 3-60F (Attaque)
+- BX-02 : Starter HellsScythe 4-60T (Équilibre)
+- BX-03 : Starter WizardArrow 4-80B (Endurance)
+- BX-04 : Starter KnightShield 3-80N (Défense)
+- BX-05 : Booster WizardArrow 4-80B
+- BX-06 : Booster KnightShield 3-80N
+- BX-07 : Start Dash Set (DranSword, Launcher, Stadium)
+- BX-08 : 3on3 Deck Set (HellsScythe, WizardArrow, KnightShield)
+- BX-09 : Beybattle Pass
+- BX-10 : Xtreme Stadium
+- BX-13 : Booster KnightLance 4-80HN
+- BX-14 : Random Booster Vol. 1 (SharkEdge 3-60LF)
+- BX-15 : Starter LeonClaw 5-60P
+- BX-16 : Random Booster ViperTail Select
+- BX-17 : Battle Entry Set
+- BX-19 : Booster RhinoHorn 3-80S
+- BX-20 : DranDagger Deck Set
+- BX-21 : HellsChain Deck Set
+- BX-23 : Starter PhoenixWing 9-60GF
+- BX-24 : Random Booster Vol. 2 (WyvernGale 5-80GB)
+- BX-26 : Booster UnicornSting 5-60GP
+- BX-27 : Random Booster SphinxCowl Select
+- BX-31 : Random Booster Vol. 3 (TyrannoBeat 4-70Q)
+- BX-33 : Booster WeissTiger 3-60U
+- BX-34 : Starter CobaltDragoon 2-60C (Left Spin)
+- BX-35 : Random Booster Vol. 4 (BlackShell 4-60DOT)
+- BX-36 : Random Booster WhaleWave Select
+- BX-38 : Booster CrimsonGaruda 4-70TP
+- BX-44 : Booster TriceraPress M-85BS
+- BX-45 : Booster SamuraiCalibur 6-70M
+
+### Unique Line (UX)
+- UX-01 : Starter DranBuster 1-60A
+- UX-02 : Starter HellsHammer 3-70H
+- UX-03 : Booster WizardRod 5-70DB
+- UX-05 : Random Booster ShinobiShadow Select
+- UX-06 : Booster LeonCrest 7-60GN
+- UX-07 : PhoenixRudder Deck Set
+- UX-08 : Starter SilverWolf 3-80FB
+- UX-09 : Starter SamuraiSaber 2-70L
+- UX-11 : Starter ImpactDrake 9-60LR
+- UX-13 : Booster GolemRock 1-60UN
+- UX-14 : Starter ScorpioSpear 0-70Z
+- UX-17 : Starter MeteorDragoon 3-70J
+
+### Custom Line (CX)
+- CX-01 : Starter DranBrave S6-60V
+- CX-02 : Starter WizardArc R4-55LO
+- CX-03 : Booster PerseusDark B6-80W
+- CX-09 : Starter SolEclipse D5-70TK
+- CX-10 : Booster WolfHunt F0-60DB
+- CX-12 : PhoenixFlare Z9-80WW
+
+---
+
+## FONCTIONNEMENT RPB
+1. Tournois : Utilisez /annonce tournoi pour voir les prochains événements. Inscriptions via Challonge.
+2. Profils : Utilisez /profile pour voir vos stats de victoires/défaites et votre rang.
+3. Inscription : Utilisez /inscription rejoindre pour créer votre compte blader.
+4. Rankings : Le classement en temps réel est sur https://rpbey.fr/rankings.
+5. Bot : Assistant officiel pour tournois et duels virtuels (/battle).
+
+## RÉSEAUX SOCIAUX
+- TikTok : @rpb_beyblade
+- X/Twitter : @RPB_Beyblade
+- YouTube : @RPBBeyblade

@@ -1,10 +1,12 @@
 import { Command } from '@sapphire/framework';
 import {
   ActionRowBuilder,
+  AttachmentBuilder,
   ButtonBuilder,
   ButtonStyle,
   EmbedBuilder,
 } from 'discord.js';
+import { generateBattleCard } from '../../lib/canvas-utils.js';
 import { Colors, RPB } from '../../lib/constants.js';
 import prisma from '../../lib/prisma.js';
 import { pendingBattles } from '../../lib/state.js';
@@ -130,13 +132,19 @@ export class BattleCommand extends Command {
       id: string;
       displayName: string;
       tag: string;
-      displayAvatarURL: (opts: { size: number }) => string;
+      displayAvatarURL: (opts: {
+        size: number;
+        extension?: 'png' | 'webp' | 'jpg' | 'jpeg';
+      }) => string;
     },
     opponent: {
       id: string;
       displayName: string;
       tag: string;
-      displayAvatarURL: (opts: { size: number }) => string;
+      displayAvatarURL: (opts: {
+        size: number;
+        extension?: 'png' | 'webp' | 'jpg' | 'jpeg';
+      }) => string;
     },
   ) {
     // Initial message
@@ -198,24 +206,24 @@ export class BattleCommand extends Command {
       this.container.logger.error('Failed to update battle stats:', e);
     }
 
+    // Generate visual battle card
+    const cardBuffer = await generateBattleCard({
+      winnerName: winner.displayName,
+      winnerAvatarUrl: winner.displayAvatarURL({ extension: 'png', size: 512 }),
+      loserName: loser.displayName,
+      loserAvatarUrl: loser.displayAvatarURL({ extension: 'png', size: 512 }),
+      finishType: finishType.result,
+      finishMessage: finishType.message,
+      finishEmoji: finishType.emoji,
+    });
+
+    const attachment = new AttachmentBuilder(cardBuffer, {
+      name: `battle-${interaction.id}.png`,
+    });
+
     const resultEmbed = new EmbedBuilder()
-      .setTitle(`${finishType.emoji} ${finishType.message}`)
-      .setDescription(
-        `**${winner.displayName}** remporte le combat !\n\n` +
-          `🏆 Victoire contre **${loser.displayName}**\n` +
-          `📊 Points gagnés: **${finishType.points}**`,
-      )
       .setColor(Colors.Primary)
-      .setThumbnail(winner.displayAvatarURL({ size: 128 }))
-      .addFields(
-        { name: '🥇 Vainqueur', value: winner.tag, inline: true },
-        { name: '💔 Perdant', value: loser.tag, inline: true },
-        {
-          name: '🎯 Type de finish',
-          value: finishType.result.toUpperCase(),
-          inline: true,
-        },
-      )
+      .setImage(`attachment://battle-${interaction.id}.png`)
       .setFooter({ text: `${RPB.FullName} | GG !` })
       .setTimestamp();
 
@@ -227,7 +235,11 @@ export class BattleCommand extends Command {
         .setEmoji('🔄'),
     );
 
-    return interaction.editReply({ embeds: [resultEmbed], components: [row] });
+    return interaction.editReply({
+      embeds: [resultEmbed],
+      files: [attachment],
+      components: [row],
+    });
   }
 
   private sleep(ms: number): Promise<void> {

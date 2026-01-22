@@ -1,3 +1,4 @@
+import { spawn } from 'node:child_process';
 import {
   createServer,
   type IncomingMessage,
@@ -10,36 +11,24 @@ import type {
   GuildMember,
   GuildTextBasedChannel,
 } from 'discord.js';
+import { WebSocket, WebSocketServer } from 'ws';
 import { Colors, RPB } from './constants.js';
 
 const logs: { timestamp: string; level: string; message: string }[] = [];
 const MAX_LOGS = 1000;
+let wss: WebSocketServer | null = null;
 
 // Member fetch throttling
-
 let lastMemberFetch = 0;
-
 let memberFetchPromise: Promise<
   Collection<string, GuildMember> | undefined
 > | null = null;
-
 const MEMBER_FETCH_COOLDOWN = 5 * 60 * 1000; // 5 minutes
 
 async function ensureMembers(guild: Guild) {
-  // If a fetch is already in progress, wait for it
-  if (memberFetchPromise) {
-    return memberFetchPromise;
-  }
+  if (memberFetchPromise) return memberFetchPromise;
+  if (Date.now() - lastMemberFetch < MEMBER_FETCH_COOLDOWN) return;
 
-  // If we fetched recently, rely on cache
-  if (Date.now() - lastMemberFetch < MEMBER_FETCH_COOLDOWN) {
-    // Check if cache seems reasonable (e.g. > 90% of member count)
-    // If cache is empty or very low, we might force fetch regardless of cooldown?
-    // For now, trust the cooldown.
-    return;
-  }
-
-  // Start a new fetch
   memberFetchPromise = guild.members
     .fetch()
     .then((members) => {
@@ -48,7 +37,6 @@ async function ensureMembers(guild: Guild) {
     })
     .catch((err) => {
       container.logger.error('Failed to fetch members:', err);
-      // Don't update lastMemberFetch so we retry next time (or maybe cooldown on error too?)
       return undefined;
     })
     .finally(() => {
@@ -59,15 +47,22 @@ async function ensureMembers(guild: Guild) {
 }
 
 export function addLog(level: string, message: string) {
-  logs.push({
+  const logEntry = {
     timestamp: new Date().toISOString(),
     level,
     message,
-  });
+  };
+  logs.push(logEntry);
+  if (logs.length > MAX_LOGS) logs.shift();
 
-  // Keep only the last MAX_LOGS entries
-  if (logs.length > MAX_LOGS) {
-    logs.shift();
+  // Broadcast to WS clients
+  if (wss) {
+    const payload = JSON.stringify({ type: 'log', data: logEntry });
+    wss.clients.forEach((client) => {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(payload);
+      }
+    });
   }
 }
 
@@ -115,38 +110,28 @@ function formatMemory(bytes: number): string {
   return `${mb.toFixed(2)} MB`;
 }
 
-/**
- * Base JSON response helper
- */
 function sendJSON(res: ServerResponse, data: unknown, status = 200) {
   res.writeHead(status, { 'Content-Type': 'application/json' });
   res.end(JSON.stringify(data));
 }
 
-/**
- * Error response helper
- */
 function sendError(res: ServerResponse, message: string, status = 400) {
   sendJSON(res, { error: message }, status);
 }
 
 async function handleRequest(req: IncomingMessage, res: ServerResponse) {
-  // CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS, POST');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, x-api-key');
 
-  // OPTIONS for Preflight
   if (req.method === 'OPTIONS') {
     res.writeHead(204);
     res.end();
     return;
   }
 
-  // Check API key
   const apiKey = req.headers['x-api-key'];
   const expectedKey = process.env.BOT_API_KEY;
-
   if (expectedKey && apiKey !== expectedKey) {
     return sendError(res, 'Unauthorized', 401);
   }
@@ -156,7 +141,6 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse) {
     `http://${req.headers.host ?? 'localhost'}`,
   );
 
-  // Router Logic
   try {
     switch (url.pathname) {
       case '/health':
@@ -186,10 +170,8 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse) {
       case '/api/roles': {
         const guildId = process.env.GUILD_ID;
         if (!guildId) return sendError(res, 'GUILD_ID not configured');
-
         const guild = container.client.guilds.cache.get(guildId);
         if (!guild) return sendError(res, 'Guild not found in cache', 404);
-
         const roles = guild.roles.cache
           .filter((role) => role.name !== '@everyone')
           .map((role) => ({
@@ -200,28 +182,19 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse) {
             managed: role.managed,
           }))
           .sort((a, b) => b.position - a.position);
-
         return sendJSON(res, { roles });
       }
 
       case '/api/member': {
-        // Handle /api/members/:id via logic since switch match is exact path usually?
-        // Actually the current router is basic switch(url.pathname).
-        // I will add a check for prefix or query param.
-        // Let's use /api/member?userId=<id>
         const userId = url.searchParams.get('userId');
         const guildId = process.env.GUILD_ID;
-
         if (!userId || !guildId)
           return sendError(res, 'Missing userId or GUILD_ID');
-
         try {
           const guild = container.client.guilds.cache.get(guildId);
           if (!guild) return sendError(res, 'Guild not found', 404);
-
           const member = await guild.members.fetch(userId).catch(() => null);
           if (!member) return sendError(res, 'Member not found', 404);
-
           return sendJSON(res, {
             member: {
               id: member.id,
@@ -255,20 +228,14 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse) {
       case '/api/members-by-role': {
         const roleId = url.searchParams.get('roleId');
         const guildId = process.env.GUILD_ID;
-
         if (!roleId || !guildId)
           return sendError(res, 'Missing roleId or GUILD_ID');
-
         try {
           const guild = container.client.guilds.cache.get(guildId);
           if (!guild) return sendError(res, 'Guild not found', 404);
-
-          // Ensure members are cached (throttled)
           await ensureMembers(guild);
-
           const role = guild.roles.cache.get(roleId);
           if (!role) return sendError(res, 'Role not found', 404);
-
           const members = role.members.map((m) => ({
             id: m.id,
             username: m.user.username,
@@ -288,7 +255,6 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse) {
             globalName: m.user.globalName,
             createdAt: m.user.createdAt,
           }));
-
           return sendJSON(res, { members });
         } catch (e) {
           container.logger.error(
@@ -305,12 +271,10 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse) {
         for (const key of safeEnvKeys) {
           if (process.env[key]) env[key] = process.env[key];
         }
-
         const colorsFormatted: Record<string, string> = {};
         for (const [key, value] of Object.entries(Colors)) {
           colorsFormatted[key] = `0x${value.toString(16).padStart(6, '0')}`;
         }
-
         return sendJSON(res, {
           env,
           constants: {
@@ -341,7 +305,6 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse) {
       case '/api/webhook/twitch': {
         if (req.method !== 'POST')
           return sendError(res, 'Method not allowed', 405);
-
         let body = '';
         req.on('data', (chunk) => {
           body += chunk;
@@ -354,8 +317,11 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse) {
                 RPB.Channels.Social,
               );
               if (channel?.isTextBased()) {
+                const mention = RPB.Roles.Events
+                  ? `<@&${RPB.Roles.Events}>`
+                  : '@everyone';
                 await (channel as GuildTextBasedChannel).send({
-                  content: `@everyone 🔴 **${data.event.broadcaster_user_name} est en LIVE !**\nhttps://www.twitch.tv/${data.event.broadcaster_user_login}`,
+                  content: `${mention} 🔴 **${data.event.broadcaster_user_name} est en LIVE !**\nhttps://www.twitch.tv/${data.event.broadcaster_user_login}`,
                 });
               }
             }
@@ -385,7 +351,6 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse) {
       case '/api/agent/dispatch': {
         if (req.method !== 'POST')
           return sendError(res, 'Method not allowed', 405);
-
         let body = '';
         req.on('data', (chunk) => {
           body += chunk;
@@ -395,7 +360,6 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse) {
             const { action, params } = JSON.parse(body);
             const client = container.client;
             const guild = client.guilds.cache.get(process.env.GUILD_ID ?? '');
-
             if (!guild) return sendError(res, 'Guild not found', 500);
 
             switch (action) {
@@ -410,7 +374,6 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse) {
                 );
                 return sendJSON(res, { success: true, id: msg.id });
               }
-
               case 'send_dm': {
                 if (!params?.userId || !params?.content)
                   return sendError(res, 'Missing params');
@@ -418,7 +381,6 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse) {
                 const msg = await user.send(params.content);
                 return sendJSON(res, { success: true, id: msg.id });
               }
-
               case 'add_role': {
                 if (!params?.userId || !params?.roleId)
                   return sendError(res, 'Missing params');
@@ -426,13 +388,30 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse) {
                 await member.roles.add(params.roleId);
                 return sendJSON(res, { success: true });
               }
-
               case 'remove_role': {
                 if (!params?.userId || !params?.roleId)
                   return sendError(res, 'Missing params');
                 const member = await guild.members.fetch(params.userId);
                 await member.roles.remove(params.roleId);
                 return sendJSON(res, { success: true });
+              }
+
+              case 'run_gemini': {
+                if (!params?.args) return sendError(res, 'Missing args');
+                const args = params.args;
+                container.logger.info(
+                  `[AgentDispatch] Launching Gemini with args: ${args.join(' ')}`,
+                );
+                spawn('gemini', args, {
+                  shell: true,
+                  env: { ...process.env },
+                });
+                // We don't wait for completion here for simplicity in HTTP response,
+                // but we could stream logs if using WS.
+                return sendJSON(res, {
+                  success: true,
+                  message: 'Gemini started',
+                });
               }
 
               default:
@@ -458,6 +437,108 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse) {
 export function startApiServer(port = 3001) {
   const server = createServer((req, res) => {
     void handleRequest(req, res);
+  });
+
+  // Initialize WebSocket Server
+  wss = new WebSocketServer({ server });
+
+  wss.on('connection', (ws) => {
+    container.logger.info('[WS] Client connected');
+    ws.send(JSON.stringify({ type: 'info', message: 'Connected to RPB Bot' }));
+
+    // Send recent logs
+    ws.send(JSON.stringify({ type: 'logs_history', data: getLogs(20) }));
+
+    ws.on('message', async (message) => {
+      try {
+        const raw = message.toString();
+        const payload = JSON.parse(raw);
+        container.logger.info(`[WS] Received: ${payload.type}`);
+
+        switch (payload.type) {
+          case 'speak': {
+            // { type: 'speak', channelId: '...', content: '...' }
+            const { channelId, content } = payload;
+            if (channelId && content) {
+              const channel = container.client.channels.cache.get(channelId);
+              if (channel?.isTextBased()) {
+                await (channel as GuildTextBasedChannel).send(content);
+                ws.send(
+                  JSON.stringify({
+                    type: 'response',
+                    success: true,
+                    action: 'speak',
+                  }),
+                );
+              } else {
+                ws.send(
+                  JSON.stringify({
+                    type: 'error',
+                    message: 'Invalid channel',
+                  }),
+                );
+              }
+            }
+            break;
+          }
+
+          case 'launch_gemini': {
+            // { type: 'launch_gemini', args: ['-p', '...'] }
+            const args = payload.args || [];
+            container.logger.info(
+              `[WS] Launching Gemini with args: ${args.join(' ')}`,
+            );
+
+            const child = spawn('gemini', args, {
+              shell: true,
+              env: { ...process.env },
+            });
+
+            child.stdout.on('data', (data) => {
+              ws.send(
+                JSON.stringify({
+                  type: 'gemini_stdout',
+                  data: data.toString(),
+                }),
+              );
+            });
+
+            child.stderr.on('data', (data) => {
+              ws.send(
+                JSON.stringify({
+                  type: 'gemini_stderr',
+                  data: data.toString(),
+                }),
+              );
+            });
+
+            child.on('close', (code) => {
+              ws.send(
+                JSON.stringify({
+                  type: 'gemini_exit',
+                  code,
+                }),
+              );
+            });
+            break;
+          }
+
+          case 'eval': {
+            // Dangerous, but useful for 'modifying code' or hot-patching?
+            // User asked to 'modify code of the bot in case of error'.
+            // That usually implies editing files. I (Gemini) can do that via filesystem tools.
+            // This 'eval' might be for runtime inspection.
+            // I'll leave it out for security unless explicitly requested.
+            break;
+          }
+
+          default:
+            ws.send(JSON.stringify({ type: 'error', message: 'Unknown type' }));
+        }
+      } catch (e) {
+        ws.send(JSON.stringify({ type: 'error', message: String(e) }));
+      }
+    });
   });
 
   server.listen(port, '0.0.0.0', () => {
