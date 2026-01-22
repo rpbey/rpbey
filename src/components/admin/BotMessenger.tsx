@@ -14,20 +14,44 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
-const CHANNELS = [
-  { id: '1333203623471087708', name: 'Général / Social' },
-  { id: 'annonces', name: 'Annonces (Auto-détection)' },
-  { id: 'annonce-tournois', name: 'Annonce Tournois (Auto-détection)' },
-];
+interface Channel {
+  id: string;
+  name: string;
+}
 
 export function BotMessenger() {
-  const [channelId, setChannelId] = useState(CHANNELS[0]?.id ?? '');
+  const [channels, setChannels] = useState<Channel[]>([]);
+  const [channelId, setChannelId] = useState('');
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchChannels = async () => {
+      try {
+        const response = await fetch('/api/bot/config');
+        if (response.ok) {
+          const data = await response.json();
+          const channelList = Object.entries(data.constants.Channels).map(
+            ([name, id]) => ({
+              id: id as string,
+              name: name,
+            }),
+          );
+          setChannels(channelList);
+          if (channelList.length > 0) {
+            setChannelId(channelList[0].id);
+          }
+        }
+      } catch (err) {
+        console.error('Failed to fetch channels:', err);
+      }
+    };
+    fetchChannels();
+  }, []);
 
   const handleSendMessage = async () => {
     if (!content.trim()) return;
@@ -75,8 +99,9 @@ export function BotMessenger() {
               value={channelId}
               label="Canal"
               onChange={(e) => setChannelId(e.target.value)}
+              disabled={channels.length === 0}
             >
-              {CHANNELS.map((ch) => (
+              {channels.map((ch) => (
                 <MenuItem key={ch.id} value={ch.id}>
                   {ch.name}
                 </MenuItem>
@@ -103,7 +128,7 @@ export function BotMessenger() {
             variant="contained"
             startIcon={<SendIcon />}
             onClick={handleSendMessage}
-            disabled={loading || !content.trim()}
+            disabled={loading || !content.trim() || !channelId}
           >
             {loading ? 'Envoi...' : 'Envoyer le message'}
           </Button>

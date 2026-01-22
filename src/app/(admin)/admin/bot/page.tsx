@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  Code as CodeIcon,
   Settings as ConfigIcon,
   Groups as GuildsIcon,
   Terminal as LogsIcon,
@@ -18,9 +19,13 @@ import {
   Button,
   Card,
   CardContent,
+  CardHeader,
   Chip,
   CircularProgress,
   IconButton,
+  List,
+  ListItem,
+  ListItemText,
   Paper,
   Stack,
   Tooltip,
@@ -43,18 +48,36 @@ interface BotStatus {
   error?: string;
 }
 
+interface NativeCommand {
+  name: string;
+  description: string;
+  category: string;
+  enabled: boolean;
+}
+
 export default function BotStatusPage() {
   const [status, setStatus] = useState<BotStatus | null>(null);
+  const [commands, setCommands] = useState<NativeCommand[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchStatus = useCallback(async () => {
+  const fetchData = useCallback(async () => {
     try {
-      const response = await fetch('/api/bot/status');
-      if (!response.ok) throw new Error('Failed to fetch status');
+      const [statusRes, commandsRes] = await Promise.all([
+        fetch('/api/bot/status'),
+        fetch('/api/bot/commands'),
+      ]);
 
-      const data = await response.json();
-      setStatus(data);
+      if (!statusRes.ok) throw new Error('Failed to fetch status');
+
+      const statusData = await statusRes.json();
+      setStatus(statusData);
+
+      if (commandsRes.ok) {
+        const commandsData = await commandsRes.json();
+        setCommands(commandsData.commands || []);
+      }
+
       setError(null);
     } catch (err) {
       setError(String(err));
@@ -64,10 +87,10 @@ export default function BotStatusPage() {
   }, []);
 
   useEffect(() => {
-    fetchStatus();
-    const interval = setInterval(fetchStatus, 10000);
+    fetchData();
+    const interval = setInterval(fetchData, 10000);
     return () => clearInterval(interval);
-  }, [fetchStatus]);
+  }, [fetchData]);
 
   if (loading && !status) {
     return (
@@ -99,6 +122,14 @@ export default function BotStatusPage() {
         <Stack direction="row" spacing={1}>
           <Button
             component={Link}
+            href="/admin/bot/commands"
+            variant="outlined"
+            startIcon={<CodeIcon />}
+          >
+            Commandes Custom
+          </Button>
+          <Button
+            component={Link}
             href="/admin/bot/logs"
             variant="outlined"
             startIcon={<LogsIcon />}
@@ -114,7 +145,7 @@ export default function BotStatusPage() {
             Configuration
           </Button>
           <Tooltip title="Rafraîchir">
-            <IconButton onClick={fetchStatus} disabled={loading}>
+            <IconButton onClick={fetchData} disabled={loading}>
               <RefreshIcon />
             </IconButton>
           </Tooltip>
@@ -282,14 +313,57 @@ export default function BotStatusPage() {
             </Grid>
           </Grid>
 
-          {/* New Admin Features */}
+          {/* Tools & Commands */}
           <Box sx={{ mt: 4 }}>
-            <Typography variant="h5" fontWeight={600} mb={3}>
-              Outils d'administration
-            </Typography>
             <Grid container spacing={3}>
-              <Grid size={{ xs: 12, md: 8 }}>
+              {/* Messenger */}
+              <Grid size={{ xs: 12, md: 7 }}>
                 <BotMessenger />
+              </Grid>
+
+              {/* Native Commands List */}
+              <Grid size={{ xs: 12, md: 5 }}>
+                <Card variant="outlined" sx={{ height: '100%' }}>
+                  <CardHeader
+                    title="Commandes Natives"
+                    subheader={`${commands.length} commandes chargées`}
+                  />
+                  <CardContent sx={{ p: 0, maxHeight: 400, overflow: 'auto' }}>
+                    <List dense>
+                      {commands.map((cmd) => (
+                        <ListItem
+                          key={cmd.name}
+                          divider
+                          secondaryAction={
+                            <Chip
+                              label={cmd.category}
+                              size="small"
+                              variant="outlined"
+                            />
+                          }
+                        >
+                          <ListItemText
+                            primary={
+                              <Typography fontWeight="bold">
+                                /{cmd.name}
+                              </Typography>
+                            }
+                            secondary={cmd.description}
+                          />
+                        </ListItem>
+                      ))}
+                      {commands.length === 0 && (
+                        <Typography
+                          textAlign="center"
+                          color="text.secondary"
+                          py={4}
+                        >
+                          Aucune commande trouvée (Bot hors ligne ?)
+                        </Typography>
+                      )}
+                    </List>
+                  </CardContent>
+                </Card>
               </Grid>
             </Grid>
           </Box>
