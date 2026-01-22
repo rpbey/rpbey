@@ -31,7 +31,6 @@ export function Model({ modelUrl, textureUrl }: ModelProps) {
     
     // Fix texture encoding/orientation if needed
     texture.colorSpace = THREE.SRGBColorSpace;
-    texture.flipY = false; // OBJ often needs flipY false for textures
 
     clonedObj.traverse((child) => {
       if ((child as THREE.Mesh).isMesh) {
