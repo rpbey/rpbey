@@ -73,7 +73,7 @@ export function IconNav() {
       sx={{
         position: 'fixed',
         top: 'calc(16px + env(safe-area-inset-top))',
-        left: 'calc(16px + env(safe-area-inset-left))',
+        left: 0,
         bottom: 'calc(16px + env(safe-area-inset-bottom))',
         zIndex: 1200,
         display: { xs: 'none', md: 'flex' },
@@ -81,7 +81,9 @@ export function IconNav() {
         alignItems: 'center',
         gap: 1.5,
         p: 1.5,
-        borderRadius: 8, // 32px - Extra large M3
+        borderRadius: 0,
+        borderTopRightRadius: 24,
+        borderBottomRightRadius: 24,
         bgcolor: (theme) => alpha(theme.palette.background.paper, 0.9),
         backdropFilter: 'blur(20px)',
         boxShadow: '0 8px 32px rgba(0,0,0,0.3)',

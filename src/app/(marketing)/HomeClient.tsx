@@ -13,7 +13,7 @@ import Link from 'next/link';
 import { FeedMyPartnership } from '@/components/marketing';
 import { useThemeMode } from '@/components/theme/ThemeRegistry';
 import { ChallongeBracket } from '@/components/tournaments';
-import { DiscordStatusCard } from '@/components/ui';
+import { OnlineMembersCounter } from '@/components/ui/OnlineMembersCounter';
 import { useSession } from '@/lib/auth-client';
 import type { DiscordStats, TeamGroup } from '@/lib/discord-data';
 
@@ -157,12 +157,9 @@ export default function HomeClient({
                   animate={{ y: 0, opacity: 1 }}
                   whileInView={{ opacity: 1 }}
                   transition={{ delay: 0.6, duration: 0.8 }}
-                  sx={{ maxWidth: 400, mt: 4 }}
+                  sx={{ mt: 4 }}
                 >
-                  <DiscordStatusCard
-                    initialStats={discordStats}
-                    initialTeam={discordTeam}
-                  />
+                  <OnlineMembersCounter />
                 </Box>
               </Box>
             </Grid>

@@ -34,7 +34,7 @@ export default function MarketingLayout({
           flex: 1,
           display: 'flex',
           flexDirection: 'column',
-          ml: { xs: 0, md: `${ICON_NAV_WIDTH + 16}px` },
+          ml: { xs: 0, md: `${ICON_NAV_WIDTH}px` },
           pb: { xs: 'calc(100px + env(safe-area-inset-bottom))', md: 0 },
           minHeight: '100vh',
           bgcolor: 'background.default',
