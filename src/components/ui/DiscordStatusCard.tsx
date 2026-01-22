@@ -164,24 +164,6 @@ export function DiscordStatusCard({
                     width: 6,
                     height: 6,
                     borderRadius: '50%',
-                    bgcolor: '#22c55e',
-                    boxShadow: '0 0 8px rgba(34, 197, 94, 0.6)',
-                  }}
-                />
-                <Typography
-                  variant="caption"
-                  color="text.secondary"
-                  fontWeight={600}
-                >
-                  {onlineCount.toLocaleString()} EN LIGNE
-                </Typography>
-              </Box>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                <Box
-                  sx={{
-                    width: 6,
-                    height: 6,
-                    borderRadius: '50%',
                     bgcolor: 'text.disabled',
                   }}
                 />

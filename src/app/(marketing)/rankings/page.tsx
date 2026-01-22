@@ -20,8 +20,17 @@ export default async function RankingsPage({ searchParams }: RankingsPageProps) 
   const pageSize = 20;
 
   // 1. Récupération optimisée avec pagination
+  const whereCondition = {
+    user: {
+      name: { notIn: ['Yoyo', 'Loteux'] },
+      username: { notIn: ['yoyo__goat', 'loteux'] },
+    },
+    bladerName: { notIn: ['Yoyo', 'Loteux'] },
+  };
+
   const [profiles, totalCount] = await Promise.all([
     prisma.profile.findMany({
+      where: whereCondition,
       take: pageSize,
       skip: (page - 1) * pageSize,
       orderBy: [
@@ -30,10 +39,16 @@ export default async function RankingsPage({ searchParams }: RankingsPageProps) 
         { wins: 'desc' },
       ],
       include: {
-        user: true,
+        user: {
+          include: {
+            _count: {
+              select: { tournaments: true },
+            },
+          },
+        },
       },
     }),
-    prisma.profile.count(),
+    prisma.profile.count({ where: whereCondition }),
   ]);
 
   const totalPages = Math.ceil(totalCount / pageSize);

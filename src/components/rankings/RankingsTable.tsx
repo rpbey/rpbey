@@ -17,7 +17,13 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import type { Profile, User } from '@prisma/client';
 import { getInitials } from '@/lib/utils';
 
-type ProfileWithUser = Profile & { user: User };
+type ProfileWithUser = Profile & { 
+  user: User & {
+    _count: {
+      tournaments: number;
+    };
+  };
+};
 
 interface RankingsTableProps {
   profiles: ProfileWithUser[];
@@ -103,6 +109,7 @@ export function RankingsTable({
               <TableCell width={80} align="center">Rang</TableCell>
               <TableCell>Blader</TableCell>
               <TableCell align="center">Points</TableCell>
+              <TableCell align="center">Participations</TableCell>
               <TableCell align="center">Tournois Gagnés</TableCell>
               <TableCell align="center">Matchs</TableCell>
               <TableCell align="center">Winrate</TableCell>
@@ -191,6 +198,11 @@ export function RankingsTable({
                         {profile.rankingPoints}
                       </Typography>
                       <Typography variant="caption" color="text.secondary">pts</Typography>
+                    </TableCell>
+                    <TableCell align="center">
+                      <Typography fontWeight="bold">
+                        {profile.user._count.tournaments}
+                      </Typography>
                     </TableCell>
                     <TableCell align="center">
                       {profile.tournamentWins > 0 ? (
