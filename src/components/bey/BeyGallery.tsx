@@ -98,6 +98,12 @@ export function BeyGallery({ manifest, bbxData }: BeyGalleryProps) {
     setSelectedModel(null); // Reset selection on category change
   };
 
+  const isBladeCategory = (category: string) => {
+    return category.toLowerCase().includes('blade');
+  };
+
+  const shouldShowTexture = selectedModel && isBladeCategory(selectedModel.category);
+
   return (
     <Grid container spacing={3} sx={{ height: 'calc(100vh - 100px)' }}>
       {/* Left Panel: Navigation & List */}
@@ -255,7 +261,7 @@ export function BeyGallery({ manifest, bbxData }: BeyGalleryProps) {
               <Box sx={{ flexGrow: 1, minHeight: 0, position: 'relative' }}>
                 <ModelViewer
                   modelUrl={selectedModel.path}
-                  textureUrl={currentTexture?.path}
+                  textureUrl={shouldShowTexture ? currentTexture?.path : undefined}
                 />
                 
                 {/* Stats Overlay */}
@@ -310,55 +316,57 @@ export function BeyGallery({ manifest, bbxData }: BeyGalleryProps) {
               </Box>
 
               {/* Texture Selector */}
-              <Box>
-                <Typography
-                  variant="caption"
-                  fontWeight="bold"
-                  color="text.secondary"
-                  mb={1}
-                  display="block"
-                >
-                  TEXTURES ({manifest.textures.length})
-                </Typography>
-                <Stack
-                  direction="row"
-                  spacing={1}
-                  sx={{ overflowX: 'auto', pb: 1 }}
-                >
-                  {manifest.textures.map((tex) => (
-                    <Box
-                      key={tex.path}
-                      onClick={() => setSelectedTexture(tex)}
-                      sx={{
-                        width: 48,
-                        height: 48,
-                        flexShrink: 0,
-                        borderRadius: 2,
-                        overflow: 'hidden',
-                        border: '2px solid',
-                        borderColor:
-                          currentTexture?.path === tex.path
-                            ? 'primary.main'
-                            : 'transparent',
-                        cursor: 'pointer',
-                        '&:hover': { opacity: 0.8 },
-                      }}
-                    >
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={tex.path}
-                        alt={tex.name}
-                        style={{
-                          width: '100%',
-                          height: '100%',
-                          objectFit: 'cover',
+              {shouldShowTexture && (
+                <Box>
+                  <Typography
+                    variant="caption"
+                    fontWeight="bold"
+                    color="text.secondary"
+                    mb={1}
+                    display="block"
+                  >
+                    TEXTURES ({manifest.textures.length})
+                  </Typography>
+                  <Stack
+                    direction="row"
+                    spacing={1}
+                    sx={{ overflowX: 'auto', pb: 1 }}
+                  >
+                    {manifest.textures.map((tex) => (
+                      <Box
+                        key={tex.path}
+                        onClick={() => setSelectedTexture(tex)}
+                        sx={{
+                          width: 48,
+                          height: 48,
+                          flexShrink: 0,
+                          borderRadius: 2,
+                          overflow: 'hidden',
+                          border: '2px solid',
+                          borderColor:
+                            currentTexture?.path === tex.path
+                              ? 'primary.main'
+                              : 'transparent',
+                          cursor: 'pointer',
+                          '&:hover': { opacity: 0.8 },
                         }}
-                        loading="lazy"
-                      />
-                    </Box>
-                  ))}
-                </Stack>
-              </Box>
+                      >
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={tex.path}
+                          alt={tex.name}
+                          style={{
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover',
+                          }}
+                          loading="lazy"
+                        />
+                      </Box>
+                    ))}
+                  </Stack>
+                </Box>
+              )}
             </>
           ) : (
             <Box
