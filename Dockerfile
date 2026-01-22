@@ -43,6 +43,9 @@ COPY . .
 # This avoids the @prisma/dev ESM issue by using node with ESM flag
 RUN node --experimental-require-module ./node_modules/prisma/build/index.js generate
 
+# Build Bot
+RUN pnpm run bot:build
+
 # Build Next.js
 # Mount the .next/cache directory to speed up subsequent builds
 RUN --mount=type=cache,target=/app/.next/cache pnpm run build
@@ -69,7 +72,10 @@ COPY --from=builder /app/package.json ./package.json
 # Copy production dependencies (needed for full Next.js support)
 # OPTIMIZATION: In standalone mode, node_modules are already included in .next/standalone
 # We comment this out to reduce image size and avoid conflicts.
-# COPY --from=prod-deps /app/node_modules ./node_modules
+COPY --from=prod-deps /app/node_modules ./node_modules
+
+# Copy Bot built files
+COPY --from=builder --chown=nextjs:nodejs /app/bot/dist ./bot/dist
 
 # Automatically leverage output traces to reduce image size
 # https://nextjs.org/docs/advanced-features/output-file-tracing

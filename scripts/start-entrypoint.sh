@@ -18,5 +18,10 @@ fi
 echo ">>> RUNNING DATABASE MIGRATIONS..."
 npx prisma migrate deploy || echo ">>> WARNING: Migrations failed or not needed."
 
-echo ">>> STARTING DASHBOARD SERVICE (Next.js)..."
-exec node server.js
+if [ "$RUN_BOT" = "true" ]; then
+  echo ">>> STARTING DISCORD BOT..."
+  exec node bot/dist/index.js
+else
+  echo ">>> STARTING DASHBOARD SERVICE (Next.js)..."
+  exec node server.js
+fi
