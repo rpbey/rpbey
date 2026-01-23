@@ -13,8 +13,8 @@ import Link from 'next/link';
 import { FeedMyPartnership, TournamentVideo } from '@/components/marketing';
 import { useThemeMode } from '@/components/theme/ThemeRegistry';
 import { ChallongeBracket } from '@/components/tournaments/ChallongeBracket';
-import { DiscordWidget } from '@/components/ui/DiscordWidget';
 import { useSession } from '@/lib/auth-client';
+import DiscordStatusCard from '@/components/dashboard/DiscordStatusCard';
 import type { DiscordStats, TeamGroup } from '@/lib/discord-data';
 
 // M3 Motion Easings
@@ -175,21 +175,6 @@ export default function HomeClient({
                   La communauté française de référence pour Beyblade X.
                   Divertissement, passion et compétition réunis en un seul lieu.
                 </Typography>
-
-                <Box
-                  component={motion.div}
-                  initial={{ y: 20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  whileInView={{ opacity: 1 }}
-                  transition={{
-                    delay: 0.4,
-                    duration: 0.6,
-                    ease: EASE.EMPHASIZED_DECELERATE as any,
-                  }}
-                  sx={{ mt: 4 }}
-                >
-                  <DiscordWidget />
-                </Box>
               </Box>
             </Grid>
 
@@ -509,46 +494,10 @@ export default function HomeClient({
                 height: '100%',
                 position: 'relative',
                 minHeight: 400,
+                p: 4
               }}
             >
-              {/* Abstract graphic or dynamic element could go here */}
-              <Box
-                sx={{
-                  position: 'absolute',
-                  top: 0,
-                  right: 0,
-                  bottom: 0,
-                  width: '100%',
-                  background:
-                    'radial-gradient(circle at center, rgba(255,255,255,0.05) 1px, transparent 1px)',
-                  backgroundSize: '20px 20px',
-                  maskImage: 'linear-gradient(to right, transparent, black)',
-                }}
-              />
-              <Box
-                component={motion.div}
-                animate={{
-                  y: [0, -20, 0],
-                  rotate: [0, 5, 0],
-                }}
-                transition={{
-                  duration: 6,
-                  repeat: Infinity,
-                  ease: 'easeInOut',
-                }}
-                sx={{
-                  position: 'absolute',
-                  top: '50%',
-                  left: '50%',
-                  transform: 'translate(-50%, -50%)',
-                  width: 250,
-                  height: 250,
-                  borderRadius: '50%',
-                  background: 'linear-gradient(45deg, #dc2626, #fbbf24)',
-                  filter: 'blur(60px)',
-                  opacity: 0.6,
-                }}
-              />
+              <DiscordStatusCard />
             </Grid>
           </Grid>
         </Box>
