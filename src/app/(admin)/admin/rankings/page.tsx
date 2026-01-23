@@ -3,8 +3,8 @@ import {
   getRankingConfig,
   getTournamentCategories,
 } from '@/server/actions/ranking';
-import RankingSettingsForm from './RankingSettingsForm';
 import PointAdjustmentList from './PointAdjustmentList';
+import RankingSettingsForm from './RankingSettingsForm';
 
 export const metadata = {
   title: 'Admin - Classements',
@@ -21,7 +21,8 @@ export default async function RankingAdminPage() {
           Gestion des Classements
         </Typography>
         <Typography color="text.secondary">
-          Configurez le barème des points, les catégories de tournois et gérez les ajustements manuels.
+          Configurez le barème des points, les catégories de tournois et gérez
+          les ajustements manuels.
         </Typography>
       </Box>
 
@@ -29,7 +30,7 @@ export default async function RankingAdminPage() {
         initialConfig={config}
         initialCategories={categories}
       />
-      
+
       <PointAdjustmentList />
     </Box>
   );

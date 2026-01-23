@@ -38,7 +38,9 @@ export const Emojis = {
 export const RPB = {
   Name: 'RPB Bot',
   FullName: 'République Populaire du Beyblade',
-      Discord: 'https://discord.gg/rpb',  Color: 0xdc2626,
+  Discord: 'https://discord.gg/rpb',
+  X: 'https://x.com/rpb_ey',
+  Color: 0xdc2626,
   GoldColor: 0xfbbf24,
   // Channel names for auto-detection
   Channels: {

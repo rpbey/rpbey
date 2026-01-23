@@ -1,7 +1,7 @@
 'use client';
 
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
-import { Box, Card, Stack, Typography, alpha, useTheme } from '@mui/material';
+import { alpha, Box, Card, Stack, Typography, useTheme } from '@mui/material';
 import { motion } from 'framer-motion';
 
 // Types for our Bracket Structure
@@ -238,7 +238,7 @@ export function NativeBracket() {
                   sx={{ position: 'relative' }}
                 >
                   <MatchCard match={match} />
-                  
+
                   {/* Connector Logic (Simplified visual connectors) */}
                   {roundIndex < BRACKET_DATA.length - 1 && (
                     <Box

@@ -27,6 +27,8 @@ export async function GET() {
         key.startsWith('BETTER_AUTH') ||
         key.startsWith('DATABASE') ||
         key.startsWith('DISCORD') ||
+        key.startsWith('TWITCH') ||
+        key.startsWith('GOOGLE') ||
         key === 'NODE_ENV'
       ) {
         const isSensitive = sensitiveKeys.some((s) =>

@@ -17,6 +17,7 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { headers } from 'next/headers';
 import Link from 'next/link';
+import { DiscordWidget } from '@/components/ui/DiscordWidget';
 import { DiscordIcon } from '@/components/ui/Icons';
 import { getBotStatus } from '@/lib/bot';
 import prisma from '@/lib/prisma';
@@ -396,51 +397,58 @@ export default async function AboutPage() {
         <Divider sx={{ my: 6 }} />
 
         {/* Rejoindre */}
-        <Box sx={{ textAlign: 'center', py: 6 }}>
-          <Typography variant="h4" fontWeight="bold" sx={{ mb: 2 }}>
-            Prêt à rejoindre l'aventure ?
-          </Typography>
-          <Typography
-            variant="body1"
-            color="text.secondary"
-            sx={{ mb: 4, maxWidth: 500, mx: 'auto' }}
-          >
-            Rejoins notre communauté Discord pour participer aux tournois,
-            discuter avec d'autres bladers et ne manquer aucun événement !
-          </Typography>
-          <Stack
-            direction={{ xs: 'column', sm: 'row' }}
-            spacing={2}
-            justifyContent="center"
-          >
-            <Button
-              component="a"
-              href="https://discord.gg/rpb"
-              target="_blank"
-              rel="noopener noreferrer"
-              variant="contained"
-              size="large"
-              startIcon={<DiscordIcon />}
-              sx={{
-                px: 4,
-                py: 1.5,
-                bgcolor: '#5865F2',
-                '&:hover': { bgcolor: '#4752C4' },
-              }}
-            >
-              Rejoindre le Discord
-            </Button>
-            <Button
-              component={Link}
-              href="/tournaments"
-              variant="outlined"
-              size="large"
-              startIcon={<EmojiEvents />}
-              sx={{ px: 4, py: 1.5 }}
-            >
-              Voir les tournois
-            </Button>
-          </Stack>
+        <Box sx={{ py: 6 }}>
+          <Grid container spacing={6} alignItems="center">
+            <Grid size={{ xs: 12, md: 7 }}>
+              <Typography variant="h4" fontWeight="bold" sx={{ mb: 2 }}>
+                Prêt à rejoindre l'aventure ?
+              </Typography>
+              <Typography
+                variant="body1"
+                color="text.secondary"
+                sx={{ mb: 4, maxWidth: 500 }}
+              >
+                Rejoins notre communauté Discord pour participer aux tournois,
+                discuter avec d'autres bladers et ne manquer aucun événement !
+              </Typography>
+              <Stack
+                direction={{ xs: 'column', sm: 'row' }}
+                spacing={2}
+                justifyContent={{ xs: 'center', sm: 'flex-start' }}
+              >
+                <Button
+                  component="a"
+                  href="https://discord.gg/rpb"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  variant="contained"
+                  size="large"
+                  startIcon={<DiscordIcon />}
+                  sx={{
+                    px: 4,
+                    py: 1.5,
+                    bgcolor: '#5865F2',
+                    '&:hover': { bgcolor: '#4752C4' },
+                  }}
+                >
+                  Rejoindre le Discord
+                </Button>
+                <Button
+                  component={Link}
+                  href="/tournaments"
+                  variant="outlined"
+                  size="large"
+                  startIcon={<EmojiEvents />}
+                  sx={{ px: 4, py: 1.5 }}
+                >
+                  Voir les tournois
+                </Button>
+              </Stack>
+            </Grid>
+            <Grid size={{ xs: 12, md: 5 }}>
+              <DiscordWidget />
+            </Grid>
+          </Grid>
         </Box>
       </Container>
     </>

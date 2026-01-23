@@ -346,7 +346,7 @@ export function BladerProfileHeader({
                 sx={{ fontWeight: 'bold' }}
               />
               <Chip
-                label={`${stats.elo} ELO`}
+                label={`${stats.points.toLocaleString()} PTS`}
                 size="medium"
                 variant="outlined"
                 sx={{

@@ -22,7 +22,7 @@ export function OnlineMembersCounter() {
   useEffect(() => {
     async function fetchStatus() {
       try {
-        const res = await fetch('/api/bot/status');
+        const res = await fetch('/api/bot/public-status');
         if (res.ok) {
           const data = await res.json();
           setOnlineCount(data.onlineCount);

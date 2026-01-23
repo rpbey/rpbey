@@ -1,8 +1,7 @@
-
 import { Box, Container } from '@mui/material';
-import { prisma } from '@/lib/prisma';
 import { RankingForm } from '@/components/admin/RankingForm';
 import { PageHeader } from '@/components/ui';
+import { prisma } from '@/lib/prisma';
 
 export const metadata = {
   title: 'Admin - Système de Classement',
@@ -24,11 +23,11 @@ export default async function RankingAdminPage() {
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
-      <PageHeader 
-        title="Système de Classement" 
+      <PageHeader
+        title="Système de Classement"
         description="Configurez les points attribués lors des tournois. Toute modification entraînera un recalcul complet de l'historique."
       />
-      
+
       <Box sx={{ mt: 4 }}>
         <RankingForm initialRules={initialRules} />
       </Box>

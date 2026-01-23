@@ -81,7 +81,8 @@ export default function AdminDrivePage() {
           <Typography color="error">{error}</Typography>
           {error.includes('credentials') && (
             <Typography sx={{ mt: 2 }} color="text.secondary">
-              Please ensure <code>GOOGLE_APPLICATION_CREDENTIALS</code> is set in your environment variables.
+              Please ensure <code>GOOGLE_APPLICATION_CREDENTIALS</code> is set
+              in your environment variables.
             </Typography>
           )}
         </Box>

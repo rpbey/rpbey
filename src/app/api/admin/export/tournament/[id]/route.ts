@@ -1,13 +1,12 @@
-
-import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import { generateTournamentExport } from '@/lib/csv-export';
-import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
+import { NextResponse } from 'next/server';
+import { auth } from '@/lib/auth';
+import { generateTournamentExport } from '@/lib/csv-export';
+import { prisma } from '@/lib/prisma';
 
 export async function GET(
-  request: Request, 
-  { params }: { params: Promise<{ id: string }> }
+  _request: Request,
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await auth.api.getSession({ headers: await headers() });
@@ -22,11 +21,11 @@ export async function GET(
       include: {
         participants: {
           include: {
-            user: { include: { profile: true } }
+            user: { include: { profile: true } },
           },
-          orderBy: { finalPlacement: 'asc' }
-        }
-      }
+          orderBy: { finalPlacement: 'asc' },
+        },
+      },
     });
 
     if (!tournament) {
@@ -34,7 +33,7 @@ export async function GET(
     }
 
     const csv = generateTournamentExport(tournament);
-    
+
     // Nettoyage du nom pour le fichier
     const filename = `RPB_Export_${tournament.name.replace(/[^a-z0-9]/gi, '_')}.csv`;
 

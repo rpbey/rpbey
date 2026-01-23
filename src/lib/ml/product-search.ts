@@ -1,4 +1,3 @@
-
 import type { PrismaClient } from '@prisma/client';
 import natural from 'natural';
 
@@ -25,20 +24,22 @@ export class ProductSearch {
   async init() {
     console.log('🧠 [ML] Building Product Knowledge Base...');
     const products = await this.prisma.product.findMany({
-      include: { beyblades: { include: { blade: true, ratchet: true, bit: true } } }
+      include: {
+        beyblades: { include: { blade: true, ratchet: true, bit: true } },
+      },
     });
 
     products.forEach((p, index) => {
       // Construction du "document" textuel représentant le produit
       // On inclut le code, nom, type, et les pièces
       let content = `${p.code} ${p.name} ${p.productType} ${p.productLine}`;
-      
+
       if (p.nameEn) content += ` ${p.nameEn}`;
-      
-      p.beyblades.forEach(b => {
+
+      p.beyblades.forEach((b) => {
         content += ` ${b.name} ${b.blade.name} ${b.ratchet.name} ${b.bit.name}`;
         // Ajout de mots clés de type
-        if (b.beyType) content += ` ${b.beyType}`; 
+        if (b.beyType) content += ` ${b.beyType}`;
       });
 
       this.tfidf.addDocument(content);
@@ -46,7 +47,9 @@ export class ProductSearch {
     });
 
     this.isReady = true;
-    console.log(`🧠 [ML] Knowledge Base ready with ${products.length} products.`);
+    console.log(
+      `🧠 [ML] Knowledge Base ready with ${products.length} products.`,
+    );
   }
 
   /**
@@ -54,8 +57,8 @@ export class ProductSearch {
    */
   search(query: string, limit = 3): SearchResult[] {
     if (!this.isReady) {
-        console.warn('⚠️ ML Search not ready yet.');
-        return [];
+      console.warn('⚠️ ML Search not ready yet.');
+      return [];
     }
 
     const results: SearchResult[] = [];
@@ -64,14 +67,12 @@ export class ProductSearch {
       if (measure > 0) {
         results.push({
           product: this.productMap.get(i),
-          score: measure
+          score: measure,
         });
       }
     });
 
     // Tri par pertinence et limite
-    return results
-      .sort((a, b) => b.score - a.score)
-      .slice(0, limit);
+    return results.sort((a, b) => b.score - a.score).slice(0, limit);
   }
 }

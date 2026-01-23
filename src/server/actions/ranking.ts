@@ -1,9 +1,9 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import prisma from '@/lib/prisma';
-import { auth } from '@/lib/auth'; // Assuming auth helper is here, check import path
 import { headers } from 'next/headers';
+import { auth } from '@/lib/auth'; // Assuming auth helper is here, check import path
+import prisma from '@/lib/prisma';
 
 export async function getRankingConfig() {
   let config = await prisma.rankingSystem.findFirst();
@@ -107,11 +107,11 @@ export async function recalculateRankings() {
   }
 
   // 4. Mettre à jour les profils en masse
-  
+
   // D'abord, on remet tout le monde à 0 pour gérer ceux qui n'ont plus de points
   // Attention : cela réinitialise aussi ceux qui n'ont QUE des ajustements manuels si on ne les a pas ajoutés à la map
   // C'est pourquoi on itère sur la map qui contient TOUS les ids concernés (tournois + ajustements)
-  
+
   await prisma.profile.updateMany({
     data: { rankingPoints: 0 },
   });
@@ -121,7 +121,7 @@ export async function recalculateRankings() {
     // S'assurer que le profil existe (normalement oui via la logique précédente, mais au cas où pour les ajustements isolés)
     const profile = await prisma.profile.findUnique({ where: { userId } });
     if (profile) {
-       await prisma.profile.update({
+      await prisma.profile.update({
         where: { userId },
         data: { rankingPoints: points },
       });
@@ -131,7 +131,7 @@ export async function recalculateRankings() {
         data: {
           userId,
           rankingPoints: points,
-        }
+        },
       });
     }
   }
@@ -204,31 +204,35 @@ export async function getPointAdjustments(limit = 20) {
           id: true,
           name: true,
           image: true,
-        }
+        },
       },
       admin: {
         select: {
           name: true,
-        }
-      }
-    }
+        },
+      },
+    },
   });
 }
 
-export async function addPointAdjustment(userId: string, points: number, reason: string) {
+export async function addPointAdjustment(
+  userId: string,
+  points: number,
+  reason: string,
+) {
   const session = await auth.api.getSession({
-    headers: await headers()
+    headers: await headers(),
   });
-  
-  if (!session?.user) throw new Error("Unauthorized");
+
+  if (!session?.user) throw new Error('Unauthorized');
 
   const adjustment = await prisma.pointAdjustment.create({
     data: {
       userId,
       points,
       reason,
-      adminId: session.user.id
-    }
+      adminId: session.user.id,
+    },
   });
 
   // Mise à jour incrémentale immédiate
@@ -236,9 +240,9 @@ export async function addPointAdjustment(userId: string, points: number, reason:
     where: { userId },
     data: {
       rankingPoints: {
-        increment: points
-      }
-    }
+        increment: points,
+      },
+    },
   });
 
   revalidatePath('/admin/rankings');
@@ -247,7 +251,7 @@ export async function addPointAdjustment(userId: string, points: number, reason:
 
 export async function deletePointAdjustment(id: string) {
   const adjustment = await prisma.pointAdjustment.findUnique({ where: { id } });
-  if (!adjustment) throw new Error("Ajustement introuvable");
+  if (!adjustment) throw new Error('Ajustement introuvable');
 
   await prisma.pointAdjustment.delete({ where: { id } });
 
@@ -256,9 +260,9 @@ export async function deletePointAdjustment(id: string) {
     where: { userId: adjustment.userId },
     data: {
       rankingPoints: {
-        decrement: adjustment.points 
-      }
-    }
+        decrement: adjustment.points,
+      },
+    },
   });
 
   revalidatePath('/admin/rankings');
@@ -266,21 +270,21 @@ export async function deletePointAdjustment(id: string) {
 
 export async function searchUsers(query: string) {
   if (query.length < 2) return [];
-  
+
   return await prisma.user.findMany({
     where: {
       OR: [
         { name: { contains: query, mode: 'insensitive' } },
         { email: { contains: query, mode: 'insensitive' } },
         { discordTag: { contains: query, mode: 'insensitive' } },
-      ]
+      ],
     },
     take: 5,
     select: {
       id: true,
       name: true,
       image: true,
-      email: true
-    }
+      email: true,
+    },
   });
 }

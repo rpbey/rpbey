@@ -1,19 +1,19 @@
 'use client';
 
-import { useState } from 'react';
-import { 
-  Box, 
-  Button, 
-  Card, 
-  CardContent, 
-  Grid, 
-  TextField, 
-  Typography, 
-  Alert,
-  CircularProgress,
-  InputAdornment
-} from '@mui/material';
 import SaveIcon from '@mui/icons-material/Save';
+import {
+  Alert,
+  Box,
+  Button,
+  Card,
+  CardContent,
+  CircularProgress,
+  Grid,
+  InputAdornment,
+  TextField,
+  Typography,
+} from '@mui/material';
+import { useState } from 'react';
 
 interface RankingRules {
   participation: number;
@@ -30,9 +30,11 @@ export function RankingForm({ initialRules }: { initialRules: RankingRules }) {
   const [success, setSuccess] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const handleChange = (field: keyof RankingRules) => (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRules({ ...rules, [field]: parseInt(event.target.value) || 0 });
-  };
+  const handleChange =
+    (field: keyof RankingRules) =>
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      setRules({ ...rules, [field]: parseInt(event.target.value, 10) || 0 });
+    };
 
   const handleSubmit = async () => {
     setLoading(true);
@@ -49,7 +51,7 @@ export function RankingForm({ initialRules }: { initialRules: RankingRules }) {
       if (!res.ok) throw new Error('Erreur lors de la sauvegarde');
 
       setSuccess('Règles mises à jour et classement recalculé avec succès !');
-    } catch (err) {
+    } catch (_err) {
       setError('Impossible de mettre à jour le classement.');
     } finally {
       setLoading(false);
@@ -58,12 +60,23 @@ export function RankingForm({ initialRules }: { initialRules: RankingRules }) {
 
   return (
     <Box>
-      {success && <Alert severity="success" sx={{ mb: 3 }}>{success}</Alert>}
-      {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
+      {success && (
+        <Alert severity="success" sx={{ mb: 3 }}>
+          {success}
+        </Alert>
+      )}
+      {error && (
+        <Alert severity="error" sx={{ mb: 3 }}>
+          {error}
+        </Alert>
+      )}
 
       <Grid container spacing={3}>
         <Grid size={{ xs: 12, md: 6 }}>
-          <Card elevation={0} sx={{ border: '1px solid', borderColor: 'divider' }}>
+          <Card
+            elevation={0}
+            sx={{ border: '1px solid', borderColor: 'divider' }}
+          >
             <CardContent>
               <Typography variant="h6" gutterBottom color="primary">
                 Match & Participation
@@ -71,7 +84,7 @@ export function RankingForm({ initialRules }: { initialRules: RankingRules }) {
               <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
                 Points attribués pour l'activité de base.
               </Typography>
-              
+
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                 <TextField
                   label="Participation"
@@ -79,7 +92,9 @@ export function RankingForm({ initialRules }: { initialRules: RankingRules }) {
                   value={rules.participation}
                   onChange={handleChange('participation')}
                   InputProps={{
-                    endAdornment: <InputAdornment position="end">pts</InputAdornment>,
+                    endAdornment: (
+                      <InputAdornment position="end">pts</InputAdornment>
+                    ),
                   }}
                   helperText="Points reçus juste pour s'être inscrit et check-in."
                 />
@@ -89,7 +104,9 @@ export function RankingForm({ initialRules }: { initialRules: RankingRules }) {
                   value={rules.matchWin}
                   onChange={handleChange('matchWin')}
                   InputProps={{
-                    endAdornment: <InputAdornment position="end">pts</InputAdornment>,
+                    endAdornment: (
+                      <InputAdornment position="end">pts</InputAdornment>
+                    ),
                   }}
                   helperText="Bonus pour chaque match remporté dans l'arbre."
                 />
@@ -99,7 +116,10 @@ export function RankingForm({ initialRules }: { initialRules: RankingRules }) {
         </Grid>
 
         <Grid size={{ xs: 12, md: 6 }}>
-          <Card elevation={0} sx={{ border: '1px solid', borderColor: 'divider' }}>
+          <Card
+            elevation={0}
+            sx={{ border: '1px solid', borderColor: 'divider' }}
+          >
             <CardContent>
               <Typography variant="h6" gutterBottom color="secondary">
                 Performance & Podium
@@ -142,12 +162,18 @@ export function RankingForm({ initialRules }: { initialRules: RankingRules }) {
       </Grid>
 
       <Box sx={{ mt: 4, display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
-        <Button 
-          variant="contained" 
-          size="large" 
-          onClick={handleSubmit} 
+        <Button
+          variant="contained"
+          size="large"
+          onClick={handleSubmit}
           disabled={loading}
-          startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <SaveIcon />}
+          startIcon={
+            loading ? (
+              <CircularProgress size={20} color="inherit" />
+            ) : (
+              <SaveIcon />
+            )
+          }
           sx={{ px: 4 }}
         >
           {loading ? 'Recalcul en cours...' : 'Sauvegarder & Recalculer'}

@@ -96,7 +96,7 @@ export function IconFooter() {
       <Tooltip title="X (Twitter)">
         <IconButton
           component="a"
-          href="https://x.com/i/communities/1809671339109658814"
+          href="https://x.com/rpb_ey"
           target="_blank"
           rel="noopener noreferrer"
           size="small"

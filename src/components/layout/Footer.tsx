@@ -1,4 +1,4 @@
-import GitHubIcon from '@mui/icons-material/GitHub';
+import { GitHub as GitHubIcon, X as XIcon } from '@mui/icons-material';
 import { Box, Container, IconButton, Stack, Typography } from '@mui/material';
 import Link from 'next/link';
 
@@ -64,6 +64,16 @@ export function Footer() {
               aria-label="GitHub"
             >
               <GitHubIcon fontSize="small" />
+            </IconButton>
+            <IconButton
+              component={Link}
+              href="https://x.com/rpb_ey"
+              target="_blank"
+              rel="noopener"
+              size="small"
+              aria-label="X (Twitter)"
+            >
+              <XIcon fontSize="small" />
             </IconButton>{' '}
           </Stack>
         </Stack>

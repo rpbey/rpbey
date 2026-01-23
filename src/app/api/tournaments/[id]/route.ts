@@ -110,10 +110,16 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     }
 
     // SKIP API for B_TS1 (Imported locally)
-    const isOfflineTournament = existing.challongeId === '17261774' || existing.challongeUrl?.includes('B_TS1');
+    const isOfflineTournament =
+      existing.challongeId === '17261774' ||
+      existing.challongeUrl?.includes('B_TS1');
 
     // Update on Challonge if linked AND not offline
-    if (existing.challongeId && (name || description || date) && !isOfflineTournament) {
+    if (
+      existing.challongeId &&
+      (name || description || date) &&
+      !isOfflineTournament
+    ) {
       try {
         const challonge = getChallongeService();
         await challonge.updateTournament(existing.challongeId, {
@@ -171,7 +177,9 @@ export async function DELETE(_request: NextRequest, { params }: RouteParams) {
     }
 
     // Delete from Challonge if linked
-    const isOfflineTournament = tournament.challongeId === '17261774' || tournament.challongeUrl?.includes('B_TS1');
+    const isOfflineTournament =
+      tournament.challongeId === '17261774' ||
+      tournament.challongeUrl?.includes('B_TS1');
 
     if (tournament.challongeId && !isOfflineTournament) {
       try {
@@ -242,8 +250,15 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     }
 
     // SKIP API for B_TS1
-    if (tournament.challongeId === '17261774' || tournament.challongeUrl?.includes('B_TS1')) {
-       return NextResponse.json({ success: true, action, message: 'Tournament is in offline mode (B_TS1)' });
+    if (
+      tournament.challongeId === '17261774' ||
+      tournament.challongeUrl?.includes('B_TS1')
+    ) {
+      return NextResponse.json({
+        success: true,
+        action,
+        message: 'Tournament is in offline mode (B_TS1)',
+      });
     }
 
     const challonge = getChallongeService();

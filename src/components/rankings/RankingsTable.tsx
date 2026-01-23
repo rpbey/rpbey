@@ -4,6 +4,7 @@ import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Pagination from '@mui/material/Pagination';
 import Paper from '@mui/material/Paper';
+import { useTheme } from '@mui/material/styles';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -11,13 +12,12 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
-import { useTheme } from '@mui/material/styles';
+import type { Profile, User } from '@prisma/client';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import type { Profile, User } from '@prisma/client';
 import { getInitials } from '@/lib/utils';
 
-type ProfileWithUser = Profile & { 
+type ProfileWithUser = Profile & {
   user: User & {
     _count: {
       tournaments: number;
@@ -41,7 +41,10 @@ export function RankingsTable({
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
+  const handlePageChange = (
+    _event: React.ChangeEvent<unknown>,
+    value: number,
+  ) => {
     const params = new URLSearchParams(searchParams);
     params.set('page', value.toString());
     router.push(`/rankings?${params.toString()}`);
@@ -50,7 +53,7 @@ export function RankingsTable({
   const getRankColor = (index: number) => {
     // Calcul du rang absolu basé sur la page
     const absoluteRank = (currentPage - 1) * 20 + index + 1;
-    
+
     if (absoluteRank === 1) return '#FFD700'; // Or
     if (absoluteRank === 2) return '#C0C0C0'; // Argent
     if (absoluteRank === 3) return '#CD7F32'; // Bronze
@@ -59,7 +62,7 @@ export function RankingsTable({
 
   const getRankBadge = (index: number) => {
     const absoluteRank = (currentPage - 1) * 20 + index + 1;
-    
+
     if (absoluteRank <= 3) {
       return (
         <Box
@@ -75,14 +78,15 @@ export function RankingsTable({
             fontWeight: 'bold',
             mx: 'auto',
             boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
-            textShadow: absoluteRank === 1 ? 'none' : '0 1px 2px rgba(0,0,0,0.3)'
+            textShadow:
+              absoluteRank === 1 ? 'none' : '0 1px 2px rgba(0,0,0,0.3)',
           }}
         >
           {absoluteRank}
         </Box>
       );
     }
-    
+
     return (
       <Typography fontWeight="bold" color="text.secondary">
         #{absoluteRank}
@@ -100,13 +104,15 @@ export function RankingsTable({
           borderColor: 'divider',
           borderRadius: 4,
           overflow: 'hidden',
-          mb: 4
+          mb: 4,
         }}
       >
         <Table>
           <TableHead>
             <TableRow sx={{ bgcolor: 'action.hover' }}>
-              <TableCell width={80} align="center">Rang</TableCell>
+              <TableCell width={80} align="center">
+                Rang
+              </TableCell>
               <TableCell>Blader</TableCell>
               <TableCell align="center">Points</TableCell>
               <TableCell align="center">Participations</TableCell>
@@ -125,17 +131,15 @@ export function RankingsTable({
                     : '0';
 
                 return (
-                  <TableRow 
-                    key={profile.id} 
-                    hover 
-                    sx={{ 
+                  <TableRow
+                    key={profile.id}
+                    hover
+                    sx={{
                       '&:last-child td, &:last-child th': { border: 0 },
-                      transition: 'background-color 0.2s' 
+                      transition: 'background-color 0.2s',
                     }}
                   >
-                    <TableCell align="center">
-                      {getRankBadge(index)}
-                    </TableCell>
+                    <TableCell align="center">{getRankBadge(index)}</TableCell>
                     <TableCell>
                       <Link
                         href={`/profile/${profile.userId}`}
@@ -153,34 +157,38 @@ export function RankingsTable({
                             },
                           }}
                         >
-                          <Avatar 
+                          <Avatar
                             src={profile.user.image || undefined}
-                            sx={{ 
-                              width: 48, 
+                            sx={{
+                              width: 48,
                               height: 48,
                               border: `2px solid ${theme.palette.background.paper}`,
-                              boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
                             }}
                           >
-                            {getInitials(profile.bladerName || profile.user.name)}
+                            {getInitials(
+                              profile.bladerName || profile.user.name,
+                            )}
                           </Avatar>
                           <Box>
                             <Typography
                               fontWeight="bold"
                               sx={{ transition: 'color 0.2s' }}
                             >
-                              {profile.bladerName || profile.user.name || 'Anonyme'}
+                              {profile.bladerName ||
+                                profile.user.name ||
+                                'Anonyme'}
                             </Typography>
                             <Typography
                               variant="caption"
                               color="text.secondary"
-                              sx={{ 
+                              sx={{
                                 display: 'inline-block',
                                 bgcolor: 'action.selected',
                                 px: 1,
                                 py: 0.2,
                                 borderRadius: 1,
-                                mt: 0.5
+                                mt: 0.5,
                               }}
                             >
                               {profile.favoriteType || 'Type inconnu'}
@@ -197,7 +205,9 @@ export function RankingsTable({
                       >
                         {profile.rankingPoints}
                       </Typography>
-                      <Typography variant="caption" color="text.secondary">pts</Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        pts
+                      </Typography>
                     </TableCell>
                     <TableCell align="center">
                       <Typography fontWeight="bold">
@@ -206,9 +216,18 @@ export function RankingsTable({
                     </TableCell>
                     <TableCell align="center">
                       {profile.tournamentWins > 0 ? (
-                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0.5 }}>
+                        <Box
+                          sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: 0.5,
+                          }}
+                        >
                           <span style={{ fontSize: '1.2rem' }}>🏆</span>
-                          <Typography fontWeight="bold">{profile.tournamentWins}</Typography>
+                          <Typography fontWeight="bold">
+                            {profile.tournamentWins}
+                          </Typography>
                         </Box>
                       ) : (
                         <Typography color="text.disabled">-</Typography>
@@ -216,16 +235,26 @@ export function RankingsTable({
                     </TableCell>
                     <TableCell align="center">
                       <Typography variant="body2">
-                        <span style={{ color: theme.palette.success.main }}>{profile.wins}W</span>
+                        <span style={{ color: theme.palette.success.main }}>
+                          {profile.wins}W
+                        </span>
                         {' / '}
-                        <span style={{ color: theme.palette.error.main }}>{profile.losses}L</span>
+                        <span style={{ color: theme.palette.error.main }}>
+                          {profile.losses}L
+                        </span>
                       </Typography>
                     </TableCell>
                     <TableCell align="center">
-                      <Box sx={{ position: 'relative', display: 'inline-flex' }}>
-                        <Typography 
-                          fontWeight="bold" 
-                          color={parseFloat(winRate) >= 50 ? 'success.main' : 'text.secondary'}
+                      <Box
+                        sx={{ position: 'relative', display: 'inline-flex' }}
+                      >
+                        <Typography
+                          fontWeight="bold"
+                          color={
+                            parseFloat(winRate) >= 50
+                              ? 'success.main'
+                              : 'text.secondary'
+                          }
                         >
                           {winRate}%
                         </Typography>

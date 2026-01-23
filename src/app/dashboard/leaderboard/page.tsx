@@ -57,7 +57,7 @@ export default function LeaderboardPage() {
           Classement
         </Typography>
         <Typography color="text.secondary">
-          Classement global des bladers basé sur le système ELO
+          Classement officiel RPB basé sur les points de tournoi
         </Typography>
       </Box>
 
@@ -68,7 +68,7 @@ export default function LeaderboardPage() {
               <TableRow>
                 <TableCell width={80}>Rang</TableCell>
                 <TableCell>Blader</TableCell>
-                <TableCell align="right">ELO</TableCell>
+                <TableCell align="right">Points</TableCell>
                 <TableCell
                   align="right"
                   sx={{ display: { xs: 'none', sm: 'table-cell' } }}
@@ -156,10 +156,11 @@ export default function LeaderboardPage() {
                     </TableCell>
                     <TableCell align="right">
                       <Chip
-                        label={entry.elo}
+                        label={entry.points.toLocaleString()}
                         size="small"
                         color="primary"
                         variant="outlined"
+                        sx={{ fontWeight: 'bold' }}
                       />
                     </TableCell>
                     <TableCell

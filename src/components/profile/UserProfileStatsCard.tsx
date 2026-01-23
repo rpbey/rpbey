@@ -220,13 +220,13 @@ export function UserProfileStatsCard({ stats }: StatsCardProps) {
             />
           </Grid>
 
-          {/* ELO / Rank */}
+          {/* Points / Rank */}
           <Grid size={{ xs: 12, sm: 6 }}>
             <StatItem
               icon={<TrendingUpIcon />}
-              label="Classement"
+              label="Rang & Points"
               value={`#${stats.rank}`}
-              subValue={`${stats.elo} ELO`}
+              subValue={`${stats.points.toLocaleString()} pts`}
               color="info.main"
             />
           </Grid>

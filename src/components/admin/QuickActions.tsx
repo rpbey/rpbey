@@ -38,7 +38,7 @@ export function QuickActions() {
     {
       label: 'Créer un tournoi',
       icon: TrophyIcon,
-      onClick: () => router.push('/admin/tournaments/new'),
+      onClick: () => router.push('/admin/tournaments?action=new'),
     },
     {
       label: isRestarting ? 'Redémarrage...' : 'Redémarrer le bot',

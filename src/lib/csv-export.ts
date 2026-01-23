@@ -8,8 +8,8 @@ export function jsonToCsv(data: Record<string, any>[]): string {
   const csvRows = [headers.join(',')];
 
   for (const row of data) {
-    const values = headers.map(header => {
-      const escaped = ('' + row[header]).replace(/"/g, '"');
+    const values = headers.map((header) => {
+      const escaped = `${row[header]}`.replace(/"/g, '"');
       return `"${escaped}"`;
     });
     csvRows.push(values.join(','));
@@ -26,7 +26,7 @@ export function generateTournamentExport(tournament: any) {
     Pseudo_Discord: p.user.discordTag || '-',
     Victoires: p.wins,
     Defaites: p.losses,
-    Points: p.user.profile?.rankingPoints || 0
+    Points: p.user.profile?.rankingPoints || 0,
   }));
 
   return jsonToCsv(participantsData);

@@ -23,7 +23,11 @@ export function ModelViewer({ modelUrl, textureUrl }: ModelViewerProps) {
       <Canvas shadows dpr={[1, 2]}>
         <PerspectiveCamera makeDefault position={[0, 0, 5]} fov={50} />
         <Suspense fallback={null}>
-                    <Stage environment="city" intensity={0.5} shadows={{ type: 'contact', opacity: 0.4, blur: 2 }}>
+          <Stage
+            environment="city"
+            intensity={0.5}
+            shadows={{ type: 'contact', opacity: 0.4, blur: 2 }}
+          >
             <Model modelUrl={modelUrl} textureUrl={textureUrl} />
           </Stage>
         </Suspense>

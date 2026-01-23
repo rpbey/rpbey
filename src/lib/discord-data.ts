@@ -102,18 +102,18 @@ export async function getDiscordTeam(): Promise<TeamGroup[]> {
 
     // Sort order: ADMIN -> RH -> ARBITRE -> STAFF -> Others
     const sortOrder: RoleType[] = ['ADMIN', 'RH', 'ARBITRE', 'STAFF'];
-    
+
     return teamData
       .filter((t) => t.members.length > 0)
       .sort((a, b) => {
         const indexA = sortOrder.indexOf(a.roleType);
         const indexB = sortOrder.indexOf(b.roleType);
-        
+
         // Items in sortOrder come first
         if (indexA !== -1 && indexB !== -1) return indexA - indexB;
         if (indexA !== -1) return -1;
         if (indexB !== -1) return 1;
-        
+
         // Fallback to alphabetical or defined order
         return 0;
       });

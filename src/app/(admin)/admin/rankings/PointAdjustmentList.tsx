@@ -1,10 +1,6 @@
 'use client';
 
-import {
-  Add,
-  Delete,
-  History,
-} from '@mui/icons-material';
+import { Add, Delete, History } from '@mui/icons-material';
 import {
   Alert,
   Autocomplete,
@@ -25,7 +21,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import {
   addPointAdjustment,
   deletePointAdjustment,
@@ -63,7 +59,10 @@ export default function PointAdjustmentList() {
   const [loading, setLoading] = useState(false);
   const [searchLoading, setSearchLoading] = useState(false);
   const [adjustments, setAdjustments] = useState<Adjustment[]>([]);
-  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [message, setMessage] = useState<{
+    type: 'success' | 'error';
+    text: string;
+  } | null>(null);
 
   const fetchAdjustments = async () => {
     try {
@@ -76,9 +75,12 @@ export default function PointAdjustmentList() {
 
   useEffect(() => {
     fetchAdjustments();
-  }, []);
+  }, [fetchAdjustments]);
 
-  const handleSearchUser = async (event: React.SyntheticEvent, value: string) => {
+  const handleSearchUser = async (
+    _event: React.SyntheticEvent,
+    value: string,
+  ) => {
     if (value.length < 2) {
       setUsers([]);
       return;
@@ -102,22 +104,27 @@ export default function PointAdjustmentList() {
     setMessage(null);
 
     try {
-      await addPointAdjustment(selectedUser.id, parseInt(points), reason);
+      await addPointAdjustment(selectedUser.id, parseInt(points, 10), reason);
       setMessage({ type: 'success', text: 'Points ajustés avec succès.' });
       setSelectedUser(null);
       setPoints('');
       setReason('');
       fetchAdjustments();
     } catch {
-      setMessage({ type: 'error', text: 'Erreur lors de l\'ajustement.' });
+      setMessage({ type: 'error', text: "Erreur lors de l'ajustement." });
     } finally {
       setLoading(false);
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Voulez-vous vraiment annuler cet ajustement ? Cela inversera l\'opération sur le solde du joueur.')) return;
-    
+    if (
+      !confirm(
+        "Voulez-vous vraiment annuler cet ajustement ? Cela inversera l'opération sur le solde du joueur.",
+      )
+    )
+      return;
+
     try {
       await deletePointAdjustment(id);
       fetchAdjustments();
@@ -136,7 +143,11 @@ export default function PointAdjustmentList() {
       <Divider />
       <CardContent>
         {message && (
-          <Alert severity={message.type} sx={{ mb: 3 }} onClose={() => setMessage(null)}>
+          <Alert
+            severity={message.type}
+            sx={{ mb: 3 }}
+            onClose={() => setMessage(null)}
+          >
             {message.text}
           </Alert>
         )}
@@ -147,7 +158,7 @@ export default function PointAdjustmentList() {
               <Autocomplete
                 options={users}
                 getOptionLabel={(option) => option.name || option.email}
-                filterOptions={(x) => x} 
+                filterOptions={(x) => x}
                 loading={searchLoading}
                 onInputChange={handleSearchUser}
                 onChange={(_, value) => setSelectedUser(value)}
@@ -162,7 +173,9 @@ export default function PointAdjustmentList() {
                       ...params.InputProps,
                       endAdornment: (
                         <>
-                          {searchLoading ? <CircularProgress color="inherit" size={20} /> : null}
+                          {searchLoading ? (
+                            <CircularProgress color="inherit" size={20} />
+                          ) : null}
                           {params.InputProps.endAdornment}
                         </>
                       ),
@@ -172,9 +185,14 @@ export default function PointAdjustmentList() {
                 renderOption={(props, option) => (
                   <li {...props} key={option.id}>
                     <Box display="flex" alignItems="center" gap={1}>
-                      <Avatar src={option.image || undefined} sx={{ width: 24, height: 24 }} />
+                      <Avatar
+                        src={option.image || undefined}
+                        sx={{ width: 24, height: 24 }}
+                      />
                       <Typography variant="body2">{option.name}</Typography>
-                      <Typography variant="caption" color="text.secondary">({option.email})</Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        ({option.email})
+                      </Typography>
                     </Box>
                   </li>
                 )}
@@ -206,7 +224,13 @@ export default function PointAdjustmentList() {
                 variant="contained"
                 fullWidth
                 sx={{ height: 56 }}
-                startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <Add />}
+                startIcon={
+                  loading ? (
+                    <CircularProgress size={20} color="inherit" />
+                  ) : (
+                    <Add />
+                  )
+                }
                 disabled={loading || !selectedUser}
               >
                 Ajouter
@@ -216,7 +240,10 @@ export default function PointAdjustmentList() {
         </form>
 
         <Box sx={{ mt: 4 }}>
-          <Typography variant="subtitle2" sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+          <Typography
+            variant="subtitle2"
+            sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}
+          >
             <History fontSize="small" />
             Derniers ajustements
           </Typography>
@@ -225,16 +252,20 @@ export default function PointAdjustmentList() {
               <ListItem
                 key={adj.id}
                 secondaryAction={
-                  <IconButton edge="end" aria-label="delete" onClick={() => handleDelete(adj.id)}>
+                  <IconButton
+                    edge="end"
+                    aria-label="delete"
+                    onClick={() => handleDelete(adj.id)}
+                  >
                     <Delete />
                   </IconButton>
                 }
-                sx={{ 
-                  bgcolor: 'background.default', 
-                  mb: 1, 
+                sx={{
+                  bgcolor: 'background.default',
+                  mb: 1,
                   borderRadius: 1,
                   borderLeft: '4px solid',
-                  borderColor: adj.points > 0 ? 'success.main' : 'error.main'
+                  borderColor: adj.points > 0 ? 'success.main' : 'error.main',
                 }}
               >
                 <ListItemAvatar>
@@ -244,30 +275,43 @@ export default function PointAdjustmentList() {
                 </ListItemAvatar>
                 <ListItemText
                   primary={
-                    <Box component="span" sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-                      <Typography variant="body2" component="span" fontWeight="bold">
+                    <Box
+                      component="span"
+                      sx={{ display: 'flex', gap: 1, alignItems: 'center' }}
+                    >
+                      <Typography
+                        variant="body2"
+                        component="span"
+                        fontWeight="bold"
+                      >
                         {adj.user.name}
                       </Typography>
-                      <Typography 
-                        variant="body2" 
-                        component="span" 
+                      <Typography
+                        variant="body2"
+                        component="span"
                         color={adj.points > 0 ? 'success.main' : 'error.main'}
                         fontWeight="bold"
                       >
-                        {adj.points > 0 ? '+' : ''}{adj.points} pts
+                        {adj.points > 0 ? '+' : ''}
+                        {adj.points} pts
                       </Typography>
                     </Box>
                   }
                   secondary={
                     <>
-                      {adj.reason} — par {adj.admin?.name || 'Système'} le {new Date(adj.createdAt).toLocaleDateString()}
+                      {adj.reason} — par {adj.admin?.name || 'Système'} le{' '}
+                      {new Date(adj.createdAt).toLocaleDateString()}
                     </>
                   }
                 />
               </ListItem>
             ))}
             {adjustments.length === 0 && (
-              <Typography variant="body2" color="text.secondary" sx={{ py: 2, textAlign: 'center' }}>
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{ py: 2, textAlign: 'center' }}
+              >
                 Aucun ajustement récent.
               </Typography>
             )}

@@ -76,7 +76,7 @@ export function DiscordStatusCard({
     );
   }
 
-  const onlineCount = stats?.onlineCount || 0;
+  const _onlineCount = stats?.onlineCount || 0;
   const totalCount = stats?.memberCount || 0;
   const serverName = stats?.serverName || 'RPB Community';
 

@@ -203,18 +203,20 @@ export default function TournamentDetailPage({
     try {
       // Use the new CSV Export API
       const url = `/api/admin/export/tournament/${id}`;
-      
+
       // Create a temporary link to trigger download
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', `RPB_Export_${tournament.name.replace(/[^a-z0-9]/gi, '_')}.csv`);
+      link.setAttribute(
+        'download',
+        `RPB_Export_${tournament.name.replace(/[^a-z0-9]/gi, '_')}.csv`,
+      );
       document.body.appendChild(link);
       link.click();
       link.remove();
-
     } catch (err) {
       console.error('Export error:', err);
-      alert('Une erreur est survenue lors de l\'export');
+      alert("Une erreur est survenue lors de l'export");
     } finally {
       setActionLoading(null);
     }

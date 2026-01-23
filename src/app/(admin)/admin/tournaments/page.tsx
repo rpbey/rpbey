@@ -29,6 +29,7 @@ import {
 } from '@mui/material';
 import TablePagination from '@mui/material/TablePagination';
 import type { Tournament } from '@prisma/client';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 import {
   PageHeader,
@@ -50,6 +51,8 @@ import { CommunitySyncDialog } from './CommunitySyncDialog';
 import { TournamentDialog } from './TournamentDialog';
 
 export default function AdminTournamentsPage() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const [tournaments, setTournaments] = useState<
     (Tournament & { _count: { participants: number } })[]
   >([]);
@@ -71,6 +74,14 @@ export default function AdminTournamentsPage() {
     activeTournaments: 0,
     totalParticipants: 0,
   });
+
+  useEffect(() => {
+    if (searchParams.get('action') === 'new') {
+      setDialogOpen(true);
+      // Clean up URL
+      router.replace('/admin/tournaments');
+    }
+  }, [searchParams, router]);
 
   const debouncedSearch = useDebounce(search, 500);
 

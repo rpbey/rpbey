@@ -1,9 +1,8 @@
-
+import { headers } from 'next/headers';
 import { NextResponse } from 'next/server';
+import { auth } from '@/lib/auth'; // Suppose une lib auth standard
 import { prisma } from '@/lib/prisma';
 import { RankingService } from '@/lib/ranking-service';
-import { auth } from '@/lib/auth'; // Suppose une lib auth standard
-import { headers } from 'next/headers';
 
 export async function GET() {
   try {
@@ -16,7 +15,10 @@ export async function GET() {
     const rules = await prisma.rankingSystem.findFirst();
     return NextResponse.json(rules || {});
   } catch (_error) {
-    return NextResponse.json({ error: 'Failed to fetch rules' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Failed to fetch rules' },
+      { status: 500 },
+    );
   }
 }
 
@@ -28,19 +30,40 @@ export async function PUT(request: Request) {
     }
 
     const body = await request.json();
-    const { participation, matchWin, firstPlace, secondPlace, thirdPlace, top8 } = body;
+    const {
+      participation,
+      matchWin,
+      firstPlace,
+      secondPlace,
+      thirdPlace,
+      top8,
+    } = body;
 
     // Mise à jour ou Création (upsert like behavior but ensuring single row)
     const existing = await prisma.rankingSystem.findFirst();
-    
+
     if (existing) {
       await prisma.rankingSystem.update({
         where: { id: existing.id },
-        data: { participation, matchWin, firstPlace, secondPlace, thirdPlace, top8 }
+        data: {
+          participation,
+          matchWin,
+          firstPlace,
+          secondPlace,
+          thirdPlace,
+          top8,
+        },
       });
     } else {
       await prisma.rankingSystem.create({
-        data: { participation, matchWin, firstPlace, secondPlace, thirdPlace, top8 }
+        data: {
+          participation,
+          matchWin,
+          firstPlace,
+          secondPlace,
+          thirdPlace,
+          top8,
+        },
       });
     }
 
@@ -50,6 +73,9 @@ export async function PUT(request: Request) {
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error(error);
-    return NextResponse.json({ error: 'Failed to update rules' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Failed to update rules' },
+      { status: 500 },
+    );
   }
 }

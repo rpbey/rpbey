@@ -28,12 +28,14 @@ export interface UserStats {
     wins: number;
     losses: number;
   }[];
+  points: number; // Added points field
 }
 
 export interface LeaderboardEntry {
   userId: string;
   bladerName: string;
   elo: number;
+  points: number; // Added points field
   wins: number;
   losses: number;
   winRate: number;
@@ -154,39 +156,21 @@ export async function getUserStats(userId: string): Promise<UserStats | null> {
   const eloChange = totalWins * 15 - totalLosses * 15;
   const elo = STARTING_ELO + eloChange;
 
-  // Get rank based on ELO
+  // Use Official Points from Profile
+  const points = user.profile?.rankingPoints || 0;
+
+  // Get rank based on POINTS (not ELO)
   const allUsers = await prisma.user.findMany({
     include: { profile: true },
   });
 
-  const allStats = await Promise.all(
-    allUsers.map(async (u) => {
-      const userMatches = await prisma.tournamentMatch.count({
-        where: {
-          winnerId: u.id,
-          state: 'complete',
-        },
-      });
-      const userLossesCount = await prisma.tournamentMatch.count({
-        where: {
-          OR: [{ player1Id: u.id }, { player2Id: u.id }],
-          NOT: { winnerId: u.id },
-          state: 'complete',
-        },
-      });
+  const allStats = allUsers.map((u) => ({
+    id: u.id,
+    points: u.profile?.rankingPoints || 0,
+  }));
 
-      const uWins = (u.profile?.wins || 0) + userMatches;
-      const uLosses = (u.profile?.losses || 0) + userLossesCount;
-
-      return {
-        id: u.id,
-        elo: STARTING_ELO + uWins * 15 - uLosses * 15,
-      };
-    }),
-  );
-
-  const sortedByElo = allStats.sort((a, b) => b.elo - a.elo);
-  const rank = sortedByElo.findIndex((s) => s.id === userId) + 1;
+  const sortedByPoints = allStats.sort((a, b) => b.points - a.points);
+  const rank = sortedByPoints.findIndex((s) => s.id === userId) + 1;
 
   // Analyze most used parts from active decks
   const bladeUsage: Record<string, { name: string; count: number }> = {};
@@ -289,6 +273,7 @@ export async function getUserStats(userId: string): Promise<UserStats | null> {
     recentForm,
     rank,
     elo,
+    points, // Return points
     mostUsedBlades,
     mostUsedRatchets,
     mostUsedBits,
@@ -326,19 +311,21 @@ export async function getLeaderboard(limit = 50): Promise<LeaderboardEntry[]> {
           ? (totalWins / (totalWins + totalLosses)) * 100
           : 0;
       const elo = STARTING_ELO + totalWins * 15 - totalLosses * 15;
+      const points = user.profile?.rankingPoints || 0;
 
       return {
         userId: user.id,
         bladerName: user.profile?.bladerName ?? user.name ?? 'Unknown',
         elo,
+        points,
         wins: totalWins,
         losses: totalLosses,
         winRate,
         rank: 0,
       };
     })
-    .filter((entry) => entry.wins + entry.losses > 0)
-    .sort((a, b) => b.elo - a.elo)
+    .filter((entry) => entry.wins + entry.losses > 0 || entry.points > 0) // Include if they have points OR matches
+    .sort((a, b) => b.points - a.points) // Sort by POINTS
     .slice(0, limit);
 
   // Assign ranks

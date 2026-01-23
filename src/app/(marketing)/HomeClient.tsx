@@ -17,6 +17,19 @@ import { OnlineMembersCounter } from '@/components/ui/OnlineMembersCounter';
 import { useSession } from '@/lib/auth-client';
 import type { DiscordStats, TeamGroup } from '@/lib/discord-data';
 
+// M3 Motion Easings
+// https://m3.material.io/styles/motion/easing-and-duration/tokens-specs
+const EASE = {
+  // Emphasized: Begin and end on screen. Used for most standard transitions.
+  EMPHASIZED: [0.2, 0.0, 0.0, 1.0] as const,
+  // Emphasized Decelerate: Entering screen.
+  EMPHASIZED_DECELERATE: [0.05, 0.7, 0.1, 1.0] as const,
+  // Emphasized Accelerate: Exiting screen.
+  EMPHASIZED_ACCELERATE: [0.3, 0.0, 0.8, 0.15] as const,
+  // Standard: General use.
+  STANDARD: [0.2, 0.0, 0, 1.0] as const,
+};
+
 interface HomeClientProps {
   discordStats: DiscordStats;
   discordTeam: TeamGroup[];
@@ -37,8 +50,8 @@ export default function HomeClient({
   const heroOpacity = useTransform(scrollY, [0, 400], [1, 0]);
   const textY = useTransform(scrollY, [0, 500], [0, 50]);
 
-  // Smooth spring for image
-  const imageSpring = useSpring(scrollY, { stiffness: 100, damping: 30 });
+  // Smooth spring for image - using a slightly more expressive spring
+  const imageSpring = useSpring(scrollY, { stiffness: 70, damping: 15 });
   const imageY = useTransform(imageSpring, [0, 500], [0, -50]);
 
   return (
@@ -46,7 +59,7 @@ export default function HomeClient({
       {/* Hero Section */}
       <Box
         component={motion.div}
-        style={{ opacity: heroOpacity }}
+        style={{ opacity: heroOpacity } as any}
         sx={{
           position: 'relative',
           minHeight: { xs: '80vh', md: '90vh' },
@@ -59,7 +72,7 @@ export default function HomeClient({
         {/* Parallax Background */}
         <Box
           component={motion.div}
-          style={{ y: heroY }}
+          style={{ y: heroY } as any}
           sx={{
             position: 'absolute',
             top: 0,
@@ -70,7 +83,7 @@ export default function HomeClient({
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             zIndex: -1,
-            transition: 'background-image 0.5s ease',
+            transition: 'background-image 0.5s cubic-bezier(0.2, 0, 0, 1)',
           }}
         />
 
@@ -95,10 +108,13 @@ export default function HomeClient({
             <Grid size={{ xs: 12, md: 7 }}>
               <Box
                 component={motion.div}
-                initial={{ opacity: 0, y: 30, filter: 'blur(10px)' }}
+                initial={{ opacity: 0, y: 40, filter: 'blur(10px)' }}
                 animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                transition={{ duration: 1, ease: 'easeOut' }}
-                style={{ y: textY }}
+                transition={{
+                  duration: 0.8,
+                  ease: EASE.EMPHASIZED_DECELERATE as any,
+                }}
+                style={{ y: textY } as any}
               >
                 <Typography
                   variant="h1"
@@ -136,7 +152,11 @@ export default function HomeClient({
                   component={motion.p}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 0.9, x: 0 }}
-                  transition={{ delay: 0.3, duration: 0.8 }}
+                  transition={{
+                    delay: 0.2,
+                    duration: 0.6,
+                    ease: EASE.EMPHASIZED as any,
+                  }}
                   sx={{
                     mb: 5,
                     maxWidth: 550,
@@ -156,7 +176,11 @@ export default function HomeClient({
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   whileInView={{ opacity: 1 }}
-                  transition={{ delay: 0.6, duration: 0.8 }}
+                  transition={{
+                    delay: 0.4,
+                    duration: 0.6,
+                    ease: EASE.EMPHASIZED_DECELERATE as any,
+                  }}
                   sx={{ mt: 4 }}
                 >
                   <OnlineMembersCounter />
@@ -170,10 +194,14 @@ export default function HomeClient({
                   component={motion.img}
                   src="/tournoi.png"
                   alt="Tournoi Beyblade"
-                  style={{ y: imageY }}
-                  initial={{ scale: 0.8, opacity: 0, rotate: -10 }}
+                  style={{ y: imageY } as any}
+                  initial={{ scale: 0.8, opacity: 0, rotate: -5 }}
                   animate={{ scale: 1, opacity: 1, rotate: 0 }}
-                  transition={{ delay: 0.4, duration: 1.2, type: 'spring' }}
+                  transition={{
+                    delay: 0.2,
+                    duration: 1.0,
+                    ease: EASE.EMPHASIZED as any, // Using emphasized easing instead of spring for cleaner entrance
+                  }}
                   sx={{
                     width: '100%',
                     filter:
@@ -196,7 +224,10 @@ export default function HomeClient({
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-50px' }}
-            transition={{ duration: 0.6 }}
+            transition={{
+              duration: 0.6,
+              ease: EASE.EMPHASIZED_DECELERATE as any,
+            }}
           >
             <Typography
               variant="h3"
@@ -227,10 +258,10 @@ export default function HomeClient({
       <Container maxWidth="lg" sx={{ py: 4 }}>
         <Box
           component={motion.div}
-          initial={{ opacity: 0, scale: 0.95 }}
-          whileInView={{ opacity: 1, scale: 1 }}
+          initial={{ opacity: 0, scale: 0.95, y: 20 }}
+          whileInView={{ opacity: 1, scale: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.6, ease: EASE.EMPHASIZED as any }}
         >
           <FeedMyPartnership />
         </Box>
@@ -240,10 +271,13 @@ export default function HomeClient({
       <Container maxWidth="lg" sx={{ py: 8, position: 'relative' }}>
         <Box
           component={motion.div}
-          initial={{ opacity: 0, y: 50 }}
+          initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
+          transition={{
+            duration: 0.7,
+            ease: EASE.EMPHASIZED_DECELERATE as any,
+          }}
           sx={{
             position: 'relative',
             borderRadius: 8,
@@ -293,32 +327,53 @@ export default function HomeClient({
                 textAlign: { xs: 'center', md: 'left' },
               }}
             >
-              <Typography
-                variant="h2"
-                fontWeight={900}
-                gutterBottom
-                sx={{
-                  color: 'white',
-                  fontSize: { xs: '2.5rem', md: '3.5rem' },
-                  letterSpacing: '-0.02em',
-                  lineHeight: 1.1,
+              <Box
+                component={motion.div}
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{
+                  delay: 0.2,
+                  duration: 0.6,
+                  ease: EASE.EMPHASIZED as any,
                 }}
               >
-                Prêt à rejoindre
-                <br />
-                <Box component="span" sx={{ color: '#fbbf24' }}>
-                  la communauté ?
-                </Box>
-              </Typography>
+                <Typography
+                  variant="h2"
+                  fontWeight={900}
+                  gutterBottom
+                  sx={{
+                    color: 'white',
+                    fontSize: { xs: '2.5rem', md: '3.5rem' },
+                    letterSpacing: '-0.02em',
+                    lineHeight: 1.1,
+                  }}
+                >
+                  Prêt à rejoindre
+                  <br />
+                  <Box component="span" sx={{ color: '#fbbf24' }}>
+                    la communauté ?
+                  </Box>
+                </Typography>
+              </Box>
 
               <Stack
+                component={motion.div}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{
+                  delay: 0.3,
+                  duration: 0.6,
+                  ease: EASE.EMPHASIZED as any,
+                }}
                 direction={{ xs: 'column', sm: 'row' }}
                 spacing={2}
                 justifyContent={{ xs: 'center', md: 'flex-start' }}
               >
                 <Button
                   component="a"
-                  href="https://x.com/i/communities/1809671339109658814"
+                  href="https://x.com/rpb_ey"
                   target="_blank"
                   rel="noopener noreferrer"
                   variant="contained"
@@ -373,7 +428,7 @@ export default function HomeClient({
                     transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                   }}
                 >
-                  Rejoindre la Communauté
+                  Nous suivre sur X
                 </Button>
 
                 {session?.user?.role === 'admin' ? (

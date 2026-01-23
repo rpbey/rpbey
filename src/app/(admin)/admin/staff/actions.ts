@@ -90,7 +90,13 @@ export async function getMembersByRole(roleId: string) {
 
 import { getBotApiUrl } from '@/lib/bot-config';
 
-// ... (existing imports)
+const ROLE_PRIORITY: Record<string, number> = {
+  admin: 100,
+  rh: 90,
+  modo: 80,
+  staff: 70,
+  arbitre: 60,
+};
 
 export async function syncStaffFromDiscord() {
   await checkAdmin();
@@ -103,23 +109,32 @@ export async function syncStaffFromDiscord() {
     errors: 0,
   };
 
-  // ... (existing priority definition)
+  const staffMap = new Map<
+    string,
+    { member: BotMember; roleType: string; priority: number }
+  >();
 
   // 1. Collect all members from all mapped roles
-  for (const [roleId, roleType] of Object.entries(DiscordRoleMapping)) {
+  for (const [roleId, roleKey] of Object.entries(DiscordRoleMapping)) {
     try {
+      const roleType = roleKey.toLowerCase();
       console.log(`[SyncStaff] Fetching role ${roleType} (${roleId})...`);
       const members = await getMembersByRole(roleId);
-      console.log(`[SyncStaff] Found ${members.length} members for ${roleType}`);
-      
+      console.log(
+        `[SyncStaff] Found ${members.length} members for ${roleType}`,
+      );
+
       const priority = ROLE_PRIORITY[roleType] || 0;
 
       for (const member of members) {
-        // ... (existing map logic)
+        const existing = staffMap.get(member.id);
+        if (!existing || existing.priority < priority) {
+          staffMap.set(member.id, { member, roleType, priority });
+        }
       }
     } catch (e) {
       console.error(
-        `[SyncStaff] Failed to fetch members for role ${roleType} (${roleId}):`,
+        `[SyncStaff] Failed to fetch members for role ${roleKey} (${roleId}):`,
         e,
       );
       results.errors++;
@@ -129,13 +144,43 @@ export async function syncStaffFromDiscord() {
   // 2. Upsert unique users with their highest role
   for (const [discordId, { member, roleType }] of staffMap.entries()) {
     try {
-      // ... (existing upsert logic)
+      const avatarHash = member.serverAvatar || member.avatar;
+      let imageUrl = null;
+      if (avatarHash) {
+        imageUrl = `https://cdn.discordapp.com/avatars/${member.id}/${member.avatar}.png`;
+      }
+
+      const name = member.displayName || member.username;
+
+      const data = {
+        name,
+        role: roleType,
+        teamId: roleType,
+        imageUrl: imageUrl || undefined,
+        discordId,
+        isActive: true,
+      };
+
+      const existing = await prisma.staffMember.findFirst({
+        where: { discordId },
+      });
+
+      if (existing) {
+        await prisma.staffMember.update({
+          where: { id: existing.id },
+          data,
+        });
+        results.updated++;
+      } else {
+        await prisma.staffMember.create({ data });
+        results.added++;
+      }
     } catch (e) {
       console.error('[SyncStaff] Sync error for member:', discordId, e);
       results.errors++;
     }
   }
-  
+
   console.log('[SyncStaff] Sync complete:', results);
 
   revalidatePath('/admin/staff');

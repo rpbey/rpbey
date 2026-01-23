@@ -218,7 +218,75 @@ export default function AdminSettingsPage() {
                   </Stack>
                 </Box>
 
-                {/* Placeholder for other integrations like Discord or Twitch if needed */}
+                <Box
+                  sx={{
+                    p: 2,
+                    borderRadius: 2,
+                    bgcolor: 'background.default',
+                    border: '1px solid',
+                    borderColor: 'divider',
+                  }}
+                >
+                  <Stack
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="center"
+                  >
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <Typography fontWeight="bold">Twitch</Typography>
+                      {config?.env.TWITCH_CLIENT_ID ? (
+                        <CheckCircle color="success" fontSize="small" />
+                      ) : (
+                        <ErrorIcon color="error" fontSize="small" />
+                      )}
+                    </Box>
+                    <Chip
+                      label={
+                        config?.env.TWITCH_CLIENT_ID ? 'Configuré' : 'Manquant'
+                      }
+                      color={config?.env.TWITCH_CLIENT_ID ? 'success' : 'error'}
+                      size="small"
+                      variant="outlined"
+                    />
+                  </Stack>
+                </Box>
+
+                <Box
+                  sx={{
+                    p: 2,
+                    borderRadius: 2,
+                    bgcolor: 'background.default',
+                    border: '1px solid',
+                    borderColor: 'divider',
+                  }}
+                >
+                  <Stack
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="center"
+                  >
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <Typography fontWeight="bold">Google Drive</Typography>
+                      {config?.env.GOOGLE_CLIENT_EMAIL ? (
+                        <CheckCircle color="success" fontSize="small" />
+                      ) : (
+                        <ErrorIcon color="error" fontSize="small" />
+                      )}
+                    </Box>
+                    <Chip
+                      label={
+                        config?.env.GOOGLE_CLIENT_EMAIL
+                          ? 'Configuré'
+                          : 'Manquant'
+                      }
+                      color={
+                        config?.env.GOOGLE_CLIENT_EMAIL ? 'success' : 'error'
+                      }
+                      size="small"
+                      variant="outlined"
+                    />
+                  </Stack>
+                </Box>
               </Stack>
             </CardContent>
           </Card>

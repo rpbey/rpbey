@@ -1,28 +1,30 @@
 'use client';
 
 import {
+  ArrowBack,
   Article,
   BarChart,
   Cloud,
   Code,
   Dashboard,
   Inventory2,
+  Launch,
   Leaderboard,
+  LiveTv,
   Logout,
   Menu as MenuIcon,
-  ArrowBack,
   People,
   Person,
   Settings,
   SmartToy,
   Terminal,
-  Launch,
 } from '@mui/icons-material';
 import {
   AppBar,
   Avatar,
   alpha,
   Box,
+  Button,
   Divider,
   Drawer,
   IconButton,
@@ -35,11 +37,10 @@ import {
   MenuItem,
   Stack,
   Toolbar,
+  Tooltip,
   Typography,
   useMediaQuery,
   useTheme,
-  Tooltip,
-  Button,
 } from '@mui/material';
 import BottomNavigation from '@mui/material/BottomNavigation';
 import BottomNavigationAction from '@mui/material/BottomNavigationAction';
@@ -93,10 +94,17 @@ const NAV_ITEMS: NavItem[] = [
   },
   { label: 'Contenu', path: '/admin/content', icon: Article, adminOnly: true },
   { label: 'Drive', path: '/admin/drive', icon: Cloud, adminOnly: true },
+  { label: 'Twitch', path: '/admin/twitch', icon: LiveTv, adminOnly: true },
   {
     label: 'Tournois',
     path: '/admin/tournaments',
     icon: TrophyIcon,
+    adminOnly: true,
+  },
+  {
+    label: 'Classements',
+    path: '/admin/rankings',
+    icon: Leaderboard,
     adminOnly: true,
   },
   { label: 'Équipe', path: '/admin/staff', icon: People, adminOnly: true },
@@ -146,7 +154,8 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   );
   const bottomNavValue = activeNavItem?.path || '';
 
-  const showBackButton = pathname !== '/admin' && pathname !== '/dashboard/profile';
+  const showBackButton =
+    pathname !== '/admin' && pathname !== '/dashboard/profile';
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -169,7 +178,16 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   const drawerContent = (
     <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
       <Box sx={{ p: 3, display: 'flex', alignItems: 'center', gap: 2 }}>
-        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 16, textDecoration: 'none', color: 'inherit' }}>
+        <Link
+          href="/"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 16,
+            textDecoration: 'none',
+            color: 'inherit',
+          }}
+        >
           <RpbLogo size={32} />
           <Typography variant="h6" fontWeight="800" letterSpacing="-0.02em">
             RPB Dashboard
@@ -495,7 +513,16 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                 gap: 1,
               }}
             >
-              <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none', color: 'inherit' }}>
+              <Link
+                href="/"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  textDecoration: 'none',
+                  color: 'inherit',
+                }}
+              >
                 <RpbLogo size={24} />
                 <Typography variant="h6" fontWeight="bold">
                   RPB
@@ -504,17 +531,17 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             </Box>
 
             {/* Page Title & Back Button */}
-            <Box
-              sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
-            >
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               {showBackButton && (
                 <Tooltip title="Retour">
-                  <IconButton 
+                  <IconButton
                     onClick={() => router.back()}
                     size="small"
-                    sx={{ 
+                    sx={{
                       bgcolor: alpha(theme.palette.text.primary, 0.05),
-                      '&:hover': { bgcolor: alpha(theme.palette.text.primary, 0.1) }
+                      '&:hover': {
+                        bgcolor: alpha(theme.palette.text.primary, 0.1),
+                      },
                     }}
                   >
                     <ArrowBack fontSize="small" />
@@ -539,10 +566,10 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                     variant="text"
                     size="small"
                     startIcon={<Launch fontSize="small" />}
-                    sx={{ 
+                    sx={{
                       display: { xs: 'none', sm: 'inline-flex' },
                       fontWeight: 600,
-                      borderRadius: 2
+                      borderRadius: 2,
                     }}
                   >
                     Voir le site

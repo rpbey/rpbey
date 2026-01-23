@@ -1,13 +1,14 @@
 'use client';
 
 import CategoryIcon from '@mui/icons-material/Category';
-import SearchIcon from '@mui/icons-material/Search';
 import InfoIcon from '@mui/icons-material/Info';
+import SearchIcon from '@mui/icons-material/Search';
 import {
   Box,
   Card,
   CardActionArea,
   Chip,
+  Divider,
   Grid,
   InputAdornment,
   Paper,
@@ -16,7 +17,6 @@ import {
   Tabs,
   TextField,
   Typography,
-  Divider,
 } from '@mui/material';
 import { useMemo, useState } from 'react';
 import type { BeyFile, BeyManifest } from '@/types/bey';
@@ -24,7 +24,7 @@ import { ModelViewer } from './ModelViewer';
 
 // Loose type for BBX Data
 interface BBXData {
-  "Pic Bank"?: Array<{
+  'Pic Bank'?: Array<{
     Blade?: string;
     Type?: string;
     System?: string;
@@ -66,11 +66,11 @@ export function BeyGallery({ manifest, bbxData }: BeyGalleryProps) {
   // Find stats for selected model
   const selectedStats = useMemo(() => {
     if (!selectedModel || !bbxData || !bbxData['Pic Bank']) return null;
-    
+
     const normName = normalize(selectedModel.name);
-    
+
     // Try to find in Pic Bank
-    return bbxData['Pic Bank'].find(row => {
+    return bbxData['Pic Bank'].find((row) => {
       // Check Blade column
       if (row.Blade && normalize(row.Blade).includes(normName)) return true;
       // Check Ref column (e.g. BX-01 DranSword)
@@ -85,8 +85,7 @@ export function BeyGallery({ manifest, bbxData }: BeyGalleryProps) {
       const matchesCategory = model.category === selectedCategory;
       const matchesSearch =
         model.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (model.subcategory &&
-          model.subcategory.toLowerCase().includes(searchQuery.toLowerCase()));
+        model.subcategory?.toLowerCase().includes(searchQuery.toLowerCase());
       return matchesCategory && matchesSearch;
     });
   }, [manifest.models, selectedCategory, searchQuery]);
@@ -102,7 +101,8 @@ export function BeyGallery({ manifest, bbxData }: BeyGalleryProps) {
     return category.toLowerCase().includes('blade');
   };
 
-  const shouldShowTexture = selectedModel && isBladeCategory(selectedModel.category);
+  const shouldShowTexture =
+    selectedModel && isBladeCategory(selectedModel.category);
 
   return (
     <Grid container spacing={3} sx={{ height: 'calc(100vh - 100px)' }}>
@@ -235,17 +235,23 @@ export function BeyGallery({ manifest, bbxData }: BeyGalleryProps) {
                   {selectedModel.name}
                 </Typography>
                 <Stack direction="row" spacing={1}>
-                  {selectedStats && selectedStats.Type && (
-                    <Chip 
-                      label={selectedStats.Type} 
+                  {selectedStats?.Type && (
+                    <Chip
+                      label={selectedStats.Type}
                       size="small"
-                      sx={{ 
-                        bgcolor: selectedStats.Type === 'Attack' ? '#ef4444' : 
-                                 selectedStats.Type === 'Defense' ? '#3b82f6' : 
-                                 selectedStats.Type === 'Stamina' ? '#22c55e' : 
-                                 selectedStats.Type === 'Balance' ? '#eab308' : 'grey.500',
+                      sx={{
+                        bgcolor:
+                          selectedStats.Type === 'Attack'
+                            ? '#ef4444'
+                            : selectedStats.Type === 'Defense'
+                              ? '#3b82f6'
+                              : selectedStats.Type === 'Stamina'
+                                ? '#22c55e'
+                                : selectedStats.Type === 'Balance'
+                                  ? '#eab308'
+                                  : 'grey.500',
                         color: 'white',
-                        fontWeight: 'bold'
+                        fontWeight: 'bold',
                       }}
                     />
                   )}
@@ -261,12 +267,14 @@ export function BeyGallery({ manifest, bbxData }: BeyGalleryProps) {
               <Box sx={{ flexGrow: 1, minHeight: 0, position: 'relative' }}>
                 <ModelViewer
                   modelUrl={selectedModel.path}
-                  textureUrl={shouldShowTexture ? currentTexture?.path : undefined}
+                  textureUrl={
+                    shouldShowTexture ? currentTexture?.path : undefined
+                  }
                 />
-                
+
                 {/* Stats Overlay */}
                 {selectedStats && (
-                  <Paper 
+                  <Paper
                     elevation={3}
                     sx={{
                       position: 'absolute',
@@ -277,10 +285,17 @@ export function BeyGallery({ manifest, bbxData }: BeyGalleryProps) {
                       bgcolor: 'background.paper',
                       borderRadius: 2,
                       opacity: 0.9,
-                      backdropFilter: 'blur(10px)'
+                      backdropFilter: 'blur(10px)',
                     }}
                   >
-                    <Typography variant="subtitle2" fontWeight="bold" gutterBottom display="flex" alignItems="center" gap={1}>
+                    <Typography
+                      variant="subtitle2"
+                      fontWeight="bold"
+                      gutterBottom
+                      display="flex"
+                      alignItems="center"
+                      gap={1}
+                    >
                       <InfoIcon fontSize="small" color="primary" />
                       Informations
                     </Typography>
@@ -288,26 +303,42 @@ export function BeyGallery({ manifest, bbxData }: BeyGalleryProps) {
                     <Stack spacing={1}>
                       {selectedStats.Ref && (
                         <Box display="flex" justifyContent="space-between">
-                          <Typography variant="caption" color="text.secondary">Ref</Typography>
-                          <Typography variant="body2" fontWeight="medium">{selectedStats.Ref.split(' ')[0]}</Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            Ref
+                          </Typography>
+                          <Typography variant="body2" fontWeight="medium">
+                            {selectedStats.Ref.split(' ')[0]}
+                          </Typography>
                         </Box>
                       )}
                       {selectedStats.System && (
                         <Box display="flex" justifyContent="space-between">
-                          <Typography variant="caption" color="text.secondary">Système</Typography>
-                          <Typography variant="body2">{selectedStats.System}</Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            Système
+                          </Typography>
+                          <Typography variant="body2">
+                            {selectedStats.System}
+                          </Typography>
                         </Box>
                       )}
                       {selectedStats.Brand && (
                         <Box display="flex" justifyContent="space-between">
-                          <Typography variant="caption" color="text.secondary">Marque</Typography>
-                          <Typography variant="body2">{selectedStats.Brand}</Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            Marque
+                          </Typography>
+                          <Typography variant="body2">
+                            {selectedStats.Brand}
+                          </Typography>
                         </Box>
                       )}
                       {selectedStats.Rotation && (
                         <Box display="flex" justifyContent="space-between">
-                          <Typography variant="caption" color="text.secondary">Rotation</Typography>
-                          <Typography variant="body2">{selectedStats.Rotation}</Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            Rotation
+                          </Typography>
+                          <Typography variant="body2">
+                            {selectedStats.Rotation}
+                          </Typography>
                         </Box>
                       )}
                     </Stack>

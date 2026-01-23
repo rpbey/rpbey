@@ -1,4 +1,3 @@
-
 import { prisma } from '@/lib/prisma';
 
 export class RankingService {
@@ -11,25 +10,35 @@ export class RankingService {
 
     // 1. Récupérer les règles
     const rules = await prisma.rankingSystem.findFirst();
-    if (!rules) throw new Error("Système de classement non configuré.");
+    if (!rules) throw new Error('Système de classement non configuré.');
 
     // 2. Récupérer tous les tournois TERMINÉS
     const tournaments = await prisma.tournament.findMany({
       where: { status: 'COMPLETE' },
       include: {
         participants: true,
-        matches: true // Pour compter les victoires
-      }
+        matches: true, // Pour compter les victoires
+      },
     });
 
     console.log(`📊 Analyse de ${tournaments.length} tournois terminés.`);
 
     // 3. Map pour stocker les points temporaires : UserId -> Points
-    const userPoints = new Map<string, { points: number; wins: number; losses: number; tournamentWins: number }>();
+    const userPoints = new Map<
+      string,
+      { points: number; wins: number; losses: number; tournamentWins: number }
+    >();
 
     // Initialisation des compteurs
     const allUsers = await prisma.user.findMany({ select: { id: true } });
-    allUsers.forEach(u => userPoints.set(u.id, { points: 0, wins: 0, losses: 0, tournamentWins: 0 }));
+    allUsers.forEach((u) =>
+      userPoints.set(u.id, {
+        points: 0,
+        wins: 0,
+        losses: 0,
+        tournamentWins: 0,
+      }),
+    );
 
     // 4. Boucle de calcul
     for (const t of tournaments) {
@@ -38,7 +47,12 @@ export class RankingService {
       // A. Points de Participation & Placement
       for (const p of t.participants) {
         let points = 0;
-        const stats = userPoints.get(p.userId) || { points: 0, wins: 0, losses: 0, tournamentWins: 0 };
+        const stats = userPoints.get(p.userId) || {
+          points: 0,
+          wins: 0,
+          losses: 0,
+          tournamentWins: 0,
+        };
 
         // Participation
         points += rules.participation * weight;
@@ -70,42 +84,43 @@ export class RankingService {
             wStats.wins += 1;
           }
         }
-        
+
         // Calcul des défaites (si player1 est winner, player2 perd, et inversement)
         if (m.winnerId && m.player1Id && m.player2Id) {
-            const loserId = m.winnerId === m.player1Id ? m.player2Id : m.player1Id;
-            const lStats = userPoints.get(loserId);
-            if (lStats) {
-                lStats.losses += 1;
-            }
+          const loserId =
+            m.winnerId === m.player1Id ? m.player2Id : m.player1Id;
+          const lStats = userPoints.get(loserId);
+          if (lStats) {
+            lStats.losses += 1;
+          }
         }
       }
     }
 
     // 5. Sauvegarde en Batch
     console.log(`💾 Mise à jour de ${userPoints.size} profils...`);
-    
+
     let updatedCount = 0;
     for (const [userId, stats] of userPoints.entries()) {
       // On met à jour ou crée le profil
       if (stats.points > 0 || stats.wins > 0 || stats.losses > 0) {
-          await prisma.profile.upsert({
-            where: { userId },
-            create: {
-              userId,
-              rankingPoints: Math.round(stats.points),
-              wins: stats.wins,
-              losses: stats.losses,
-              tournamentWins: stats.tournamentWins
-            },
-            update: {
-              rankingPoints: Math.round(stats.points),
-              wins: stats.wins,
-              losses: stats.losses,
-              tournamentWins: stats.tournamentWins
-            }
-          });
-          updatedCount++;
+        await prisma.profile.upsert({
+          where: { userId },
+          create: {
+            userId,
+            rankingPoints: Math.round(stats.points),
+            wins: stats.wins,
+            losses: stats.losses,
+            tournamentWins: stats.tournamentWins,
+          },
+          update: {
+            rankingPoints: Math.round(stats.points),
+            wins: stats.wins,
+            losses: stats.losses,
+            tournamentWins: stats.tournamentWins,
+          },
+        });
+        updatedCount++;
       }
     }
 

@@ -31,9 +31,12 @@ export class GoogleDriveService {
   async listFiles(): Promise<DriveFile[]> {
     try {
       // Check if credentials are present in env to avoid hard crash
-      if (!process.env.GOOGLE_APPLICATION_CREDENTIALS && !process.env.GOOGLE_PRIVATE_KEY) {
-         console.warn('Google Drive credentials missing.');
-         return []; // Return empty list instead of crashing, or mock data for dev
+      if (
+        !process.env.GOOGLE_APPLICATION_CREDENTIALS &&
+        !process.env.GOOGLE_PRIVATE_KEY
+      ) {
+        console.warn('Google Drive credentials missing.');
+        return []; // Return empty list instead of crashing, or mock data for dev
       }
 
       const res = await this.drive.files.list({
@@ -48,7 +51,9 @@ export class GoogleDriveService {
     } catch (error: any) {
       console.error('Error listing Drive files:', error);
       if (error.message?.includes('No key or keyFile')) {
-         throw new Error('Google Drive credentials missing. Please configure GOOGLE_APPLICATION_CREDENTIALS.');
+        throw new Error(
+          'Google Drive credentials missing. Please configure GOOGLE_APPLICATION_CREDENTIALS.',
+        );
       }
       throw new Error('Failed to list files from Google Drive');
     }
