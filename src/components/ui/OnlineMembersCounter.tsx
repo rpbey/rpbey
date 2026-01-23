@@ -1,7 +1,8 @@
 'use client';
 
 import { Box, keyframes, Skeleton, Typography } from '@mui/material';
-import { useEffect, useState } from 'react';
+import useSWR from 'swr';
+import { api } from '@/lib/standard-api';
 
 const pulse = keyframes`
   0% {
@@ -15,35 +16,23 @@ const pulse = keyframes`
   }
 `;
 
+const fetcher = (url: string) => api.get<{ onlineCount: number }>(url);
+
 export function OnlineMembersCounter() {
-  const [onlineCount, setOnlineCount] = useState<number | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function fetchStatus() {
-      try {
-        const res = await fetch('/api/bot/public-status');
-        if (res.ok) {
-          const data = await res.json();
-          setOnlineCount(data.onlineCount);
-        }
-      } catch (error) {
-        console.error('Failed to fetch online count', error);
-      } finally {
-        setLoading(false);
-      }
+  const { data, isLoading } = useSWR(
+    '/api/bot/public-status',
+    fetcher,
+    {
+      refreshInterval: 30000,
+      revalidateOnFocus: false,
     }
+  );
 
-    fetchStatus();
-    const interval = setInterval(fetchStatus, 30000); // Update every 30s
-    return () => clearInterval(interval);
-  }, []);
-
-  if (loading) {
+  if (isLoading && !data) {
     return <Skeleton variant="rounded" width={120} height={32} />;
   }
 
-  if (onlineCount === null) return null;
+  if (!data || typeof data.onlineCount !== 'number') return null;
 
   return (
     <Box
@@ -83,7 +72,7 @@ export function OnlineMembersCounter() {
         fontWeight={700}
         sx={{ color: 'white', letterSpacing: '0.05em' }}
       >
-        {onlineCount.toLocaleString()}{' '}
+        {data.onlineCount.toLocaleString()}{' '}
         <span style={{ opacity: 0.7, fontWeight: 400 }}>EN LIGNE</span>
       </Typography>
     </Box>

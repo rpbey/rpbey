@@ -12,23 +12,44 @@ import Typography from '@mui/material/Typography';
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
+import useSWR from 'swr';
 import type { DiscordStats, TeamGroup } from '@/lib/discord-data';
-import { LOGO_VARIANTS } from '@/lib/role-colors';
+import { LOGO_VARIANTS, RoleColors } from '@/lib/role-colors';
 import { api } from '@/lib/standard-api';
 import { DiscordRoleBadge } from './DiscordRoleBadge';
+
+const DISCORD_BLUE = '#5865F2';
+const DISCORD_BLUE_HOVER = '#4752C4';
 
 interface DiscordStatusCardProps {
   initialStats?: DiscordStats | null;
   initialTeam?: TeamGroup[];
 }
 
+const fetcher = (url: string) => api.get(url);
+
 export function DiscordStatusCard({
   initialStats,
   initialTeam,
 }: DiscordStatusCardProps) {
-  const [stats, setStats] = useState<DiscordStats | null>(initialStats || null);
-  const [team, setTeam] = useState<TeamGroup[]>(initialTeam || []);
-  const [loading, setLoading] = useState(!initialStats);
+  const { data: stats, isLoading: statsLoading } = useSWR<DiscordStats>(
+    '/api/discord/stats',
+    fetcher,
+    {
+      fallbackData: initialStats || undefined,
+      refreshInterval: 60000,
+      revalidateOnFocus: false,
+    }
+  );
+
+  const { data: teamData, isLoading: teamLoading } = useSWR<{
+    team: TeamGroup[];
+  }>('/api/discord/team', fetcher, {
+    fallbackData: initialTeam ? { team: initialTeam } : undefined,
+    refreshInterval: 60000,
+    revalidateOnFocus: false,
+  });
+
   const [currentLogoIndex, setCurrentLogoIndex] = useState(0);
 
   useEffect(() => {
@@ -38,32 +59,8 @@ export function DiscordStatusCard({
     return () => clearInterval(interval);
   }, []);
 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const [statsData, teamData] = await Promise.all([
-          api.get<DiscordStats>('/api/discord/stats', { cache: 'no-store' }),
-          api.get<{ team: TeamGroup[] }>('/api/discord/team', {
-            cache: 'no-store',
-          }),
-        ]);
-        setStats(statsData);
-        setTeam(teamData.team);
-      } catch (error) {
-        console.error('Failed to fetch discord data:', error);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    if (!initialStats) {
-      fetchData();
-    }
-
-    // Poll for updates every minute
-    const interval = setInterval(fetchData, 60000);
-    return () => clearInterval(interval);
-  }, [initialStats]);
+  const team = teamData?.team || [];
+  const loading = (statsLoading && !stats) || (teamLoading && !teamData);
 
   if (loading) {
     return (
@@ -76,7 +73,6 @@ export function DiscordStatusCard({
     );
   }
 
-  const _onlineCount = stats?.onlineCount || 0;
   const totalCount = stats?.memberCount || 0;
   const serverName = stats?.serverName || 'RPB Community';
 
@@ -97,8 +93,8 @@ export function DiscordStatusCard({
         boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
         transition: 'all 0.3s ease',
         '&:hover': {
-          borderColor: '#dc2626', // RPB Red
-          boxShadow: '0 12px 48px rgba(220, 38, 38, 0.15)',
+          borderColor: RoleColors.DEFAULT.primary,
+          boxShadow: `0 12px 48px ${alpha(RoleColors.DEFAULT.primary, 0.15)}`,
         },
       }}
     >
@@ -143,7 +139,11 @@ export function DiscordStatusCard({
                   height={48}
                   style={{
                     objectFit: 'contain',
-                    filter: `drop-shadow(0 0 8px ${alpha(LOGO_VARIANTS[currentLogoIndex]?.color || '#dc2626', 0.6)})`,
+                    filter: `drop-shadow(0 0 8px ${alpha(
+                      LOGO_VARIANTS[currentLogoIndex]?.color ||
+                        RoleColors.DEFAULT.primary,
+                      0.6
+                    )})`,
                   }}
                 />
               </motion.div>
@@ -246,11 +246,6 @@ export function DiscordStatusCard({
                       >
                         {member.displayName}
                       </Typography>
-                      {/* Removed username to reduce clutter/basic info feel, kept display name only? 
-                          Or keep username but maybe style it differently? 
-                          The user said "no discord basic info", maybe they mean the 'status' text?
-                          I'll keep username as it's useful identity. 
-                      */}
                       <Typography
                         variant="caption"
                         sx={{
@@ -280,11 +275,11 @@ export function DiscordStatusCard({
           variant="contained"
           fullWidth
           sx={{
-            bgcolor: '#5865F2',
+            bgcolor: DISCORD_BLUE,
             color: 'white',
             '&:hover': {
-              bgcolor: '#4752C4',
-              boxShadow: '0 4px 12px rgba(88, 101, 242, 0.4)',
+              bgcolor: DISCORD_BLUE_HOVER,
+              boxShadow: `0 4px 12px ${alpha(DISCORD_BLUE, 0.4)}`,
             },
             py: 1.2,
             fontSize: '0.9rem',

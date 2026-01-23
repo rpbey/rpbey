@@ -17,6 +17,7 @@ import { Colors, RPB } from './constants.js';
 const logs: { timestamp: string; level: string; message: string }[] = [];
 const MAX_LOGS = 1000;
 let wss: WebSocketServer | null = null;
+let isPlaying = false; // Global flag to prevent transcription during playback
 
 // Member fetch throttling
 let lastMemberFetch = 0;
@@ -333,6 +334,42 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse) {
         return;
       }
 
+      case '/api/webhook/youtube': {
+        if (req.method !== 'POST')
+          return sendError(res, 'Method not allowed', 405);
+        let body = '';
+        req.on('data', (chunk) => {
+          body += chunk;
+        });
+        req.on('end', async () => {
+          try {
+            const data = JSON.parse(body);
+            if (data.event?.type === 'video.upload') {
+              // Channel ID provided by user: 1333203623471087708
+              // or fallback to Social channel if configured
+              const targetChannelId = '1333203623471087708'; 
+              
+              const channel = container.client.channels.cache.get(targetChannelId);
+              
+              if (channel?.isTextBased()) {
+                const { title, authorName, url } = data.event;
+                // You might want to mention a role here too if desired
+                const content = `🎥 **Nouvelle vidéo de ${authorName} !**\n**${title}**\n${url}`;
+                
+                await (channel as GuildTextBasedChannel).send({ content });
+              } else {
+                 container.logger.warn(`[YouTube] Channel ${targetChannelId} not found or not text-based.`);
+              }
+            }
+            sendJSON(res, { ok: true });
+          } catch (e) {
+            container.logger.error('[YouTube] Error processing webhook:', e);
+            sendError(res, 'Internal Error', 500);
+          }
+        });
+        return;
+      }
+
       case '/api/webhook/twitch/verify': {
         if (req.method !== 'GET')
           return sendError(res, 'Method not allowed', 405);
@@ -394,6 +431,243 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse) {
                 const member = await guild.members.fetch(params.userId);
                 await member.roles.remove(params.roleId);
                 return sendJSON(res, { success: true });
+              }
+
+              case 'join_voice': {
+                if (!params?.channelId) return sendError(res, 'Missing channelId');
+                const { joinVoiceChannel, VoiceConnectionStatus, entersState, EndBehaviorType, createAudioPlayer, createAudioResource, AudioPlayerStatus } = await import('@discordjs/voice');
+                const prism = await import('prism-media');
+                const { pipeline } = await import('node:stream');
+                const { detectKeyword } = await import('./detector.js');
+                const { synthesizeSpeech } = await import('./transcriber.js');
+
+                const channel = await client.channels.fetch(params.channelId);
+                if (!channel || !channel.isVoiceBased())
+                  return sendError(res, 'Invalid voice channel');
+
+                const connection = joinVoiceChannel({
+                  channelId: channel.id,
+                  guildId: channel.guild.id,
+                  adapterCreator: channel.guild.voiceAdapterCreator,
+                  selfDeaf: false,
+                  selfMute: false,
+                });
+
+                connection.on(VoiceConnectionStatus.Ready, () => {
+                  container.logger.info(`[Voice] Connected to ${channel.name}. Listening for 'RPBEY'...`);
+                  
+                  const receiver = connection.receiver;
+                  
+                  receiver.speaking.on('start', (userId) => {
+                    if (isPlaying) return;
+
+                    // container.logger.info(`[Voice] 🎙️ Analyzing user ${userId}...`);
+                    
+                    const opusStream = receiver.subscribe(userId, {
+                      end: {
+                        behavior: EndBehaviorType.AfterSilence,
+                        duration: 500,
+                      },
+                    });
+
+                    // Decode Opus to PCM
+                    const opusDecoder = new prism.default.opus.Decoder({ rate: 48000, channels: 2, frameSize: 960 });
+                    const pcmStream = opusStream.pipe(opusDecoder);
+                    
+                    const chunks: Buffer[] = [];
+                    pcmStream.on('data', (chunk: Buffer) => {
+                      chunks.push(chunk);
+                    });
+
+                    pcmStream.on('end', async () => {
+                      const pcmBuffer = Buffer.concat(chunks);
+                      // Require at least 0.5 sec of audio
+                      if (pcmBuffer.length < 48000) return;
+
+                      try {
+                        const isKeyword = await detectKeyword(pcmBuffer);
+                        if (isKeyword) {
+                            container.logger.info(`[Voice] 🚨 KEYWORD 'RPBEY' DETECTED from ${userId}!`);
+                            addLog('INFO', `[Voice] User ${userId} said the keyword!`);
+                            
+                            // Trigger Response
+                            if (!isPlaying) {
+                                isPlaying = true;
+                                const responsePath = await synthesizeSpeech("Bonjour !");
+                                const player = createAudioPlayer();
+                                const resource = createAudioResource(responsePath);
+                                connection.subscribe(player);
+                                player.play(resource);
+                                
+                                player.on(AudioPlayerStatus.Idle, () => {
+                                    isPlaying = false;
+                                    import('node:fs').then(fs => fs.unlinkSync(responsePath));
+                                });
+                            }
+                        }
+                      } catch (err) {
+                        container.logger.error('[Voice] Detection failed:', err);
+                      }
+                    });
+                  });
+                });
+
+                try {
+                  await entersState(connection, VoiceConnectionStatus.Ready, 5000);
+                } catch (e) {
+                  container.logger.error('[Voice] Failed to join within 5s', e);
+                }
+
+                return sendJSON(res, { success: true, message: `Joined ${channel.name}` });
+              }
+
+              case 'leave_voice': {
+                if (!params?.guildId) return sendError(res, 'Missing guildId');
+                const { getVoiceConnection } = await import('@discordjs/voice');
+                const connection = getVoiceConnection(params.guildId);
+                if (connection) {
+                  connection.destroy();
+                  return sendJSON(res, { success: true, message: 'Left voice channel' });
+                }
+                return sendError(res, 'Not connected to any voice channel in this guild', 404);
+              }
+
+              case 'play_audio': {
+                if (!params?.guildId || !params?.filePath)
+                  return sendError(res, 'Missing guildId or filePath');
+                
+                const { getVoiceConnection, createAudioPlayer, createAudioResource, AudioPlayerStatus } = await import('@discordjs/voice');
+                
+                const connection = getVoiceConnection(params.guildId);
+                
+                if (!connection)
+                  return sendError(res, 'Bot is not connected to a voice channel in this guild', 404);
+
+                const player = createAudioPlayer();
+                
+                // Let discord.js/ffmpeg handle the format (wav, mp3, etc.) automatically
+                // This is safer than manual raw PCM handling which caused static noise
+                const resource = createAudioResource(params.filePath);
+                
+                connection.subscribe(player);
+                player.play(resource);
+
+                player.on(AudioPlayerStatus.Playing, () => {
+                  isPlaying = true;
+                  container.logger.info(`[Voice] 🎵 Started playing: ${params.filePath}`);
+                });
+
+                player.on(AudioPlayerStatus.Idle, () => {
+                  isPlaying = false;
+                  container.logger.info('[Voice] ⏹️ Finished playing');
+                  player.stop();
+                });
+
+                player.on('error', (error) => {
+                  isPlaying = false;
+                  container.logger.error('[Voice] Audio player error:', error);
+                });
+
+                return sendJSON(res, { success: true, message: 'Playback started' });
+              }
+
+              case 'speak_text': {
+                if (!params?.guildId || !params?.text)
+                  return sendError(res, 'Missing guildId or text');
+
+                const { synthesizeSpeech } = await import('./transcriber.js');
+                
+                try {
+                  container.logger.info(`[Voice] 🗣️ Synthesizing: "${params.text}"...`);
+                  const filePath = await synthesizeSpeech(params.text);
+                  
+                  // Use standard playback logic (auto-detect format via ffmpeg)
+                  const { getVoiceConnection, createAudioPlayer, createAudioResource, AudioPlayerStatus } = await import('@discordjs/voice');
+                  const connection = getVoiceConnection(params.guildId);
+                  
+                  if (!connection)
+                    return sendError(res, 'Bot is not connected to a voice channel in this guild', 404);
+
+                  const player = createAudioPlayer();
+                  const resource = createAudioResource(filePath);
+                  
+                  connection.subscribe(player);
+                  player.play(resource);
+
+                  player.on(AudioPlayerStatus.Playing, () => {
+                    isPlaying = true;
+                    container.logger.info(`[Voice] 🎵 Speaking TTS...`);
+                  });
+
+                  player.on(AudioPlayerStatus.Idle, () => {
+                    isPlaying = false;
+                    container.logger.info('[Voice] ⏹️ Finished speaking');
+                    player.stop();
+                    // Clean up file
+                    import('node:fs').then(fs => fs.unlinkSync(filePath));
+                  });
+
+                  return sendJSON(res, { success: true, message: 'TTS started' });
+
+                } catch (e) {
+                  container.logger.error('[Voice] TTS failed:', e);
+                  return sendError(res, 'TTS generation failed', 500);
+                }
+              }
+
+              case 'record_sample': {
+                // params: { guildId, duration: 2000, label: 'rpbey' }
+                if (!params?.guildId || !params?.label)
+                  return sendError(res, 'Missing guildId or label');
+
+                const { getVoiceConnection, EndBehaviorType } = await import('@discordjs/voice');
+                const prism = await import('prism-media');
+                const { pipeline } = await import('node:stream');
+                const { createWriteStream } = await import('node:fs');
+                const path = await import('node:path');
+
+                const connection = getVoiceConnection(params.guildId);
+                if (!connection) return sendError(res, 'Bot not connected', 404);
+
+                const receiver = connection.receiver;
+                // Get the first speaking user or wait?
+                // For simplicity, we'll listen to the next speaking event
+                
+                container.logger.info(`[Voice] 🔴 Waiting for speech to record as '${params.label}'...`);
+
+                const speakingHandler = (userId: string) => {
+                    // Remove listener to record only once per request
+                    receiver.speaking.off('start', speakingHandler);
+                    
+                    container.logger.info(`[Voice] 🎙️ Recording ${params.label} from ${userId}...`);
+                    
+                    const opusStream = receiver.subscribe(userId, {
+                      end: {
+                        behavior: EndBehaviorType.AfterSilence,
+                        duration: 500, // Short silence to cut
+                      },
+                    });
+
+                    const filename = `${params.label}-${Date.now()}.pcm`;
+                    const filepath = path.join(process.cwd(), 'temp', 'dataset', filename);
+                    
+                    // Ensure dir exists
+                    const datasetDir = path.join(process.cwd(), 'temp', 'dataset');
+                    import('node:fs').then(fs => {
+                        if (!fs.existsSync(datasetDir)) fs.mkdirSync(datasetDir, { recursive: true });
+                        const out = createWriteStream(filepath);
+                        const opusDecoder = new prism.default.opus.Decoder({ rate: 48000, channels: 2, frameSize: 960 });
+
+                        pipeline(opusStream, opusDecoder, out, (err) => {
+                          if (err) container.logger.error(`[Voice] Recording failed:`, err);
+                          else container.logger.info(`[Voice] ✅ Saved sample: ${filename}`);
+                        });
+                    });
+                };
+
+                receiver.speaking.on('start', speakingHandler);
+
+                return sendJSON(res, { success: true, message: `Ready to record '${params.label}'. Please speak now.` });
               }
 
               case 'run_gemini': {
