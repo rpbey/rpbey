@@ -12,8 +12,8 @@ import { motion, useScroll, useSpring, useTransform } from 'framer-motion';
 import Link from 'next/link';
 import { FeedMyPartnership, TournamentVideo } from '@/components/marketing';
 import { useThemeMode } from '@/components/theme/ThemeRegistry';
-import { NativeBracket } from '@/components/tournaments/NativeBracket';
-import { OnlineMembersCounter } from '@/components/ui/OnlineMembersCounter';
+import { ChallongeBracket } from '@/components/tournaments/ChallongeBracket';
+import { DiscordWidget } from '@/components/ui/DiscordWidget';
 import { useSession } from '@/lib/auth-client';
 import type { DiscordStats, TeamGroup } from '@/lib/discord-data';
 
@@ -33,11 +33,16 @@ const EASE = {
 interface HomeClientProps {
   discordStats: DiscordStats;
   discordTeam: TeamGroup[];
+  activeTournament?: {
+    name: string;
+    challongeUrl: string | null;
+  } | null;
 }
 
 export default function HomeClient({
   discordStats: _discordStats,
   discordTeam: _discordTeam,
+  activeTournament,
 }: HomeClientProps) {
   const { backgroundImage, mode } = useThemeMode();
   const { scrollY } = useScroll();
@@ -183,7 +188,7 @@ export default function HomeClient({
                   }}
                   sx={{ mt: 4 }}
                 >
-                  <OnlineMembersCounter />
+                  <DiscordWidget />
                 </Box>
               </Box>
             </Grid>
@@ -216,40 +221,45 @@ export default function HomeClient({
         </Container>
       </Box>
 
-      {/* Bracket Section */}
-      <Box sx={{ bgcolor: 'surface.low', py: 8 }}>
-        <Container maxWidth="lg">
-          <Box
-            component={motion.div}
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-50px' }}
-            transition={{
-              duration: 0.6,
-              ease: EASE.EMPHASIZED_DECELERATE as any,
-            }}
-          >
-            <Typography
-              variant="h3"
-              fontWeight="bold"
-              textAlign="center"
-              sx={{ mb: 2, letterSpacing: '-0.02em' }}
+      {/* Bracket Section - Only show if there's an active tournament */}
+      {activeTournament?.challongeUrl && (
+        <Box sx={{ bgcolor: 'surface.low', py: 8 }}>
+          <Container maxWidth="lg">
+            <Box
+              component={motion.div}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-50px' }}
+              transition={{
+                duration: 0.6,
+                ease: EASE.EMPHASIZED_DECELERATE as any,
+              }}
             >
-              BEY-TAMASHII SERIES #1
-            </Typography>
-            <Typography
-              variant="h6"
-              color="text.secondary"
-              textAlign="center"
-              sx={{ mb: 8, maxWidth: 600, mx: 'auto' }}
-            >
-              Suivez l'arbre du tournoi en direct et ne manquez aucun match !
-            </Typography>
-          </Box>
+              <Typography
+                variant="h3"
+                fontWeight="bold"
+                textAlign="center"
+                sx={{ mb: 2, letterSpacing: '-0.02em' }}
+              >
+                {activeTournament.name}
+              </Typography>
+              <Typography
+                variant="h6"
+                color="text.secondary"
+                textAlign="center"
+                sx={{ mb: 8, maxWidth: 600, mx: 'auto' }}
+              >
+                Suivez l'arbre du tournoi en direct et ne manquez aucun match !
+              </Typography>
+            </Box>
 
-          <NativeBracket />
-        </Container>
-      </Box>
+            <ChallongeBracket
+              challongeUrl={activeTournament.challongeUrl}
+              title={activeTournament.name}
+            />
+          </Container>
+        </Box>
+      )}
 
       {/* Video Section */}
       <TournamentVideo videoId="nIVOi5NFjAM" />
@@ -266,6 +276,7 @@ export default function HomeClient({
           <FeedMyPartnership />
         </Box>
       </Container>
+
 
       {/* CTA Section */}
       <Container maxWidth="lg" sx={{ py: 8, position: 'relative' }}>

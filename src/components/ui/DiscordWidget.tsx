@@ -1,60 +1,40 @@
 'use client';
 
-import { Box, Card, Typography } from '@mui/material';
+import { Box, Skeleton } from '@mui/material';
+import { useState } from 'react';
 
-interface DiscordWidgetProps {
-  id?: string;
-  theme?: 'light' | 'dark';
-  width?: string | number;
-  height?: string | number;
-}
+export function DiscordWidget() {
+  const [loading, setLoading] = useState(true);
 
-export function DiscordWidget({
-  id = '1319715782032228463',
-  theme = 'dark',
-  width = '100%',
-  height = 500,
-}: DiscordWidgetProps) {
   return (
-    <Card
-      elevation={0}
+    <Box
       sx={{
-        overflow: 'hidden',
+        width: 350,
+        height: 500,
         borderRadius: 4,
-        border: '1px solid',
-        borderColor: 'divider',
-        bgcolor: 'background.paper',
+        overflow: 'hidden',
+        position: 'relative',
+        bgcolor: 'rgba(0,0,0,0.2)',
       }}
     >
-      <Box
-        sx={{
-          p: 2,
-          borderBottom: '1px solid',
-          borderColor: 'divider',
-          bgcolor: 'rgba(88, 101, 242, 0.05)',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 1.5,
-        }}
-      >
-        <Box
-          component="img"
-          src="/logo.png"
-          alt="RPB"
-          sx={{ width: 24, height: 24, borderRadius: '50%' }}
+      {loading && (
+        <Skeleton
+          variant="rectangular"
+          width="100%"
+          height="100%"
+          sx={{ position: 'absolute', inset: 0 }}
         />
-        <Typography variant="subtitle2" fontWeight="bold">
-          Discord Officiel
-        </Typography>
-      </Box>
+      )}
       <iframe
-        title="Discord Widget"
-        src={`https://discord.com/widget?id=${id}&theme=${theme}`}
-        width={width}
-        height={height}
+        src="https://discord.com/widget?id=1319715782032228463&theme=dark"
+        width="100%"
+        height="100%"
+        allowTransparency={true}
+        frameBorder="0"
         sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"
-        style={{ display: 'block', border: 'none' }}
+        onLoad={() => setLoading(false)}
+        title="Discord Widget"
       />
-    </Card>
+    </Box>
   );
 }
