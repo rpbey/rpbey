@@ -16,9 +16,20 @@ WORKDIR /app
 COPY package.json pnpm-lock.yaml ./
 
 # ============================================
+# Build Base stage (with compilers)
+# ============================================
+FROM base AS build-base
+
+# Install Python and Build Essentials for native modules (node-gyp)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3 \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# ============================================
 # Dependencies stage
 # ============================================
-FROM base AS deps
+FROM build-base AS deps
 
 # Install dependencies
 RUN --mount=type=cache,target=/root/.local/share/pnpm/store pnpm install --frozen-lockfile
@@ -26,7 +37,7 @@ RUN --mount=type=cache,target=/root/.local/share/pnpm/store pnpm install --froze
 # ============================================
 # Production Dependencies stage
 # ============================================
-FROM base AS prod-deps
+FROM build-base AS prod-deps
 
 COPY package.json pnpm-lock.yaml ./
 RUN --mount=type=cache,target=/root/.local/share/pnpm/store pnpm install --prod --frozen-lockfile
@@ -34,7 +45,7 @@ RUN --mount=type=cache,target=/root/.local/share/pnpm/store pnpm install --prod 
 # ============================================
 # Builder stage
 # ============================================
-FROM base AS builder
+FROM build-base AS builder
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
