@@ -1,4 +1,3 @@
-
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { auth } from '@/lib/auth';
@@ -75,5 +74,20 @@ export async function GET(req: NextRequest) {
   const csvHeaders = ['Rank', 'Name', 'Username', 'DiscordId', 'Points', 'Wins', 'Losses', 'Tournaments'];
   const csvRows = data.map(row => 
     csvHeaders.map(header => {
-      const val = row[header as keyof typeof row];
-      return typeof val === 'string' ? `"${val.replace(/
+      const val = (row as any)[header];
+      if (typeof val === 'string') {
+          return '"' + val.replace(/"/g, '""') + '"';
+      }
+      return val;
+    }).join(',')
+  );
+  
+  const csvString = [csvHeaders.join(','), ...csvRows].join('\n');
+
+  return new NextResponse(csvString, {
+    headers: {
+      'Content-Type': 'text/csv',
+      'Content-Disposition': `attachment; filename="rankings-${seasonId || 'current'}.csv"`
+    }
+  });
+}

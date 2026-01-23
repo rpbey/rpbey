@@ -1,0 +1,110 @@
+
+> rpb-dashboard@1.0.0 build /root/rpb-dashboard
+> NODE_OPTIONS='--max-old-space-size=4096' next build
+
+▲ Next.js 16.1.4 (Turbopack)
+- Environments: .env
+- Experiments (use with caution):
+  · serverActions
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 25.8s
+  Running TypeScript ...
+  Collecting page data using 7 workers ...
+  Generating static pages using 7 workers (0/62) ...
+  Generating static pages using 7 workers (15/62) 
+  Generating static pages using 7 workers (30/62) 
+  Generating static pages using 7 workers (46/62) 
+✓ Generating static pages using 7 workers (62/62) in 1228.9ms
+  Finalizing page optimization ...
+
+Route (app)                             Revalidate  Expire
+┌ ƒ /
+├ ○ /_not-found
+├ ƒ /a-propos
+├ ƒ /admin
+├ ƒ /admin/bot
+├ ƒ /admin/bot/commands
+├ ƒ /admin/bot/config
+├ ƒ /admin/bot/logs
+├ ƒ /admin/content
+├ ƒ /admin/discord
+├ ƒ /admin/drive
+├ ƒ /admin/ranking
+├ ƒ /admin/rankings
+├ ƒ /admin/settings
+├ ƒ /admin/staff
+├ ƒ /admin/stats
+├ ƒ /admin/tournaments
+├ ƒ /admin/tournaments/[id]
+├ ƒ /admin/twitch
+├ ƒ /admin/users
+├ ƒ /api/admin/bot/message
+├ ƒ /api/admin/bot/restart
+├ ƒ /api/admin/config
+├ ƒ /api/admin/export/rankings
+├ ƒ /api/admin/export/tournament/[id]
+├ ƒ /api/admin/integrations/challonge
+├ ƒ /api/admin/ranking
+├ ƒ /api/admin/scrape
+├ ƒ /api/auth/[...all]
+├ ƒ /api/auth/callback/challonge
+├ ƒ /api/auth/challonge
+├ ƒ /api/auth/dev-login
+├ ƒ /api/bot/commands
+├ ƒ /api/bot/config
+├ ƒ /api/bot/logs
+├ ƒ /api/bot/public-status
+├ ƒ /api/bot/status
+├ ƒ /api/decks
+├ ƒ /api/decks/[id]
+├ ƒ /api/decks/[id]/activate
+├ ƒ /api/discord/stats
+├ ƒ /api/discord/team
+├ ƒ /api/health
+├ ƒ /api/interactions
+├ ƒ /api/marketing/feedmy
+├ ƒ /api/parts
+├ ƒ /api/parts/[id]
+├ ƒ /api/profile
+├ ƒ /api/stats
+├ ƒ /api/tournaments
+├ ƒ /api/tournaments/[id]
+├ ƒ /api/tournaments/[id]/matches
+├ ƒ /api/tournaments/[id]/participants
+├ ƒ /api/tournaments/[id]/register
+├ ƒ /api/users/[id]
+├ ƒ /api/users/[id]/card
+├ ƒ /api/users/[id]/matches
+├ ƒ /api/users/[id]/sync
+├ ƒ /api/webhooks/discord
+├ ƒ /api/webhooks/twitch
+├ ƒ /api/webhooks/youtube
+├ ○ /bey
+├ ƒ /dashboard
+├ ƒ /dashboard/deck
+├ ƒ /dashboard/leaderboard
+├ ƒ /dashboard/profile
+├ ƒ /dashboard/profile/[id]
+├ ƒ /dashboard/profile/edit
+├ ƒ /notre-equipe
+├ ○ /privacy
+├ ○ /profile
+├ ƒ /profile/[id]
+├ ƒ /rankings
+├ ○ /reglement
+├ ○ /robots.txt
+├ ○ /sign-in
+├ ○ /sign-up
+├ ○ /sitemap.xml                                1h      1y
+├ ○ /tournaments
+├ ƒ /tournaments/[id]
+├ ƒ /tv
+└ ○ /two-factor
+
+
+ƒ Proxy (Middleware)
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
