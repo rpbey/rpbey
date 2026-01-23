@@ -24,11 +24,16 @@ export default async function RankingsPage({
 
   // 1. Récupération optimisée avec pagination
   const whereCondition = {
-    user: {
-      name: { notIn: ['Yoyo', 'Loteux'] },
-      username: { notIn: ['yoyo__goat', 'loteux'] },
+    userId: {
+      notIn: [
+        'Y5gdJ6ZpfAHfsNcJQc0PMbAqyVeQAiHE', // Yoyo
+        'O3Q8olZegE8dfLZTbrQtuD5T3ZqVUkxJ', // Loteux
+      ],
     },
-    bladerName: { notIn: ['Yoyo', 'Loteux'] },
+    // On peut quand même garder des filtres de secours au cas où les IDs changeraient (peu probable)
+    user: {
+      name: { notIn: ['Yoyo', 'Loteux', '𝓡𝓟𝓑 | LOTTEUX!'] },
+    },
   };
 
   const [profiles, totalCount] = await Promise.all([
