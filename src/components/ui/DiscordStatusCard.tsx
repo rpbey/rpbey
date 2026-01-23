@@ -26,7 +26,7 @@ interface DiscordStatusCardProps {
   initialTeam?: TeamGroup[];
 }
 
-const fetcher = (url: string) => api.get(url);
+const fetcher = (url: string) => api.get(url).then(res => res as any);
 
 export function DiscordStatusCard({
   initialStats,
