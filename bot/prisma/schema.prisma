@@ -6,6 +6,21 @@ datasource db {
   provider = "postgresql"
 }
 
+model PointAdjustment {
+  id        String   @id @default(cuid())
+  userId    String
+  points    Int
+  reason    String
+  adminId   String?
+  createdAt DateTime @default(now())
+  
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  admin     User?    @relation("AdminAdjustments", fields: [adminId], references: [id])
+
+  @@index([userId])
+  @@map("point_adjustments")
+}
+
 model User {
   id               String                  @id @default(cuid())
   name             String?
@@ -43,6 +58,8 @@ model User {
   winnerMatches    TournamentMatch[]       @relation("WinnerMatches")
   tournaments      TournamentParticipant[]
   twoFactors       TwoFactor[]
+  pointAdjustments PointAdjustment[]
+  adminAdjustments PointAdjustment[]       @relation("AdminAdjustments")
 
   @@map("users")
 }
@@ -160,6 +177,8 @@ model Part {
   tipType      String?
   releaseDate  DateTime?
   imageUrl     String?
+  modelUrl     String?
+  textureUrl   String?
   rarity       String?
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
@@ -415,6 +434,17 @@ model DiscordRole {
   updatedAt   DateTime @updatedAt
 
   @@map("discord_roles")
+}
+
+model DiscordChannel {
+  id        String   @id
+  name      String
+  type      String
+  parentId  String?
+  position  Int
+  updatedAt DateTime @updatedAt
+
+  @@map("discord_channels")
 }
 
 enum BeyType {

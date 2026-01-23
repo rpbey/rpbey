@@ -41,6 +41,7 @@ try {
       GatewayIntentBits.MessageContent,
       GatewayIntentBits.GuildModeration,
       GatewayIntentBits.GuildPresences, // Required for tracking online status
+      GatewayIntentBits.GuildVoiceStates, // Required for voice
     ],
     partials: [Partials.Message, Partials.Channel, Partials.GuildMember],
     loadMessageCommandListeners: true,

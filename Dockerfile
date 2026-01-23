@@ -72,7 +72,7 @@ COPY --from=builder /app/package.json ./package.json
 # Copy production dependencies (needed for full Next.js support)
 # OPTIMIZATION: In standalone mode, node_modules are already included in .next/standalone
 # We comment this out to reduce image size and avoid conflicts.
-COPY --from=prod-deps /app/node_modules ./node_modules
+# COPY --from=prod-deps /app/node_modules ./node_modules
 
 # Copy Bot built files
 COPY --from=builder --chown=nextjs:nodejs /app/bot/dist ./bot/dist
@@ -83,10 +83,12 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
 # Install Chromium for Puppeteer
+# Clean up apt cache to reduce image size
 RUN apt-get update && apt-get install -y --no-install-recommends \
     chromium \
     fonts-liberation \
-    && rm -rf /var/lib/apt/lists/*
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 USER nextjs
 

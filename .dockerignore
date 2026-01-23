@@ -1,0 +1,110 @@
+# ============================================
+# .dockerignore for RPB Dashboard
+# Optimized for Next.js 16 + Prisma 7 + Monorepo
+# ============================================
+
+# --- Dependencies & Runtimes ---
+node_modules/
+**/node_modules/
+.pnpm-store/
+.npm/
+.cache/
+.next/
+dist/
+build/
+out/
+bot/dist/
+*.pid
+
+# --- Version Control & CI/CD ---
+.git/
+.gitignore
+.gitattributes
+.github/
+
+# --- Environment & Secrets ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# --- IDEs & Editors ---
+.vscode/
+.idea/
+.fleet/
+.sublime-project
+.sublime-workspace
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# --- Gemini / Agent Artifacts ---
+.gemini/
+GEMINI.md
+bot/GEMINI.md
+data_bey_analysis.md
+fandom_dump.md
+llms-full.txt
+llms.txt
+mui-llms.txt
+
+# --- Logs ---
+*.log
+**/*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# --- Documentation ---
+docs/
+README.md
+LICENSE
+CONTRIBUTING.md
+
+# --- Temporary / Local Data ---
+storage/
+temp/
+bot/temp/
+bot/storage/
+temp_extract/
+bbx_extract.zip
+takara.html
+
+# --- Media & Large Assets ---
+beyblade_generic.mp3
+beyblade_generic.raw
+
+# --- Scraped Data & Seeding ---
+# Ignore most data/ except what is imported by code
+data/*
+!data/beyblade_x_logic_rules.json
+!data/discord_mapping.json
+!data/knowledge_base.txt
+!data/wbo_rules.json
+!data/wbo_rules_full.json
+data/fandom_details/
+
+# --- Prisma ---
+# Keep schema and migrations, ignore local utility scripts
+prisma/*.ts
+!prisma/schema.prisma
+!prisma/migrations/
+
+# --- Scripts ---
+# Keep start-entrypoint.sh, ignore all local TypeScript maintenance scripts
+scripts/*.ts
+!scripts/start-entrypoint.sh
+
+# --- Application Configs (Safety: do NOT ignore) ---
+!package.json
+!pnpm-lock.yaml
+!pnpm-workspace.yaml
+!tsconfig.json
+!next.config.ts
+!next-env.d.ts
+!.mcp.json
+!biome.json
+!eslint.config.mjs

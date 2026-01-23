@@ -1,5 +1,3 @@
-ignoredBuiltDependencies:
-  - '@prisma/engines'
-  - canvas
-  - prisma
-  - sharp
+packages:
+  - '.'
+  - 'bot'
