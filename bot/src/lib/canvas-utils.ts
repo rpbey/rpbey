@@ -462,3 +462,138 @@ export async function generateBattleCard(data: BattleCardData) {
 
   return canvas.toBuffer('image/png');
 }
+
+export interface LeaderboardEntry {
+  rank: number;
+  name: string;
+  points: number;
+  winRate: string;
+  avatarUrl: string;
+}
+
+export async function generateLeaderboardCard(entries: LeaderboardEntry[]) {
+  const width = 1000;
+  const height = 1200; // Taller for the list
+  const canvas = createCanvas(width, height);
+  const ctx = canvas.getContext('2d');
+
+  // Background
+  const bgPath = getAssetPath('public/background-seasson-2.webp');
+  try {
+    const background = await loadImage(bgPath);
+    ctx.drawImage(background, 0, 0, width, height);
+  } catch {
+    ctx.fillStyle = '#1e1b4b';
+    ctx.fillRect(0, 0, width, height);
+  }
+
+  // Overlay
+  const gradient = ctx.createLinearGradient(0, 0, 0, height);
+  gradient.addColorStop(0, 'rgba(0, 0, 0, 0.85)');
+  gradient.addColorStop(1, 'rgba(0, 0, 0, 0.95)');
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, width, height);
+
+  // Header
+  ctx.font = 'bold 60px GoogleSans';
+  ctx.fillStyle = '#fbbf24'; // Gold
+  ctx.textAlign = 'center';
+  ctx.fillText('CLASSEMENT OFFICIEL RPB', width / 2, 80);
+
+  ctx.strokeStyle = '#fbbf24';
+  ctx.lineWidth = 4;
+  ctx.beginPath();
+  ctx.moveTo(width / 2 - 200, 100);
+  ctx.lineTo(width / 2 + 200, 100);
+  ctx.stroke();
+
+  // Draw List
+  const startY = 160;
+  const rowHeight = 100;
+
+  for (let i = 0; i < entries.length; i++) {
+    const entry = entries[i];
+    const y = startY + i * rowHeight;
+
+    // Row Background (Alternating)
+    if (i % 2 === 0) {
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.03)';
+      ctx.fillRect(50, y - 60, width - 100, rowHeight - 10);
+    }
+
+    // Rank Badge
+    let rankColor = '#94a3b8'; // Slate 400 default
+    if (entry.rank === 1) rankColor = '#fbbf24'; // Gold
+    if (entry.rank === 2) rankColor = '#e2e8f0'; // Silver
+    if (entry.rank === 3) rankColor = '#cd7f32'; // Bronze
+
+    ctx.fillStyle = rankColor;
+    ctx.beginPath();
+    ctx.arc(100, y - 15, 30, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.font = 'bold 32px GoogleSans';
+    ctx.fillStyle = entry.rank === 1 ? '#000' : '#000'; // Contrast text
+    ctx.textAlign = 'center';
+    ctx.fillText(`#${entry.rank}`, 100, y - 5);
+
+    // Avatar
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(200, y - 15, 40, 0, Math.PI * 2, true);
+    ctx.closePath();
+    ctx.clip();
+    try {
+      const avatar = await loadImage(entry.avatarUrl);
+      ctx.drawImage(avatar, 160, y - 55, 80, 80);
+    } catch {
+      ctx.fillStyle = '#444';
+      ctx.fill();
+    }
+    ctx.restore();
+
+    // Border for Top 3 Avatars
+    if (entry.rank <= 3) {
+      ctx.strokeStyle = rankColor;
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.arc(200, y - 15, 40, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+
+    // Name
+    ctx.textAlign = 'left';
+    ctx.font = 'bold 36px GoogleSans';
+    ctx.fillStyle = '#ffffff';
+    if (entry.rank === 1) ctx.fillStyle = '#fbbf24';
+    ctx.fillText(entry.name.toUpperCase(), 280, y);
+
+    // Stats (Right aligned)
+    // Points
+    ctx.textAlign = 'right';
+    ctx.font = 'bold 40px GoogleSans';
+    ctx.fillStyle = rankColor;
+    ctx.fillText(`${entry.points}`, 750, y);
+    
+    ctx.font = '20px GoogleSans';
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+    ctx.fillText('PTS', 750, y + 25);
+
+    // Winrate
+    ctx.font = 'bold 28px GoogleSans';
+    ctx.fillStyle = '#ffffff';
+    ctx.fillText(`${entry.winRate}%`, 900, y);
+
+    ctx.font = '20px GoogleSans';
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+    ctx.fillText('WR', 900, y + 25);
+  }
+
+  // Footer
+  ctx.textAlign = 'center';
+  ctx.font = 'italic 20px GoogleSans';
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+  ctx.fillText('rpbey.fr/rankings - Mis à jour en temps réel', width / 2, height - 30);
+
+  return canvas.toBuffer('image/png');
+}

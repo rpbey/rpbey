@@ -98,6 +98,23 @@ export default function SeasonManager({ seasons }: { seasons: Season[] }) {
             >
               Archiver & Nouvelle Saison
             </Button>
+
+            <Box sx={{ mt: 2, display: 'flex', gap: 1 }}>
+              <Button 
+                variant="outlined" 
+                size="small" 
+                onClick={() => window.open('/api/admin/export/rankings?seasonId=current&format=csv')}
+              >
+                Export CSV
+              </Button>
+              <Button 
+                variant="outlined" 
+                size="small" 
+                onClick={() => window.open('/api/admin/export/rankings?seasonId=current&format=json')}
+              >
+                Export JSON
+              </Button>
+            </Box>
           </Box>
         ) : (
           <Box sx={{ mb: 3, p: 2, bgcolor: 'error.light', color: 'error.contrastText', borderRadius: 2 }}>
@@ -133,6 +150,14 @@ export default function SeasonManager({ seasons }: { seasons: Season[] }) {
                   }`}
                 />
                 <Chip label="Archivée" size="small" />
+                <Box sx={{ ml: 'auto', display: 'flex', gap: 1 }}>
+                  <Button 
+                    size="small" 
+                    onClick={() => window.open(`/api/admin/export/rankings?seasonId=${season.id}&format=csv`)}
+                  >
+                    CSV
+                  </Button>
+                </Box>
               </ListItem>
             ))}
             {seasons.filter(s => !s.isActive).length === 0 && (
