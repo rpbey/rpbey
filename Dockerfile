@@ -13,7 +13,8 @@ RUN corepack enable && corepack prepare pnpm@10.27.0 --activate
 WORKDIR /app
 
 # Copy package files first (for better layer caching)
-COPY package.json pnpm-lock.yaml ./
+COPY pnpm-workspace.yaml pnpm-lock.yaml package.json ./
+COPY bot/package.json ./bot/
 
 # ============================================
 # Build Base stage (with compilers)
@@ -39,7 +40,8 @@ RUN --mount=type=cache,target=/root/.local/share/pnpm/store pnpm install --froze
 # ============================================
 FROM build-base AS prod-deps
 
-COPY package.json pnpm-lock.yaml ./
+COPY pnpm-workspace.yaml pnpm-lock.yaml package.json ./
+COPY bot/package.json ./bot/
 RUN --mount=type=cache,target=/root/.local/share/pnpm/store pnpm install --prod --frozen-lockfile
 
 # ============================================
