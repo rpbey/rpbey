@@ -49,7 +49,7 @@ RUN --mount=type=cache,target=/root/.local/share/pnpm/store pnpm install --prod 
 # ============================================
 FROM build-base AS builder
 
-COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app ./
 COPY . .
 
 # Generate Prisma Client using the CLI directly
