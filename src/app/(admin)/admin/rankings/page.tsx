@@ -3,8 +3,10 @@ import {
   getRankingConfig,
   getTournamentCategories,
 } from '@/server/actions/ranking';
+import { getSeasons } from '@/server/actions/season';
 import PointAdjustmentList from './PointAdjustmentList';
 import RankingSettingsForm from './RankingSettingsForm';
+import SeasonManager from '@/components/admin/rankings/SeasonManager';
 
 export const metadata = {
   title: 'Admin - Classements',
@@ -13,6 +15,7 @@ export const metadata = {
 export default async function RankingAdminPage() {
   const config = await getRankingConfig();
   const categories = await getTournamentCategories();
+  const seasons = await getSeasons();
 
   return (
     <Box sx={{ py: 4 }}>
@@ -25,6 +28,8 @@ export default async function RankingAdminPage() {
           les ajustements manuels.
         </Typography>
       </Box>
+
+      <SeasonManager seasons={seasons} />
 
       <RankingSettingsForm
         initialConfig={config}

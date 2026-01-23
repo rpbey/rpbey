@@ -60,8 +60,39 @@ model User {
   twoFactors       TwoFactor[]
   pointAdjustments PointAdjustment[]
   adminAdjustments PointAdjustment[]       @relation("AdminAdjustments")
+  seasonEntries    SeasonEntry[]
 
   @@map("users")
+}
+
+model RankingSeason {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  startDate   DateTime @default(now())
+  endDate     DateTime?
+  isActive    Boolean  @default(true)
+  entries     SeasonEntry[]
+
+  @@map("ranking_seasons")
+}
+
+model SeasonEntry {
+  id             String   @id @default(cuid())
+  seasonId       String
+  userId         String
+  points         Int
+  wins           Int
+  losses         Int
+  tournamentWins Int
+  rank           Int?
+  
+  season         RankingSeason @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([seasonId, userId])
+  @@index([seasonId])
+  @@map("season_entries")
 }
 
 model Session {
@@ -476,6 +507,7 @@ enum TournamentStatus {
   UNDERWAY
   COMPLETE
   CANCELLED
+  ARCHIVED
 }
 
 enum ProductType {

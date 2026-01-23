@@ -44,10 +44,23 @@ export async function updateRankingConfig(data: {
 
 export async function recalculateRankings() {
   const config = await getRankingConfig();
+  
+  // Get current season to determine start date
+  const currentSeason = await prisma.rankingSeason.findFirst({
+    where: { isActive: true },
+  });
+
+  // If no season is defined, we might default to all-time or a specific date.
+  // For now, let's assume if no season exists, we count everything (or create a default season 1 manually).
+  const startDate = currentSeason?.startDate || new Date(0); // Epoch if no season
 
   // 1. Récupérer tous les tournois terminés et leurs participants, avec leur catégorie
+  // Filter by date >= season start
   const tournaments = await prisma.tournament.findMany({
-    where: { status: 'COMPLETE' },
+    where: { 
+      status: 'COMPLETE',
+      date: { gte: startDate }
+    },
     include: {
       category: true,
       participants: {
