@@ -11,12 +11,31 @@ const nextConfig: NextConfig = {
   cacheComponents: true,
 
   // External packages for server (Puppeteer/Crawlee)
-  serverExternalPackages: ["puppeteer", "crawlee", "turndown", "@napi-rs/canvas"],
+  serverExternalPackages: [
+    "puppeteer", 
+    "puppeteer-extra", 
+    "puppeteer-extra-plugin-stealth", 
+    "crawlee", 
+    "turndown", 
+    "@napi-rs/canvas"
+  ],
 
   // Experimental features
   experimental: {
+    optimizePackageImports: [
+      "@mui/x-charts",
+      "@mui/x-data-grid",
+      "@mui/x-date-pickers",
+      "@mui/x-tree-view",
+    ],
     serverActions: {
-      allowedOrigins: ["46.224.145.55:3000", "rpbey.fr", "localhost:3000"],
+      allowedOrigins: [
+        "46.224.145.55:3000", 
+        "46.224.145.55:8000",
+        "rpbey.fr", 
+        "localhost:3000",
+        "localhost:8000"
+      ],
     },
   },
 
@@ -41,6 +60,18 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "lh3.googleusercontent.com",
+      },
+      {
+        protocol: "https",
+        hostname: "static-cdn.jtvnw.net",
+      },
+      {
+        protocol: "https",
+        hostname: "*.ytimg.com",
+      },
+      {
+        protocol: "https",
+        hostname: "img.youtube.com",
       },
     ],
   },

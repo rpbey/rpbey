@@ -82,6 +82,11 @@ export const auth = betterAuth({
   trustedOrigins: [
     process.env.BETTER_AUTH_URL || 'http://localhost:3000',
     'https://rpbey.fr',
+    'http://localhost:8000',
+    'http://46.224.145.55:3000',
+    'http://46.224.145.55:8000',
+    'https://46.224.145.55:3000',
+    'https://46.224.145.55:8000',
   ],
 });
 
