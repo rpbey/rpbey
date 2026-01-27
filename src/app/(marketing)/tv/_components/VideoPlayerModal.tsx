@@ -6,6 +6,7 @@ import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
+import { useEffect, useState } from 'react';
 import type { VideoInfo } from '@/lib/twitch';
 
 interface VideoPlayerModalProps {
@@ -23,22 +24,23 @@ export function VideoPlayerModal({
   onClose,
   domain,
 }: VideoPlayerModalProps) {
+  const [hostname, setHostname] = useState<string>('');
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setHostname(window.location.hostname);
+    }
+  }, []);
+
   if (!video || !type) return null;
 
   let embedUrl = '';
   if (type === 'youtube') {
     embedUrl = `https://www.youtube-nocookie.com/embed/${video.id}?autoplay=1`;
   } else if (type === 'twitch') {
-    // Check if it's a clip or a video
-    // Twitch clips IDs are strings (slugs), video IDs are numbers usually but stored as strings.
-    // Clips URL usually contains "clip" or we can rely on the passed 'type'.
-    // Assuming 'twitch' here means Clips for now as per user request, but could be VOD.
-    // However, the Twitch API returns different objects.
-    // Let's assume Clips for now if the URL contains 'clip' or based on context.
-    // Actually, `getRPBClips` returns clips.
-
-    // Construct embed for Clip
-    embedUrl = `https://clips.twitch.tv/embed?clip=${video.id}&parent=${domain}&autoplay=true`;
+    // Construct embed for Clip with dynamic parent
+    const parent = hostname || domain;
+    embedUrl = `https://clips.twitch.tv/embed?clip=${video.id}&parent=${parent}&autoplay=true`;
   }
 
   return (
