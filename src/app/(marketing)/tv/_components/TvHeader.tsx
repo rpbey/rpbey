@@ -1,41 +1,77 @@
-import { LiveTv } from '@mui/icons-material';
-import { Box, Typography } from '@mui/material';
+import { Avatar, Box, Typography } from '@mui/material';
+import Image from 'next/image';
 
 export default function TvHeader() {
   return (
     <Box
       sx={{
-        mb: 4,
         display: 'flex',
-        flexDirection: { xs: 'column', sm: 'row' },
-        alignItems: { xs: 'flex-start', sm: 'center' },
-        gap: 2,
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        py: 1,
+        px: { xs: 1, md: 0 },
+        bgcolor: 'background.default',
+        borderBottom: { xs: '1px solid', md: 'none' },
+        borderColor: 'divider',
+        mb: { xs: 2, md: 4 },
       }}
     >
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-        <LiveTv color="primary" sx={{ fontSize: { xs: 32, sm: 40 } }} />
-        <Typography
-          variant="h4"
-          fontWeight="bold"
-          sx={{ fontSize: { xs: '1.75rem', sm: '2.125rem' } }}
-        >
-          RPB TV
-        </Typography>
+      {/* Gauche: Logo RPB TV style YouTube */}
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+          <Box sx={{ mr: 1, display: 'flex', alignItems: 'center' }}>
+            <Image
+              src="/logo.png"
+              alt="RPB Logo"
+              width={32}
+              height={32}
+              style={{ objectFit: 'contain' }}
+            />
+          </Box>
+          <Typography
+            variant="h6"
+            fontWeight="900"
+            sx={{
+              letterSpacing: '-0.05em',
+              textTransform: 'uppercase',
+              fontSize: { xs: '1.2rem', md: '1.5rem' },
+            }}
+          >
+            RPB{' '}
+            <Box
+              component="span"
+              sx={{
+                color: 'text.secondary',
+                fontSize: '0.6em',
+                fontWeight: 'bold',
+                verticalAlign: 'top',
+                ml: 0.2,
+              }}
+            >
+              TV
+            </Box>
+          </Typography>
+        </Box>
       </Box>
-      <Typography
-        variant="body1"
-        color="text.secondary"
-        sx={{ display: { xs: 'none', sm: 'block' } }}
+
+      {/* Droite: Actions YouTube Style */}
+      <Box
+        sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0.5, sm: 1 } }}
       >
-        Le direct de la communauté sur Twitch
-      </Typography>
-      <Typography
-        variant="body1"
-        color="text.secondary"
-        sx={{ display: { xs: 'block', sm: 'none' } }}
-      >
-        Le direct de la communauté sur Twitch
-      </Typography>
+        <Avatar
+          sx={{
+            width: 32,
+            height: 32,
+            ml: 1,
+            bgcolor: '#fbbf24',
+            color: 'black',
+            fontSize: '0.8rem',
+            fontWeight: 'bold',
+          }}
+        >
+          RPB
+        </Avatar>
+      </Box>
     </Box>
   );
 }
