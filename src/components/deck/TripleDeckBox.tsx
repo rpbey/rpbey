@@ -1,6 +1,7 @@
 /* eslint-disable react/no-unknown-property */
 'use client';
 
+import { Box } from '@mui/material';
 import {
   Float,
   OrbitControls,
@@ -220,5 +221,3 @@ export function TripleDeckBox({
     </Box>
   );
 }
-
-import { Box } from '@mui/material';
