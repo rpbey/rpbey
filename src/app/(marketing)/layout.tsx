@@ -5,7 +5,6 @@ import {
   MarketingHeader,
   MobileNav,
 } from "@/components/layout";
-import { SponsorBanner } from "@/components/marketing";
 import Box from "@mui/material/Box";
 import type { Metadata } from "next";
 
@@ -38,7 +37,6 @@ export default function MarketingLayout({ children }: { children: React.ReactNod
         }}
       >
         <MarketingHeader />
-        <SponsorBanner />
         <Box sx={{ flex: 1 }}>{children}</Box>
         <IconFooter />
       </Box>
