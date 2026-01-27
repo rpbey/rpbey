@@ -9,27 +9,42 @@ import {
   Container,
   Divider,
   Stack,
+  TextField,
   Typography,
+  InputAdornment,
+  IconButton,
+  Collapse,
 } from '@mui/material';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { Suspense, useState } from 'react';
 import { TwitchButton } from '@/components/auth';
 import { DiscordIcon } from '@/components/ui/Icons';
 import { useThemeMode } from '@/components/theme/ThemeRegistry';
-import { signIn } from '@/lib/auth-client';
+import { signIn, signUp } from '@/lib/auth-client';
 
 function SignInContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const error = searchParams.get('error');
   const [isLoading, setIsLoading] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  
+  // Form states
+  const [emailOrUsername, setEmailOrUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [name, setName] = useState(''); // For sign up
+  const [authError, setAuthError] = useState<string | null>(null);
+
   const { backgroundImage } = useThemeMode();
 
   const handleDiscordSignIn = async () => {
     if (isLoading) return;
     setIsLoading(true);
+    setAuthError(null);
     
-    // Safety timeout: Reset loading state after 10s if redirect doesn't happen
     const timeoutId = setTimeout(() => {
       setIsLoading(false);
     }, 10000);
@@ -39,10 +54,76 @@ function SignInContent() {
         provider: 'discord',
         callbackURL: '/dashboard',
       });
-      // On success, the page redirects, so we don't need to clear timeout/loading
     } catch (err) {
       console.error('Login failed', err);
       clearTimeout(timeoutId);
+      setIsLoading(false);
+    }
+  };
+
+  const handleCredentials = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (isLoading) return;
+    setIsLoading(true);
+    setAuthError(null);
+
+    try {
+      if (isSignUp) {
+        // Registration
+        await signUp.email({
+          email: emailOrUsername,
+          password,
+          name,
+          callbackURL: '/dashboard',
+        }, {
+          onRequest: () => {
+            // Optional: Loading state handled globally
+          },
+          onSuccess: () => {
+            router.push('/dashboard');
+          },
+          onError: (ctx) => {
+            setAuthError(ctx.error.message);
+            setIsLoading(false);
+          },
+        });
+      } else {
+        // Login
+        const isEmail = emailOrUsername.includes('@');
+        if (isEmail) {
+          await signIn.email({
+            email: emailOrUsername,
+            password,
+            callbackURL: '/dashboard',
+          }, {
+            onSuccess: () => {
+              router.push('/dashboard');
+            },
+            onError: (ctx) => {
+              setAuthError(ctx.error.message);
+              setIsLoading(false);
+            },
+          });
+        } else {
+          // Username login
+          await signIn.username({
+            username: emailOrUsername,
+            password,
+            callbackURL: '/dashboard',
+          }, {
+            onSuccess: () => {
+              router.push('/dashboard');
+            },
+            onError: (ctx) => {
+              setAuthError(ctx.error.message);
+              setIsLoading(false);
+            },
+          });
+        }
+      }
+    } catch (err) {
+      console.error('Credentials auth failed', err);
+      setAuthError('Une erreur inattendue est survenue.');
       setIsLoading(false);
     }
   };
@@ -72,20 +153,23 @@ function SignInContent() {
                 fontWeight="bold"
                 gutterBottom
               >
-                Connexion
+                {isSignUp ? 'Inscription' : 'Connexion'}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Connecte-toi à la République Populaire du Beyblade
+                {isSignUp 
+                  ? 'Crée ton compte RPB' 
+                  : 'Connecte-toi à la République Populaire du Beyblade'}
               </Typography>
             </Box>
 
-            {error && (
+            {(error || authError) && (
               <Alert severity="error" sx={{ mb: 3 }}>
-                Une erreur est survenue lors de la connexion.
+                {authError || "Une erreur est survenue lors de la connexion."}
               </Alert>
             )}
 
-            <Stack spacing={2}>
+            {/* Social Logins */}
+            <Stack spacing={2} sx={{ mb: 3 }}>
               <Button
                 fullWidth
                 variant="contained"
@@ -103,7 +187,7 @@ function SignInContent() {
                 }}
                 startIcon={<DiscordIcon size={24} />}
               >
-                {isLoading ? 'Connexion...' : 'Continuer avec Discord'}
+                {isLoading ? 'Chargement...' : 'Continuer avec Discord'}
               </Button>
 
               <TwitchButton callbackURL="/dashboard" />
@@ -111,27 +195,99 @@ function SignInContent() {
 
             <Divider sx={{ my: 3 }}>
               <Typography variant="body2" color="text.secondary">
-                ou
+                ou avec email
               </Typography>
             </Divider>
 
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              textAlign="center"
-            >
-              Pas encore membre ?{' '}
-              <Link
-                href="https://discord.gg/rpb"
-                style={{
-                  color: 'inherit',
-                  fontWeight: 'bold',
-                  textDecoration: 'none',
-                }}
-              >
-                Rejoins le Discord RPB
-              </Link>
-            </Typography>
+            {/* Credentials Form */}
+            <form onSubmit={handleCredentials}>
+              <Stack spacing={2.5}>
+                {isSignUp && (
+                  <TextField
+                    fullWidth
+                    label="Nom d'affichage"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    required={isSignUp}
+                    disabled={isLoading}
+                  />
+                )}
+                
+                <TextField
+                  fullWidth
+                  label={isSignUp ? "Email" : "Email ou Nom d'utilisateur"}
+                  value={emailOrUsername}
+                  onChange={(e) => setEmailOrUsername(e.target.value)}
+                  required
+                  disabled={isLoading}
+                  type={isSignUp ? "email" : "text"}
+                />
+
+                <TextField
+                  fullWidth
+                  label="Mot de passe"
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  disabled={isLoading}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          onClick={() => setShowPassword(!showPassword)}
+                          edge="end"
+                        >
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+
+                <Button
+                  fullWidth
+                  type="submit"
+                  variant="contained"
+                  size="large"
+                  disabled={isLoading}
+                  sx={{
+                    bgcolor: 'primary.main',
+                    py: 1.5,
+                    borderRadius: 2,
+                    textTransform: 'none',
+                    fontSize: '1.1rem',
+                    fontWeight: 'bold',
+                  }}
+                >
+                  {isLoading 
+                    ? 'Chargement...' 
+                    : (isSignUp ? "S'inscrire" : 'Se connecter')}
+                </Button>
+              </Stack>
+            </form>
+
+            <Box sx={{ mt: 3, textAlign: 'center' }}>
+              <Typography variant="body2" color="text.secondary">
+                {isSignUp ? 'Déjà un compte ?' : 'Pas encore de compte ?'}
+                {' '}
+                <Box 
+                  component="span" 
+                  onClick={() => {
+                    setIsSignUp(!isSignUp);
+                    setAuthError(null);
+                  }}
+                  sx={{ 
+                    color: 'primary.main', 
+                    fontWeight: 'bold', 
+                    cursor: 'pointer',
+                    '&:hover': { textDecoration: 'underline' }
+                  }}
+                >
+                  {isSignUp ? 'Se connecter' : "S'inscrire"}
+                </Box>
+              </Typography>
+            </Box>
           </CardContent>
         </Card>
       </Container>
