@@ -1,10 +1,9 @@
 import { PartType } from '@prisma/client';
-import { NextResponse } from 'next/server';
+import { NextResponse, connection } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-export const dynamic = 'force-dynamic';
-
 export async function GET() {
+  await connection();
   try {
     const [blades, ratchets, bits] = await Promise.all([
       prisma.part.findMany({ where: { type: PartType.BLADE } }),
