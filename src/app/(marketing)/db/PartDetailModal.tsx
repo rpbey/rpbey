@@ -14,7 +14,7 @@ import {
   useMediaQuery,
   useTheme,
 } from '@mui/material';
-import { RadarChart } from '@mui/x-charts/RadarChart';
+import { DynamicRadarChart as RadarChart } from '@/components/ui/DynamicCharts';
 import type { Part } from '@prisma/client';
 
 interface PartDetailModalProps {

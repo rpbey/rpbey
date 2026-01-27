@@ -9,8 +9,10 @@ import {
   useTheme,
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
-import { BarChart } from '@mui/x-charts/BarChart';
-import { PieChart } from '@mui/x-charts/PieChart';
+import {
+  DynamicBarChart as BarChart,
+  DynamicPieChart as PieChart,
+} from '@/components/ui/DynamicCharts';
 
 interface StatsChartsProps {
   registrations: { month: string; count: number }[];

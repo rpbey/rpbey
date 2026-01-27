@@ -9,7 +9,7 @@ import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import { RadarChart } from '@mui/x-charts/RadarChart';
+import { DynamicRadarChart as RadarChart } from '@/components/ui/DynamicCharts';
 import type { Part } from '@prisma/client';
 import { PartSelector } from './PartSelector';
 
