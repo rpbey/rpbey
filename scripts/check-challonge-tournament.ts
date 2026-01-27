@@ -7,7 +7,7 @@ dotenv.config({ path: path.resolve(process.cwd(), ".env") });
 
 async function checkTournament() {
   const service = getChallongeService();
-  const tournamentId = "B_TS1"; // Derived from URL https://challonge.com/fr/B_TS1
+  const tournamentId = "B_TS2"; // Derived from URL https://challonge.com/fr/B_TS2
 
   console.log(`Checking tournament: ${tournamentId}...`);
 

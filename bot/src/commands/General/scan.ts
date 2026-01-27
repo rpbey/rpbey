@@ -19,7 +19,7 @@ export class ScanCommand extends Command {
   override registerApplicationCommands(registry: Command.Registry) {
     registry.registerChatInputCommand((builder) =>
       builder
-        .setName('scan')
+        .setName('scanner')
         .setDescription('Scanner les IDs des salons et rôles')
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
         .addSubcommand((sub) =>

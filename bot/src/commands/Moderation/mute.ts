@@ -17,7 +17,7 @@ export class MuteCommand extends Command {
   override registerApplicationCommands(registry: Command.Registry) {
     registry.registerChatInputCommand((builder) =>
       builder
-        .setName('mute')
+        .setName('muet')
         .setDescription("Gérer le mute d'un membre")
         .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers)
         .setContexts(0)

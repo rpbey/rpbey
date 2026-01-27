@@ -8,15 +8,13 @@ const nextConfig: NextConfig = {
   output: "standalone",
 
   // Cache Components (Next.js 16+)
-  cacheComponents: false,
+  cacheComponents: true,
 
   // External packages for server (Puppeteer/Crawlee)
   serverExternalPackages: ["puppeteer", "crawlee", "turndown", "@napi-rs/canvas"],
 
   // Experimental features
   experimental: {
-    // Enable PPR for faster page loads
-    // ppr: true,
     serverActions: {
       allowedOrigins: ["46.224.145.55:3000", "rpbey.fr", "localhost:3000"],
     },

@@ -46,7 +46,7 @@ export default function SeasonManager({ seasons }: { seasons: Season[] }) {
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/(^-|-$)/g, '');
-        
+
       await archiveCurrentSeason(nextName, slug);
       setOpen(false);
       setNextName('');
@@ -86,7 +86,8 @@ export default function SeasonManager({ seasons }: { seasons: Season[] }) {
               <Chip label="En cours" color="success" size="small" />
             </Box>
             <Typography variant="caption" color="text.secondary">
-              Débutée le {new Date(currentSeason.startDate).toLocaleDateString()}
+              Débutée le{' '}
+              {new Date(currentSeason.startDate).toLocaleDateString()}
             </Typography>
 
             <Button
@@ -100,27 +101,44 @@ export default function SeasonManager({ seasons }: { seasons: Season[] }) {
             </Button>
 
             <Box sx={{ mt: 2, display: 'flex', gap: 1 }}>
-              <Button 
-                variant="outlined" 
-                size="small" 
-                onClick={() => window.open('/api/admin/export/rankings?seasonId=current&format=csv')}
+              <Button
+                variant="outlined"
+                size="small"
+                onClick={() =>
+                  window.open(
+                    '/api/admin/export/rankings?seasonId=current&format=csv',
+                  )
+                }
               >
                 Export CSV
               </Button>
-              <Button 
-                variant="outlined" 
-                size="small" 
-                onClick={() => window.open('/api/admin/export/rankings?seasonId=current&format=json')}
+              <Button
+                variant="outlined"
+                size="small"
+                onClick={() =>
+                  window.open(
+                    '/api/admin/export/rankings?seasonId=current&format=json',
+                  )
+                }
               >
                 Export JSON
               </Button>
             </Box>
           </Box>
         ) : (
-          <Box sx={{ mb: 3, p: 2, bgcolor: 'error.light', color: 'error.contrastText', borderRadius: 2 }}>
+          <Box
+            sx={{
+              mb: 3,
+              p: 2,
+              bgcolor: 'error.light',
+              color: 'error.contrastText',
+              borderRadius: 2,
+            }}
+          >
             <Typography fontWeight="bold">Aucune saison active !</Typography>
             <Typography variant="body2">
-              Le système de classement nécessite une saison active pour fonctionner correctement.
+              Le système de classement nécessite une saison active pour
+              fonctionner correctement.
             </Typography>
             <Button
               variant="contained"
@@ -151,18 +169,24 @@ export default function SeasonManager({ seasons }: { seasons: Season[] }) {
                 />
                 <Chip label="Archivée" size="small" />
                 <Box sx={{ ml: 'auto', display: 'flex', gap: 1 }}>
-                  <Button 
-                    size="small" 
-                    onClick={() => window.open(`/api/admin/export/rankings?seasonId=${season.id}&format=csv`)}
+                  <Button
+                    size="small"
+                    onClick={() =>
+                      window.open(
+                        `/api/admin/export/rankings?seasonId=${season.id}&format=csv`,
+                      )
+                    }
                   >
                     CSV
                   </Button>
                 </Box>
               </ListItem>
             ))}
-            {seasons.filter(s => !s.isActive).length === 0 && (
-                <Typography variant="body2" color="text.secondary">Aucune archive.</Typography>
-            )}
+          {seasons.filter((s) => !s.isActive).length === 0 && (
+            <Typography variant="body2" color="text.secondary">
+              Aucune archive.
+            </Typography>
+          )}
         </List>
       </CardContent>
 
@@ -191,7 +215,11 @@ export default function SeasonManager({ seasons }: { seasons: Season[] }) {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setOpen(false)}>Annuler</Button>
-          <Button onClick={handleArchive} variant="contained" disabled={!nextName || loading}>
+          <Button
+            onClick={handleArchive}
+            variant="contained"
+            disabled={!nextName || loading}
+          >
             {loading ? 'Traitement...' : 'Confirmer'}
           </Button>
         </DialogActions>

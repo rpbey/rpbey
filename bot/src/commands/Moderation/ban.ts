@@ -13,7 +13,7 @@ export class BanCommand extends Command {
   override registerApplicationCommands(registry: Command.Registry) {
     registry.registerChatInputCommand((builder) =>
       builder
-        .setName('ban')
+        .setName('bannir')
         .setDescription('Bannir un membre du serveur')
         .setDefaultMemberPermissions(PermissionFlagsBits.BanMembers)
         .setContexts(0)

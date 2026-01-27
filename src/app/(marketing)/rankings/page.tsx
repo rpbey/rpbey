@@ -3,7 +3,7 @@ import { RankingsTable } from '@/components/rankings/RankingsTable';
 import SeasonSelector from '@/components/rankings/SeasonSelector';
 import { PageHeader } from '@/components/ui';
 import prisma from '@/lib/prisma';
-import { getSeasons, getSeasonStandings } from '@/server/actions/season';
+import { getSeasonStandings, getSeasons } from '@/server/actions/season';
 
 export const metadata = {
   title: 'Classements | RPB',
@@ -23,14 +23,17 @@ export default async function RankingsPage({
   const resolvedSearchParams = await searchParams;
   const page = Number(resolvedSearchParams.page) || 1;
   const pageSize = 20;
-  const seasonSlug = typeof resolvedSearchParams.season === 'string' ? resolvedSearchParams.season : null;
+  const seasonSlug =
+    typeof resolvedSearchParams.season === 'string'
+      ? resolvedSearchParams.season
+      : null;
 
   // Fetch available seasons
   const seasons = await getSeasons();
 
   let profiles: any[] = [];
   let totalCount = 0;
-  let title = "Classements Officiels";
+  let title = 'Classements Officiels';
 
   if (seasonSlug && seasonSlug !== 'current') {
     // Historical Season
@@ -41,7 +44,7 @@ export default async function RankingsPage({
       // Manually paginate the entries
       profiles = seasonData.entries
         .slice((page - 1) * pageSize, page * pageSize)
-        .map(entry => ({
+        .map((entry) => ({
           id: entry.id,
           userId: entry.userId,
           rankingPoints: entry.points,
@@ -50,12 +53,12 @@ export default async function RankingsPage({
           tournamentWins: entry.tournamentWins,
           bladerName: null, // Fallback to user name in table
           favoriteType: null, // Not stored in history, optional
-          user: entry.user
+          user: entry.user,
         }));
     }
   } else {
     // Current Season (Live Profile Data)
-    
+
     // 1. Récupération optimisée avec pagination
     const whereCondition = {
       userId: {
@@ -92,7 +95,7 @@ export default async function RankingsPage({
       }),
       prisma.profile.count({ where: whereCondition }),
     ]);
-    
+
     profiles = liveProfiles;
     totalCount = count;
   }

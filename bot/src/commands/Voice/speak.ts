@@ -1,7 +1,12 @@
+import {
+  AudioPlayerStatus,
+  createAudioPlayer,
+  createAudioResource,
+  getVoiceConnection,
+  StreamType,
+} from '@discordjs/voice';
 import { Command } from '@sapphire/framework';
-import { getVoiceConnection, createAudioPlayer, createAudioResource, AudioPlayerStatus } from '@discordjs/voice';
-import { synthesizeSpeech } from '../../lib/transcriber.js';
-import fs from 'node:fs';
+import { synthesizeSpeechStream } from '../../lib/transcriber.js';
 
 export class SpeakCommand extends Command {
   public constructor(context: Command.LoaderContext, options: Command.Options) {
@@ -21,48 +26,64 @@ export class SpeakCommand extends Command {
           option
             .setName('message')
             .setDescription('Le message à lire')
-            .setRequired(true)
-        )
+            .setRequired(true),
+        ),
     );
   }
 
-  public override async chatInputRun(interaction: Command.ChatInputCommandInteraction) {
+  public override async chatInputRun(
+    interaction: Command.ChatInputCommandInteraction,
+  ) {
     const message = interaction.options.getString('message', true);
     const guildId = interaction.guildId;
 
     if (!guildId) {
-      return interaction.reply({ content: 'Cette commande ne fonctionne que sur un serveur.', ephemeral: true });
+      return interaction.reply({
+        content: 'Cette commande ne fonctionne que sur un serveur.',
+        ephemeral: true,
+      });
     }
 
     const connection = getVoiceConnection(guildId);
 
     if (!connection) {
-      return interaction.reply({ content: 'Je ne suis pas connecté à un salon vocal. Utilisez d\'abord /join.', ephemeral: true });
+      return interaction.reply({
+        content:
+          "Je ne suis pas connecté à un salon vocal. Utilisez d'abord /rejoindre.",
+        ephemeral: true,
+      });
     }
 
     await interaction.deferReply();
 
     try {
-      const filePath = await synthesizeSpeech(message);
-      
+      console.log(`[Speak] Requesting TTS for: "${message}"`);
+      // Use streaming for instant playback
+      const audioStream = synthesizeSpeechStream(message);
+
       const player = createAudioPlayer();
-      const resource = createAudioResource(filePath);
-      
+      // Use Arbitrary to force FFmpeg to detect format (MP3) and convert to Opus
+      const resource = createAudioResource(audioStream, {
+        inputType: StreamType.Arbitrary,
+      });
+
       connection.subscribe(player);
       player.play(resource);
 
+      player.on(AudioPlayerStatus.Playing, () => {
+        console.log('[Speak] Player started playing');
+      });
+
       player.on(AudioPlayerStatus.Idle, () => {
+        console.log('[Speak] Player finished');
         player.stop();
-        // Clean up file
-        try {
-            if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
-        } catch (e) {
-            console.error('Failed to cleanup TTS file', e);
-        }
+      });
+
+      player.on('error', (error) => {
+        console.error('[Speak] Player error:', error);
       });
 
       return interaction.editReply(`🗣️ **Dit :** "${message}"`);
-
     } catch (error) {
       console.error(error);
       return interaction.editReply('❌ Erreur lors de la synthèse vocale.');

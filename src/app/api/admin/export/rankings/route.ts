@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
+import { type NextRequest, NextResponse } from 'next/server';
+import { auth } from '@/lib/auth';
+import { prisma } from '@/lib/prisma';
 
 export async function GET(req: NextRequest) {
   const session = await auth.api.getSession({
@@ -18,15 +18,15 @@ export async function GET(req: NextRequest) {
 
   // Fetch data
   let data = [];
-  
+
   if (seasonId && seasonId !== 'current') {
     // Historical Data
     const entries = await prisma.seasonEntry.findMany({
       where: { seasonId },
       include: { user: true },
-      orderBy: { points: 'desc' }
+      orderBy: { points: 'desc' },
     });
-    
+
     data = entries.map((e, i) => ({
       Rank: i + 1,
       Name: e.user.name || 'Unknown',
@@ -35,7 +35,7 @@ export async function GET(req: NextRequest) {
       Points: e.points,
       Wins: e.wins,
       Losses: e.losses,
-      Tournaments: e.tournamentWins
+      Tournaments: e.tournamentWins,
     }));
   } else {
     // Live Data
@@ -45,8 +45,8 @@ export async function GET(req: NextRequest) {
       orderBy: [
         { rankingPoints: 'desc' },
         { tournamentWins: 'desc' },
-        { wins: 'desc' }
-      ]
+        { wins: 'desc' },
+      ],
     });
 
     data = profiles.map((p, i) => ({
@@ -57,7 +57,7 @@ export async function GET(req: NextRequest) {
       Points: p.rankingPoints,
       Wins: p.wins,
       Losses: p.losses,
-      Tournaments: p.tournamentWins
+      Tournaments: p.tournamentWins,
     }));
   }
 
@@ -65,29 +65,40 @@ export async function GET(req: NextRequest) {
     return new NextResponse(JSON.stringify(data, null, 2), {
       headers: {
         'Content-Type': 'application/json',
-        'Content-Disposition': `attachment; filename="rankings-${seasonId || 'current'}.json"`
-      }
+        'Content-Disposition': `attachment; filename="rankings-${seasonId || 'current'}.json"`,
+      },
     });
   }
 
   // CSV Format
-  const csvHeaders = ['Rank', 'Name', 'Username', 'DiscordId', 'Points', 'Wins', 'Losses', 'Tournaments'];
-  const csvRows = data.map(row => 
-    csvHeaders.map(header => {
-      const val = (row as any)[header];
-      if (typeof val === 'string') {
-          return '"' + val.replace(/"/g, '""') + '"';
-      }
-      return val;
-    }).join(',')
+  const csvHeaders = [
+    'Rank',
+    'Name',
+    'Username',
+    'DiscordId',
+    'Points',
+    'Wins',
+    'Losses',
+    'Tournaments',
+  ];
+  const csvRows = data.map((row) =>
+    csvHeaders
+      .map((header) => {
+        const val = (row as any)[header];
+        if (typeof val === 'string') {
+          return `"${val.replace(/"/g, '""')}"`;
+        }
+        return val;
+      })
+      .join(','),
   );
-  
+
   const csvString = [csvHeaders.join(','), ...csvRows].join('\n');
 
   return new NextResponse(csvString, {
     headers: {
       'Content-Type': 'text/csv',
-      'Content-Disposition': `attachment; filename="rankings-${seasonId || 'current'}.csv"`
-    }
+      'Content-Disposition': `attachment; filename="rankings-${seasonId || 'current'}.csv"`,
+    },
   });
 }

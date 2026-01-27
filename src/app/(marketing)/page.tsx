@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {
   await connection();
-  
+
   // Parallel data fetching
   const [stats, team, activeTournament] = await Promise.all([
     getDiscordStats(),

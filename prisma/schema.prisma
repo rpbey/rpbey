@@ -13,9 +13,8 @@ model PointAdjustment {
   reason    String
   adminId   String?
   createdAt DateTime @default(now())
-  
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   admin     User?    @relation("AdminAdjustments", fields: [adminId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@map("point_adjustments")
@@ -38,47 +37,71 @@ model User {
   username         String?                 @unique
   displayUsername  String?
   twoFactorEnabled Boolean                 @default(false)
-  
-  // Extended Discord Info (Synced)
-  nickname         String?
-  joinedAt         DateTime?
-  premiumSince     DateTime?
-  roles            Json?     @default("[]")
-  status           String?
-  activities       Json?     @default("[]")
-  serverAvatar     String?
+  activities       Json?                   @default("[]")
   globalName       String?
-
+  joinedAt         DateTime?
+  nickname         String?
+  premiumSince     DateTime?
+  roles            Json?                   @default("[]")
+  serverAvatar     String?
+  status           String?
   accounts         Account[]
+  botConversations BotConversation[]
   decks            Deck[]
+  adminAdjustments PointAdjustment[]       @relation("AdminAdjustments")
+  pointAdjustments PointAdjustment[]
   profile          Profile?
+  seasonEntries    SeasonEntry[]
   sessions         Session[]
   player1Matches   TournamentMatch[]       @relation("Player1Matches")
   player2Matches   TournamentMatch[]       @relation("Player2Matches")
   winnerMatches    TournamentMatch[]       @relation("WinnerMatches")
   tournaments      TournamentParticipant[]
   twoFactors       TwoFactor[]
-  pointAdjustments PointAdjustment[]
-  adminAdjustments PointAdjustment[]       @relation("AdminAdjustments")
-  seasonEntries    SeasonEntry[]
 
   @@map("users")
 }
 
+model BotConversation {
+  id        String       @id @default(cuid())
+  userId    String
+  title     String?
+  isActive  Boolean      @default(true)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages  BotMessage[]
+
+  @@index([userId])
+  @@map("bot_conversations")
+}
+
+model BotMessage {
+  id             String          @id @default(cuid())
+  conversationId String
+  role           String          @default("user")
+  content        String
+  timestamp      DateTime        @default(now())
+  conversation   BotConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId])
+  @@map("bot_messages")
+}
+
 model RankingSeason {
-  id          String   @id @default(cuid())
-  name        String
-  slug        String   @unique
-  startDate   DateTime @default(now())
-  endDate     DateTime?
-  isActive    Boolean  @default(true)
-  entries     SeasonEntry[]
+  id        String        @id @default(cuid())
+  name      String
+  slug      String        @unique
+  startDate DateTime      @default(now())
+  endDate   DateTime?
+  isActive  Boolean       @default(true)
+  entries   SeasonEntry[]
 
   @@map("ranking_seasons")
 }
 
 model SeasonEntry {
-  id             String   @id @default(cuid())
+  id             String        @id @default(cuid())
   seasonId       String
   userId         String
   points         Int
@@ -86,7 +109,6 @@ model SeasonEntry {
   losses         Int
   tournamentWins Int
   rank           Int?
-  
   season         RankingSeason @relation(fields: [seasonId], references: [id], onDelete: Cascade)
   user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -165,11 +187,11 @@ model Profile {
   wins           Int             @default(0)
   losses         Int             @default(0)
   tournamentWins Int             @default(0)
-  rankingPoints  Int             @default(0)
   twitterHandle  String?
   tiktokHandle   String?
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
+  rankingPoints  Int             @default(0)
   user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("profiles")
@@ -208,11 +230,11 @@ model Part {
   tipType      String?
   releaseDate  DateTime?
   imageUrl     String?
-  modelUrl     String?
-  textureUrl   String?
   rarity       String?
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
+  modelUrl     String?
+  textureUrl   String?
   beyBits      Beyblade[] @relation("BeyBitRelation")
   beyBlades    Beyblade[] @relation("BeyBladeRelation")
   beyRatchets  Beyblade[] @relation("BeyRatchetRelation")
@@ -271,21 +293,18 @@ model Deck {
 }
 
 model DeckItem {
-  id        String  @id @default(cuid())
+  id        String    @id @default(cuid())
   position  Int
   deckId    String
-  // Option 1: Link to a pre-built Beyblade
   beyId     String?
-  // Option 2: Custom build (Blade + Ratchet + Bit)
   bladeId   String?
   ratchetId String?
   bitId     String?
-
-  deck    Deck      @relation(fields: [deckId], references: [id], onDelete: Cascade)
-  bey     Beyblade? @relation(fields: [beyId], references: [id])
-  blade   Part?     @relation("BladeRelation", fields: [bladeId], references: [id])
-  ratchet Part?     @relation("RatchetRelation", fields: [ratchetId], references: [id])
-  bit     Part?     @relation("BitRelation", fields: [bitId], references: [id])
+  bey       Beyblade? @relation(fields: [beyId], references: [id])
+  bit       Part?     @relation("BitRelation", fields: [bitId], references: [id])
+  blade     Part?     @relation("BladeRelation", fields: [bladeId], references: [id])
+  deck      Deck      @relation(fields: [deckId], references: [id], onDelete: Cascade)
+  ratchet   Part?     @relation("RatchetRelation", fields: [ratchetId], references: [id])
 
   @@unique([deckId, position])
   @@index([deckId])
@@ -308,13 +327,13 @@ model Tournament {
   announcementMessageId String?
   channelId             String?
   status                TournamentStatus        @default(UPCOMING)
-  weight                Float                   @default(1.0)
-  categoryId            String?
-  category              TournamentCategory?     @relation(fields: [categoryId], references: [id])
   createdAt             DateTime                @default(now())
   updatedAt             DateTime                @updatedAt
+  weight                Float                   @default(1.0)
+  categoryId            String?
   matches               TournamentMatch[]
   participants          TournamentParticipant[]
+  category              TournamentCategory?     @relation(fields: [categoryId], references: [id])
 
   @@map("tournaments")
 }
@@ -323,7 +342,7 @@ model TournamentCategory {
   id          String       @id @default(cuid())
   name        String       @unique
   multiplier  Float        @default(1.0)
-  color       String?      // Pour l'affichage (ex: Or pour Major)
+  color       String?
   tournaments Tournament[]
 
   @@map("tournament_categories")
@@ -381,20 +400,17 @@ model StaffMember {
   discordId        String?
   displayIndex     Int       @default(0)
   isActive         Boolean   @default(true)
-  
-  // Extended Discord Info
-  nickname         String?
-  joinedAt         DateTime?
-  premiumSince     DateTime?
-  roles            Json?     @default("[]")
-  status           String?
-  activities       Json?     @default("[]")
-  serverAvatar     String?
-  globalName       String?
-  accountCreatedAt DateTime?
-
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
+  accountCreatedAt DateTime?
+  activities       Json?     @default("[]")
+  globalName       String?
+  joinedAt         DateTime?
+  nickname         String?
+  premiumSince     DateTime?
+  roles            Json?     @default("[]")
+  serverAvatar     String?
+  status           String?
 
   @@map("staff_members")
 }
@@ -418,7 +434,6 @@ model Product {
   name          String
   nameEn        String?
   nameFr        String?
-  description   String?
   productType   ProductType
   productLine   ProductLine
   price         Int?
@@ -431,6 +446,7 @@ model Product {
   includedParts String[]
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
+  description   String?
   beyblades     Beyblade[]
 
   @@index([productLine])

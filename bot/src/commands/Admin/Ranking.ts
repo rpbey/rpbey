@@ -37,7 +37,7 @@ export class RankingCommand extends Subcommand {
             .setDescription('Configurer les points du système de classement')
             .addIntegerOption((option) =>
               option
-                .setName('match_win')
+                .setName('victoire_match')
                 .setDescription('Points par victoire de match (ex: 200)')
                 .setRequired(true),
             )
@@ -55,19 +55,19 @@ export class RankingCommand extends Subcommand {
             )
             .addIntegerOption((option) =>
               option
-                .setName('third')
+                .setName('troisieme')
                 .setDescription('Points pour 3ème place (ex: 1000)')
                 .setRequired(true),
             )
             .addIntegerOption((option) =>
               option
-                .setName('second')
+                .setName('deuxieme')
                 .setDescription('Points pour 2ème place (ex: 1500)')
                 .setRequired(true),
             )
             .addIntegerOption((option) =>
               option
-                .setName('first')
+                .setName('premier')
                 .setDescription('Points pour 1ère place (ex: 2000)')
                 .setRequired(true),
             ),
@@ -104,12 +104,12 @@ export class RankingCommand extends Subcommand {
   ) {
     await interaction.deferReply({ ephemeral: true });
 
-    const matchWin = interaction.options.getInteger('match_win', true);
+    const matchWin = interaction.options.getInteger('victoire_match', true);
     const participation = interaction.options.getInteger('participation', true);
     const top8 = interaction.options.getInteger('top8', true);
-    const thirdPlace = interaction.options.getInteger('third', true);
-    const secondPlace = interaction.options.getInteger('second', true);
-    const firstPlace = interaction.options.getInteger('first', true);
+    const thirdPlace = interaction.options.getInteger('troisieme', true);
+    const secondPlace = interaction.options.getInteger('deuxieme', true);
+    const firstPlace = interaction.options.getInteger('premier', true);
 
     try {
       // Find existing config or create new one

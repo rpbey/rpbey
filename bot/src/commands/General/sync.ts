@@ -6,7 +6,7 @@ export class SyncCommand extends Command {
   public constructor(context: Command.LoaderContext, options: Command.Options) {
     super(context, {
       ...options,
-      name: 'sync',
+      name: 'synchroniser',
       description:
         'Synchronise rôles, salons et membres avec la base de données',
       requiredUserPermissions: [PermissionFlagsBits.Administrator],

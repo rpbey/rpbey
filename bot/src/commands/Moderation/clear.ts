@@ -17,7 +17,7 @@ export class ClearCommand extends Command {
   override registerApplicationCommands(registry: Command.Registry) {
     registry.registerChatInputCommand((builder) =>
       builder
-        .setName('clear')
+        .setName('effacer')
         .setDescription('Supprimer plusieurs messages à la fois')
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages)
         .setContexts(0)

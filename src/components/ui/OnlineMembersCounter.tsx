@@ -19,14 +19,10 @@ const pulse = keyframes`
 const fetcher = (url: string) => api.get<{ onlineCount: number }>(url);
 
 export function OnlineMembersCounter() {
-  const { data, isLoading } = useSWR(
-    '/api/bot/public-status',
-    fetcher,
-    {
-      refreshInterval: 30000,
-      revalidateOnFocus: false,
-    }
-  );
+  const { data, isLoading } = useSWR('/api/bot/public-status', fetcher, {
+    refreshInterval: 30000,
+    revalidateOnFocus: false,
+  });
 
   if (isLoading && !data) {
     return <Skeleton variant="rounded" width={120} height={32} />;

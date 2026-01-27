@@ -36,11 +36,14 @@ export async function createSeason(name: string, slug: string) {
   return season;
 }
 
-export async function archiveCurrentSeason(nextSeasonName: string, nextSeasonSlug: string) {
+export async function archiveCurrentSeason(
+  nextSeasonName: string,
+  nextSeasonSlug: string,
+) {
   const currentSeason = await getCurrentSeason();
 
   if (!currentSeason) {
-    throw new Error("Aucune saison active à archiver.");
+    throw new Error('Aucune saison active à archiver.');
   }
 
   // 1. Snapshot profiles to SeasonEntry
@@ -49,9 +52,9 @@ export async function archiveCurrentSeason(nextSeasonName: string, nextSeasonSlu
   });
 
   // Batch insert entries
-  // Note: Prisma createMany doesn't support relations easily with where clauses in SQLite/some adapters, 
+  // Note: Prisma createMany doesn't support relations easily with where clauses in SQLite/some adapters,
   // but standard postgres is fine. We iterate to be safe and simple for now or map data.
-  const entriesData = profiles.map(p => ({
+  const entriesData = profiles.map((p) => ({
     seasonId: currentSeason.id,
     userId: p.userId,
     points: p.rankingPoints,
@@ -70,11 +73,11 @@ export async function archiveCurrentSeason(nextSeasonName: string, nextSeasonSlu
   // We only archive COMPLETE tournaments that happened during this season
   // Actually, let's rely on date filtering for calculation, but marking status is good.
   await prisma.tournament.updateMany({
-    where: { 
+    where: {
       status: 'COMPLETE',
-      date: { gte: currentSeason.startDate }
+      date: { gte: currentSeason.startDate },
     },
-    data: { status: 'ARCHIVED' }
+    data: { status: 'ARCHIVED' },
   });
 
   // 3. Reset Profiles

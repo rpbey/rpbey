@@ -13,7 +13,7 @@ export class KickCommand extends Command {
   override registerApplicationCommands(registry: Command.Registry) {
     registry.registerChatInputCommand((builder) =>
       builder
-        .setName('kick')
+        .setName('expulser')
         .setDescription('Expulser un membre du serveur')
         .setDefaultMemberPermissions(PermissionFlagsBits.KickMembers)
         .setContexts(0)

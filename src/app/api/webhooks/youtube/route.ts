@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { parseStringPromise } from 'xml2js';
-import { getBotApiUrl, BOT_API_KEY } from '@/lib/bot-config';
+import { BOT_API_KEY, getBotApiUrl } from '@/lib/bot-config';
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
@@ -18,17 +18,17 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const body = await req.text();
-    
+
     // Parse Atom feed XML
     const result = await parseStringPromise(body, { explicitArray: false });
-    
+
     if (!result?.feed?.entry) {
       // Often strictly just verification/update without content or malformed
       return new NextResponse('No entry found', { status: 200 });
     }
 
     const entry = result.feed.entry;
-    
+
     // Check if it's a new video or update
     // Typically we look for 'yt:videoId'
     const videoId = entry['yt:videoId'];
@@ -40,7 +40,7 @@ export async function POST(req: Request) {
 
     // Filter out updates if needed (e.g. if published !== updated substantially, it might be an edit)
     // For now, we forward everything to the bot and let it decide or just notify
-    
+
     const event = {
       type: 'video.upload',
       videoId,
@@ -49,7 +49,7 @@ export async function POST(req: Request) {
       authorName,
       published,
       updated,
-      url: `https://www.youtube.com/watch?v=${videoId}`
+      url: `https://www.youtube.com/watch?v=${videoId}`,
     };
 
     console.log(`YouTube Notification: ${title} by ${authorName}`);

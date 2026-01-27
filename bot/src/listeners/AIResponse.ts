@@ -1,15 +1,7 @@
 import { ApplyOptions } from '@sapphire/decorators';
 import { Events, Listener } from '@sapphire/framework';
-import {
-  ActionRowBuilder,
-  ButtonBuilder,
-  ButtonStyle,
-  ChannelType,
-  EmbedBuilder,
-  type Message,
-} from 'discord.js';
-import { aiService } from '../lib/ai.js';
-import { Colors, RPB } from '../lib/constants.js';
+import { ChannelType, type Message } from 'discord.js';
+import { clawdbotService } from '../lib/clawdbot.js';
 
 @ApplyOptions<Listener.Options>({
   event: Events.MessageCreate,
@@ -28,102 +20,40 @@ export class AIResponse extends Listener {
     // We only respond automatically to direct mentions or DMs
     if (!isMention && !isDM) return;
 
-    // 1. Try to answer with AI if it looks like a question
-    const isQuestion =
-      message.content.includes('?') ||
-      message.content.toLowerCase().includes('comment') ||
-      message.content.toLowerCase().includes("c'est quoi") ||
-      isDM; // In DMs, we assume any message is a potential query
-
-    if (isQuestion) {
-      const question = message.content
-        .replace(/<@!?[0-9]+>/g, '') // Remove mention
-        .trim();
-
-      const context = aiService.getKnowledgeBase();
-
-      if (context && question.length > 3) {
-        const answers = await aiService.answerQuestion(question, context);
-
-        // Confident answer
-        if (answers && answers.length > 0 && answers[0].score > 0.8) {
-          const answer = answers[0].text;
-          const aiEmbed = new EmbedBuilder()
-            .setTitle('🤖 Assistant IA RPB')
-            .setDescription(answer)
-            .setColor(Colors.Info)
-            .setFooter({
-              text: `Confiance : ${Math.round(answers[0].score * 10)}%`,
-            });
-
-          return message.reply({ embeds: [aiEmbed] });
-        }
-      }
+    // Trigger typing indicator
+    if ('sendTyping' in message.channel) {
+      await (message.channel as any).sendTyping();
     }
 
-    // 2. Fallback to standard greeting/menu if not a clear question or in a guild mention
-    if (isMention) {
-      const description = [
-        `Je suis le **${RPB.Name}**, l'assistant IA officiel de la **${RPB.FullName}**.`,
-        '',
-        'Je peux répondre à tes questions sur le serveur et le Beyblade X.',
-        'Pose moi une question avec `/ask` ou ici même !',
-      ].join('\n');
+    // Prepare message content (remove bot mention)
+    const question = message.content
+      .replace(new RegExp(`<@!?${botId}>`, 'g'), '')
+      .trim();
 
-      const embed = new EmbedBuilder()
-        .setTitle(`👋 Bonjour ${message.author.displayName} !`)
-        .setDescription(description)
-        .setColor(Colors.Primary)
-        .addFields(
-          {
-            name: '📜 Règles Officielles',
-            value:
-              '[World Beyblade Org](https://worldbeyblade.org/Thread-Beyblade-X-Rules)',
-            inline: true,
-          },
-          {
-            name: '🛒 Produits X',
-            value:
-              '[Takara Tomy](https://beyblade.takaratomy.co.jp/beyblade-x/lineup/)',
-            inline: true,
-          },
-          {
-            name: '📊 Classement',
-            value: '[RPB Rankings](https://rpbey.fr/rankings)',
-            inline: true,
-          },
-          {
-            name: '🏆 Tournois',
-            value: '`/annonce tournoi`',
-            inline: true,
-          },
-          {
-            name: '👤 Mon Profil',
-            value: '`/profile`',
-            inline: true,
-          },
-          {
-            name: '⚔️ Combat',
-            value: '`/battle`',
-            inline: true,
-          },
-        )
-        .setThumbnail(this.container.client.user?.displayAvatarURL() ?? null)
-        .setFooter({ text: 'Données certifiées par la RPB' })
-        .setTimestamp();
+    // Use channel ID as session ID to maintain context per channel
+    const sessionId = isDM
+      ? `dm-${message.author.id}`
+      : `channel-${message.channel.id}`;
 
-      const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
-        new ButtonBuilder()
-          .setLabel('Voir le site')
-          .setStyle(ButtonStyle.Link)
-          .setURL('https://rpbey.fr'),
-        new ButtonBuilder()
-          .setLabel('Discord')
-          .setStyle(ButtonStyle.Link)
-          .setURL(RPB.Discord),
+    const response = await clawdbotService.askRyuga(question, sessionId, {
+      channel: 'discord',
+      to: isDM ? `user:${message.author.id}` : `channel:${message.channel.id}`,
+    });
+
+    if (response) {
+      // Split response if it's too long for Discord (2000 chars)
+      if (response.length > 1950) {
+        const chunks = response.match(/[\s\S]{1,1950}/g) || [response];
+        for (const chunk of chunks) {
+          await message.reply(chunk);
+        }
+      } else {
+        await message.reply(response);
+      }
+    } else {
+      this.container.logger.error(
+        '[AIResponse] No response received from Clawdbot',
       );
-
-      await message.reply({ embeds: [embed], components: [row] });
     }
   }
 }

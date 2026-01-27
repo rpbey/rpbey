@@ -14,7 +14,7 @@ export class AskCommand extends Command {
   override registerApplicationCommands(registry: Command.Registry) {
     registry.registerChatInputCommand((builder) =>
       builder
-        .setName('ask')
+        .setName('demander')
         .setDescription('Pose une question sur RPB ou le Beyblade X')
         .addStringOption((opt) =>
           opt

@@ -71,7 +71,7 @@ export class ChallongeScraper {
 
   /**
    * Scrape un tournoi complet
-   * @param urlId L'URL complète ou le slug (ex: "fr/B_TS1" ou "B_TS1")
+   * @param urlId L'URL complète ou le slug (ex: "fr/B_TS2" ou "B_TS2")
    */
   async scrape(urlId: string): Promise<ScrapedTournament> {
     if (!this.browser) await this.init();

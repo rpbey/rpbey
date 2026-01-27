@@ -72,8 +72,18 @@ export default function TournamentDetailPage() {
     );
   }
 
+  const isBTS2 = tournament.name.includes('BEY-TAMASHII SERIES #2');
+  const isBTS1 = tournament.name.includes('BEY-TAMASHII SERIES #1');
+
   // Coordinates for "Dernier Bar Avant la Fin du Monde" (Default for now)
   const mapPosition: [number, number] = [48.85785, 2.34623];
+
+  const formattedDate = new Date(tournament.date).toLocaleDateString('fr-FR', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
 
   return (
     <Container maxWidth="lg" sx={{ py: 8 }}>
@@ -95,6 +105,35 @@ export default function TournamentDetailPage() {
 
       <Grid container spacing={4}>
         <Grid size={{ xs: 12, md: 8 }}>
+          
+          {/* Tournament Poster / Header Image */}
+          {(isBTS2 || isBTS1) && (
+            <Box 
+                sx={{ 
+                    width: '100%', 
+                    borderRadius: 4, 
+                    overflow: 'hidden', 
+                    mb: 4,
+                    border: '1px solid',
+                    borderColor: 'divider',
+                    aspectRatio: '16/9',
+                    position: 'relative'
+                }}
+            >
+                <Box 
+                    component="img"
+                    src={isBTS2 ? '/tournaments/BTS2.png' : '/tournaments/B_TS1.svg'}
+                    alt={tournament.name}
+                    sx={{ 
+                        width: '100%', 
+                        height: '100%', 
+                        objectFit: 'cover',
+                        filter: isBTS2 ? 'none' : 'invert(1) brightness(0.8)' // Keep SVG visible
+                    }}
+                />
+            </Box>
+          )}
+
           {/* Main Info & Map */}
           <Paper
             elevation={0}
@@ -119,7 +158,7 @@ export default function TournamentDetailPage() {
                       Date
                     </Typography>
                     <Typography variant="body1">
-                      Dimanche 11 janvier 2026
+                      {formattedDate}
                     </Typography>
                   </Box>
                 </Stack>
@@ -131,8 +170,9 @@ export default function TournamentDetailPage() {
                       Heure
                     </Typography>
                     <Typography variant="body1">
-                      Début à 14h00 (Ouverture des inscriptions/check-in à
-                      13h00)
+                      {isBTS2 
+                        ? "Check-in : 13h00 | Fin des inscriptions : 14h00"
+                        : "Début à 14h00 (Ouverture des inscriptions/check-in à 13h00)"}
                     </Typography>
                   </Box>
                 </Stack>
@@ -144,8 +184,7 @@ export default function TournamentDetailPage() {
                       Lieu
                     </Typography>
                     <Typography variant="body1">
-                      Dernier Bar Avant la Fin du Monde, 19 Avenue Victoria,
-                      75001 Paris
+                      {tournament.location || 'Lieu à confirmer'}
                     </Typography>
                   </Box>
                 </Stack>
@@ -157,8 +196,7 @@ export default function TournamentDetailPage() {
                       Format
                     </Typography>
                     <Typography variant="body1">
-                      3on3 classique en Double éliminations (pas de Ban-list ou
-                      de limited-list pour le moment)
+                      {tournament.format}
                     </Typography>
                   </Box>
                 </Stack>
@@ -211,9 +249,7 @@ export default function TournamentDetailPage() {
               challongeUrl={tournament.challongeUrl}
               title={`Arbre: ${tournament.name}`}
               svgPath={
-                tournament.name.includes('BEY-TAMASHII SERIES #1')
-                  ? '/tournaments/B_TS1.svg'
-                  : undefined
+                isBTS1 ? '/tournaments/B_TS1.svg' : undefined
               }
             />
           )}

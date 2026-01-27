@@ -29,7 +29,7 @@ async function scrapeChallonge() {
       'Accept-Language': 'fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7'
     });
 
-    const url = 'https://challonge.com/fr/B_TS1/module';
+    const url = 'https://challonge.com/fr/B_TS2/module';
     console.log(`🌍 Navigation vers : ${url}`);
     
     // Navigation avec un délai d'attente généreux pour les challenges

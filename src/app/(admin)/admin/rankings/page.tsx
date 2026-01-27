@@ -1,4 +1,5 @@
 import { Box, Typography } from '@mui/material';
+import SeasonManager from '@/components/admin/rankings/SeasonManager';
 import {
   getRankingConfig,
   getTournamentCategories,
@@ -6,7 +7,6 @@ import {
 import { getSeasons } from '@/server/actions/season';
 import PointAdjustmentList from './PointAdjustmentList';
 import RankingSettingsForm from './RankingSettingsForm';
-import SeasonManager from '@/components/admin/rankings/SeasonManager';
 
 export const metadata = {
   title: 'Admin - Classements',

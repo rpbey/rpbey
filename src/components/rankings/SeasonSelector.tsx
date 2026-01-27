@@ -1,7 +1,7 @@
 'use client';
 
-import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 import type { SelectChangeEvent } from '@mui/material';
+import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 interface Season {
@@ -19,7 +19,7 @@ export default function SeasonSelector({ seasons }: { seasons: Season[] }) {
   const handleChange = (event: SelectChangeEvent) => {
     const value = event.target.value;
     const params = new URLSearchParams(searchParams);
-    
+
     if (value === 'current') {
       params.delete('season');
     } else {
@@ -27,7 +27,7 @@ export default function SeasonSelector({ seasons }: { seasons: Season[] }) {
     }
     // Reset page on season change
     params.set('page', '1');
-    
+
     router.push(`/rankings?${params.toString()}`);
   };
 
@@ -40,11 +40,9 @@ export default function SeasonSelector({ seasons }: { seasons: Season[] }) {
         label="Saison"
         onChange={handleChange}
       >
-        <MenuItem value="current">
-          Saison Actuelle (En cours)
-        </MenuItem>
+        <MenuItem value="current">Saison Actuelle (En cours)</MenuItem>
         {seasons
-          .filter(s => !s.isActive)
+          .filter((s) => !s.isActive)
           .map((season) => (
             <MenuItem key={season.id} value={season.slug}>
               {season.name}

@@ -10,12 +10,14 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { motion, useScroll, useSpring, useTransform } from 'framer-motion';
 import Link from 'next/link';
+import DiscordStatusCard from '@/components/dashboard/DiscordStatusCard';
 import { FeedMyPartnership, TournamentVideo } from '@/components/marketing';
 import { useThemeMode } from '@/components/theme/ThemeRegistry';
 import { ChallongeBracket } from '@/components/tournaments/ChallongeBracket';
 import { useSession } from '@/lib/auth-client';
-import DiscordStatusCard from '@/components/dashboard/DiscordStatusCard';
 import type { DiscordStats, TeamGroup } from '@/lib/discord-data';
+
+import { DiscordIcon, TrophyIcon } from '@/components/ui/Icons';
 
 // M3 Motion Easings
 // https://m3.material.io/styles/motion/easing-and-duration/tokens-specs
@@ -175,6 +177,76 @@ export default function HomeClient({
                   La communauté française de référence pour Beyblade X.
                   Divertissement, passion et compétition réunis en un seul lieu.
                 </Typography>
+
+                <Stack
+                  direction={{ xs: 'column', sm: 'row' }}
+                  spacing={2}
+                  sx={{ mt: 4 }}
+                  component={motion.div}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4, duration: 0.6 }}
+                >
+                  <Button
+                    component="a"
+                    href={activeTournament?.challongeUrl || '/tournaments'}
+                    target={activeTournament?.challongeUrl ? '_blank' : '_self'}
+                    variant="contained"
+                    size="large"
+                    startIcon={<TrophyIcon size={20} />}
+                    sx={{
+                      px: 4,
+                      py: 1.8,
+                      fontSize: '1.1rem',
+                      fontWeight: 800,
+                      textTransform: 'none',
+                      borderRadius: '16px',
+                      background:
+                        'linear-gradient(135deg, #dc2626 0%, #991b1b 100%)',
+                      boxShadow: '0 4px 20px rgba(220, 38, 38, 0.4)',
+                      '&:hover': {
+                        background:
+                          'linear-gradient(135deg, #ef4444 0%, #b91c1c 100%)',
+                        transform: 'translateY(-2px)',
+                        boxShadow: '0 8px 30px rgba(220, 38, 38, 0.5)',
+                      },
+                      transition: 'all 0.3s ease',
+                    }}
+                  >
+                    S'inscrire au Tournoi
+                  </Button>
+
+                  <Button
+                    component="a"
+                    href="https://discord.gg/rpb"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    variant="outlined"
+                    size="large"
+                    startIcon={<DiscordIcon size={20} />}
+                    sx={{
+                      px: 4,
+                      py: 1.8,
+                      fontSize: '1.1rem',
+                      fontWeight: 700,
+                      textTransform: 'none',
+                      borderRadius: '16px',
+                      color: '#ffffff',
+                      borderColor: 'rgba(255,255,255,0.3)',
+                      background: 'rgba(255,255,255,0.05)',
+                      backdropFilter: 'blur(10px)',
+                      '&:hover': {
+                        borderColor: '#ffffff',
+                        background: 'rgba(255,255,255,0.15)',
+                        transform: 'translateY(-2px)',
+                        boxShadow: '0 8px 25px rgba(255, 255, 255, 0.1)',
+                      },
+                      transition: 'all 0.3s ease',
+                    }}
+                  >
+                    Rejoindre le Discord
+                  </Button>
+                </Stack>
               </Box>
             </Grid>
 
@@ -261,7 +333,6 @@ export default function HomeClient({
           <FeedMyPartnership />
         </Box>
       </Container>
-
 
       {/* CTA Section */}
       <Container maxWidth="lg" sx={{ py: 8, position: 'relative' }}>
@@ -494,7 +565,7 @@ export default function HomeClient({
                 height: '100%',
                 position: 'relative',
                 minHeight: 400,
-                p: 4
+                p: 4,
               }}
             >
               <DiscordStatusCard />

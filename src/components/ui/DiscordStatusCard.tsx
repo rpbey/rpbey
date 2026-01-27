@@ -26,7 +26,7 @@ interface DiscordStatusCardProps {
   initialTeam?: TeamGroup[];
 }
 
-const fetcher = (url: string) => api.get(url).then(res => res as any);
+const fetcher = (url: string) => api.get(url).then((res) => res as any);
 
 export function DiscordStatusCard({
   initialStats,
@@ -39,7 +39,7 @@ export function DiscordStatusCard({
       fallbackData: initialStats || undefined,
       refreshInterval: 60000,
       revalidateOnFocus: false,
-    }
+    },
   );
 
   const { data: teamData, isLoading: teamLoading } = useSWR<{
@@ -142,7 +142,7 @@ export function DiscordStatusCard({
                     filter: `drop-shadow(0 0 8px ${alpha(
                       LOGO_VARIANTS[currentLogoIndex]?.color ||
                         RoleColors.DEFAULT.primary,
-                      0.6
+                      0.6,
                     )})`,
                   }}
                 />

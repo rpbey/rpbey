@@ -574,7 +574,7 @@ export async function generateLeaderboardCard(entries: LeaderboardEntry[]) {
     ctx.font = 'bold 40px GoogleSans';
     ctx.fillStyle = rankColor;
     ctx.fillText(`${entry.points}`, 750, y);
-    
+
     ctx.font = '20px GoogleSans';
     ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
     ctx.fillText('PTS', 750, y + 25);
@@ -593,7 +593,11 @@ export async function generateLeaderboardCard(entries: LeaderboardEntry[]) {
   ctx.textAlign = 'center';
   ctx.font = 'italic 20px GoogleSans';
   ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
-  ctx.fillText('rpbey.fr/rankings - Mis à jour en temps réel', width / 2, height - 30);
+  ctx.fillText(
+    'rpbey.fr/rankings - Mis à jour en temps réel',
+    width / 2,
+    height - 30,
+  );
 
   return canvas.toBuffer('image/png');
 }

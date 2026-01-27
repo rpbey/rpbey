@@ -44,7 +44,7 @@ export async function updateRankingConfig(data: {
 
 export async function recalculateRankings() {
   const config = await getRankingConfig();
-  
+
   // Get current season to determine start date
   const currentSeason = await prisma.rankingSeason.findFirst({
     where: { isActive: true },
@@ -57,9 +57,9 @@ export async function recalculateRankings() {
   // 1. Récupérer tous les tournois terminés et leurs participants, avec leur catégorie
   // Filter by date >= season start
   const tournaments = await prisma.tournament.findMany({
-    where: { 
+    where: {
       status: 'COMPLETE',
-      date: { gte: startDate }
+      date: { gte: startDate },
     },
     include: {
       category: true,

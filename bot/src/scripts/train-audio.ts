@@ -11,13 +11,17 @@ const SAMPLE_RATE = 48000;
 const DURATION_SEC = 1;
 const CHUNK_SIZE = SAMPLE_RATE * DURATION_SEC; // 48000 samples
 const DATASET_DIR = path.join(process.cwd(), 'temp', 'dataset');
-const RECORDINGS_DIR = path.join(process.cwd(), 'temp', 'recordings'); // Old dir fallback
+const _RECORDINGS_DIR = path.join(process.cwd(), 'temp', 'recordings'); // Old dir fallback
 const MODEL_DIR = path.join(process.cwd(), 'model');
 
 async function loadRawFile(filepath: string): Promise<Float32Array> {
   const buffer = await fs.promises.readFile(filepath);
   // Convert Int16 buffer to Float32 [-1.0, 1.0]
-  const int16 = new Int16Array(buffer.buffer, buffer.byteOffset, buffer.length / 2);
+  const int16 = new Int16Array(
+    buffer.buffer,
+    buffer.byteOffset,
+    buffer.length / 2,
+  );
   const float32 = new Float32Array(int16.length);
   for (let i = 0; i < int16.length; i++) {
     float32[i] = int16[i] / 32768.0;
@@ -31,7 +35,7 @@ function chunkAudio(audio: Float32Array): Float32Array[] {
   // Input is stereo interlaced (L, R, L, R...)
   // We want chunks of 48000 samples (1 sec).
   // Total raw length is samples * channels.
-  
+
   // Extract mono first
   const mono = new Float32Array(audio.length / 2);
   for (let i = 0; i < mono.length; i++) {
@@ -54,13 +58,13 @@ async function prepareDataset() {
   // Helper to process a directory
   async function processDir(dir: string) {
     if (!fs.existsSync(dir)) return;
-    const files = fs.readdirSync(dir).filter(f => f.endsWith('.pcm'));
-    
+    const files = fs.readdirSync(dir).filter((f) => f.endsWith('.pcm'));
+
     for (const file of files) {
       const p = path.join(dir, file);
       const audio = await loadRawFile(p);
       const chunks = chunkAudio(audio);
-      
+
       // Determine label
       // Class 1: RPBEY (positive)
       // Class 0: Noise/Other (negative)
@@ -69,7 +73,7 @@ async function prepareDataset() {
         label = 1;
       }
 
-      chunks.forEach(c => {
+      chunks.forEach((c) => {
         xs.push(c);
         ys.push(label);
       });
@@ -78,9 +82,11 @@ async function prepareDataset() {
 
   await processDir(DATASET_DIR);
   // Also use old recordings as noise if needed, but let's stick to labeled dataset primarily
-  // await processDir(RECORDINGS_DIR); 
+  // await processDir(RECORDINGS_DIR);
 
-  console.log(`📊 Stats: ${ys.filter(y => y === 1).length} RPBEY samples, ${ys.filter(y => y === 0).length} Noise samples.`);
+  console.log(
+    `📊 Stats: ${ys.filter((y) => y === 1).length} RPBEY samples, ${ys.filter((y) => y === 0).length} Noise samples.`,
+  );
 
   if (xs.length === 0) {
     throw new Error('No data found in temp/dataset!');
@@ -92,9 +98,9 @@ async function prepareDataset() {
   // Shuffle
   const indices = xs.map((_, i) => i);
   tf.util.shuffle(indices);
-  
-  const shuffledXs = indices.map(i => xs[i]);
-  const shuffledYs = indices.map(i => ys[i]);
+
+  const shuffledXs = indices.map((i) => xs[i]);
+  const shuffledYs = indices.map((i) => ys[i]);
 
   // Flatten
   const totalLength = shuffledXs.length * CHUNK_SIZE;
@@ -116,23 +122,27 @@ async function createModel() {
 
   // Simple 1D CNN for audio
   // Input: 48000 samples (1 sec)
-  
+
   // Downsample/Conv 1
-  model.add(tf.layers.conv1d({
-    inputShape: [CHUNK_SIZE, 1],
-    kernelSize: 80, // Large kernel for raw audio
-    strides: 4,
-    filters: 8,
-    activation: 'relu'
-  }));
+  model.add(
+    tf.layers.conv1d({
+      inputShape: [CHUNK_SIZE, 1],
+      kernelSize: 80, // Large kernel for raw audio
+      strides: 4,
+      filters: 8,
+      activation: 'relu',
+    }),
+  );
   model.add(tf.layers.maxPooling1d({ poolSize: 4 }));
 
   // Conv 2
-  model.add(tf.layers.conv1d({
-    kernelSize: 3,
-    filters: 16,
-    activation: 'relu'
-  }));
+  model.add(
+    tf.layers.conv1d({
+      kernelSize: 3,
+      filters: 16,
+      activation: 'relu',
+    }),
+  );
   model.add(tf.layers.maxPooling1d({ poolSize: 4 }));
 
   // Flatten & Dense
@@ -143,7 +153,7 @@ async function createModel() {
   model.compile({
     optimizer: tf.train.adam(0.001),
     loss: 'categoricalCrossentropy',
-    metrics: ['accuracy']
+    metrics: ['accuracy'],
   });
 
   return model;
@@ -160,14 +170,14 @@ class NodeFileSystem implements tf.io.IOHandler {
     const modelJsonPath = path.join(this.path, 'model.json');
     const weightsData = artifacts.weightData;
     delete artifacts.weightData; // Do not include raw weights in JSON
-    
+
     fs.writeFileSync(modelJsonPath, JSON.stringify(artifacts, null, 2));
 
     // Save weights
     if (weightsData) {
       const weightsPath = path.join(this.path, 'weights.bin');
       fs.writeFileSync(weightsPath, Buffer.from(weightsData as ArrayBuffer));
-      
+
       // Update manifest
       // Actually tfjs usually expects weights in model.json manifest to point to filenames
       // But for simple reloading we might need to conform to spec
@@ -177,7 +187,7 @@ class NodeFileSystem implements tf.io.IOHandler {
       modelArtifactsInfo: {
         dateSaved: new Date(),
         modelTopologyType: 'JSON',
-      }
+      },
     };
   }
 }
@@ -196,15 +206,16 @@ async function train() {
       validationSplit: 0.2,
       callbacks: {
         onEpochEnd: (epoch, logs) => {
-          console.log(`Epoch ${epoch + 1}: loss=${logs?.loss.toFixed(4)}, acc=${logs?.acc.toFixed(4)}`);
-        }
-      }
+          console.log(
+            `Epoch ${epoch + 1}: loss=${logs?.loss.toFixed(4)}, acc=${logs?.acc.toFixed(4)}`,
+          );
+        },
+      },
     });
 
     console.log('💾 Saving model...');
     await model.save(new NodeFileSystem(MODEL_DIR));
     console.log('✅ Model saved!');
-
   } catch (err) {
     console.error('Training error:', err);
   }
