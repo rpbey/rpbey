@@ -501,6 +501,24 @@ model DiscordChannel {
   @@map("discord_channels")
 }
 
+model YouTubeVideo {
+  id          String   @id
+  title       String
+  channelName String
+  channelId   String
+  channelAvatar String?
+  views       Int
+  thumbnail   String
+  url         String
+  duration    String
+  publishedAt DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  isFeatured  Boolean  @default(true)
+
+  @@map("youtube_videos")
+}
+
 enum BeyType {
   ATTACK
   DEFENSE
