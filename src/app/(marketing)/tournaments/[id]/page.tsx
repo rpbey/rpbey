@@ -129,7 +129,7 @@ export default function TournamentDetailPage() {
           >
             <Box sx={{ p: 3 }}>
               <Grid container spacing={3}>
-                <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
+                <Grid size={{ xs: 12, sm: 6, lg: 2 }}>
                   <Stack direction="row" spacing={1.5} alignItems="center">
                     <CalendarMonth color="primary" fontSize="small" />
                     <Box>
@@ -150,7 +150,7 @@ export default function TournamentDetailPage() {
                   </Stack>
                 </Grid>
 
-                <Grid size={{ xs: 12, sm: 6, lg: 4 }}>
+                <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
                   <Stack direction="row" spacing={1.5} alignItems="center">
                     <Info color="primary" fontSize="small" />
                     <Box>
@@ -168,7 +168,7 @@ export default function TournamentDetailPage() {
                   </Stack>
                 </Grid>
 
-                <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
+                <Grid size={{ xs: 12, sm: 6, lg: 5 }}>
                   <Stack direction="row" spacing={1.5} alignItems="center">
                     <LocationOn color="primary" fontSize="small" />
                     <Box>
@@ -179,7 +179,7 @@ export default function TournamentDetailPage() {
                       >
                         Lieu
                       </Typography>
-                      <Typography variant="body2" fontWeight="bold" noWrap>
+                      <Typography variant="body2" fontWeight="bold">
                         {tournament.location || 'Confirmé'}
                       </Typography>
                     </Box>
