@@ -1,7 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import prisma from '@/lib/prisma';
+import { prisma } from '@/lib/prisma';
 
 export type ContentBlockInput = {
   slug: string;

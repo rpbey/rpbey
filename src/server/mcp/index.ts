@@ -3,7 +3,7 @@ import {
   ResourceTemplate,
 } from '@modelcontextprotocol/sdk/server/mcp.js';
 import * as z from 'zod';
-import prisma from '@/lib/prisma';
+import { prisma } from '@/lib/prisma';
 
 // Initialize MCP Server
 export const mcpServer = new McpServer({

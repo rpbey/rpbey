@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { botClient } from '@/lib/bot';
-import prisma from '@/lib/prisma';
+import { prisma } from '@/lib/prisma';
 
 export type BotCommandInput = {
   name: string;

@@ -1,7 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import prisma from '@/lib/prisma';
+import { prisma } from '@/lib/prisma';
 
 export async function getUsers(page = 1, pageSize = 10, search = '') {
   const skip = (page - 1) * pageSize;

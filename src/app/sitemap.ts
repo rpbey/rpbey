@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import type { MetadataRoute } from 'next';
-import prisma from '@/lib/prisma';
+import { prisma } from '@/lib/prisma';
 
 export const revalidate = 3600;
 

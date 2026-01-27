@@ -1,27 +1,44 @@
 'use client';
 
 import {
-  Bot,
-  Code,
-  Cpu,
-  Loader2,
-  Send,
-  Sparkles,
-  Terminal,
-  User as UserIcon,
-} from 'lucide-react';
+  Box,
+  Button,
+  CircularProgress,
+  IconButton,
+  Paper,
+  Stack,
+  TextField,
+  Typography,
+  useTheme,
+  Collapse,
+} from '@mui/material';
 import {
-  useEffect,
-  useEffect as useIsomorphicLayoutEffect,
-  useRef,
-  useState,
-} from 'react';
+  Send as SendIcon,
+  Person as UserIcon,
+  SmartToy as BotIcon,
+  AutoAwesome as SparklesIcon,
+  Terminal as TerminalIcon,
+  Code as CodeIcon,
+  Memory as CpuIcon,
+  ExpandMore,
+  ExpandLess
+} from '@mui/icons-material';
+import { useState, useRef, useEffect, useLayoutEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { useToast } from '@/hooks/use-toast';
-import { cn } from '@/lib/utils';
+
+// Animations
+const animations = `
+  @keyframes gemini-gradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  @keyframes message-in {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+`;
 
 interface Message {
   id: string;
@@ -43,58 +60,83 @@ interface ToolCardProps {
   result?: string;
 }
 
-function _ToolCard({ name, args, result }: ToolCardProps) {
+function ToolCard({ name, args, result }: ToolCardProps) {
   const [expanded, setExpanded] = useState(false);
-  const displayResult =
-    result && result.length > 150 ? `${result.slice(0, 150)}...` : result;
+  const displayResult = result && result.length > 150 ? result.slice(0, 150) + '...' : result;
 
   return (
-    <div className="my-2 border border-white/10 rounded-lg bg-black/40 overflow-hidden text-xs">
-      <div
-        className="flex items-center gap-2 p-2 bg-white/5 cursor-pointer hover:bg-white/10 transition-colors"
+    <Paper
+      elevation={0}
+      sx={{
+        my: 1,
+        border: '1px solid',
+        borderColor: 'divider',
+        bgcolor: 'rgba(0,0,0,0.2)',
+        overflow: 'hidden',
+        borderRadius: 2
+      }}
+    >
+      <Box
         onClick={() => setExpanded(!expanded)}
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 1,
+          p: 1,
+          px: 2,
+          cursor: 'pointer',
+          bgcolor: 'rgba(255,255,255,0.05)',
+          '&:hover': { bgcolor: 'rgba(255,255,255,0.1)' }
+        }}
       >
-        <Terminal size={14} className="text-red-400" />
-        <span className="font-mono text-red-200">{name}</span>
-        <span className="text-muted-foreground ml-auto">
-          {expanded ? 'Hide' : 'Show'}
-        </span>
-      </div>
+        <TerminalIcon sx={{ fontSize: 16, color: 'error.light' }} />
+        <Typography variant="caption" fontFamily="monospace" color="error.light">
+          {name}
+        </Typography>
+        <Box sx={{ ml: 'auto' }}>
+          {expanded ? <ExpandLess fontSize="small" /> : <ExpandMore fontSize="small" />}
+        </Box>
+      </Box>
 
-      {expanded && (
-        <div className="p-3 space-y-2 border-t border-white/10">
+      <Collapse in={expanded}>
+        <Box sx={{ p: 2, borderTop: '1px solid', borderColor: 'divider' }}>
           {args && (
-            <div className="space-y-1">
-              <div className="flex items-center gap-1 text-muted-foreground">
-                <Code size={12} />
-                <span>Arguments</span>
-              </div>
-              <pre className="bg-black/60 p-2 rounded text-gray-300 font-mono overflow-x-auto whitespace-pre-wrap">
-                {args}
-              </pre>
-            </div>
+            <Box sx={{ mb: 2 }}>
+              <Stack direction="row" alignItems="center" gap={1} mb={0.5}>
+                <CodeIcon sx={{ fontSize: 14, color: 'text.secondary' }} />
+                <Typography variant="caption" color="text.secondary">Arguments</Typography>
+              </Stack>
+              <Paper variant="outlined" sx={{ p: 1, bgcolor: 'rgba(0,0,0,0.3)', overflowX: 'auto' }}>
+                <Typography variant="caption" fontFamily="monospace" color="text.primary" component="pre" sx={{ m: 0 }}>
+                  {args}
+                </Typography>
+              </Paper>
+            </Box>
           )}
-
           {result && (
-            <div className="space-y-1">
-              <div className="flex items-center gap-1 text-muted-foreground">
-                <Cpu size={12} />
-                <span>Result</span>
-              </div>
-              <pre className="bg-black/60 p-2 rounded text-green-300 font-mono overflow-x-auto whitespace-pre-wrap">
-                {result}
-              </pre>
-            </div>
+            <Box>
+              <Stack direction="row" alignItems="center" gap={1} mb={0.5}>
+                <CpuIcon sx={{ fontSize: 14, color: 'text.secondary' }} />
+                <Typography variant="caption" color="text.secondary">Result</Typography>
+              </Stack>
+              <Paper variant="outlined" sx={{ p: 1, bgcolor: 'rgba(0,0,0,0.3)', overflowX: 'auto' }}>
+                <Typography variant="caption" fontFamily="monospace" color="success.light" component="pre" sx={{ m: 0 }}>
+                  {result}
+                </Typography>
+              </Paper>
+            </Box>
           )}
-        </div>
-      )}
-
+        </Box>
+      </Collapse>
+      
       {!expanded && displayResult && (
-        <div className="px-3 py-2 text-gray-400 font-mono truncate border-t border-white/5">
-          {displayResult}
-        </div>
+        <Box sx={{ px: 2, py: 1, borderTop: '1px solid', borderColor: 'divider' }}>
+           <Typography variant="caption" fontFamily="monospace" color="text.disabled" noWrap display="block">
+             {displayResult}
+           </Typography>
+        </Box>
       )}
-    </div>
+    </Paper>
   );
 }
 
@@ -103,25 +145,21 @@ export function RyugaChat({ user }: RyugaChatProps) {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const { toast } = useToast();
+  const theme = useTheme();
 
   useEffect(() => {
-    // Load history
     fetch('/api/bot/chat')
-      .then((res) => res.json())
-      .then((data) => {
+      .then(res => res.json())
+      .then(data => {
         if (data.messages && data.messages.length > 0) {
-          setMessages(data.messages);
+            setMessages(data.messages);
         } else {
-          // Default welcome if no history
-          setMessages([
-            {
-              id: 'welcome',
-              role: 'assistant',
-              content: `Hmpf. Tu oses déranger l'Empereur Dragon ? Parle, ${user.name || 'Blader'}, et sois bref.`,
-              timestamp: Date.now(),
-            },
-          ]);
+            setMessages([{
+                id: 'welcome',
+                role: 'assistant',
+                content: `Hmpf. Tu oses déranger l'Empereur Dragon ? Parle, ${user.name || 'Blader'}, et sois bref.`,
+                timestamp: Date.now(),
+            }]);
         }
       })
       .catch(console.error);
@@ -133,7 +171,7 @@ export function RyugaChat({ user }: RyugaChatProps) {
     }
   };
 
-  useIsomorphicLayoutEffect(() => {
+  useLayoutEffect(() => {
     scrollToBottom();
   }, [messages]);
 
@@ -159,156 +197,238 @@ export function RyugaChat({ user }: RyugaChatProps) {
         body: JSON.stringify({ message: userMsg.content }),
       });
 
-      if (!response.ok) {
-        throw new Error('Erreur de communication avec Ryuga');
-      }
+      if (!response.ok) throw new Error('Erreur de communication');
 
       const data = await response.json();
-
+      
       const botMsg: Message = {
         id: data.id || (Date.now() + 1).toString(),
         role: 'assistant',
-        content: data.response || '...',
+        content: data.response || "...",
         timestamp: data.timestamp || Date.now(),
       };
 
       setMessages((prev) => [...prev, botMsg]);
-    } catch (_error) {
-      toast({
-        title: 'Erreur',
-        description: 'Ryuga refuse de répondre pour le moment.',
-        variant: 'destructive',
-      });
+    } catch (error) {
+      console.error(error);
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="flex flex-col h-full relative overflow-hidden bg-black/40">
-      {/* Background Ambience */}
-      <div className="absolute inset-0 gemini-glow opacity-60" />
-
+    <Box 
+      sx={{ 
+        display: 'flex', 
+        flexDirection: 'column', 
+        height: '100%', 
+        position: 'relative', 
+        overflow: 'hidden',
+        bgcolor: 'background.default',
+        backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(220, 38, 38, 0.1) 0%, rgba(0, 0, 0, 0) 70%)'
+      }}
+    >
+      <style>{animations}</style>
+      
       {/* Chat Area */}
-      <div
-        ref={scrollRef}
-        className="flex-1 overflow-y-auto p-4 space-y-6 scroll-smooth chat-scroll z-10"
+      <Box 
+        ref={scrollRef} 
+        sx={{ 
+          flex: 1, 
+          overflowY: 'auto', 
+          p: 3, 
+          display: 'flex', 
+          flexDirection: 'column', 
+          gap: 3,
+          scrollBehavior: 'smooth'
+        }}
       >
-        {messages.map((msg) => (
-          <div
-            key={msg.id}
-            className={cn(
-              'flex w-full max-w-[85%] gap-4 animate-message-in',
-              msg.role === 'user' ? 'ml-auto flex-row-reverse' : 'mr-auto',
-            )}
-          >
-            {/* Avatar */}
-            <div
-              className={cn(
-                'flex h-10 w-10 shrink-0 select-none items-center justify-center rounded-full border shadow-lg',
-                msg.role === 'user'
-                  ? 'bg-gradient-to-br from-blue-600 to-cyan-500 border-blue-400/30 text-white'
-                  : 'ryuga-dragon-gradient border-red-500/30 text-red-100',
-              )}
+        {messages.map((msg) => {
+          const isUser = msg.role === 'user';
+          return (
+            <Box
+              key={msg.id}
+              sx={{
+                display: 'flex',
+                gap: 2,
+                flexDirection: isUser ? 'row-reverse' : 'row',
+                alignSelf: isUser ? 'flex-end' : 'flex-start',
+                maxWidth: { xs: '90%', md: '80%' },
+                animation: 'message-in 0.3s ease-out forwards',
+              }}
             >
-              {msg.role === 'user' ? <UserIcon size={18} /> : <Bot size={18} />}
-            </div>
-
-            {/* Bubble */}
-            <div
-              className={cn(
-                'rounded-2xl px-5 py-3 text-sm shadow-md overflow-hidden relative',
-                msg.role === 'user'
-                  ? 'bg-blue-600/20 border border-blue-500/30 text-blue-50'
-                  : 'glass-morphism text-gray-100',
-              )}
-            >
-              {/* Dragon/Gemini subtle accent for bot messages */}
-              {msg.role === 'assistant' && (
-                <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-red-500 to-transparent opacity-50" />
-              )}
-
-              {/* Special parsing for tool calls if present in text (custom format) */}
-              <ReactMarkdown
-                remarkPlugins={[remarkGfm]}
-                className="prose dark:prose-invert prose-sm max-w-none break-words prose-p:leading-relaxed prose-pre:bg-black/50 prose-pre:border prose-pre:border-white/10"
-                components={{
-                  pre: ({ node, ...props }) => (
-                    <div
-                      className="overflow-auto w-full my-3 bg-black/60 p-3 rounded-lg border border-white/10 shadow-inner"
-                      {...props}
-                    />
-                  ),
-                  code: ({ node, ...props }) => (
-                    <code
-                      className="bg-white/10 px-1.5 py-0.5 rounded text-xs font-mono border border-white/5"
-                      {...props}
-                    />
-                  ),
-                  a: ({ node, ...props }) => (
-                    <a
-                      className="text-red-400 hover:text-red-300 underline underline-offset-4"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      {...props}
-                    />
-                  ),
-                  strong: ({ node, ...props }) => (
-                    <strong className="font-bold text-red-200" {...props} />
-                  ),
+              {/* Avatar */}
+              <Box
+                sx={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0,
+                  bgcolor: isUser ? 'primary.main' : 'transparent',
+                  background: !isUser ? 'linear-gradient(135deg, #450a0a 0%, #7f1d1d 100%)' : undefined,
+                  boxShadow: 3,
+                  border: '1px solid',
+                  borderColor: isUser ? 'primary.light' : 'error.main'
                 }}
               >
-                {msg.content}
-              </ReactMarkdown>
-            </div>
-          </div>
-        ))}
+                {isUser ? <UserIcon sx={{ color: 'white' }} /> : <BotIcon sx={{ color: '#fecaca' }} />}
+              </Box>
+              
+              {/* Bubble */}
+              <Paper
+                elevation={3}
+                sx={{
+                  p: 2,
+                  px: 3,
+                  borderRadius: 3,
+                  bgcolor: isUser 
+                    ? 'primary.dark' 
+                    : 'rgba(30, 30, 30, 0.8)',
+                  backdropFilter: 'blur(10px)',
+                  color: isUser ? 'primary.contrastText' : 'text.primary',
+                  border: '1px solid',
+                  borderColor: isUser ? 'primary.main' : 'rgba(255,255,255,0.1)',
+                  position: 'relative',
+                  overflow: 'hidden'
+                }}
+              >
+                {!isUser && (
+                  <Box 
+                    sx={{ 
+                      position: 'absolute', 
+                      top: 0, 
+                      left: 0, 
+                      width: 4, 
+                      height: '100%', 
+                      background: 'linear-gradient(to bottom, #ef4444, transparent)' 
+                    }} 
+                  />
+                )}
 
+                <Box className="markdown-content">
+                  <ReactMarkdown 
+                    remarkPlugins={[remarkGfm]}
+                    components={{
+                        p: ({node, ...props}) => <Typography variant="body2" component="p" sx={{ mb: 1, lineHeight: 1.6 }} {...props} />,
+                        a: ({node, ...props}) => <Typography component="a" sx={{ color: 'error.light', textDecoration: 'underline' }} target="_blank" rel="noopener noreferrer" {...props} />,
+                        code: ({node, ...props}) => (
+                            <Box 
+                                component="span" 
+                                sx={{ 
+                                    fontFamily: 'monospace', 
+                                    bgcolor: 'rgba(255,255,255,0.1)', 
+                                    px: 0.5, 
+                                    py: 0.25, 
+                                    borderRadius: 0.5, 
+                                    fontSize: '0.85em' 
+                                }} 
+                                {...props} 
+                            />
+                        ),
+                        pre: ({node, ...props}) => (
+                            <Paper variant="outlined" sx={{ p: 1.5, my: 1.5, bgcolor: 'rgba(0,0,0,0.4)', overflow: 'auto', borderRadius: 2 }}>
+                                <pre {...props} />
+                            </Paper>
+                        )
+                    }}
+                  >
+                    {msg.content}
+                  </ReactMarkdown>
+                </Box>
+              </Paper>
+            </Box>
+          );
+        })}
+        
         {isLoading && (
-          <div className="flex w-full max-w-[80%] gap-4 mr-auto animate-pulse">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-red-500/30 ryuga-dragon-gradient text-red-100">
-              <Sparkles size={18} className="animate-spin duration-[3s]" />
-            </div>
-            <div className="rounded-2xl px-5 py-3 text-sm glass-morphism text-muted-foreground italic flex items-center gap-2">
-              <Loader2 size={14} className="animate-spin" />
-              L'Empereur analyse...
-            </div>
-          </div>
+          <Box sx={{ display: 'flex', gap: 2, maxWidth: '80%' }}>
+             <Box
+                sx={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  background: 'linear-gradient(135deg, #450a0a 0%, #7f1d1d 100%)',
+                  border: '1px solid',
+                  borderColor: 'error.main'
+                }}
+              >
+                <SparklesIcon sx={{ color: '#fecaca', animation: 'spin 3s linear infinite' }} />
+            </Box>
+            <Paper
+                elevation={0}
+                sx={{
+                  p: 2,
+                  px: 3,
+                  borderRadius: 3,
+                  bgcolor: 'rgba(30, 30, 30, 0.6)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1.5
+                }}
+            >
+              <CircularProgress size={16} color="error" />
+              <Typography variant="body2" fontStyle="italic" color="text.secondary">
+                L'Empereur analyse...
+              </Typography>
+            </Paper>
+          </Box>
         )}
-      </div>
+      </Box>
 
       {/* Input Area */}
-      <div className="p-4 border-t border-white/10 bg-black/40 backdrop-blur-md z-20">
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            sendMessage();
-          }}
-          className="flex gap-3 max-w-4xl mx-auto relative"
+      <Box 
+        sx={{ 
+          p: 2, 
+          borderTop: '1px solid', 
+          borderColor: 'divider',
+          bgcolor: 'background.paper',
+          backdropFilter: 'blur(20px)'
+        }}
+      >
+        <form 
+          onSubmit={(e) => { e.preventDefault(); sendMessage(); }}
+          style={{ maxWidth: 900, margin: '0 auto', display: 'flex', gap: 12 }}
         >
-          <div className="relative flex-1">
-            <Input
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Posez votre question..."
-              className="w-full bg-white/5 border-white/10 focus:border-red-500/50 focus:ring-red-500/20 pl-4 pr-4 py-6 rounded-xl text-base shadow-inner transition-all"
-              disabled={isLoading}
-            />
-          </div>
-          <Button
-            type="submit"
+          <TextField 
+            fullWidth
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Posez votre question..."
+            variant="outlined"
+            disabled={isLoading}
+            sx={{
+                '& .MuiOutlinedInput-root': {
+                    borderRadius: 3,
+                    bgcolor: 'rgba(255,255,255,0.03)',
+                    '&.Mui-focused fieldset': {
+                        borderColor: 'error.main',
+                    },
+                }
+            }}
+          />
+          <Button 
+            type="submit" 
             disabled={isLoading || !input.trim()}
-            className="h-auto px-6 rounded-xl bg-gradient-to-r from-red-700 to-red-600 hover:from-red-600 hover:to-red-500 text-white shadow-lg shadow-red-900/20 border border-red-500/20 transition-all hover:scale-105 active:scale-95"
+            variant="contained"
+            sx={{
+                borderRadius: 3,
+                px: 3,
+                background: 'linear-gradient(to right, #b91c1c, #dc2626)',
+                '&:hover': {
+                    background: 'linear-gradient(to right, #991b1b, #b91c1c)',
+                }
+            }}
           >
-            {isLoading ? (
-              <Loader2 className="animate-spin" size={20} />
-            ) : (
-              <Send size={20} />
-            )}
-            <span className="sr-only">Envoyer</span>
+            {isLoading ? <CircularProgress size={24} color="inherit" /> : <SendIcon />}
           </Button>
         </form>
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 }

@@ -21,7 +21,7 @@ import Link from 'next/link';
 import { QuickActions } from '@/components/admin/QuickActions';
 import { TrophyIcon } from '@/components/ui/Icons';
 import { getBotStatus } from '@/lib/bot';
-import prisma from '@/lib/prisma';
+import { prisma } from '@/lib/prisma';
 import { formatDateTime } from '@/lib/utils';
 
 export default async function AdminDashboardPage() {

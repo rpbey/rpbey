@@ -1,5 +1,5 @@
 import { getBotStatus } from '@/lib/bot';
-import prisma from '@/lib/prisma';
+import { prisma } from '@/lib/prisma';
 import { DiscordRoleMapping, type RoleType } from '@/lib/role-colors';
 import type { BotMember } from '@/types';
 

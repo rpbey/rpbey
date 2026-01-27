@@ -20,7 +20,7 @@ import Link from 'next/link';
 import { DiscordWidget } from '@/components/ui/DiscordWidget';
 import { DiscordIcon } from '@/components/ui/Icons';
 import { getBotStatus } from '@/lib/bot';
-import prisma from '@/lib/prisma';
+import { prisma } from '@/lib/prisma';
 
 export const metadata = {
   title: 'À Propos',

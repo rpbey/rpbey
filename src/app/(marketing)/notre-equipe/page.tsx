@@ -1,6 +1,6 @@
 import { Box, Typography } from '@mui/material';
 import { headers } from 'next/headers';
-import prisma from '@/lib/prisma';
+import { prisma } from '@/lib/prisma';
 import { TeamClientContent } from './TeamClientContent';
 
 export const metadata = {

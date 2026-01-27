@@ -7,7 +7,7 @@ export const metadata = {
   title: 'Admin - Système de Classement',
 };
 
-export const dynamic = 'force-dynamic';
+
 
 export default async function RankingAdminPage() {
   const rules = await prisma.rankingSystem.findFirst();

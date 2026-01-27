@@ -1,7 +1,7 @@
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { admin, twoFactor, username } from 'better-auth/plugins';
-import prisma from '@/lib/prisma';
+import { prisma } from '@/lib/prisma';
 
 const isProduction = process.env.NODE_ENV === 'production';
 const baseURL =

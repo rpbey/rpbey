@@ -2,7 +2,7 @@ import Container from '@mui/material/Container';
 import { RankingsTable } from '@/components/rankings/RankingsTable';
 import SeasonSelector from '@/components/rankings/SeasonSelector';
 import { PageHeader } from '@/components/ui';
-import prisma from '@/lib/prisma';
+import { prisma } from '@/lib/prisma';
 import { getSeasonStandings, getSeasons } from '@/server/actions/season';
 
 export const metadata = {
@@ -11,7 +11,7 @@ export const metadata = {
     'Les meilleurs bladers de la République Populaire du Beyblade. Classement officiel mis à jour en temps réel.',
 };
 
-export const dynamic = 'force-dynamic'; // Pour être sûr que la pagination est fraîche
+ // Pour être sûr que la pagination est fraîche
 
 interface RankingsPageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;

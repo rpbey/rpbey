@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
+import { prisma } from '@/lib/prisma';
 
 export async function POST(req: NextRequest) {
   if (process.env.NODE_ENV === 'production') {

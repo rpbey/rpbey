@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { headers } from 'next/headers';
 import { auth } from '@/lib/auth'; // Assuming auth helper is here, check import path
-import prisma from '@/lib/prisma';
+import { prisma } from '@/lib/prisma';
 
 export async function getRankingConfig() {
   let config = await prisma.rankingSystem.findFirst();

@@ -12,7 +12,7 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { headers } from 'next/headers';
 import { StatsCharts } from '@/components/admin/StatsCharts';
-import prisma from '@/lib/prisma';
+import { prisma } from '@/lib/prisma';
 
 export default async function AdminStatsPage() {
   await headers();
