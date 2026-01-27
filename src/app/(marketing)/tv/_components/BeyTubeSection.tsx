@@ -35,14 +35,7 @@ export function BeyTubeSection() {
   }, []);
 
   return (
-    <Box
-      sx={{
-        py: { xs: 4, md: 8 },
-        bgcolor: 'background.default',
-        position: 'relative',
-      }}
-    >
-      <Container maxWidth="xl" sx={{ px: { xs: 2, sm: 3 } }}>
+    <Box sx={{ mb: 4 }}>
         <Box sx={{ mb: 2 }}>
           <Typography
             variant="h3"
@@ -101,7 +94,7 @@ export function BeyTubeSection() {
             ? Array.from(new Array(4)).map((_, i) => (
                 <Grid
                   key={i}
-                  size={{ xs: 12, sm: 6, md: 4, lg: 3 }}
+                  size={{ xs: 12, sm: 6, md: 6, lg: 6 }}
                   sx={{
                     display: { xs: i < 2 ? 'block' : 'none', sm: 'block' },
                   }}
@@ -117,13 +110,14 @@ export function BeyTubeSection() {
                 </Grid>
               ))
             : videos.map((video) => (
-                <Grid key={video.id} size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
+                <Grid key={video.id} size={{ xs: 12, sm: 6, md: 6, lg: 6 }}>
                   <YouTubeMobileCard
                     video={{
                       title: video.title,
                       thumbnail: video.thumbnail,
                       duration: video.duration || '0:00',
                       channelName: video.channelName,
+                      channelAvatar: video.channelAvatar,
                       views: video.views,
                       ago: video.ago || 'Populaire',
                       url: video.url,
@@ -132,7 +126,6 @@ export function BeyTubeSection() {
                 </Grid>
               ))}
         </Grid>
-      </Container>
     </Box>
   );
 }

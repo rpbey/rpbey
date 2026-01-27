@@ -1,5 +1,5 @@
-import { History, Radio } from '@mui/icons-material';
-import { Card, CardContent, Typography } from '@mui/material';
+import { History, PeopleAlt } from '@mui/icons-material';
+import { Box, Card, CardContent, Typography } from '@mui/material';
 
 interface ViewerCountProps {
   isLive: boolean;
@@ -16,41 +16,49 @@ export default function ViewerCount({
     <Card
       sx={{
         borderRadius: 4,
-        minHeight: { xs: 160, md: '100%' }, // Ensure mobile visibility
+        height: '100%',
         display: 'flex',
-        alignItems: 'center',
+        flexDirection: 'column',
         justifyContent: 'center',
-        bgcolor: 'surface.low',
+        bgcolor: 'background.paper',
+        border: '1px solid',
+        borderColor: 'divider',
+        minHeight: { xs: 80, md: '100%' },
       }}
     >
-      <CardContent sx={{ textAlign: 'center' }}>
-        {isLive ? (
-          <>
-            <Radio
-              sx={{ fontSize: { xs: 40, md: 48 }, mb: 1, color: 'error.main' }}
-            />
-            <Typography variant="subtitle1" fontWeight="bold">
-              {viewerCount} Spectateurs
+      <CardContent sx={{ py: 2, px: 2.5, '&:last-child': { pb: 2 } }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Box
+            sx={{
+              width: 40,
+              height: 40,
+              borderRadius: 2,
+              bgcolor: isLive ? 'rgba(255,0,0,0.1)' : 'action.hover',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            {isLive ? (
+              <PeopleAlt sx={{ color: '#ff0000' }} />
+            ) : (
+              <History sx={{ color: 'text.secondary' }} />
+            )}
+          </Box>
+          <Box>
+            <Typography variant="h6" fontWeight="bold" sx={{ lineHeight: 1 }}>
+              {isLive ? viewerCount : hasLatestVideo ? 'Rediffusion' : 'Off'}
             </Typography>
-          </>
-        ) : (
-          <>
-            <History
-              sx={{
-                fontSize: { xs: 40, md: 48 },
-                mb: 1,
-                color: 'text.secondary',
-              }}
-            />
             <Typography
-              variant="subtitle1"
-              fontWeight="bold"
+              variant="caption"
               color="text.secondary"
+              fontWeight="bold"
+              sx={{ textTransform: 'uppercase' }}
             >
-              {hasLatestVideo ? 'Rediffusion' : 'Hors ligne'}
+              {isLive ? 'Spectateurs' : 'Statut'}
             </Typography>
-          </>
-        )}
+          </Box>
+        </Box>
       </CardContent>
     </Card>
   );
