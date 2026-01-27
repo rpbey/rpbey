@@ -50,32 +50,40 @@ export function StatsCharts({
               Croissance Utilisateurs & Tournois
             </Typography>
             <Box sx={{ height: 350, width: '100%' }}>
-              <BarChart
-                xAxis={[
-                  {
-                    scaleType: 'band',
-                    data: registrations.map((d) => d.month),
-                  },
-                ]}
-                series={[
-                  {
-                    data: registrations.map((d) => d.count),
-                    label: 'Nouveaux Inscrits',
-                    color: '#3b82f6',
-                  },
-                  {
-                    data: tournaments.map((d) => d.count),
-                    label: 'Tournois Créés',
-                    color: '#fbbf24',
-                  },
-                ]}
-                height={isMobile ? 250 : 300}
-                sx={
-                  {
-                    // Optional: Customize chart aesthetics if needed
-                  }
-                }
-              />
+              {registrations.length > 0 ? (
+                <BarChart
+                  xAxis={[
+                    {
+                      scaleType: 'band',
+                      data: registrations.map((d) => d.month),
+                    },
+                  ]}
+                  series={[
+                    {
+                      data: registrations.map((d) => d.count),
+                      label: 'Nouveaux Inscrits',
+                      color: '#3b82f6',
+                    },
+                    {
+                      data: tournaments.map((d) => d.count),
+                      label: 'Tournois Créés',
+                      color: '#fbbf24',
+                    },
+                  ]}
+                  height={isMobile ? 250 : 300}
+                />
+              ) : (
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                  height="100%"
+                >
+                  <Typography color="text.secondary">
+                    Aucune donnée disponible
+                  </Typography>
+                </Box>
+              )}
             </Box>
           </CardContent>
         </Card>
@@ -108,41 +116,46 @@ export function StatsCharts({
                 justifyContent: 'center',
               }}
             >
-              <PieChart
-                series={[
-                  {
-                    data: matchesStatus.map((s, i) => ({
-                      id: i,
-                      value: s.count,
-                      label: s.status,
-                      color:
-                        s.status === 'Terminé'
-                          ? '#22c55e'
-                          : s.status === 'En cours'
-                            ? '#3b82f6'
-                            : '#94a3b8',
-                    })),
-                    innerRadius: 40,
-                    outerRadius: 100,
-                    paddingAngle: 4,
-                    cornerRadius: 6,
-                    highlightScope: { fade: 'global', highlight: 'item' },
-                    faded: {
-                      innerRadius: 30,
-                      additionalRadius: -30,
-                      color: 'gray',
+              {matchesStatus.length > 0 ? (
+                <PieChart
+                  series={[
+                    {
+                      data: matchesStatus.map((s, i) => ({
+                        id: i,
+                        value: s.count,
+                        label: s.status,
+                        color:
+                          s.status === 'Terminé'
+                            ? '#22c55e'
+                            : s.status === 'En cours'
+                              ? '#3b82f6'
+                              : '#94a3b8',
+                      })),
+                      innerRadius: 40,
+                      outerRadius: 100,
+                      paddingAngle: 4,
+                      cornerRadius: 6,
+                      highlightScope: { fade: 'global', highlight: 'item' },
+                      faded: {
+                        innerRadius: 30,
+                        additionalRadius: -30,
+                        color: 'gray',
+                      },
                     },
-                  },
-                ]}
-                margin={{ right: 5 }}
-                height={isMobile ? 250 : 300}
-                slotProps={{
-                  legend: {
-                    // hidden: true, // Moved to prop
-                  },
-                }}
-                hideLegend
-              />
+                  ]}
+                  margin={{ right: 5 }}
+                  height={isMobile ? 250 : 300}
+                  slotProps={{
+                    legend: {
+                      // hidden: true, // Moved to prop
+                    },
+                  }}
+                />
+              ) : (
+                <Typography color="text.secondary">
+                  Aucun match enregistré
+                </Typography>
+              )}
             </Box>
           </CardContent>
         </Card>
