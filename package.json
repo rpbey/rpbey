@@ -48,7 +48,6 @@
     "@mui/x-charts": "^8.23.0",
     "@mui/x-date-pickers": "^8.23.0",
     "@napi-rs/canvas": "^0.1.88",
-    "@prisma/adapter-pg": "^7.2.0",
     "@prisma/client": "^7.2.0",
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.5.0",
