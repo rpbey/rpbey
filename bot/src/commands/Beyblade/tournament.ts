@@ -261,7 +261,10 @@ export class TournamentCommand extends Command {
           .setFooter({ text: `${unlinkedParticipants.length} compte(s) non lié(s)` })
           .setTimestamp();
 
-        await targetChannel.send({ embeds: [embed] });
+        await targetChannel.send({
+          content: '<@&1451549606608371814>',
+          embeds: [embed]
+        });
 
         return interaction.editReply(
           `✅ Rapport envoyé dans <#${targetChannelId}>. ${unlinkedParticipants.length} participants non liés détectés.`
