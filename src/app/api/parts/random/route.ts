@@ -2,6 +2,8 @@ import { PartType } from '@prisma/client';
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
     const [blades, ratchets, bits] = await Promise.all([
