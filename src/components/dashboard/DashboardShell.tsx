@@ -71,6 +71,11 @@ const NAV_ITEMS: NavItem[] = [
     path: '/dashboard/profile',
   },
   {
+    label: 'Paramètres',
+    icon: Settings,
+    path: '/dashboard/settings',
+  },
+  {
     label: 'Decks',
     icon: Inventory2,
     path: '/dashboard/deck',
@@ -129,7 +134,7 @@ const NAV_ITEMS: NavItem[] = [
     adminOnly: true,
   },
   {
-    label: 'Paramètres',
+    label: 'Config Site',
     path: '/admin/settings',
     icon: Settings,
     adminOnly: true,
