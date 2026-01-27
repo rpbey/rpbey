@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { Browser } from 'puppeteer';
 import puppeteer from 'puppeteer-extra';
 import StealthPlugin from 'puppeteer-extra-plugin-stealth';
@@ -92,7 +93,7 @@ export class ChallongeScraper {
     let standings = [];
     try {
       standings = await this.fetchStandings(standingsUrl);
-    } catch (_e) {
+    } catch {
       console.warn(
         '⚠️ Impossible de récupérer les standings HTML, calcul basé sur le store uniquement.',
       );
@@ -152,7 +153,7 @@ export class ChallongeScraper {
         `)) as any[];
 
       return standings || [];
-    } catch (_e) {
+    } catch {
       return [];
     } finally {
       await page.close();

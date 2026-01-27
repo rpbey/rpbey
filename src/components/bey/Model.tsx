@@ -43,5 +43,6 @@ export function Model({ modelUrl, textureUrl }: ModelProps) {
     });
   }, [clonedObj, texture, textureUrl]);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return <primitive {...({ object: clonedObj } as any)} />;
 }

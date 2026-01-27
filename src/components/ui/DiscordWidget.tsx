@@ -29,11 +29,10 @@ export function DiscordWidget() {
         src="https://discord.com/widget?id=1319715782032228463&theme=dark"
         width="100%"
         height="100%"
-        allowTransparency={true}
-        frameBorder="0"
         sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"
         onLoad={() => setLoading(false)}
         title="Discord Widget"
+        style={{ border: 0 }}
       />
     </Box>
   );

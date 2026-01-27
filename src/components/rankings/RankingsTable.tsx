@@ -1,10 +1,10 @@
 'use client';
 
+import { useMediaQuery, useTheme } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Pagination from '@mui/material/Pagination';
 import Paper from '@mui/material/Paper';
-import { useTheme } from '@mui/material/styles';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -38,6 +38,7 @@ export function RankingsTable({
   currentPage,
 }: RankingsTableProps) {
   const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -103,21 +104,45 @@ export function RankingsTable({
           border: '1px solid',
           borderColor: 'divider',
           borderRadius: 4,
-          overflow: 'hidden',
+          overflowX: 'auto',
           mb: 4,
+          '&::-webkit-scrollbar': { height: '4px' },
+          '&::-webkit-scrollbar-thumb': {
+            bgcolor: 'divider',
+            borderRadius: '4px',
+          },
         }}
       >
         <Table>
           <TableHead>
             <TableRow sx={{ bgcolor: 'action.hover' }}>
-              <TableCell width={80} align="center">
-                Rang
+              <TableCell
+                width={isMobile ? 50 : 80}
+                align="center"
+                sx={{ px: { xs: 0.5, sm: 2 } }}
+              >
+                #
               </TableCell>
               <TableCell>Blader</TableCell>
               <TableCell align="center">Points</TableCell>
-              <TableCell align="center">Participations</TableCell>
-              <TableCell align="center">Tournois Gagnés</TableCell>
-              <TableCell align="center">Matchs</TableCell>
+              <TableCell
+                align="center"
+                sx={{ display: { xs: 'none', md: 'table-cell' } }}
+              >
+                Participations
+              </TableCell>
+              <TableCell
+                align="center"
+                sx={{ display: { xs: 'none', sm: 'table-cell' } }}
+              >
+                Tournois Gagnés
+              </TableCell>
+              <TableCell
+                align="center"
+                sx={{ display: { xs: 'none', lg: 'table-cell' } }}
+              >
+                Matchs
+              </TableCell>
               <TableCell align="center">Winrate</TableCell>
             </TableRow>
           </TableHead>
@@ -139,7 +164,9 @@ export function RankingsTable({
                       transition: 'background-color 0.2s',
                     }}
                   >
-                    <TableCell align="center">{getRankBadge(index)}</TableCell>
+                    <TableCell align="center" sx={{ px: { xs: 0.5, sm: 2 } }}>
+                      {getRankBadge(index)}
+                    </TableCell>
                     <TableCell>
                       <Link
                         href={`/profile/${profile.userId}`}
@@ -173,7 +200,14 @@ export function RankingsTable({
                           <Box>
                             <Typography
                               fontWeight="bold"
-                              sx={{ transition: 'color 0.2s' }}
+                              sx={{
+                                transition: 'color 0.2s',
+                                fontSize: { xs: '0.85rem', md: '1rem' },
+                                maxWidth: { xs: '100px', sm: 'none' },
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                whiteSpace: 'nowrap',
+                              }}
                             >
                               {profile.bladerName ||
                                 profile.user.name ||
@@ -209,12 +243,18 @@ export function RankingsTable({
                         pts
                       </Typography>
                     </TableCell>
-                    <TableCell align="center">
+                    <TableCell
+                      align="center"
+                      sx={{ display: { xs: 'none', md: 'table-cell' } }}
+                    >
                       <Typography fontWeight="bold">
                         {profile.user._count.tournaments}
                       </Typography>
                     </TableCell>
-                    <TableCell align="center">
+                    <TableCell
+                      align="center"
+                      sx={{ display: { xs: 'none', sm: 'table-cell' } }}
+                    >
                       {profile.tournamentWins > 0 ? (
                         <Box
                           sx={{
@@ -233,7 +273,10 @@ export function RankingsTable({
                         <Typography color="text.disabled">-</Typography>
                       )}
                     </TableCell>
-                    <TableCell align="center">
+                    <TableCell
+                      align="center"
+                      sx={{ display: { xs: 'none', lg: 'table-cell' } }}
+                    >
                       <Typography variant="body2">
                         <span style={{ color: theme.palette.success.main }}>
                           {profile.wins}W

@@ -1,6 +1,5 @@
 'use client';
 
-import BoltIcon from '@mui/icons-material/Bolt';
 import PersonIcon from '@mui/icons-material/Person';
 import StarIcon from '@mui/icons-material/Star';
 import {
@@ -19,11 +18,12 @@ import {
   Typography,
   useTheme,
 } from '@mui/material';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import useSWR from 'swr';
 import { SecuritySettings } from '@/components/profile';
+import { DeckBoxUpload } from '@/components/profile/DeckBoxUpload';
 import { useToast } from '@/components/ui';
 import { useAuth } from '@/hooks';
 
@@ -32,6 +32,8 @@ interface ProfileFormData {
   bio: string;
   experience: string;
   favoriteType: string;
+  challongeUsername?: string;
+  deckBoxImage?: string;
 }
 
 const BEYBLADE_TYPES = [
@@ -52,10 +54,24 @@ const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 export default function EditProfilePage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { user } = useAuth();
   const { showToast } = useToast();
   const theme = useTheme();
   const [isSaving, setIsSaving] = useState(false);
+
+  // Handle OAuth results
+  useEffect(() => {
+    const challonge = searchParams.get('challonge');
+    if (challonge === 'success') {
+      showToast('Compte Challonge lié avec succès !', 'success');
+      // Clear URL params
+      router.replace('/dashboard/profile/edit');
+    } else if (challonge === 'error') {
+      showToast('Erreur lors de la liaison Challonge.', 'error');
+      router.replace('/dashboard/profile/edit');
+    }
+  }, [searchParams, showToast, router]);
 
   // Fetch current profile data
   const { data: profileData, isLoading: isProfileLoading } = useSWR(
@@ -76,6 +92,8 @@ export default function EditProfilePage() {
       setValue('bio', profileData.bio || '');
       setValue('experience', profileData.experience || 'BEGINNER');
       setValue('favoriteType', profileData.favoriteType || 'BALANCE');
+      setValue('challongeUsername', profileData.challongeUsername || '');
+      setValue('deckBoxImage', profileData.deckBoxImage || '');
     }
   }, [profileData, setValue]);
 
@@ -182,6 +200,36 @@ export default function EditProfilePage() {
                           })}
                           error={!!errors.bladerName}
                           helperText={errors.bladerName?.message}
+                          sx={{
+                            '& .MuiOutlinedInput-root': { borderRadius: 3 },
+                          }}
+                        />
+                      </Grid>
+
+                      <Grid size={{ xs: 12 }}>
+                        <Typography
+                          variant="subtitle2"
+                          gutterBottom
+                          fontWeight="bold"
+                        >
+                          Ma Deck Box
+                        </Typography>
+                        <DeckBoxUpload
+                          currentImage={profileData?.deckBoxImage}
+                          onUpload={(url) =>
+                            setValue('deckBoxImage', url, { shouldDirty: true })
+                          }
+                        />
+                      </Grid>
+
+                      <Grid size={{ xs: 12 }}>
+                        <TextField
+                          fullWidth
+                          label="Pseudo Challonge"
+                          placeholder="Ton pseudo utilisé sur Challonge.com"
+                          helperText="Permet de lier automatiquement tes résultats de tournoi."
+                          variant="outlined"
+                          {...register('challongeUsername')}
                           sx={{
                             '& .MuiOutlinedInput-root': { borderRadius: 3 },
                           }}
@@ -311,11 +359,64 @@ export default function EditProfilePage() {
               <Box
                 sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}
               >
-                <BoltIcon color="warning" fontSize="small" />
+                <Box
+                  component="img"
+                  src="https://challonge.com/favicon.ico"
+                  sx={{ width: 16, height: 16 }}
+                />
                 <Typography variant="subtitle2" fontWeight="bold">
-                  Infos du compte
+                  Compte Challonge
                 </Typography>
               </Box>
+              {profileData?.challongeUsername ? (
+                <Stack spacing={1}>
+                  <Typography
+                    variant="caption"
+                    color="success.main"
+                    fontWeight="bold"
+                  >
+                    Lié : {profileData.challongeUsername}
+                  </Typography>
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    color="error"
+                    onClick={() => {
+                      if (
+                        confirm('Voulez-vous délier votre compte Challonge ?')
+                      ) {
+                        // We can just clear the field via the main form if we want,
+                        // but a quick button is better.
+                        setValue('challongeUsername', '');
+                        onSubmit({ ...profileData, challongeUsername: '' });
+                      }
+                    }}
+                  >
+                    Délier
+                  </Button>
+                </Stack>
+              ) : (
+                <Button
+                  variant="outlined"
+                  size="small"
+                  fullWidth
+                  href="/api/auth/challonge"
+                  sx={{ mt: 1, borderRadius: 2 }}
+                >
+                  Lier mon compte
+                </Button>
+              )}
+            </Box>
+
+            <Box
+              sx={{
+                p: 3,
+                borderRadius: 4,
+                bgcolor: 'background.paper',
+                border: '1px solid',
+                borderColor: 'divider',
+              }}
+            >
               <Typography
                 variant="caption"
                 color="text.secondary"

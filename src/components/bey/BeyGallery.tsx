@@ -33,8 +33,10 @@ interface BBXData {
     Ref?: string;
     Ratchet?: string;
     Bit?: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     [key: string]: any;
   }>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any;
 }
 

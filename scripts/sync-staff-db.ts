@@ -16,7 +16,8 @@ const pool = new Pool({ connectionString });
 const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
-// Role Mapping from src/lib/role-colors.ts
+// Role Mapping: Discord Role ID -> DB Role Enum/String
+// Order matters: First match wins (Priority)
 const DiscordRoleMapping: Record<string, string> = {
   '1319720685714804809': 'ADMIN',
   '1446871643753418793': 'RH',
@@ -25,10 +26,13 @@ const DiscordRoleMapping: Record<string, string> = {
   '1460095694151876869': 'ARBITRE',
 };
 
+// Priority list to determine main role if user has multiple
+const ROLE_PRIORITY = ['ADMIN', 'RH', 'MODO', 'ARBITRE', 'STAFF'];
+
 const VALID_ROLE_IDS = Object.keys(DiscordRoleMapping);
 
 async function syncStaff() {
-  console.log('🔄 Starting Staff Sync...');
+  console.log('🔄 Starting Full Staff Sync...');
 
   if (!process.env.DISCORD_TOKEN) {
     console.error('❌ DISCORD_TOKEN is missing');
@@ -43,87 +47,101 @@ async function syncStaff() {
     await client.login(process.env.DISCORD_TOKEN);
     console.log('✅ Connected to Discord');
 
-    // Get the guild (Server)
-    // We'll iterate over all guilds the bot is in, but typically it's just RPB
-    // Or we can try to find the guild that contains these roles.
-    const guilds = await client.guilds.fetch();
-    console.log(`Found ${guilds.size} guilds.`);
-
-    // Assuming the main guild is the one we want. 
-    // We can loop or find one by ID if we had it. 
-    // Let's iterate all cached guilds to be safe, or just pick the first one.
-    // Better: Find the guild that actually has these roles.
-    
-    let targetGuild = null;
-    
-    // Check first guild (usually correct in single-server bots)
-    for (const [id, g] of client.guilds.cache) {
-        targetGuild = g; 
-        break; // Just take the first one for now
-    }
-
-    if (!targetGuild) {
-        console.error('❌ No guilds found');
+    // Assuming we use the first guild found, or specify ID if known
+    // For RPB, likely the only guild.
+    const guild = client.guilds.cache.first();
+    if (!guild) {
+        console.error('❌ No guild found');
         return;
     }
     
-    console.log(`🎯 Targeting Guild: ${targetGuild.name} (${targetGuild.id})`);
+    console.log(`🎯 Targeting Guild: ${guild.name} (${guild.id})`);
 
-    // Fetch all DB Staff
-    const dbStaff = await prisma.staffMember.findMany({
-        where: { isActive: true }
-    });
-    console.log(`📚 Found ${dbStaff.length} active staff in DB`);
+    // Fetch ALL members
+    console.log('📥 Fetching all members...');
+    const members = await guild.members.fetch();
+    console.log(`👥 Total Members: ${members.size}`);
 
-    let removedCount = 0;
-    let keptCount = 0;
+    let addedCount = 0;
+    let updatedCount = 0;
+    let deactivatedCount = 0;
+    const activeDiscordIds = new Set<string>();
 
-    for (const staff of dbStaff) {
-        if (!staff.discordId) {
-            console.warn(`⚠️ Staff ${staff.name} has no Discord ID. Skipping.`);
-            continue;
-        }
+    for (const [id, member] of members) {
+        // Check if member has any staff role
+        const memberRoleIds = member.roles.cache.map(r => r.id);
+        const staffRoles = memberRoleIds.filter(rid => VALID_ROLE_IDS.includes(rid));
 
-        try {
-            // Fetch member from Discord
-            const member = await targetGuild.members.fetch(staff.discordId).catch(() => null);
-
-            if (!member) {
-                console.log(`❌ User ${staff.name} (${staff.discordId}) not found in guild. Removing...`);
-                await prisma.staffMember.update({
-                    where: { id: staff.id },
-                    data: { isActive: false }
-                });
-                removedCount++;
-                continue;
+        if (staffRoles.length > 0) {
+            // Determine primary role based on priority
+            let primaryRole = 'STAFF';
+            for (const roleType of ROLE_PRIORITY) {
+                // Find the discord ID associated with this role type
+                const roleId = Object.keys(DiscordRoleMapping).find(key => DiscordRoleMapping[key] === roleType);
+                if (roleId && staffRoles.includes(roleId)) {
+                    primaryRole = roleType;
+                    break;
+                }
             }
 
-            // Check roles
-            const hasStaffRole = member.roles.cache.some(r => VALID_ROLE_IDS.includes(r.id));
+            const avatarUrl = member.user.displayAvatarURL({ extension: 'png', size: 256 });
+            const nickname = member.nickname || member.user.displayName; // Global Name or Username
 
-            if (!hasStaffRole) {
-                console.log(`🔻 User ${staff.name} (${staff.discordId}) has no staff roles. Removing...`);
-                await prisma.staffMember.update({
-                    where: { id: staff.id },
-                    data: { isActive: false }
-                });
-                removedCount++;
+            // Upsert into DB
+            const existing = await prisma.staffMember.findFirst({
+                where: { discordId: id }
+            });
+
+            if (existing) {
+                if (existing.role !== primaryRole || existing.name !== nickname || existing.imageUrl !== avatarUrl || !existing.isActive) {
+                    await prisma.staffMember.update({
+                        where: { id: existing.id },
+                        data: {
+                            role: primaryRole,
+                            name: nickname,
+                            imageUrl: avatarUrl,
+                            isActive: true, // Reactivate if was inactive
+                            updatedAt: new Date()
+                        }
+                    });
+                    updatedCount++;
+                }
             } else {
-                // Optional: Update role type if changed?
-                // For now, just keep them active.
-                // console.log(`✅ User ${staff.name} is verified.`);
-                keptCount++;
+                await prisma.staffMember.create({
+                    data: {
+                        name: nickname,
+                        role: primaryRole,
+                        discordId: id,
+                        teamId: 'rpb-core', // Default team
+                        imageUrl: avatarUrl,
+                        isActive: true
+                    }
+                });
+                addedCount++;
             }
+            
+            activeDiscordIds.add(id);
+        }
+    }
 
-        } catch (err) {
-            console.error(`❌ Error checking ${staff.name}:`, err);
+    // Deactivate staff not found in scan
+    const dbStaff = await prisma.staffMember.findMany({ where: { isActive: true } });
+    for (const staff of dbStaff) {
+        if (staff.discordId && !activeDiscordIds.has(staff.discordId)) {
+            console.log(`🔻 Deactivating ${staff.name} (Role lost or left server)`);
+            await prisma.staffMember.update({
+                where: { id: staff.id },
+                data: { isActive: false }
+            });
+            deactivatedCount++;
         }
     }
 
     console.log('-----------------------------------');
     console.log(`✅ Sync Complete.`);
-    console.log(`❌ Removed (set inactive): ${removedCount}`);
-    console.log(`✅ Kept: ${keptCount}`);
+    console.log(`➕ Added: ${addedCount}`);
+    console.log(`🔄 Updated: ${updatedCount}`);
+    console.log(`❌ Deactivated: ${deactivatedCount}`);
 
   } catch (error) {
     console.error('❌ Critical Error:', error);

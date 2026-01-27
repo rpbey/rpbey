@@ -1,27 +1,27 @@
-import { connection } from 'next/server';
-import { getDiscordStats, getDiscordTeam } from '@/lib/discord-data';
-import { prisma } from '@/lib/prisma';
-import HomeClient from './HomeClient';
-
-
+import { getDiscordStats, getDiscordTeam } from "@/lib/discord-data";
+import { prisma } from "@/lib/prisma";
+import { getContent } from "@/server/actions/cms";
+import { cacheLife } from "next/cache";
+import HomeClient from "./HomeClient";
 
 export default async function HomePage() {
-  await connection();
+  "use cache";
+  cacheLife("minutes");
 
-  // Parallel data fetching
-  const [stats, team, activeTournament] = await Promise.all([
+  const [stats, team, activeTournament, heroContent] = await Promise.all([
     getDiscordStats(),
     getDiscordTeam(),
     prisma.tournament.findFirst({
       where: {
         status: {
-          in: ['UNDERWAY', 'CHECKIN', 'REGISTRATION_OPEN'],
+          in: ["UNDERWAY", "CHECKIN", "REGISTRATION_OPEN"],
         },
         challongeUrl: { not: null },
       },
-      orderBy: { date: 'desc' },
-      select: { challongeUrl: true, name: true },
+      orderBy: { date: "desc" },
+      select: { id: true, challongeUrl: true, name: true },
     }),
+    getContent("home-hero-text"),
   ]);
 
   return (
@@ -29,6 +29,7 @@ export default async function HomePage() {
       discordStats={stats}
       discordTeam={team}
       activeTournament={activeTournament}
+      heroContent={heroContent?.content}
     />
   );
 }

@@ -26,6 +26,7 @@ interface DiscordStatusCardProps {
   initialTeam?: TeamGroup[];
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const fetcher = (url: string) => api.get(url).then((res) => res as any);
 
 export function DiscordStatusCard({
@@ -281,8 +282,8 @@ export function DiscordStatusCard({
               bgcolor: DISCORD_BLUE_HOVER,
               boxShadow: `0 4px 12px ${alpha(DISCORD_BLUE, 0.4)}`,
             },
-            py: 1.2,
-            fontSize: '0.9rem',
+            py: { xs: 1, md: 1.2 },
+            fontSize: { xs: '0.85rem', md: '0.9rem' },
             borderRadius: 2.5,
             textTransform: 'none',
             fontWeight: 800,

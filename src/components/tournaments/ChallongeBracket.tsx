@@ -1,16 +1,15 @@
-'use client';
+"use client";
 
-import OpenInNewIcon from '@mui/icons-material/OpenInNew';
-import RefreshIcon from '@mui/icons-material/Refresh';
-import FullscreenIcon from '@mui/icons-material/Fullscreen';
-import Box from '@mui/material/Box';
-import IconButton from '@mui/material/IconButton';
-import Paper from '@mui/material/Paper';
-import Skeleton from '@mui/material/Skeleton';
-import Tooltip from '@mui/material/Tooltip';
-import Typography from '@mui/material/Typography';
-import { useTheme } from '@mui/material/styles';
-import { useState, useRef, useEffect } from 'react';
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import RefreshIcon from "@mui/icons-material/Refresh";
+import Box from "@mui/material/Box";
+import IconButton from "@mui/material/IconButton";
+import Paper from "@mui/material/Paper";
+import Skeleton from "@mui/material/Skeleton";
+import { useTheme } from "@mui/material/styles";
+import Tooltip from "@mui/material/Tooltip";
+import Typography from "@mui/material/Typography";
+import { useRef, useState } from "react";
 
 interface ChallongeBracketProps {
   challongeUrl: string;
@@ -24,7 +23,7 @@ export function ChallongeBracket({
   challongeUrl,
   height = 650,
   title,
-  themeId = '7792', // Default to a clean dark theme
+  themeId = "7792", // Default to a clean dark theme
   svgPath,
 }: ChallongeBracketProps) {
   const [loading, setLoading] = useState(true);
@@ -38,7 +37,7 @@ export function ChallongeBracket({
   };
 
   const isSvgMode = !!svgPath;
-  const isDark = theme.palette.mode === 'dark';
+  const isDark = theme.palette.mode === "dark";
 
   // Construct optimized URL
   // theme: ID for styling (creates dark background match)
@@ -51,108 +50,107 @@ export function ChallongeBracket({
     <Paper
       elevation={0}
       sx={{
-        width: '100%',
+        width: "100%",
         borderRadius: 4,
-        overflow: 'hidden',
-        border: '1px solid',
-        borderColor: 'rgba(255,255,255,0.1)',
-        bgcolor: isDark ? 'rgba(20, 20, 20, 0.6)' : 'rgba(255, 255, 255, 0.8)',
-        backdropFilter: 'blur(12px)',
-        boxShadow: isDark 
-            ? '0 8px 32px rgba(0, 0, 0, 0.4)' 
-            : '0 8px 32px rgba(0, 0, 0, 0.05)',
-        transition: 'all 0.3s ease',
-        '&:hover': {
-            borderColor: 'primary.main',
-            boxShadow: isDark 
-                ? '0 12px 40px rgba(220, 38, 38, 0.15)' // Red glow on hover
-                : '0 12px 40px rgba(0, 0, 0, 0.1)',
-        }
+        overflow: "hidden",
+        border: "none",
+        bgcolor: "transparent",
+        backdropFilter: "none",
+        boxShadow: "none",
+        transition: "none",
+        "&:hover": {
+          borderColor: "transparent",
+          boxShadow: "none",
+        },
       }}
     >
-      {/* Header Bar */}
-      <Box
-        sx={{
-          px: 3,
-          py: 2,
-          borderBottom: '1px solid',
-          borderColor: 'divider',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          background: isDark 
-            ? 'linear-gradient(90deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.0) 100%)' 
-            : 'rgba(0,0,0,0.02)',
-        }}
-      >
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+      {/* Header Bar - only shown if title is provided */}
+      {title && (
+        <Box
+          sx={{
+            px: 3,
+            py: 2,
+            borderBottom: "1px solid",
+            borderColor: "divider",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            background: isDark
+              ? "linear-gradient(90deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.0) 100%)"
+              : "rgba(0,0,0,0.02)",
+          }}
+        >
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
             {/* Status Dot */}
-            <Box 
-                sx={{ 
-                    width: 8, 
-                    height: 8, 
-                    borderRadius: '50%', 
-                    bgcolor: loading ? 'warning.main' : 'success.main',
-                    boxShadow: loading ? '0 0 8px #f59e0b' : '0 0 8px #22c55e'
-                }} 
+            <Box
+              sx={{
+                width: 8,
+                height: 8,
+                borderRadius: "50%",
+                bgcolor: loading ? "warning.main" : "success.main",
+                boxShadow: loading ? "0 0 8px #f59e0b" : "0 0 8px #22c55e",
+              }}
             />
             <Typography
-            variant="subtitle1"
-            fontWeight="700"
-            sx={{ 
-                letterSpacing: '0.02em',
-                background: 'linear-gradient(45deg, #fff, #ccc)',
-                backgroundClip: 'text',
-                WebkitTextFillColor: isDark ? 'transparent' : 'inherit'
-            }}
+              variant="subtitle1"
+              fontWeight="700"
+              sx={{
+                letterSpacing: "0.02em",
+                background: "linear-gradient(45deg, #fff, #ccc)",
+                backgroundClip: "text",
+                WebkitTextFillColor: isDark ? "transparent" : "inherit",
+              }}
             >
-            {title || 'Arbre de Tournoi'}
+              {title}
             </Typography>
-        </Box>
+          </Box>
 
-        <Box sx={{ display: 'flex', gap: 1 }}>
-          {!isSvgMode && (
-            <Tooltip title="Actualiser les résultats">
-              <IconButton 
-                size="small" 
-                onClick={handleRefresh}
-                sx={{ 
-                    color: 'text.secondary',
-                    '&:hover': { color: 'primary.main', bgcolor: 'primary.main', bgcolorOpacity: 0.1 } 
+          <Box sx={{ display: "flex", gap: 1 }}>
+            {!isSvgMode && (
+              <Tooltip title="Actualiser les résultats">
+                <IconButton
+                  size="small"
+                  onClick={handleRefresh}
+                  sx={{
+                    color: "text.secondary",
+                    "&:hover": {
+                      color: "primary.main",
+                      bgcolor: "primary.main",
+                      bgcolorOpacity: 0.1,
+                    },
+                  }}
+                >
+                  <RefreshIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+            )}
+            <Tooltip title="Ouvrir sur Challonge">
+              <IconButton
+                size="small"
+                component="a"
+                href={challongeUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                sx={{
+                  color: "text.secondary",
+                  "&:hover": { color: "primary.main" },
                 }}
               >
-                <RefreshIcon fontSize="small" />
+                <OpenInNewIcon fontSize="small" />
               </IconButton>
             </Tooltip>
-          )}
-          <Tooltip
-            title="Ouvrir sur Challonge"
-          >
-            <IconButton
-              size="small"
-              component="a"
-              href={challongeUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              sx={{ 
-                color: 'text.secondary',
-                '&:hover': { color: 'primary.main' } 
-            }}
-            >
-              <OpenInNewIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
+          </Box>
         </Box>
-      </Box>
+      )}
 
       {/* Bracket Content */}
       <Box
         sx={{
-          position: 'relative',
-          width: '100%',
+          position: "relative",
+          width: "100%",
           height,
-          bgcolor: isDark ? '#18181b' : '#f4f4f5', // Neutral background behind iframe
-          overflow: isSvgMode ? 'auto' : 'hidden',
+          bgcolor: "transparent",
+          overflow: isSvgMode ? "auto" : "hidden",
         }}
       >
         {isSvgMode ? (
@@ -160,12 +158,12 @@ export function ChallongeBracket({
             component="img"
             src={svgPath}
             alt={title}
-            sx={{ 
-                width: '100%', 
-                height: 'auto', 
-                minHeight: '100%',
-                objectFit: 'contain',
-                p: 2 
+            sx={{
+              width: "100%",
+              height: "auto",
+              minHeight: "100%",
+              objectFit: "contain",
+              p: 2,
             }}
             onLoad={() => setLoading(false)}
           />
@@ -174,14 +172,14 @@ export function ChallongeBracket({
             {loading && (
               <Box
                 sx={{
-                  position: 'absolute',
+                  position: "absolute",
                   inset: 0,
                   zIndex: 2,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  bgcolor: 'background.paper',
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  bgcolor: "background.paper",
                 }}
               >
                 <Skeleton
@@ -191,12 +189,12 @@ export function ChallongeBracket({
                   sx={{ borderRadius: 3 }}
                   animation="wave"
                 />
-                <Typography variant="caption" sx={{ mt: 2, color: 'text.secondary' }}>
-                    Chargement de l'arbre...
+                <Typography variant="caption" sx={{ mt: 2, color: "text.secondary" }}>
+                  Chargement de l'arbre...
                 </Typography>
               </Box>
             )}
-            
+
             <iframe
               ref={iframeRef}
               key={key}
@@ -204,15 +202,14 @@ export function ChallongeBracket({
               src={embedUrl}
               width="100%"
               height="100%"
-              frameBorder="0"
               scrolling="auto"
-              allowTransparency={true}
               onLoad={() => setLoading(false)}
-              style={{ 
-                display: 'block',
+              style={{
+                border: 0,
+                display: "block",
                 opacity: loading ? 0 : 1,
-                transition: 'opacity 0.5s ease',
-                filter: isDark ? 'contrast(1.1) saturate(1.1)' : 'none' // Slight pop for dark mode
+                transition: "opacity 0.5s ease",
+                filter: isDark ? "contrast(1.1) saturate(1.1)" : "none", // Slight pop for dark mode
               }}
             />
           </>

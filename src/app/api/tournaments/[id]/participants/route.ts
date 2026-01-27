@@ -147,7 +147,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
             seed,
           },
         );
-        challongeParticipantId = result.data.id;
+        challongeParticipantId = result.id;
       } catch (err) {
         console.error('Failed to add participant to Challonge:', err);
       }

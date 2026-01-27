@@ -61,10 +61,11 @@ export default async function AdminDiscordPage() {
           >
             <CardContent>
               <Typography variant="h6" fontWeight="bold" gutterBottom>
-                Status Système
+                Statut Système
               </Typography>
 
               <Grid container spacing={4} sx={{ mt: 1 }}>
+                {' '}
                 <Grid size={{ xs: 6, md: 4 }}>
                   <Box sx={{ display: 'flex', gap: 2 }}>
                     <AccessTime color="primary" />
@@ -78,7 +79,6 @@ export default async function AdminDiscordPage() {
                     </Box>
                   </Box>
                 </Grid>
-
                 <Grid size={{ xs: 6, md: 4 }}>
                   <Box sx={{ display: 'flex', gap: 2 }}>
                     <Speed color="warning" />
@@ -92,7 +92,6 @@ export default async function AdminDiscordPage() {
                     </Box>
                   </Box>
                 </Grid>
-
                 <Grid size={{ xs: 6, md: 4 }}>
                   <Box sx={{ display: 'flex', gap: 2 }}>
                     <Memory color="info" />
@@ -106,7 +105,6 @@ export default async function AdminDiscordPage() {
                     </Box>
                   </Box>
                 </Grid>
-
                 <Grid size={{ xs: 6, md: 4 }}>
                   <Box sx={{ display: 'flex', gap: 2 }}>
                     <Dns color="secondary" />

@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next';
 
-export const dynamic = 'force-static';
-
+// MIGRATED from: export const dynamic = 'force-static';
+// → Dynamic by default with Cache Components.
 export default function robots(): MetadataRoute.Robots {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://rpbey.fr';
 

@@ -28,11 +28,12 @@ export async function syncCommunityTournaments() {
 
   // Fetch tournaments from Challonge (pending and in_progress)
   // We fetch multiple pages if needed, but for now let's just get the first page of 25
-  const response = await service.listCommunityTournaments(communityId, {
-    perPage: 25,
-  });
-
-  const challongeTournaments = response.data;
+  const challongeTournaments = await service.listCommunityTournaments(
+    communityId,
+    {
+      perPage: 25,
+    },
+  );
 
   // Get existing tournaments to avoid duplicates
   const existingTournaments = await prisma.tournament.findMany({
@@ -52,8 +53,8 @@ export async function syncCommunityTournaments() {
 
 export async function importTournamentFromChallonge(challongeId: string) {
   const service = getChallongeService();
-  const response = await service.getTournament(challongeId);
-  const t = response.data.attributes;
+  const tournament = await service.getTournament(challongeId);
+  const t = tournament.attributes;
 
   // Map Challonge state to our status
   let status: TournamentStatus = 'UPCOMING';
@@ -69,7 +70,7 @@ export async function importTournamentFromChallonge(challongeId: string) {
       format: t.tournamentType,
       maxPlayers: 64, // Default
       status,
-      challongeId: response.data.id,
+      challongeId: tournament.id,
       challongeUrl: t.url, // Usually just the slug
     },
   });

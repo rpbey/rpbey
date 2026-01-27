@@ -19,7 +19,7 @@ import { signOut, useSession } from '@/lib/auth-client';
 import { LOGO_VARIANTS } from '@/lib/role-colors';
 
 const pages = [
-  { label: 'Dashboard', href: '/dashboard' },
+  { label: 'Tableau de bord', href: '/dashboard' },
   { label: 'Tournois', href: '/tournaments' },
   { label: 'Classements', href: '/rankings' },
 ];

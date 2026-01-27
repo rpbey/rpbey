@@ -118,8 +118,8 @@ export async function POST(request: NextRequest) {
           signupCap: maxPlayers,
         });
 
-        challongeId = result.data.id;
-        challongeUrl = `https://challonge.com/${result.data.attributes.url}`;
+        challongeId = result.id;
+        challongeUrl = `https://challonge.com/${result.attributes.url}`;
       } catch (err) {
         console.error('Failed to create Challonge tournament:', err);
         // Continue without Challonge integration

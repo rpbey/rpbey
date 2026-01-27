@@ -1,303 +1,304 @@
 /**
- * RPB - Seed Parts Database
- * Importe toutes les pièces Beyblade X depuis Beyblade-EX
- * https://github.com/Beyblade-EX/beyblade-ex.github.io/tree/master/db
+ * RPB - Seed Parts Database (Local)
+ * Imports cleaned Beyblade X parts from local JSON files (derived from new HTML extraction)
  */
 
-import 'dotenv/config'
-import { PrismaClient, PartType, type BeyType } from '@prisma/client'
-import { PrismaPg } from '@prisma/adapter-pg'
-import { Pool } from 'pg'
+import 'dotenv/config';
+import fs from 'fs';
+import path from 'path';
+import { PrismaClient, PartType, type BeyType } from '@prisma/client';
+import { PrismaPg } from '@prisma/adapter-pg';
+import { Pool } from 'pg';
 
-const connectionString = process.env.DATABASE_URL
+const connectionString = process.env.DATABASE_URL;
 if (!connectionString) {
-  throw new Error('DATABASE_URL environment variable is not set')
+  throw new Error('DATABASE_URL environment variable is not set');
 }
 
-const pool = new Pool({ connectionString })
-const adapter = new PrismaPg(pool)
-const prisma = new PrismaClient({ adapter })
+const pool = new Pool({ connectionString });
+const adapter = new PrismaPg(pool);
+const prisma = new PrismaClient({ adapter });
 
-const BEYBLADE_EX_BASE =
-  'https://raw.githubusercontent.com/Beyblade-EX/beyblade-ex.github.io/master/db'
+const CLEANED_DATA_DIR = path.join(process.cwd(), 'data/cleaned');
 
-// ============================================================================
-// Types from Beyblade-EX JSON
-// ============================================================================
+// ============================================================================ 
+// Types (matching NEW cleaned JSONs)
+// ============================================================================ 
 
-interface RawBlade {
-  name: string
-  type: number // 0=Attack, 1=Defense, 2=Stamina, 3=Balance
-  stat: [number, number, number, number, number] // [attack, defense, stamina, burst, dash]
-  weight?: number
-  img?: string
+interface CleanedBlade {
+  name: string;
+  spin: string;
+  stats: {
+    attack: string;
+    defense: string;
+    stamina: string;
+    weight: number;
+  };
 }
 
-interface RawBit {
-  name: string
-  stat: [string, number, number] // [gearRatio, weight, shaftWidthIndex]
-  type?: number // 0=Attack, 1=Defense, 2=Stamina, 3=Balance
-  img?: string
+interface CleanedRatchet {
+  name: string;
+  stats: {
+    attack: string;
+    defense: string;
+    stamina: string;
+    weight: number;
+  };
 }
 
-interface RawRatchet {
-  name: string
-  stat: [number, number] // [weight, height]
-  img?: string
+interface CleanedBit {
+  name: string;
+  code: string;
+  stats: {
+    attack: string;
+    defense: string;
+    stamina: string;
+    dash: string;
+    burst: string; // burstResistance in DB
+    weight: number;
+    type: string;
+  };
 }
 
-interface PartMeta {
-  blade?: { type: string[] }
-  bit?: { ratio: string[]; shaft: string[] }
-  [key: string]: unknown
+interface CleanedBey {
+  blade: string;
+  type: string;
 }
 
-// ============================================================================
+// ============================================================================ 
 // Utility Functions
-// ============================================================================
+// ============================================================================ 
 
-function mapBeyType(typeIndex: number): BeyType {
-  switch (typeIndex) {
-    case 0:
-      return 'ATTACK'
-    case 1:
-      return 'DEFENSE'
-    case 2:
-      return 'STAMINA'
-    case 3:
-      return 'BALANCE'
-    default:
-      return 'BALANCE'
+function mapBeyType(typeStr: string): BeyType {
+  if (!typeStr) return 'BALANCE';
+  const t = typeStr.toUpperCase().trim();
+  if (t === 'ATTACK') return 'ATTACK';
+  if (t === 'DEFENSE') return 'DEFENSE';
+  if (t === 'STAMINA') return 'STAMINA';
+  return 'BALANCE';
+}
+
+function normalizeId(name: string): string {
+  return name.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+}
+
+function readJson<T>(filename: string): T {
+  const filePath = path.join(CLEANED_DATA_DIR, filename);
+  if (!fs.existsSync(filePath)) {
+    throw new Error(`File not found: ${filePath}`);
   }
+  return JSON.parse(fs.readFileSync(filePath, 'utf8'));
 }
 
-function normalizeId(id: string): string {
-  // Remove special characters and normalize
-  return id.replace(/[^a-zA-Z0-9-]/g, '')
+function normalizeName(name: string): string {
+  return name
+    .replace(/\[R\]/g, '(Rush)')
+    .replace(/\[U\]/g, '(Upper)')
+    .replace(/\[A\]/g, '(Attack)')
+    .replace(/\[D\]/g, '(Defense)')
+    .replace(/\[3\]/g, '3')
+    .replace(/\[6\]/g, '6')
+    .trim();
 }
-
-async function fetchJson<T>(url: string): Promise<T> {
-  console.log(`📥 Fetching ${url}...`)
-  const response = await fetch(url)
-  if (!response.ok) {
-    throw new Error(`Failed to fetch ${url}: ${response.statusText}`)
-  }
-  return response.json() as Promise<T>
-}
-
-// ============================================================================
-// Seed Functions
-// ============================================================================
 
 async function seedBlades(): Promise<number> {
-  const sources = [
-    { url: `${BEYBLADE_EX_BASE}/part-blade.json`, type: 'standard' },
-    { url: `${BEYBLADE_EX_BASE}/part-blade-CX.json`, type: 'custom-x' },
-    { url: `${BEYBLADE_EX_BASE}/part-blade-collab.json`, type: 'collab' },
-  ]
+  const blades = readJson<CleanedBlade[]>('blades.json');
+  const beys = readJson<CleanedBey[]>('beys.json');
+  const images = readJson<{ blades: Record<string, string> }>('images.json').blades;
+  
+  // Create a map of Blade Name -> Type from the Beys list
+  const bladeTypeMap = new Map<string, string>();
+  beys.forEach(b => {
+      // Clean bey blade name to match
+      const key = normalizeName(b.blade).toLowerCase();
+      if (b.type) bladeTypeMap.set(key, b.type);
+  });
 
-  let totalCount = 0
+  console.log(`  → Found ${blades.length} blades from local data`);
 
-  for (const source of sources) {
+  let count = 0;
+  for (const blade of blades) {
     try {
-      const blades = await fetchJson<Record<string, RawBlade>>(source.url)
-      const entries = Object.entries(blades)
-
-      console.log(`  → Found ${entries.length} blades (${source.type})`)
-
-      for (const [id, blade] of entries) {
-        try {
-          const name = blade.name || id // Fallback to ID if name is missing
-          // Convert stats to strings (they can be "29+" or just numbers)
-          const toStatString = (val: unknown): string | null => {
-            if (val === null || val === undefined) return null
-            return String(val)
-          }
-          await prisma.part.upsert({
-            where: { externalId: normalizeId(id) },
-            update: {
-              name,
-              type: PartType.BLADE,
-              beyType: mapBeyType(blade.type),
-              attack: toStatString(blade.stat?.[0]),
-              defense: toStatString(blade.stat?.[1]),
-              stamina: toStatString(blade.stat?.[2]),
-              burst: toStatString(blade.stat?.[3]),
-              dash: toStatString(blade.stat?.[4]),
-              weight: blade.weight ?? null,
-              imageUrl: blade.img ?? null,
-              rarity: source.type === 'collab' ? 'Collab' : source.type === 'custom-x' ? 'Custom X' : 'Standard',
-            },
-            create: {
-              externalId: normalizeId(id),
-              name,
-              type: PartType.BLADE,
-              beyType: mapBeyType(blade.type),
-              attack: toStatString(blade.stat?.[0]),
-              defense: toStatString(blade.stat?.[1]),
-              stamina: toStatString(blade.stat?.[2]),
-              burst: toStatString(blade.stat?.[3]),
-              dash: toStatString(blade.stat?.[4]),
-              weight: blade.weight ?? null,
-              imageUrl: blade.img ?? null,
-              rarity: source.type === 'collab' ? 'Collab' : source.type === 'custom-x' ? 'Custom X' : 'Standard',
-            },
-          })
-          totalCount++
-        } catch (err) {
-          console.error(`  ⚠️ Failed to upsert blade ${id}:`, err)
-        }
+      const cleanName = normalizeName(blade.name);
+      const id = normalizeId(cleanName);
+      
+      // Lookup type
+      let typeStr = bladeTypeMap.get(cleanName.toLowerCase());
+      if (!typeStr) {
+          typeStr = bladeTypeMap.get(cleanName.replace(/\s+/g, '').toLowerCase());
       }
+      
+      // Lookup image
+      // Try exact name, then clean name
+      let imgUrl = images[blade.name.toLowerCase()] || images[cleanName.toLowerCase()];
+      // Some might have different spacing in Pic Bank vs Part List
+      if (!imgUrl) imgUrl = images[cleanName.replace(/\s+/g, '').toLowerCase()];
+
+      await prisma.part.upsert({
+        where: { externalId: id },
+        update: {
+          name: cleanName,
+          type: PartType.BLADE,
+          beyType: mapBeyType(typeStr || 'BALANCE'),
+          attack: blade.stats.attack,
+          defense: blade.stats.defense,
+          stamina: blade.stats.stamina,
+          weight: blade.stats.weight,
+          imageUrl: imgUrl || null,
+        },
+        create: {
+          externalId: id,
+          name: cleanName,
+          type: PartType.BLADE,
+          beyType: mapBeyType(typeStr || 'BALANCE'),
+          attack: blade.stats.attack,
+          defense: blade.stats.defense,
+          stamina: blade.stats.stamina,
+          weight: blade.stats.weight,
+          imageUrl: imgUrl || null,
+        },
+      });
+      count++;
     } catch (err) {
-      console.warn(`  ⚠️ Could not fetch ${source.url}:`, err)
+      console.error(`  ⚠️ Failed to upsert blade ${blade.name}:`, err);
     }
   }
-
-  return totalCount
+  return count;
 }
 
 async function seedRatchets(): Promise<number> {
-  try {
-    const ratchets = await fetchJson<Record<string, RawRatchet>>(
-      `${BEYBLADE_EX_BASE}/part-ratchet.json`
-    )
-    const entries = Object.entries(ratchets)
+  const ratchets = readJson<CleanedRatchet[]>('ratchets.json');
+  const images = readJson<{ ratchets: Record<string, string> }>('images.json').ratchets;
 
-    console.log(`  → Found ${entries.length} ratchets`)
+  console.log(`  → Found ${ratchets.length} ratchets from local data`);
 
-    let count = 0
-    for (const [id, ratchet] of entries) {
-      try {
-        const name = ratchet.name || id // Fallback to ID if name is missing
-        // Parse protrusions from name (e.g., "3-60" -> 3)
-        const protrusionMatch = name.match(/^(\d+)-/)
-        const protrusions = protrusionMatch?.[1] ? parseInt(protrusionMatch[1], 10) : null
+  let count = 0;
+  for (const ratchet of ratchets) {
+    try {
+      const cleanName = normalizeName(ratchet.name);
+      const id = normalizeId(cleanName);
+      
+      const match = cleanName.match(/^(\d+)-(\d+)/);
+      const protrusions = match?.[1] ? parseInt(match[1], 10) : null;
+      const height = match?.[2] ? parseInt(match[2], 10) : null;
 
-        await prisma.part.upsert({
-          where: { externalId: normalizeId(id) },
-          update: {
-            name,
-            type: PartType.RATCHET,
-            weight: typeof ratchet.stat?.[0] === 'number' ? ratchet.stat[0] : null,
-            height: typeof ratchet.stat?.[1] === 'number' ? ratchet.stat[1] : null,
-            protrusions,
-            imageUrl: ratchet.img ?? null,
-          },
-          create: {
-            externalId: normalizeId(id),
-            name,
-            type: PartType.RATCHET,
-            weight: typeof ratchet.stat?.[0] === 'number' ? ratchet.stat[0] : null,
-            height: typeof ratchet.stat?.[1] === 'number' ? ratchet.stat[1] : null,
-            protrusions,
-            imageUrl: ratchet.img ?? null,
-          },
-        })
-        count++
-      } catch (err) {
-        console.error(`  ⚠️ Failed to upsert ratchet ${id}:`, err)
-      }
+      const imgUrl = images[ratchet.name.toLowerCase()] || images[cleanName.toLowerCase()];
+
+      await prisma.part.upsert({
+        where: { externalId: id },
+        update: {
+          name: cleanName,
+          type: PartType.RATCHET,
+          attack: ratchet.stats.attack,
+          defense: ratchet.stats.defense,
+          stamina: ratchet.stats.stamina,
+          weight: ratchet.stats.weight,
+          protrusions,
+          height,
+          imageUrl: imgUrl || null,
+        },
+        create: {
+          externalId: id,
+          name: cleanName,
+          type: PartType.RATCHET,
+          attack: ratchet.stats.attack,
+          defense: ratchet.stats.defense,
+          stamina: ratchet.stats.stamina,
+          weight: ratchet.stats.weight,
+          protrusions,
+          height,
+          imageUrl: imgUrl || null,
+        },
+      });
+      count++;
+    } catch (err) {
+      console.error(`  ⚠️ Failed to upsert ratchet ${ratchet.name}:`, err);
     }
-
-    return count
-  } catch (err) {
-    console.error('  ❌ Failed to fetch ratchets:', err)
-    return 0
   }
+  return count;
 }
 
 async function seedBits(): Promise<number> {
-  // Fetch metadata for shaft width mapping
-  let meta: PartMeta = {}
-  try {
-    meta = await fetchJson<PartMeta>(`${BEYBLADE_EX_BASE}/part-meta.json`)
-  } catch {
-    console.warn('  ⚠️ Could not fetch part-meta.json')
-  }
+  const bits = readJson<CleanedBit[]>('bits.json');
+  const images = readJson<{ bits: Record<string, string> }>('images.json').bits;
 
-  const shaftWidths = meta.bit?.shaft ?? ['L', 'M', 'S']
+  console.log(`  → Found ${bits.length} bits from local data`);
 
-  try {
-    const bits = await fetchJson<Record<string, RawBit>>(
-      `${BEYBLADE_EX_BASE}/part-bit.json`
-    )
-    const entries = Object.entries(bits)
+  let count = 0;
+  for (const bit of bits) {
+    try {
+      const cleanName = normalizeName(bit.name);
+      const id = normalizeId(cleanName);
+      
+      const imgUrl = images[bit.name.toLowerCase()] || images[cleanName.toLowerCase()];
 
-    console.log(`  → Found ${entries.length} bits`)
-
-    let count = 0
-    for (const [id, bit] of entries) {
-      try {
-        const shaftWidthIndex = bit.stat[2]
-        const shaftWidth = shaftWidths[shaftWidthIndex] ?? null
-        const name = bit.name || id // Fallback to ID if name is missing
-
-        await prisma.part.upsert({
-          where: { externalId: normalizeId(id) },
-          update: {
-            name,
-            type: PartType.BIT,
-            beyType: bit.type !== undefined ? mapBeyType(bit.type) : null,
-            gearRatio: bit.stat[0],
-            weight: typeof bit.stat[1] === 'number' ? bit.stat[1] : null,
-            shaftWidth,
-            tipType: name,
-            imageUrl: bit.img ?? null,
-          },
-          create: {
-            externalId: normalizeId(id),
-            name,
-            type: PartType.BIT,
-            beyType: bit.type !== undefined ? mapBeyType(bit.type) : null,
-            gearRatio: bit.stat[0],
-            weight: typeof bit.stat[1] === 'number' ? bit.stat[1] : null,
-            shaftWidth,
-            tipType: name,
-            imageUrl: bit.img ?? null,
-          },
-        })
-        count++
-      } catch (err) {
-        console.error(`  ⚠️ Failed to upsert bit ${id}:`, err)
-      }
+      await prisma.part.upsert({
+        where: { externalId: id },
+        update: {
+          name: cleanName,
+          type: PartType.BIT,
+          attack: bit.stats.attack,
+          defense: bit.stats.defense,
+          stamina: bit.stats.stamina,
+          dash: bit.stats.dash,
+          burst: bit.stats.burst,
+          weight: bit.stats.weight,
+          tipType: bit.code,
+          beyType: mapBeyType(bit.stats.type),
+          imageUrl: imgUrl || null,
+        },
+        create: {
+          externalId: id,
+          name: cleanName,
+          type: PartType.BIT,
+          attack: bit.stats.attack,
+          defense: bit.stats.defense,
+          stamina: bit.stats.stamina,
+          dash: bit.stats.dash,
+          burst: bit.stats.burst,
+          weight: bit.stats.weight,
+          tipType: bit.code,
+          beyType: mapBeyType(bit.stats.type),
+          imageUrl: imgUrl || null,
+        },
+      });
+      count++;
+    } catch (err) {
+      console.error(`  ⚠️ Failed to upsert bit ${bit.name}:`, err);
     }
-
-    return count
-  } catch (err) {
-    console.error('  ❌ Failed to fetch bits:', err)
-    return 0
   }
+  return count;
 }
 
-// ============================================================================
+// ============================================================================ 
 // Main
-// ============================================================================
+// ============================================================================ 
 
 async function main() {
-  console.log('🌀 RPB Parts Database Seeder')
-  console.log('============================\n')
+  console.log('🌀 RPB Local Parts Database Seeder (Updated)');
+  console.log('==========================================\n');
 
-  console.log('📦 Seeding Blades...')
-  const bladeCount = await seedBlades()
-  console.log(`  ✅ ${bladeCount} blades seeded\n`)
+  console.log('📦 Seeding Blades...');
+  const bladeCount = await seedBlades();
+  console.log(`  ✅ ${bladeCount} blades seeded\n`);
 
-  console.log('⚙️ Seeding Ratchets...')
-  const ratchetCount = await seedRatchets()
-  console.log(`  ✅ ${ratchetCount} ratchets seeded\n`)
+  console.log('⚙️ Seeding Ratchets...');
+  const ratchetCount = await seedRatchets();
+  console.log(`  ✅ ${ratchetCount} ratchets seeded\n`);
 
-  console.log('💫 Seeding Bits...')
-  const bitCount = await seedBits()
-  console.log(`  ✅ ${bitCount} bits seeded\n`)
+  console.log('💫 Seeding Bits...');
+  const bitCount = await seedBits();
+  console.log(`  ✅ ${bitCount} bits seeded\n`);
 
-  console.log('============================')
-  console.log(`🎉 Total: ${bladeCount + ratchetCount + bitCount} parts seeded!`)
+  console.log('==========================================');
+  console.log(`🎉 Total: ${bladeCount + ratchetCount + bitCount} parts seeded!`);
 }
 
 main()
   .catch((e) => {
-    console.error('❌ Seed failed:', e)
-    process.exit(1)
+    console.error('❌ Seed failed:', e);
+    process.exit(1);
   })
   .finally(async () => {
-    await prisma.$disconnect()
-  })
+    await prisma.$disconnect();
+  });

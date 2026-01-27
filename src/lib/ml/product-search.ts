@@ -2,6 +2,7 @@ import type { PrismaClient } from '@prisma/client';
 import natural from 'natural';
 
 export interface SearchResult {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   product: any;
   score: number;
 }
@@ -9,6 +10,7 @@ export interface SearchResult {
 export class ProductSearch {
   private prisma: PrismaClient;
   private tfidf: natural.TfIdf;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private productMap: Map<number, any>; // Index -> Product
   private isReady: boolean = false;
 

@@ -112,7 +112,7 @@ export function IconFooter() {
       </Tooltip>
 
       {/* Divider */}
-      <Box sx={{ width: 1, height: 16, bgcolor: 'divider', mx: 1 }} />
+      <Box sx={{ width: '1px', height: 16, bgcolor: 'divider', mx: 1 }} />
 
       {/* Links */}
       <Typography
@@ -128,7 +128,7 @@ export function IconFooter() {
         Règlement
       </Typography>
 
-      <Box sx={{ width: 1, height: 16, bgcolor: 'divider', mx: 1 }} />
+      <Box sx={{ width: '1px', height: 16, bgcolor: 'divider', mx: 1 }} />
 
       <Typography
         component="a"
@@ -143,7 +143,7 @@ export function IconFooter() {
         Confidentialité
       </Typography>
 
-      <Box sx={{ width: 1, height: 16, bgcolor: 'divider', mx: 1 }} />
+      <Box sx={{ width: '1px', height: 16, bgcolor: 'divider', mx: 1 }} />
 
       {/* Copyright */}
       <Typography variant="caption" color="text.secondary">

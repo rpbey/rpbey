@@ -53,7 +53,14 @@ export async function PATCH(request: Request) {
     }
 
     const body = await request.json();
-    const { bladerName, favoriteType, experience, bio } = body;
+    const {
+      bladerName,
+      favoriteType,
+      experience,
+      bio,
+      challongeUsername,
+      deckBoxImage,
+    } = body;
 
     const profile = await prisma.profile.upsert({
       where: { userId: session.user.id },
@@ -62,6 +69,8 @@ export async function PATCH(request: Request) {
         favoriteType,
         experience,
         bio,
+        challongeUsername,
+        deckBoxImage,
       },
       create: {
         userId: session.user.id,
@@ -69,6 +78,8 @@ export async function PATCH(request: Request) {
         favoriteType,
         experience,
         bio,
+        challongeUsername,
+        deckBoxImage,
       },
     });
 

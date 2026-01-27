@@ -1,8 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getBotStatus } from '@/lib/bot';
 
-
-
 export async function GET() {
   try {
     const status = await getBotStatus();

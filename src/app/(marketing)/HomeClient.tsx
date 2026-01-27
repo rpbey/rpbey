@@ -1,277 +1,405 @@
-'use client';
+"use client";
 
-import { AdminPanelSettings } from '@mui/icons-material';
-import { useMediaQuery, useTheme } from '@mui/material';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Container from '@mui/material/Container';
-import Grid from '@mui/material/Grid';
-import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
-import { motion, useScroll, useSpring, useTransform } from 'framer-motion';
-import Link from 'next/link';
-import DiscordStatusCard from '@/components/dashboard/DiscordStatusCard';
-import { FeedMyPartnership, TournamentVideo } from '@/components/marketing';
-import { useThemeMode } from '@/components/theme/ThemeRegistry';
-import { ChallongeBracket } from '@/components/tournaments/ChallongeBracket';
-import { useSession } from '@/lib/auth-client';
-import type { DiscordStats, TeamGroup } from '@/lib/discord-data';
+import { DynamicBlock } from "@/components/cms/DynamicBlock";
+import { FeedMyPartnership, TournamentVideo } from "@/components/marketing";
+import { useThemeMode } from "@/components/theme/ThemeRegistry";
+import { ChallongeBracket } from "@/components/tournaments/ChallongeBracket";
+import { DiscordStatusCard } from "@/components/ui/DiscordStatusCard";
+import { useSession } from "@/lib/auth-client";
+import type { DiscordStats, TeamGroup } from "@/lib/discord-data";
+import { AdminPanelSettings } from "@mui/icons-material";
+import { GlobalStyles, useMediaQuery, useTheme } from "@mui/material";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Container from "@mui/material/Container";
+import Grid from "@mui/material/Grid";
+import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
+import { AnimatePresence, motion, type MotionStyle } from "framer-motion";
+import Link from "next/link";
+import { useState } from "react";
 
-import { DiscordIcon, TrophyIcon } from '@/components/ui/Icons';
-
-// M3 Motion Easings
-// https://m3.material.io/styles/motion/easing-and-duration/tokens-specs
+// MD3 Expressive 2026 - Spring-based easing for organic motion
 const EASE = {
-  // Emphasized: Begin and end on screen. Used for most standard transitions.
+  // Emphasized - main transitions
   EMPHASIZED: [0.2, 0.0, 0.0, 1.0] as const,
-  // Emphasized Decelerate: Entering screen.
+  // Emphasized Decelerate - entries
   EMPHASIZED_DECELERATE: [0.05, 0.7, 0.1, 1.0] as const,
-  // Emphasized Accelerate: Exiting screen.
+  // Emphasized Accelerate - exits
   EMPHASIZED_ACCELERATE: [0.3, 0.0, 0.8, 0.15] as const,
-  // Standard: General use.
+  // Standard - subtle transitions
   STANDARD: [0.2, 0.0, 0, 1.0] as const,
+  // Expressive - playful, bouncy (MD3 2026)
+  EXPRESSIVE: [0.34, 1.56, 0.64, 1] as const,
+};
+
+// MD3 Expressive spring configs
+const SPRING = {
+  // Snappy for interactions
+  snappy: { stiffness: 400, damping: 30, mass: 1 },
+  // Bouncy for playful elements
+  bouncy: { stiffness: 300, damping: 20, mass: 1.2 },
+  // Gentle for large elements
+  gentle: { stiffness: 100, damping: 20, mass: 1 },
 };
 
 interface HomeClientProps {
-  discordStats: DiscordStats;
-  discordTeam: TeamGroup[];
   activeTournament?: {
+    id: string;
     name: string;
     challongeUrl: string | null;
   } | null;
+  heroContent?: string;
+  discordStats?: DiscordStats | null;
+  discordTeam?: TeamGroup[];
 }
 
 export default function HomeClient({
-  discordStats: _discordStats,
-  discordTeam: _discordTeam,
   activeTournament,
+  heroContent,
+  discordStats,
+  discordTeam,
 }: HomeClientProps) {
   const { backgroundImage, mode } = useThemeMode();
-  const { scrollY } = useScroll();
   const { data: session } = useSession();
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-
-  // Parallax effects
-  const heroY = useTransform(scrollY, [0, 500], [0, 150]);
-  const heroOpacity = useTransform(scrollY, [0, 400], [1, 0]);
-  const textY = useTransform(scrollY, [0, 500], [0, 50]);
-
-  // Smooth spring for image - using a slightly more expressive spring
-  const imageSpring = useSpring(scrollY, { stiffness: 70, damping: 15 });
-  const imageY = useTransform(imageSpring, [0, 500], [0, -50]);
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isTablet = useMediaQuery(theme.breakpoints.down("md"));
+  const [activeHeroTab, setActiveHeroTab] = useState<"tournament" | "discord">("tournament");
+  const heroOpacity = 1;
 
   return (
     <>
-      {/* Hero Section */}
+      {/* Hero Section - Mobile-first with MD3 Expressive 2026 */}
       <Box
         component={motion.div}
-        style={{ opacity: heroOpacity } as any}
+        style={{ opacity: heroOpacity } as MotionStyle}
         sx={{
-          position: 'relative',
-          minHeight: { xs: '80vh', md: '90vh' },
-          display: 'flex',
-          alignItems: 'center',
-          overflow: 'hidden',
-          perspective: '1000px',
+          position: "relative",
+          // Mobile-first: fixed height or auto to avoid huge empty space
+          minHeight: { xs: "auto", md: "90vh" },
+          display: "flex",
+          alignItems: { xs: "flex-start", md: "center" },
+          overflow: "hidden",
+          perspective: "1000px",
+          // Removed top padding on mobile since header has it, minimal on desktop
+          pt: { xs: 4, md: 0 },
         }}
       >
-        {/* Parallax Background */}
-        <Box
-          component={motion.div}
-          style={{ y: heroY } as any}
-          sx={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: -200,
-            backgroundImage: `url(${backgroundImage})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            zIndex: -1,
-            transition: 'background-image 0.5s cubic-bezier(0.2, 0, 0, 1)',
-          }}
-        />
-
+        {/* Background - Parallax removed */}
         <Box
           sx={{
-            position: 'absolute',
+            position: "absolute",
             top: 0,
             left: 0,
             right: 0,
             bottom: 0,
-            background:
-              'linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.7) 100%)',
+            backgroundImage: `url(${backgroundImage})`,
+            backgroundSize: "cover",
+            backgroundPosition: { xs: "center top", md: "center" },
+            zIndex: -1,
+            transition: "background-image 0.5s cubic-bezier(0.2, 0, 0, 1)",
+          }}
+        />
+
+        {/* Gradient overlay - darker on mobile for readability */}
+        <Box
+          sx={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: {
+              xs: "linear-gradient(to bottom, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.85) 100%)",
+              md: "linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.7) 100%)",
+            },
             zIndex: 0,
           }}
         />
 
         <Container
           maxWidth="lg"
-          sx={{ position: 'relative', zIndex: 1, py: { xs: 8, md: 0 } }}
+          sx={{
+            position: "relative",
+            zIndex: 1,
+            // Mobile-first padding
+            px: { xs: 2.5, sm: 3, md: 4 },
+            pt: { xs: 4, sm: 6, md: 0 },
+            pb: { xs: 8, sm: 6, md: 0 },
+          }}
         >
-          <Grid container spacing={4} alignItems="center">
+          <Grid container spacing={{ xs: 3, md: 4 }} alignItems="center">
             <Grid size={{ xs: 12, md: 7 }}>
               <Box
                 component={motion.div}
-                initial={{ opacity: 0, y: 40, filter: 'blur(10px)' }}
-                animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                initial={{ opacity: 0, y: 40, filter: "blur(10px)" }}
+                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                 transition={{
-                  duration: 0.8,
-                  ease: EASE.EMPHASIZED_DECELERATE as any,
+                  duration: 0.7,
+                  ease: EASE.EMPHASIZED_DECELERATE,
                 }}
-                style={{ y: textY } as any}
               >
+                {/* MD3 Expressive Typography - fluid scaling */}
                 <Typography
                   variant="h1"
                   fontWeight={900}
                   sx={{
-                    fontSize: { xs: '3rem', sm: '4rem', md: '5rem' },
-                    letterSpacing: '-0.03em',
-                    mb: 2,
-                    color: '#ffffff',
+                    display: { xs: "none", md: "block" },
+                    fontSize: {
+                      sm: "3.5rem",
+                      md: "4.5rem",
+                      lg: "5.5rem",
+                    },
+                    textAlign: "left",
                     lineHeight: 1,
-                    textShadow: '0 8px 32px rgba(0,0,0,0.4)',
+                    mb: 1.5,
+                    color: "white",
+                    textShadow: "0 4px 20px rgba(0,0,0,0.6)",
+                    fontVariationSettings: '"opsz" 72',
+                    textTransform: "uppercase",
+                    letterSpacing: "-0.04em",
                   }}
                 >
-                  RÉPUBLIQUE
+                  République
                   <br />
-                  POPULAIRE
+                  Populaire
                   <br />
                   <Box
                     component="span"
                     sx={{
-                      background:
-                        mode === 'tournament'
-                          ? 'linear-gradient(90deg, #60A5FA, #93c5fd)'
-                          : 'linear-gradient(90deg, #dc2626, #fbbf24)',
-                      backgroundClip: 'text',
-                      WebkitBackgroundClip: 'text',
-                      WebkitTextFillColor: 'transparent',
+                      background: "linear-gradient(135deg, #dc2626 0%, #fbbf24 100%)",
+                      WebkitBackgroundClip: "text",
+                      WebkitTextFillColor: "transparent",
                     }}
                   >
-                    BEYBLADE
+                    Beyblade
                   </Box>
                 </Typography>
-                <Typography
-                  variant="h6"
-                  component={motion.p}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 0.9, x: 0 }}
-                  transition={{
-                    delay: 0.2,
-                    duration: 0.6,
-                    ease: EASE.EMPHASIZED as any,
-                  }}
-                  sx={{
-                    mb: 5,
-                    maxWidth: 550,
-                    color: 'white',
-                    fontSize: { xs: '1.1rem', md: '1.3rem' },
-                    fontWeight: 400,
-                    textShadow: '0 2px 10px rgba(0,0,0,0.3)',
-                    lineHeight: 1.6,
-                  }}
-                >
-                  La communauté française de référence pour Beyblade X.
-                  Divertissement, passion et compétition réunis en un seul lieu.
-                </Typography>
 
-                <Stack
-                  direction={{ xs: 'column', sm: 'row' }}
-                  spacing={2}
-                  sx={{ mt: 4 }}
+                {/* Description - Now at the Top and Bold */}
+                <Box
                   component={motion.div}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4, duration: 0.6 }}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.3 }}
+                  sx={{
+                    mb: 4,
+                    maxWidth: "100%",
+                    textAlign: "left",
+                    px: { xs: 1, md: 0 },
+                  }}
                 >
-                  <Button
-                    component="a"
-                    href={activeTournament?.challongeUrl || '/tournaments'}
-                    target={activeTournament?.challongeUrl ? '_blank' : '_self'}
-                    variant="contained"
-                    size="large"
-                    startIcon={<TrophyIcon size={20} />}
-                    sx={{
-                      px: 4,
-                      py: 1.8,
-                      fontSize: '1.1rem',
-                      fontWeight: 800,
-                      textTransform: 'none',
-                      borderRadius: '16px',
-                      background:
-                        'linear-gradient(135deg, #dc2626 0%, #991b1b 100%)',
-                      boxShadow: '0 4px 20px rgba(220, 38, 38, 0.4)',
-                      '&:hover': {
-                        background:
-                          'linear-gradient(135deg, #ef4444 0%, #b91c1c 100%)',
-                        transform: 'translateY(-2px)',
-                        boxShadow: '0 8px 30px rgba(220, 38, 38, 0.5)',
+                  <DynamicBlock
+                    slug="home-hero-text"
+                    initialContent={heroContent}
+                    fallback="La communauté française de Beyblade qui allie divertissement et compétitivité"
+                    className="hero-text-block"
+                  />
+                  <GlobalStyles
+                    styles={{
+                      ".hero-text-block p": {
+                        color: "white",
+                        fontSize: { xs: "1.1rem", md: "0.95rem" },
+                        fontWeight: 800, // Bold as requested
+                        lineHeight: 1.5,
+                        textAlign: "left",
+                        margin: 0,
+                        maxWidth: "100%",
+                        textShadow: "0 2px 10px rgba(0,0,0,0.3)",
                       },
-                      transition: 'all 0.3s ease',
                     }}
-                  >
-                    S'inscrire au Tournoi
-                  </Button>
+                  />
+                </Box>
 
-                  <Button
-                    component="a"
-                    href="https://discord.gg/rpb"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    variant="outlined"
-                    size="large"
-                    startIcon={<DiscordIcon size={20} />}
+                {/* Mobile View Selector - Transition System */}
+                {isMobile && (
+                  <Stack
+                    direction="row"
+                    spacing={1}
                     sx={{
-                      px: 4,
-                      py: 1.8,
-                      fontSize: '1.1rem',
-                      fontWeight: 700,
-                      textTransform: 'none',
-                      borderRadius: '16px',
-                      color: '#ffffff',
-                      borderColor: 'rgba(255,255,255,0.3)',
-                      background: 'rgba(255,255,255,0.05)',
-                      backdropFilter: 'blur(10px)',
-                      '&:hover': {
-                        borderColor: '#ffffff',
-                        background: 'rgba(255,255,255,0.15)',
-                        transform: 'translateY(-2px)',
-                        boxShadow: '0 8px 25px rgba(255, 255, 255, 0.1)',
-                      },
-                      transition: 'all 0.3s ease',
+                      mb: 4,
+                      p: 0.5,
+                      borderRadius: "12px",
+                      bgcolor: "rgba(255,255,255,0.05)",
+                      border: "1px solid rgba(255,255,255,0.1)",
+                      width: "fit-content",
                     }}
                   >
-                    Rejoindre le Discord
-                  </Button>
-                </Stack>
+                    <Button
+                      size="small"
+                      onClick={() => setActiveHeroTab("tournament")}
+                      sx={{
+                        borderRadius: "8px",
+                        px: 3,
+                        bgcolor:
+                          activeHeroTab === "tournament" ? "rgba(255,255,255,0.1)" : "transparent",
+                        color: activeHeroTab === "tournament" ? "#fbbf24" : "text.secondary",
+                        fontWeight: 800,
+                        textTransform: "none",
+                        "&:hover": { bgcolor: "rgba(255,255,255,0.15)" },
+                      }}
+                    >
+                      Tournoi
+                    </Button>
+                    <Button
+                      size="small"
+                      onClick={() => setActiveHeroTab("discord")}
+                      sx={{
+                        borderRadius: "8px",
+                        px: 3,
+                        bgcolor:
+                          activeHeroTab === "discord" ? "rgba(255,255,255,0.1)" : "transparent",
+                        color: activeHeroTab === "discord" ? "#6366f1" : "text.secondary",
+                        fontWeight: 800,
+                        textTransform: "none",
+                        "&:hover": { bgcolor: "rgba(255,255,255,0.15)" },
+                      }}
+                    >
+                      Discord
+                    </Button>
+                  </Stack>
+                )}
+
+                <AnimatePresence mode="wait">
+                  {(isMobile ? activeHeroTab === "tournament" : isTablet) && (
+                    <Box
+                      key="tournament-view"
+                      component={motion.div}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.3 }}
+                      sx={{
+                        display: isMobile && activeHeroTab !== "tournament" ? "none" : "flex",
+                        flexDirection: "column",
+                        alignItems: isMobile ? "center" : "flex-start",
+                        width: "100%",
+                        mb: { xs: 4, md: 6 },
+                      }}
+                    >
+                      {/* Tournament Poster for Mobile ONLY (Desktop has it on right) */}
+                      {isMobile && (
+                        <Box
+                          component={motion.img}
+                          src="/tournaments/BTS2.png"
+                          alt="Tournoi"
+                          sx={{
+                            width: "85%",
+                            maxWidth: "280px",
+                            height: "auto",
+                            borderRadius: 4,
+                            mb: 2,
+                            boxShadow: "0 24px 48px rgba(0,0,0,0.8)",
+                            border: "1px solid rgba(255,255,255,0.1)",
+                          }}
+                        />
+                      )}
+
+                      <Button
+                        component={Link}
+                        href="/tournaments/cm-bts2-auto-imported"
+                        variant="contained"
+                        sx={{
+                          width: { xs: "100%", sm: "auto" },
+                          minWidth: { xs: "280px", md: "240px" },
+                          py: 2,
+                          borderRadius: 2,
+                          background: "linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)",
+                          color: "#fff",
+                          fontWeight: 900,
+                          fontSize: "1.1rem",
+                          textTransform: "none",
+                          boxShadow: "0 10px 30px rgba(139, 92, 246, 0.4)",
+                          "&:hover": {
+                            transform: "translateY(-2px)",
+                            boxShadow: "0 15px 40px rgba(139, 92, 246, 0.6)",
+                          },
+                        }}
+                      >
+                        Participer au Tournoi
+                      </Button>
+                    </Box>
+                  )}
+
+                  {(activeHeroTab === "discord" || !isMobile) && (
+                    <Box
+                      key="discord-view"
+                      component={motion.div}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.3 }}
+                      sx={{
+                        display: isMobile && activeHeroTab !== "discord" ? "none" : "block",
+                        width: "100%",
+                        maxWidth: 400,
+                        mt: { xs: 0, md: 4 },
+                      }}
+                    >
+                      <DiscordStatusCard initialStats={discordStats} initialTeam={discordTeam} />
+                    </Box>
+                  )}
+                </AnimatePresence>
               </Box>
             </Grid>
 
-            {!isMobile && (
+            {/* Hero image - visible on tablet+ */}
+            {!isTablet && (
               <Grid size={{ xs: 12, md: 5 }}>
                 <Box
-                  component={motion.img}
-                  src="/tournoi.png"
-                  alt="Tournoi Beyblade"
-                  style={{ y: imageY } as any}
-                  initial={{ scale: 0.8, opacity: 0, rotate: -5 }}
-                  animate={{ scale: 1, opacity: 1, rotate: 0 }}
-                  transition={{
-                    delay: 0.2,
-                    duration: 1.0,
-                    ease: EASE.EMPHASIZED as any, // Using emphasized easing instead of spring for cleaner entrance
-                  }}
                   sx={{
-                    width: '100%',
-                    filter:
-                      mode === 'tournament'
-                        ? 'drop-shadow(0 40px 80px rgba(96,165,250,0.5))'
-                        : 'drop-shadow(0 40px 80px rgba(220,38,38,0.5))',
+                    width: "100%",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
                   }}
-                />
+                >
+                  <Box
+                    component={motion.img}
+                    src="/tournaments/BTS2.png"
+                    alt="Tournoi Beyblade"
+                    transition={{
+                      delay: 0.2,
+                      duration: 1.0,
+                      type: "spring",
+                      ...SPRING.bouncy,
+                    }}
+                    sx={{
+                      width: "100%",
+                      filter:
+                        mode === "tournament"
+                          ? "drop-shadow(0 40px 80px rgba(96,165,250,0.5))"
+                          : "drop-shadow(0 40px 80px rgba(220,38,38,0.5))",
+                      borderRadius: 4,
+                      mb: 3,
+                    }}
+                  />
+                  <Button
+                    component={Link}
+                    href="/tournaments/cm-bts2-auto-imported"
+                    variant="contained"
+                    size="large"
+                    sx={{
+                      width: "100%",
+                      maxWidth: 300,
+                      py: 2,
+                      borderRadius: 3,
+                      background: "linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)",
+                      color: "#fff",
+                      fontWeight: 900,
+                      fontSize: "1.1rem",
+                      textTransform: "none",
+                      boxShadow: "0 10px 30px rgba(139, 92, 246, 0.3)",
+                      "&:hover": {
+                        transform: "translateY(-2px)",
+                        boxShadow: "0 15px 40px rgba(139, 92, 246, 0.4)",
+                      },
+                    }}
+                  >
+                    Participer au Tournoi
+                  </Button>
+                </Box>
               </Grid>
             )}
           </Grid>
@@ -280,40 +408,49 @@ export default function HomeClient({
 
       {/* Bracket Section - Only show if there's an active tournament */}
       {activeTournament?.challongeUrl && (
-        <Box sx={{ bgcolor: 'surface.low', py: 8 }}>
-          <Container maxWidth="lg">
+        <Box
+          sx={{
+            bgcolor: "surface.low",
+            // Mobile-first padding
+            py: { xs: 5, sm: 6, md: 8 },
+          }}
+        >
+          <Container maxWidth="lg" sx={{ px: { xs: 2, sm: 3, md: 4 } }}>
             <Box
               component={motion.div}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-50px' }}
+              viewport={{ once: true, margin: "-50px" }}
               transition={{
                 duration: 0.6,
-                ease: EASE.EMPHASIZED_DECELERATE as any,
+                ease: EASE.EMPHASIZED_DECELERATE,
               }}
             >
-              <Typography
-                variant="h3"
-                fontWeight="bold"
-                textAlign="center"
-                sx={{ mb: 2, letterSpacing: '-0.02em' }}
-              >
-                {activeTournament.name}
-              </Typography>
-              <Typography
-                variant="h6"
-                color="text.secondary"
-                textAlign="center"
-                sx={{ mb: 8, maxWidth: 600, mx: 'auto' }}
-              >
-                Suivez l'arbre du tournoi en direct et ne manquez aucun match !
-              </Typography>
+              {(isTablet || (typeof window !== "undefined" && window.innerWidth < 640)) && (
+                <Box sx={{ display: "none" }} /> // Removed from here
+              )}
             </Box>
 
-            <ChallongeBracket
-              challongeUrl={activeTournament.challongeUrl}
-              title={activeTournament.name}
-            />
+            <Box
+              sx={{
+                width: "100%",
+                overflowX: "auto",
+                pb: 2,
+                cursor: "grab",
+                "&::-webkit-scrollbar": { height: 6 },
+                "&::-webkit-scrollbar-thumb": {
+                  bgcolor: "rgba(255,255,255,0.1)",
+                  borderRadius: 10,
+                },
+              }}
+            >
+              <Box sx={{ minWidth: { xs: 800, md: "auto" } }}>
+                <ChallongeBracket
+                  challongeUrl={activeTournament.challongeUrl}
+                  title="" // Removed duplicate title
+                />
+              </Box>
+            </Box>
           </Container>
         </Box>
       )}
@@ -321,77 +458,100 @@ export default function HomeClient({
       {/* Video Section */}
       <TournamentVideo videoId="nIVOi5NFjAM" />
 
-      {/* Partnership Section */}
-      <Container maxWidth="lg" sx={{ py: 4 }}>
+      {/* Partnership Section - MD3 Expressive */}
+      <Container
+        maxWidth="lg"
+        sx={{
+          py: { xs: 3, sm: 4, md: 4 },
+          px: { xs: 2, sm: 3, md: 4 },
+        }}
+      >
         <Box
           component={motion.div}
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           whileInView={{ opacity: 1, scale: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, ease: EASE.EMPHASIZED as any }}
+          viewport={{ once: true, margin: "-30px" }}
+          transition={{
+            duration: 0.6,
+            ease: EASE.EMPHASIZED,
+          }}
         >
           <FeedMyPartnership />
         </Box>
       </Container>
 
-      {/* CTA Section */}
-      <Container maxWidth="lg" sx={{ py: 8, position: 'relative' }}>
+      {/* CTA Section - MD3 Expressive with mobile-first design */}
+      <Container
+        maxWidth="lg"
+        sx={{
+          py: { xs: 4, sm: 6, md: 8 },
+          px: { xs: 2, sm: 3, md: 4 },
+          position: "relative",
+        }}
+      >
         <Box
           component={motion.div}
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          viewport={{ once: true, margin: "-50px" }}
           transition={{
             duration: 0.7,
-            ease: EASE.EMPHASIZED_DECELERATE as any,
+            ease: EASE.EMPHASIZED_DECELERATE,
           }}
           sx={{
-            position: 'relative',
-            borderRadius: 8,
-            overflow: 'hidden',
-            background: 'linear-gradient(135deg, #1a1a1a 0%, #450a0a 100%)',
-            boxShadow: '0 20px 80px rgba(220, 38, 38, 0.2)',
-            border: '1px solid rgba(255,255,255,0.1)',
+            position: "relative",
+            // MD3 Expressive shape - larger radius on mobile
+            borderRadius: { xs: 4, sm: 6, md: 8 },
+            overflow: "hidden",
+            background: "linear-gradient(135deg, #1a1a1a 0%, #450a0a 100%)",
+            boxShadow: {
+              xs: "0 10px 40px rgba(220, 38, 38, 0.15)",
+              md: "0 20px 80px rgba(220, 38, 38, 0.2)",
+            },
+            border: "1px solid rgba(255,255,255,0.1)",
           }}
         >
           {/* Decorative Background Elements */}
           <Box
             sx={{
-              position: 'absolute',
-              top: '-50%',
-              left: '-20%',
-              width: '80%',
-              height: '200%',
-              background:
-                'radial-gradient(circle, rgba(220, 38, 38, 0.2) 0%, rgba(0,0,0,0) 70%)',
-              transform: 'rotate(-45deg)',
-              pointerEvents: 'none',
+              position: "absolute",
+              top: "-50%",
+              left: "-20%",
+              width: "80%",
+              height: "200%",
+              background: "radial-gradient(circle, rgba(220, 38, 38, 0.2) 0%, rgba(0,0,0,0) 70%)",
+              transform: "rotate(-45deg)",
+              pointerEvents: "none",
             }}
           />
           <Box
             sx={{
-              position: 'absolute',
-              bottom: '-50%',
-              right: '-20%',
-              width: '80%',
-              height: '200%',
-              background:
-                'radial-gradient(circle, rgba(251, 191, 36, 0.1) 0%, rgba(0,0,0,0) 70%)',
-              transform: 'rotate(-45deg)',
-              pointerEvents: 'none',
+              position: "absolute",
+              bottom: "-50%",
+              right: "-20%",
+              width: "80%",
+              height: "200%",
+              background: "radial-gradient(circle, rgba(251, 191, 36, 0.1) 0%, rgba(0,0,0,0) 70%)",
+              transform: "rotate(-45deg)",
+              pointerEvents: "none",
             }}
           />
 
           <Grid
             container
             alignItems="center"
-            sx={{ position: 'relative', zIndex: 1, minHeight: 400 }}
+            sx={{
+              position: "relative",
+              zIndex: 1,
+              minHeight: { xs: "auto", md: 400 },
+            }}
           >
             <Grid
               size={{ xs: 12, md: 7 }}
               sx={{
-                p: { xs: 4, md: 8 },
-                textAlign: { xs: 'center', md: 'left' },
+                // Mobile-first padding
+                p: { xs: 3, sm: 4, md: 8 },
+                textAlign: "left", // Force left
               }}
             >
               <Box
@@ -402,7 +562,7 @@ export default function HomeClient({
                 transition={{
                   delay: 0.2,
                   duration: 0.6,
-                  ease: EASE.EMPHASIZED as any,
+                  ease: EASE.EMPHASIZED,
                 }}
               >
                 <Typography
@@ -410,15 +570,26 @@ export default function HomeClient({
                   fontWeight={900}
                   gutterBottom
                   sx={{
-                    color: 'white',
-                    fontSize: { xs: '2.5rem', md: '3.5rem' },
-                    letterSpacing: '-0.02em',
+                    color: "white",
+                    // Fluid typography
+                    fontSize: {
+                      xs: "clamp(1.5rem, 5vw, 2rem)",
+                      sm: "clamp(2rem, 5vw, 2.5rem)",
+                      md: "clamp(2.5rem, 4vw, 3.5rem)",
+                    },
+                    letterSpacing: "-0.02em",
                     lineHeight: 1.1,
                   }}
                 >
                   Prêt à rejoindre
                   <br />
-                  <Box component="span" sx={{ color: '#fbbf24' }}>
+                  <Box
+                    component={motion.span}
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    transition={{ delay: 0.4 }}
+                    sx={{ color: "#fbbf24" }}
+                  >
                     la communauté ?
                   </Box>
                 </Typography>
@@ -432,11 +603,12 @@ export default function HomeClient({
                 transition={{
                   delay: 0.3,
                   duration: 0.6,
-                  ease: EASE.EMPHASIZED as any,
+                  ease: EASE.EMPHASIZED,
                 }}
-                direction={{ xs: 'column', sm: 'row' }}
-                spacing={2}
-                justifyContent={{ xs: 'center', md: 'flex-start' }}
+                direction={{ xs: "column", sm: "row" }}
+                spacing={{ xs: 1.5, sm: 2 }}
+                justifyContent="flex-start" // Force left
+                sx={{ mt: { xs: 2, md: 0 } }}
               >
                 <Button
                   component="a"
@@ -447,58 +619,46 @@ export default function HomeClient({
                   size="large"
                   startIcon={
                     <svg
-                      width="18"
-                      height="18"
+                      width={isMobile ? 16 : 18}
+                      height={isMobile ? 16 : 18}
                       viewBox="0 0 24 24"
                       fill="currentColor"
-                      aria-labelledby="x-icon-title"
+                      aria-labelledby="x-icon-title-cta"
                     >
-                      <title id="x-icon-title">X (Twitter)</title>
+                      <title id="x-icon-title-cta">X (Twitter)</title>
                       <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
                     </svg>
                   }
                   sx={{
-                    px: 4,
-                    py: 1.8,
-                    fontSize: '1rem',
+                    // MD3 touch target
+                    minHeight: { xs: 40, md: 52 },
+                    px: { xs: 2.5, md: 4 },
+                    py: { xs: 1, md: 1.8 },
+                    fontSize: { xs: "0.85rem", md: "1rem" },
                     fontWeight: 800,
-                    textTransform: 'none',
-                    borderRadius: '16px', // Modern slightly squared rounded corners
-                    background: '#000000',
-                    color: '#ffffff',
-                    border: '1px solid rgba(255,255,255,0.1)',
-                    boxShadow:
-                      '0 4px 20px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.2)',
-                    position: 'relative',
-                    overflow: 'hidden',
-                    '&:hover': {
-                      background: '#000000',
-                      borderColor: 'rgba(255,255,255,0.3)',
-                      transform: 'translateY(-2px)',
-                      boxShadow:
-                        '0 8px 30px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.3)',
+                    textTransform: "none",
+                    borderRadius: { xs: "12px", md: "16px" },
+                    background: "#000000",
+                    color: "#ffffff",
+                    border: "1px solid rgba(255,255,255,0.1)",
+                    boxShadow: "0 4px 20px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.2)",
+                    width: { xs: "100%", sm: "auto" },
+                    "&:hover": {
+                      background: "#000000",
+                      borderColor: "rgba(255,255,255,0.3)",
+                      transform: "translateY(-2px)",
+                      boxShadow: "0 8px 30px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.3)",
                     },
-                    '&::before': {
-                      content: '""',
-                      position: 'absolute',
-                      top: 0,
-                      left: '-100%',
-                      width: '100%',
-                      height: '100%',
-                      background:
-                        'linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent)',
-                      transition: '0.5s',
+                    "&:active": {
+                      transform: "translateY(0) scale(0.98)",
                     },
-                    '&:hover::before': {
-                      left: '100%',
-                    },
-                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                    transition: "all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)",
                   }}
                 >
                   Nous suivre sur X
                 </Button>
 
-                {session?.user?.role === 'admin' ? (
+                {session?.user?.role === "admin" ? (
                   <Button
                     component={Link}
                     href="/dashboard"
@@ -506,24 +666,29 @@ export default function HomeClient({
                     size="large"
                     startIcon={<AdminPanelSettings />}
                     sx={{
-                      px: 4,
-                      py: 1.8,
-                      fontSize: '1rem',
+                      minHeight: { xs: 40, md: 52 },
+                      px: { xs: 3, md: 4 },
+                      py: { xs: 1.5, md: 1.8 },
+                      fontSize: { xs: "0.95rem", md: "1rem" },
                       fontWeight: 700,
-                      textTransform: 'none',
-                      borderRadius: '16px',
-                      color: '#000000',
-                      background: '#fbbf24',
-                      boxShadow: '0 4px 20px rgba(251, 191, 36, 0.3)',
-                      '&:hover': {
-                        background: '#f59e0b',
-                        transform: 'translateY(-2px)',
-                        boxShadow: '0 8px 30px rgba(251, 191, 36, 0.4)',
+                      textTransform: "none",
+                      borderRadius: { xs: "12px", md: "16px" },
+                      color: "#000000",
+                      background: "#fbbf24",
+                      boxShadow: "0 4px 20px rgba(251, 191, 36, 0.3)",
+                      width: { xs: "100%", sm: "auto" },
+                      "&:hover": {
+                        background: "#f59e0b",
+                        transform: "translateY(-2px)",
+                        boxShadow: "0 8px 30px rgba(251, 191, 36, 0.4)",
                       },
-                      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                      "&:active": {
+                        transform: "translateY(0) scale(0.98)",
+                      },
+                      transition: "all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)",
                     }}
                   >
-                    Admin Dashboard
+                    Administration
                   </Button>
                 ) : (
                   <Button
@@ -532,43 +697,37 @@ export default function HomeClient({
                     variant="outlined"
                     size="large"
                     sx={{
-                      px: 4,
-                      py: 1.8,
-                      fontSize: '1rem',
+                      minHeight: { xs: 40, md: 52 },
+                      px: { xs: 2.5, md: 4 },
+                      py: { xs: 1, md: 1.8 },
+                      fontSize: { xs: "0.9rem", md: "1rem" },
                       fontWeight: 700,
-                      textTransform: 'none',
-                      borderRadius: '16px',
-                      color: '#ffffff',
-                      borderColor: 'rgba(255,255,255,0.2)',
-                      background: 'rgba(255,255,255,0.03)',
-                      backdropFilter: 'blur(10px)',
-                      boxShadow: '0 4px 20px rgba(0,0,0,0.2)',
-                      '&:hover': {
-                        borderColor: '#ffffff',
-                        background: 'rgba(255,255,255,0.1)',
-                        transform: 'translateY(-2px)',
-                        boxShadow: '0 8px 25px rgba(255,255,255,0.1)',
+                      textTransform: "none",
+                      borderRadius: { xs: "12px", md: "16px" },
+                      color: "#ffffff",
+                      borderColor: "rgba(255,255,255,0.2)",
+                      borderWidth: 2,
+                      background: "rgba(255,255,255,0.03)",
+                      backdropFilter: "blur(10px)",
+                      boxShadow: "0 4px 20px rgba(0,0,0,0.2)",
+                      width: { xs: "100%", sm: "auto" },
+                      "&:hover": {
+                        borderColor: "#ffffff",
+                        borderWidth: 2,
+                        background: "rgba(255,255,255,0.1)",
+                        transform: "translateY(-2px)",
+                        boxShadow: "0 8px 25px rgba(255, 255, 255, 0.1)",
                       },
-                      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                      "&:active": {
+                        transform: "translateY(0) scale(0.98)",
+                      },
+                      transition: "all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)",
                     }}
                   >
                     Se connecter
                   </Button>
                 )}
               </Stack>
-            </Grid>
-
-            <Grid
-              size={{ xs: 12, md: 5 }}
-              sx={{
-                display: { xs: 'none', md: 'block' },
-                height: '100%',
-                position: 'relative',
-                minHeight: 400,
-                p: 4,
-              }}
-            >
-              <DiscordStatusCard />
             </Grid>
           </Grid>
         </Box>

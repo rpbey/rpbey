@@ -116,9 +116,8 @@ export default function BotStatusPage() {
         mb={3}
       >
         <Typography variant="h4" fontWeight={600}>
-          🤖 Status du Bot
+          🤖 Statut du Bot
         </Typography>
-
         <Stack direction="row" spacing={1}>
           <Button
             component={Link}

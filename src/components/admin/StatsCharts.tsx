@@ -1,6 +1,13 @@
 'use client';
 
-import { Box, Card, CardContent, Typography } from '@mui/material';
+import {
+  Box,
+  Card,
+  CardContent,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { BarChart } from '@mui/x-charts/BarChart';
 import { PieChart } from '@mui/x-charts/PieChart';
@@ -16,6 +23,9 @@ export function StatsCharts({
   tournaments,
   matchesStatus,
 }: StatsChartsProps) {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
   return (
     <Grid container spacing={3} sx={{ mt: 3 }}>
       {/* User Growth */}
@@ -57,7 +67,7 @@ export function StatsCharts({
                     color: '#fbbf24',
                   },
                 ]}
-                height={300}
+                height={isMobile ? 250 : 300}
                 sx={
                   {
                     // Optional: Customize chart aesthetics if needed
@@ -123,7 +133,7 @@ export function StatsCharts({
                   },
                 ]}
                 margin={{ right: 5 }}
-                height={300}
+                height={isMobile ? 250 : 300}
                 slotProps={{
                   legend: {
                     // hidden: true, // Moved to prop

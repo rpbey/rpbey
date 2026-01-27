@@ -51,7 +51,7 @@ export function RankingForm({ initialRules }: { initialRules: RankingRules }) {
       if (!res.ok) throw new Error('Erreur lors de la sauvegarde');
 
       setSuccess('Règles mises à jour et classement recalculé avec succès !');
-    } catch (_err) {
+    } catch {
       setError('Impossible de mettre à jour le classement.');
     } finally {
       setLoading(false);

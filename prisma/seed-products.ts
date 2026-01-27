@@ -5,6 +5,8 @@
 
 import 'dotenv/config'
 import pg from 'pg'
+import fs from 'fs'
+import path from 'path'
 import { PrismaClient } from '@prisma/client'
 import { PrismaPg } from '@prisma/adapter-pg'
 
@@ -21,10 +23,21 @@ const pool = new Pool({ connectionString })
 const adapter = new PrismaPg(pool)
 const prisma = new PrismaClient({ adapter })
 
+// Load Hasbro Data
+const hasbroDataPath = path.resolve(process.cwd(), 'data/cleaned/hasbro.json');
+let hasbroData: { ttId: string, hasbroId: string, hasbroName: string }[] = [];
+
+if (fs.existsSync(hasbroDataPath)) {
+    hasbroData = JSON.parse(fs.readFileSync(hasbroDataPath, 'utf-8'));
+}
+
+const hasbroMap = new Map(hasbroData.map(h => [h.ttId, h]));
+
 // Product data types
 interface ProductData {
   code: string
   name: string
+  nameEn?: string
   productType:
     | 'STARTER'
     | 'BOOSTER'
@@ -418,6 +431,7 @@ const products: ProductData[] = [
   {
     code: 'BX-47',
     name: 'ストリングランチャーL レッドVer.',
+    nameEn: 'String Launcher L Red Ver.',
     productType: 'TOOL',
     productLine: 'BX',
     price: 990,
@@ -429,6 +443,7 @@ const products: ProductData[] = [
   {
     code: 'BX-46',
     name: 'バトルエントリーセット∞',
+    nameEn: 'Battle Entry Set Infinity',
     productType: 'SET',
     productLine: 'BX',
     price: 7500,
@@ -462,6 +477,7 @@ const products: ProductData[] = [
   {
     code: 'BX-43',
     name: 'ギアケース ホワイトVer.',
+    nameEn: 'Gear Case White Ver.',
     productType: 'TOOL',
     productLine: 'BX',
     price: 4000,
@@ -473,6 +489,7 @@ const products: ProductData[] = [
   {
     code: 'BX-42',
     name: 'ラバーカスタムグリップ ブルーVer.',
+    nameEn: 'Rubber Custom Grip Blue Ver.',
     productType: 'TOOL',
     productLine: 'BX',
     price: 1320,
@@ -484,6 +501,7 @@ const products: ProductData[] = [
   {
     code: 'BX-41',
     name: 'ラバーカスタムグリップ ガンメタVer.',
+    nameEn: 'Rubber Custom Grip Gunmetal Ver.',
     productType: 'TOOL',
     productLine: 'BX',
     price: 1320,
@@ -495,6 +513,7 @@ const products: ProductData[] = [
   {
     code: 'BX-40',
     name: 'ワインダーランチャーL',
+    nameEn: 'Winder Launcher L',
     productType: 'TOOL',
     productLine: 'BX',
     price: 880,
@@ -528,6 +547,7 @@ const products: ProductData[] = [
   {
     code: 'BX-37',
     name: 'ダブルエクストリームスタジアムセット',
+    nameEn: 'Double Xtreme Stadium Set',
     productType: 'SET',
     productLine: 'BX',
     price: 8200,
@@ -583,6 +603,7 @@ const products: ProductData[] = [
   {
     code: 'BX-32',
     name: 'ワイドエクストリームスタジアム',
+    nameEn: 'Wide Xtreme Stadium',
     productType: 'TOOL',
     productLine: 'BX',
     price: 4400,
@@ -605,6 +626,7 @@ const products: ProductData[] = [
   {
     code: 'BX-30',
     name: 'カスタムグリップ レッドVer.',
+    nameEn: 'Custom Grip Red Ver.',
     productType: 'TOOL',
     productLine: 'BX',
     price: 1100,
@@ -616,6 +638,7 @@ const products: ProductData[] = [
   {
     code: 'BX-29',
     name: 'カスタムグリップ ホワイトVer.',
+    nameEn: 'Custom Grip White Ver.',
     productType: 'TOOL',
     productLine: 'BX',
     price: 1100,
@@ -627,6 +650,7 @@ const products: ProductData[] = [
   {
     code: 'BX-28',
     name: 'ストリングランチャー ホワイトVer.',
+    nameEn: 'String Launcher White Ver.',
     productType: 'TOOL',
     productLine: 'BX',
     price: 990,
@@ -660,6 +684,7 @@ const products: ProductData[] = [
   {
     code: 'BX-25',
     name: 'ギアケース',
+    nameEn: 'Gear Case',
     productType: 'TOOL',
     productLine: 'BX',
     price: 4000,
@@ -693,6 +718,7 @@ const products: ProductData[] = [
   {
     code: 'BX-22',
     name: 'ドランソード3-60F エントリーパッケージ',
+    nameEn: 'Dran Sword 3-60F Entry Package',
     productType: 'STARTER',
     productLine: 'BX',
     price: 1400,
@@ -704,6 +730,7 @@ const products: ProductData[] = [
   {
     code: 'BX-21',
     name: 'ヘルズチェインデッキセット',
+    nameEn: 'Hells Chain Deck Set',
     productType: 'SET',
     productLine: 'BX',
     price: 3960,
@@ -715,6 +742,7 @@ const products: ProductData[] = [
   {
     code: 'BX-20',
     name: 'ドランダガーデッキセット',
+    nameEn: 'Dran Dagger Deck Set',
     productType: 'SET',
     productLine: 'BX',
     price: 3960,
@@ -737,6 +765,7 @@ const products: ProductData[] = [
   {
     code: 'BX-18',
     name: 'ストリングランチャー',
+    nameEn: 'String Launcher',
     productType: 'TOOL',
     productLine: 'BX',
     price: 990,
@@ -748,6 +777,7 @@ const products: ProductData[] = [
   {
     code: 'BX-17',
     name: 'バトルエントリーセット',
+    nameEn: 'Battle Entry Set',
     productType: 'SET',
     productLine: 'BX',
     price: 6050,
@@ -803,6 +833,7 @@ const products: ProductData[] = [
   {
     code: 'BX-12',
     name: '3on3デッキケース',
+    nameEn: '3on3 Deck Case',
     productType: 'TOOL',
     productLine: 'BX',
     price: 990,
@@ -814,6 +845,7 @@ const products: ProductData[] = [
   {
     code: 'BX-11',
     name: 'ランチャーグリップ',
+    nameEn: 'Launcher Grip',
     productType: 'TOOL',
     productLine: 'BX',
     price: 700,
@@ -825,6 +857,7 @@ const products: ProductData[] = [
   {
     code: 'BX-10',
     name: 'エクストリームスタジアム',
+    nameEn: 'Xtreme Stadium',
     productType: 'TOOL',
     productLine: 'BX',
     price: 2750,
@@ -836,6 +869,7 @@ const products: ProductData[] = [
   {
     code: 'BX-09',
     name: 'ベイバトルパス',
+    nameEn: 'BeyBattle Pass',
     productType: 'TOOL',
     productLine: 'BX',
     price: 3300,
@@ -941,6 +975,8 @@ async function seedProducts() {
   let updated = 0
 
   for (const product of products) {
+    const hasbro = hasbroMap.get(product.code);
+
     const data = {
       code: product.code,
       name: product.name,
@@ -953,6 +989,8 @@ async function seedProducts() {
       imageUrl: product.imageUrl,
       productUrl: product.productUrl,
       shopUrl: product.shopUrl,
+      hasbroCode: hasbro?.hasbroId || null,
+      nameHasbro: hasbro?.hasbroName || null,
     }
 
     const existing = await prisma.product.findUnique({

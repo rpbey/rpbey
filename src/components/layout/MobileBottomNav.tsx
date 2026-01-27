@@ -60,7 +60,7 @@ export function MobileBottomNav() {
               icon={<EmojiEvents />}
             />
             <BottomNavigationAction
-              label="Classement"
+              label="Classements"
               value="/rankings"
               icon={<Leaderboard />}
             />

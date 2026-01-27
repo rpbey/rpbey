@@ -1,12 +1,17 @@
 'use server';
 
+import { exec } from 'child_process';
 import { revalidatePath } from 'next/cache';
 import { headers } from 'next/headers';
+import { promisify } from 'util';
 import { auth } from '@/lib/auth';
+import {
+  getMembersByRole as getBotMembersByRole,
+  getDiscordRoles as getBotRoles,
+} from '@/lib/bot';
 import { prisma } from '@/lib/prisma';
 
-import { DiscordRoleMapping } from '@/lib/role-colors';
-import type { BotMember } from '@/types';
+const execAsync = promisify(exec);
 
 export type StaffMemberInput = {
   name: string;
@@ -31,8 +36,9 @@ async function checkAdmin() {
 }
 
 export async function getStaffMembers() {
+  await checkAdmin();
   return await prisma.staffMember.findMany({
-    orderBy: [{ teamId: 'asc' }, { displayIndex: 'asc' }],
+    orderBy: [{ role: 'asc' }, { displayIndex: 'asc' }],
   });
 }
 
@@ -76,114 +82,42 @@ export async function deleteStaffMember(id: string) {
   return { success: true };
 }
 
+export async function syncStaffFromDiscord() {
+  await checkAdmin();
+
+  console.log('[SyncStaff] Triggering sync script...');
+
+  try {
+    const { stdout, stderr } = await execAsync(
+      'npx tsx scripts/sync-staff-db.ts',
+    );
+
+    console.log('[SyncStaff] Script output:', stdout);
+    if (stderr) console.error('[SyncStaff] Script stderr:', stderr);
+
+    const addedMatch = stdout.match(/Added: (\d+)/);
+    const updatedMatch = stdout.match(/Updated: (\d+)/);
+
+    revalidatePath('/admin/staff');
+    revalidatePath('/notre-equipe');
+
+    return {
+      added: addedMatch?.[1] ? parseInt(addedMatch[1]) : 0,
+      updated: updatedMatch?.[1] ? parseInt(updatedMatch[1]) : 0,
+      success: true,
+    };
+  } catch (error) {
+    console.error('[SyncStaff] Execution failed:', error);
+    throw new Error('Failed to run sync script');
+  }
+}
+
 export async function getDiscordRoles() {
   await checkAdmin();
-  const { getDiscordRoles } = await import('@/lib/bot');
-  return await getDiscordRoles();
+  return getBotRoles();
 }
 
 export async function getMembersByRole(roleId: string) {
   await checkAdmin();
-  const { getMembersByRole } = await import('@/lib/bot');
-  return await getMembersByRole(roleId);
-}
-
-import { getBotApiUrl } from '@/lib/bot-config';
-
-const ROLE_PRIORITY: Record<string, number> = {
-  admin: 100,
-  rh: 90,
-  modo: 80,
-  staff: 70,
-  arbitre: 60,
-};
-
-export async function syncStaffFromDiscord() {
-  await checkAdmin();
-
-  console.log(`[SyncStaff] Starting sync using Bot URL: ${getBotApiUrl()}`);
-
-  const results = {
-    added: 0,
-    updated: 0,
-    errors: 0,
-  };
-
-  const staffMap = new Map<
-    string,
-    { member: BotMember; roleType: string; priority: number }
-  >();
-
-  // 1. Collect all members from all mapped roles
-  for (const [roleId, roleKey] of Object.entries(DiscordRoleMapping)) {
-    try {
-      const roleType = roleKey.toLowerCase();
-      console.log(`[SyncStaff] Fetching role ${roleType} (${roleId})...`);
-      const members = await getMembersByRole(roleId);
-      console.log(
-        `[SyncStaff] Found ${members.length} members for ${roleType}`,
-      );
-
-      const priority = ROLE_PRIORITY[roleType] || 0;
-
-      for (const member of members) {
-        const existing = staffMap.get(member.id);
-        if (!existing || existing.priority < priority) {
-          staffMap.set(member.id, { member, roleType, priority });
-        }
-      }
-    } catch (e) {
-      console.error(
-        `[SyncStaff] Failed to fetch members for role ${roleKey} (${roleId}):`,
-        e,
-      );
-      results.errors++;
-    }
-  }
-
-  // 2. Upsert unique users with their highest role
-  for (const [discordId, { member, roleType }] of staffMap.entries()) {
-    try {
-      const avatarHash = member.serverAvatar || member.avatar;
-      let imageUrl = null;
-      if (avatarHash) {
-        imageUrl = `https://cdn.discordapp.com/avatars/${member.id}/${member.avatar}.png`;
-      }
-
-      const name = member.displayName || member.username;
-
-      const data = {
-        name,
-        role: roleType,
-        teamId: roleType,
-        imageUrl: imageUrl || undefined,
-        discordId,
-        isActive: true,
-      };
-
-      const existing = await prisma.staffMember.findFirst({
-        where: { discordId },
-      });
-
-      if (existing) {
-        await prisma.staffMember.update({
-          where: { id: existing.id },
-          data,
-        });
-        results.updated++;
-      } else {
-        await prisma.staffMember.create({ data });
-        results.added++;
-      }
-    } catch (e) {
-      console.error('[SyncStaff] Sync error for member:', discordId, e);
-      results.errors++;
-    }
-  }
-
-  console.log('[SyncStaff] Sync complete:', results);
-
-  revalidatePath('/admin/staff');
-  revalidatePath('/notre-equipe');
-  return results;
+  return getBotMembersByRole(roleId);
 }

@@ -1,29 +1,25 @@
-import Box from '@mui/material/Box';
-import type { Metadata } from 'next';
 import {
   ICON_NAV_WIDTH,
   IconFooter,
   IconNav,
+  MarketingHeader,
   MobileNav,
-} from '@/components/layout';
-import { SponsorBanner } from '@/components/marketing';
+} from "@/components/layout";
+import { SponsorBanner } from "@/components/marketing";
+import Box from "@mui/material/Box";
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: {
-    default: 'RPB - République Populaire du Beyblade',
-    template: '%s | RPB',
+    default: "RPB - République Populaire du Beyblade",
+    template: "%s | RPB",
   },
-  description:
-    'La communauté française de Beyblade. Tournois, classements et plus encore.',
+  description: "La communauté française de Beyblade. Tournois, classements et plus encore.",
 };
 
-export default function MarketingLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function MarketingLayout({ children }: { children: React.ReactNode }) {
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh' }}>
+    <Box sx={{ display: "flex", minHeight: "100vh" }}>
       {/* Desktop: Left icon navigation */}
       <IconNav />
 
@@ -32,14 +28,16 @@ export default function MarketingLayout({
         component="main"
         sx={{
           flex: 1,
-          display: 'flex',
-          flexDirection: 'column',
+          display: "flex",
+          flexDirection: "column",
           ml: { xs: 0, md: `${ICON_NAV_WIDTH}px` },
-          pb: { xs: 'calc(100px + env(safe-area-inset-bottom))', md: 0 },
-          minHeight: '100vh',
-          bgcolor: 'background.default',
+          pt: { xs: "64px", md: 0 },
+          pb: { xs: "calc(100px + env(safe-area-inset-bottom))", md: 0 },
+          minHeight: "100vh",
+          bgcolor: "background.default",
         }}
       >
+        <MarketingHeader />
         <SponsorBanner />
         <Box sx={{ flex: 1 }}>{children}</Box>
         <IconFooter />

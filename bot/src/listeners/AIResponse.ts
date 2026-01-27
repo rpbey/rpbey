@@ -22,6 +22,7 @@ export class AIResponse extends Listener {
 
     // Trigger typing indicator
     if ('sendTyping' in message.channel) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await (message.channel as any).sendTyping();
     }
 

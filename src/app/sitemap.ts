@@ -3,8 +3,8 @@ import path from 'node:path';
 import type { MetadataRoute } from 'next';
 import { prisma } from '@/lib/prisma';
 
-export const revalidate = 3600;
-
+// MIGRATED from: export const revalidate = 3600;
+// → Dynamic by default with Cache Components.
 const STATIC_ROUTES = {
   '': 'src/app/(marketing)/page.tsx',
   '/tournaments': 'src/app/(marketing)/tournaments/page.tsx',

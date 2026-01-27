@@ -5,6 +5,7 @@
  */
 
 import Autocomplete from '@mui/material/Autocomplete';
+import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -22,6 +23,7 @@ interface PartSelectorProps {
   label?: string;
   error?: boolean;
   helperText?: string;
+  dark?: boolean;
 }
 
 function getBeyTypeColor(beyType: BeyType | null): string {
@@ -61,6 +63,7 @@ export function PartSelector({
   label,
   error,
   helperText,
+  dark = false,
 }: PartSelectorProps) {
   const [options, setOptions] = useState<Part[]>([]);
   const [loading, setLoading] = useState(false);
@@ -78,6 +81,7 @@ export function PartSelector({
         const result = await response.json();
 
         if (result.data) {
+          // Sort by name for consistency
           setOptions(result.data);
         }
       } catch (err) {
@@ -122,6 +126,26 @@ export function PartSelector({
           label={label ?? getPartTypeLabel(type)}
           error={error}
           helperText={helperText}
+          variant={dark ? 'filled' : 'outlined'}
+          sx={
+            dark
+              ? {
+                  bgcolor: '#333',
+                  borderRadius: 1,
+                  '& .MuiInputBase-root': {
+                    color: 'white',
+                    bgcolor: '#333',
+                  },
+                  '& .MuiInputLabel-root': { color: '#aaa' },
+                  '& .MuiInputLabel-root.Mui-focused': { color: '#fff' },
+                  '& .MuiFilledInput-root': {
+                    bgcolor: '#333',
+                    '&:hover': { bgcolor: '#444' },
+                    '&.Mui-focused': { bgcolor: '#444' },
+                  },
+                }
+              : {}
+          }
           slotProps={{
             input: {
               ...params.InputProps,
@@ -144,38 +168,58 @@ export function PartSelector({
             component="li"
             key={key}
             {...rest}
-            sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
+            sx={{ display: 'flex', alignItems: 'center', gap: 2, py: 1 }}
           >
-            {option.beyType && (
-              <Chip
-                size="small"
-                label={option.beyType.charAt(0)}
-                sx={{
-                  bgcolor: getBeyTypeColor(option.beyType),
-                  color: 'white',
-                  minWidth: 24,
-                  height: 24,
-                }}
-              />
-            )}
-            <Box>
-              <Typography variant="body2">{option.name}</Typography>
-              {type === 'BLADE' && option.attack !== null && (
-                <Typography variant="caption" color="text.secondary">
-                  ATK {option.attack} | DEF {option.defense} | STA{' '}
-                  {option.stamina}
+            <Avatar
+              src={option.imageUrl || undefined}
+              variant="rounded"
+              sx={{
+                width: 48,
+                height: 48,
+                bgcolor: 'transparent',
+                border: '1px solid #333',
+              }}
+            >
+              {option.name.charAt(0)}
+            </Avatar>
+
+            <Box sx={{ flexGrow: 1 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Typography variant="body2" fontWeight="bold">
+                  {option.name}
                 </Typography>
-              )}
-              {type === 'RATCHET' && option.height !== null && (
-                <Typography variant="caption" color="text.secondary">
-                  Height: {option.height} | Weight: {option.weight}g
-                </Typography>
-              )}
-              {type === 'BIT' && option.gearRatio && (
-                <Typography variant="caption" color="text.secondary">
-                  Ratio: {option.gearRatio} | Weight: {option.weight}g
-                </Typography>
-              )}
+                {option.system && (
+                  <Chip
+                    label={option.system}
+                    size="small"
+                    sx={{
+                      height: 16,
+                      fontSize: '0.6rem',
+                      bgcolor: '#444',
+                      color: '#fff',
+                    }}
+                  />
+                )}
+              </Box>
+
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                sx={{ display: 'flex', gap: 1, mt: 0.5 }}
+              >
+                {option.beyType && (
+                  <span
+                    style={{
+                      color: getBeyTypeColor(option.beyType),
+                      fontWeight: 'bold',
+                    }}
+                  >
+                    {option.beyType}
+                  </span>
+                )}
+                {option.weight && <span>• {option.weight}g</span>}
+                {option.spinDirection && <span>• {option.spinDirection}</span>}
+              </Typography>
             </Box>
           </Box>
         );

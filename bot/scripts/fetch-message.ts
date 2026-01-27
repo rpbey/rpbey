@@ -52,7 +52,7 @@ client.once('ready', async () => {
                 }));
                 process.exit(0);
             }
-        } catch (e) {
+        } catch {
             // ignore permission errors
         }
     }

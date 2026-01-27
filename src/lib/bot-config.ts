@@ -13,12 +13,9 @@ export function getBotApiUrl() {
   // Fallbacks
   if (process.env.NODE_ENV === 'production') {
     // In production (Docker), localhost refers to the container itself.
-    // Use the host IP (docker0 gateway) to reach the bot service running on the host.
-    // Verified 10.0.0.1 works from host, usually accessible from containers.
-    console.warn(
-      'Warning: BOT_API_URL is not set in production. Defaulting to http://10.0.0.1:3001',
-    );
-    return 'http://10.0.0.1:3001';
+    // Use the host IP to reach the bot service running on the host.
+    // Updated to the actual Host Public IP as per previous fixes.
+    return 'http://46.224.145.55:3001';
   }
 
   return 'http://localhost:3001';

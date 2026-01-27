@@ -38,7 +38,7 @@ export class NowPlayingCommand extends Command {
         { name: 'Durée', value: track.duration, inline: true },
         {
           name: 'Progression',
-          value: `${timestamp?.progress}%` || 'N/A',
+          value: timestamp ? `${timestamp.progress}%` : 'N/A',
           inline: true,
         },
       )

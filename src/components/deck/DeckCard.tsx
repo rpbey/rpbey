@@ -143,12 +143,26 @@ export function DeckCard({
 
   // Calculate total stats
   const totalStats = sortedBeys.reduce(
-    (acc, bey) => ({
-      attack: acc.attack + (bey.blade ? parseStat(bey.blade.attack) : 0),
-      defense: acc.defense + (bey.blade ? parseStat(bey.blade.defense) : 0),
-      stamina: acc.stamina + (bey.blade ? parseStat(bey.blade.stamina) : 0),
-      dash: acc.dash + (bey.blade ? parseStat(bey.blade.dash) : 0),
-    }),
+    (acc, bey) => {
+      const parts = [bey.blade, bey.ratchet, bey.bit].filter(Boolean) as Part[];
+
+      const beyStats = parts.reduce(
+        (bAcc, part) => ({
+          attack: bAcc.attack + parseStat(part.attack),
+          defense: bAcc.defense + parseStat(part.defense),
+          stamina: bAcc.stamina + parseStat(part.stamina),
+          dash: bAcc.dash + parseStat(part.dash),
+        }),
+        { attack: 0, defense: 0, stamina: 0, dash: 0 },
+      );
+
+      return {
+        attack: acc.attack + beyStats.attack,
+        defense: acc.defense + beyStats.defense,
+        stamina: acc.stamina + beyStats.stamina,
+        dash: acc.dash + beyStats.dash,
+      };
+    },
     { attack: 0, defense: 0, stamina: 0, dash: 0 },
   );
 
@@ -232,7 +246,7 @@ export function DeckCard({
           </Box>
           <Box sx={{ textAlign: 'center' }}>
             <Typography variant="caption" color="text.secondary">
-              STA
+              END
             </Typography>
             <Typography variant="body2" fontWeight="bold" color="success.main">
               {totalStats.stamina}

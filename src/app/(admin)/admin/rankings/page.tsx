@@ -12,7 +12,10 @@ export const metadata = {
   title: 'Admin - Classements',
 };
 
+import { connection } from 'next/server';
+
 export default async function RankingAdminPage() {
+  await connection();
   const config = await getRankingConfig();
   const categories = await getTournamentCategories();
   const seasons = await getSeasons();

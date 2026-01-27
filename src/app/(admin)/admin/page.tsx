@@ -90,7 +90,9 @@ export default async function AdminDashboardPage() {
     {
       label: 'Membres Discord',
       value: botStatus?.memberCount?.toLocaleString() || '---',
-      change: botStatus ? 'En ligne' : 'Hors ligne',
+      change: botStatus
+        ? `${botStatus.onlineCount || 0} En ligne`
+        : 'Hors ligne',
       icon: SmartToy,
       color: '#5865F2',
       trendColor: botStatus ? 'success.main' : 'error.main',
@@ -161,6 +163,7 @@ export default async function AdminDashboardPage() {
           label={botStatus ? 'Systèmes Opérationnels' : 'Bot Hors Ligne'}
           color={botStatus ? 'success' : 'error'}
           variant="outlined"
+          sx={{ borderRadius: 2, fontWeight: 'bold' }}
         />
       </Box>
 
@@ -181,10 +184,11 @@ export default async function AdminDashboardPage() {
               role="listitem"
             >
               <Card
-                variant="filled"
+                variant="outlined"
                 sx={{
-                  transition: 'transform 0.2s',
-                  '&:hover': { transform: 'translateY(-4px)' },
+                  transition: 'all 0.2s',
+                  '&:hover': { transform: 'translateY(-4px)', boxShadow: 4 },
+                  borderLeft: `4px solid ${stat.color}`,
                 }}
                 role="article"
                 aria-label={`Statistique: ${stat.label}`}
@@ -202,6 +206,7 @@ export default async function AdminDashboardPage() {
                         variant="body2"
                         color="text.secondary"
                         gutterBottom
+                        fontWeight="bold"
                       >
                         {stat.label}
                       </Typography>
@@ -216,7 +221,11 @@ export default async function AdminDashboardPage() {
                           mt: 1,
                         }}
                       >
-                        <Typography variant="caption" color={stat.trendColor}>
+                        <Typography
+                          variant="caption"
+                          color={stat.trendColor}
+                          fontWeight="bold"
+                        >
                           {stat.change}
                         </Typography>
                       </Box>

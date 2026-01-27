@@ -84,6 +84,7 @@ export async function GET(req: NextRequest) {
   const csvRows = data.map((row) =>
     csvHeaders
       .map((header) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const val = (row as any)[header];
         if (typeof val === 'string') {
           return `"${val.replace(/"/g, '""')}"`;

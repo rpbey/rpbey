@@ -65,6 +65,7 @@ export interface VideoInfo {
   duration: string;
   publishedAt: Date;
   viewCount: number;
+  channelLogo?: string;
 }
 
 export async function getLatestRPBVideo(): Promise<VideoInfo | null> {
@@ -104,9 +105,68 @@ export async function getLatestRPBVideo(): Promise<VideoInfo | null> {
       duration: video.duration,
       publishedAt: video.publishDate,
       viewCount: video.views,
+      channelLogo: user.profilePictureUrl,
     };
   } catch (error) {
     console.error('Error fetching Twitch video:', error);
     return null;
+  }
+}
+
+export async function getRPBClips(limit = 6): Promise<VideoInfo[]> {
+  if (!clientId || !clientSecret) return [];
+
+  try {
+    const user = await twitchClient.users.getUserByName(channelName);
+    if (!user) return [];
+
+    const clips = await twitchClient.clips.getClipsForBroadcaster(user.id, {
+      limit,
+    });
+
+    return clips.data.map((clip) => ({
+      id: clip.id,
+      title: clip.title,
+      url: clip.url,
+      thumbnailUrl: clip.thumbnailUrl
+        .replace('{width}', '640')
+        .replace('{height}', '360'),
+      duration: Math.round(clip.duration).toString() + 's',
+      publishedAt: clip.creationDate,
+      viewCount: clip.views,
+      channelLogo: user.profilePictureUrl,
+    }));
+  } catch (error) {
+    console.error('Error fetching Twitch clips:', error);
+    return [];
+  }
+}
+
+export async function getRPBVideos(limit = 6): Promise<VideoInfo[]> {
+  if (!clientId || !clientSecret) return [];
+
+  try {
+    const user = await twitchClient.users.getUserByName(channelName);
+    if (!user) return [];
+
+    const videos = await twitchClient.videos.getVideosByUser(user.id, {
+      limit,
+      type: 'archive',
+    });
+
+    return videos.data.map((video) => ({
+      id: video.id,
+      title: video.title,
+      url: video.url,
+      thumbnailUrl: video.thumbnailUrl
+        .replace('%{width}', '640')
+        .replace('%{height}', '360'),
+      duration: video.duration,
+      publishedAt: video.publishDate,
+      viewCount: video.views,
+    }));
+  } catch (error) {
+    console.error('Error fetching Twitch videos:', error);
+    return [];
   }
 }

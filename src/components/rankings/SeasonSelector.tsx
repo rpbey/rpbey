@@ -32,7 +32,7 @@ export default function SeasonSelector({ seasons }: { seasons: Season[] }) {
   };
 
   return (
-    <FormControl sx={{ minWidth: 200, mb: 4 }} size="small">
+    <FormControl sx={{ minWidth: { xs: '100%', sm: 200 }, mb: 4 }} size="small">
       <InputLabel id="season-select-label">Saison</InputLabel>
       <Select
         labelId="season-select-label"

@@ -14,5 +14,5 @@ export default async function DashboardPage() {
   }
 
   // User redirect (Admins also go here by default now)
-  redirect('/dashboard/profile');
+  redirect(`/dashboard/profile/${session.user.id}`);
 }

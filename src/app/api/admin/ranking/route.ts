@@ -14,7 +14,7 @@ export async function GET() {
 
     const rules = await prisma.rankingSystem.findFirst();
     return NextResponse.json(rules || {});
-  } catch (_error) {
+  } catch {
     return NextResponse.json(
       { error: 'Failed to fetch rules' },
       { status: 500 },

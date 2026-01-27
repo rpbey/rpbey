@@ -134,15 +134,14 @@ export function MediaCard({ video, type, onClick }: MediaCardProps) {
           sx={{ p: { xs: 1.5, sm: 1.5 }, display: 'flex', gap: 1.5 }}
         >
           <Avatar
+            src="/logo.png"
+            alt="RPB Logo"
             sx={{
               width: 32,
               height: 32,
-              bgcolor: type === 'twitch' ? 'secondary.main' : 'error.main',
-              fontSize: '0.8rem',
+              bgcolor: 'transparent',
             }}
-          >
-            {type === 'twitch' ? 'T' : 'Y'}
-          </Avatar>
+          />
 
           <Box sx={{ flex: 1 }}>
             <Typography

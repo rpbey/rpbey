@@ -6,6 +6,7 @@
 
 import { useMediaQuery, useTheme } from '@mui/material';
 import Alert from '@mui/material/Alert';
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import Dialog from '@mui/material/Dialog';
@@ -13,14 +14,15 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import Stack from '@mui/material/Stack';
 import Switch from '@mui/material/Switch';
 import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
 import { useEffect, useState } from 'react';
 import { validateDeck } from '@/lib/tournament-logic';
 import type { BeyData } from './BeyBuilder';
 import { BeyBuilder } from './BeyBuilder';
 import type { Deck } from './DeckCard';
+import { TripleDeckBox } from './TripleDeckBox';
 
 interface DeckBuilderModalProps {
   open: boolean;
@@ -49,11 +51,22 @@ export function DeckBuilderModal({
     { ...emptyBey },
     { ...emptyBey },
   ]);
+  const [selectedIdx, setSelectedIdx] = useState(0);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [modelMapping, setModelMapping] = useState<Record<string, any>>({});
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
+  // Load model mapping
+  useEffect(() => {
+    fetch('/data/part-model-map.json')
+      .then((res) => res.json())
+      .then((mapping) => setModelMapping(mapping))
+      .catch((err) => console.error('Failed to load model mapping', err));
+  }, []);
 
   // Reset form when modal opens/closes or deck changes
   useEffect(() => {
@@ -89,6 +102,7 @@ export function DeckBuilderModal({
         setIsActive(false);
         setBeys([{ ...emptyBey }, { ...emptyBey }, { ...emptyBey }]);
       }
+      setSelectedIdx(0);
       setError(null);
       setValidationErrors([]);
     }
@@ -186,88 +200,170 @@ export function DeckBuilderModal({
 
       if (!response.ok) {
         const result = await response.json();
-        throw new Error(result.error || 'Failed to save deck');
+        throw new Error(result.error || "Impossible d'enregistrer le deck");
       }
 
       onSave();
       onClose();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      setError(err instanceof Error ? err.message : 'Une erreur est survenue');
     } finally {
       setSaving(false);
     }
   };
 
+  const currentBeysModels = beys.map((b) =>
+    b.blade ? modelMapping[b.blade.id] : null,
+  );
+
   return (
     <Dialog
       open={open}
       onClose={onClose}
-      maxWidth="md"
+      maxWidth="lg"
       fullWidth
       fullScreen={isMobile}
+      PaperProps={{
+        sx: {
+          bgcolor: '#0a0a0a',
+          backgroundImage:
+            'url("https://www.transparenttextures.com/patterns/dark-matter.png")',
+        },
+      }}
     >
-      <DialogTitle>
-        {deck ? 'Modifier le Deck' : 'Créer un nouveau Deck'}
+      <DialogTitle
+        sx={{
+          color: 'white',
+          borderBottom: '1px solid #222',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}
+      >
+        <Typography variant="h6" fontWeight="900" sx={{ letterSpacing: 2 }}>
+          {deck ? "MODIFIER L'ÉQUIPEMENT" : 'NOUVELLE DECK BOX'}
+        </Typography>
+        <FormControlLabel
+          control={
+            <Switch
+              checked={isActive}
+              onChange={(e) => setIsActive(e.target.checked)}
+              color="warning"
+            />
+          }
+          label={
+            <Typography
+              variant="caption"
+              sx={{ color: '#aaa', fontWeight: 'bold' }}
+            >
+              ACTIF POUR TOURNOIS
+            </Typography>
+          }
+        />
       </DialogTitle>
 
-      <DialogContent dividers>
-        <Stack spacing={3}>
+      <DialogContent sx={{ p: 0 }}>
+        <Box sx={{ p: 3, display: 'flex', flexDirection: 'column', gap: 3 }}>
           {error && <Alert severity="error">{error}</Alert>}
           {validationErrors.length > 0 && (
-            <Alert severity="warning">
-              <ul style={{ margin: 0, paddingLeft: '1.5rem' }}>
-                {validationErrors.map((err, i) => (
-                  // biome-ignore lint/suspicious/noArrayIndexKey: Order is stable for validation errors
-                  <li key={i}>{err}</li>
-                ))}
-              </ul>
+            <Alert severity="warning" sx={{ borderRadius: 2 }}>
+              {validationErrors[0]}
             </Alert>
           )}
 
-          <TextField
-            label="Nom du Deck"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            fullWidth
-            required
-            placeholder="Mon deck agressif"
-          />
+          {/* 3D Overview */}
+          <Box sx={{ position: 'relative' }}>
+            <TripleDeckBox
+              selectedIdx={selectedIdx}
+              onSelect={setSelectedIdx}
+              beysModels={currentBeysModels}
+            />
+            <Box
+              sx={{
+                position: 'absolute',
+                bottom: 20,
+                left: '50%',
+                transform: 'translateX(-50%)',
+                textAlign: 'center',
+                pointerEvents: 'none',
+              }}
+            >
+              <Typography
+                variant="caption"
+                sx={{ color: '#666', letterSpacing: 1, fontWeight: 'bold' }}
+              >
+                CLIQUEZ SUR UN COMPARTIMENT POUR LE CONFIGURER
+              </Typography>
+            </Box>
+          </Box>
 
-          <FormControlLabel
-            control={
-              <Switch
-                checked={isActive}
-                onChange={(e) => setIsActive(e.target.checked)}
+          {/* Selected Slot Editor */}
+          <Box
+            sx={{
+              bgcolor: '#111',
+              borderRadius: 4,
+              border: '2px solid #222',
+              p: 3,
+              boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
+            }}
+          >
+            <Box sx={{ mb: 3, display: 'flex', gap: 2, alignItems: 'center' }}>
+              <TextField
+                label="NOM DU DECK"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+                variant="standard"
+                placeholder="Equipe RPB"
+                sx={{
+                  flexGrow: 1,
+                  '& .MuiInputBase-root': {
+                    color: 'white',
+                    fontSize: '1.2rem',
+                    fontWeight: '900',
+                  },
+                  '& .MuiInputLabel-root': {
+                    color: '#555',
+                    fontWeight: 'bold',
+                  },
+                }}
               />
-            }
-            label="Définir comme deck actif pour les tournois"
-          />
+            </Box>
 
-          {beys.map((bey, index) => (
             <BeyBuilder
-              // biome-ignore lint/suspicious/noArrayIndexKey: Fixed slots
-              key={index}
-              position={index + 1}
-              data={bey}
-              onChange={(data) => handleBeyChange(index, data)}
+              position={selectedIdx + 1}
+              data={beys[selectedIdx]!}
+              onChange={(data) => handleBeyChange(selectedIdx, data)}
               usedPartIds={usedPartIds}
               disabled={saving}
             />
-          ))}
-        </Stack>
+          </Box>
+        </Box>
       </DialogContent>
 
-      <DialogActions>
-        <Button onClick={onClose} disabled={saving}>
-          Annuler
+      <DialogActions
+        sx={{ bgcolor: '#0a0a0a', borderTop: '1px solid #222', p: 3 }}
+      >
+        <Button onClick={onClose} disabled={saving} sx={{ color: '#555' }}>
+          ANNULER
         </Button>
         <Button
           onClick={handleSave}
           variant="contained"
+          color="error"
           disabled={!isValid || saving}
-          startIcon={saving ? <CircularProgress size={20} /> : null}
+          startIcon={
+            saving ? <CircularProgress size={20} color="inherit" /> : null
+          }
+          sx={{
+            fontWeight: '900',
+            px: 6,
+            py: 1.5,
+            borderRadius: 2,
+            letterSpacing: 2,
+          }}
         >
-          {saving ? 'Sauvegarde...' : 'Sauvegarder'}
+          {saving ? 'CHARGEMENT...' : "VALIDER L'ÉQUIPEMENT"}
         </Button>
       </DialogActions>
     </Dialog>

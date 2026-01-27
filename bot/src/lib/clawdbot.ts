@@ -33,7 +33,6 @@ export class ClawdbotService {
     options: { to?: string; channel?: string } = {},
   ): Promise<string | null> {
     try {
-      // We use the CLI to trigger an agent turn. This ensures we use the correct config and token.
       const { exec } = await import('node:child_process');
       const { promisify } = await import('node:util');
       const execAsync = promisify(exec);
@@ -42,28 +41,35 @@ export class ClawdbotService {
       const safeMessage = message.replace(/'/g, "'\\''");
       const safeSessionId = sessionId.replace(/[^a-zA-Z0-9-]/g, '_');
 
-      const pnpmPath = '/root/.nvm/versions/node/v24.12.0/bin/pnpm';
+      // Use local CLI installed in node_modules
+      // Assuming cwd is the bot project root (bot/)
+      const clawdbotBin = './node_modules/.bin/clawdbot';
 
-      let cmd = `${pnpmPath} start agent --message '${safeMessage}' --session-id '${safeSessionId}' --json`;
+      let cmd = `${clawdbotBin} agent --message '${safeMessage}' --session-id '${safeSessionId}' --json`;
       if (options.channel) cmd += ` --channel ${options.channel}`;
       if (options.to) cmd += ` --to '${options.to}'`;
 
-      // We run from /root/clawdbot directory
       const { stdout, stderr } = await execAsync(cmd, {
-        cwd: '/root/clawdbot',
+        cwd: process.cwd(), // Execute from bot root
         env: {
           ...process.env,
-          PATH: '/root/.nvm/versions/node/v24.12.0/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
-          HOME: '/root', // Important for finding .clawdbot config
+          HOME: '/root', // Ensure it finds ~/.clawdbot config
         },
       });
 
       if (stderr && !stdout) {
-        container.logger.error('[Clawdbot] Error calling agent:', stderr);
-        return null;
+        // Warning: Clawdbot CLI might print logs to stderr even on success
+        // We only consider it an error if stdout is empty
+        container.logger.warn('[Clawdbot] Stderr:', stderr);
       }
 
       const response = JSON.parse(stdout) as ClawdbotResponse;
+
+      // Handle case where result might be empty
+      if (!response.result?.payloads?.length) {
+        return null;
+      }
+
       return response.result.payloads.map((p) => p.text).join('\n');
     } catch (error) {
       container.logger.error('[Clawdbot] Failed to ask Ryuga:', error);

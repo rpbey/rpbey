@@ -265,8 +265,9 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 
     switch (action) {
       case 'sync_participants': {
-        const { data: challongeParticipants } =
-          await challonge.listParticipants(tournament.challongeId);
+        const challongeParticipants = await challonge.listParticipants(
+          tournament.challongeId,
+        );
 
         const participantsToCreate = [];
         const alreadySyncedLocalIds = new Set(
@@ -300,11 +301,10 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
         }
 
         if (participantsToCreate.length > 0) {
-          const { data: createdParticipants } =
-            await challonge.bulkCreateParticipants(
-              tournament.challongeId,
-              participantsToCreate,
-            );
+          const createdParticipants = await challonge.bulkCreateParticipants(
+            tournament.challongeId,
+            participantsToCreate,
+          );
 
           // Map created participants back to local records
           for (const created of createdParticipants) {
@@ -342,9 +342,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 
       case 'sync': {
         // Sync matches from Challonge
-        const { data: matches } = await challonge.listMatches(
-          tournament.challongeId,
-        );
+        const matches = await challonge.listMatches(tournament.challongeId);
 
         for (const match of matches) {
           const attrs = match.attributes;

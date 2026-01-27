@@ -1,20 +1,50 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
 
+/* Reset & Mobile Fixes */
 * {
   box-sizing: border-box;
   padding: 0;
   margin: 0;
+  -webkit-tap-highlight-color: transparent;
 }
 
 html,
 body {
-  max-width: 100vw;
-  overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden; /* Prevent horizontal scroll globally */
+  position: relative;
   font-family: "Inter", sans-serif;
+  background-color: #000;
+  color: #fff;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  touch-action: manipulation;
 }
 
 body {
   min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+/* Force layout consistency */
+#__next,
+main {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+/* Mobile responsive typography corrections */
+@media (max-width: 600px) {
+  h1,
+  h2,
+  h3,
+  h4 {
+    word-break: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+  }
 }
 
 a {
@@ -111,17 +141,29 @@ a {
   pointer-events: none;
 }
 
-/* Custom Scrollbar for Chat */
-.chat-scroll::-webkit-scrollbar {
+/* Custom Scrollbar */
+::-webkit-scrollbar {
   width: 6px;
+  height: 6px;
 }
-.chat-scroll::-webkit-scrollbar-track {
+::-webkit-scrollbar-track {
   background: transparent;
 }
-.chat-scroll::-webkit-scrollbar-thumb {
+::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.1);
-  border-radius: 3px;
+  border-radius: 10px;
 }
-.chat-scroll::-webkit-scrollbar-thumb:hover {
+::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.2);
+}
+
+/* Mobile Fixes for Layout Overflows */
+@media (max-width: 600px) {
+  /* Prevent horizontal scroll on common MUI containers */
+  .MuiContainer-root,
+  .MuiGrid-container,
+  .MuiBox-root {
+    max-width: 100% !important;
+    overflow-x: hidden;
+  }
 }

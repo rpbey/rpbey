@@ -104,7 +104,7 @@ const DEFAULT_RULES = [
   },
 ];
 
-const DEFAULT_INTRO = `La **République Populaire du Beyblade** (RPB) est née de la passion d'un groupe de fans français déterminés à créer la meilleure communauté Beyblade de l'hexagone.
+const DEFAULT_INTRO = `La **République Populaire du Beyblade** (RPB) est née de la passion d'un groupe de fans français déterminés à créer la meilleure communauté Beyblade de l'Hexagone.
 
 Avec l'arrivée de **Beyblade X**, une nouvelle ère s'ouvre pour notre communauté. Nous organisons des tournois réguliers et offrons une plateforme complète pour les bladers français.
 

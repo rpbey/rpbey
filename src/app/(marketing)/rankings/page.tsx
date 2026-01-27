@@ -11,7 +11,7 @@ export const metadata = {
     'Les meilleurs bladers de la République Populaire du Beyblade. Classement officiel mis à jour en temps réel.',
 };
 
- // Pour être sûr que la pagination est fraîche
+// Pour être sûr que la pagination est fraîche
 
 interface RankingsPageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -31,6 +31,7 @@ export default async function RankingsPage({
   // Fetch available seasons
   const seasons = await getSeasons();
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let profiles: any[] = [];
   let totalCount = 0;
   let title = 'Classements Officiels';
@@ -103,10 +104,14 @@ export default async function RankingsPage({
   const totalPages = Math.ceil(totalCount / pageSize);
 
   return (
-    <Container maxWidth="lg" sx={{ py: 8 }}>
+    <Container maxWidth="lg" sx={{ py: { xs: 4, md: 8 } }}>
       <PageHeader
         title={title}
-        description={`Les ${totalCount} meilleurs bladers de la République Populaire du Beyblade.`}
+        description={
+          totalCount > 0
+            ? `Les ${totalCount} meilleurs bladers de la République Populaire du Beyblade.`
+            : 'Classement officiel.'
+        }
       />
 
       <SeasonSelector seasons={seasons} />

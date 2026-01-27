@@ -123,10 +123,10 @@ export function TournamentDialog({
               </Grid>
               <Grid size={{ xs: 12, sm: 6 }}>
                 <FormControl fullWidth size="small">
-                  <InputLabel>Status</InputLabel>
+                  <InputLabel>Statut</InputLabel>
                   <Select
                     value={formData.status}
-                    label="Status"
+                    label="Statut"
                     onChange={(e) =>
                       setFormData({
                         ...formData,

@@ -83,6 +83,9 @@ const commonOptions: ThemeOptions = {
       fontWeight: 800,
       lineHeight: 1.1,
       letterSpacing: '-0.03em',
+      '@media (max-width:600px)': {
+        fontSize: '1.75rem',
+      },
       fontVariationSettings: '"wght" 800, "opsz" 48, "wdth" 100',
     },
     h2: {
@@ -90,54 +93,81 @@ const commonOptions: ThemeOptions = {
       fontWeight: 700,
       lineHeight: 1.15,
       letterSpacing: '-0.02em',
+      '@media (max-width:600px)': {
+        fontSize: '1.5rem',
+      },
       fontVariationSettings: '"wght" 700, "opsz" 40, "wdth" 100',
     },
     h3: {
       fontSize: '2.5rem',
       fontWeight: 600,
       lineHeight: 1.2,
+      '@media (max-width:600px)': {
+        fontSize: '1.25rem',
+      },
       fontVariationSettings: '"wght" 600, "opsz" 32',
     },
     h4: {
       fontSize: '2rem',
       fontWeight: 600,
       lineHeight: 1.25,
+      '@media (max-width:600px)': {
+        fontSize: '1.1rem',
+      },
       fontVariationSettings: '"wght" 600, "opsz" 28',
     },
     h5: {
       fontSize: '1.5rem',
       fontWeight: 500,
       lineHeight: 1.3,
+      '@media (max-width:600px)': {
+        fontSize: '1rem',
+      },
       fontVariationSettings: '"wght" 500, "opsz" 24',
     },
     h6: {
       fontSize: '1.25rem',
       fontWeight: 500,
       lineHeight: 1.4,
+      '@media (max-width:600px)': {
+        fontSize: '0.9rem',
+      },
       fontVariationSettings: '"wght" 500, "opsz" 20',
     },
     subtitle1: {
       fontSize: '1rem',
       fontWeight: 500,
       lineHeight: 1.5,
+      '@media (max-width:600px)': {
+        fontSize: '0.9rem',
+      },
       fontVariationSettings: '"wght" 500, "opsz" 16',
     },
     subtitle2: {
       fontSize: '0.875rem',
       fontWeight: 500,
       lineHeight: 1.5,
+      '@media (max-width:600px)': {
+        fontSize: '0.8rem',
+      },
       fontVariationSettings: '"wght" 500, "opsz" 14',
     },
     body1: {
       fontSize: '1rem',
       fontWeight: 400,
       lineHeight: 1.6,
+      '@media (max-width:600px)': {
+        fontSize: '0.9rem',
+      },
       fontVariationSettings: '"wght" 400, "opsz" 14',
     },
     body2: {
       fontSize: '0.875rem',
       fontWeight: 400,
       lineHeight: 1.6,
+      '@media (max-width:600px)': {
+        fontSize: '0.8rem',
+      },
       fontVariationSettings: '"wght" 400, "opsz" 12',
     },
     button: {
@@ -258,6 +288,29 @@ const commonOptions: ThemeOptions = {
           backgroundColor: SURFACE_DARK.main,
           height: 80,
           borderRadius: '16px 16px 0 0',
+        },
+      },
+    },
+    MuiTableContainer: {
+      styleOverrides: {
+        root: {
+          overflowX: 'auto',
+          '&::-webkit-scrollbar': { height: '6px' },
+          '&::-webkit-scrollbar-thumb': {
+            backgroundColor: 'rgba(255, 255, 255, 0.1)',
+            borderRadius: '10px',
+          },
+        },
+      },
+    },
+    MuiContainer: {
+      styleOverrides: {
+        root: {
+          // Force a minimum padding on mobile if not specified
+          '@media (max-width:600px)': {
+            paddingLeft: '16px',
+            paddingRight: '16px',
+          },
         },
       },
     },

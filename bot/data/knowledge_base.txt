@@ -1,10 +1,738 @@
+# Beyblade X Knowledge Base
 
-Cheick est con.
+## Characters
+### Ai Nekki
+- Japanese Name: 熱気アイ
+- Beyblade: LeonClaw 5-60T|Claw Leon 5-60T
+- Team: Top Blend (formerly)
 
---- INFO IMPORTÉE LE 1/23/2026 ---
-Source: RPB - République Populaire du Beyblade | RPBX (Twitter) (https://rpbey.fr/)
-RÉPUBLIQUEPOPULAIREBEYBLADE
-La communauté française de référence pour Beyblade X. Divertissement, passion et compétition réunis en un seul lieu.
-BEY-TAMASHII SERIES #1
-FeedMy devient le sponsor attitré de la RPB ! Profitez de lots et concours de QUALITÉ lors de nos événements.Utilisez le code RPB10 pour -10% sur tout le site et bénéficiez de la livraison offerte dès 100€ d'achats.
-Prêt à rejoindrela communauté ?
+### Aoi Harukaze
+- Japanese Name: 春風アオイ
+- Beyblade: SharkEdge 9-60GF|Keel Shark 9-60GF
+
+### Arce
+- Japanese Name: アルカ
+
+### Bariki Jinnai
+- Japanese Name: {{Ruby|陣内|じんない
+
+### Blaze Fujiwara
+- Japanese Name: {{Ruby|不死原|ふじわら
+
+### Byte
+- Japanese Name: {{Ruby|刃威斗|ばいと
+
+### Carlo Maruko
+- Japanese Name: {{Ruby|丸湖|まるこ
+
+### Ciel Kaminari
+- Japanese Name: 神成シエル
+- Beyblade: '''Primary Beys:'''<br>BlackShell 4-60D|Obsidian Shell 4-60D<br>Shelter Drake 7-80GP|Shelter Drake 7-80GP<br>ShelterDrake 5-70O|ShelterDrake 5-70O<br>ShelterDrake 3-60D|Shelter Drake 3-60D<br>'''Replicas/Borrowed Beys:'''<br>CobaltDrake 4-60F|Cobalt Drake 4-60F (replica)<br>DranBuster 1-60A|Buster Dran 1-60A (replica)<br>CobaltDragoon 2-60C|Cobalt Dragoon 2-60C (replica)
+- Team: Pendragon
+
+### Douden
+- Japanese Name: {{Ruby|銅田|どうだ
+
+### Eight Kurosu
+- Japanese Name: {{Ruby|黒|くろ
+
+### Enga Fugazaru
+- Japanese Name: {{Ruby|腐|ふ
+
+### Five Kurosu
+- Japanese Name: {{Ruby|黒|くろ
+
+### Four Kurosu
+- Japanese Name: {{Ruby|黒|くろ
+
+### Genri Sayo
+- Japanese Name: {{Ruby|左葉|さよう
+
+### Gigatani
+- Japanese Name: {{Ruby|戯画谷|ぎがたに
+
+### Ginro
+- Japanese Name: {{Ruby|銀|ぎん
+
+### Hayate Kurohane
+- Japanese Name: 黒羽ハヤテ
+- Beyblade: ShinobiShadow 1-60GN|Shadow Shinobi 1-60GN<br>TriceraPress M-85D|Brace Triceratops M-85D
+
+### Hina
+- Japanese Name: ヒナ
+- Beyblade: WizardArrow 4-80LF|Arrow Wizard 4-80LF<br>PhoenixFeather 3-60F|Feather Phoenix 3-60F
+
+### Iwao Gogo
+- Japanese Name: 剛轟 イワオ
+- Beyblade: GolemRock 1-60UN|Rock Golem 1-60UN
+- Team: Gordias
+
+### Jaq Manju
+- Japanese Name: 万獣ジャク
+
+### Jaxon Cross
+- Japanese Name: {{Ruby|黒須|くろす
+
+### Jian Strong
+- Japanese Name: チョー・パン
+- Beyblade: SharkEdge 3-60LF|Keel Shark 3-60LF<br>RhinoHorn 3-80S|Horn Rhino 3-80S<br>RhinoHorn 5-80A|Horn Rhino 5-80A
+- Team: Zooganic<br>Strong Ones (Temporarily)
+
+### Joka Manju
+- Japanese Name: 万獣ジョカ
+- Beyblade: ShinobiShadow 1-80MN|Shadow Shinobi 1-80MN
+
+### Karla Konjiki
+- Japanese Name: {{Ruby|金|こん
+
+### Khrome Ryugu
+- Japanese Name: {{Ruby|龍宮|りゅうぐう
+
+### Lantz Roji
+- Japanese Name: 露地ランツ
+- Beyblade: '''Primary Beys:'''<br>PerseusDark B6-80W|Dark Perseus B 6-80W<br>'''Generic/Borrowed Beys:'''<br>LeonClaw 5-60T|Claw Leon 5-60T
+- Team: Zodiac
+
+### Leak Fushimi
+- Japanese Name: {{Ruby|伏見|ふしみ
+
+### Line Shindo
+- Japanese Name: {{Ruby|進堂|しんどう
+
+### Lupe Himekawa
+- Japanese Name: {{Ruby|姫川|ひめかわ
+
+### Mais Kumiki
+- Japanese Name: {{Ruby|組木|くみき
+
+### Mamoru Shiromae
+- Japanese Name: 城前マモル
+- Beyblade: SphinxCowl 4-60MN|Cowl Sphinx 4-60MN
+
+### Masato Akechi
+- Japanese Name: 明智マサト
+- Beyblade: WizardArrow 5-70GB|Arrow Wizard 5-70GB
+
+### Megaoka
+- Japanese Name: 目ヶ岡
+- Beyblade: WyvernGale 5-80P|Gale Wyvern 5-80P<br>SharkEdge 3-60LF|Keel Shark 3-60LF
+
+### Meiko Myoden
+- Japanese Name: {{Ruby|冥殿|めいでん
+
+### Million Mizu
+- Japanese Name: 三頭ミリオン
+- Beyblade: '''Primary Beys:'''<br>CerberusFlame W5-80WB|Flame Cerberus W 5-80WB<br>'''Generic/Borrowed Beys:'''<br>Strike Hawk 4-80LF (formerly; anime)
+- Team: Zodiac
+
+### Multi Nana-iro
+- Japanese Name: {{Ruby|七色|なないろ
+
+### Nanase
+- Japanese Name: ななせ
+
+### Natsu Shiranui
+- Japanese Name: 不知火ナツ
+- Beyblade: LeonClaw 3-70GP|Claw Leon 3-70GP
+
+### Nijiko
+- Japanese Name: にじこ
+
+### Nine Kurosu
+- Japanese Name: {{Ruby|黒|くろ
+
+### Number One
+- Japanese Name: イチゴー
+- Beyblade: Very Berry Bomb 5-80GB|Very Berry Cherry 5-80GB<br>SharkEdge 3-60LF|Very Berry Dynamite 3-60LF
+- Team: Strong Ones (Temporarily)
+
+### Number Three
+- Japanese Name: サンゴー
+
+### Number Zero
+- Japanese Name: ゼロゴー
+
+### Omega Shiroboshi
+- Japanese Name: 白星オメガ
+- Beyblade: SamuraiSaber 2-70L|Saber Samurai 2-70L<br>AeroPegasus 3-70A|Aero Pegasus 3-70A<br>PegasusBlast ATr|Blast Pegasus A Tr
+- Team: Zodiac
+
+### One Kurosu
+- Japanese Name: {{Ruby|黒|くろ
+
+### Packun
+- Japanese Name: ぱっくん
+- Beyblade: '''Primary Beys'''<br>HellsHammer 3-70H|Hammer Packun 3-70H<br>DranBuster 1-60A|Buster Packun 1-60A<br>WizardRod 5-70DB|Wand Wizard 5-70DB<br>SamuraiSaber 2-70L|Saber Packun 2-70L<br>ViperTail 3-80P|Tail Packun 3-80P<br>WizardArc R4-55LO|PackunArc R4-55LO<br>ClockMirage 9-65B|PackunMirage 9-65B<br>SolEclipse D5-70TK|PackunEclipse D5-70TK<br>'''Generic/Borrowed Beys'''<br>WizardArrow 4-80LF|Arrow Wizard 4-80LF<br>WyvernGale 5-80P|Gale Wyvern 5-80P
+- Team: Packun Channel<br>Dreams (temporary)
+
+### Pris Manju
+- Japanese Name: 万獣プリス
+
+### Prisse Manju
+- Japanese Name: 万獣プリセ
+
+### Quinn Manju
+- Japanese Name: {{Ruby|万獣|まんじゅう
+
+### Rebel Sakashima
+- Japanese Name: {{Ruby|逆嶋|さかしま
+
+### Reiyu Kuwabara
+- Japanese Name: {{Ruby|桑|くわ
+
+### Ren Katamuki
+- Japanese Name: {{Ruby|片向|かたむき
+
+### Rex Jura
+- Japanese Name: {{Ruby|珠羅|じゅら
+
+### Robin Kazami
+- Japanese Name: {{Ruby|風|かざ
+
+### Ryu Isshin
+- Japanese Name: {{Ruby|一|いっ
+
+### Safa
+- Japanese Name: スフィー
+- Beyblade: SphinxCowl 9-80GN|Cowl Sphinx 9-80GN
+
+### Sheer Kamikage
+- Japanese Name: 神影シア
+- Beyblade: ShinobiKnife 4-60LF|Knife Shinobi 4-60LF
+
+### Sigrid Nana-iro
+- Japanese Name: {{Ruby|七色 |なないろ
+
+### Sol Harema
+- Japanese Name: {{Ruby|晴間|はれま
+
+### Sue Manju
+- Japanese Name: 万獣スエ
+
+### Sui Akizuki
+- Japanese Name: 秋月スイ
+- Beyblade: UnicornSting 5-60U|Sting Unicorn 5-60U<br>AeroPegasus 7-60L|Aero Pegasus 7-60L
+
+### Surface Shirogane
+- Japanese Name: {{Ruby|白銀|しろがね
+
+### Suzaki
+- Japanese Name: スザキ
+- Beyblade: WizardArrow 4-80LF|Arrow Wizard 4-80LF
+- Team: Albatross (Formerly)
+
+### Taiki Hirako
+- Japanese Name: 平子タイキ
+- Beyblade: WyvernGale 3-60DB|Gale Wyvern 3-60DB
+
+### Taisho Sushiya
+- Japanese Name: {{Ruby|寿司谷|すしや
+
+### Takumi Ishiyama
+- Japanese Name: 石山タクミ
+- Beyblade: Stone Mont Blanc|Stone Mountain (Manga)<br>Stone Mont Blanc 3-80N|Stone Mountain 3-80N<br>PhoenixFeather 3-60F|Feather Phoenix 3-60F
+- Team: Phalanx<br>Top Boyz (Temporarily)
+
+### Tenka Shiroboshi
+- Japanese Name: {{Ruby|白星|しろぼし
+
+### Three Kurosu
+- Japanese Name: {{Ruby|黒|くろ
+
+### Titus Manju
+- Japanese Name: {{Ruby|万獣|まんじゅう
+
+### Toguro Okunaga
+- Japanese Name: {{Ruby|億|おく
+
+### Tsubasa Takaya
+- Japanese Name: 鷹野ツバサ
+- Beyblade: WyvernGale 5-80GB|Gale Wyvern 5-80GB
+
+### Tsuru
+- Japanese Name: ツル
+- Beyblade: WizardArrow 4-80LF|Arrow Wizard 4-80LF
+- Team: Albatross (Formerly)
+
+### Tsuyoshi Goriki
+- Japanese Name: 剛力ツヨシ
+- Beyblade: DranBuster 1-80R|Buster Dran 1-80R
+
+### Warden
+- Japanese Name: 門バンタロウ
+- Beyblade: WyvernGale 5-80GB|Gale Wyvern 5-80GB
+- Team: Top Blend (formerly)<br>Top Boyz (Temporarily)
+
+### Yeti
+- Japanese Name: イエティ
+- Beyblade: SphinxCowl 9-80GN|Cowl Sphinx 9-80GN
+
+### Yoko Kyubi
+- Japanese Name: {{Ruby|九|きゅう
+
+### Yuni Naniwa
+- Japanese Name: {{Ruby|難波|なんば
+
+### Zero Kurosu
+- Japanese Name: {{Ruby|黒|くろ
+
+### Zonamos Nekoyama
+- Japanese Name: {{Ruby|猫山|ねこやま
+
+## Beyblades
+### AeroPegasus 3-70A
+
+### Antler Stag B 2-60HN
+- Type: Defense
+- Ratchet: 2-60
+- Bit: High Needle
+
+### Arrow Wizard 4-80O
+- Type: Stamina
+- Ratchet: 4-80
+- Bit: Orb
+
+### BearScratch 5-60F
+
+### Bite Croc 3-60LF
+- Type: Attack
+- Ratchet: 3-60
+- Bit: Low Flat
+
+### BlackShell 4-60D
+
+### BlackShell 9-80B
+
+### Bumblebee 3-60GP
+- Type: Balance
+- Ratchet: 3-60
+- Bit: Gear Point
+
+### Buster Dran 5-70DB
+- Type: Stamina
+- Ratchet: 5-70
+- Bit: Disk Ball
+
+### Captain America 4-70GB
+- Type: Stamina
+- Ratchet: 4-70
+- Bit: Gear Ball
+
+### Chewbacca 4-80LF
+- Type: Attack
+- Ratchet: 4-80
+- Bit: Low Flat
+
+### ClockMirage 9-65B
+
+### CobaltDragoon 2-60C
+
+### CobaltDrake 4-60F
+
+### CobaltDrake 9-60R
+
+### CrimsonGaruda 4-70TP
+
+### CrocCrunch 2-60Q
+
+### Dagger Dran 4-70Q
+- Type: Attack
+- Ratchet: 4-70
+- Bit: Quake
+
+### Darth Vader 4-60P
+
+### DracielShield 7-60D
+
+### DragoonStorm 4-60RA
+
+### DranArc S2-70K
+
+### DranBrave S6-60V
+
+### DranBuster 1-60A
+
+### DranBuster 3-70N
+
+### DranDagger 2-80GP
+
+### DranDagger 4-60R
+
+### DranDagger 4-70P
+
+### DranDagger 9-60LF
+
+### DranSword 3-60F
+
+### DranSword 3-80B
+
+### DranSword 4-80DB
+
+### DranzerSpiral 3-80T
+- Type: Balance
+- Ratchet: 3-80
+- Bit: Taper
+
+### DrigerSlash 4-80P
+
+### Fort Hornet R 7-60T
+- Type: Balance
+- Ratchet: 7-60
+- Bit: Taper
+
+### FoxBrush J0-80DB
+
+### FoxBrush J2-60U
+
+### FoxBrush J9-70GR
+
+### General Grievous 3-80HN
+- Type: Defense
+- Ratchet: 3-80
+- Bit: High Needle
+
+### GhostCircle 0-80GB
+
+### GhostCircle 4-60H
+
+### Gill Shark 4-70O
+- Type: Stamina
+- Ratchet: 4-70
+- Bit: Orb
+
+### GoatTackle 7-70T
+
+### GolemRock 1-60UN
+
+### Green Goblin 9-80HT
+- Type: Balance
+- Ratchet: 9-80
+- Bit: High Taper
+
+### HellsArc T3-85O
+
+### HellsBrave J3-60GF
+
+### HellsChain 5-60HT
+
+### HellsChain 9-80O
+
+### HellsHammer 3-70H
+
+### HellsReaper T4-70K
+
+### HellsScythe 3-80B
+
+### HellsScythe 3-80F
+- Type: Attack
+- Ratchet: 3-80
+- Bit: Flat
+
+### HellsScythe 4-60T
+
+### HellsScythe 4-80LF
+
+### Hover Wyvern 3-85N
+
+### ImpactDrake 7-80GP
+
+### ImpactDrake 9-60LR
+
+### Iron Man 4-80B
+
+### Knife Shinobi 4-80HN
+
+### KnightLance 3-60LF
+
+### KnightLance 4-60GB
+
+### KnightLance 4-80HN
+
+### KnightMail 3-85BS
+
+### KnightShield 3-80N
+
+### KnightShield 4-60LF
+
+### KnightShield 4-80T
+
+### KnightShield 5-80T
+
+### LeonClaw 0-80E
+
+### LeonClaw 3-80HN
+
+### LeonClaw 5-60P
+
+### LeonCrest 7-60GN
+
+### LeonCrest 9-80K
+
+### LeonFang T4-60A
+
+### Lightning L-Drago 1-60F (Rapid-Hit Type)
+
+### Lightning L-Drago 1-60F (Upper Type)
+
+### Luke Skywalker 4-80B
+
+### Maguro Edge 3-60LF
+- Type: Attack
+- Ratchet: 3-60
+- Bit: Low Flat
+
+### MammothTusk 2-80E
+
+### Megatron 4-80B
+
+### MeteorDragoon 3-70J
+
+### Miles Morales 1-60GN
+- Type: Defense
+- Ratchet: 1-60
+- Bit: Gear Needle
+
+### Moff Gideon 3-80N
+
+### Mosasaurus 9-60U
+
+### MummyCurse 7-55W
+
+### Obi-Wan Kenobi 4-60P
+- Type: Balance
+- Ratchet: 4-60
+- Bit: Point
+
+### Optimus Primal 3-60F
+
+### Optimus Prime 4-60P
+
+### OrochiCluster 6-60LF
+
+### PegasusBlast ATr
+
+### PerseusDark B6-80W
+
+### PhoenixFeather 3-60F
+
+### PhoenixFeather 4-60LF
+
+### PhoenixWing 5-80H
+
+### PhoenixWing 9-60GF
+
+### PhoenixWing 9-80DB
+
+### Quetzalcoatlus 4-55D
+
+### Red Hulk 1-80R
+- Type: Attack
+- Ratchet: 1-80
+- Bit: Rush
+
+### RhinoHorn 3-80S
+
+### RhinoHorn 5-80Q
+
+### RhinoReaper C4-55D
+
+### Roar Tyranno 9-60GF
+
+### Rock Leone 6-80GN
+
+### SamuraiCalibur 6-70M
+
+### SamuraiSaber 2-70L
+
+### SamuraiSteel 5-70GF
+
+### Savage Bear 3-60S
+- Type: Defense
+- Ratchet: 3-60
+- Bit: Spike
+
+### ScorpioSpear 0-70Z
+
+### SharkEdge 1-60Q
+
+### SharkEdge 3-60LF
+
+### SharkEdge 3-80F
+
+### SharkEdge 4-80N
+
+### SharkEdge 5-60GF
+
+### SharkScale 4-50UF
+
+### ShelterDrake 3-60D
+
+### ShelterDrake 5-70O
+
+### ShelterDrake 7-80GP
+
+### ShinobiKnife 4-60LF
+
+### ShinobiShadow 1-80MN
+
+### ShinobiShadow 3-70GP
+
+### ShinobiShadow 3-80F
+
+### ShinobiShadow 9-60LF
+
+### Shockwave 5-80O
+- Type: Stamina
+- Ratchet: 5-80
+- Bit: Orb
+
+### SilverWolf 3-80FB
+
+### SphinxCowl 1-80GF
+
+### SphinxCowl 4-80HT
+
+### SphinxCowl 5-60O
+
+### SphinxCowl 9-80GN
+
+### Spider-Man 3-60F
+
+### Spinosaurus 3-85A
+
+### Starscream 3-80N
+
+### Steel Samurai 4-80T
+- Type: Balance
+- Ratchet: 4-80
+- Bit: Taper
+
+### Sting Unicorn 4-60P
+- Type: Balance
+- Ratchet: 4-60
+- Bit: Point
+
+### Stone Mont Blanc 3-80N
+- Type: Defense
+- Ratchet: 3-80
+- Bit: Needle
+
+### StormPegasis 3-70RA
+
+### Stormtrooper 5-70B
+- Type: Stamina
+- Ratchet: 5-70
+- Bit: Ball
+
+### Strike Hawk 4-80LF
+
+### T. Rex 1-80GB
+
+### Tackle Goat 2-70N
+- Type: Defense
+- Ratchet: 2-70
+- Bit: Needle
+
+### Talon Ptera 3-80B
+- Type: Stamina
+- Ratchet: 3-80
+- Bit: Ball
+
+### Thanos 4-60P
+
+### The Mandalorian 3-60F
+
+### TriceraPress M-85BS
+
+### Trypio 3-60N
+- Type: Defense
+- Ratchet: 3-60
+- Bit: Needle
+
+### Tusk Mammoth 3-60T
+- Type: Balance
+- Ratchet: 3-60
+- Bit: Taper
+
+### TyrannoBeat 3-60S
+
+### TyrannoBeat 4-70Q
+
+### TyrannoRoar 1-70L
+
+### UnicornSting 3-70D
+
+### UnicornSting 5-60GP
+
+### ValkyrieVolt S4-70V
+
+### Venom 3-80N
+
+### Very Berry Bomb 5-80GB
+- Type: Stamina
+- Ratchet: 5-80
+- Bit: Gear Ball
+
+### VictoryValkyrie 2-60RA
+
+### ViperTail 3-80HN
+
+### ViperTail 4-60F
+
+### ViperTail 5-60F
+
+### ViperTail 5-70D
+
+### ViperTail 5-80O
+
+### WeissTiger 3-60U
+
+### WhaleWave 3-80GB
+
+### WhaleWave 4-70HN
+
+### WhaleWave 5-80E
+
+### WhaleWave 7-60K
+
+### WizardArc R4-55LO
+
+### WizardArrow 3-60T
+- Type: Balance
+- Ratchet: 3-60
+- Bit: Taper
+
+### WizardArrow 4-60N
+
+### WizardArrow 4-80B
+
+### WizardArrow 4-80GB
+
+### WizardArrow 4-80N
+
+### WizardRod 1-60R
+
+### WizardRod 5-70DB
+
+### Wriggle Kraken S 3-85O
+- Type: Stamina
+- Ratchet: 3-85
+- Bit: Orb
+
+### WyvernGale 0-80C
+
+### WyvernGale 2-60S
+
+### WyvernGale 3-60T
+
+### WyvernGale 5-80GB
+
+### WyvernHover 2-80GN
+
+### XenoXcalibur 3-60GF
+
+### Yell Kong 3-60GB
+- Type: Stamina
+- Ratchet: 3-60
+- Bit: Gear Ball
+

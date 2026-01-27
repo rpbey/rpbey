@@ -15,7 +15,7 @@ export default tseslint.config(
       "generated/**",
       "src/generated/**",
       "dist/**",
-      "bot/dist/**",
+      "bot/**",
       "temp_extract/**",
       "scripts/**",
       "temp/**",
@@ -24,8 +24,21 @@ export default tseslint.config(
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,
+  // Base config for all TS files
   {
     files: ["**/*.{ts,tsx}"],
+    rules: {
+      "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
+      "@typescript-eslint/no-explicit-any": "warn",
+      "@typescript-eslint/consistent-type-imports": [
+        "error",
+        { prefer: "type-imports", fixStyle: "inline-type-imports" },
+      ],
+    },
+  },
+  // React-specific config
+  {
+    files: ["src/**/*.{ts,tsx}"],
     plugins: {
       react: reactPlugin,
       "react-hooks": hooksPlugin,
@@ -43,15 +56,8 @@ export default tseslint.config(
       "react-hooks/rules-of-hooks": "error",
       "react-hooks/exhaustive-deps": "warn",
       "react-hooks/set-state-in-effect": "off",
-      "react-hooks/preserve-manual-memoization": "off",
-      "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
-      "@typescript-eslint/no-explicit-any": "warn",
       "react/no-unescaped-entities": "off",
       "@next/next/no-img-element": "off",
-      "@typescript-eslint/consistent-type-imports": [
-        "error",
-        { prefer: "type-imports", fixStyle: "inline-type-imports" },
-      ],
     },
     settings: {
       react: {

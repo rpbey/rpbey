@@ -10,32 +10,32 @@ export const metadata = {
 };
 
 const TEAM_LABELS: Record<string, string> = {
-  admin: 'Administration',
-  rh: 'Ressources Humaines',
-  modo: 'Modération',
-  arbitre: 'Arbitrage',
-  staff: 'Staff',
-  dev: 'Développement',
-  event: 'Événementiel',
-  media: 'Média / Design',
+  ADMIN: 'Administration',
+  RH: 'Ressources Humaines',
+  MODO: 'Modération',
+  ARBITRE: 'Arbitrage',
+  STAFF: 'Staff',
+  DEV: 'Développement',
+  EVENT: 'Événementiel',
+  MEDIA: 'Média / Design',
 };
 
 const TEAM_ORDER = [
-  'admin',
-  'rh',
-  'modo',
-  'arbitre',
-  'staff',
-  'dev',
-  'event',
-  'media',
+  'ADMIN',
+  'RH',
+  'MODO',
+  'ARBITRE',
+  'STAFF',
+  'DEV',
+  'EVENT',
+  'MEDIA',
 ];
 
 export default async function TeamPage() {
   await headers();
   const members = await prisma.staffMember.findMany({
     where: { isActive: true },
-    orderBy: [{ teamId: 'asc' }, { displayIndex: 'asc' }],
+    orderBy: [{ role: 'asc' }, { displayIndex: 'asc' }],
   });
 
   if (members.length === 0) {
@@ -51,13 +51,15 @@ export default async function TeamPage() {
     );
   }
 
-  // Group members by team
+  // Group members by ROLE
   const groupedMembers = members.reduce(
     (acc, member) => {
-      if (!acc[member.teamId]) {
-        acc[member.teamId] = [];
+      // Ensure role is a string key
+      const roleKey = member.role || 'STAFF';
+      if (!acc[roleKey]) {
+        acc[roleKey] = [];
       }
-      acc[member.teamId]?.push(member);
+      acc[roleKey]?.push(member);
       return acc;
     },
     {} as Record<string, typeof members>,

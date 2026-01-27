@@ -45,7 +45,7 @@ const navItems = [
   { icon: TrophyIcon, label: 'Tournois', href: '/tournaments' },
   { icon: BarChart, label: 'Classements', href: '/rankings' },
   { icon: LiveTv, label: 'TV', href: '/tv' },
-  { icon: People, label: 'L’Équipe', href: '/notre-equipe' },
+  { icon: People, label: "L'équipe", href: '/notre-equipe' },
 ];
 
 export function IconNav() {
@@ -243,7 +243,7 @@ export function IconNav() {
                 <ListItemIcon>
                   <AccountCircle fontSize="small" />
                 </ListItemIcon>
-                <ListItemText primary="Mon Profil" />
+                <ListItemText primary="Mon profil" />
               </MenuItem>,
               <MenuItem
                 key="settings"
@@ -268,7 +268,7 @@ export function IconNav() {
                   <ListItemIcon>
                     <AdminPanelSettings fontSize="small" />
                   </ListItemIcon>
-                  <ListItemText primary="Admin" />
+                  <ListItemText primary="Administration" />
                 </MenuItem>
               ),
               (session.user.role === 'admin' ||
@@ -426,19 +426,6 @@ export function MobileNav() {
             label="Classements"
             value="/rankings"
             icon={<BarChart />}
-          />
-          <BottomNavigationAction
-            label={isAdmin ? 'Admin' : session?.user ? 'Profil' : 'Compte'}
-            value={isAdmin ? '/admin' : '/account'}
-            icon={
-              isAdmin ? (
-                <AdminPanelSettings />
-              ) : session?.user ? (
-                <AccountCircle />
-              ) : (
-                <Login />
-              )
-            }
           />
         </BottomNavigation>
       </Paper>

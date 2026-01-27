@@ -1,92 +1,54 @@
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 import { prisma } from '../src/lib/prisma';
-import { PartType } from '@prisma/client';
 
 async function main() {
-  console.log('🔗 Linking Products to Parts...');
-
+  const parts = await prisma.part.findMany({ where: { type: 'BLADE' } });
   const products = await prisma.product.findMany();
-  const allParts = await prisma.part.findMany();
 
-  const blades = allParts.filter(p => p.type === PartType.BLADE);
-  const ratchets = allParts.filter(p => p.type === PartType.RATCHET);
-  const bits = allParts.filter(p => p.type === PartType.BIT);
+  console.log(`Linking ${parts.length} blades to ${products.length} products...`);
 
-  console.log(`📊 Found ${products.length} products and ${allParts.length} parts.`);
-
-  let linkedCount = 0;
-
-  for (const product of products) {
-    // Try to find Beyblade components in product name or description
-    // Example: "ドランブレイブS6-60V" -> Dran Brave, 6-60, V
+  for (const part of parts) {
+    // Simple matching: does product name contain part name?
+    // "Dran Sword" in "Starter Dran Sword 3-60F"
+    // Be careful with substrings (e.g. "Dran" matching "Dran Dagger" and "Dran Sword")
+    // We sort products by length descending to match longest first?
     
-    // Pattern: [BladeName] [Ratchet] [Bit]
-    // Japanese often doesn't have spaces: ドランブレイブS6-60V
+    // Better: Match "Starter [Name]"
     
-    // 1. Identify Ratchet (e.g., 3-60, 5-80, 9-60)
-    const ratchetMatch = product.name.match(/(\d-\d{2})/);
-    const foundRatchet = ratchetMatch ? ratchets.find(r => r.name === ratchetMatch[1]) : null;
+    const matchingProducts = products.filter(p => 
+        p.name.toLowerCase().includes(part.name.toLowerCase())
+    );
 
-    if (foundRatchet) {
-      // 2. Everything before ratchet is likely the Blade
-      const splitParts = product.name.split(foundRatchet.name);
-      const beforeRatchet = splitParts[0];
-      
-      if (beforeRatchet !== undefined) {
-        // Clean up common prefixes like "BX-01 スターター"
-        const cleanBladeSearch = beforeRatchet.replace(/^[A-Z]{2}-\d{2,3}/, '').replace(/スターター|ブースター|セット|【[^\\\]]+】/, '').trim();
+    if (matchingProducts.length > 0) {
+        // Link to the earliest release? Or store multiple?
+        // Schema has `productId` on Beyblade, not Part directly (via relation)
+        // Wait, Part schema doesn't have `productId`. Beyblade has.
+        // But `Part` has no direct link to Product in schema yet?
         
-        const foundBlade = blades.find(b => 
-          cleanBladeSearch.includes(b.name) || 
-          b.nameJp && cleanBladeSearch.includes(b.nameJp)
-        );
-
-        // 3. Everything after ratchet is likely the Bit
-        const afterRatchet = splitParts[1];
-        const cleanBitSearch = afterRatchet?.split(' ')[0]?.split('\n')[0]?.trim();
-      
-        const foundBit = cleanBitSearch ? bits.find(b => 
-          cleanBitSearch === b.name || 
-          (b.name.length > 1 && cleanBitSearch.startsWith(b.name))
-        ) : null;
-
-        if (foundBlade && foundRatchet && foundBit) {
-          console.log(`✨ Matched ${product.code}: ${foundBlade.name} ${foundRatchet.name}${foundBit.name}`);
-          
-          await prisma.product.update({
-            where: { id: product.id },
-            data: {
-              includedParts: [foundBlade.name, foundRatchet.name, foundBit.name]
-            }
-          });
-
-          // Create a Beyblade record linked to this product if it doesn't exist
-          await prisma.beyblade.upsert({
-            where: { code: product.code },
-            update: {
-              name: `${foundBlade.name} ${foundRatchet.name}${foundBit.name}`,
-              productId: product.id,
-              bladeId: foundBlade.id,
-              ratchetId: foundRatchet.id,
-              bitId: foundBit.id,
-            },
-            create: {
-              code: product.code,
-              name: `${foundBlade.name} ${foundRatchet.name}${foundBit.name}`,
-              productId: product.id,
-              bladeId: foundBlade.id,
-              ratchetId: foundRatchet.id,
-              bitId: foundBit.id,
-            }
-          });
-
-          linkedCount++;
+        // Let's check schema.
+        // `Part` doesn't have `productId`. `Beyblade` has. 
+        // But we are dealing with parts.
+        
+        // Actually, we should probably add `releaseDate` to Part based on Product release date.
+        // And maybe `originalProductCode`.
+        
+        const earliest = matchingProducts.sort((a,b) => (a.releaseDate?.getTime() || 0) - (b.releaseDate?.getTime() || 0))[0];
+        
+        if (earliest && earliest.releaseDate) {
+            await prisma.part.update({
+                where: { id: part.id },
+                data: {
+                    releaseDate: earliest.releaseDate
+                }
+            });
+            process.stdout.write('+');
         }
-      }
     }
   }
-
-  console.log(`✅ Linked ${linkedCount} products to their parts!`);
+  
+  console.log('\nDone linking release dates!');
 }
 
-main().catch(console.error).finally(() => prisma.$disconnect());
+main();

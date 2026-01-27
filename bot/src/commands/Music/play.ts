@@ -49,6 +49,7 @@ export class PlayCommand extends Command {
       this.container.logger.info(`[Music] Searching for: ${query}`);
 
       // Refine query if not a URL
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let searchResult: any;
       try {
         new URL(query);
@@ -67,6 +68,7 @@ export class PlayCommand extends Command {
         );
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { track } = await player.play(channel as any, searchResult, {
         nodeOptions: {
           metadata: interaction,

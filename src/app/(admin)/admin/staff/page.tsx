@@ -42,23 +42,25 @@ import {
 import { StaffDialog } from './StaffDialog';
 
 const TEAM_LABELS: Record<string, string> = {
-  admin: 'Administration',
-  rh: 'Ressources Humaines',
-  modo: 'Modération',
-  staff: 'Staff',
-  dev: 'Développement',
-  event: 'Événementiel',
-  media: 'Média / Design',
+  ADMIN: 'Administration',
+  RH: 'Ressources Humaines',
+  MODO: 'Modération',
+  ARBITRE: 'Arbitrage',
+  STAFF: 'Staff',
+  DEV: 'Développement',
+  EVENT: 'Événementiel',
+  MEDIA: 'Média / Design',
 };
 
 const TEAM_COLORS: Record<string, string> = {
-  admin: RoleColors.ADMIN.hex,
-  rh: RoleColors.RH.hex,
-  modo: RoleColors.MODO.hex,
-  staff: RoleColors.STAFF.hex,
-  dev: '#10b981', // Emerald
-  event: '#f59e0b', // Amber
-  media: '#8b5cf6', // Violet
+  ADMIN: RoleColors.ADMIN.hex,
+  RH: RoleColors.RH.hex,
+  MODO: RoleColors.MODO.hex,
+  STAFF: RoleColors.STAFF.hex,
+  ARBITRE: '#f59e0b', // Amber
+  DEV: '#10b981', // Emerald
+  EVENT: '#f59e0b', // Amber
+  MEDIA: '#8b5cf6', // Violet
 };
 
 export default function AdminStaffPage() {
@@ -189,21 +191,21 @@ export default function AdminStaffPage() {
         </Box>
       ) : (
         <Stack spacing={4}>
-          {Object.keys(TEAM_LABELS).map((teamId) => {
-            const teamMembers = members.filter((m) => m.teamId === teamId);
+          {Object.keys(TEAM_LABELS).map((roleKey) => {
+            const teamMembers = members.filter((m) => m.role === roleKey);
             if (teamMembers.length === 0) return null;
 
             return (
-              <Box key={teamId}>
+              <Box key={roleKey}>
                 <Box
                   sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}
                 >
                   <Typography variant="h6" fontWeight="bold">
-                    {TEAM_LABELS[teamId]}
+                    {TEAM_LABELS[roleKey]}
                   </Typography>
                   <StatusChip
                     label={`${teamMembers.length} membre${teamMembers.length > 1 ? 's' : ''}`}
-                    customColor={TEAM_COLORS[teamId]}
+                    customColor={TEAM_COLORS[roleKey]}
                     size="small"
                   />
                   <Box sx={{ flex: 1, height: '1px', bgcolor: 'divider' }} />
@@ -223,7 +225,7 @@ export default function AdminStaffPage() {
                           '&:hover': {
                             transform: 'translateY(-4px)',
                             boxShadow: 1,
-                            borderColor: TEAM_COLORS[teamId],
+                            borderColor: TEAM_COLORS[roleKey],
                           },
                         }}
                       >
@@ -240,12 +242,12 @@ export default function AdminStaffPage() {
                               sx={{
                                 width: 48,
                                 height: 48,
-                                border: `2px solid ${alpha(TEAM_COLORS[teamId] || '#000', 0.1)}`,
+                                border: `2px solid ${alpha(TEAM_COLORS[roleKey] || '#000', 0.1)}`,
                                 bgcolor: alpha(
-                                  TEAM_COLORS[teamId] || '#000',
+                                  TEAM_COLORS[roleKey] || '#000',
                                   0.05,
                                 ),
-                                color: TEAM_COLORS[teamId],
+                                color: TEAM_COLORS[roleKey],
                                 fontWeight: 'bold',
                               }}
                             >

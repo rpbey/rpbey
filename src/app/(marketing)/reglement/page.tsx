@@ -80,7 +80,7 @@ const RULES = [
     icon: <Group />,
     title: 'Respect mutuel exigé',
     description:
-      'Toute forme de harcèlement visant un membre ou un staff de la RPB sera sévèrement puni. Si vous n’êtes pas d’accord avec une décision prise, cela doit se faire entendre dans le respect et la courtoisie.',
+      'Toute forme de harcèlement visant un membre ou un staff de la RPB sera sévèrement punie. Si vous n’êtes pas d’accord avec une décision prise, cela doit se faire entendre dans le respect et la courtoisie.',
     color: '#fbbf24',
   },
 ];

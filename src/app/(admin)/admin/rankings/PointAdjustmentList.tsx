@@ -21,7 +21,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   addPointAdjustment,
   deletePointAdjustment,
@@ -64,14 +64,14 @@ export default function PointAdjustmentList() {
     text: string;
   } | null>(null);
 
-  const fetchAdjustments = async () => {
+  const fetchAdjustments = useCallback(async () => {
     try {
       const data = await getPointAdjustments();
       setAdjustments(data);
     } catch {
       // Ignorer l'erreur silencieusement ou ajouter un toast global si nécessaire
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchAdjustments();

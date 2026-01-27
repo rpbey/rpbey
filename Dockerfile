@@ -14,7 +14,6 @@ WORKDIR /app
 
 # Copy package files first (for better layer caching)
 COPY pnpm-workspace.yaml pnpm-lock.yaml package.json ./
-COPY bot/package.json ./bot/
 
 # ============================================
 # Build Base stage (with compilers)
@@ -41,7 +40,6 @@ RUN --mount=type=cache,target=/root/.local/share/pnpm/store pnpm install --froze
 FROM build-base AS prod-deps
 
 COPY pnpm-workspace.yaml pnpm-lock.yaml package.json ./
-COPY bot/package.json ./bot/
 RUN --mount=type=cache,target=/root/.local/share/pnpm/store pnpm install --prod --frozen-lockfile
 
 # ============================================
@@ -55,9 +53,6 @@ COPY . .
 # Generate Prisma Client using the CLI directly
 # This avoids the @prisma/dev ESM issue by using node with ESM flag
 RUN node --experimental-require-module ./node_modules/prisma/build/index.js generate
-
-# Build Bot
-RUN pnpm run bot:build
 
 # Build Next.js
 # Mount the .next/cache directory to speed up subsequent builds
@@ -81,14 +76,6 @@ WORKDIR /app
 # Copy necessary files
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/package.json ./package.json
-
-# Copy production dependencies (needed for full Next.js support)
-# OPTIMIZATION: In standalone mode, node_modules are already included in .next/standalone
-# We comment this out to reduce image size and avoid conflicts.
-# COPY --from=prod-deps /app/node_modules ./node_modules
-
-# Copy Bot built files
-COPY --from=builder --chown=nextjs:nodejs /app/bot/dist ./bot/dist
 
 # Automatically leverage output traces to reduce image size
 # https://nextjs.org/docs/advanced-features/output-file-tracing
@@ -116,7 +103,7 @@ ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 
 # Health check to allow Coolify/Docker to detect unhealthy containers
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-  CMD node -e "const port = process.env.RUN_BOT ? (process.env.BOT_API_PORT || 3001) : (process.env.PORT || 3000); const path = process.env.HEALTHCHECK_PATH || '/api/health'; fetch('http://localhost:' + port + path).then(r => {if(!r.ok) throw new Error(r.statusText)})"
+  CMD node -e "const port = process.env.PORT || 3000; const path = process.env.HEALTHCHECK_PATH || '/api/health'; fetch('http://localhost:' + port + path).then(r => {if(!r.ok) throw new Error(r.statusText)})"
 
 # Use start script to handle conditional startup
 COPY --chown=nextjs:nodejs scripts/start-entrypoint.sh ./start-entrypoint.sh

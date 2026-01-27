@@ -39,6 +39,7 @@ export function SponsorBanner() {
           animate={{ height: 'auto', opacity: 1 }}
           exit={{ height: 0, opacity: 0 }}
           sx={{
+            display: { xs: 'none', md: 'block' },
             bgcolor: 'primary.main',
             color: 'primary.contrastText',
             position: 'relative',
@@ -48,33 +49,41 @@ export function SponsorBanner() {
         >
           <Box
             sx={{
-              px: { xs: 2, md: 4 },
-              py: 1,
+              px: { xs: 5, md: 4 }, // Increased padding on mobile to avoid close button
+              py: 1.5,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              minHeight: 48,
+              minHeight: { xs: 56, md: 48 },
               position: 'relative',
-              background: `linear-gradient(90deg, ${theme.palette.primary.main} 0%, ${alpha(theme.palette.primary.light, 0.8)} 50%, ${theme.palette.primary.main} 100%)`,
+              background: `linear-gradient(90deg, ${theme.palette.primary.main} 0%, ${alpha(
+                theme.palette.primary.light,
+                0.8,
+              )} 50%, ${theme.palette.primary.main} 100%)`,
             }}
           >
             <Stack
               direction="row"
-              spacing={2}
+              spacing={1.5}
               alignItems="center"
-              sx={{ textAlign: 'center' }}
+              sx={{ textAlign: 'left', width: '100%' }}
             >
-              <LocalOfferIcon sx={{ display: { xs: 'none', sm: 'block' } }} />
+              <LocalOfferIcon
+                sx={{ display: { xs: 'none', sm: 'block' }, flexShrink: 0 }}
+              />
               <Typography
-                variant="body2"
+                variant="caption"
                 fontWeight="bold"
-                sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}
+                sx={{
+                  fontSize: { xs: '0.7rem', sm: '0.875rem' },
+                  lineHeight: 1.2,
+                  flex: 1,
+                }}
               >
-                ÉNORME ANNONCE : FeedMy devient notre sponsor officiel ! -10%
-                avec le code{' '}
+                ANNONCE : FeedMy sponsorise la RPB ! -10% code{' '}
                 <Box
                   component="span"
-                  sx={{ color: '#fbbf24', textDecoration: 'underline' }}
+                  sx={{ color: '#fbbf24', fontWeight: 900 }}
                 >
                   RPB10
                 </Box>

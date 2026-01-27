@@ -14,8 +14,8 @@ env.useBrowserCache = false;
 env.backends.onnx.wasm.numThreads = 1; // Limit threads to avoid overload
 
 // Singleton instances
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 let transcriber: any = null;
-const _synthesizer: any = null;
 
 // --- STT (Speech-to-Text) ---
 export async function loadTranscriber() {

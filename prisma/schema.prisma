@@ -190,6 +190,8 @@ model Profile {
   tournamentWins Int             @default(0)
   twitterHandle  String?
   tiktokHandle   String?
+  challongeUsername String?
+  deckBoxImage   String?
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
   rankingPoints  Int             @default(0)
@@ -236,6 +238,8 @@ model Part {
   updatedAt    DateTime   @updatedAt
   modelUrl     String?
   textureUrl   String?
+  spinDirection String?
+  system       String?
   beyBits      Beyblade[] @relation("BeyBitRelation")
   beyBlades    Beyblade[] @relation("BeyBladeRelation")
   beyRatchets  Beyblade[] @relation("BeyRatchetRelation")
@@ -435,6 +439,8 @@ model Product {
   name          String
   nameEn        String?
   nameFr        String?
+  nameHasbro    String?
+  hasbroCode    String?
   productType   ProductType
   productLine   ProductLine
   price         Int?

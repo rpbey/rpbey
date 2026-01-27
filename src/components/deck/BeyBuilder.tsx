@@ -4,15 +4,13 @@
  * BeyBuilder - Component to build a single Bey (Blade + Ratchet + Bit)
  */
 
+import { useMediaQuery, useTheme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
-import Paper from '@mui/material/Paper';
-import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
+import { RadarChart } from '@mui/x-charts/RadarChart';
 import type { Part } from '@prisma/client';
-import { useEffect, useState } from 'react';
-import { ModelViewer } from '../bey/ModelViewer';
 import { PartSelector } from './PartSelector';
 
 export interface BeyData {
@@ -37,27 +35,31 @@ function parseStat(stat: string | number | null | undefined): number {
   return match?.[1] ? parseInt(match[1], 10) : 0;
 }
 
-function calculateStats(blade: Part | null): {
+function calculateStats(
+  blade: Part | null,
+  ratchet: Part | null,
+  bit: Part | null,
+): {
   attack: number;
   defense: number;
   stamina: number;
   dash: number;
-} | null {
-  if (!blade) return null;
-  return {
-    attack: parseStat(blade.attack),
-    defense: parseStat(blade.defense),
-    stamina: parseStat(blade.stamina),
-    dash: parseStat(blade.dash),
-  };
-}
+  burst: number;
+  weight: number;
+} {
+  const parts = [blade, ratchet, bit].filter(Boolean) as Part[];
 
-function getBeyName(data: BeyData): string {
-  const parts = [data.blade?.name, data.ratchet?.name, data.bit?.name].filter(
-    Boolean,
+  return parts.reduce(
+    (acc, part) => ({
+      attack: acc.attack + parseStat(part.attack),
+      defense: acc.defense + parseStat(part.defense),
+      stamina: acc.stamina + parseStat(part.stamina),
+      dash: acc.dash + parseStat(part.dash),
+      burst: acc.burst + parseStat(part.burst),
+      weight: acc.weight + (part.weight || 0),
+    }),
+    { attack: 0, defense: 0, stamina: 0, dash: 0, burst: 0, weight: 0 },
   );
-
-  return parts.join(' ') || 'Bey non configuré';
 }
 
 export function BeyBuilder({
@@ -67,27 +69,11 @@ export function BeyBuilder({
   usedPartIds,
   disabled = false,
 }: BeyBuilderProps) {
-  const [modelMapping, setModelMapping] = useState<
-    Record<string, { model?: string; texture?: string }>
-  >({});
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-  useEffect(() => {
-    fetch('/data/part-model-map.json')
-      .then((res) => res.json())
-      .then((mapping) => {
-        setModelMapping(mapping);
-      })
-      .catch((err) => {
-        console.error('Failed to load model mapping', err);
-      });
-  }, []);
-
-  const stats = calculateStats(data.blade);
-  const beyName = getBeyName(data);
+  const stats = calculateStats(data.blade, data.ratchet, data.bit);
   const isComplete = data.blade && data.ratchet && data.bit;
-
-  // Find 3D model for current blade
-  const bladeModel = data.blade ? modelMapping[data.blade.id] : null;
 
   // Filter out current bey's parts from usedPartIds
   const currentPartIds = [
@@ -100,153 +86,215 @@ export function BeyBuilder({
   );
 
   return (
-    <Paper
-      elevation={2}
+    <Box
       sx={{
-        p: 2,
-        borderLeft: 4,
-        borderColor: isComplete ? 'primary.main' : 'grey.400',
+        p: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 2,
       }}
     >
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          mb: 2,
-        }}
-      >
-        <Typography variant="subtitle1" fontWeight="bold">
-          Bey #{position}
-        </Typography>
-        {isComplete && (
-          <Chip
-            size="small"
-            label="Complet"
-            color="success"
-            variant="outlined"
-          />
-        )}
-      </Box>
-
-      {/* 3D Preview */}
-      <Box
-        sx={{
-          height: 180,
-          mb: 2,
-          borderRadius: 2,
-          overflow: 'hidden',
-          border: '1px solid',
-          borderColor: 'divider',
-        }}
-      >
-        {data.blade ? (
-          bladeModel?.model ? (
-            <ModelViewer
-              modelUrl={bladeModel.model}
-              textureUrl={bladeModel.texture}
-            />
-          ) : (
-            <Box
-              sx={{
-                height: '100%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                bgcolor: 'action.hover',
-              }}
-            >
-              <Typography variant="caption" color="text.secondary">
-                Aperçu 3D indisponible
-              </Typography>
-            </Box>
-          )
-        ) : (
-          <Box
-            sx={{
-              height: '100%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              bgcolor: 'action.hover',
-            }}
-          >
-            <Typography variant="caption" color="text.secondary">
-              Choisissez une lame pour l'aperçu
-            </Typography>
-          </Box>
-        )}
-      </Box>
-
-      <Stack spacing={2}>
+      <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
         <TextField
-          label="Surnom (optionnel)"
+          label="SURNOM DU BEY"
           value={data.nickname}
           onChange={(e) => onChange({ ...data, nickname: e.target.value })}
           disabled={disabled}
           size="small"
-          placeholder={beyName}
+          placeholder={`Bey #${position}`}
           fullWidth
+          variant="filled"
+          sx={{
+            flexGrow: 1,
+            '& .MuiInputBase-root': {
+              bgcolor: '#222',
+              color: 'white',
+              borderRadius: 1,
+            },
+            '& .MuiInputLabel-root': { color: '#888' },
+          }}
         />
 
+        <Chip
+          label={isComplete ? 'PRÊT' : 'INCOMPLET'}
+          color={isComplete ? 'success' : 'error'}
+          size="small"
+          variant="outlined"
+          sx={{ fontWeight: 'bold' }}
+        />
+      </Box>
+
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr',
+          gap: 2,
+        }}
+      >
         <PartSelector
           type="BLADE"
+          label="LAME (BLADE)"
           value={data.blade}
           onChange={(blade) => onChange({ ...data, blade })}
           disabled={disabled}
           disabledPartIds={otherUsedPartIds}
+          dark={true}
         />
 
         <PartSelector
           type="RATCHET"
+          label="RATCHET"
           value={data.ratchet}
           onChange={(ratchet) => onChange({ ...data, ratchet })}
           disabled={disabled}
           disabledPartIds={otherUsedPartIds}
+          dark={true}
         />
 
         <PartSelector
           type="BIT"
+          label="POINTE (BIT)"
           value={data.bit}
           onChange={(bit) => onChange({ ...data, bit })}
           disabled={disabled}
           disabledPartIds={otherUsedPartIds}
+          dark={true}
         />
+      </Box>
 
-        {stats && (
-          <Box
-            sx={{
-              display: 'flex',
-              gap: 2,
-              pt: 1,
-              borderTop: 1,
-              borderColor: 'divider',
-              flexWrap: 'wrap',
-            }}
-          >
+      {/* Stats Radar Chart */}
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: isMobile ? 'column' : 'row',
+          alignItems: 'center',
+          gap: 2,
+          mt: 1,
+          p: 2,
+          bgcolor: '#080808',
+          borderRadius: 2,
+          border: '1px solid #333',
+          position: 'relative',
+          overflow: 'hidden',
+        }}
+      >
+        <Box
+          sx={{
+            width: isMobile ? '100%' : '50%',
+            height: 200,
+            display: 'flex',
+            justifyContent: 'center',
+          }}
+        >
+          <RadarChart
+            {...({
+              series: [
+                {
+                  type: 'radar',
+                  data: [
+                    stats.attack,
+                    stats.defense,
+                    stats.stamina,
+                    stats.dash,
+                    stats.burst,
+                  ],
+                  color: '#dc2626',
+                },
+              ],
+              xAxis: [
+                {
+                  scaleType: 'band',
+                  data: ['ATK', 'DEF', 'END', 'DSH', 'BST'],
+                },
+              ],
+              width: 250,
+              height: 200,
+              margin: { top: 10, bottom: 10, left: 10, right: 10 },
+              slotProps: {
+                legend: { hidden: true },
+              },
+              sx: {
+                '& .MuiChartsAxis-line': { stroke: '#444' },
+                '& .MuiChartsAxis-tick': { stroke: '#444' },
+                '& .MuiChartsAxis-tickLabel': {
+                  fill: '#aaa',
+                  fontWeight: 'bold',
+                },
+              },
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            } as any)}
+          />
+        </Box>
+
+        <Box
+          sx={{
+            width: isMobile ? '100%' : '50%',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            gap: 2,
+          }}
+        >
+          <Box sx={{ textAlign: 'center' }}>
+            <Typography
+              variant="caption"
+              sx={{ color: '#888', fontWeight: 'bold', letterSpacing: 1 }}
+            >
+              POIDS TOTAL
+            </Typography>
+            <Typography
+              variant="h3"
+              sx={{
+                color: 'white',
+                fontWeight: '900',
+                textShadow: '0 0 20px rgba(255,255,255,0.2)',
+              }}
+            >
+              {stats.weight.toFixed(1)}
+              <span style={{ fontSize: '1rem', color: '#666' }}>g</span>
+            </Typography>
+          </Box>
+
+          <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1 }}>
             <Chip
-              size="small"
               label={`ATK ${stats.attack}`}
-              sx={{ bgcolor: 'error.main', color: 'white' }}
+              size="small"
+              sx={{
+                bgcolor: 'rgba(239, 68, 68, 0.2)',
+                color: '#ef4444',
+                fontWeight: 'bold',
+              }}
             />
             <Chip
-              size="small"
               label={`DEF ${stats.defense}`}
-              sx={{ bgcolor: 'info.main', color: 'white' }}
+              size="small"
+              sx={{
+                bgcolor: 'rgba(59, 130, 246, 0.2)',
+                color: '#3b82f6',
+                fontWeight: 'bold',
+              }}
             />
             <Chip
+              label={`END ${stats.stamina}`}
               size="small"
-              label={`STA ${stats.stamina}`}
-              sx={{ bgcolor: 'success.main', color: 'white' }}
+              sx={{
+                bgcolor: 'rgba(34, 197, 94, 0.2)',
+                color: '#22c55e',
+                fontWeight: 'bold',
+              }}
             />
             <Chip
+              label={`DSH ${stats.dash}`}
               size="small"
-              label={`X ${stats.dash}`}
-              sx={{ bgcolor: 'warning.main', color: 'black' }}
+              sx={{
+                bgcolor: 'rgba(251, 191, 36, 0.2)',
+                color: '#fbbf24',
+                fontWeight: 'bold',
+              }}
             />
           </Box>
-        )}
-      </Stack>
-    </Paper>
+        </Box>
+      </Box>
+    </Box>
   );
 }

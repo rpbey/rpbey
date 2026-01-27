@@ -449,9 +449,7 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse) {
                   AudioPlayerStatus,
                 } = await import('@discordjs/voice');
                 const prism = await import('prism-media');
-                const { pipeline } = await import('node:stream');
                 const { detectKeyword } = await import('./detector.js');
-                const { synthesizeSpeech } = await import('./transcriber.js');
 
                 const channel = await client.channels.fetch(params.channelId);
                 if (!channel || !channel.isVoiceBased())

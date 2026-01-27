@@ -11,7 +11,6 @@ const SAMPLE_RATE = 48000;
 const DURATION_SEC = 1;
 const CHUNK_SIZE = SAMPLE_RATE * DURATION_SEC; // 48000 samples
 const DATASET_DIR = path.join(process.cwd(), 'temp', 'dataset');
-const _RECORDINGS_DIR = path.join(process.cwd(), 'temp', 'recordings'); // Old dir fallback
 const MODEL_DIR = path.join(process.cwd(), 'model');
 
 async function loadRawFile(filepath: string): Promise<Float32Array> {

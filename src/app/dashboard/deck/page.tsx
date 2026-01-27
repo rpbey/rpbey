@@ -38,13 +38,13 @@ export default function DeckPage() {
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.error || 'Failed to fetch decks');
+        throw new Error(result.error || 'Impossible de récupérer les decks');
       }
 
       setDecks(result.data);
       setError(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      setError(err instanceof Error ? err.message : 'Une erreur est survenue');
     } finally {
       setLoading(false);
     }
@@ -74,12 +74,12 @@ export default function DeckPage() {
 
       if (!response.ok) {
         const result = await response.json();
-        throw new Error(result.error || 'Failed to delete deck');
+        throw new Error(result.error || 'Impossible de supprimer le deck');
       }
 
       setDecks(decks.filter((d) => d.id !== deletingDeck.id));
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      setError(err instanceof Error ? err.message : 'Une erreur est survenue');
     } finally {
       setDeleteDialogOpen(false);
       setDeletingDeck(null);
@@ -94,7 +94,7 @@ export default function DeckPage() {
 
       if (!response.ok) {
         const result = await response.json();
-        throw new Error(result.error || 'Failed to activate deck');
+        throw new Error(result.error || "Impossible d'activer le deck");
       }
 
       // Update local state
@@ -105,7 +105,7 @@ export default function DeckPage() {
         })),
       );
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      setError(err instanceof Error ? err.message : 'Une erreur est survenue');
     }
   };
 
@@ -141,7 +141,7 @@ export default function DeckPage() {
           startIcon={<AddIcon />}
           onClick={() => setBuilderOpen(true)}
         >
-          Nouveau Deck
+          Nouveau deck
         </Button>
       </Box>
 

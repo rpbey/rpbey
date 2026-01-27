@@ -20,7 +20,7 @@ export class JoinCommand extends Command {
   public override async chatInputRun(
     interaction: Command.ChatInputCommandInteraction,
   ) {
-    if (!interaction.guildId || !interaction.member) return;
+    if (!interaction.guild || !interaction.member) return;
 
     const member = interaction.member as GuildMember;
     const channel = member.voice.channel;
@@ -34,8 +34,9 @@ export class JoinCommand extends Command {
 
     joinVoiceChannel({
       channelId: channel.id,
-      guildId: interaction.guildId,
-      adapterCreator: interaction.guild?.voiceAdapterCreator,
+      guildId: interaction.guild.id,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      adapterCreator: interaction.guild.voiceAdapterCreator as any,
       selfDeaf: false,
     });
 

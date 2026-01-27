@@ -48,6 +48,7 @@ export class GoogleDriveService {
       });
 
       return (res.data.files as DriveFile[]) || [];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error('Error listing Drive files:', error);
       if (error.message?.includes('No key or keyFile')) {

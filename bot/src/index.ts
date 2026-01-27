@@ -62,6 +62,7 @@ try {
   });
 
   // Initialize Discord Player
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const player = new Player(client as any);
 
   // Load extractors
@@ -80,7 +81,7 @@ try {
         '[Music] FFmpeg not found in PATH, relying on ffmpeg-static.',
       );
     }
-  } catch (_e) {
+  } catch {
     container.logger.warn('[Music] Failed to verify FFmpeg.');
   }
 
@@ -98,6 +99,7 @@ try {
   });
   player.events.on('playerStart', (queue, track) => {
     container.logger.info(`[Music] Started playing: **${track.title}**`);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const interaction = queue.metadata as any;
     if (interaction?.channel) {
       interaction.channel.send(`▶️ **Lecture en cours :** ${track.title}`);

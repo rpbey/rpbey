@@ -27,71 +27,62 @@ export class RandomBeyCommand extends Command {
 
     // Fetch parts from DB
     const [blades, ratchets, bits] = await Promise.all([
-      prisma.part.findMany({
-        where: { type: 'BLADE' },
-        select: { name: true },
-      }),
-      prisma.part.findMany({
-        where: { type: 'RATCHET' },
-        select: { name: true },
-      }),
-      prisma.part.findMany({ where: { type: 'BIT' }, select: { name: true } }),
+      prisma.part.findMany({ where: { type: 'BLADE' } }),
+      prisma.part.findMany({ where: { type: 'RATCHET' } }),
+      prisma.part.findMany({ where: { type: 'BIT' } }),
     ]);
 
-    // Fallback if DB is empty
-    const bladeList =
-      blades.length > 0
-        ? blades.map((p) => p.name)
-        : [
-            'Dran Sword',
-            'Hells Scythe',
-            'Wizard Arrow',
-            'Knight Shield',
-            'Leon Claw',
-            'Phoenix Wing',
-            'Shark Edge',
-            'Unicorn Sting',
-          ];
-    const ratchetList =
-      ratchets.length > 0
-        ? ratchets.map((p) => p.name)
-        : ['3-60', '4-60', '5-60', '3-80', '4-80', '5-80'];
-    const bitList =
-      bits.length > 0
-        ? bits.map((p) => p.name)
-        : ['Flat', 'Ball', 'Point', 'Needle', 'Taper', 'Rush'];
+    if (blades.length === 0 || ratchets.length === 0 || bits.length === 0) {
+      return interaction.editReply(
+        '❌ Impossible de générer un combo : base de données incomplète.',
+      );
+    }
 
-    const types = [
-      { name: 'Attaque', emoji: '⚔️', color: 0xef4444 },
-      { name: 'Défense', emoji: '🛡️', color: 0x3b82f6 },
-      { name: 'Endurance', emoji: '🌀', color: 0x22c55e },
-      { name: 'Équilibre', emoji: '⚖️', color: 0xfbbf24 },
-    ];
+    const blade = this.random(blades);
+    const ratchet = this.random(ratchets);
+    const bit = this.random(bits);
 
-    const blade = this.random(bladeList);
-    const ratchet = this.random(ratchetList);
-    const bit = this.random(bitList);
-    const type = this.random(types);
+    const combo = `${blade.name} ${ratchet.name} ${bit.name}`;
 
-    const combo = `${blade} ${ratchet} ${bit}`;
+    // Helper to parse stats
+    const p = (val: string | null) => parseInt(val || '0', 10);
+    const w = (val: number | null) => val || 0;
 
-    // Generate random stats (placeholder)
-    const attack = this.randomStat();
-    const defense = this.randomStat();
-    const stamina = this.randomStat();
-    const weight = (Math.random() * 20 + 40).toFixed(1);
+    // Calculate real stats
+    const attack = p(blade.attack) + p(ratchet.attack) + p(bit.attack);
+    const defense = p(blade.defense) + p(ratchet.defense) + p(bit.defense);
+    const stamina = p(blade.stamina) + p(ratchet.stamina) + p(bit.stamina);
+    const weight = (
+      w(blade.weight) +
+      w(ratchet.weight) +
+      w(bit.weight)
+    ).toFixed(1);
+
+    // Determine type based on Blade (or Bit as fallback)
+    const typeMap: Record<
+      string,
+      { name: string; emoji: string; color: number }
+    > = {
+      ATTACK: { name: 'Attaque', emoji: '⚔️', color: 0xef4444 },
+      DEFENSE: { name: 'Défense', emoji: '🛡️', color: 0x3b82f6 },
+      STAMINA: { name: 'Endurance', emoji: '🌀', color: 0x22c55e },
+      BALANCE: { name: 'Équilibre', emoji: '⚖️', color: 0xfbbf24 },
+    };
+
+    const typeKey = blade.beyType || bit.beyType || 'BALANCE';
+    const type = typeMap[typeKey] || typeMap.BALANCE;
 
     // Generate visual combo card
     const cardBuffer = await generateComboCard({
       name: combo,
-      blade,
-      ratchet,
-      bit,
+      blade: blade.name,
+      ratchet: ratchet.name,
+      bit: bit.name,
       type: type.name,
       attack,
       defense,
       stamina,
-      weight,
+      weight: weight,
       color: type.color,
     });
 
