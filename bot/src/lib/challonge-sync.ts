@@ -118,7 +118,6 @@ export async function importTournament(
             },
           });
           importedCount++;
-        }
       }
     }
 
@@ -218,7 +217,6 @@ export async function syncParticipants(
             },
           });
           syncedCount++;
-        }
       }
     }
 

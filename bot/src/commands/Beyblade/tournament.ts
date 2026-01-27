@@ -3,6 +3,7 @@ import {
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
+  ChannelType,
   EmbedBuilder,
   PermissionFlagsBits,
 } from 'discord.js';
@@ -249,7 +250,7 @@ export class TournamentCommand extends Command {
       const targetChannelId = '1456760750893826293';
       const targetChannel = await interaction.client.channels.fetch(targetChannelId);
 
-      if (targetChannel && targetChannel.isTextBased()) {
+      if (targetChannel && targetChannel.type === ChannelType.GuildText) {
         const embed = new EmbedBuilder()
           .setTitle(`⚠️ Comptes non liés - ${tournament.attributes.name}`)
           .setDescription(
