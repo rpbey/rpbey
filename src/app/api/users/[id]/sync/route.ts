@@ -41,8 +41,11 @@ export async function POST(
     const botMember = await getBotMember(user.discordId);
 
     if (!botMember) {
+      console.error(
+        `[Sync] Member not found or Bot unreachable for Discord ID: ${user.discordId}`,
+      );
       return NextResponse.json(
-        { error: 'Member not found in Discord server' },
+        { error: 'Member not found in Discord server or Bot unreachable' },
         { status: 404 },
       );
     }
