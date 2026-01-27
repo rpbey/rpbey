@@ -47,6 +47,14 @@ export const auth = betterAuth({
     discord: {
       clientId: process.env.DISCORD_CLIENT_ID || '',
       clientSecret: process.env.DISCORD_CLIENT_SECRET || '',
+      mapProfileToUser: (profile) => {
+        return {
+          discordId: profile.id,
+          discordTag: profile.discriminator === '0' ? profile.username : `${profile.username}#${profile.discriminator}`,
+          image: `https://cdn.discordapp.com/avatars/${profile.id}/${profile.avatar}.png`,
+          globalName: profile.global_name,
+        };
+      },
     },
     twitch: {
       clientId: process.env.TWITCH_CLIENT_ID || '',
