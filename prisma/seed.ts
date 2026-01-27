@@ -1,6 +1,6 @@
 import type { TournamentStatus } from "@prisma/client";
 import "dotenv/config";
-import prisma from "../src/lib/prisma";
+import { prisma } from "../src/lib/prisma";
 
 async function main() {
   console.log("Clearing old tournaments...");
