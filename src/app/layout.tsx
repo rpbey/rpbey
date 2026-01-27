@@ -1,4 +1,5 @@
 import InitColorSchemeScript from '@mui/material/InitColorSchemeScript';
+import { GoogleTagManager } from '@next/third-parties/google';
 import type { Metadata, Viewport } from 'next';
 import { JsonLd } from '@/components/seo/JsonLd';
 import ThemeRegistry from '@/components/theme/ThemeRegistry';
@@ -95,7 +96,17 @@ export default function RootLayout({
       className={googleSansFlex.variable}
       suppressHydrationWarning
     >
+      <GoogleTagManager gtmId="GTM-WQTHQZM9" />
       <body>
+        <noscript>
+          <iframe
+            src="https://www.googletagmanager.com/ns.html?id=GTM-WQTHQZM9"
+            height="0"
+            width="0"
+            style={{ display: 'none', visibility: 'hidden' }}
+            title="gtm"
+          />
+        </noscript>
         <InitColorSchemeScript attribute="class" defaultMode="dark" />
         <JsonLd data={generateWebsiteJsonLd()} />
         <ThemeRegistry>

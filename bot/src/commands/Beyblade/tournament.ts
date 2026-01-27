@@ -139,6 +139,19 @@ export class TournamentCommand extends Command {
             .setDescription(
               'Affiche les tournois depuis la base de données locale',
             ),
+        )
+        .addSubcommand((sub) =>
+          sub
+            .setName('verifier-liens')
+            .setDescription(
+              'Vérifie les comptes non liés sur un tournoi et notifie le salon dédié (Admin)',
+            )
+            .addStringOption((opt) =>
+              opt
+                .setName('id')
+                .setDescription('ID ou URL du tournoi Challonge')
+                .setRequired(true),
+            ),
         ),
     );
   }
@@ -167,11 +180,101 @@ export class TournamentCommand extends Command {
         return this.syncTournament(interaction);
       case 'local':
         return this.listLocalTournaments(interaction);
+      case 'verifier-liens':
+        return this.checkLinks(interaction);
       default:
         return interaction.reply({
           content: '❌ Sous-commande inconnue.',
           ephemeral: true,
         });
+    }
+  }
+
+  private async checkLinks(interaction: Command.ChatInputCommandInteraction) {
+    // Check admin permissions
+    if (
+      !interaction.memberPermissions?.has(PermissionFlagsBits.Administrator)
+    ) {
+      return interaction.reply({
+        content: '❌ Seuls les administrateurs peuvent effectuer cette vérification.',
+        ephemeral: true,
+      });
+    }
+
+    const challongeId = interaction.options.getString('id', true);
+    await interaction.deferReply();
+
+    try {
+      const challonge = getChallongeClient();
+      const [tournamentRes, participantsRes] = await Promise.all([
+        challonge.getTournament(challongeId),
+        challonge.listParticipants(challongeId),
+      ]);
+
+      const tournament = tournamentRes.data;
+      const participants = participantsRes.data;
+
+      if (!participants || participants.length === 0) {
+        return interaction.editReply('📭 Aucun participant inscrit à ce tournoi.');
+      }
+
+      const unlinkedParticipants: string[] = [];
+
+      for (const p of participants) {
+        // 1. Check if already linked in Challonge metadata (misc field)
+        if (p.attributes.misc) continue;
+
+        // 2. Check if linked via Profile name matching
+        const user = await prisma.user.findFirst({
+          where: {
+            profile: {
+              challongeUsername: {
+                equals: p.attributes.name,
+                mode: 'insensitive',
+              },
+            },
+          },
+        });
+
+        if (!user) {
+          unlinkedParticipants.push(p.attributes.name);
+        }
+      }
+
+      if (unlinkedParticipants.length === 0) {
+        return interaction.editReply('✅ Tous les participants ont un compte Discord lié !');
+      }
+
+      // Send report to the specific channel
+      const targetChannelId = '1456760750893826293';
+      const targetChannel = await interaction.client.channels.fetch(targetChannelId);
+
+      if (targetChannel && targetChannel.isTextBased()) {
+        const embed = new EmbedBuilder()
+          .setTitle(`⚠️ Comptes non liés - ${tournament.attributes.name}`)
+          .setDescription(
+            `Les participants Challonge suivants n'ont pas encore lié leur compte Discord :\n\n` +
+            unlinkedParticipants.map(name => `• **${name}**`).join('\n') +
+            `\n\n👉 Utilisez la commande \`/challonge lier <pseudo>\` pour lier votre compte et apparaître dans le classement !`
+          )
+          .setColor(Colors.Warning)
+          .setFooter({ text: `${unlinkedParticipants.length} compte(s) non lié(s)` })
+          .setTimestamp();
+
+        await targetChannel.send({ embeds: [embed] });
+
+        return interaction.editReply(
+          `✅ Rapport envoyé dans <#${targetChannelId}>. ${unlinkedParticipants.length} participants non liés détectés.`
+        );
+      } else {
+        return interaction.editReply(
+          `❌ Impossible de trouver ou d'écrire dans le salon <#${targetChannelId}>.`
+        );
+      }
+
+    } catch (error) {
+      this.container.logger.error('Check links error:', error);
+      return interaction.editReply('❌ Erreur lors de la vérification des liens.');
     }
   }
 

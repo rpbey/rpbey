@@ -73,21 +73,37 @@ export async function importTournament(
     for (const p of participants) {
       // Le champ misc contient l'ID Discord si défini
       const discordId = p.attributes.misc;
+      let user = null;
 
       if (discordId) {
-        // Trouver l'utilisateur par Discord ID
-        const user = await prisma.user.findUnique({
+        // 1. Trouver l'utilisateur par Discord ID
+        user = await prisma.user.findUnique({
           where: { discordId },
         });
+      }
 
-        if (user) {
-          await prisma.tournamentParticipant.upsert({
-            where: {
-              tournamentId_userId: {
-                tournamentId: dbTournament.id,
-                userId: user.id,
+      if (!user) {
+        // 2. Fallback : Trouver par pseudo Challonge
+        user = await prisma.user.findFirst({
+          where: {
+            profile: {
+              challongeUsername: {
+                equals: p.attributes.name,
+                mode: 'insensitive',
               },
             },
+          },
+        });
+      }
+
+      if (user) {
+        await prisma.tournamentParticipant.upsert({
+          where: {
+            tournamentId_userId: {
+              tournamentId: dbTournament.id,
+              userId: user.id,
+            },
+          },
             update: {
               challongeParticipantId: p.id,
               seed: p.attributes.seed,
@@ -159,20 +175,35 @@ export async function syncParticipants(
     let syncedCount = 0;
     for (const p of participants) {
       const discordId = p.attributes.misc;
+      let user = null;
 
       if (discordId) {
-        const user = await prisma.user.findUnique({
+        user = await prisma.user.findUnique({
           where: { discordId },
         });
+      }
 
-        if (user) {
-          await prisma.tournamentParticipant.upsert({
-            where: {
-              tournamentId_userId: {
-                tournamentId: dbTournament.id,
-                userId: user.id,
+      if (!user) {
+        user = await prisma.user.findFirst({
+          where: {
+            profile: {
+              challongeUsername: {
+                equals: p.attributes.name,
+                mode: 'insensitive',
               },
             },
+          },
+        });
+      }
+
+      if (user) {
+        await prisma.tournamentParticipant.upsert({
+          where: {
+            tournamentId_userId: {
+              tournamentId: dbTournament.id,
+              userId: user.id,
+            },
+          },
             update: {
               challongeParticipantId: p.id,
               seed: p.attributes.seed,
