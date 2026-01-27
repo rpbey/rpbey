@@ -21,7 +21,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 // Set default behavior for application commands
 ApplicationCommandRegistries.setDefaultBehaviorWhenNotIdentical(
-  RegisterBehavior.BulkOverwrite,
+  RegisterBehavior.Overwrite,
 );
 
 // If GUILD_ID is provided in .env, set it as default for faster command registration
