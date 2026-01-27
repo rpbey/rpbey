@@ -15,6 +15,7 @@ export async function getPublicParts(params: {
   const take = 24;
   const skip = (page - 1) * take;
 
+  // biome-ignore lint/suspicious/noExplicitAny: Dynamic Prisma query
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const where: any = {};
 
@@ -32,6 +33,7 @@ export async function getPublicParts(params: {
 
   if (beyTypes && beyTypes.length > 0) {
     // Map string[] to BeyType enum (Prisma handles strings for enums usually, but let's be safe if types mismatch)
+    // biome-ignore lint/suspicious/noExplicitAny: Enum matching
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     where.beyType = { in: beyTypes as any };
   }

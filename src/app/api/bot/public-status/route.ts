@@ -1,4 +1,4 @@
-import { NextResponse, connection } from 'next/server';
+import { connection, NextResponse } from 'next/server';
 import { getBotStatus } from '@/lib/bot';
 
 export async function GET() {

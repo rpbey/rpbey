@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { connection } from 'next/server';
-import { DashboardShell } from '@/components/dashboard/DashboardShell';
+import { AdminShell } from '@/components/admin/AdminShell';
 import { auth } from '@/lib/auth';
 
 export const metadata: Metadata = {
@@ -35,5 +35,5 @@ export default async function AdminLayout({
     redirect('/dashboard');
   }
 
-  return <DashboardShell>{children}</DashboardShell>;
+  return <AdminShell>{children}</AdminShell>;
 }

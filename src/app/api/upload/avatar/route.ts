@@ -1,8 +1,8 @@
-import { auth } from '@/lib/auth';
+import { mkdir, writeFile } from 'fs/promises';
 import { headers } from 'next/headers';
 import { NextResponse } from 'next/server';
-import { mkdir, writeFile } from 'fs/promises';
 import path from 'path';
+import { auth } from '@/lib/auth';
 
 export async function POST(request: Request) {
   try {
@@ -26,11 +26,18 @@ export async function POST(request: Request) {
     const buffer = Buffer.from(bytes);
 
     if (!file.type.startsWith('image/')) {
-      return NextResponse.json({ error: 'File must be an image' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'File must be an image' },
+        { status: 400 },
+      );
     }
 
-    if (file.size > 5 * 1024 * 1024) { // 5MB limit
-      return NextResponse.json({ error: 'File size too large (max 5MB)' }, { status: 400 });
+    if (file.size > 5 * 1024 * 1024) {
+      // 5MB limit
+      return NextResponse.json(
+        { error: 'File size too large (max 5MB)' },
+        { status: 400 },
+      );
     }
 
     // Save file
@@ -47,11 +54,13 @@ export async function POST(request: Request) {
 
     // Update user profile immediately? Or let the client do it?
     // Let's return the URL and let the client call updateUser to maintain separation.
-    
-    return NextResponse.json({ url: imageUrl });
 
+    return NextResponse.json({ url: imageUrl });
   } catch (error) {
     console.error('Upload error:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal Server Error' },
+      { status: 500 },
+    );
   }
 }

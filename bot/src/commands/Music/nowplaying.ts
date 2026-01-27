@@ -17,6 +17,7 @@ export class NowPlayingCommand extends Command {
   public override async chatInputRun(
     interaction: Command.ChatInputCommandInteraction,
   ) {
+    // biome-ignore lint/style/noNonNullAssertion: Guarded by GuildOnly
     const queue = useQueue(interaction.guildId!);
 
     if (!queue || !queue.currentTrack) {

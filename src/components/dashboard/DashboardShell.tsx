@@ -2,23 +2,14 @@
 
 import {
   ArrowBack,
-  Article,
-  BarChart,
-  Cloud,
-  Code,
-  Dashboard,
   Inventory2,
   Launch,
   Leaderboard,
-  LiveTv,
   Logout,
   MoreHoriz,
-  People,
   Person,
   Settings,
   Shuffle,
-  SmartToy,
-  Terminal,
 } from '@mui/icons-material';
 import {
   AppBar,
@@ -26,7 +17,6 @@ import {
   alpha,
   Box,
   Button,
-  Divider,
   Drawer,
   IconButton,
   List,
@@ -48,7 +38,6 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { CacheBuster } from '@/components/system/CacheBuster';
-import { TrophyIcon } from '@/components/ui/Icons';
 import { PageTransition } from '@/components/ui/PageTransition';
 import { RpbLogo } from '@/components/ui/RpbLogo';
 import { signOut, useSession } from '@/lib/auth-client';
@@ -60,11 +49,9 @@ interface NavItem {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   icon: any;
   path: string;
-  adminOnly?: boolean;
 }
 
 const NAV_ITEMS: NavItem[] = [
-  // User Links (Primary Mobile Tabs)
   {
     label: 'Profil',
     icon: Person,
@@ -90,55 +77,6 @@ const NAV_ITEMS: NavItem[] = [
     icon: Shuffle,
     path: '/dashboard/random',
   },
-  // Admin Links
-  { label: "Vue d'ensemble", path: '/admin', icon: Dashboard, adminOnly: true },
-  {
-    label: 'Bot Discord',
-    path: '/admin/discord',
-    icon: SmartToy,
-    adminOnly: true,
-  },
-  { label: 'Statut du bot', path: '/admin/bot', icon: Code, adminOnly: true },
-  {
-    label: 'Logs du bot',
-    path: '/admin/bot/logs',
-    icon: Terminal,
-    adminOnly: true,
-  },
-  { label: 'Contenu', path: '/admin/content', icon: Article, adminOnly: true },
-  { label: 'Drive', path: '/admin/drive', icon: Cloud, adminOnly: true },
-  { label: 'Twitch', path: '/admin/twitch', icon: LiveTv, adminOnly: true },
-  {
-    label: 'Tournois',
-    path: '/admin/tournaments',
-    icon: TrophyIcon,
-    adminOnly: true,
-  },
-  {
-    label: 'Classements',
-    path: '/admin/rankings',
-    icon: Leaderboard,
-    adminOnly: true,
-  },
-  { label: 'Équipe', path: '/admin/staff', icon: People, adminOnly: true },
-  {
-    label: 'Utilisateurs',
-    path: '/admin/users',
-    icon: People,
-    adminOnly: true,
-  },
-  {
-    label: 'Statistiques',
-    path: '/admin/stats',
-    icon: BarChart,
-    adminOnly: true,
-  },
-  {
-    label: 'Config Site',
-    path: '/admin/settings',
-    icon: Settings,
-    adminOnly: true,
-  },
 ];
 
 export function DashboardShell({ children }: { children: React.ReactNode }) {
@@ -153,24 +91,13 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   const isAdmin =
     session?.user?.role === 'admin' || session?.user?.role === 'superadmin';
 
-  // Filter items based on role
-  const visibleItems = NAV_ITEMS.filter((item) => !item.adminOnly || isAdmin);
-
-  // Split items for sidebar grouping
-  const userItems = visibleItems.filter((item) => !item.adminOnly);
-  const adminItems = visibleItems.filter((item) => item.adminOnly);
-
   // Determine active item
-  const activeNavItem = visibleItems.find((item) =>
-    item.path !== '/admin'
-      ? pathname.startsWith(item.path)
-      : pathname === '/admin',
+  const activeNavItem = NAV_ITEMS.find((item) =>
+    pathname.startsWith(item.path),
   );
 
   // Bottom Nav Logic
-  // We check if the current path matches one of the 4 primary tabs.
-  // If not, we highlight "Menu" if the drawer is open, or nothing.
-  const isPrimaryTab = userItems.some(
+  const isPrimaryTab = NAV_ITEMS.some(
     (item) => item.path === activeNavItem?.path,
   );
   const bottomNavValue = isPrimaryTab
@@ -179,8 +106,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
       ? 'menu'
       : false;
 
-  const showBackButton =
-    pathname !== '/admin' && pathname !== '/dashboard/profile';
+  const showBackButton = pathname !== '/dashboard/profile'; // Profile is usually "Home" for dashboard
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleBottomNavChange = (_: any, newValue: string) => {
@@ -282,7 +208,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             </Typography>
           }
         >
-          {userItems.map((item) => {
+          {NAV_ITEMS.map((item) => {
             const isActive = pathname.startsWith(item.path);
             const Icon = item.icon;
             return (
@@ -335,87 +261,6 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             );
           })}
         </List>
-
-        {isAdmin && adminItems.length > 0 && (
-          <>
-            <Divider sx={{ my: 2, opacity: 0.5 }} />
-            <List
-              disablePadding
-              subheader={
-                <Typography
-                  variant="caption"
-                  fontWeight="bold"
-                  color="text.secondary"
-                  sx={{
-                    px: 3,
-                    mb: 1,
-                    display: 'block',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.1em',
-                  }}
-                >
-                  Administration
-                </Typography>
-              }
-            >
-              {adminItems.map((item) => {
-                const isActive =
-                  item.path === '/admin'
-                    ? pathname === '/admin'
-                    : pathname.startsWith(item.path);
-                const Icon = item.icon;
-                return (
-                  <ListItem key={item.path} disablePadding>
-                    <ListItemButton
-                      component={Link}
-                      href={item.path}
-                      selected={isActive}
-                      onClick={() => setMobileOpen(false)}
-                      sx={{
-                        mx: 1.5,
-                        mb: 0.5,
-                        px: 3,
-                        py: 1.5,
-                        minHeight: 56,
-                        borderRadius: '28px',
-                        gap: 1.5,
-                        bgcolor: isActive
-                          ? alpha(theme.palette.secondary.main, 0.12)
-                          : 'transparent',
-                        color: isActive ? 'secondary.main' : 'text.primary',
-                        '&:hover': {
-                          bgcolor: alpha(theme.palette.secondary.main, 0.08),
-                        },
-                        '&.Mui-selected': {
-                          bgcolor: alpha(theme.palette.secondary.main, 0.12),
-                          '&:hover': {
-                            bgcolor: alpha(theme.palette.secondary.main, 0.16),
-                          },
-                        },
-                      }}
-                    >
-                      <ListItemIcon
-                        sx={{
-                          minWidth: 'auto',
-                          color: isActive ? 'secondary.main' : 'text.secondary',
-                        }}
-                      >
-                        <Icon sx={{ fontSize: 24 }} />
-                      </ListItemIcon>
-                      <ListItemText
-                        primary={item.label}
-                        primaryTypographyProps={{
-                          fontSize: '0.9rem',
-                          fontWeight: isActive ? 700 : 500,
-                        }}
-                      />
-                    </ListItemButton>
-                  </ListItem>
-                );
-              })}
-            </List>
-          </>
-        )}
       </Box>
 
       <Box sx={{ p: 2, borderTop: '1px solid', borderColor: 'divider' }}>
@@ -650,7 +495,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             }}
           >
             {/* Primary User Tabs */}
-            {userItems.slice(0, 4).map((item) => {
+            {NAV_ITEMS.slice(0, 4).map((item) => {
               const Icon = item.icon;
               return (
                 <BottomNavigationAction
@@ -662,7 +507,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
               );
             })}
 
-            {/* "Menu" Tab for everything else (Admin, etc) */}
+            {/* "Menu" Tab for everything else */}
             <BottomNavigationAction
               label="Menu"
               value="menu"

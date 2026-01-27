@@ -1,8 +1,8 @@
 'use client';
 
 import { Box, Typography, useTheme } from '@mui/material';
-import { DynamicBarChart as MuiBarChart } from '@/components/ui/DynamicCharts';
 import type React from 'react';
+import { DynamicBarChart as MuiBarChart } from '@/components/ui/DynamicCharts';
 
 interface ChartProps {
   title?: string;

@@ -50,7 +50,10 @@ export const auth = betterAuth({
       mapProfileToUser: (profile) => {
         return {
           discordId: profile.id,
-          discordTag: profile.discriminator === '0' ? profile.username : `${profile.username}#${profile.discriminator}`,
+          discordTag:
+            profile.discriminator === '0'
+              ? profile.username
+              : `${profile.username}#${profile.discriminator}`,
           image: `https://cdn.discordapp.com/avatars/${profile.id}/${profile.avatar}.png`,
           globalName: profile.global_name,
         };

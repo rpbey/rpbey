@@ -1,27 +1,27 @@
 'use client';
 
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 import {
   Alert,
   Box,
   Button,
   Card,
   CardContent,
+  Collapse,
   Container,
   Divider,
+  IconButton,
+  InputAdornment,
   Stack,
   TextField,
   Typography,
-  InputAdornment,
-  IconButton,
-  Collapse,
 } from '@mui/material';
-import { Visibility, VisibilityOff } from '@mui/icons-material';
 import Link from 'next/link';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useState } from 'react';
 import { TwitchButton } from '@/components/auth';
-import { DiscordIcon } from '@/components/ui/Icons';
 import { useThemeMode } from '@/components/theme/ThemeRegistry';
+import { DiscordIcon } from '@/components/ui/Icons';
 import { signIn, signUp } from '@/lib/auth-client';
 
 function SignInContent() {
@@ -31,7 +31,7 @@ function SignInContent() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  
+
   // Form states
   const [emailOrUsername, setEmailOrUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -44,7 +44,7 @@ function SignInContent() {
     if (isLoading) return;
     setIsLoading(true);
     setAuthError(null);
-    
+
     const timeoutId = setTimeout(() => {
       setIsLoading(false);
     }, 10000);
@@ -70,55 +70,64 @@ function SignInContent() {
     try {
       if (isSignUp) {
         // Registration
-        await signUp.email({
-          email: emailOrUsername,
-          password,
-          name,
-          callbackURL: '/dashboard',
-        }, {
-          onRequest: () => {
-            // Optional: Loading state handled globally
+        await signUp.email(
+          {
+            email: emailOrUsername,
+            password,
+            name,
+            callbackURL: '/dashboard',
           },
-          onSuccess: () => {
-            router.push('/dashboard');
+          {
+            onRequest: () => {
+              // Optional: Loading state handled globally
+            },
+            onSuccess: () => {
+              router.push('/dashboard');
+            },
+            onError: (ctx) => {
+              setAuthError(ctx.error.message);
+              setIsLoading(false);
+            },
           },
-          onError: (ctx) => {
-            setAuthError(ctx.error.message);
-            setIsLoading(false);
-          },
-        });
+        );
       } else {
         // Login
         const isEmail = emailOrUsername.includes('@');
         if (isEmail) {
-          await signIn.email({
-            email: emailOrUsername,
-            password,
-            callbackURL: '/dashboard',
-          }, {
-            onSuccess: () => {
-              router.push('/dashboard');
+          await signIn.email(
+            {
+              email: emailOrUsername,
+              password,
+              callbackURL: '/dashboard',
             },
-            onError: (ctx) => {
-              setAuthError(ctx.error.message);
-              setIsLoading(false);
+            {
+              onSuccess: () => {
+                router.push('/dashboard');
+              },
+              onError: (ctx) => {
+                setAuthError(ctx.error.message);
+                setIsLoading(false);
+              },
             },
-          });
+          );
         } else {
           // Username login
-          await signIn.username({
-            username: emailOrUsername,
-            password,
-            callbackURL: '/dashboard',
-          }, {
-            onSuccess: () => {
-              router.push('/dashboard');
+          await signIn.username(
+            {
+              username: emailOrUsername,
+              password,
+              callbackURL: '/dashboard',
             },
-            onError: (ctx) => {
-              setAuthError(ctx.error.message);
-              setIsLoading(false);
+            {
+              onSuccess: () => {
+                router.push('/dashboard');
+              },
+              onError: (ctx) => {
+                setAuthError(ctx.error.message);
+                setIsLoading(false);
+              },
             },
-          });
+          );
         }
       }
     } catch (err) {
@@ -156,15 +165,15 @@ function SignInContent() {
                 {isSignUp ? 'Inscription' : 'Connexion'}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                {isSignUp 
-                  ? 'Crée ton compte RPB' 
+                {isSignUp
+                  ? 'Crée ton compte RPB'
                   : 'Connecte-toi à la République Populaire du Beyblade'}
               </Typography>
             </Box>
 
             {(error || authError) && (
               <Alert severity="error" sx={{ mb: 3 }}>
-                {authError || "Une erreur est survenue lors de la connexion."}
+                {authError || 'Une erreur est survenue lors de la connexion.'}
               </Alert>
             )}
 
@@ -212,15 +221,15 @@ function SignInContent() {
                     disabled={isLoading}
                   />
                 )}
-                
+
                 <TextField
                   fullWidth
-                  label={isSignUp ? "Email" : "Email ou Nom d'utilisateur"}
+                  label={isSignUp ? 'Email' : "Email ou Nom d'utilisateur"}
                   value={emailOrUsername}
                   onChange={(e) => setEmailOrUsername(e.target.value)}
                   required
                   disabled={isLoading}
-                  type={isSignUp ? "email" : "text"}
+                  type={isSignUp ? 'email' : 'text'}
                 />
 
                 <TextField
@@ -260,28 +269,29 @@ function SignInContent() {
                     fontWeight: 'bold',
                   }}
                 >
-                  {isLoading 
-                    ? 'Chargement...' 
-                    : (isSignUp ? "S'inscrire" : 'Se connecter')}
+                  {isLoading
+                    ? 'Chargement...'
+                    : isSignUp
+                      ? "S'inscrire"
+                      : 'Se connecter'}
                 </Button>
               </Stack>
             </form>
 
             <Box sx={{ mt: 3, textAlign: 'center' }}>
               <Typography variant="body2" color="text.secondary">
-                {isSignUp ? 'Déjà un compte ?' : 'Pas encore de compte ?'}
-                {' '}
-                <Box 
-                  component="span" 
+                {isSignUp ? 'Déjà un compte ?' : 'Pas encore de compte ?'}{' '}
+                <Box
+                  component="span"
                   onClick={() => {
                     setIsSignUp(!isSignUp);
                     setAuthError(null);
                   }}
-                  sx={{ 
-                    color: 'primary.main', 
-                    fontWeight: 'bold', 
+                  sx={{
+                    color: 'primary.main',
+                    fontWeight: 'bold',
                     cursor: 'pointer',
-                    '&:hover': { textDecoration: 'underline' }
+                    '&:hover': { textDecoration: 'underline' },
                   }}
                 >
                   {isSignUp ? 'Se connecter' : "S'inscrire"}

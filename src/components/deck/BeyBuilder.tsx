@@ -9,8 +9,8 @@ import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import { DynamicRadarChart as RadarChart } from '@/components/ui/DynamicCharts';
 import type { Part } from '@prisma/client';
+import { DynamicRadarChart as RadarChart } from '@/components/ui/DynamicCharts';
 import { PartSelector } from './PartSelector';
 
 export interface BeyData {

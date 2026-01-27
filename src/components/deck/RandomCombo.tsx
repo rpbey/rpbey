@@ -11,7 +11,6 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import type { Part } from '@prisma/client';
 import { useState } from 'react';
-import { ModelViewer } from '@/components/bey/ModelViewer';
 
 interface RandomComboData {
   blade: Part;
@@ -22,17 +21,6 @@ interface RandomComboData {
 export function RandomCombo() {
   const [combo, setCombo] = useState<RandomComboData | null>(null);
   const [loading, setLoading] = useState(false);
-  const [modelMapping, setModelMapping] = useState<
-    Record<string, { model?: string; texture?: string }>
-  >({});
-
-  // Load model mapping once
-  useState(() => {
-    fetch('/data/part-model-map.json')
-      .then((res) => res.json())
-      .then(setModelMapping)
-      .catch((err) => console.error('Failed to load model map', err));
-  });
 
   const generateCombo = async () => {
     setLoading(true);
@@ -53,8 +41,6 @@ export function RandomCombo() {
   useState(() => {
     if (!combo) generateCombo();
   });
-
-  const bladeModel = combo?.blade ? modelMapping[combo.blade.id] : null;
 
   return (
     <Card sx={{ maxWidth: 600, mx: 'auto', mt: 4, borderRadius: 4 }}>
@@ -83,16 +69,9 @@ export function RandomCombo() {
           {loading ? (
             <CircularProgress />
           ) : combo ? (
-            bladeModel?.model ? (
-              <ModelViewer
-                modelUrl={bladeModel.model}
-                textureUrl={bladeModel.texture}
-              />
-            ) : (
-              <Typography color="text.secondary">
-                Aperçu 3D non disponible
-              </Typography>
-            )
+            <Typography variant="h1" sx={{ opacity: 0.2 }}>
+              ?
+            </Typography>
           ) : (
             <CircularProgress />
           )}

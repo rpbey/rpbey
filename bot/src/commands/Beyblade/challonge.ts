@@ -4,7 +4,10 @@ import { Colors, RPB } from '../../lib/constants.js';
 import prisma from '../../lib/prisma.js';
 
 export class ChallongeCommand extends Subcommand {
-  public constructor(context: Subcommand.LoaderContext, options: Subcommand.Options) {
+  public constructor(
+    context: Subcommand.LoaderContext,
+    options: Subcommand.Options,
+  ) {
     super(context, {
       ...options,
       description: 'Gérer la liaison avec Challonge',
@@ -16,7 +19,7 @@ export class ChallongeCommand extends Subcommand {
         {
           name: 'info',
           chatInputRun: 'chatInputInfo',
-        }
+        },
       ],
     });
   }
@@ -34,24 +37,26 @@ export class ChallongeCommand extends Subcommand {
               option
                 .setName('pseudo')
                 .setDescription('Ton pseudo exact sur Challonge')
-                .setRequired(true)
-            )
+                .setRequired(true),
+            ),
         )
         .addSubcommand((command) =>
           command
             .setName('info')
-            .setDescription('Voir les informations de ton compte lié')
-        )
+            .setDescription('Voir les informations de ton compte lié'),
+        ),
     );
   }
 
-  public async chatInputLink(interaction: Subcommand.ChatInputCommandInteraction) {
+  public async chatInputLink(
+    interaction: Subcommand.ChatInputCommandInteraction,
+  ) {
     const challongeUsername = interaction.options.getString('pseudo', true);
     await interaction.deferReply({ ephemeral: true });
 
     try {
       // Find or create user and profile
-      const user = await prisma.user.upsert({
+      const _user = await prisma.user.upsert({
         where: { discordId: interaction.user.id },
         create: {
           discordId: interaction.user.id,
@@ -86,14 +91,13 @@ export class ChallongeCommand extends Subcommand {
         .setTitle('✅ Compte Challonge lié !')
         .setDescription(
           `Ton compte Discord est maintenant lié au pseudo Challonge : **${challongeUsername}**.\n\n` +
-          `Cela permettra de suivre automatiquement tes résultats de tournoi.`
+            `Cela permettra de suivre automatiquement tes résultats de tournoi.`,
         )
         .setColor(Colors.Success)
         .setFooter({ text: RPB.FullName })
         .setTimestamp();
 
       return interaction.editReply({ embeds: [embed] });
-
     } catch (error) {
       this.container.logger.error('Challonge link error:', error);
       return interaction.editReply({
@@ -102,7 +106,9 @@ export class ChallongeCommand extends Subcommand {
     }
   }
 
-  public async chatInputInfo(interaction: Subcommand.ChatInputCommandInteraction) {
+  public async chatInputInfo(
+    interaction: Subcommand.ChatInputCommandInteraction,
+  ) {
     await interaction.deferReply({ ephemeral: true });
 
     try {
@@ -113,7 +119,8 @@ export class ChallongeCommand extends Subcommand {
 
       if (!user?.profile?.challongeUsername) {
         return interaction.editReply({
-          content: "❌ Tu n'as pas encore lié de compte Challonge. Utilise `/challonge lier` pour le faire.",
+          content:
+            "❌ Tu n'as pas encore lié de compte Challonge. Utilise `/challonge lier` pour le faire.",
         });
       }
 
@@ -123,16 +130,19 @@ export class ChallongeCommand extends Subcommand {
         .addFields({
           name: 'Pseudo Lié',
           value: user.profile.challongeUsername,
-          inline: true
+          inline: true,
         })
-        .setDescription(`Lien profil : [Voir sur Challonge](https://challonge.com/users/${user.profile.challongeUsername})`)
+        .setDescription(
+          `Lien profil : [Voir sur Challonge](https://challonge.com/users/${user.profile.challongeUsername})`,
+        )
         .setFooter({ text: RPB.FullName });
 
       return interaction.editReply({ embeds: [embed] });
-
     } catch (error) {
       this.container.logger.error('Challonge info error:', error);
-      return interaction.editReply('❌ Erreur lors de la récupération des infos.');
+      return interaction.editReply(
+        '❌ Erreur lors de la récupération des infos.',
+      );
     }
   }
 }

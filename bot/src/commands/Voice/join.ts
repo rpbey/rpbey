@@ -35,6 +35,7 @@ export class JoinCommand extends Command {
     joinVoiceChannel({
       channelId: channel.id,
       guildId: interaction.guild.id,
+      // biome-ignore lint/suspicious/noExplicitAny: Mismatched types in library
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       adapterCreator: interaction.guild.voiceAdapterCreator as any,
       selfDeaf: false,

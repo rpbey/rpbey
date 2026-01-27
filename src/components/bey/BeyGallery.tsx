@@ -20,7 +20,6 @@ import {
 } from '@mui/material';
 import { useMemo, useState } from 'react';
 import type { BeyFile, BeyManifest } from '@/types/bey';
-import { ModelViewer } from './ModelViewer';
 
 // Loose type for BBX Data
 interface BBXData {
@@ -266,13 +265,21 @@ export function BeyGallery({ manifest, bbxData }: BeyGalleryProps) {
                 </Stack>
               </Box>
 
-              <Box sx={{ flexGrow: 1, minHeight: 0, position: 'relative' }}>
-                <ModelViewer
-                  modelUrl={selectedModel.path}
-                  textureUrl={
-                    shouldShowTexture ? currentTexture?.path : undefined
-                  }
-                />
+              <Box
+                sx={{
+                  flexGrow: 1,
+                  minHeight: 0,
+                  position: 'relative',
+                  bgcolor: '#f5f5f5',
+                  borderRadius: 2,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <Typography color="text.secondary">
+                  Visualisation 3D désactivée
+                </Typography>
 
                 {/* Stats Overlay */}
                 {selectedStats && (

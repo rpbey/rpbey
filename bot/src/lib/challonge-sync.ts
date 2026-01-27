@@ -104,20 +104,20 @@ export async function importTournament(
               userId: user.id,
             },
           },
-            update: {
-              challongeParticipantId: p.id,
-              seed: p.attributes.seed,
-              checkedIn: p.attributes.checkedIn ?? false,
-            },
-            create: {
-              tournamentId: dbTournament.id,
-              userId: user.id,
-              challongeParticipantId: p.id,
-              seed: p.attributes.seed,
-              checkedIn: p.attributes.checkedIn ?? false,
-            },
-          });
-          importedCount++;
+          update: {
+            challongeParticipantId: p.id,
+            seed: p.attributes.seed,
+            checkedIn: p.attributes.checkedIn ?? false,
+          },
+          create: {
+            tournamentId: dbTournament.id,
+            userId: user.id,
+            challongeParticipantId: p.id,
+            seed: p.attributes.seed,
+            checkedIn: p.attributes.checkedIn ?? false,
+          },
+        });
+        importedCount++;
       }
     }
 
@@ -203,20 +203,20 @@ export async function syncParticipants(
               userId: user.id,
             },
           },
-            update: {
-              challongeParticipantId: p.id,
-              seed: p.attributes.seed,
-              checkedIn: p.attributes.checkedIn ?? false,
-            },
-            create: {
-              tournamentId: dbTournament.id,
-              userId: user.id,
-              challongeParticipantId: p.id,
-              seed: p.attributes.seed,
-              checkedIn: p.attributes.checkedIn ?? false,
-            },
-          });
-          syncedCount++;
+          update: {
+            challongeParticipantId: p.id,
+            seed: p.attributes.seed,
+            checkedIn: p.attributes.checkedIn ?? false,
+          },
+          create: {
+            tournamentId: dbTournament.id,
+            userId: user.id,
+            challongeParticipantId: p.id,
+            seed: p.attributes.seed,
+            checkedIn: p.attributes.checkedIn ?? false,
+          },
+        });
+        syncedCount++;
       }
     }
 

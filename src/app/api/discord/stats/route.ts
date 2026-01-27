@@ -1,4 +1,4 @@
-import { NextResponse, connection } from 'next/server';
+import { connection, NextResponse } from 'next/server';
 import { getDiscordStats } from '@/lib/discord-data';
 
 export async function GET() {

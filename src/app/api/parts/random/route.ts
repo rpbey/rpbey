@@ -1,26 +1,32 @@
 import { PartType } from '@prisma/client';
-import { NextResponse, connection } from 'next/server';
+import { connection, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+
+async function getRandomPart(type: PartType) {
+  const count = await prisma.part.count({ where: { type } });
+  if (count === 0) return null;
+  const skip = Math.floor(Math.random() * count);
+  return await prisma.part.findFirst({
+    where: { type },
+    skip,
+  });
+}
 
 export async function GET() {
   await connection();
   try {
-    const [blades, ratchets, bits] = await Promise.all([
-      prisma.part.findMany({ where: { type: PartType.BLADE } }),
-      prisma.part.findMany({ where: { type: PartType.RATCHET } }),
-      prisma.part.findMany({ where: { type: PartType.BIT } }),
+    const [randomBlade, randomRatchet, randomBit] = await Promise.all([
+      getRandomPart(PartType.BLADE),
+      getRandomPart(PartType.RATCHET),
+      getRandomPart(PartType.BIT),
     ]);
 
-    if (!blades.length || !ratchets.length || !bits.length) {
+    if (!randomBlade || !randomRatchet || !randomBit) {
       return NextResponse.json(
         { error: 'Not enough parts found' },
         { status: 404 },
       );
     }
-
-    const randomBlade = blades[Math.floor(Math.random() * blades.length)];
-    const randomRatchet = ratchets[Math.floor(Math.random() * ratchets.length)];
-    const randomBit = bits[Math.floor(Math.random() * bits.length)];
 
     return NextResponse.json({
       blade: randomBlade,

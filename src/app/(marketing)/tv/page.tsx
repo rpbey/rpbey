@@ -15,7 +15,7 @@ export const metadata = {
 export default async function TVPage() {
   'use cache';
   cacheLife('minutes');
-  
+
   const domain = process.env.NEXT_PUBLIC_DOMAIN || 'rpbey.fr';
 
   // Fetch media in parallel

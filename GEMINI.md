@@ -47,9 +47,7 @@ Utilise ces IDs pour tes recherches :
 - Next.js 16 : `/websites/nextjs_app`
 - discord.js : `/discordjs/discord.js`
 - Sapphire : `/sapphiredev/framework`
-- MCP (TypeScript SDK) : `/modelcontextprotocol/typescript-sdk`
 
 ## Mises à Jour Récentes
 - **Infra** : Optimisation Next.js 16.1 + Cache Components.
 - **Bot** : Ajout du WebSocket (port 3001) pour le pilotage via Gemini.
-- **MCP** : Serveur MCP configuré pour permettre à Gemini de parler sur Discord et corriger ses propres erreurs.

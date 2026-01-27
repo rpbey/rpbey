@@ -197,7 +197,8 @@ export class TournamentCommand extends Command {
       !interaction.memberPermissions?.has(PermissionFlagsBits.Administrator)
     ) {
       return interaction.reply({
-        content: '❌ Seuls les administrateurs peuvent effectuer cette vérification.',
+        content:
+          '❌ Seuls les administrateurs peuvent effectuer cette vérification.',
         ephemeral: true,
       });
     }
@@ -216,7 +217,9 @@ export class TournamentCommand extends Command {
       const participants = participantsRes.data;
 
       if (!participants || participants.length === 0) {
-        return interaction.editReply('📭 Aucun participant inscrit à ce tournoi.');
+        return interaction.editReply(
+          '📭 Aucun participant inscrit à ce tournoi.',
+        );
       }
 
       const unlinkedParticipants: string[] = [];
@@ -243,42 +246,48 @@ export class TournamentCommand extends Command {
       }
 
       if (unlinkedParticipants.length === 0) {
-        return interaction.editReply('✅ Tous les participants ont un compte Discord lié !');
+        return interaction.editReply(
+          '✅ Tous les participants ont un compte Discord lié !',
+        );
       }
 
       // Send report to the specific channel
       const targetChannelId = '1456760750893826293';
-      const targetChannel = await interaction.client.channels.fetch(targetChannelId);
+      const targetChannel =
+        await interaction.client.channels.fetch(targetChannelId);
 
       if (targetChannel && targetChannel.type === ChannelType.GuildText) {
         const embed = new EmbedBuilder()
           .setTitle(`⚠️ Comptes non liés - ${tournament.attributes.name}`)
           .setDescription(
             `Les participants Challonge suivants n'ont pas encore lié leur compte Discord :\n\n` +
-            unlinkedParticipants.map(name => `• **${name}**`).join('\n') +
-            `\n\n👉 Utilisez la commande \`/challonge lier <pseudo>\` pour lier votre compte et apparaître dans le classement !`
+              unlinkedParticipants.map((name) => `• **${name}**`).join('\n') +
+              `\n\n👉 Utilisez la commande \`/challonge lier <pseudo>\` pour lier votre compte et apparaître dans le classement !`,
           )
           .setColor(Colors.Warning)
-          .setFooter({ text: `${unlinkedParticipants.length} compte(s) non lié(s)` })
+          .setFooter({
+            text: `${unlinkedParticipants.length} compte(s) non lié(s)`,
+          })
           .setTimestamp();
 
         await targetChannel.send({
           content: '<@&1451549606608371814>',
-          embeds: [embed]
+          embeds: [embed],
         });
 
         return interaction.editReply(
-          `✅ Rapport envoyé dans <#${targetChannelId}>. ${unlinkedParticipants.length} participants non liés détectés.`
+          `✅ Rapport envoyé dans <#${targetChannelId}>. ${unlinkedParticipants.length} participants non liés détectés.`,
         );
       } else {
         return interaction.editReply(
-          `❌ Impossible de trouver ou d'écrire dans le salon <#${targetChannelId}>.`
+          `❌ Impossible de trouver ou d'écrire dans le salon <#${targetChannelId}>.`,
         );
       }
-
     } catch (error) {
       this.container.logger.error('Check links error:', error);
-      return interaction.editReply('❌ Erreur lors de la vérification des liens.');
+      return interaction.editReply(
+        '❌ Erreur lors de la vérification des liens.',
+      );
     }
   }
 

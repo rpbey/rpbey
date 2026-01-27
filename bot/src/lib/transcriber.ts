@@ -14,6 +14,7 @@ env.useBrowserCache = false;
 env.backends.onnx.wasm.numThreads = 1; // Limit threads to avoid overload
 
 // Singleton instances
+// biome-ignore lint/suspicious/noExplicitAny: Pipeline type complex
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let transcriber: any = null;
 

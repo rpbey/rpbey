@@ -62,6 +62,7 @@ try {
   });
 
   // Initialize Discord Player
+  // biome-ignore lint/suspicious/noExplicitAny: Discord Player type compatibility
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const player = new Player(client as any);
 
@@ -99,6 +100,7 @@ try {
   });
   player.events.on('playerStart', (queue, track) => {
     container.logger.info(`[Music] Started playing: **${track.title}**`);
+    // biome-ignore lint/suspicious/noExplicitAny: Metadata is untyped
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const interaction = queue.metadata as any;
     if (interaction?.channel) {

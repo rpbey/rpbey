@@ -49,15 +49,18 @@ export class PlayCommand extends Command {
       this.container.logger.info(`[Music] Searching for: ${query}`);
 
       // Refine query if not a URL
+      // biome-ignore lint/suspicious/noExplicitAny: Discord Player types
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let searchResult: any;
       try {
         new URL(query);
         searchResult = await player.search(query, {
+          // biome-ignore lint/suspicious/noExplicitAny: User type mismatch
           requestedBy: interaction.user as any,
         });
       } catch {
         searchResult = await player.search(`ytsearch:${query}`, {
+          // biome-ignore lint/suspicious/noExplicitAny: User type mismatch
           requestedBy: interaction.user as any,
         });
       }
@@ -68,6 +71,7 @@ export class PlayCommand extends Command {
         );
       }
 
+      // biome-ignore lint/suspicious/noExplicitAny: Channel type mismatch
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { track } = await player.play(channel as any, searchResult, {
         nodeOptions: {

@@ -159,18 +159,11 @@ export async function getUserStats(userId: string): Promise<UserStats | null> {
   // Use Official Points from Profile
   const points = user.profile?.rankingPoints || 0;
 
-  // Get rank based on POINTS (not ELO)
-  const allUsers = await prisma.user.findMany({
-    include: { profile: true },
-  });
-
-  const allStats = allUsers.map((u) => ({
-    id: u.id,
-    points: u.profile?.rankingPoints || 0,
-  }));
-
-  const sortedByPoints = allStats.sort((a, b) => b.points - a.points);
-  const rank = sortedByPoints.findIndex((s) => s.id === userId) + 1;
+  // Get rank based on POINTS (Efficient Count Query)
+  const rank =
+    (await prisma.profile.count({
+      where: { rankingPoints: { gt: points } },
+    })) + 1;
 
   // Analyze most used parts from active decks
   const bladeUsage: Record<string, { name: string; count: number }> = {};
@@ -285,55 +278,28 @@ export async function getUserStats(userId: string): Promise<UserStats | null> {
  * Get global leaderboard
  */
 export async function getLeaderboard(limit = 50): Promise<LeaderboardEntry[]> {
-  const users = await prisma.user.findMany({
-    include: {
-      profile: true,
-      player1Matches: {
-        where: { state: 'complete' },
-      },
-      player2Matches: {
-        where: { state: 'complete' },
-      },
+  const profiles = await prisma.profile.findMany({
+    orderBy: [{ rankingPoints: 'desc' }, { wins: 'desc' }],
+    take: limit,
+    include: { user: true },
+    where: {
+      rankingPoints: { gt: 0 },
     },
   });
 
-  const leaderboard: LeaderboardEntry[] = users
-    .map((user) => {
-      const allMatches = [...user.player1Matches, ...user.player2Matches];
-      const matchWins = allMatches.filter((m) => m.winnerId === user.id).length;
-      const matchLosses = allMatches.length - matchWins;
-
-      const totalWins = (user.profile?.wins || 0) + matchWins;
-      const totalLosses = (user.profile?.losses || 0) + matchLosses;
-
-      const winRate =
-        totalWins + totalLosses > 0
-          ? (totalWins / (totalWins + totalLosses)) * 100
-          : 0;
-      const elo = STARTING_ELO + totalWins * 15 - totalLosses * 15;
-      const points = user.profile?.rankingPoints || 0;
-
-      return {
-        userId: user.id,
-        bladerName: user.profile?.bladerName ?? user.name ?? 'Unknown',
-        elo,
-        points,
-        wins: totalWins,
-        losses: totalLosses,
-        winRate,
-        rank: 0,
-      };
-    })
-    .filter((entry) => entry.wins + entry.losses > 0 || entry.points > 0) // Include if they have points OR matches
-    .sort((a, b) => b.points - a.points) // Sort by POINTS
-    .slice(0, limit);
-
-  // Assign ranks
-  leaderboard.forEach((entry, index) => {
-    entry.rank = index + 1;
-  });
-
-  return leaderboard;
+  return profiles.map((profile, index) => ({
+    userId: profile.userId,
+    bladerName: profile.bladerName ?? profile.user.name ?? 'Unknown',
+    elo: 1000 + (profile.wins * 15 - profile.losses * 15), // Approximate ELO if not stored
+    points: profile.rankingPoints,
+    wins: profile.wins,
+    losses: profile.losses,
+    winRate:
+      profile.wins + profile.losses > 0
+        ? (profile.wins / (profile.wins + profile.losses)) * 100
+        : 0,
+    rank: index + 1,
+  }));
 }
 
 /**

@@ -22,7 +22,6 @@ import { validateDeck } from '@/lib/tournament-logic';
 import type { BeyData } from './BeyBuilder';
 import { BeyBuilder } from './BeyBuilder';
 import type { Deck } from './DeckCard';
-import { TripleDeckBox } from './TripleDeckBox';
 
 interface DeckBuilderModalProps {
   open: boolean;
@@ -271,13 +270,21 @@ export function DeckBuilderModal({
             </Alert>
           )}
 
-          {/* 3D Overview */}
-          <Box sx={{ position: 'relative' }}>
-            <TripleDeckBox
-              selectedIdx={selectedIdx}
-              onSelect={setSelectedIdx}
-              beysModels={currentBeysModels}
-            />
+          {/* 3D Overview Placeholder */}
+          <Box
+            sx={{
+              position: 'relative',
+              height: 200,
+              bgcolor: '#1a1a1a',
+              borderRadius: 4,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <Typography variant="body1" color="text.secondary">
+              Aperçu 3D désactivé pour optimiser les performances.
+            </Typography>
             <Box
               sx={{
                 position: 'absolute',

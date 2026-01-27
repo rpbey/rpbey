@@ -1,5 +1,5 @@
-import { ProfileSettingsForm } from '@/components/dashboard/settings/ProfileSettingsForm';
 import { Container } from '@mui/material';
+import { ProfileSettingsForm } from '@/components/dashboard/settings/ProfileSettingsForm';
 
 export const metadata = {
   title: 'Paramètres | Dashboard',

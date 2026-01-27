@@ -23,6 +23,7 @@ export async function getRecentYouTubeVideos(
     const entries = result.feed.entry || [];
 
     // Process only the first 'limit' entries
+    // biome-ignore lint/suspicious/noExplicitAny: XML parser result
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return entries.slice(0, limit).map((entry: any) => {
       const videoId = entry['yt:videoId']?.[0];
