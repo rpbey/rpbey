@@ -41,43 +41,53 @@ export async function upsertPart(data: Partial<Part>) {
 
   if (!data.name || !data.type) throw new Error('Name and Type are required');
 
-  // Auto-generate externalId if missing
-  const externalId =
-    data.externalId ||
-    `${data.type}-${data.name}`.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+  // Generate externalId if not provided, or update it if name changes (optional, but good for consistency)
+  const generatedId = `${data.type}-${data.name}`
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-');
+  
+  const externalId = data.externalId || generatedId;
 
-  await prisma.part.upsert({
-    where: { externalId },
-    update: {
-      name: data.name,
-      type: data.type,
-      weight: data.weight,
-      system: data.system,
-      spinDirection: data.spinDirection,
-      imageUrl: data.imageUrl,
-      beyType: data.beyType,
-      attack: data.attack,
-      defense: data.defense,
-      stamina: data.stamina,
-      dash: data.dash,
-      burst: data.burst,
-    },
-    create: {
-      externalId,
-      name: data.name,
-      type: data.type,
-      weight: data.weight,
-      system: data.system || 'BX',
-      spinDirection: data.spinDirection,
-      imageUrl: data.imageUrl,
-      beyType: data.beyType,
-      attack: data.attack,
-      defense: data.defense,
-      stamina: data.stamina,
-      dash: data.dash,
-      burst: data.burst,
-    },
-  });
+  if (data.id) {
+    // Update existing
+    await prisma.part.update({
+      where: { id: data.id },
+      data: {
+        name: data.name,
+        type: data.type,
+        externalId: data.externalId, // Allow manual override or keep existing
+        weight: data.weight,
+        system: data.system,
+        spinDirection: data.spinDirection,
+        imageUrl: data.imageUrl,
+        beyType: data.beyType,
+        attack: data.attack,
+        defense: data.defense,
+        stamina: data.stamina,
+        dash: data.dash,
+        burst: data.burst,
+      },
+    });
+  } else {
+    // Create new
+    await prisma.part.create({
+      data: {
+        externalId, // Use generated or provided
+        name: data.name,
+        type: data.type,
+        weight: data.weight,
+        system: data.system || 'BX',
+        spinDirection: data.spinDirection,
+        imageUrl: data.imageUrl,
+        beyType: data.beyType,
+        attack: data.attack,
+        defense: data.defense,
+        stamina: data.stamina,
+        dash: data.dash,
+        burst: data.burst,
+      },
+    });
+  }
 
   revalidatePath('/admin/parts');
   return { success: true };

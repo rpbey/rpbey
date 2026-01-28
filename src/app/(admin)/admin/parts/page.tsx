@@ -9,7 +9,7 @@ import {
   IconButton,
   TextField,
 } from '@mui/material';
-import { DataGrid, type GridColDef } from '@mui/x-data-grid';
+import { DataGrid, type GridColDef, type GridRowModel } from '@mui/x-data-grid';
 import type { Part } from '@prisma/client';
 import { useCallback, useEffect, useState } from 'react';
 import { PageHeader, useToast } from '@/components/ui';
@@ -63,6 +63,18 @@ export default function AdminPartsPage() {
     }
   };
 
+  const processRowUpdate = async (newRow: GridRowModel) => {
+    const updatedPart = newRow as Part;
+    try {
+      await upsertPart(updatedPart);
+      showToast('Modification enregistrée', 'success');
+      return updatedPart;
+    } catch (error) {
+      showToast('Erreur lors de la sauvegarde', 'error');
+      throw error;
+    }
+  };
+
   const columns: GridColDef[] = [
     {
       field: 'imageUrl',
@@ -83,20 +95,78 @@ export default function AdminPartsPage() {
         </Avatar>
       ),
     },
-    { field: 'name', headerName: 'Nom', flex: 1 },
-    { field: 'type', headerName: 'Type', width: 100 },
-    { field: 'system', headerName: 'Système', width: 80 },
-    { field: 'weight', headerName: 'Poids (g)', width: 100 },
+    { field: 'name', headerName: 'Nom', flex: 1, editable: true },
+    {
+      field: 'type',
+      headerName: 'Type',
+      width: 100,
+      type: 'singleSelect',
+      valueOptions: ['BLADE', 'RATCHET', 'BIT'],
+      editable: true,
+    },
+    { field: 'system', headerName: 'Système', width: 80, editable: true },
+    {
+      field: 'weight',
+      headerName: 'Poids (g)',
+      width: 90,
+      type: 'number',
+      editable: true,
+    },
+    {
+      field: 'beyType',
+      headerName: 'Type Bey',
+      width: 100,
+      type: 'singleSelect',
+      valueOptions: ['ATTACK', 'DEFENSE', 'STAMINA', 'BALANCE'],
+      editable: true,
+    },
+    {
+      field: 'spinDirection',
+      headerName: 'Rotation',
+      width: 90,
+      editable: true,
+    },
+    // Stats Columns
+    {
+      field: 'attack',
+      headerName: 'Atk',
+      width: 60,
+      editable: true,
+    },
+    {
+      field: 'defense',
+      headerName: 'Def',
+      width: 60,
+      editable: true,
+    },
+    {
+      field: 'stamina',
+      headerName: 'Sta',
+      width: 60,
+      editable: true,
+    },
+    {
+      field: 'dash',
+      headerName: 'Dash',
+      width: 60,
+      editable: true,
+    },
+    {
+      field: 'burst',
+      headerName: 'Burst',
+      width: 60,
+      editable: true,
+    },
     {
       field: 'updatedAt',
       headerName: 'MAJ',
-      width: 120,
+      width: 100,
       valueFormatter: (value: string) => new Date(value).toLocaleDateString(),
     },
     {
       field: 'actions',
       headerName: 'Actions',
-      width: 120,
+      width: 100,
       renderCell: (params) => (
         <>
           <IconButton size="small" onClick={() => handleEdit(params.row)}>
@@ -118,7 +188,7 @@ export default function AdminPartsPage() {
     <Box>
       <PageHeader
         title="Inventaire des Pièces"
-        description="Gérez la base de données Beyblade X (Blades, Ratchets, Bits)"
+        description="Gérez la base de données Beyblade X (Tableur)"
       >
         <Button startIcon={<Add />} variant="contained" onClick={handleCreate}>
           Ajouter une pièce
@@ -127,7 +197,7 @@ export default function AdminPartsPage() {
 
       <Box sx={{ mb: 2 }}>
         <TextField
-          label="Rechercher"
+          label="Rechercher (Nom, ID...)"
           size="small"
           fullWidth
           value={search}
@@ -135,12 +205,23 @@ export default function AdminPartsPage() {
         />
       </Box>
 
-      <Card sx={{ height: 600 }}>
+      <Card sx={{ height: '75vh' }}>
         <DataGrid
           rows={rows}
           columns={columns}
           loading={loading}
           disableRowSelectionOnClick
+          processRowUpdate={processRowUpdate}
+          onProcessRowUpdateError={(error) => console.error(error)}
+          initialState={{
+            pagination: { paginationModel: { pageSize: 25 } },
+          }}
+          pageSizeOptions={[25, 50, 100]}
+          sx={{
+            '& .MuiDataGrid-cell--editable': {
+              bgcolor: 'action.hover',
+            },
+          }}
         />
       </Card>
 
