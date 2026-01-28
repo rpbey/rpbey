@@ -3,7 +3,6 @@ import { cacheLife } from 'next/cache';
 import { getBeyTubeFeatured } from '@/lib/beytube';
 import { getRPBClips } from '@/lib/twitch';
 import { getRecentYouTubeVideos } from '@/lib/youtube';
-import TvHeader from './_components/TvHeader';
 import { TvFeed } from './_components/TvFeed';
 
 export const metadata = {
@@ -26,8 +25,7 @@ export default async function TVPage() {
   ]);
 
   return (
-    <Container maxWidth="md" sx={{ py: 0, px: 0 }}>
-      <TvHeader />
+    <Container maxWidth="md" sx={{ py: 2, px: 0 }}>
       <TvFeed
         clips={clips}
         rpbVideos={rpbVideos}
