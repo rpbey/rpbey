@@ -298,7 +298,7 @@ export default function HomeClient({
                       {isMobile && (
                         <Box
                           component={motion.img}
-                          src="/tournaments/BTS2.png"
+                          src="/canvas.png"
                           alt="Tournoi"
                           sx={{
                             width: '85%',
@@ -322,15 +322,15 @@ export default function HomeClient({
                           py: 2,
                           borderRadius: 2,
                           background:
-                            'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)',
-                          color: '#fff',
+                            'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)', // Red gradient
+                          color: '#fbbf24', // Gold text
                           fontWeight: 900,
                           fontSize: '1.1rem',
                           textTransform: 'none',
-                          boxShadow: '0 10px 30px rgba(139, 92, 246, 0.4)',
+                          boxShadow: '0 10px 30px rgba(220, 38, 38, 0.4)',
                           '&:hover': {
                             transform: 'translateY(-2px)',
-                            boxShadow: '0 15px 40px rgba(139, 92, 246, 0.6)',
+                            boxShadow: '0 15px 40px rgba(220, 38, 38, 0.6)',
                           },
                         }}
                       >
@@ -380,7 +380,7 @@ export default function HomeClient({
                 >
                   <Box
                     component={motion.img}
-                    src="/tournaments/BTS2.png"
+                    src="/canvas.png"
                     alt="Tournoi Beyblade"
                     transition={{
                       delay: 0.2,
@@ -409,15 +409,15 @@ export default function HomeClient({
                       py: 2,
                       borderRadius: 3,
                       background:
-                        'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)',
-                      color: '#fff',
+                        'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)', // Red gradient
+                      color: '#fbbf24', // Gold text
                       fontWeight: 900,
                       fontSize: '1.1rem',
                       textTransform: 'none',
-                      boxShadow: '0 10px 30px rgba(139, 92, 246, 0.3)',
+                      boxShadow: '0 10px 30px rgba(220, 38, 38, 0.3)',
                       '&:hover': {
                         transform: 'translateY(-2px)',
-                        boxShadow: '0 15px 40px rgba(139, 92, 246, 0.4)',
+                        boxShadow: '0 15px 40px rgba(220, 38, 38, 0.4)',
                       },
                     }}
                   >
