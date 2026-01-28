@@ -37,7 +37,12 @@ export async function GET() {
       orderBy: [{ isActive: 'desc' }, { updatedAt: 'desc' }],
     });
 
-    return NextResponse.json({ data: decks });
+    const formattedDecks = decks.map((deck) => ({
+      ...deck,
+      beys: deck.items,
+    }));
+
+    return NextResponse.json({ data: formattedDecks });
   } catch (error) {
     console.error('Error fetching decks:', error);
     return NextResponse.json(
@@ -158,7 +163,12 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    return NextResponse.json({ data: deck }, { status: 201 });
+    const formattedDeck = {
+      ...deck,
+      beys: deck.items,
+    };
+
+    return NextResponse.json({ data: formattedDeck }, { status: 201 });
   } catch (error) {
     console.error('Error creating deck:', error);
     return NextResponse.json(

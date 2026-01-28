@@ -54,18 +54,8 @@ export function DeckBuilderModal({
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [modelMapping, setModelMapping] = useState<Record<string, any>>({});
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-
-  // Load model mapping
-  useEffect(() => {
-    fetch('/data/part-model-map.json')
-      .then((res) => res.json())
-      .then((mapping) => setModelMapping(mapping))
-      .catch((err) => console.error('Failed to load model mapping', err));
-  }, []);
 
   // Reset form when modal opens/closes or deck changes
   useEffect(() => {
@@ -210,10 +200,6 @@ export function DeckBuilderModal({
       setSaving(false);
     }
   };
-
-  const currentBeysModels = beys.map((b) =>
-    b.blade ? modelMapping[b.blade.id] : null,
-  );
 
   return (
     <Dialog
