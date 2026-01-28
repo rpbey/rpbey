@@ -61,7 +61,7 @@ export function ProfileSettingsForm() {
         type: 'success',
         text: 'Image téléchargée. Cliquez sur Enregistrer pour valider.',
       });
-    } catch {
+    } catch (error) {
       setMessage({
         type: 'error',
         text: "Erreur lors du téléchargement de l'image.",

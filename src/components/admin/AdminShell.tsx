@@ -19,6 +19,7 @@ import {
 import {
   AppBar,
   Avatar,
+  alpha,
   Box,
   Button,
   Drawer,
@@ -31,6 +32,7 @@ import {
   Stack,
   Toolbar,
   Typography,
+  useTheme,
 } from '@mui/material';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -60,6 +62,7 @@ const ADMIN_NAV_ITEMS = [
 ];
 
 export function AdminShell({ children }: { children: React.ReactNode }) {
+  const theme = useTheme();
   const pathname = usePathname();
   const router = useRouter();
   const { data: session } = useSession();
