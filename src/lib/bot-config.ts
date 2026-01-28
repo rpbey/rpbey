@@ -6,15 +6,17 @@
 export function getBotApiUrl() {
   const url = process.env.BOT_API_URL;
 
-  if (url) {
-    return url;
+  // In production, we must avoid using localhost/127.0.0.1 as it refers to the container
+  if (process.env.NODE_ENV === 'production') {
+    if (url && !url.includes('localhost') && !url.includes('127.0.0.1')) {
+      return url;
+    }
+    // Fallback to Host Public IP for reliability
+    return 'http://46.224.145.55:3001';
   }
 
-  // Fallbacks
-  if (process.env.NODE_ENV === 'production') {
-    // In production (Docker), localhost refers to the container itself.
-    // Use the Docker gateway IP to reach the bot service running on the host.
-    return 'http://172.17.0.1:3001';
+  if (url) {
+    return url;
   }
 
   return 'http://localhost:3001';
