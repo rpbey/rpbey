@@ -21,7 +21,7 @@ import {
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import useSWR from 'swr';
+import useSWR, { mutate } from 'swr';
 import { SecuritySettings } from '@/components/profile';
 import { DeckBoxUpload } from '@/components/profile/DeckBoxUpload';
 import { useToast } from '@/components/ui';
@@ -65,6 +65,7 @@ export default function EditProfilePage() {
     const challonge = searchParams.get('challonge');
     if (challonge === 'success') {
       showToast('Compte Challonge lié avec succès !', 'success');
+      mutate('/api/profile');
       // Clear URL params
       router.replace('/dashboard/profile/edit');
     } else if (challonge === 'error') {
