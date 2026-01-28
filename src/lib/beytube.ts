@@ -19,7 +19,7 @@ export async function getBeyTubeFeatured(): Promise<BeyTubeVideo[]> {
     const videos = await prisma.youTubeVideo.findMany({
       where: { isFeatured: true },
       orderBy: { publishedAt: 'desc' },
-      take: 4,
+      take: 20,
     });
 
     return videos.map((v) => ({
