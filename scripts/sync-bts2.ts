@@ -1,123 +1,88 @@
+
 import 'dotenv/config';
-import { getChallongeService } from '../src/lib/challonge';
-import { prisma } from '../src/lib/prisma';
+import { ChallongeScraper } from '../src/lib/scrapers/challonge-scraper';
+import pg from 'pg';
 
 async function main() {
-  const challonge = getChallongeService();
-  const TOURNAMENT_SLUG = 'B_TS2'; // Try direct URL first
-  const FALLBACK_SLUG = 'fr-B_TS2';
+  const scraper = new ChallongeScraper();
+  const db = new pg.Client({ connectionString: process.env.DATABASE_URL });
 
-  console.log(`🔌 Connecting to Challonge for ${TOURNAMENT_SLUG}...`);
-
-  let tournament;
   try {
-    tournament = await challonge.getTournament(TOURNAMENT_SLUG);
-  } catch (e) {
-    console.warn(`Failed to fetch ${TOURNAMENT_SLUG}, trying ${FALLBACK_SLUG}...`);
-    try {
-      tournament = await challonge.getTournament(FALLBACK_SLUG);
-    } catch (e2) {
-      console.error('Could not find tournament on Challonge API.');
-      throw e2;
-    }
-  }
+    await db.connect();
+    console.log('🔌 Connecté à la base de données.');
 
-  console.log(`✅ Found Tournament: ${tournament.attributes.name} (${tournament.id})`);
-  console.log(`📅 Date: ${tournament.attributes.startAt}`);
-  console.log(`👥 Status: ${tournament.attributes.state}`);
+    // 1. Scrape B_TS2
+    console.log('🕵️ Démarrage du scraping pour B_TS2...');
+    const result = await scraper.scrape('fr/B_TS2');
+    console.log(`✅ Données récupérées : ${result.metadata.name} (${result.participants.length} participants)`);
 
-  // Upsert Tournament
-  const tournamentId = 'cm-bts2-auto-imported'; // Keep ID from previous script for consistency
-  
-  await prisma.tournament.upsert({
-    where: { id: tournamentId },
-    update: {
-      name: tournament.attributes.name,
-      description: tournament.attributes.description || "Tournoi qualificatif pour la collaboration LFBX ! Premier des quatre tournois qualificatifs.",
-      date: tournament.attributes.startAt ? new Date(tournament.attributes.startAt) : new Date('2026-02-08T13:00:00Z'),
-      status: mapStatus(tournament.attributes.state),
-      challongeId: tournament.id,
-      challongeUrl: tournament.attributes.url,
-      challongeState: tournament.attributes.state,
-      updatedAt: new Date(),
-    },
-    create: {
-      id: tournamentId,
-      name: tournament.attributes.name,
-      description: tournament.attributes.description || "Tournoi qualificatif pour la collaboration LFBX ! Premier des quatre tournois qualificatifs.",
-      date: tournament.attributes.startAt ? new Date(tournament.attributes.startAt) : new Date('2026-02-08T13:00:00Z'),
-      location: "Dernier Bar Avant la Fin du Monde, 19 Avenue Victoria, 75001 Paris",
-      format: "3on3 Double Elimination",
-      status: mapStatus(tournament.attributes.state),
-      challongeId: tournament.id,
-      challongeUrl: tournament.attributes.url,
-      challongeState: tournament.attributes.state,
-    },
-  });
+    // 2. Upsert Tournament
+    const tournamentQuery = `
+      INSERT INTO tournaments (
+        id, name, description, date, location, format, "challongeUrl", status, "createdAt", "updatedAt"
+      ) VALUES (
+        $1, $2, $3, $4, $5, $6, $7, $8, NOW(), NOW()
+      )
+      ON CONFLICT (id) DO UPDATE SET
+        name = EXCLUDED.name,
+        description = EXCLUDED.description,
+        date = EXCLUDED.date,
+        status = EXCLUDED.status,
+        "updatedAt" = NOW()
+      RETURNING id;
+    `;
 
-  console.log('🏆 Tournament synced in DB.');
+    // Generate a clean CUID-like ID or use the name-based one if preferred.
+    // For BTS2 let's use a consistent ID.
+    const tournamentId = 'cm-bts2-auto-imported'; 
+    const tournamentDate = new Date('2026-02-08T13:00:00Z');
 
-  // Sync Participants
-  console.log('👥 Syncing participants...');
-  const participants = await challonge.listParticipants(tournament.id);
-  console.log(`Found ${participants.length} participants in Challonge.`);
+    await db.query(tournamentQuery, [
+      tournamentId,
+      result.metadata.name,
+      "Tournoi qualificatif pour la collaboration LFBX ! Premier des quatre tournois qualificatifs.",
+      tournamentDate,
+      "Dernier Bar Avant la Fin du Monde, 19 Avenue Victoria, 75001 Paris",
+      "3on3 Double Elimination",
+      "https://challonge.com/fr/B_TS2",
+      "REGISTRATION_OPEN"
+    ]);
 
-  for (const p of participants) {
-    // Try to find user by name or username or tag
-    const user = await prisma.user.findFirst({
-      where: {
-        OR: [
-          { name: { equals: p.attributes.name, mode: 'insensitive' } },
-          { username: { equals: p.attributes.name, mode: 'insensitive' } },
-          { discordTag: { equals: p.attributes.name, mode: 'insensitive' } },
-          // Also check profile challongeUsername if available
-           { profile: { challongeUsername: { equals: p.attributes.name, mode: 'insensitive' } } }
-        ]
-      }
-    });
+    console.log('🏆 Tournoi créé/mis à jour dans la DB.');
 
-    if (user) {
-      await prisma.tournamentParticipant.upsert({
-        where: {
-          tournamentId_userId: {
-            tournamentId,
-            userId: user.id
-          }
-        },
-        update: {
-          challongeParticipantId: p.id,
-          seed: p.attributes.seed,
-          checkedIn: p.attributes.checkedIn,
-          updatedAt: new Date(),
-        },
-        create: {
-          tournamentId,
-          userId: user.id,
-          challongeParticipantId: p.id,
-          seed: p.attributes.seed,
-          checkedIn: p.attributes.checkedIn,
+    // 3. Sync Participants (Simple name-based sync for now)
+    console.log('👥 Synchronisation des participants...');
+    for (const p of result.participants) {
+        // Tenter de trouver un utilisateur existant par nom ou tag
+        const userRes = await db.query('SELECT id FROM users WHERE name = $1 OR username = $1', [p.name]);
+        const userId = userRes.rows[0]?.id;
+
+        if (userId) {
+            await db.query(`
+                INSERT INTO tournament_participants (id, "tournamentId", "userId", "challongeParticipantId", seed, "createdAt", "updatedAt")
+                VALUES ($1, $2, $3, $4, $5, NOW(), NOW())
+                ON CONFLICT ("tournamentId", "userId") DO UPDATE SET
+                    seed = EXCLUDED.seed,
+                    "challongeParticipantId" = EXCLUDED."challongeParticipantId",
+                    "updatedAt" = NOW()
+            `, [
+                `tp-${tournamentId}-${userId}`,
+                tournamentId,
+                userId,
+                String(p.id),
+                p.seed
+            ]);
         }
-      });
-      console.log(`✅ Linked ${p.attributes.name} to user ${user.name}`);
-    } else {
-      console.log(`⚠️ User not found for participant: ${p.attributes.name}`);
     }
-  }
 
-  console.log('✨ Sync complete.');
-}
+    console.log('✨ Synchronisation terminée avec succès.');
 
-function mapStatus(challongeState: string): 'UPCOMING' | 'REGISTRATION_OPEN' | 'UNDERWAY' | 'COMPLETE' {
-  switch (challongeState) {
-    case 'pending': return 'REGISTRATION_OPEN'; // Or UPCOMING
-    case 'underway': return 'UNDERWAY';
-    case 'complete': return 'COMPLETE';
-    default: return 'REGISTRATION_OPEN';
+  } catch (err) {
+    console.error('❌ Erreur :', err);
+  } finally {
+    await scraper.close();
+    await db.end();
   }
 }
 
-main()
-  .catch(console.error)
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+main();
