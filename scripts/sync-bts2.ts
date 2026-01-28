@@ -62,8 +62,27 @@ async function main() {
         const userRes = await db.query('SELECT id FROM users WHERE name = $1 OR username = $1', [p.name]);
         let userId = userRes.rows[0]?.id;
 
-        // SI l'utilisateur n'existe pas, on pourrait le créer en "invité" ?
-        // Pour l'instant on ne sync que ceux qui existent
+        // Create stub user if not found
+        if (!userId) {
+            const cleanName = p.name.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
+            const stubUsername = `bts2_${cleanName}`.substring(0, 30);
+            const stubEmail = `${cleanName}@import.bts2`;
+
+            try {
+                const createRes = await db.query(`
+                    INSERT INTO users (id, name, username, email, role, image, "createdAt", "updatedAt")
+                    VALUES (gen_random_uuid(), $1, $2, $3, 'user', '/logo.png', NOW(), NOW())
+                    ON CONFLICT (email) DO UPDATE SET name = EXCLUDED.name -- Just to return ID
+                    RETURNING id
+                `, [p.name, stubUsername, stubEmail]);
+                userId = createRes.rows[0]?.id;
+                console.log(`➕ Stub user créé/récupéré: ${p.name} -> ${userId}`);
+            } catch (e) {
+                console.warn(`⚠️ Erreur création stub user pour ${p.name}:`, e);
+                // Fallback: try to find by email if unique constraint failed on username?
+                // For now, skip if failed
+            }
+        }
         
         if (userId) {
             challongeIdToUserId.set(p.id, userId);
