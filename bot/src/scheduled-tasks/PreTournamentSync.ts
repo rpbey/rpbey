@@ -1,8 +1,9 @@
 import { ScheduledTask } from '@sapphire/plugin-scheduled-tasks';
 import {
   getTournamentsNeedingSync,
-  syncParticipants,
+  scrapeAndSyncTournament,
 } from '../lib/challonge-sync.js';
+import prisma from '../lib/prisma.js'; // Import prisma to fetch URL
 
 /**
  * Tâche de synchronisation pré-tournoi
@@ -10,8 +11,7 @@ import {
  * S'exécute toutes les heures et synchronise UNIQUEMENT les tournois
  * qui commencent dans les 24 prochaines heures.
  *
- * Coût: ~1 requête API par tournoi nécessitant un sync
- * Fréquence: Maximum 1 sync/heure/tournoi pendant 24h = ~24 requêtes/tournoi
+ * Utilise le scraping furtif pour contourner Cloudflare.
  */
 export class PreTournamentSyncTask extends ScheduledTask {
   public constructor(
@@ -32,27 +32,35 @@ export class PreTournamentSyncTask extends ScheduledTask {
     );
 
     try {
-      // Récupérer les tournois qui nécessitent un sync (dans les 24h)
-      const tournamentsToSync = await getTournamentsNeedingSync();
+      // Récupérer les ID des tournois qui nécessitent un sync (dans les 24h)
+      const tournamentIds = await getTournamentsNeedingSync();
 
-      if (tournamentsToSync.length === 0) {
+      if (tournamentIds.length === 0) {
         this.container.logger.info('[Task] Aucun tournoi à synchroniser');
         return;
       }
 
       this.container.logger.info(
-        `[Task] ${tournamentsToSync.length} tournoi(s) à synchroniser`,
+        `[Task] ${tournamentIds.length} tournoi(s) à synchroniser`,
       );
 
-      let totalRequests = 0;
+      for (const challongeId of tournamentIds) {
+        // Fetch full tournament object to get URL
+        const t = await prisma.tournament.findUnique({
+            where: { challongeId },
+            select: { challongeUrl: true, challongeId: true }
+        });
 
-      for (const challongeId of tournamentsToSync) {
-        const result = await syncParticipants(challongeId);
-        totalRequests += result.apiRequestsUsed;
+        // Use URL if available (better for scraping), otherwise ID
+        const target = t?.challongeUrl || t?.challongeId || challongeId;
+
+        this.container.logger.info(`[Task] Scraping ${target}...`);
+        
+        const result = await scrapeAndSyncTournament(target);
 
         if (result.success) {
           this.container.logger.info(
-            `[Task] Sync ${challongeId}: ${result.participantsCount} participants`,
+            `[Task] Sync ${challongeId}: ${result.participantsCount} participants, ${result.matchesCount} matchs`,
           );
         } else {
           this.container.logger.warn(
@@ -60,13 +68,11 @@ export class PreTournamentSyncTask extends ScheduledTask {
           );
         }
 
-        // Attendre 1 seconde entre chaque requête pour éviter le rate limiting
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        // Attendre quelques secondes entre chaque scraping
+        await new Promise((resolve) => setTimeout(resolve, 5000));
       }
 
-      this.container.logger.info(
-        `[Task] Sync terminé. ${totalRequests} requêtes API utilisées.`,
-      );
+      this.container.logger.info('[Task] Sync terminé.');
     } catch (error) {
       this.container.logger.error('[Task] Erreur sync pré-tournoi:', error);
     }
