@@ -260,11 +260,12 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
         <Drawer
           variant="permanent"
           sx={{
+            display: { xs: 'none', md: 'block' },
             '& .MuiDrawer-paper': {
               boxSizing: 'border-box',
               width: RAIL_WIDTH,
-              bgcolor: '#1e1e1e', // Dark theme for sidebar
-              border: 'none',
+              bgcolor: '#1e1e1e',
+              borderRight: '1px solid rgba(255,255,255,0.1)',
             },
           }}
           open
@@ -296,6 +297,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
         component="main"
         sx={{
           flexGrow: 1,
+          p: 0, // Reset padding here, handled inside
           width: { md: `calc(100% - ${RAIL_WIDTH}px)` },
           minHeight: '100vh',
           display: 'flex',

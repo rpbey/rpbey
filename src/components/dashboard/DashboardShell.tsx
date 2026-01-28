@@ -307,6 +307,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         <Drawer
           variant="permanent"
           sx={{
+            display: { xs: 'none', md: 'block' },
             '& .MuiDrawer-paper': {
               boxSizing: 'border-box',
               width: RAIL_WIDTH,
