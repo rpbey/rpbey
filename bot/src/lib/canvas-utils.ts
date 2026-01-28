@@ -478,7 +478,7 @@ export async function generateLeaderboardCard(entries: LeaderboardEntry[]) {
   const ctx = canvas.getContext('2d');
 
   // Background
-  const bgPath = getAssetPath('public/background-seasson-2.webp');
+  const bgPath = getAssetPath('public/canvas.png');
   try {
     const background = await loadImage(bgPath);
     ctx.drawImage(background, 0, 0, width, height);
