@@ -40,6 +40,8 @@ export interface LeaderboardEntry {
   losses: number;
   winRate: number;
   rank: number;
+  tournamentsPlayed: number;
+  tournamentWins: number;
 }
 
 const K_FACTOR = 32; // ELO K-factor for rating changes
@@ -284,7 +286,15 @@ export async function getLeaderboard(limit = 50): Promise<LeaderboardEntry[]> {
   const profiles = await prisma.profile.findMany({
     orderBy: [{ rankingPoints: 'desc' }, { wins: 'desc' }],
     take: limit,
-    include: { user: true },
+    include: {
+      user: {
+        include: {
+          _count: {
+            select: { tournaments: true },
+          },
+        },
+      },
+    },
     where: {
       rankingPoints: { gt: 0 },
     },
@@ -302,6 +312,8 @@ export async function getLeaderboard(limit = 50): Promise<LeaderboardEntry[]> {
         ? (profile.wins / (profile.wins + profile.losses)) * 100
         : 0,
     rank: index + 1,
+    tournamentsPlayed: profile.user._count.tournaments,
+    tournamentWins: profile.tournamentWins,
   }));
 }
 

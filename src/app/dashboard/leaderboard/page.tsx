@@ -12,10 +12,16 @@ import Card from '@mui/material/Card';
 import Chip from '@mui/material/Chip';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
-import { DataGrid, type GridColDef, type GridRenderCellParams } from '@mui/x-data-grid';
+import {
+  DataGrid,
+  type GridColDef,
+  type GridRenderCellParams,
+} from '@mui/x-data-grid';
 import { frFR } from '@mui/x-data-grid/locales';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 import useSWR from 'swr';
+import { useSession } from '@/lib/auth-client';
 import type { LeaderboardEntry } from '@/lib/stats';
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
@@ -31,12 +37,37 @@ function getRankIcon(rank: number) {
 }
 
 export default function LeaderboardPage() {
+  const { data: session } = useSession();
+  const userId = session?.user?.id;
+  const [scrolled, setScrolled] = useState(false);
+
+  // Fetch top 500 to ensure most active users are visible
   const { data, isLoading } = useSWR<{ data: LeaderboardEntry[] }>(
-    '/api/stats?type=leaderboard&limit=100',
+    '/api/stats?type=leaderboard&limit=500',
     fetcher,
   );
 
   const leaderboard = data?.data ?? [];
+
+  // Auto-scroll to user row when data is loaded
+  useEffect(() => {
+    if (!isLoading && userId && leaderboard.length > 0 && !scrolled) {
+      // Small delay to ensure DataGrid rendered rows
+      const timer = setTimeout(() => {
+        const userRow = document.querySelector(
+          `div[data-id="${userId}"]`,
+        );
+        if (userRow) {
+          userRow.scrollIntoView({
+            block: 'center',
+            behavior: 'smooth',
+          });
+          setScrolled(true);
+        }
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [isLoading, userId, leaderboard, scrolled]);
 
   const columns: GridColDef<LeaderboardEntry>[] = [
     {
@@ -65,7 +96,13 @@ export default function LeaderboardPage() {
       renderCell: (params: GridRenderCellParams<LeaderboardEntry, string>) => (
         <Link
           href={`/dashboard/profile/${params.row.userId}`}
-          style={{ textDecoration: 'none', color: 'inherit', display: 'flex', alignItems: 'center', width: '100%' }}
+          style={{
+            textDecoration: 'none',
+            color: 'inherit',
+            display: 'flex',
+            alignItems: 'center',
+            width: '100%',
+          }}
         >
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <Avatar sx={{ width: 32, height: 32 }}>
@@ -93,21 +130,63 @@ export default function LeaderboardPage() {
       ),
     },
     {
+      field: 'tournamentsPlayed',
+      headerName: 'Participations',
+      width: 120,
+      align: 'center',
+      headerAlign: 'center',
+      renderCell: (params: GridRenderCellParams<LeaderboardEntry, number>) => (
+        <Typography variant="body2" fontWeight="bold">
+          {params.value}
+        </Typography>
+      ),
+    },
+    {
+      field: 'tournamentWins',
+      headerName: 'Victoires',
+      width: 120,
+      align: 'center',
+      headerAlign: 'center',
+      renderCell: (params: GridRenderCellParams<LeaderboardEntry, number>) =>
+        (params.value ?? 0) > 0 ? (
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 0.5,
+            }}
+          >
+            <span style={{ fontSize: '1.2rem' }}>🏆</span>
+            <Typography fontWeight="bold">{params.value}</Typography>
+          </Box>
+        ) : (
+          <Typography color="text.secondary">-</Typography>
+        ),
+    },
+    {
       field: 'matches',
-      headerName: 'V / D',
+      headerName: 'Matchs (V/D)',
       width: 120,
       align: 'right',
       headerAlign: 'right',
-      valueGetter: (_: any, row: LeaderboardEntry) => `${row.wins} / ${row.losses}`,
+      valueGetter: (_: any, row: LeaderboardEntry) =>
+        `${row.wins} / ${row.losses}`,
       renderCell: (params: GridRenderCellParams<LeaderboardEntry, string>) => {
         const [wins, losses] = (params.value ?? '0 / 0').split(' / ');
         return (
           <Typography variant="body2">
-            <Box component="span" sx={{ color: 'success.main', fontWeight: 'bold' }}>
+            <Box
+              component="span"
+              sx={{ color: 'success.main', fontWeight: 'bold' }}
+            >
               {wins}
             </Box>
             {' / '}
-            <Box component="span" sx={{ color: 'error.main', fontWeight: 'bold' }}>
+            <Box
+              component="span"
+              sx={{ color: 'error.main', fontWeight: 'bold' }}
+            >
               {losses}
             </Box>
           </Typography>
@@ -142,7 +221,7 @@ export default function LeaderboardPage() {
         </Typography>
       </Box>
 
-      <Card sx={{ height: 600, width: '100%' }}>
+      <Card sx={{ height: 800, width: '100%' }}>
         <DataGrid
           rows={leaderboard}
           columns={columns}
@@ -150,8 +229,12 @@ export default function LeaderboardPage() {
           loading={isLoading}
           localeText={frFR.components.MuiDataGrid.defaultProps.localeText}
           disableRowSelectionOnClick
+          rowSelectionModel={{
+            type: 'include',
+            ids: new Set(userId ? [userId] : []),
+          }}
           initialState={{
-            pagination: { paginationModel: { pageSize: 25 } },
+            pagination: { paginationModel: { pageSize: 100 } },
           }}
           pageSizeOptions={[25, 50, 100]}
           sx={{
@@ -162,6 +245,13 @@ export default function LeaderboardPage() {
             '& .MuiDataGrid-columnHeaders': {
               borderColor: 'divider',
               bgcolor: 'background.paper',
+            },
+            // Highlight selected row (current user)
+            '& .MuiDataGrid-row.Mui-selected': {
+              bgcolor: 'rgba(220, 38, 38, 0.15)', // RPB Red low opacity
+              '&:hover': {
+                bgcolor: 'rgba(220, 38, 38, 0.25)',
+              },
             },
           }}
         />
