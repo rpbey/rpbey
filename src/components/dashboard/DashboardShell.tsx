@@ -2,14 +2,12 @@
 
 import {
   ArrowBack,
-  Inventory2,
   Launch,
   Leaderboard,
   Logout,
   MoreHoriz,
   Person,
   Settings,
-  Shuffle,
 } from '@mui/icons-material';
 import {
   AppBar,
@@ -63,19 +61,9 @@ const NAV_ITEMS: NavItem[] = [
     path: '/dashboard/settings',
   },
   {
-    label: 'Decks',
-    icon: Inventory2,
-    path: '/dashboard/deck',
-  },
-  {
     label: 'Classement',
     icon: Leaderboard,
     path: '/dashboard/leaderboard',
-  },
-  {
-    label: 'Hasard',
-    icon: Shuffle,
-    path: '/dashboard/random',
   },
 ];
 
