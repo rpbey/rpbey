@@ -1,6 +1,6 @@
 /**
  * RPB - Leaderboard Page
- * Global rankings with ELO and win rates
+ * Global rankings with DataGrid
  */
 
 'use client';
@@ -11,14 +11,9 @@ import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Chip from '@mui/material/Chip';
 import Container from '@mui/material/Container';
-import Skeleton from '@mui/material/Skeleton';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
+import { DataGrid, type GridColDef, type GridRenderCellParams } from '@mui/x-data-grid';
+import { frFR } from '@mui/x-data-grid/locales';
 import Link from 'next/link';
 import useSWR from 'swr';
 import type { LeaderboardEntry } from '@/lib/stats';
@@ -35,13 +30,6 @@ function getRankIcon(rank: number) {
   return null;
 }
 
-function getRankBgColor(rank: number) {
-  if (rank === 1) return 'rgba(255, 215, 0, 0.1)';
-  if (rank === 2) return 'rgba(192, 192, 192, 0.1)';
-  if (rank === 3) return 'rgba(205, 127, 50, 0.1)';
-  return 'transparent';
-}
-
 export default function LeaderboardPage() {
   const { data, isLoading } = useSWR<{ data: LeaderboardEntry[] }>(
     '/api/stats?type=leaderboard&limit=100',
@@ -49,6 +37,99 @@ export default function LeaderboardPage() {
   );
 
   const leaderboard = data?.data ?? [];
+
+  const columns: GridColDef<LeaderboardEntry>[] = [
+    {
+      field: 'rank',
+      headerName: 'Rang',
+      width: 100,
+      align: 'left',
+      headerAlign: 'left',
+      renderCell: (params: GridRenderCellParams<LeaderboardEntry, number>) => (
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          {getRankIcon(params.value ?? 0)}
+          <Typography
+            fontWeight={(params.value ?? 0) <= 3 ? 'bold' : 'normal'}
+            color={(params.value ?? 0) <= 3 ? 'primary' : 'inherit'}
+          >
+            #{params.value}
+          </Typography>
+        </Box>
+      ),
+    },
+    {
+      field: 'bladerName',
+      headerName: 'Blader',
+      flex: 1,
+      minWidth: 200,
+      renderCell: (params: GridRenderCellParams<LeaderboardEntry, string>) => (
+        <Link
+          href={`/dashboard/profile/${params.row.userId}`}
+          style={{ textDecoration: 'none', color: 'inherit', display: 'flex', alignItems: 'center', width: '100%' }}
+        >
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Avatar sx={{ width: 32, height: 32 }}>
+              {params.value?.[0]}
+            </Avatar>
+            <Typography fontWeight="medium">{params.value}</Typography>
+          </Box>
+        </Link>
+      ),
+    },
+    {
+      field: 'points',
+      headerName: 'Points',
+      width: 120,
+      align: 'right',
+      headerAlign: 'right',
+      renderCell: (params: GridRenderCellParams<LeaderboardEntry, number>) => (
+        <Chip
+          label={(params.value ?? 0).toLocaleString()}
+          size="small"
+          color="primary"
+          variant="outlined"
+          sx={{ fontWeight: 'bold' }}
+        />
+      ),
+    },
+    {
+      field: 'matches',
+      headerName: 'V / D',
+      width: 120,
+      align: 'right',
+      headerAlign: 'right',
+      valueGetter: (_: any, row: LeaderboardEntry) => `${row.wins} / ${row.losses}`,
+      renderCell: (params: GridRenderCellParams<LeaderboardEntry, string>) => {
+        const [wins, losses] = (params.value ?? '0 / 0').split(' / ');
+        return (
+          <Typography variant="body2">
+            <Box component="span" sx={{ color: 'success.main', fontWeight: 'bold' }}>
+              {wins}
+            </Box>
+            {' / '}
+            <Box component="span" sx={{ color: 'error.main', fontWeight: 'bold' }}>
+              {losses}
+            </Box>
+          </Typography>
+        );
+      },
+    },
+    {
+      field: 'winRate',
+      headerName: 'Winrate',
+      width: 100,
+      align: 'right',
+      headerAlign: 'right',
+      renderCell: (params: GridRenderCellParams<LeaderboardEntry, number>) => (
+        <Chip
+          label={`${(params.value ?? 0).toFixed(1)}%`}
+          size="small"
+          color={(params.value ?? 0) >= 50 ? 'success' : 'error'}
+          variant="filled"
+        />
+      ),
+    },
+  ];
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
@@ -61,142 +142,29 @@ export default function LeaderboardPage() {
         </Typography>
       </Box>
 
-      <Card>
-        <TableContainer>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell width={80}>Rang</TableCell>
-                <TableCell>Blader</TableCell>
-                <TableCell align="right">Points</TableCell>
-                <TableCell
-                  align="right"
-                  sx={{ display: { xs: 'none', sm: 'table-cell' } }}
-                >
-                  V/D
-                </TableCell>
-                <TableCell align="right">Winrate</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {isLoading ? (
-                [...Array(10)].map((_, i) => (
-                  // biome-ignore lint/suspicious/noArrayIndexKey: Static skeleton list
-                  <TableRow key={i}>
-                    <TableCell>
-                      <Skeleton width={30} />
-                    </TableCell>
-                    <TableCell>
-                      <Box
-                        sx={{ display: 'flex', alignItems: 'center', gap: 2 }}
-                      >
-                        <Skeleton variant="circular" width={40} height={40} />
-                        <Skeleton width={120} />
-                      </Box>
-                    </TableCell>
-                    <TableCell>
-                      <Skeleton width={60} />
-                    </TableCell>
-                    <TableCell
-                      sx={{ display: { xs: 'none', sm: 'table-cell' } }}
-                    >
-                      <Skeleton width={60} />
-                    </TableCell>
-                    <TableCell>
-                      <Skeleton width={60} />
-                    </TableCell>
-                  </TableRow>
-                ))
-              ) : leaderboard.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={5} align="center" sx={{ py: 8 }}>
-                    <Typography color="text.secondary">
-                      Aucun blader classé pour le moment
-                    </Typography>
-                  </TableCell>
-                </TableRow>
-              ) : (
-                leaderboard.map((entry) => (
-                  <TableRow
-                    key={entry.userId}
-                    sx={{
-                      bgcolor: getRankBgColor(entry.rank),
-                      '&:hover': { bgcolor: 'action.hover' },
-                    }}
-                  >
-                    <TableCell>
-                      <Box
-                        sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
-                      >
-                        {getRankIcon(entry.rank)}
-                        <Typography
-                          fontWeight={entry.rank <= 3 ? 'bold' : 'normal'}
-                          color={entry.rank <= 3 ? 'primary' : 'inherit'}
-                        >
-                          #{entry.rank}
-                        </Typography>
-                      </Box>
-                    </TableCell>
-                    <TableCell>
-                      <Link
-                        href={`/dashboard/profile/${entry.userId}`}
-                        style={{ textDecoration: 'none', color: 'inherit' }}
-                      >
-                        <Box
-                          sx={{ display: 'flex', alignItems: 'center', gap: 2 }}
-                        >
-                          <Avatar sx={{ width: 40, height: 40 }}>
-                            {entry.bladerName[0]}
-                          </Avatar>
-                          <Typography fontWeight="medium">
-                            {entry.bladerName}
-                          </Typography>
-                        </Box>
-                      </Link>
-                    </TableCell>
-                    <TableCell align="right">
-                      <Chip
-                        label={entry.points.toLocaleString()}
-                        size="small"
-                        color="primary"
-                        variant="outlined"
-                        sx={{ fontWeight: 'bold' }}
-                      />
-                    </TableCell>
-                    <TableCell
-                      align="right"
-                      sx={{ display: { xs: 'none', sm: 'table-cell' } }}
-                    >
-                      <Typography>
-                        <Box
-                          component="span"
-                          sx={{ color: 'success.main', fontWeight: 'bold' }}
-                        >
-                          {entry.wins}
-                        </Box>
-                        {' / '}
-                        <Box
-                          component="span"
-                          sx={{ color: 'error.main', fontWeight: 'bold' }}
-                        >
-                          {entry.losses}
-                        </Box>
-                      </Typography>
-                    </TableCell>
-                    <TableCell align="right">
-                      <Chip
-                        label={`${entry.winRate.toFixed(1)}%`}
-                        size="small"
-                        color={entry.winRate >= 50 ? 'success' : 'error'}
-                        variant="filled"
-                      />
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
+      <Card sx={{ height: 600, width: '100%' }}>
+        <DataGrid
+          rows={leaderboard}
+          columns={columns}
+          getRowId={(row) => row.userId}
+          loading={isLoading}
+          localeText={frFR.components.MuiDataGrid.defaultProps.localeText}
+          disableRowSelectionOnClick
+          initialState={{
+            pagination: { paginationModel: { pageSize: 25 } },
+          }}
+          pageSizeOptions={[25, 50, 100]}
+          sx={{
+            border: 'none',
+            '& .MuiDataGrid-cell': {
+              borderColor: 'divider',
+            },
+            '& .MuiDataGrid-columnHeaders': {
+              borderColor: 'divider',
+              bgcolor: 'background.paper',
+            },
+          }}
+        />
       </Card>
     </Container>
   );
