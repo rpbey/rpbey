@@ -5,30 +5,15 @@ import {
 import type { ButtonInteraction } from 'discord.js';
 import {
   ActionRowBuilder,
-  AttachmentBuilder,
   ButtonBuilder,
   ButtonStyle,
   EmbedBuilder,
 } from 'discord.js';
-import { generateBattleCard } from '../lib/canvas-utils.js';
 import { Colors, RPB } from '../lib/constants.js';
 import prisma from '../lib/prisma.js';
 import { pendingBattles } from '../lib/state.js';
-import { pickRandom } from '../lib/utils.js';
+import { getDeckStats, getRandomStats, runBattleSimulation } from '../lib/battle-utils.js';
 
-const battleResults = [
-  { result: 'burst', message: '💥 **BURST FINISH !**', points: 2, emoji: '💥' },
-  { result: 'over', message: '🔄 **OVER FINISH !**', points: 1, emoji: '🔄' },
-  { result: 'spin', message: '🌀 **SPIN FINISH !**', points: 1, emoji: '🌀' },
-  {
-    result: 'xtreme',
-    message: '⚡ **X-TREME FINISH !**',
-    points: 3,
-    emoji: '⚡',
-  },
-];
-
-// Store pending battles via shared state in lib/state.ts
 export class BattleButtonHandler extends InteractionHandler {
   public constructor(context: InteractionHandler.LoaderContext) {
     super(context, {
@@ -60,6 +45,8 @@ export class BattleButtonHandler extends InteractionHandler {
         return this.handleChallenge(interaction, challengerId);
       case 'stats':
         return this.handleStats(interaction);
+      case 'random':
+        return this.handleRandom(interaction, challengerId);
       default:
         return interaction.reply({
           content: '❌ Action inconnue.',
@@ -103,6 +90,30 @@ export class BattleButtonHandler extends InteractionHandler {
       });
     }
 
+    // Check Decks
+    const [statsA, statsB] = await Promise.all([
+        getDeckStats(challenger.id),
+        getDeckStats(interaction.user.id)
+    ]);
+
+    if (!statsA || !statsB) {
+        const embed = new EmbedBuilder()
+          .setTitle('⚠️ Decks manquants')
+          .setDescription(
+            `L'un des joueurs (ou les deux) n'a pas de deck actif.\nVoulez-vous lancer un **Combat Aléatoire** ?`
+          )
+          .setColor(Colors.Warning);
+
+        const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
+          new ButtonBuilder()
+            .setCustomId(`battle-random-${challenger.id}`)
+            .setLabel('🎲 Combat Aléatoire')
+            .setStyle(ButtonStyle.Primary)
+        );
+
+        return interaction.update({ embeds: [embed], components: [row] });
+    }
+
     // Start battle animation
     await interaction.update({
       content: null,
@@ -122,89 +133,41 @@ export class BattleButtonHandler extends InteractionHandler {
     // Simulate battle
     await this.sleep(2500);
 
-    // Determine winner
-    const winner = Math.random() > 0.5 ? challenger : interaction.user;
-    const loser = winner.id === challenger.id ? interaction.user : challenger;
-    const finishType = pickRandom(battleResults);
+    return runBattleSimulation(interaction, challenger, interaction.user, statsA, statsB);
+  }
 
-    // Update stats in DB
-    try {
-      const dbWinner = await prisma.user.upsert({
-        where: { discordId: winner.id },
-        update: {},
-        create: {
-          discordId: winner.id,
-          discordTag: winner.tag,
-          name: winner.displayName,
-          email: `${winner.id}@discord.rpbey.fr`,
-        },
+  private async handleRandom(interaction: ButtonInteraction, targetId: string) {
+      // Determine who is who
+      // In prompt, targetId is the "other" person.
+      // If triggered by Quick Battle prompt (Challenger clicked), targetId is Opponent.
+      // If triggered by Accept prompt (Opponent clicked), targetId is Challenger.
+      
+      const target = await interaction.client.users.fetch(targetId).catch(() => null);
+      if (!target) return interaction.reply({ content: '❌ Erreur joueur introuvable.', ephemeral: true });
+
+      // Identify Challenger/Opponent purely for visual consistency? 
+      // Let's just treat interaction.user as Player A and target as Player B.
+      
+      const statsA = getRandomStats();
+      const statsB = getRandomStats();
+
+      await interaction.update({
+        content: null,
+        embeds: [
+            new EmbedBuilder()
+            .setTitle('🎲 Combat Aléatoire !')
+            .setDescription(
+                `**${interaction.user.displayName}** VS **${target.displayName}**\n\n` +
+                'Génération de combos aléatoires...\n' +
+                '🌀 3... 2... 1... **LET IT RIP !**'
+            )
+            .setColor(Colors.Secondary)
+        ],
+        components: []
       });
 
-      await prisma.profile.upsert({
-        where: { userId: dbWinner.id },
-        update: { wins: { increment: 1 } },
-        create: { userId: dbWinner.id, wins: 1 },
-      });
-
-      const dbLoser = await prisma.user.upsert({
-        where: { discordId: loser.id },
-        update: {},
-        create: {
-          discordId: loser.id,
-          discordTag: loser.tag,
-          name: loser.displayName,
-          email: `${loser.id}@discord.rpbey.fr`,
-        },
-      });
-
-      await prisma.profile.upsert({
-        where: { userId: dbLoser.id },
-        update: { losses: { increment: 1 } },
-        create: { userId: dbLoser.id, losses: 1 },
-      });
-    } catch (e) {
-      this.container.logger.error('Failed to update battle stats:', e);
-    }
-
-    // Generate visual battle card
-    const cardBuffer = await generateBattleCard({
-      winnerName: winner.displayName,
-      winnerAvatarUrl: winner.displayAvatarURL({ extension: 'png', size: 512 }),
-      loserName: loser.displayName,
-      loserAvatarUrl: loser.displayAvatarURL({ extension: 'png', size: 512 }),
-      finishType: finishType.result,
-      finishMessage: finishType.message,
-      finishEmoji: finishType.emoji,
-    });
-
-    const attachment = new AttachmentBuilder(cardBuffer, {
-      name: `battle-${interaction.id}.png`,
-    });
-
-    const resultEmbed = new EmbedBuilder()
-      .setColor(Colors.Primary)
-      .setImage(`attachment://battle-${interaction.id}.png`)
-      .setFooter({ text: `${RPB.FullName} | GG !` })
-      .setTimestamp();
-
-    const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
-      new ButtonBuilder()
-        .setCustomId(`battle-rematch-${loser.id}`)
-        .setLabel('Revanche !')
-        .setStyle(ButtonStyle.Primary)
-        .setEmoji('🔄'),
-      new ButtonBuilder()
-        .setCustomId(`battle-stats-${winner.id}`)
-        .setLabel('Voir stats')
-        .setStyle(ButtonStyle.Secondary)
-        .setEmoji('📊'),
-    );
-
-    return interaction.editReply({
-      embeds: [resultEmbed],
-      files: [attachment],
-      components: [row],
-    });
+      await this.sleep(2000);
+      return runBattleSimulation(interaction, interaction.user, target, statsA, statsB);
   }
 
   private async handleDecline(
