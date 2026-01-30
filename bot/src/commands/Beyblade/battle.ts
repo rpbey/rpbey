@@ -12,16 +12,19 @@ import prisma from '../../lib/prisma.js';
 import { pendingBattles } from '../../lib/state.js';
 import { pickRandom } from '../../lib/utils.js';
 
+// Helper to parse stats
+const p = (val: string | number | null | undefined): number => {
+  if (typeof val === 'number') return val;
+  if (!val) return 0;
+  const parsed = parseInt(val, 10);
+  return isNaN(parsed) ? 0 : parsed;
+};
+
 const battleResults = [
-  { result: 'burst', message: '💥 **BURST FINISH !**', points: 2, emoji: '💥' },
-  { result: 'over', message: '🔄 **OVER FINISH !**', points: 1, emoji: '🔄' },
-  { result: 'spin', message: '🌀 **SPIN FINISH !**', points: 1, emoji: '🌀' },
-  {
-    result: 'xtreme',
-    message: '⚡ **X-TREME FINISH !**',
-    points: 3,
-    emoji: '⚡',
-  },
+  { result: 'burst', message: '💥 **BURST FINISH !**', points: 2, emoji: '💥', type: 'ATTACK' },
+  { result: 'over', message: '🔄 **OVER FINISH !**', points: 1, emoji: '🔄', type: 'DEFENSE' },
+  { result: 'spin', message: '🌀 **SPIN FINISH !**', points: 1, emoji: '🌀', type: 'STAMINA' },
+  { result: 'xtreme', message: '⚡ **X-TREME FINISH !**', points: 3, emoji: '⚡', type: 'ATTACK' },
 ];
 
 export class BattleCommand extends Command {
@@ -126,6 +129,49 @@ export class BattleCommand extends Command {
     return interaction.reply({ embeds: [embed], components: [row] });
   }
 
+  private async getDeckStats(discordId: string) {
+    const user = await prisma.user.findFirst({
+      where: { discordId },
+      include: {
+        decks: {
+          where: { isActive: true },
+          include: { items: { include: { blade: true, ratchet: true, bit: true } } }
+        }
+      }
+    });
+
+    // Default stats if no deck
+    let stats = { attack: 100, defense: 100, stamina: 100, dash: 50, power: 350 };
+
+    if (user && user.decks.length > 0) {
+      const deck = user.decks[0];
+      let atk = 0, def = 0, sta = 0, dsh = 0;
+      
+      for (const item of deck.items) {
+        const parts = [item.blade, item.ratchet, item.bit];
+        atk += parts.reduce((acc, part) => acc + p(part?.attack), 0);
+        def += parts.reduce((acc, part) => acc + p(part?.defense), 0);
+        sta += parts.reduce((acc, part) => acc + p(part?.stamina), 0);
+        dsh += parts.reduce((acc, part) => acc + p(part?.dash), 0);
+      }
+      
+      // Average per bey (approx) to keep scale consistent or just sum
+      // Let's use Sum as Power
+      stats = { 
+        attack: atk, 
+        defense: def, 
+        stamina: sta, 
+        dash: dsh,
+        power: atk + def + sta + (dsh * 0.5) // Dash weighted less for raw power
+      };
+    } else {
+        // Boost random stats a bit to be competitive with a starter deck
+        stats.power = 400 + Math.random() * 100;
+    }
+
+    return stats;
+  }
+
   private async executeQuickBattle(
     interaction: Command.ChatInputCommandInteraction,
     challenger: {
@@ -159,13 +205,54 @@ export class BattleCommand extends Command {
 
     await interaction.reply({ embeds: [startEmbed] });
 
+    // Fetch Stats
+    const [statsA, statsB] = await Promise.all([
+        this.getDeckStats(challenger.id),
+        this.getDeckStats(opponent.id)
+    ]);
+
     // Simulate battle with suspense
     await this.sleep(2000);
 
-    // Determine winner
-    const winner = Math.random() > 0.5 ? challenger : opponent;
+    // Determine winner based on Power Ratio
+    // Add randomness factor (Luck) +/- 20%
+    const luckA = 0.8 + Math.random() * 0.4;
+    const luckB = 0.8 + Math.random() * 0.4;
+    
+    const scoreA = statsA.power * luckA;
+    const scoreB = statsB.power * luckB;
+
+    const winner = scoreA > scoreB ? challenger : opponent;
     const loser = winner.id === challenger.id ? opponent : challenger;
-    const finishType = pickRandom(battleResults);
+    const winnerStats = winner.id === challenger.id ? statsA : statsB;
+
+    // Determine Finish Type based on Winner Stats
+    // Normalize stats to find highest attribute
+    const total = winnerStats.attack + winnerStats.defense + winnerStats.stamina;
+    const atkRatio = winnerStats.attack / total;
+    const defRatio = winnerStats.defense / total;
+    const staRatio = winnerStats.stamina / total;
+    const dashBonus = winnerStats.dash > 50 ? 0.2 : 0; // High dash increases Xtreme chance
+
+    let finishType;
+    const roll = Math.random();
+
+    // Xtreme Finish (High Attack + Dash)
+    if (roll < (atkRatio * 0.5 + dashBonus)) {
+        finishType = battleResults.find(r => r.result === 'xtreme')!;
+    } 
+    // Burst Finish (High Attack)
+    else if (roll < (atkRatio * 0.8 + dashBonus)) {
+        finishType = battleResults.find(r => r.result === 'burst')!;
+    }
+    // Spin Finish (High Stamina)
+    else if (roll < (atkRatio * 0.8 + staRatio)) {
+        finishType = battleResults.find(r => r.result === 'spin')!;
+    }
+    // Over Finish (Default/Defense/Luck)
+    else {
+        finishType = battleResults.find(r => r.result === 'over')!;
+    }
 
     // Update stats in DB
     try {
