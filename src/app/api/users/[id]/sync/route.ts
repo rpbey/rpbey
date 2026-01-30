@@ -59,8 +59,8 @@ export async function POST(
         serverAvatar: botMember.serverAvatar,
         globalName: botMember.globalName,
         roles: botMember.roles,
-        // Also update standard fields if possible (avatar?)
-        // image: botMember.avatar ?? undefined, // Maybe keep original auth image?
+        // Also update standard fields
+        image: botMember.avatar ?? undefined,
       },
     });
 
