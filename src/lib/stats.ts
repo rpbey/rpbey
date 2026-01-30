@@ -255,12 +255,15 @@ export async function getUserStats(userId: string): Promise<UserStats | null> {
   return {
     userId,
     bladerName: user.profile?.bladerName ?? user.name ?? 'Unknown',
-    totalMatches: matches.length,
-    wins,
-    losses,
-    winRate,
-    tournamentsPlayed: participations.length,
-    tournamentsWon,
+    totalMatches: totalWins + totalLosses,
+    wins: totalWins,
+    losses: totalLosses,
+    winRate:
+      totalWins + totalLosses > 0
+        ? (totalWins / (totalWins + totalLosses)) * 100
+        : 0,
+    tournamentsPlayed: participations.length, // TODO: Add legacy tournaments count if available in profile
+    tournamentsWon: (user.profile?.tournamentWins || 0) + tournamentsWon,
     currentStreak,
     bestStreak,
     recentForm,
