@@ -107,26 +107,24 @@ export class RankingService {
 
     let updatedCount = 0;
     for (const [userId, stats] of userPoints.entries()) {
-      // On met à jour ou crée le profil
-      if (stats.points > 0 || stats.wins > 0 || stats.losses > 0) {
-        await prisma.profile.upsert({
-          where: { userId },
-          create: {
-            userId,
-            rankingPoints: Math.round(stats.points),
-            wins: stats.wins,
-            losses: stats.losses,
-            tournamentWins: stats.tournamentWins,
-          },
-          update: {
-            rankingPoints: Math.round(stats.points),
-            wins: stats.wins,
-            losses: stats.losses,
-            tournamentWins: stats.tournamentWins,
-          },
-        });
-        updatedCount++;
-      }
+      // On met à jour le profil (on force la mise à jour pour réinitialiser les anciens points)
+      await prisma.profile.upsert({
+        where: { userId },
+        create: {
+          userId,
+          rankingPoints: Math.round(stats.points),
+          wins: stats.wins,
+          losses: stats.losses,
+          tournamentWins: stats.tournamentWins,
+        },
+        update: {
+          rankingPoints: Math.round(stats.points),
+          wins: stats.wins,
+          losses: stats.losses,
+          tournamentWins: stats.tournamentWins,
+        },
+      });
+      updatedCount++;
     }
 
     console.log(`✅ ${updatedCount} profils mis à jour avec succès.`);

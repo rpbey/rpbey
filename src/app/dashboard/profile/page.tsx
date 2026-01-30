@@ -1,38 +1,18 @@
-/**
- * RPB - My Profile Page (redirect to dynamic route)
- */
+import { headers } from 'next/headers';
+import { redirect } from 'next/navigation';
+import { auth } from '@/lib/auth';
 
-'use client';
+export default async function MyProfilePage() {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
 
-import Box from '@mui/material/Box';
-import CircularProgress from '@mui/material/CircularProgress';
-import Container from '@mui/material/Container';
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
-import { useAuth } from '@/hooks';
+  // Si pas de session, le DashboardLayout (AuthGuard) s'en occupera aussi, 
+  // mais on assure la redirection ici vers la page de connexion au cas où.
+  if (!session) {
+    redirect('/sign-in');
+  }
 
-export default function MyProfilePage() {
-  const router = useRouter();
-  const { user, isLoading } = useAuth();
-
-  useEffect(() => {
-    if (!isLoading && user) {
-      router.replace(`/dashboard/profile/${user.id}`);
-    }
-  }, [user, isLoading, router]);
-
-  return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          minHeight: 400,
-        }}
-      >
-        <CircularProgress />
-      </Box>
-    </Container>
-  );
+  // Redirection directe vers l'ID de l'utilisateur pour éviter le mot-clé "me"
+  redirect(`/dashboard/profile/${session.user.id}`);
 }

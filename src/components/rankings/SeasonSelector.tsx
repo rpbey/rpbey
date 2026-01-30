@@ -11,7 +11,13 @@ interface Season {
   isActive: boolean;
 }
 
-export default function SeasonSelector({ seasons }: { seasons: Season[] }) {
+export default function SeasonSelector({
+  seasons,
+  baseUrl = '/rankings',
+}: {
+  seasons: Season[];
+  baseUrl?: string;
+}) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const currentSlug = searchParams.get('season') || 'current';
@@ -28,7 +34,7 @@ export default function SeasonSelector({ seasons }: { seasons: Season[] }) {
     // Reset page on season change
     params.set('page', '1');
 
-    router.push(`/rankings?${params.toString()}`);
+    router.push(`${baseUrl}?${params.toString()}`);
   };
 
   return (

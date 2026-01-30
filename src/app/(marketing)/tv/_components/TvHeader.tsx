@@ -37,7 +37,7 @@ export default function TvHeader() {
               fontSize: { xs: '1.2rem', md: '1.5rem' },
             }}
           >
-            RPB{' '}
+            Rediffusion{' '}
             <Box
               component="span"
               sx={{
@@ -69,7 +69,7 @@ export default function TvHeader() {
             fontWeight: 'bold',
           }}
         >
-          RPB
+          R
         </Avatar>
       </Box>
     </Box>

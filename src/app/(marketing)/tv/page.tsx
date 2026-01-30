@@ -5,9 +5,9 @@ import { getRecentYouTubeVideos } from '@/lib/youtube';
 import { TvFeed } from './_components/TvFeed';
 
 export const metadata = {
-  title: 'RPB TV | Clips & Vidéos',
+  title: 'Rediffusion TV | Clips & Vidéos',
   description:
-    'Le meilleur du Beyblade X : Clips Twitch, vidéos RPB et sélection BeyTube FR.',
+    'Le meilleur du Beyblade X : Clips Twitch, vidéos Rediffusion et sélection BeyTube FR.',
 };
 
 export const revalidate = 60;

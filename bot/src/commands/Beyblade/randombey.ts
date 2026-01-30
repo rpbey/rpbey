@@ -84,6 +84,7 @@ export class RandomBeyCommand extends Command {
       stamina,
       weight: weight,
       color: type.color,
+      bladeImageUrl: blade.imageUrl,
     });
 
     const attachment = new AttachmentBuilder(cardBuffer, {

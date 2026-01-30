@@ -60,7 +60,7 @@ export function TvFeed({
           }}
         >
           <Tab label="Clips" />
-          <Tab label="RPB" />
+          <Tab label="Rediffusion" />
           <Tab label="BeyTube" />
         </Tabs>
       </Box>
@@ -86,7 +86,7 @@ export function TvFeed({
           </>
         )}
 
-        {/* TAB 1: VIDEOS RPB */}
+        {/* TAB 1: VIDEOS REDIFFUSION */}
         {tab === 1 && (
           <>
             {rpbVideos.length > 0 ? (

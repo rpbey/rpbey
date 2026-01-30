@@ -52,14 +52,12 @@ export async function POST(request: Request) {
 
     const imageUrl = `/uploads/avatars/${filename}`;
 
-    // Update user profile immediately? Or let the client do it?
-    // Let's return the URL and let the client call updateUser to maintain separation.
-
     return NextResponse.json({ url: imageUrl });
   } catch (error) {
     console.error('Upload error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     return NextResponse.json(
-      { error: 'Internal Server Error' },
+      { error: `Internal Server Error: ${errorMessage}` },
       { status: 500 },
     );
   }

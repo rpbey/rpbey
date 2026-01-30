@@ -73,9 +73,14 @@ RUN addgroup --system --gid 1001 nodejs && \
 
 WORKDIR /app
 
-# Copy necessary files
-COPY --from=builder /app/public ./public
+# Copy necessary files and set ownership
+COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 COPY --from=builder /app/package.json ./package.json
+
+# Ensure uploads directory exists and is writable
+RUN mkdir -p public/uploads/avatars public/uploads/deckboxes && \
+    chown -R nextjs:nodejs public && \
+    chmod -R 775 public/uploads
 
 # Automatically leverage output traces to reduce image size
 # https://nextjs.org/docs/advanced-features/output-file-tracing

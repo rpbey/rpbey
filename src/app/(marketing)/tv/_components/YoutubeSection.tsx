@@ -19,7 +19,7 @@ export default function YoutubeSection({ channelId }: YoutubeSectionProps) {
             fontWeight="bold"
             sx={{ fontSize: { xs: '1.5rem', sm: '2.125rem' } }}
           >
-            RPB YouTube
+            Rediffusion YouTube
           </Typography>
           <Typography
             variant="body1"

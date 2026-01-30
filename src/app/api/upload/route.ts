@@ -25,35 +25,48 @@ export async function POST(request: Request) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // Ensure uploads directory exists
-    const uploadDir = join(process.cwd(), 'public', 'uploads');
-    // We should probably check if directory exists, but assuming standard Next.js setup
-    // let's just use unique filenames
-    const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-    const extension = file.name.split('.').pop();
-    const filename = `deckbox-${session.user.id}-${uniqueSuffix}.${extension}`;
-    const filepath = join(uploadDir, filename);
-
-    // Note: In a real production env (like Vercel), local file writes don't persist.
-    // However, for this VPS setup with Coolify/Docker, we should ideally map a volume.
-    // For now, I'll write to public/uploads assuming it's writable.
-    // If public/uploads doesn't exist, I should create it?
-    // Let's rely on standard practice or create it if missing.
-
-    // I'll add a check for the directory creation just in case
-    if (!existsSync(uploadDir)) {
-      mkdirSync(uploadDir, { recursive: true });
+    // Validation
+    if (!file.type.startsWith('image/')) {
+      return NextResponse.json(
+        { error: 'File must be an image' },
+        { status: 400 },
+      );
     }
+
+    if (file.size > 10 * 1024 * 1024) {
+      // 10MB limit for deckboxes
+      return NextResponse.json(
+        { error: 'File size too large (max 10MB)' },
+        { status: 400 },
+      );
+    }
+
+    // Ensure uploads directory exists
+    const uploadDir = join(process.cwd(), 'public', 'uploads', 'deckboxes');
+    
+    try {
+      if (!existsSync(uploadDir)) {
+        mkdirSync(uploadDir, { recursive: true });
+      }
+    } catch (err) {
+      console.error('Error creating upload directory:', err);
+    }
+
+    const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+    const extension = file.name.split('.').pop() || 'jpg';
+    const filename = `${session.user.id}-${uniqueSuffix}.${extension}`;
+    const filepath = join(uploadDir, filename);
 
     await writeFile(filepath, buffer);
 
-    const fileUrl = `/uploads/${filename}`;
+    const fileUrl = `/uploads/deckboxes/${filename}`;
 
     return NextResponse.json({ url: fileUrl });
   } catch (error) {
     console.error('Error uploading file:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     return NextResponse.json(
-      { error: 'Failed to upload file' },
+      { error: `Failed to upload file: ${errorMessage}` },
       { status: 500 },
     );
   }

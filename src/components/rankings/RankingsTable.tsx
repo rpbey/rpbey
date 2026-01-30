@@ -30,12 +30,16 @@ interface RankingsTableProps {
   totalPages: number;
   currentPage: number;
   totalCount: number;
+  profileUrlPrefix?: string;
+  baseUrl?: string;
 }
 
 export function RankingsTable({
   profiles,
   totalPages,
   currentPage,
+  profileUrlPrefix = '/profile',
+  baseUrl = '/rankings',
 }: RankingsTableProps) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -48,7 +52,7 @@ export function RankingsTable({
   ) => {
     const params = new URLSearchParams(searchParams);
     params.set('page', value.toString());
-    router.push(`/rankings?${params.toString()}`);
+    router.push(`${baseUrl}?${params.toString()}`);
   };
 
   const getRankColor = (index: number) => {
@@ -169,7 +173,7 @@ export function RankingsTable({
                     </TableCell>
                     <TableCell>
                       <Link
-                        href={`/profile/${profile.userId}`}
+                        href={`${profileUrlPrefix}/${profile.userId}`}
                         style={{ textDecoration: 'none', color: 'inherit' }}
                       >
                         <Box

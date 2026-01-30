@@ -119,7 +119,6 @@ export async function getUserStats(userId: string): Promise<UserStats | null> {
   // Calculate basic stats
   const wins = matches.filter((m) => m.winnerId === userId).length;
   const losses = matches.length - wins;
-  const winRate = matches.length > 0 ? (wins / matches.length) * 100 : 0;
 
   // Calculate current streak
   let currentStreak = 0;
@@ -144,22 +143,14 @@ export async function getUserStats(userId: string): Promise<UserStats | null> {
   }
   if (currentStreak === 0) currentStreak = tempStreak;
 
-  // Count tournament wins
-  const tournamentsWon = participations.filter(
-    (p) => p.finalPlacement === 1,
-  ).length;
-
-  // Calculate ELO based on both profile stats (baseline) and match history
-  const profileWins = user.profile?.wins || 0;
-  const profileLosses = user.profile?.losses || 0;
-  const totalWins = profileWins + wins;
-  const totalLosses = profileLosses + losses;
-
-  const eloChange = totalWins * 15 - totalLosses * 15;
-  const elo = STARTING_ELO + eloChange;
-
-  // Use Official Points from Profile
+  // Use Official Stats from Profile
+  const tournamentWins = user.profile?.tournamentWins || 0;
   const points = user.profile?.rankingPoints || 0;
+
+  // Calculate ELO based on match history
+  // totalWins/Losses here are dynamic from the complete matches in DB
+  const eloChange = wins * 15 - losses * 15;
+  const elo = STARTING_ELO + eloChange;
 
   // Get rank based on POINTS (Efficient Count Query)
   const rank =
@@ -192,13 +183,6 @@ export async function getUserStats(userId: string): Promise<UserStats | null> {
           bitUsage[item.bitId] = { name: item.bit.name, count: 0 };
         const entry = bitUsage[item.bitId];
         if (entry) entry.count++;
-      }
-
-      // Check for pre-built bey (stock combo)
-      if (item.beyId && item.bey) {
-        // Not strictly tracking stock usage, but we could if we wanted to
-        // For now, we only track parts if they are available on the Beyblade model
-        // This would require fetch logic not currently in `include` above if we want deep parts from bey
       }
     }
   }
@@ -257,15 +241,15 @@ export async function getUserStats(userId: string): Promise<UserStats | null> {
   return {
     userId,
     bladerName: user.profile?.bladerName ?? user.name ?? 'Unknown',
-    totalMatches: totalWins + totalLosses,
-    wins: totalWins,
-    losses: totalLosses,
+    totalMatches: wins + losses,
+    wins: wins,
+    losses: losses,
     winRate:
-      totalWins + totalLosses > 0
-        ? (totalWins / (totalWins + totalLosses)) * 100
+      wins + losses > 0
+        ? (wins / (wins + losses)) * 100
         : 0,
-    tournamentsPlayed: participations.length, // TODO: Add legacy tournaments count if available in profile
-    tournamentsWon: (user.profile?.tournamentWins || 0) + tournamentsWon,
+    tournamentsPlayed: participations.length,
+    tournamentsWon: tournamentWins,
     currentStreak,
     bestStreak,
     recentForm,

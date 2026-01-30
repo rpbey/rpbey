@@ -48,7 +48,7 @@ export function BeyTubeSection() {
           </Box>
         </Typography>
         <Typography variant="body1" color="text.secondary">
-          Le top de la scène francophone sélectionné par la RPB.
+          Le top de la scène francophone sélectionné par Rediffusion TV.
         </Typography>
       </Box>
 

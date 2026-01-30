@@ -102,7 +102,13 @@ export async function getSeasonStandings(slug: string) {
     include: {
       entries: {
         include: {
-          user: true,
+          user: {
+            include: {
+              _count: {
+                select: { tournaments: true },
+              },
+            },
+          },
         },
         orderBy: { points: 'desc' },
       },

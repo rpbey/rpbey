@@ -8,6 +8,7 @@ import { alpha, useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import { useState } from 'react';
 import { DeckBoxEditor } from './DeckBoxEditor';
+import { useToast } from '@/components/ui';
 
 interface DeckBoxUploadProps {
   currentImage?: string | null;
@@ -18,6 +19,7 @@ export function DeckBoxUpload({ currentImage, onUpload }: DeckBoxUploadProps) {
   const [uploading, setUploading] = useState(false);
   const [editorOpen, setEditorOpen] = useState(false);
   const theme = useTheme();
+  const { showToast } = useToast();
 
   const uploadFile = async (file: File | Blob) => {
     setUploading(true);
@@ -30,14 +32,18 @@ export function DeckBoxUpload({ currentImage, onUpload }: DeckBoxUploadProps) {
         body: formData,
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        throw new Error('Upload failed');
+        throw new Error(data.error || 'Upload failed');
       }
 
-      const data = await response.json();
       onUpload(data.url);
+      showToast('Photo mise à jour ! N\'oublie pas de sauvegarder ton profil.', 'success');
     } catch (error) {
       console.error('Error uploading file:', error);
+      const message = error instanceof Error ? error.message : 'Erreur lors de l\'upload';
+      showToast(message, 'error');
     } finally {
       setUploading(false);
     }

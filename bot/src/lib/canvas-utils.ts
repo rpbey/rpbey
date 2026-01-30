@@ -248,6 +248,7 @@ export interface ComboCardData {
   stamina: number;
   weight: string;
   color: number;
+  bladeImageUrl?: string | null;
 }
 
 export async function generateComboCard(data: ComboCardData) {
@@ -294,22 +295,53 @@ export async function generateComboCard(data: ComboCardData) {
   ctx.fillStyle = '#ffffff';
   ctx.fillText(data.type.toUpperCase(), width / 2, 128);
 
+  // Blade Image (Circle)
+  if (data.bladeImageUrl) {
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(150, 250, 100, 0, Math.PI * 2, true);
+    ctx.closePath();
+    ctx.clip();
+    try {
+      // Handle relative URLs if they are served from our dashboard
+      let imgUrl = data.bladeImageUrl;
+      if (imgUrl.startsWith('/')) {
+        imgUrl = `https://rpbey.fr${imgUrl}`;
+      }
+      const bladeImg = await loadImage(imgUrl);
+      ctx.drawImage(bladeImg, 50, 150, 200, 200);
+    } catch (e) {
+      console.error('Failed to load blade image:', e);
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+      ctx.fill();
+    }
+    ctx.restore();
+
+    // Circle Border
+    ctx.strokeStyle = hexColor;
+    ctx.lineWidth = 5;
+    ctx.beginPath();
+    ctx.arc(150, 250, 100, 0, Math.PI * 2, true);
+    ctx.stroke();
+  }
+
   // Parts section
-  const drawPart = (label: string, value: string, y: number) => {
+  const drawPart = (label: string, value: string, y: number, xPos: number) => {
     ctx.textAlign = 'right';
     ctx.font = '24px GoogleSans';
     ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
-    ctx.fillText(label, width / 2 - 20, y);
+    ctx.fillText(label, xPos - 20, y);
 
     ctx.textAlign = 'left';
     ctx.font = 'bold 32px GoogleSans';
     ctx.fillStyle = '#fbbf24';
-    ctx.fillText(value, width / 2 + 20, y);
+    ctx.fillText(value, xPos + 20, y);
   };
 
-  drawPart('BLADE', data.blade, 200);
-  drawPart('RATCHET', data.ratchet, 260);
-  drawPart('BIT', data.bit, 320);
+  const partsX = data.bladeImageUrl ? 500 : width / 2;
+  drawPart('BLADE', data.blade, 200, partsX);
+  drawPart('RATCHET', data.ratchet, 260, partsX);
+  drawPart('BIT', data.bit, 320, partsX);
 
   // Stats Bar Helper
   const drawProgressBar = (
@@ -317,43 +349,47 @@ export async function generateComboCard(data: ComboCardData) {
     value: number,
     y: number,
     color: string,
+    xOffset: number
   ) => {
     ctx.textAlign = 'left';
     ctx.font = 'bold 20px GoogleSans';
     ctx.fillStyle = '#ffffff';
-    ctx.fillText(label, 100, y);
+    ctx.fillText(label, xOffset, y);
 
-    const barWidth = 400;
+    const barWidth = 350;
     const barHeight = 20;
-    const filledWidth = (value / 100) * barWidth;
+    const filledWidth = Math.min((value / 100) * barWidth, barWidth);
 
     // Background bar
     ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
     ctx.beginPath();
-    ctx.roundRect(250, y - 15, barWidth, barHeight, 10);
+    ctx.roundRect(xOffset + 120, y - 15, barWidth, barHeight, 10);
     ctx.fill();
 
     // Filled bar
     ctx.fillStyle = color;
     ctx.beginPath();
-    ctx.roundRect(250, y - 15, filledWidth, barHeight, 10);
+    ctx.roundRect(xOffset + 120, y - 15, filledWidth, barHeight, 10);
     ctx.fill();
 
     // Value
     ctx.font = 'bold 20px GoogleSans';
     ctx.fillStyle = '#ffffff';
-    ctx.fillText(value.toString(), 670, y);
+    ctx.fillText(value.toString(), xOffset + 120 + barWidth + 20, y);
   };
 
-  drawProgressBar('ATTAQUE', data.attack, 400, '#ef4444');
-  drawProgressBar('DÉFENSE', data.defense, 440, '#3b82f6');
-  drawProgressBar('ENDURANCE', data.stamina, 480, '#22c55e');
+  const statsX = data.bladeImageUrl ? 100 : 100;
+  const statsWidth = data.bladeImageUrl ? width - 200 : width - 200;
+
+  drawProgressBar('ATTAQUE', data.attack, 400, '#ef4444', 100);
+  drawProgressBar('DÉFENSE', data.defense, 440, '#3b82f6', 100);
+  drawProgressBar('ENDURANCE', data.stamina, 480, '#22c55e', 100);
 
   // Weight
   ctx.textAlign = 'center';
   ctx.font = 'bold 30px GoogleSans';
   ctx.fillStyle = '#ffffff';
-  ctx.fillText(`${data.weight}g`, width / 2, 370);
+  ctx.fillText(`${data.weight}g`, partsX, 370);
 
   return canvas.toBuffer('image/png');
 }

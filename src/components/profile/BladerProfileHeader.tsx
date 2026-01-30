@@ -48,11 +48,13 @@ function getRankColor(rank: number): string {
   return '#666';
 }
 
-function getRankTitle(_rank: number, elo: number): string {
-  if (elo >= 1500) return 'Champion';
-  if (elo >= 1300) return 'Expert';
-  if (elo >= 1150) return 'Confirmé';
-  if (elo >= 1000) return 'Intermédiaire';
+function getRankTitle(points: number): string {
+  if (points >= 20000) return 'Légende';
+  if (points >= 10000) return 'Champion';
+  if (points >= 5000) return 'Élite';
+  if (points >= 2500) return 'Expert';
+  if (points >= 1000) return 'Confirmé';
+  if (points >= 500) return 'Intermédiaire';
   return 'Débutant';
 }
 
@@ -71,275 +73,172 @@ export function BladerProfileHeader({
   const [isSyncing, setIsSyncing] = useState(false);
 
   const handleShare = async () => {
-    const url = window.location.href;
     if (navigator.share) {
-      await navigator.share({
-        title: `Profil de ${stats.bladerName} - RPB`,
-        url,
-      });
+      try {
+        await navigator.share({
+          title: `Profil de ${stats.bladerName} | RPB`,
+          text: `Découvrez les stats de ${stats.bladerName} sur la République Populaire du Beyblade !`,
+          url: window.location.href,
+        });
+      } catch (err) {
+        console.error('Error sharing:', err);
+      }
     } else {
-      await navigator.clipboard.writeText(url);
+      await navigator.clipboard.writeText(window.location.href);
       alert('Lien copié dans le presse-papier !');
     }
   };
 
-  const handleSync = async () => {
-    if (!userId) return;
+  const handleSyncRoles = async () => {
+    if (!userId || isSyncing) return;
     setIsSyncing(true);
     try {
-      const res = await fetch(`/api/users/${userId}/sync`, { method: 'POST' });
+      const res = await fetch(`/api/users/${userId}/sync-roles`, {
+        method: 'POST',
+      });
       if (res.ok) {
         window.location.reload();
-      } else {
-        alert('Erreur lors de la synchronisation avec Discord');
       }
-    } catch (e) {
-      console.error(e);
-      alert('Erreur réseau');
+    } catch (error) {
+      console.error('Failed to sync roles:', error);
     } finally {
       setIsSyncing(false);
     }
   };
 
-  // Filter relevant roles to display (exclude @everyone, etc if needed, but bot sends clean list usually)
-  // We prioritize high-level roles.
-  const displayRoles =
-    discordRoles?.filter((r) => r.name !== '@everyone').slice(0, 3) || [];
-
   return (
     <Card
       elevation={0}
       sx={{
-        background: `linear-gradient(135deg, ${alpha(theme.palette.primary.dark, 0.9)} 0%, ${alpha(
-          theme.palette.background.paper,
-          0.95,
-        )} 100%)`,
+        borderRadius: 5,
+        overflow: 'visible',
         position: 'relative',
-        overflow: 'hidden',
-        borderRadius: 6,
+        background: `linear-gradient(135deg, ${alpha(
+          theme.palette.background.paper,
+          0.9,
+        )} 0%, ${alpha(theme.palette.background.default, 0.8)} 100%)`,
+        backdropFilter: 'blur(20px)',
         border: '1px solid',
         borderColor: 'divider',
-        backdropFilter: 'blur(20px)',
-        boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
       }}
     >
-      {/* Decorative background accent */}
-      <Box
-        sx={{
-          position: 'absolute',
-          top: -100,
-          right: -100,
-          width: 300,
-          height: 300,
-          borderRadius: '50%',
-          background: `radial-gradient(circle, ${alpha(
-            theme.palette.primary.main,
-            0.3,
-          )} 0%, transparent 70%)`,
-          filter: 'blur(40px)',
-          zIndex: 0,
-        }}
-      />
-      <Box
-        sx={{
-          position: 'absolute',
-          bottom: -50,
-          left: -50,
-          width: 200,
-          height: 200,
-          borderRadius: '50%',
-          background: `radial-gradient(circle, ${alpha(
-            theme.palette.secondary.main,
-            0.2,
-          )} 0%, transparent 70%)`,
-          filter: 'blur(40px)',
-          zIndex: 0,
-        }}
-      />
-
-      <CardContent sx={{ pt: 5, pb: 5, position: 'relative', zIndex: 1 }}>
+      <CardContent sx={{ p: { xs: 3, md: 5 } }}>
         <Box
           sx={{
             display: 'flex',
             flexDirection: { xs: 'column', md: 'row' },
             alignItems: { xs: 'center', md: 'flex-start' },
-            gap: 4,
+            gap: { xs: 3, md: 5 },
           }}
         >
-          {/* Avatar Area */}
-          <Box
-            sx={{
-              display: 'flex',
-              justifyContent: 'center',
-              position: 'relative',
-            }}
-          >
-            <Box
+          {/* Avatar Section */}
+          <Box sx={{ position: 'relative' }}>
+            <Avatar
+              src={avatarUrl}
               sx={{
-                position: 'relative',
-                borderRadius: '50%',
-                p: 0.5,
-                background: `linear-gradient(135deg, ${getRankColor(stats.rank)}, ${alpha(
-                  getRankColor(stats.rank),
-                  0.3,
-                )})`,
+                width: { xs: 120, md: 160 },
+                height: { xs: 120, md: 160 },
+                border: '4px solid',
+                borderColor: 'background.paper',
+                boxShadow: '0 8px 24px rgba(0,0,0,0.2)',
               }}
-            >
-              <Avatar
-                src={avatarUrl}
-                sx={{
-                  width: { xs: 120, md: 160 },
-                  height: { xs: 120, md: 160 },
-                  border: '4px solid',
-                  borderColor: 'background.paper',
-                  boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
-                  fontSize: '4rem',
-                  bgcolor: 'primary.main',
-                }}
-              >
-                {stats.bladerName[0]}
-              </Avatar>
-            </Box>
-
+            />
             {stats.rank <= 3 && (
               <Box
                 sx={{
                   position: 'absolute',
-                  top: 0,
-                  right: 0,
+                  bottom: -10,
+                  right: -10,
                   bgcolor: getRankColor(stats.rank),
                   borderRadius: '50%',
-                  width: 40,
-                  height: 40,
+                  width: 48,
+                  height: 48,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   boxShadow: 3,
-                  border: '2px solid white',
-                  zIndex: 2,
+                  border: '3px solid white',
                 }}
               >
-                <EmojiEventsIcon sx={{ color: 'black', fontSize: 24 }} />
+                <EmojiEventsIcon sx={{ color: 'white' }} />
               </Box>
             )}
           </Box>
 
-          {/* Info Area */}
-          <Box sx={{ flex: 1, textAlign: { xs: 'center', md: 'left' } }}>
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 2,
-                justifyContent: { xs: 'center', md: 'flex-start' },
-                flexWrap: 'wrap',
-                mb: 1.5,
-              }}
+          {/* Info Section */}
+          <Box sx={{ flexGrow: 1, textAlign: { xs: 'center', md: 'left' } }}>
+            <Stack
+              direction="row"
+              spacing={2}
+              alignItems="center"
+              justifyContent={{ xs: 'center', md: 'flex-start' }}
+              sx={{ mb: 1 }}
             >
-              <Typography
-                variant="h3"
-                fontWeight="900"
-                sx={{
-                  fontSize: { xs: '2rem', md: '3rem' },
-                  letterSpacing: '-0.03em',
-                  background: `linear-gradient(90deg, ${theme.palette.text.primary}, ${theme.palette.text.secondary})`,
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                }}
-              >
+              <Typography variant="h3" fontWeight="900" letterSpacing="-0.03em">
                 {stats.bladerName}
               </Typography>
               {isOwnProfile && (
-                <>
-                  <Tooltip title="Modifier le profil">
-                    <IconButton
-                      component={Link}
-                      href="/dashboard/profile/edit"
-                      size="small"
-                      sx={{
-                        bgcolor: 'action.hover',
-                        border: '1px solid',
-                        borderColor: 'divider',
-                      }}
-                    >
-                      <EditIcon fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
-                  <Tooltip title="Synchroniser avec Discord">
-                    <IconButton
-                      onClick={handleSync}
-                      disabled={isSyncing}
-                      size="small"
-                      sx={{
-                        bgcolor: 'action.hover',
-                        border: '1px solid',
-                        borderColor: 'divider',
-                      }}
-                    >
-                      {isSyncing ? (
-                        <CircularProgress size={20} />
-                      ) : (
-                        <SyncIcon fontSize="small" />
-                      )}
-                    </IconButton>
-                  </Tooltip>
-                </>
+                <IconButton
+                  component={Link}
+                  href="/dashboard/profile/edit"
+                  size="small"
+                  sx={{ bgcolor: 'action.hover' }}
+                >
+                  <EditIcon fontSize="small" />
+                </IconButton>
               )}
-            </Box>
+            </Stack>
 
-            {/* Discord Role Badges */}
-            {displayRoles.length > 0 && (
-              <Stack
-                direction="row"
-                spacing={1}
-                sx={{
-                  mb: 2,
-                  justifyContent: { xs: 'center', md: 'flex-start' },
-                }}
-              >
-                {displayRoles.map((role) => (
-                  <Chip
-                    key={role.id}
-                    label={role.name.toUpperCase()}
-                    size="small"
-                    sx={{
-                      bgcolor:
-                        role.color === '#000000' ? '#99aab5' : role.color, // Fallback for default black
-                      color: '#fff',
-                      fontWeight: 700,
-                      fontSize: '0.65rem',
-                      height: 20,
-                      border: '1px solid rgba(255,255,255,0.2)',
-                    }}
-                  />
-                ))}
-              </Stack>
-            )}
-
+            {/* Badges/Roles */}
             <Stack
               direction="row"
               spacing={1}
-              sx={{
-                mt: 1,
-                justifyContent: { xs: 'center', md: 'flex-start' },
-                mb: 3,
-                flexWrap: 'wrap',
-                gap: 1,
-              }}
+              flexWrap="wrap"
+              justifyContent={{ xs: 'center', md: 'flex-start' }}
+              sx={{ mb: 3, gap: 1 }}
+            >
+              {discordRoles?.map((role) => (
+                <Chip
+                  key={role.id}
+                  label={role.name}
+                  size="small"
+                  sx={{
+                    bgcolor: alpha(role.color, 0.1),
+                    color: role.color,
+                    borderColor: alpha(role.color, 0.2),
+                    fontWeight: 'bold',
+                    border: '1px solid',
+                  }}
+                />
+              ))}
+              {isOwnProfile && (
+                <Tooltip title="Synchroniser les rôles Discord">
+                  <Chip
+                    icon={
+                      isSyncing ? (
+                        <CircularProgress size={16} />
+                      ) : (
+                        <SyncIcon />
+                      )
+                    }
+                    label="Sync"
+                    onClick={handleSyncRoles}
+                    size="small"
+                    variant="outlined"
+                    sx={{ cursor: 'pointer' }}
+                  />
+                </Tooltip>
+              )}
+            </Stack>
+
+            <Stack
+              direction="row"
+              spacing={2}
+              sx={{ mb: 3 }}
+              justifyContent={{ xs: 'center', md: 'flex-start' }}
             >
               <Chip
-                label={`RANG #${stats.rank}`}
-                size="medium"
-                sx={{
-                  bgcolor: getRankColor(stats.rank),
-                  color: stats.rank <= 3 ? 'black' : 'white',
-                  fontWeight: 800,
-                  fontSize: '0.75rem',
-                  boxShadow: `0 0 15px ${alpha(getRankColor(stats.rank), 0.4)}`,
-                }}
-              />
-              <Chip
-                label={getRankTitle(stats.rank, stats.elo)}
+                label={getRankTitle(stats.points)}
                 size="medium"
                 color="secondary"
                 variant="filled"

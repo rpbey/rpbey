@@ -84,8 +84,11 @@ export default function EditProfilePage() {
     register,
     handleSubmit,
     setValue,
+    watch,
     formState: { errors },
   } = useForm<ProfileFormData>();
+
+  const watchedDeckBoxImage = watch('deckBoxImage');
 
   useEffect(() => {
     if (profileData) {
@@ -216,9 +219,12 @@ export default function EditProfilePage() {
                           Ma Deck Box
                         </Typography>
                         <DeckBoxUpload
-                          currentImage={profileData?.deckBoxImage}
+                          currentImage={watchedDeckBoxImage}
                           onUpload={(url) =>
-                            setValue('deckBoxImage', url, { shouldDirty: true })
+                            setValue('deckBoxImage', url, {
+                              shouldDirty: true,
+                              shouldValidate: true,
+                            })
                           }
                         />
                       </Grid>
