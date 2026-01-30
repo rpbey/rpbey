@@ -9,7 +9,7 @@ export class PartCommand extends Subcommand {
   ) {
     super(context, {
       ...options,
-      name: 'part',
+      name: 'piece',
       description: "Obtenir les statistiques d'une pièce",
       subcommands: [
         { name: 'blade', chatInputRun: 'chatInputBlade' },
@@ -22,7 +22,7 @@ export class PartCommand extends Subcommand {
   override registerApplicationCommands(registry: Subcommand.Registry) {
     registry.registerChatInputCommand((builder) =>
       builder
-        .setName('part')
+        .setName('piece')
         .setDescription("Obtenir les statistiques d'une pièce")
         .addSubcommand((command) =>
           command

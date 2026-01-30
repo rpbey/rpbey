@@ -21,7 +21,7 @@ export class ProfileCommand extends Command {
   override registerApplicationCommands(registry: Command.Registry) {
     registry.registerChatInputCommand((builder) =>
       builder
-        .setName('profile')
+        .setName('profil')
         .setDescription("Voir le profil d'un blader")
         .addUserOption((opt) =>
           opt

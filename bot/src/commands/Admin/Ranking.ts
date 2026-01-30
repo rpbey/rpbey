@@ -8,12 +8,12 @@ import prisma from '../../lib/prisma.js';
   preconditions: ['GuildOnly'],
   subcommands: [
     {
-      name: 'reset',
+      name: 'raz',
       chatInputRun: 'chatInputReset',
     },
     {
-      name: 'setup',
-      chatInputRun: 'chatInputSetup',
+      name: 'config',
+      chatInputRun: 'chatInputConfig',
     },
   ],
 })
@@ -21,19 +21,19 @@ export class RankingCommand extends Subcommand {
   public override registerApplicationCommands(registry: Subcommand.Registry) {
     registry.registerChatInputCommand((builder) =>
       builder
-        .setName('ranking')
+        .setName('classement-admin')
         .setDescription("Commandes d'administration du classement")
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
         .addSubcommand((command) =>
           command
-            .setName('reset')
+            .setName('raz')
             .setDescription(
               'RAZ complet des points de classement de tous les membres',
             ),
         )
         .addSubcommand((command) =>
           command
-            .setName('setup')
+            .setName('config')
             .setDescription('Configurer les points du système de classement')
             .addIntegerOption((option) =>
               option
@@ -99,7 +99,7 @@ export class RankingCommand extends Subcommand {
     }
   }
 
-  public async chatInputSetup(
+  public async chatInputConfig(
     interaction: Subcommand.ChatInputCommandInteraction,
   ) {
     await interaction.deferReply({ ephemeral: true });

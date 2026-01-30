@@ -256,38 +256,60 @@ export function DeckBuilderModal({
             </Alert>
           )}
 
-          {/* 3D Overview Placeholder */}
+          {/* 3D Overview / Selector Placeholder */}
           <Box
             sx={{
-              position: 'relative',
-              height: 200,
-              bgcolor: '#1a1a1a',
-              borderRadius: 4,
               display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
+              gap: 2,
+              mb: 1,
             }}
           >
-            <Typography variant="body1" color="text.secondary">
-              Aperçu 3D désactivé pour optimiser les performances.
-            </Typography>
-            <Box
-              sx={{
-                position: 'absolute',
-                bottom: 20,
-                left: '50%',
-                transform: 'translateX(-50%)',
-                textAlign: 'center',
-                pointerEvents: 'none',
-              }}
-            >
-              <Typography
-                variant="caption"
-                sx={{ color: '#666', letterSpacing: 1, fontWeight: 'bold' }}
+            {[0, 1, 2].map((idx) => (
+              <Box
+                key={idx}
+                onClick={() => setSelectedIdx(idx)}
+                sx={{
+                  flex: 1,
+                  height: 120,
+                  bgcolor: selectedIdx === idx ? '#222' : '#111',
+                  border: '2px solid',
+                  borderColor: selectedIdx === idx ? 'error.main' : '#222',
+                  borderRadius: 2,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                  '&:hover': {
+                    bgcolor: '#1a1a1a',
+                    borderColor: selectedIdx === idx ? 'error.main' : '#444',
+                  },
+                }}
               >
-                CLIQUEZ SUR UN COMPARTIMENT POUR LE CONFIGURER
-              </Typography>
-            </Box>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    color: selectedIdx === idx ? 'error.main' : '#666',
+                    fontWeight: 'bold',
+                    mb: 1,
+                  }}
+                >
+                  BEY #{idx + 1}
+                </Typography>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: beys[idx]?.blade ? 'white' : '#444',
+                    fontWeight: '900',
+                    textAlign: 'center',
+                    px: 1,
+                  }}
+                >
+                  {beys[idx]?.blade?.name || 'VIDE'}
+                </Typography>
+              </Box>
+            ))}
           </Box>
 
           {/* Selected Slot Editor */}

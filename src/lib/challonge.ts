@@ -260,12 +260,14 @@ class ChallongeService {
     state?: 'pending' | 'in_progress' | 'ended';
     page?: number;
     perPage?: number;
+    subdomain?: string;
     userToken?: string;
   }): Promise<ChallongeTournament[]> {
     const query = new URLSearchParams();
     if (params?.state) query.set('state', params.state);
     if (params?.page) query.set('page', params.page.toString());
     if (params?.perPage) query.set('per_page', params.perPage.toString());
+    if (params?.subdomain) query.set('subdomain', params.subdomain);
 
     const queryString = query.toString() ? `?${query.toString()}` : '';
     const response = await this.request<ApiResponse<ChallongeTournament[]>>(

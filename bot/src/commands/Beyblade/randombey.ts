@@ -15,7 +15,7 @@ export class RandomBeyCommand extends Command {
   override registerApplicationCommands(registry: Command.Registry) {
     registry.registerChatInputCommand((builder) =>
       builder
-        .setName('randombey')
+        .setName('aleatoire')
         .setDescription('Génère une combinaison Beyblade X aléatoire !'),
     );
   }

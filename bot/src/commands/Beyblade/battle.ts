@@ -35,7 +35,7 @@ export class BattleCommand extends Command {
   override registerApplicationCommands(registry: Command.Registry) {
     registry.registerChatInputCommand((builder) =>
       builder
-        .setName('battle')
+        .setName('combat')
         .setDescription(
           'Lance un combat Beyblade virtuel contre un autre membre !',
         )

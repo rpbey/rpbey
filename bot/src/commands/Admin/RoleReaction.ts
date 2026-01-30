@@ -19,7 +19,7 @@ export class UserCommand extends Command {
   public override registerApplicationCommands(registry: Command.Registry) {
     registry.registerChatInputCommand((builder) =>
       builder
-        .setName('setup-roles')
+        .setName('config-roles')
         .setDescription('Configure les messages de rôles réaction')
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
         .addChannelOption((opt) =>

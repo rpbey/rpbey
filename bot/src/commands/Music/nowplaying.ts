@@ -10,7 +10,7 @@ import { useQueue } from 'discord-player';
 export class NowPlayingCommand extends Command {
   public override registerApplicationCommands(registry: Command.Registry) {
     registry.registerChatInputCommand((builder) =>
-      builder.setName('np').setDescription(this.description),
+      builder.setName('en-cours').setDescription(this.description),
     );
   }
 

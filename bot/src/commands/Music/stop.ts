@@ -9,7 +9,7 @@ import { useQueue } from 'discord-player';
 export class StopCommand extends Command {
   public override registerApplicationCommands(registry: Command.Registry) {
     registry.registerChatInputCommand((builder) =>
-      builder.setName('stop').setDescription(this.description),
+      builder.setName('arreter').setDescription(this.description),
     );
   }
 

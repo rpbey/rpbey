@@ -15,7 +15,7 @@ export class TeachCommand extends Command {
   override registerApplicationCommands(registry: Command.Registry) {
     registry.registerChatInputCommand((builder) =>
       builder
-        .setName('teach')
+        .setName('enseigner')
         .setDescription("Enseigne un nouveau fait à l'IA")
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages)
         .addStringOption((opt) =>

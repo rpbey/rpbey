@@ -37,7 +37,7 @@ export const auth = betterAuth({
     expiresIn: 60 * 60 * 24 * 7, // 7 days
     updateAge: 60 * 60 * 24, // 1 day
     cookieCache: {
-      enabled: true,
+      enabled: false,
       maxAge: 5 * 60, // 5 minutes
     },
   },
@@ -68,6 +68,11 @@ export const auth = betterAuth({
       clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
       scope: ['https://www.googleapis.com/auth/spreadsheets'],
     },
+  },
+
+  // Advanced configuration
+  advanced: {
+    useSecureCookies: true, // Force secure cookies for production behind proxy
   },
 
   // Callbacks

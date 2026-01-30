@@ -16,7 +16,7 @@ export class ScrapeCommand extends Command {
   override registerApplicationCommands(registry: Command.Registry) {
     registry.registerChatInputCommand((builder) =>
       builder
-        .setName('scrape')
+        .setName('aspirer')
         .setDescription("Aspire le contenu d'une page web pour l'IA")
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages)
         .addStringOption((opt) =>

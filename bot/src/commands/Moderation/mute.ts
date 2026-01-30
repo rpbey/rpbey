@@ -48,7 +48,7 @@ export class MuteCommand extends Command {
         )
         .addSubcommand((sub) =>
           sub
-            .setName('setup')
+            .setName('config')
             .setDescription(
               'Configure le rôle Muted et les permissions des salons',
             ),
@@ -66,7 +66,7 @@ export class MuteCommand extends Command {
         return this.muteUser(interaction);
       case 'retirer':
         return this.unmuteUser(interaction);
-      case 'setup':
+      case 'config':
         return this.setupMutedRole(interaction);
       default:
         return interaction.reply({

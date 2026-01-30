@@ -8,8 +8,8 @@ import { scrapeAndSyncTournament } from '../../lib/challonge-sync.js';
   preconditions: ['GuildOnly'],
   subcommands: [
     {
-      name: 'sync',
-      chatInputRun: 'chatInputSync',
+      name: 'synchroniser',
+      chatInputRun: 'chatInputSynchroniser',
     },
   ],
 })
@@ -17,12 +17,12 @@ export class TournamentCommand extends Subcommand {
   public override registerApplicationCommands(registry: Subcommand.Registry) {
     registry.registerChatInputCommand((builder) =>
       builder
-        .setName('tournament')
+        .setName('tournoi')
         .setDescription('Commandes de gestion des tournois')
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageEvents)
         .addSubcommand((command) =>
           command
-            .setName('sync')
+            .setName('synchroniser')
             .setDescription('Synchronisation profonde via scraping furtif')
             .addStringOption((option) =>
               option
@@ -34,7 +34,7 @@ export class TournamentCommand extends Subcommand {
     );
   }
 
-  public async chatInputSync(
+  public async chatInputSynchroniser(
     interaction: Subcommand.ChatInputCommandInteraction,
   ) {
     const url = interaction.options.getString('url', true);

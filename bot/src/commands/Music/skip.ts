@@ -9,7 +9,7 @@ import { useQueue } from 'discord-player';
 export class SkipCommand extends Command {
   public override registerApplicationCommands(registry: Command.Registry) {
     registry.registerChatInputCommand((builder) =>
-      builder.setName('skip').setDescription(this.description),
+      builder.setName('passer').setDescription(this.description),
     );
   }
 

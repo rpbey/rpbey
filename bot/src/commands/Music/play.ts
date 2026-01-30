@@ -11,7 +11,7 @@ export class PlayCommand extends Command {
   public override registerApplicationCommands(registry: Command.Registry) {
     registry.registerChatInputCommand((builder) =>
       builder
-        .setName('play')
+        .setName('jouer')
         .setDescription(this.description)
         .addStringOption((option) =>
           option
