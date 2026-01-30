@@ -91,7 +91,7 @@ export async function generateWelcomeImage(
 export interface ProfileCardData {
   bladerName: string;
   avatarUrl: string;
-  rankTitle: string; // e.g. "Champion", "Expert"
+  rankTitle: string;
   rank: number;
   wins: number;
   losses: number;
@@ -101,12 +101,16 @@ export interface ProfileCardData {
   joinedAt: string;
   currentStreak: number;
   bestStreak: number;
-  winRate: string; // pre-calculated string e.g. "50%"
+  winRate: string;
+  activeDeck?: {
+    name: string;
+    blades: { name: string; imageUrl: string | null }[];
+  } | null;
 }
 
 export async function generateProfileCard(data: ProfileCardData) {
   const width = 1000;
-  const height = 600;
+  const height = 750; // Increased height to fit the deck
   const canvas = createCanvas(width, height);
   const ctx = canvas.getContext('2d');
 
@@ -164,7 +168,6 @@ export async function generateProfileCard(data: ProfileCardData) {
   ctx.fillText(data.bladerName.toUpperCase(), 350, 100);
 
   // Rank Title & Position Badge
-  // Color based on rank title roughly (or just use gold/silver/bronze logic for top 3)
   let badgeColor = '#ffffff';
   if (data.rank === 1) badgeColor = '#FFD700';
   else if (data.rank === 2) badgeColor = '#C0C0C0';
@@ -179,9 +182,13 @@ export async function generateProfileCard(data: ProfileCardData) {
   ctx.fill();
 
   ctx.font = 'bold 24px GoogleSans';
-  ctx.fillStyle = '#000000'; // Dark text on badge
+  ctx.fillStyle = '#000000';
   ctx.textAlign = 'center';
-  ctx.fillText(`RANG #${data.rank} • ${data.rankTitle.toUpperCase()}`, 350 + 200, 148);
+  ctx.fillText(
+    `RANG #${data.rank} • ${data.rankTitle.toUpperCase()}`,
+    350 + 200,
+    148,
+  );
   ctx.textAlign = 'start';
 
   // Stats Grid Helper
@@ -191,7 +198,7 @@ export async function generateProfileCard(data: ProfileCardData) {
     x: number,
     y: number,
     color = '#fbbf24',
-    size = 42
+    size = 42,
   ) => {
     ctx.font = '20px GoogleSans';
     ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
@@ -206,26 +213,78 @@ export async function generateProfileCard(data: ProfileCardData) {
   const col2 = 550;
   const col3 = 750;
 
-  // Row 1: Points, Win Rate, Tournaments
   drawStat('POINTS', data.rankingPoints.toLocaleString(), col1, startY);
   drawStat('WIN RATE', data.winRate, col2, startY, '#ffffff');
-  drawStat('TOURNOIS', `${data.tournamentWins}/${data.tournamentsPlayed}`, col3, startY, '#f472b6');
+  drawStat(
+    'TOURNOIS',
+    `${data.tournamentWins}/${data.tournamentsPlayed}`,
+    col3,
+    startY,
+    '#f472b6',
+  );
 
-  // Row 2: Matches
   drawStat('VICTOIRES', data.wins, col1, startY + 100, '#4ade80');
   drawStat('DÉFAITES', data.losses, col2, startY + 100, '#f87171');
   drawStat('TOTAL', data.wins + data.losses, col3, startY + 100, '#ffffff');
 
-  // Row 3: Streaks
-  drawStat('SÉRIE ACTUELLE', data.currentStreak, col1, startY + 200, data.currentStreak > 0 ? '#4ade80' : '#94a3b8', 36);
-  drawStat('MEILLEURE SÉRIE', data.bestStreak, col2, startY + 200, '#fbbf24', 36);
+  // Deck Section
+  if (data.activeDeck) {
+    const deckY = 520;
+    ctx.font = 'bold 24px GoogleSans';
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+    ctx.fillText(`EQUIPEMENT ACTIF : ${data.activeDeck.name.toUpperCase()}`, 50, deckY);
+
+    const bladeSize = 100;
+    const spacing = 300;
+    const startX = 100;
+
+    for (let i = 0; i < data.activeDeck.blades.length; i++) {
+      const blade = data.activeDeck.blades[i];
+      const x = startX + i * spacing;
+      const y = deckY + 40;
+
+      // Draw Blade
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(x + bladeSize / 2, y + bladeSize / 2, bladeSize / 2, 0, Math.PI * 2);
+      ctx.clip();
+      
+      try {
+        if (blade.imageUrl) {
+          let imgUrl = blade.imageUrl;
+          if (imgUrl.startsWith('/')) imgUrl = `https://rpbey.fr${imgUrl}`;
+          const img = await loadImage(imgUrl);
+          ctx.drawImage(img, x, y, bladeSize, bladeSize);
+        } else {
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+          ctx.fill();
+        }
+      } catch {
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+        ctx.fill();
+      }
+      ctx.restore();
+
+      // Border
+      ctx.strokeStyle = badgeColor;
+      ctx.lineWidth = 3;
+      ctx.stroke();
+
+      // Name
+      ctx.font = 'bold 18px GoogleSans';
+      ctx.fillStyle = '#ffffff';
+      ctx.textAlign = 'center';
+      ctx.fillText(blade.name.toUpperCase(), x + bladeSize / 2, y + bladeSize + 30);
+      ctx.textAlign = 'start';
+    }
+  }
 
   // Footer / Join Date
   ctx.font = 'italic 20px GoogleSans';
   ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
   ctx.textAlign = 'right';
   ctx.fillText(`Membre depuis le ${data.joinedAt}`, width - 40, height - 30);
-  
+
   // Logo RPB
   try {
     const logo = await loadImage(getAssetPath('public/logo.png'));

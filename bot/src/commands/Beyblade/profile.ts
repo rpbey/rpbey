@@ -46,6 +46,16 @@ export class ProfileCommand extends Command {
         where: { discordId: targetUser.id },
         include: {
           profile: true,
+          decks: {
+            where: { isActive: true },
+            include: {
+              items: {
+                include: { blade: true, ratchet: true, bit: true },
+                orderBy: { position: 'asc' },
+              },
+            },
+            take: 1,
+          },
           tournaments: {
             include: { tournament: true },
             orderBy: { createdAt: 'desc' },
@@ -121,6 +131,20 @@ export class ProfileCommand extends Command {
           ? `${Math.round((profile.wins / totalMatches) * 100)}%`
           : '0%';
 
+      // Format active deck
+      const activeDeck = user.decks[0];
+      const deckData = activeDeck
+        ? {
+            name: activeDeck.name,
+            blades: activeDeck.items
+              .map((item) => ({
+                name: item.blade?.name || '?',
+                imageUrl: item.blade?.imageUrl || null,
+              }))
+              .filter((b) => b.name !== '?'),
+          }
+        : null;
+
       // Generate visual profile card
       const cardBuffer = await generateProfileCard({
         bladerName: profile.bladerName || targetUser.displayName,
@@ -136,6 +160,7 @@ export class ProfileCommand extends Command {
         currentStreak,
         bestStreak,
         winRate,
+        activeDeck: deckData,
       });
 
       const attachment = new AttachmentBuilder(cardBuffer, {
