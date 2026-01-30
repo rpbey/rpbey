@@ -72,8 +72,9 @@ export class ChallongeScraper {
   /**
    * Scrape un tournoi complet
    * @param urlId L'URL complète ou le slug (ex: "fr/B_TS2" ou "B_TS2")
+   * @param cookiesString Chaîne de cookies optionnelle (format "key=value; key2=value2")
    */
-  async scrape(urlId: string): Promise<ScrapedTournament> {
+  async scrape(urlId: string, cookiesString?: string): Promise<ScrapedTournament> {
     if (!this.browser) await this.init();
 
     // Normalisation de l'URL
@@ -85,13 +86,13 @@ export class ChallongeScraper {
     console.log(`🔍 Scraping du tournoi : ${slug}`);
 
     // 1. Récupération des données brutes via le Store (Page Module)
-    const storeData = await this.fetchStoreData(moduleUrl);
+    const { storeData, pageTitle } = await this.fetchStoreData(moduleUrl, cookiesString);
 
     // 2. Récupération du classement officiel (Page Standings)
     // Utile car le Store contient parfois juste les matchs, pas le calcul final du rang
     let standings = [];
     try {
-      standings = await this.fetchStandings(standingsUrl);
+      standings = await this.fetchStandings(standingsUrl, cookiesString);
     } catch {
       console.warn(
         '⚠️ Impossible de récupérer les standings HTML, calcul basé sur le store uniquement.',
@@ -99,23 +100,26 @@ export class ChallongeScraper {
     }
 
     // 3. Traitement et fusion
-    return this.processData(storeData, standings, baseUrl);
+    return this.processData(storeData, standings, baseUrl, pageTitle);
   }
 
-  private async fetchStoreData(url: string): Promise<any> {
+  private async fetchStoreData(url: string, cookiesString?: string): Promise<{ storeData: any, pageTitle: string }> {
     if (!this.browser) throw new Error('Browser not initialized');
     const page = await this.browser.newPage();
     try {
       await page.setExtraHTTPHeaders({
         'Accept-Language': 'fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7',
+        ...(cookiesString ? { Cookie: cookiesString } : {}),
       });
       await page.goto(url, { waitUntil: 'networkidle2', timeout: 60000 });
 
       // Attente pour laisser Cloudflare/React s'hydrater
       await new Promise((r) => setTimeout(r, 5000));
 
+      const pageTitle = await page.title();
+
       // Extraction sûre via string function
-      const data = await page.evaluate(`
+      const storeData = await page.evaluate(`
             (function() {
                 if (window._initialStoreState && window._initialStoreState['TournamentStore']) {
                     return window._initialStoreState['TournamentStore'];
@@ -124,17 +128,20 @@ export class ChallongeScraper {
             })()
         `);
 
-      if (!data) throw new Error('Store Challonge non trouvé dans la page. Possible blocage Cloudflare.');
-      return data;
+      if (!storeData) throw new Error('Store Challonge non trouvé dans la page. Possible blocage Cloudflare.');
+      return { storeData, pageTitle };
     } finally {
       await page.close();
     }
   }
 
-  private async fetchStandings(url: string): Promise<any[]> {
+  private async fetchStandings(url: string, cookiesString?: string): Promise<any[]> {
     if (!this.browser) throw new Error('Browser not initialized');
     const page = await this.browser.newPage();
     try {
+      if (cookiesString) {
+        await page.setExtraHTTPHeaders({ Cookie: cookiesString });
+      }
       await page.goto(url, { waitUntil: 'networkidle2', timeout: 45000 });
 
       // Extraction du tableau
@@ -163,8 +170,18 @@ export class ChallongeScraper {
     storeData: any,
     standings: any[],
     url: string,
+    pageTitle: string,
   ): ScrapedTournament {
     const t = storeData.tournament;
+
+    // Use pageTitle to extract name if missing. Title format usually "Name - Challonge"
+    const fallbackName = pageTitle.replace(' - Challonge', '').trim();
+    const tournamentName = t?.name || fallbackName || 'Tournoi Importé';
+
+    if (!t) {
+      console.error('Keys in storeData:', Object.keys(storeData));
+      throw new Error('Tournament data missing in store');
+    }
 
     const participantsMap = new Map<number, any>();
 
@@ -208,7 +225,7 @@ export class ChallongeScraper {
     return {
       metadata: {
         id: t.id,
-        name: t.name || 'Tournoi Importé',
+        name: tournamentName,
         url: url,
         state: t.state,
         type: t.tournament_type,

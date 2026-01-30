@@ -12,11 +12,13 @@ export async function getRankingConfig() {
     config = await prisma.rankingSystem.create({
       data: {
         participation: 5,
-        firstPlace: 50,
-        secondPlace: 25,
-        thirdPlace: 15,
-        top8: 10,
-        matchWin: 5,
+        firstPlace: 10000,
+        secondPlace: 7000,
+        thirdPlace: 5000,
+        top8: 500,
+        matchWin: 0, // Deprecated
+        matchWinWinner: 1000,
+        matchWinLoser: 500,
       },
     });
   }
@@ -30,7 +32,8 @@ export async function updateRankingConfig(data: {
   secondPlace: number;
   thirdPlace: number;
   top8: number;
-  matchWin: number;
+  matchWinWinner: number;
+  matchWinLoser: number;
 }) {
   const config = await getRankingConfig();
 

@@ -36,7 +36,8 @@ interface RankingConfig {
   secondPlace: number;
   thirdPlace: number;
   top8: number;
-  matchWin: number;
+  matchWinWinner: number;
+  matchWinLoser: number;
 }
 
 interface Category {
@@ -174,12 +175,23 @@ export default function RankingSettingsForm({
                   <Grid size={{ xs: 12, sm: 6 }}>
                     <TextField
                       fullWidth
-                      label="Victoire de Match"
-                      name="matchWin"
+                      label="Victoire Winner Bracket"
+                      name="matchWinWinner"
                       type="number"
-                      value={config.matchWin}
+                      value={config.matchWinWinner}
                       onChange={handleChange}
-                      helperText="Points par match gagné (dans le bracket)"
+                      helperText="Points par victoire en Winner Bracket"
+                    />
+                  </Grid>
+                  <Grid size={{ xs: 12, sm: 6 }}>
+                    <TextField
+                      fullWidth
+                      label="Victoire Loser Bracket"
+                      name="matchWinLoser"
+                      type="number"
+                      value={config.matchWinLoser}
+                      onChange={handleChange}
+                      helperText="Points par victoire en Loser Bracket"
                     />
                   </Grid>
 

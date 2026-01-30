@@ -27,38 +27,40 @@ export interface SyncResult {
  */
 export async function scrapeAndSyncTournament(
   urlId: string,
+  cookiesString?: string,
 ): Promise<SyncResult> {
   const scraper = new ChallongeScraper();
   let apiRequestsUsed = 0; // Le scraping n'utilise pas de requêtes API quota
 
   try {
     container.logger.info(`[Sync] Démarrage du scraping deep-sync pour: ${urlId}`);
-    const result = await scraper.scrape(urlId);
+    const result = await scraper.scrape(urlId, cookiesString);
     
     // 1. Upsert Tournament
-    const tournament = result.raw.tournament;
-    const status = mapChallongeState(tournament.state);
-    const challongeId = String(tournament.id);
+    const meta = result.metadata;
+    const raw = result.raw.tournament;
+    const status = mapChallongeState(meta.state);
+    const challongeId = String(meta.id);
 
     const dbTournament = await prisma.tournament.upsert({
       where: { challongeId },
       update: {
-        name: tournament.name,
-        description: tournament.description,
-        date: tournament.start_at ? new Date(tournament.start_at) : new Date(),
+        name: meta.name,
+        description: raw.description,
+        date: raw.start_at ? new Date(raw.start_at) : new Date(),
         status,
-        challongeUrl: `https://challonge.com/${tournament.url}`,
-        challongeState: tournament.state,
+        challongeUrl: meta.url,
+        challongeState: meta.state,
       },
       create: {
         challongeId,
-        name: tournament.name,
-        description: tournament.description,
-        date: tournament.start_at ? new Date(tournament.start_at) : new Date(),
+        name: meta.name,
+        description: raw.description,
+        date: raw.start_at ? new Date(raw.start_at) : new Date(),
         status,
-        challongeUrl: `https://challonge.com/${tournament.url}`,
-        challongeState: tournament.state,
-        maxPlayers: tournament.signup_cap || 64,
+        challongeUrl: meta.url,
+        challongeState: meta.state,
+        maxPlayers: raw.signup_cap || 64,
       },
     });
 

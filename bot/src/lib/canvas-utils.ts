@@ -91,39 +91,43 @@ export async function generateWelcomeImage(
 export interface ProfileCardData {
   bladerName: string;
   avatarUrl: string;
-  experience: string;
-  favoriteType: string;
+  rankTitle: string; // e.g. "Champion", "Expert"
+  rank: number;
   wins: number;
   losses: number;
   tournamentWins: number;
+  tournamentsPlayed: number;
   rankingPoints: number;
   joinedAt: string;
+  currentStreak: number;
+  bestStreak: number;
+  winRate: string; // pre-calculated string e.g. "50%"
 }
 
 export async function generateProfileCard(data: ProfileCardData) {
   const width = 1000;
-  const height = 500;
+  const height = 600;
   const canvas = createCanvas(width, height);
   const ctx = canvas.getContext('2d');
 
   // Background
-  const bgPath = getAssetPath('public/background-seasson-2.webp');
+  const bgPath = getAssetPath('public/canvas.png');
   try {
     const background = await loadImage(bgPath);
     ctx.drawImage(background, 0, 0, width, height);
   } catch {
-    ctx.fillStyle = '#1e1b4b'; // Deep Navy fallback
+    ctx.fillStyle = '#1e1b4b';
     ctx.fillRect(0, 0, width, height);
   }
 
-  // Dark overlay with slight gradient
+  // Dark overlay
   const gradient = ctx.createLinearGradient(0, 0, width, 0);
-  gradient.addColorStop(0, 'rgba(0, 0, 0, 0.8)');
-  gradient.addColorStop(1, 'rgba(0, 0, 0, 0.4)');
+  gradient.addColorStop(0, 'rgba(0, 0, 0, 0.85)');
+  gradient.addColorStop(1, 'rgba(0, 0, 0, 0.6)');
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, width, height);
 
-  // Main Card Area (Rounded Rect)
+  // Main Card Area
   ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
   ctx.beginPath();
   ctx.roundRect(20, 20, width - 40, height - 40, 20);
@@ -157,75 +161,75 @@ export async function generateProfileCard(data: ProfileCardData) {
   // Blader Name
   ctx.font = 'bold 64px GoogleSans';
   ctx.fillStyle = '#ffffff';
-  ctx.fillText(data.bladerName.toUpperCase(), 350, 120);
+  ctx.fillText(data.bladerName.toUpperCase(), 350, 100);
 
-  // Experience Level Badge
-  const expColors: Record<string, string> = {
-    BEGINNER: '#94a3b8',
-    INTERMEDIATE: '#4ade80',
-    ADVANCED: '#60a5fa',
-    EXPERT: '#f472b6',
-    LEGEND: '#fbbf24',
-  };
-  const expLabels: Record<string, string> = {
-    BEGINNER: 'DÉBUTANT',
-    INTERMEDIATE: 'INTERMÉDIAIRE',
-    ADVANCED: 'AVANCÉ',
-    EXPERT: 'EXPERT',
-    LEGEND: 'LÉGENDE',
-  };
+  // Rank Title & Position Badge
+  // Color based on rank title roughly (or just use gold/silver/bronze logic for top 3)
+  let badgeColor = '#ffffff';
+  if (data.rank === 1) badgeColor = '#FFD700';
+  else if (data.rank === 2) badgeColor = '#C0C0C0';
+  else if (data.rank === 3) badgeColor = '#CD7F32';
+  else if (data.rankTitle === 'Champion') badgeColor = '#fbbf24';
+  else if (data.rankTitle === 'Expert') badgeColor = '#f472b6';
+  else badgeColor = '#94a3b8';
 
-  const expColor = expColors[data.experience] || '#ffffff';
-  ctx.fillStyle = expColor;
+  ctx.fillStyle = badgeColor;
   ctx.beginPath();
-  ctx.roundRect(350, 140, 220, 40, 10);
+  ctx.roundRect(350, 120, 400, 40, 10);
   ctx.fill();
 
   ctx.font = 'bold 24px GoogleSans';
-  ctx.fillStyle = '#000000';
+  ctx.fillStyle = '#000000'; // Dark text on badge
   ctx.textAlign = 'center';
-  ctx.fillText(expLabels[data.experience] || data.experience, 350 + 110, 168);
+  ctx.fillText(`RANG #${data.rank} • ${data.rankTitle.toUpperCase()}`, 350 + 200, 148);
   ctx.textAlign = 'start';
 
-  // Stats Grid
+  // Stats Grid Helper
   const drawStat = (
     label: string,
     value: string | number,
     x: number,
     y: number,
     color = '#fbbf24',
+    size = 42
   ) => {
     ctx.font = '20px GoogleSans';
     ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
     ctx.fillText(label, x, y);
-    ctx.font = 'bold 42px GoogleSans';
+    ctx.font = `bold ${size}px GoogleSans`;
     ctx.fillStyle = color;
-    ctx.fillText(value.toString(), x, y + 50);
+    ctx.fillText(value.toString(), x, y + size + 8);
   };
 
-  drawStat('POINTS', data.rankingPoints, 350, 250);
-  drawStat(
-    'WIN RATE',
-    `${Math.round((data.wins / (data.wins + data.losses || 1)) * 100)}%`,
-    550,
-    250,
-    '#ffffff',
-  );
-  drawStat('TOURNÉS', data.tournamentWins, 800, 250);
+  const startY = 230;
+  const col1 = 350;
+  const col2 = 550;
+  const col3 = 750;
 
-  drawStat('VICTOIRES', data.wins, 350, 350, '#4ade80');
-  drawStat('DÉFAITES', data.losses, 550, 350, '#f87171');
-  drawStat('TYPE', data.favoriteType || 'N/A', 800, 350, '#60a5fa');
+  // Row 1: Points, Win Rate, Tournaments
+  drawStat('POINTS', data.rankingPoints.toLocaleString(), col1, startY);
+  drawStat('WIN RATE', data.winRate, col2, startY, '#ffffff');
+  drawStat('TOURNOIS', `${data.tournamentWins}/${data.tournamentsPlayed}`, col3, startY, '#f472b6');
 
-  // Joined Date
+  // Row 2: Matches
+  drawStat('VICTOIRES', data.wins, col1, startY + 100, '#4ade80');
+  drawStat('DÉFAITES', data.losses, col2, startY + 100, '#f87171');
+  drawStat('TOTAL', data.wins + data.losses, col3, startY + 100, '#ffffff');
+
+  // Row 3: Streaks
+  drawStat('SÉRIE ACTUELLE', data.currentStreak, col1, startY + 200, data.currentStreak > 0 ? '#4ade80' : '#94a3b8', 36);
+  drawStat('MEILLEURE SÉRIE', data.bestStreak, col2, startY + 200, '#fbbf24', 36);
+
+  // Footer / Join Date
   ctx.font = 'italic 20px GoogleSans';
   ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
-  ctx.fillText(`Blader depuis le ${data.joinedAt}`, 350, 450);
-
+  ctx.textAlign = 'right';
+  ctx.fillText(`Membre depuis le ${data.joinedAt}`, width - 40, height - 30);
+  
   // Logo RPB
   try {
     const logo = await loadImage(getAssetPath('public/logo.png'));
-    ctx.drawImage(logo, 850, 30, 100, 100);
+    ctx.drawImage(logo, width - 130, 30, 100, 100);
   } catch {
     // skip
   }

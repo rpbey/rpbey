@@ -207,7 +207,9 @@ model RankingSystem {
   secondPlace   Int      @default(15)
   thirdPlace    Int      @default(10)
   top8          Int      @default(5)
-  matchWin      Int      @default(2)
+  matchWin      Int      @default(2) // Deprecated
+  matchWinWinner Int     @default(1000)
+  matchWinLoser  Int     @default(500)
   updatedAt     DateTime @updatedAt
 
   @@map("ranking_system")

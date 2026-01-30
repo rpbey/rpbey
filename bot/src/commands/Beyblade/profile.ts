@@ -51,6 +51,9 @@ export class ProfileCommand extends Command {
             orderBy: { createdAt: 'desc' },
             take: 5,
           },
+          _count: {
+            select: { tournaments: true },
+          },
         },
       });
 
@@ -72,17 +75,67 @@ export class ProfileCommand extends Command {
 
       const profile = user.profile;
 
+      // Fetch matches for stats
+      const matches = await prisma.tournamentMatch.findMany({
+        where: {
+          OR: [{ player1Id: user.id }, { player2Id: user.id }],
+          state: 'complete',
+        },
+        orderBy: { createdAt: 'asc' },
+      });
+
+      // Calculate Streaks
+      let currentStreak = 0;
+      let bestStreak = 0;
+      let tempStreak = 0;
+
+      for (const match of matches) {
+        const won = match.winnerId === user.id;
+        if (won) {
+          tempStreak++;
+          if (tempStreak > bestStreak) bestStreak = tempStreak;
+        } else {
+          tempStreak = 0;
+        }
+      }
+      currentStreak = tempStreak;
+
+      // Calculate Rank
+      const rank =
+        (await prisma.profile.count({
+          where: { rankingPoints: { gt: profile.rankingPoints } },
+        })) + 1;
+
+      // Calculate ELO & Title
+      const elo = 1000 + (profile.wins * 15 - profile.losses * 15);
+      let rankTitle = 'Débutant';
+      if (elo >= 1500) rankTitle = 'Champion';
+      else if (elo >= 1300) rankTitle = 'Expert';
+      else if (elo >= 1150) rankTitle = 'Confirmé';
+      else if (elo >= 1000) rankTitle = 'Intermédiaire';
+
+      // Win Rate
+      const totalMatches = profile.wins + profile.losses;
+      const winRate =
+        totalMatches > 0
+          ? `${Math.round((profile.wins / totalMatches) * 100)}%`
+          : '0%';
+
       // Generate visual profile card
       const cardBuffer = await generateProfileCard({
         bladerName: profile.bladerName || targetUser.displayName,
         avatarUrl: targetUser.displayAvatarURL({ extension: 'png', size: 512 }),
-        experience: profile.experience,
-        favoriteType: profile.favoriteType || 'Inconnu',
         wins: profile.wins,
         losses: profile.losses,
         tournamentWins: profile.tournamentWins,
+        tournamentsPlayed: user._count.tournaments,
         rankingPoints: profile.rankingPoints,
         joinedAt: user.createdAt.toLocaleDateString('fr-FR'),
+        rank,
+        rankTitle,
+        currentStreak,
+        bestStreak,
+        winRate,
       });
 
       const attachment = new AttachmentBuilder(cardBuffer, {

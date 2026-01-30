@@ -80,7 +80,12 @@ export class RankingService {
         if (m.winnerId) {
           const wStats = userPoints.get(m.winnerId);
           if (wStats) {
-            wStats.points += rules.matchWin * weight;
+            // Distinction Winner Bracket vs Loser Bracket
+            // Challonge: Rounds positifs = Winner, Négatifs = Loser
+            const winPoints =
+              m.round > 0 ? rules.matchWinWinner : rules.matchWinLoser;
+
+            wStats.points += winPoints * weight;
             wStats.wins += 1;
           }
         }

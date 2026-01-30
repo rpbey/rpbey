@@ -37,8 +37,14 @@ export class RankingCommand extends Subcommand {
             .setDescription('Configurer les points du système de classement')
             .addIntegerOption((option) =>
               option
-                .setName('victoire_match')
-                .setDescription('Points par victoire de match (ex: 200)')
+                .setName('victoire_winner')
+                .setDescription('Points par victoire en Winner Bracket (ex: 1000)')
+                .setRequired(true),
+            )
+            .addIntegerOption((option) =>
+              option
+                .setName('victoire_loser')
+                .setDescription('Points par victoire en Loser Bracket (ex: 500)')
                 .setRequired(true),
             )
             .addIntegerOption((option) =>
@@ -104,7 +110,8 @@ export class RankingCommand extends Subcommand {
   ) {
     await interaction.deferReply({ ephemeral: true });
 
-    const matchWin = interaction.options.getInteger('victoire_match', true);
+    const matchWinWinner = interaction.options.getInteger('victoire_winner', true);
+    const matchWinLoser = interaction.options.getInteger('victoire_loser', true);
     const participation = interaction.options.getInteger('participation', true);
     const top8 = interaction.options.getInteger('top8', true);
     const thirdPlace = interaction.options.getInteger('troisieme', true);
@@ -119,7 +126,8 @@ export class RankingCommand extends Subcommand {
         await prisma.rankingSystem.update({
           where: { id: existingConfig.id },
           data: {
-            matchWin,
+            matchWinWinner,
+            matchWinLoser,
             participation,
             top8,
             thirdPlace,
@@ -130,7 +138,8 @@ export class RankingCommand extends Subcommand {
       } else {
         await prisma.rankingSystem.create({
           data: {
-            matchWin,
+            matchWinWinner,
+            matchWinLoser,
             participation,
             top8,
             thirdPlace,
@@ -142,7 +151,8 @@ export class RankingCommand extends Subcommand {
 
       return interaction.editReply(
         `✅ **Configuration du Classement mise à jour !**\n\n` +
-          `🔹 Victoire Match : ${matchWin}\n` +
+          `🔹 Victoire Winner : ${matchWinWinner}\n` +
+          `🔹 Victoire Loser : ${matchWinLoser}\n` +
           `🔹 Participation : ${participation}\n` +
           `🔹 Top 8 : ${top8}\n` +
           `🥉 3ème Place : ${thirdPlace}\n` +
