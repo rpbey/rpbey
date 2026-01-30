@@ -1,5 +1,4 @@
 import { Container } from '@mui/material';
-import { cacheLife } from 'next/cache';
 import { getBeyTubeFeatured } from '@/lib/beytube';
 import { getRPBClips } from '@/lib/twitch';
 import { getRecentYouTubeVideos } from '@/lib/youtube';
@@ -11,10 +10,9 @@ export const metadata = {
     'Le meilleur du Beyblade X : Clips Twitch, vidéos RPB et sélection BeyTube FR.',
 };
 
-export default async function TVPage() {
-  'use cache';
-  cacheLife('minutes');
+export const revalidate = 60;
 
+export default async function TVPage() {
   const domain = process.env.NEXT_PUBLIC_DOMAIN || 'rpbey.fr';
 
   // Fetch all media in parallel

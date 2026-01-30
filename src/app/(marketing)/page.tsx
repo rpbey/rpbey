@@ -1,13 +1,11 @@
-import { cacheLife } from 'next/cache';
 import { getDiscordStats, getDiscordTeam } from '@/lib/discord-data';
 import { prisma } from '@/lib/prisma';
 import { getContent } from '@/server/actions/cms';
 import HomeClient from './HomeClient';
 
-export default async function HomePage() {
-  'use cache';
-  cacheLife('minutes');
+export const revalidate = 60;
 
+export default async function HomePage() {
   const [stats, team, activeTournament, heroContent] = await Promise.all([
     getDiscordStats(),
     getDiscordTeam(),
