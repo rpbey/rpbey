@@ -12,7 +12,6 @@ import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import Chip from '@mui/material/Chip';
 import Divider from '@mui/material/Divider';
@@ -21,7 +20,6 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { alpha, useTheme } from '@mui/material/styles';
 import type { Part } from '@prisma/client';
-import { parseStat } from '@/lib/utils';
 
 export interface DeckBey {
   id: string;
@@ -55,15 +53,6 @@ function BeyLine({ bey }: { bey: DeckBey }) {
     (partsAvailable
       ? `${bey.blade?.name} ${bey.ratchet?.name} ${bey.bit?.name}`
       : 'Bey incomplet');
-
-  const stats = partsAvailable
-    ? {
-        attack: parseStat(bey.blade?.attack),
-        defense: parseStat(bey.blade?.defense),
-        stamina: parseStat(bey.blade?.stamina),
-        dash: parseStat(bey.blade?.dash),
-      }
-    : { attack: 0, defense: 0, stamina: 0, dash: 0 };
 
   return (
     <Box
@@ -100,46 +89,6 @@ function BeyLine({ bey }: { bey: DeckBey }) {
           {name}
         </Typography>
       </Box>
-      {partsAvailable && (
-        <Box sx={{ display: 'flex', gap: 0.5, flexShrink: 0 }}>
-          <Chip
-            size="small"
-            label={stats.attack}
-            sx={{
-              bgcolor: 'error.main',
-              color: 'white',
-              minWidth: 28,
-              height: 20,
-              fontSize: '0.7rem',
-              fontWeight: 'bold',
-            }}
-          />
-          <Chip
-            size="small"
-            label={stats.defense}
-            sx={{
-              bgcolor: 'info.main',
-              color: 'white',
-              minWidth: 28,
-              height: 20,
-              fontSize: '0.7rem',
-              fontWeight: 'bold',
-            }}
-          />
-          <Chip
-            size="small"
-            label={stats.stamina}
-            sx={{
-              bgcolor: 'success.main',
-              color: 'white',
-              minWidth: 28,
-              height: 20,
-              fontSize: '0.7rem',
-              fontWeight: 'bold',
-            }}
-          />
-        </Box>
-      )}
     </Box>
   );
 }
@@ -152,31 +101,6 @@ export function DeckCard({
 }: DeckCardProps) {
   const theme = useTheme();
   const sortedBeys = [...deck.beys].sort((a, b) => a.position - b.position);
-
-  // Calculate total stats
-  const totalStats = sortedBeys.reduce(
-    (acc, bey) => {
-      const parts = [bey.blade, bey.ratchet, bey.bit].filter(Boolean) as Part[];
-
-      const beyStats = parts.reduce(
-        (bAcc, part) => ({
-          attack: bAcc.attack + parseStat(part.attack),
-          defense: bAcc.defense + parseStat(part.defense),
-          stamina: bAcc.stamina + parseStat(part.stamina),
-          dash: bAcc.dash + parseStat(part.dash),
-        }),
-        { attack: 0, defense: 0, stamina: 0, dash: 0 },
-      );
-
-      return {
-        attack: acc.attack + beyStats.attack,
-        defense: acc.defense + beyStats.defense,
-        stamina: acc.stamina + beyStats.stamina,
-        dash: acc.dash + beyStats.dash,
-      };
-    },
-    { attack: 0, defense: 0, stamina: 0, dash: 0 },
-  );
 
   return (
     <Card
@@ -259,67 +183,6 @@ export function DeckCard({
             <BeyLine key={bey.id} bey={bey} />
           ))}
         </Stack>
-
-        <Divider sx={{ my: 2, borderStyle: 'dashed' }} />
-
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'space-around',
-            bgcolor: alpha(theme.palette.text.primary, 0.03),
-            py: 1.5,
-            borderRadius: 2,
-          }}
-        >
-          <Box sx={{ textAlign: 'center' }}>
-            <Typography
-              variant="caption"
-              color="text.secondary"
-              fontWeight="bold"
-            >
-              ATK
-            </Typography>
-            <Typography variant="body2" fontWeight="900" color="error.main">
-              {totalStats.attack}
-            </Typography>
-          </Box>
-          <Box sx={{ textAlign: 'center' }}>
-            <Typography
-              variant="caption"
-              color="text.secondary"
-              fontWeight="bold"
-            >
-              DEF
-            </Typography>
-            <Typography variant="body2" fontWeight="900" color="info.main">
-              {totalStats.defense}
-            </Typography>
-          </Box>
-          <Box sx={{ textAlign: 'center' }}>
-            <Typography
-              variant="caption"
-              color="text.secondary"
-              fontWeight="bold"
-            >
-              END
-            </Typography>
-            <Typography variant="body2" fontWeight="900" color="success.main">
-              {totalStats.stamina}
-            </Typography>
-          </Box>
-          <Box sx={{ textAlign: 'center' }}>
-            <Typography
-              variant="caption"
-              color="text.secondary"
-              fontWeight="bold"
-            >
-              DASH
-            </Typography>
-            <Typography variant="body2" fontWeight="900" color="warning.main">
-              {totalStats.dash}
-            </Typography>
-          </Box>
-        </Box>
       </CardContent>
 
       {!deck.isActive && onActivate && (

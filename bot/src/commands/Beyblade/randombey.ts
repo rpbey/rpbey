@@ -52,6 +52,7 @@ export class RandomBeyCommand extends Command {
     const attack = p(blade.attack) + p(ratchet.attack) + p(bit.attack);
     const defense = p(blade.defense) + p(ratchet.defense) + p(bit.defense);
     const stamina = p(blade.stamina) + p(ratchet.stamina) + p(bit.stamina);
+    const dash = p(blade.dash) + p(ratchet.dash) + p(bit.dash);
     const weight = (
       w(blade.weight) +
       w(ratchet.weight) +
@@ -82,6 +83,7 @@ export class RandomBeyCommand extends Command {
       attack,
       defense,
       stamina,
+      dash,
       weight: weight,
       color: type.color,
       bladeImageUrl: blade.imageUrl,

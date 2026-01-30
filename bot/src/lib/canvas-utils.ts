@@ -251,9 +251,13 @@ export async function generateProfileCard(data: ProfileCardData) {
       
       try {
         if (blade.imageUrl) {
-          let imgUrl = blade.imageUrl;
-          if (imgUrl.startsWith('/')) imgUrl = `https://rpbey.fr${imgUrl}`;
-          const img = await loadImage(imgUrl);
+          let imageToLoad: string | Buffer = '';
+          if (blade.imageUrl.startsWith('/')) {
+            imageToLoad = getAssetPath(`public${blade.imageUrl}`);
+          } else {
+            imageToLoad = blade.imageUrl;
+          }
+          const img = await loadImage(imageToLoad);
           ctx.drawImage(img, x, y, bladeSize, bladeSize);
         } else {
           ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
@@ -305,6 +309,7 @@ export interface ComboCardData {
   attack: number;
   defense: number;
   stamina: number;
+  dash: number;
   weight: string;
   color: number;
   bladeImageUrl?: string | null;
@@ -312,7 +317,7 @@ export interface ComboCardData {
 
 export async function generateComboCard(data: ComboCardData) {
   const width = 800;
-  const height = 500;
+  const height = 550; // Increased height for 4th stat
   const canvas = createCanvas(width, height);
   const ctx = canvas.getContext('2d');
 
@@ -358,17 +363,20 @@ export async function generateComboCard(data: ComboCardData) {
   if (data.bladeImageUrl) {
     ctx.save();
     ctx.beginPath();
-    ctx.arc(150, 250, 100, 0, Math.PI * 2, true);
+    ctx.arc(150, 275, 100, 0, Math.PI * 2, true);
     ctx.closePath();
     ctx.clip();
     try {
-      // Handle relative URLs if they are served from our dashboard
-      let imgUrl = data.bladeImageUrl;
-      if (imgUrl.startsWith('/')) {
-        imgUrl = `https://rpbey.fr${imgUrl}`;
+      let imageToLoad: string | Buffer = '';
+      if (data.bladeImageUrl.startsWith('/')) {
+        // Try local file first
+        imageToLoad = getAssetPath(`public${data.bladeImageUrl}`);
+      } else {
+        imageToLoad = data.bladeImageUrl;
       }
-      const bladeImg = await loadImage(imgUrl);
-      ctx.drawImage(bladeImg, 50, 150, 200, 200);
+      
+      const bladeImg = await loadImage(imageToLoad);
+      ctx.drawImage(bladeImg, 50, 175, 200, 200);
     } catch (e) {
       console.error('Failed to load blade image:', e);
       ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
@@ -380,7 +388,7 @@ export async function generateComboCard(data: ComboCardData) {
     ctx.strokeStyle = hexColor;
     ctx.lineWidth = 5;
     ctx.beginPath();
-    ctx.arc(150, 250, 100, 0, Math.PI * 2, true);
+    ctx.arc(150, 275, 100, 0, Math.PI * 2, true);
     ctx.stroke();
   }
 
@@ -437,18 +445,19 @@ export async function generateComboCard(data: ComboCardData) {
     ctx.fillText(value.toString(), xOffset + 120 + barWidth + 20, y);
   };
 
-  const statsX = data.bladeImageUrl ? 100 : 100;
-  const statsWidth = data.bladeImageUrl ? width - 200 : width - 200;
+  const startStatsY = 380;
+  const gap = 40;
 
-  drawProgressBar('ATTAQUE', data.attack, 400, '#ef4444', 100);
-  drawProgressBar('DÉFENSE', data.defense, 440, '#3b82f6', 100);
-  drawProgressBar('ENDURANCE', data.stamina, 480, '#22c55e', 100);
+  drawProgressBar('ATTAQUE', data.attack, startStatsY, '#ef4444', 100);
+  drawProgressBar('DÉFENSE', data.defense, startStatsY + gap, '#3b82f6', 100);
+  drawProgressBar('ENDURANCE', data.stamina, startStatsY + gap * 2, '#22c55e', 100);
+  drawProgressBar('DASH', data.dash, startStatsY + gap * 3, '#eab308', 100);
 
   // Weight
   ctx.textAlign = 'center';
   ctx.font = 'bold 30px GoogleSans';
   ctx.fillStyle = '#ffffff';
-  ctx.fillText(`${data.weight}g`, partsX, 370);
+  ctx.fillText(`${data.weight}g`, partsX, 350); // Moved up slightly
 
   return canvas.toBuffer('image/png');
 }
