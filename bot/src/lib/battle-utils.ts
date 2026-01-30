@@ -14,7 +14,7 @@ export const p = (val: string | number | null | undefined): number => {
 
 const battleResults = [
   { result: 'burst', message: '💥 **BURST FINISH !**', points: 2, emoji: '💥', type: 'ATTACK' },
-  { result: 'over', message: '🔄 **OVER FINISH !**', points: 1, emoji: '🔄', type: 'DEFENSE' },
+  { result: 'over', message: '🔄 **OVER FINISH !**', points: 2, emoji: '🔄', type: 'DEFENSE' },
   { result: 'spin', message: '🌀 **SPIN FINISH !**', points: 1, emoji: '🌀', type: 'STAMINA' },
   { result: 'xtreme', message: '⚡ **X-TREME FINISH !**', points: 3, emoji: '⚡', type: 'ATTACK' },
 ];
