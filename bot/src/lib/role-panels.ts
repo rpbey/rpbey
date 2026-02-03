@@ -79,4 +79,20 @@ export const ROLE_PANELS: RolePanelConfig[] = [
       },
     ],
   },
+  {
+    title: 'Souhaitez-vous être informé lors des restocks ?',
+    description:
+      'Recevez une notification immédiate lorsque de nouveaux produits sont disponibles.',
+    color: RPB.Color,
+    buttons: [
+      {
+        customId: 'role-restock',
+        label: 'Alerte Restock',
+        emoji: '🛒',
+        style: ButtonStyle.Success,
+        roleKey: 'Restock',
+        description: 'Notifications pour les réassorts de la boutique.',
+      },
+    ],
+  },
 ];
