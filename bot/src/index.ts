@@ -20,8 +20,10 @@ import { setupLogCapture } from './lib/log-capture.js';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 // Set default behavior for application commands
+// We use Overwrite instead of BulkOverwrite to avoid "DiscordAPIError[50240]: You cannot remove this app's Entry Point command"
+// which happens if an Activity Entry Point exists and we try to bulk overwrite without including it.
 ApplicationCommandRegistries.setDefaultBehaviorWhenNotIdentical(
-  RegisterBehavior.BulkOverwrite,
+  RegisterBehavior.Overwrite,
 );
 
 // If GUILD_ID is provided in .env, set it as default for faster command registration
