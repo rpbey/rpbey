@@ -8,21 +8,35 @@ export async function GET(request: Request) {
   const stateBase64 = searchParams.get('state');
 
   if (!code || !stateBase64) {
-    return new NextResponse('Invalid request', { status: 400 });
+    console.error('Challonge OAuth: Missing code or state');
+    return new NextResponse('Invalid request: Missing code or state', {
+      status: 400,
+    });
   }
+
+  let userId: string;
+  let returnTo: string;
 
   try {
     const state = JSON.parse(Buffer.from(stateBase64, 'base64').toString());
-    const userId = state.userId;
-    const returnTo = state.returnTo || '/admin/settings';
+    userId = state.userId;
+    returnTo = state.returnTo || '/admin/settings';
+  } catch (err) {
+    console.error('Challonge OAuth: Invalid state format', err);
+    return new NextResponse('Invalid request: Invalid state', { status: 400 });
+  }
 
+  try {
     const challonge = getChallongeService();
+    console.log('🔄 Exchanging code for token...');
     const tokenData = await challonge.exchangeCodeForToken(code);
 
     // Fetch Challonge User Info
+    console.log('📥 Fetching Challonge user info...');
     const challongeUser = await challonge.getCurrentUser(
       tokenData.access_token,
     );
+    console.log(`✅ Linked to Challonge user: ${challongeUser.username}`);
 
     // Store in Account table for API access
     await prisma.account.upsert({
@@ -51,21 +65,30 @@ export async function GET(request: Request) {
       },
     });
 
-    // Update Profile with verified username
-    await prisma.profile.update({
+    // Update or Create Profile with verified username
+    await prisma.profile.upsert({
       where: { userId },
-      data: { challongeUsername: challongeUser.username },
+      update: { challongeUsername: challongeUser.username },
+      create: {
+        userId,
+        challongeUsername: challongeUser.username,
+      },
     });
 
     // Redirect back with success
     const separator = returnTo.includes('?') ? '&' : '?';
-    return NextResponse.redirect(
-      `${process.env.NEXT_PUBLIC_APP_URL}${returnTo}${separator}challonge=success`,
+    const redirectUrl = new URL(
+      `${returnTo}${separator}challonge=success`,
+      process.env.NEXT_PUBLIC_APP_URL || 'https://rpbey.fr',
     );
+
+    return NextResponse.redirect(redirectUrl.toString());
   } catch (error) {
-    console.error('Challonge OAuth callback failed:', error);
-    return NextResponse.redirect(
-      `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/profile/edit?challonge=error`,
+    console.error('❌ Challonge OAuth callback failed:', error);
+    const redirectUrl = new URL(
+      '/admin/settings?challonge=error',
+      process.env.NEXT_PUBLIC_APP_URL || 'https://rpbey.fr',
     );
+    return NextResponse.redirect(redirectUrl.toString());
   }
 }
