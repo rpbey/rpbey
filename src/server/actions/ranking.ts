@@ -26,19 +26,17 @@ const CategorySchema = z.object({
 
 // Cached Data Fetching
 export async function getRankingConfig() {
-  'use cache';
-  cacheTag('ranking-config');
   let config = await prisma.rankingSystem.findFirst();
 
   if (!config) {
     config = await prisma.rankingSystem.create({
       data: {
-        participation: 5,
+        participation: 500,
         firstPlace: 10000,
         secondPlace: 7000,
         thirdPlace: 5000,
         top8: 500,
-        matchWin: 0, // Deprecated
+        matchWin: 300,
         matchWinWinner: 1000,
         matchWinLoser: 500,
       },
@@ -49,8 +47,6 @@ export async function getRankingConfig() {
 }
 
 export async function getTournamentCategories() {
-  'use cache';
-  cacheTag('tournament-categories');
   return await prisma.tournamentCategory.findMany({
     orderBy: { multiplier: 'desc' },
   });
@@ -96,7 +92,7 @@ export async function recalculateRankings() {
   // 1. Fetch data
   const tournaments = await prisma.tournament.findMany({
     where: {
-      status: 'COMPLETE',
+      status: { in: ['COMPLETE', 'ARCHIVED'] },
       date: { gte: startDate },
     },
     include: {
@@ -117,30 +113,31 @@ export async function recalculateRankings() {
 
   // 2. Calculate points
   for (const tournament of tournaments) {
-    const multiplier =
-      (tournament.category?.multiplier ?? tournament.weight) || 1.0;
+    const multiplier = tournament.category?.multiplier ?? tournament.weight ?? 1.0;
 
     for (const participant of tournament.participants) {
       if (!participant.user.profile) continue;
+      if (!participant.checkedIn && tournament.status !== 'ARCHIVED') continue; 
+      // Note: for ARCHIVED, we assume they participated if they were in the final list, 
+      // but checkedIn is safer if the data is clean.
 
       const userId = participant.userId;
       let points = 0;
 
-      // Points de participation
+      // Points de participation (Base)
       points += config.participation;
 
-      // Points de placement
+      // Points de placement bonus
       if (participant.finalPlacement === 1) points += config.firstPlace;
       else if (participant.finalPlacement === 2) points += config.secondPlace;
       else if (participant.finalPlacement === 3) points += config.thirdPlace;
       else if (participant.finalPlacement && participant.finalPlacement <= 8)
         points += config.top8;
 
-      // Points de victoire
-      points += participant.wins * config.matchWinWinner; // Assuming winner points for wins
-      // Note: matchWinLoser is typically for losses, but we count wins here.
-      // If the system counts losses separately, we'd need losses * matchWinLoser.
-      // Keeping simple based on previous logic for now.
+      // Points de victoire (Matches)
+      // Note: matchWinWinner is applied to all wins for now. 
+      // If we have distinct winner/loser bracket wins in the future, we can refine this.
+      points += (participant.wins || 0) * config.matchWinWinner;
 
       const weightedPoints = Math.round(points * multiplier);
       const currentPoints = playerPoints.get(userId) || 0;
