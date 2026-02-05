@@ -14,7 +14,7 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import useSWR from 'swr';
 import type { DiscordStats, TeamGroup } from '@/lib/discord-data';
-import { LOGO_VARIANTS, RoleColors } from '@/lib/role-colors';
+import { RoleColors } from '@/lib/role-colors';
 import { api } from '@/lib/standard-api';
 import { DiscordRoleBadge } from './DiscordRoleBadge';
 
@@ -50,15 +50,6 @@ export function DiscordStatusCard({
     refreshInterval: 60000,
     revalidateOnFocus: false,
   });
-
-  const [currentLogoIndex, setCurrentLogoIndex] = useState(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentLogoIndex((prev) => (prev + 1) % LOGO_VARIANTS.length);
-    }, 3000);
-    return () => clearInterval(interval);
-  }, []);
 
   const team = teamData?.team || [];
   const loading = (statsLoading && !stats) || (teamLoading && !teamData);
@@ -118,37 +109,20 @@ export function DiscordStatusCard({
               justifyContent: 'center',
             }}
           >
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={LOGO_VARIANTS[currentLogoIndex]?.src}
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.8 }}
-                transition={{ duration: 0.5 }}
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <Image
-                  src={LOGO_VARIANTS[currentLogoIndex]?.src || '/logo.png'}
-                  alt={`${LOGO_VARIANTS[currentLogoIndex]?.role || 'RPB'} Logo`}
-                  width={48}
-                  height={48}
-                  style={{
-                    objectFit: 'contain',
-                    filter: `drop-shadow(0 0 8px ${alpha(
-                      LOGO_VARIANTS[currentLogoIndex]?.color ||
-                        RoleColors.DEFAULT.primary,
-                      0.6,
-                    )})`,
-                  }}
-                />
-              </motion.div>
-            </AnimatePresence>
+            <Image
+              src="/logos_rpb.gif"
+              alt="RPB Animated Logos"
+              width={48}
+              height={48}
+              style={{
+                objectFit: 'contain',
+                filter: `drop-shadow(0 0 8px ${alpha(
+                  RoleColors.DEFAULT.primary,
+                  0.4,
+                )})`,
+              }}
+              unoptimized
+            />
           </Box>
           <Box sx={{ flex: 1 }}>
             <Typography

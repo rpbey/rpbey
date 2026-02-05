@@ -63,17 +63,17 @@ export class BattleCommand extends Command {
     // Quick battle mode
     if (quickBattle) {
       await interaction.deferReply();
-      
+
       const [statsA, statsB] = await Promise.all([
         getDeckStats(challenger.id),
-        getDeckStats(opponent.id)
+        getDeckStats(opponent.id),
       ]);
 
       if (!statsA || !statsB) {
         const embed = new EmbedBuilder()
           .setTitle('⚠️ Decks manquants')
           .setDescription(
-            `L'un des joueurs (ou les deux) n'a pas de deck actif.\nVoulez-vous lancer un **Combat Aléatoire** ?`
+            `L'un des joueurs (ou les deux) n'a pas de deck actif.\nVoulez-vous lancer un **Combat Aléatoire** ?`,
           )
           .setColor(Colors.Warning);
 
@@ -81,7 +81,7 @@ export class BattleCommand extends Command {
           new ButtonBuilder()
             .setCustomId(`battle-random-${opponent.id}`)
             .setLabel('🎲 Combat Aléatoire')
-            .setStyle(ButtonStyle.Primary)
+            .setStyle(ButtonStyle.Primary),
         );
 
         return interaction.editReply({ embeds: [embed], components: [row] });
@@ -99,7 +99,13 @@ export class BattleCommand extends Command {
 
       await interaction.editReply({ embeds: [startEmbed] });
       await this.sleep(2000);
-      return runBattleSimulation(interaction, challenger, opponent, statsA, statsB);
+      return runBattleSimulation(
+        interaction,
+        challenger,
+        opponent,
+        statsA,
+        statsB,
+      );
     }
 
     // Challenge mode (Standard)
@@ -109,7 +115,12 @@ export class BattleCommand extends Command {
       timestamp: Date.now(),
     });
 
-    setTimeout(() => { pendingBattles.delete(challenger.id); }, 5 * 60 * 1000);
+    setTimeout(
+      () => {
+        pendingBattles.delete(challenger.id);
+      },
+      5 * 60 * 1000,
+    );
 
     const embed = new EmbedBuilder()
       .setTitle('⚔️ Défi Beyblade !')

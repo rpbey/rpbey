@@ -33,9 +33,11 @@ export async function scrapeAndSyncTournament(
   let apiRequestsUsed = 0; // Le scraping n'utilise pas de requêtes API quota
 
   try {
-    container.logger.info(`[Sync] Démarrage du scraping deep-sync pour: ${urlId}`);
+    container.logger.info(
+      `[Sync] Démarrage du scraping deep-sync pour: ${urlId}`,
+    );
     const result = await scraper.scrape(urlId, cookiesString);
-    
+
     // 1. Upsert Tournament
     const meta = result.metadata;
     const raw = result.raw.tournament;
@@ -75,9 +77,13 @@ export async function scrapeAndSyncTournament(
           OR: [
             { name: { equals: p.name, mode: 'insensitive' } },
             { username: { equals: p.name, mode: 'insensitive' } },
-            { profile: { challongeUsername: { equals: p.name, mode: 'insensitive' } } }
-          ]
-        }
+            {
+              profile: {
+                challongeUsername: { equals: p.name, mode: 'insensitive' },
+              },
+            },
+          ],
+        },
       });
 
       // Création stub si manquant
@@ -92,8 +98,8 @@ export async function scrapeAndSyncTournament(
             username: `bot_${cleanName}`.substring(0, 30),
             email: stubEmail,
             role: 'user',
-            image: '/logo.png'
-          }
+            image: '/logo.png',
+          },
         });
       }
 
@@ -103,14 +109,14 @@ export async function scrapeAndSyncTournament(
           where: {
             tournamentId_userId: {
               tournamentId: dbTournament.id,
-              userId: user.id
-            }
+              userId: user.id,
+            },
           },
           update: {
             challongeParticipantId: String(p.id),
             seed: p.seed,
             finalPlacement: p.finalRank || null,
-            checkedIn: true // Scraped participants are usually checked in or active
+            checkedIn: true, // Scraped participants are usually checked in or active
           },
           create: {
             tournamentId: dbTournament.id,
@@ -118,8 +124,8 @@ export async function scrapeAndSyncTournament(
             challongeParticipantId: String(p.id),
             seed: p.seed,
             finalPlacement: p.finalRank || null,
-            checkedIn: true
-          }
+            checkedIn: true,
+          },
         });
         importedParticipants++;
       }
@@ -128,16 +134,22 @@ export async function scrapeAndSyncTournament(
     // 3. Sync Matches
     let importedMatches = 0;
     for (const m of result.matches) {
-      const p1UserId = m.player1Id ? challongeIdToUserId.get(m.player1Id) : null;
-      const p2UserId = m.player2Id ? challongeIdToUserId.get(m.player2Id) : null;
-      const winnerUserId = m.winnerId ? challongeIdToUserId.get(m.winnerId) : null;
+      const p1UserId = m.player1Id
+        ? challongeIdToUserId.get(m.player1Id)
+        : null;
+      const p2UserId = m.player2Id
+        ? challongeIdToUserId.get(m.player2Id)
+        : null;
+      const winnerUserId = m.winnerId
+        ? challongeIdToUserId.get(m.winnerId)
+        : null;
 
       await prisma.tournamentMatch.upsert({
         where: {
           tournamentId_challongeMatchId: {
             tournamentId: dbTournament.id,
-            challongeMatchId: String(m.id)
-          }
+            challongeMatchId: String(m.id),
+          },
         },
         update: {
           round: m.round,
@@ -157,27 +169,28 @@ export async function scrapeAndSyncTournament(
           winnerId: winnerUserId || null,
           score: m.scores,
           state: m.state,
-        }
+        },
       });
       importedMatches++;
     }
 
-    container.logger.info(`[Sync] Deep-Sync réussi pour ${dbTournament.name}: ${importedParticipants} joueurs, ${importedMatches} matchs.`);
+    container.logger.info(
+      `[Sync] Deep-Sync réussi pour ${dbTournament.name}: ${importedParticipants} joueurs, ${importedMatches} matchs.`,
+    );
 
     return {
       success: true,
       tournamentId: dbTournament.id,
       participantsCount: importedParticipants,
       matchesCount: importedMatches,
-      apiRequestsUsed: 0
+      apiRequestsUsed: 0,
     };
-
   } catch (error) {
     container.logger.error('[Sync] Erreur Deep-Sync Scraping:', error);
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Erreur inconnue',
-      apiRequestsUsed: 0
+      apiRequestsUsed: 0,
     };
   } finally {
     await scraper.close();

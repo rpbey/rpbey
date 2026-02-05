@@ -1,22 +1,8 @@
 'use client';
 
-import Alert, { type AlertColor } from '@mui/material/Alert';
-import Slide, { type SlideProps } from '@mui/material/Slide';
-import Snackbar from '@mui/material/Snackbar';
-import {
-  createContext,
-  type ReactNode,
-  useCallback,
-  useContext,
-  useState,
-} from 'react';
-
-interface ToastMessage {
-  id: number;
-  message: string;
-  severity: AlertColor;
-  duration?: number;
-}
+import { type AlertColor } from '@mui/material/Alert';
+import { createContext, type ReactNode, useCallback, useContext } from 'react';
+import { toast } from 'sonner';
 
 interface ToastContextValue {
   showToast: (
@@ -32,34 +18,33 @@ interface ToastContextValue {
 
 const ToastContext = createContext<ToastContextValue | null>(null);
 
-function SlideTransition(props: SlideProps) {
-  return <Slide {...props} direction="up" />;
-}
-
 interface ToastProviderProps {
   children: ReactNode;
-  maxToasts?: number;
+  maxToasts?: number; // Kept for compatibility, but Sonner handles this internally
 }
 
-export function ToastProvider({ children, maxToasts = 3 }: ToastProviderProps) {
-  const [toasts, setToasts] = useState<ToastMessage[]>([]);
-  const [counter, setCounter] = useState(0);
-
+export function ToastProvider({ children }: ToastProviderProps) {
   const showToast = useCallback(
     (message: string, severity: AlertColor = 'info', duration = 4000) => {
-      const id = counter;
-      setCounter((prev) => prev + 1);
+      const options = { duration };
 
-      setToasts((prev) => {
-        const newToasts = [...prev, { id, message, severity, duration }];
-        // Limit number of toasts
-        if (newToasts.length > maxToasts) {
-          return newToasts.slice(-maxToasts);
-        }
-        return newToasts;
-      });
+      switch (severity) {
+        case 'success':
+          toast.success(message, options);
+          break;
+        case 'error':
+          toast.error(message, options);
+          break;
+        case 'warning':
+          toast.warning(message, options);
+          break;
+        case 'info':
+        default:
+          toast.info(message, options);
+          break;
+      }
     },
-    [counter, maxToasts],
+    [],
   );
 
   const showSuccess = useCallback(
@@ -86,37 +71,11 @@ export function ToastProvider({ children, maxToasts = 3 }: ToastProviderProps) {
     [showToast],
   );
 
-  const handleClose = useCallback((id: number) => {
-    setToasts((prev) => prev.filter((toast) => toast.id !== id));
-  }, []);
-
   return (
     <ToastContext.Provider
       value={{ showToast, showSuccess, showError, showWarning, showInfo }}
     >
       {children}
-      {toasts.map((toast, index) => (
-        <Snackbar
-          key={toast.id}
-          open
-          autoHideDuration={toast.duration}
-          onClose={() => handleClose(toast.id)}
-          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-          TransitionComponent={SlideTransition}
-          sx={{
-            bottom: { xs: 24 + index * 60, sm: 24 + index * 60 },
-          }}
-        >
-          <Alert
-            onClose={() => handleClose(toast.id)}
-            severity={toast.severity}
-            variant="filled"
-            sx={{ width: '100%', minWidth: 280 }}
-          >
-            {toast.message}
-          </Alert>
-        </Snackbar>
-      ))}
     </ToastContext.Provider>
   );
 }

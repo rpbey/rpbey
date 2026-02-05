@@ -22,6 +22,7 @@ import {
   Typography,
 } from '@mui/material';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useSocket } from '@/components/providers/SocketProvider';
 
 interface LogEntry {
   timestamp: string;
@@ -45,6 +46,7 @@ export default function BotLogsPage() {
   const [tail, setTail] = useState(100);
   const logsEndRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const { socket } = useSocket();
 
   const fetchLogs = useCallback(async () => {
     try {
@@ -65,18 +67,31 @@ export default function BotLogsPage() {
     fetchLogs();
   }, [fetchLogs]);
 
+  // Real-time logs via Socket.IO
   useEffect(() => {
-    if (!autoRefresh) return;
+    if (!socket || !autoRefresh) return;
 
-    const interval = setInterval(fetchLogs, 5000);
-    return () => clearInterval(interval);
-  }, [autoRefresh, fetchLogs]);
+    const handleNewLog = (log: LogEntry) => {
+      setLogs((prev) => {
+        const newLogs = [...prev, log];
+        if (newLogs.length > tail + 50) return newLogs.slice(-(tail + 50));
+        return newLogs;
+      });
+    };
 
+    socket.on('log_new', handleNewLog);
+
+    return () => {
+      socket.off('log_new', handleNewLog);
+    };
+  }, [socket, autoRefresh, tail]);
+
+  // Auto-scroll to bottom if near bottom
   useEffect(() => {
-    if (logsEndRef.current) {
+    if (autoRefresh && logsEndRef.current) {
       logsEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
-  }, []);
+  }, [logs, autoRefresh]);
 
   const filteredLogs = logs.filter((log) => {
     if (!filter) return true;

@@ -1,6 +1,7 @@
 'use client';
 
 import { Box, Container, Paper, Typography } from '@mui/material';
+import { YouTubeEmbed } from '@next/third-parties/google';
 import { motion } from 'framer-motion';
 
 // MD3 Expressive easing
@@ -94,23 +95,12 @@ export function TournamentVideo({
               md: '0 24px 80px rgba(0,0,0,0.4)',
             },
             position: 'relative',
-            pt: '56.25%', // 16:9 Aspect Ratio
           }}
         >
-          <iframe
-            src={`https://www.youtube.com/embed/${videoId}?autoplay=0&rel=0&modestbranding=1`}
-            title="Tournament Video"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-            loading="lazy"
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              width: '100%',
-              height: '100%',
-              border: 'none',
-            }}
+          <YouTubeEmbed
+            videoid={videoId}
+            params="rel=0&modestbranding=1"
+            style="border-radius: inherit;"
           />
         </Paper>
       </Container>

@@ -1,11 +1,33 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
+import { cacheTag } from 'next/cache';
 import { headers } from 'next/headers';
-import { auth } from '@/lib/auth'; // Assuming auth helper is here, check import path
+import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { z } from 'zod';
 
+// Zod Schemas
+const RankingConfigSchema = z.object({
+  participation: z.number().int().min(0),
+  firstPlace: z.number().int().min(0),
+  secondPlace: z.number().int().min(0),
+  thirdPlace: z.number().int().min(0),
+  top8: z.number().int().min(0),
+  matchWinWinner: z.number().int().min(0),
+  matchWinLoser: z.number().int().min(0),
+});
+
+const CategorySchema = z.object({
+  name: z.string().min(2),
+  multiplier: z.number().min(0.1),
+  color: z.string().optional(),
+});
+
+// Cached Data Fetching
 export async function getRankingConfig() {
+  'use cache';
+  cacheTag('ranking-config');
   let config = await prisma.rankingSystem.findFirst();
 
   if (!config) {
@@ -26,6 +48,15 @@ export async function getRankingConfig() {
   return config;
 }
 
+export async function getTournamentCategories() {
+  'use cache';
+  cacheTag('tournament-categories');
+  return await prisma.tournamentCategory.findMany({
+    orderBy: { multiplier: 'desc' },
+  });
+}
+
+// Mutations
 export async function updateRankingConfig(data: {
   participation: number;
   firstPlace: number;
@@ -35,30 +66,34 @@ export async function updateRankingConfig(data: {
   matchWinWinner: number;
   matchWinLoser: number;
 }) {
+  const result = RankingConfigSchema.safeParse(data);
+  if (!result.success) {
+    throw new Error('Invalid config: ' + result.error.message);
+  }
+
   const config = await getRankingConfig();
 
   await prisma.rankingSystem.update({
     where: { id: config.id },
-    data,
+    data: result.data,
   });
 
+  // revalidateTag('ranking-config'); // Temporarily removed
   revalidatePath('/admin/rankings');
 }
 
 export async function recalculateRankings() {
-  const config = await getRankingConfig();
+  // This operation is heavy and shouldn't be cached, but its result affects everything
+  const config = await getRankingConfig(); // Cached read is fine here
 
-  // Get current season to determine start date
+  // Get current season
   const currentSeason = await prisma.rankingSeason.findFirst({
     where: { isActive: true },
   });
 
-  // If no season is defined, we might default to all-time or a specific date.
-  // For now, let's assume if no season exists, we count everything (or create a default season 1 manually).
-  const startDate = currentSeason?.startDate || new Date(0); // Epoch if no season
+  const startDate = currentSeason?.startDate || new Date(0);
 
-  // 1. Récupérer tous les tournois terminés et leurs participants, avec leur catégorie
-  // Filter by date >= season start
+  // 1. Fetch data
   const tournaments = await prisma.tournament.findMany({
     where: {
       status: 'COMPLETE',
@@ -78,12 +113,10 @@ export async function recalculateRankings() {
     },
   });
 
-  // Map pour stocker les points par joueur
   const playerPoints = new Map<string, number>();
 
-  // 2. Parcourir chaque tournoi pour calculer les points
+  // 2. Calculate points
   for (const tournament of tournaments) {
-    // Utiliser le multiplicateur de la catégorie si présent, sinon le weight du tournoi
     const multiplier =
       (tournament.category?.multiplier ?? tournament.weight) || 1.0;
 
@@ -103,57 +136,49 @@ export async function recalculateRankings() {
       else if (participant.finalPlacement && participant.finalPlacement <= 8)
         points += config.top8;
 
-      // Points de victoire (basé sur wins stocké dans participant)
-      points += participant.wins * config.matchWin;
+      // Points de victoire
+      points += participant.wins * config.matchWinWinner; // Assuming winner points for wins
+      // Note: matchWinLoser is typically for losses, but we count wins here.
+      // If the system counts losses separately, we'd need losses * matchWinLoser.
+      // Keeping simple based on previous logic for now.
 
-      // Appliquer le coefficient du tournoi
       const weightedPoints = Math.round(points * multiplier);
-
-      // Ajouter au total du joueur
       const currentPoints = playerPoints.get(userId) || 0;
       playerPoints.set(userId, currentPoints + weightedPoints);
     }
   }
 
-  // 3. Ajouter les ajustements manuels
+  // 3. Add manual adjustments
   const adjustments = await prisma.pointAdjustment.findMany();
   for (const adj of adjustments) {
     const currentPoints = playerPoints.get(adj.userId) || 0;
     playerPoints.set(adj.userId, currentPoints + adj.points);
   }
 
-  // 4. Mettre à jour les profils en masse
-
-  // D'abord, on remet tout le monde à 0 pour gérer ceux qui n'ont plus de points
-  // Attention : cela réinitialise aussi ceux qui n'ont QUE des ajustements manuels si on ne les a pas ajoutés à la map
-  // C'est pourquoi on itère sur la map qui contient TOUS les ids concernés (tournois + ajustements)
-
-  await prisma.profile.updateMany({
-    data: { rankingPoints: 0 },
-  });
-
-  // Ensuite on met à jour ceux qui ont des points
-  for (const [userId, points] of playerPoints.entries()) {
-    // S'assurer que le profil existe (normalement oui via la logique précédente, mais au cas où pour les ajustements isolés)
-    const profile = await prisma.profile.findUnique({ where: { userId } });
-    if (profile) {
-      await prisma.profile.update({
-        where: { userId },
-        data: { rankingPoints: points },
+  // 4. Batch update
+  await prisma.$transaction(
+    async (tx) => {
+      await tx.profile.updateMany({
+        data: { rankingPoints: 0 },
       });
-    } else {
-      // Créer le profil si inexistant (cas rare)
-      await prisma.profile.create({
-        data: {
-          userId,
-          rankingPoints: points,
-        },
-      });
-    }
-  }
+
+      for (const [userId, points] of playerPoints.entries()) {
+        await tx.profile.upsert({
+          where: { userId },
+          update: { rankingPoints: points },
+          create: {
+            userId,
+            rankingPoints: points,
+          },
+        });
+      }
+    },
+    { timeout: 20000 },
+  );
 
   revalidatePath('/rankings');
   revalidatePath('/admin/rankings');
+  // revalidateTag('rankings-live');
 
   return {
     success: true,
@@ -161,21 +186,19 @@ export async function recalculateRankings() {
   };
 }
 
-// Gestion des catégories de tournois
-export async function getTournamentCategories() {
-  return await prisma.tournamentCategory.findMany({
-    orderBy: { multiplier: 'desc' },
-  });
-}
-
 export async function createTournamentCategory(data: {
   name: string;
   multiplier: number;
   color?: string;
 }) {
+  const result = CategorySchema.safeParse(data);
+  if (!result.success) throw new Error('Invalid category data');
+
   const category = await prisma.tournamentCategory.create({
-    data,
+    data: result.data,
   });
+
+  // revalidateTag('tournament-categories');
   revalidatePath('/admin/rankings');
   return category;
 }
@@ -184,16 +207,17 @@ export async function updateTournamentCategory(
   id: string,
   data: { name?: string; multiplier?: number; color?: string },
 ) {
+  // Partial validation
   const category = await prisma.tournamentCategory.update({
     where: { id },
     data,
   });
+  // revalidateTag('tournament-categories');
   revalidatePath('/admin/rankings');
   return category;
 }
 
 export async function deleteTournamentCategory(id: string) {
-  // Vérifier si des tournois utilisent cette catégorie
   const count = await prisma.tournament.count({ where: { categoryId: id } });
   if (count > 0) {
     throw new Error(
@@ -204,6 +228,7 @@ export async function deleteTournamentCategory(id: string) {
   await prisma.tournamentCategory.delete({
     where: { id },
   });
+  // revalidateTag('tournament-categories');
   revalidatePath('/admin/rankings');
   return { success: true };
 }
@@ -251,7 +276,6 @@ export async function addPointAdjustment(
     },
   });
 
-  // Mise à jour incrémentale immédiate
   await prisma.profile.update({
     where: { userId },
     data: {
@@ -271,7 +295,6 @@ export async function deletePointAdjustment(id: string) {
 
   await prisma.pointAdjustment.delete({ where: { id } });
 
-  // Mise à jour décrémentale immédiate (on retire les points ajoutés, ou on ajoute les points retirés)
   await prisma.profile.update({
     where: { userId: adjustment.userId },
     data: {

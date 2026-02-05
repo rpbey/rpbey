@@ -215,11 +215,7 @@ export function BladerProfileHeader({
                 <Tooltip title="Synchroniser les rôles Discord">
                   <Chip
                     icon={
-                      isSyncing ? (
-                        <CircularProgress size={16} />
-                      ) : (
-                        <SyncIcon />
-                      )
+                      isSyncing ? <CircularProgress size={16} /> : <SyncIcon />
                     }
                     label="Sync"
                     onClick={handleSyncRoles}

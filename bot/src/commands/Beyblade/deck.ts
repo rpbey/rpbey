@@ -130,9 +130,7 @@ export class DeckCommand extends Subcommand {
         d.name.toLowerCase().includes(query),
       );
       return interaction.respond(
-        filtered
-          .slice(0, 25)
-          .map((d) => ({ name: d.name, value: d.id })),
+        filtered.slice(0, 25).map((d) => ({ name: d.name, value: d.id })),
       );
     }
 
@@ -249,8 +247,7 @@ export class DeckCommand extends Subcommand {
         where: { discordId: interaction.user.id },
       });
 
-      if (!user)
-        return interaction.editReply("❌ Tu n'es pas inscrit.");
+      if (!user) return interaction.editReply("❌ Tu n'es pas inscrit.");
 
       // Check deck count limit (e.g. 10)
       const count = await prisma.deck.count({ where: { userId: user.id } });
@@ -268,11 +265,7 @@ export class DeckCommand extends Subcommand {
           isActive,
           // Create 3 empty slots
           items: {
-            create: [
-              { position: 1 },
-              { position: 2 },
-              { position: 3 },
-            ],
+            create: [{ position: 1 }, { position: 2 }, { position: 3 }],
           },
         },
       });
@@ -296,7 +289,7 @@ export class DeckCommand extends Subcommand {
       const user = await prisma.user.findUnique({
         where: { discordId: interaction.user.id },
       });
-      if (!user) return interaction.editReply("❌ Inconnu.");
+      if (!user) return interaction.editReply('❌ Inconnu.');
 
       // Deactivate all
       await prisma.deck.updateMany({
@@ -329,14 +322,18 @@ export class DeckCommand extends Subcommand {
     try {
       const user = await prisma.user.findUnique({
         where: { discordId: interaction.user.id },
-        include: { decks: { where: { isActive: true }, include: { items: true } } },
+        include: {
+          decks: { where: { isActive: true }, include: { items: true } },
+        },
       });
 
-      if (!user) return interaction.editReply("❌ Inconnu.");
-      
+      if (!user) return interaction.editReply('❌ Inconnu.');
+
       const activeDeck = user.decks[0];
       if (!activeDeck) {
-        return interaction.editReply("❌ Tu n'as pas de deck actif. Crées-en un ou actives-en un.");
+        return interaction.editReply(
+          "❌ Tu n'as pas de deck actif. Crées-en un ou actives-en un.",
+        );
       }
 
       // Verify parts exist
@@ -347,32 +344,37 @@ export class DeckCommand extends Subcommand {
       ]);
 
       if (!blade || !ratchet || !bit) {
-        return interaction.editReply("❌ Une des pièces sélectionnées est invalide.");
+        return interaction.editReply(
+          '❌ Une des pièces sélectionnées est invalide.',
+        );
       }
 
       // Update slot
       // Check if slot exists
-      let item = activeDeck.items.find(i => i.position === slot);
-      
+      let item = activeDeck.items.find((i) => i.position === slot);
+
       if (item) {
         await prisma.deckItem.update({
-            where: { id: item.id },
-            data: { bladeId, ratchetId, bitId }
+          where: { id: item.id },
+          data: { bladeId, ratchetId, bitId },
         });
       } else {
         // Should exist from creation, but safety fallback
         await prisma.deckItem.create({
-            data: {
-                deckId: activeDeck.id,
-                position: slot,
-                bladeId, ratchetId, bitId
-            }
+          data: {
+            deckId: activeDeck.id,
+            position: slot,
+            bladeId,
+            ratchetId,
+            bitId,
+          },
         });
       }
 
       const beyName = `${blade.name} ${ratchet.name} ${bit.name}`;
-      return interaction.editReply(`✅ Slot ${slot} mis à jour : **${beyName}**`);
-
+      return interaction.editReply(
+        `✅ Slot ${slot} mis à jour : **${beyName}**`,
+      );
     } catch (e) {
       this.container.logger.error(e);
       return interaction.editReply('❌ Erreur lors de la modification.');

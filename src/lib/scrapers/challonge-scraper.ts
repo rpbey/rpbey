@@ -124,7 +124,10 @@ export class ChallongeScraper {
             })()
         `);
 
-      if (!data) throw new Error('Store Challonge non trouvé dans la page. Possible blocage Cloudflare.');
+      if (!data)
+        throw new Error(
+          'Store Challonge non trouvé dans la page. Possible blocage Cloudflare.',
+        );
       return data;
     } finally {
       await page.close();

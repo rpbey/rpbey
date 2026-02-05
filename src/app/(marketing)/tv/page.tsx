@@ -10,9 +10,10 @@ export const metadata = {
     'Le meilleur du Beyblade X : Clips Twitch, vidéos Rediffusion et sélection BeyTube FR.',
 };
 
-export const revalidate = 60;
+import { connection } from 'next/server';
 
 export default async function TVPage() {
+  await connection();
   const domain = process.env.NEXT_PUBLIC_DOMAIN || 'rpbey.fr';
 
   // Fetch all media in parallel

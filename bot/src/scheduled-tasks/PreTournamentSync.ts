@@ -47,15 +47,15 @@ export class PreTournamentSyncTask extends ScheduledTask {
       for (const challongeId of tournamentIds) {
         // Fetch full tournament object to get URL
         const t = await prisma.tournament.findUnique({
-            where: { challongeId },
-            select: { challongeUrl: true, challongeId: true }
+          where: { challongeId },
+          select: { challongeUrl: true, challongeId: true },
         });
 
         // Use URL if available (better for scraping), otherwise ID
         const target = t?.challongeUrl || t?.challongeId || challongeId;
 
         this.container.logger.info(`[Task] Scraping ${target}...`);
-        
+
         const result = await scrapeAndSyncTournament(target);
 
         if (result.success) {

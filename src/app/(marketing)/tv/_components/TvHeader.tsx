@@ -1,5 +1,5 @@
 import { Avatar, Box, Typography } from '@mui/material';
-import Image from 'next/image';
+import { RpbLogo } from '@/components/ui/RpbLogo';
 
 export default function TvHeader() {
   return (
@@ -20,13 +20,7 @@ export default function TvHeader() {
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
           <Box sx={{ mr: 1, display: 'flex', alignItems: 'center' }}>
-            <Image
-              src="/logo.png"
-              alt="RPB Logo"
-              width={32}
-              height={32}
-              style={{ objectFit: 'contain' }}
-            />
+            <RpbLogo size={32} animated />
           </Box>
           <Typography
             variant="h6"

@@ -8,7 +8,7 @@ const nextConfig: NextConfig = {
   output: "standalone",
 
   // Cache Components (Next.js 16+)
-  cacheComponents: false,
+  cacheComponents: true, // Keep enabled for 'use cache' directives
 
   // External packages for server (Puppeteer/Crawlee)
   serverExternalPackages: [

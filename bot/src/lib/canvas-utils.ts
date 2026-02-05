@@ -232,7 +232,11 @@ export async function generateProfileCard(data: ProfileCardData) {
     const deckY = 520;
     ctx.font = 'bold 24px GoogleSans';
     ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
-    ctx.fillText(`EQUIPEMENT ACTIF : ${data.activeDeck.name.toUpperCase()}`, 50, deckY);
+    ctx.fillText(
+      `EQUIPEMENT ACTIF : ${data.activeDeck.name.toUpperCase()}`,
+      50,
+      deckY,
+    );
 
     const bladeSize = 100;
     const spacing = 300;
@@ -246,9 +250,15 @@ export async function generateProfileCard(data: ProfileCardData) {
       // Draw Blade
       ctx.save();
       ctx.beginPath();
-      ctx.arc(x + bladeSize / 2, y + bladeSize / 2, bladeSize / 2, 0, Math.PI * 2);
+      ctx.arc(
+        x + bladeSize / 2,
+        y + bladeSize / 2,
+        bladeSize / 2,
+        0,
+        Math.PI * 2,
+      );
       ctx.clip();
-      
+
       try {
         if (blade.imageUrl) {
           let imageToLoad: string | Buffer = '';
@@ -278,7 +288,11 @@ export async function generateProfileCard(data: ProfileCardData) {
       ctx.font = 'bold 18px GoogleSans';
       ctx.fillStyle = '#ffffff';
       ctx.textAlign = 'center';
-      ctx.fillText(blade.name.toUpperCase(), x + bladeSize / 2, y + bladeSize + 30);
+      ctx.fillText(
+        blade.name.toUpperCase(),
+        x + bladeSize / 2,
+        y + bladeSize + 30,
+      );
       ctx.textAlign = 'start';
     }
   }
@@ -374,7 +388,7 @@ export async function generateComboCard(data: ComboCardData) {
       } else {
         imageToLoad = data.bladeImageUrl;
       }
-      
+
       const bladeImg = await loadImage(imageToLoad);
       ctx.drawImage(bladeImg, 50, 175, 200, 200);
     } catch (e) {
@@ -416,7 +430,7 @@ export async function generateComboCard(data: ComboCardData) {
     value: number,
     y: number,
     color: string,
-    xOffset: number
+    xOffset: number,
   ) => {
     ctx.textAlign = 'left';
     ctx.font = 'bold 20px GoogleSans';
@@ -450,7 +464,13 @@ export async function generateComboCard(data: ComboCardData) {
 
   drawProgressBar('ATTAQUE', data.attack, startStatsY, '#ef4444', 100);
   drawProgressBar('DÉFENSE', data.defense, startStatsY + gap, '#3b82f6', 100);
-  drawProgressBar('ENDURANCE', data.stamina, startStatsY + gap * 2, '#22c55e', 100);
+  drawProgressBar(
+    'ENDURANCE',
+    data.stamina,
+    startStatsY + gap * 2,
+    '#22c55e',
+    100,
+  );
   drawProgressBar('DASH', data.dash, startStatsY + gap * 3, '#eab308', 100);
 
   // Weight

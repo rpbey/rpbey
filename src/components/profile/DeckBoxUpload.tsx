@@ -39,10 +39,14 @@ export function DeckBoxUpload({ currentImage, onUpload }: DeckBoxUploadProps) {
       }
 
       onUpload(data.url);
-      showToast('Photo mise à jour ! N\'oublie pas de sauvegarder ton profil.', 'success');
+      showToast(
+        "Photo mise à jour ! N'oublie pas de sauvegarder ton profil.",
+        'success',
+      );
     } catch (error) {
       console.error('Error uploading file:', error);
-      const message = error instanceof Error ? error.message : 'Erreur lors de l\'upload';
+      const message =
+        error instanceof Error ? error.message : "Erreur lors de l'upload";
       showToast(message, 'error');
     } finally {
       setUploading(false);

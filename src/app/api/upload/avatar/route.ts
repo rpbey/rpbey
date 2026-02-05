@@ -55,7 +55,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ url: imageUrl });
   } catch (error) {
     console.error('Upload error:', error);
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    const errorMessage =
+      error instanceof Error ? error.message : 'Unknown error';
     return NextResponse.json(
       { error: `Internal Server Error: ${errorMessage}` },
       { status: 500 },

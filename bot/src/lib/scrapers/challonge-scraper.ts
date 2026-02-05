@@ -74,7 +74,10 @@ export class ChallongeScraper {
    * @param urlId L'URL complète ou le slug (ex: "fr/B_TS2" ou "B_TS2")
    * @param cookiesString Chaîne de cookies optionnelle (format "key=value; key2=value2")
    */
-  async scrape(urlId: string, cookiesString?: string): Promise<ScrapedTournament> {
+  async scrape(
+    urlId: string,
+    cookiesString?: string,
+  ): Promise<ScrapedTournament> {
     if (!this.browser) await this.init();
 
     // Normalisation de l'URL
@@ -86,7 +89,10 @@ export class ChallongeScraper {
     console.log(`🔍 Scraping du tournoi : ${slug}`);
 
     // 1. Récupération des données brutes via le Store (Page Module)
-    const { storeData, pageTitle } = await this.fetchStoreData(moduleUrl, cookiesString);
+    const { storeData, pageTitle } = await this.fetchStoreData(
+      moduleUrl,
+      cookiesString,
+    );
 
     // 2. Récupération du classement officiel (Page Standings)
     // Utile car le Store contient parfois juste les matchs, pas le calcul final du rang
@@ -103,7 +109,10 @@ export class ChallongeScraper {
     return this.processData(storeData, standings, baseUrl, pageTitle);
   }
 
-  private async fetchStoreData(url: string, cookiesString?: string): Promise<{ storeData: any, pageTitle: string }> {
+  private async fetchStoreData(
+    url: string,
+    cookiesString?: string,
+  ): Promise<{ storeData: any; pageTitle: string }> {
     if (!this.browser) throw new Error('Browser not initialized');
     const page = await this.browser.newPage();
     try {
@@ -128,14 +137,20 @@ export class ChallongeScraper {
             })()
         `);
 
-      if (!storeData) throw new Error('Store Challonge non trouvé dans la page. Possible blocage Cloudflare.');
+      if (!storeData)
+        throw new Error(
+          'Store Challonge non trouvé dans la page. Possible blocage Cloudflare.',
+        );
       return { storeData, pageTitle };
     } finally {
       await page.close();
     }
   }
 
-  private async fetchStandings(url: string, cookiesString?: string): Promise<any[]> {
+  private async fetchStandings(
+    url: string,
+    cookiesString?: string,
+  ): Promise<any[]> {
     if (!this.browser) throw new Error('Browser not initialized');
     const page = await this.browser.newPage();
     try {

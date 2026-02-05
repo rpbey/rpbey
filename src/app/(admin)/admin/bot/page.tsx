@@ -35,6 +35,7 @@ import Grid from '@mui/material/Grid';
 import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
 import { BotMessenger } from '@/components/admin/BotMessenger';
+import { useSocket } from '@/components/providers/SocketProvider';
 
 interface BotStatus {
   status: 'running' | 'starting' | 'offline';
@@ -60,22 +61,22 @@ export default function BotStatusPage() {
   const [commands, setCommands] = useState<NativeCommand[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { socket, isConnected } = useSocket();
 
-  const fetchData = useCallback(async () => {
+  const fetchInitialData = useCallback(async () => {
     try {
-      const [statusRes, commandsRes] = await Promise.all([
-        fetch('/api/bot/status'),
-        fetch('/api/bot/commands'),
-      ]);
-
-      if (!statusRes.ok) throw new Error('Failed to fetch status');
-
-      const statusData = await statusRes.json();
-      setStatus(statusData);
-
+      // Keep fetching commands via REST for now as they don't change often
+      const commandsRes = await fetch('/api/bot/commands');
       if (commandsRes.ok) {
         const commandsData = await commandsRes.json();
         setCommands(commandsData.commands || []);
+      }
+
+      // Initial status fetch (fallback if socket takes time)
+      const statusRes = await fetch('/api/bot/status');
+      if (statusRes.ok) {
+        const statusData = await statusRes.json();
+        setStatus(statusData);
       }
 
       setError(null);
@@ -87,10 +88,23 @@ export default function BotStatusPage() {
   }, []);
 
   useEffect(() => {
-    fetchData();
-    const interval = setInterval(fetchData, 10000);
-    return () => clearInterval(interval);
-  }, [fetchData]);
+    fetchInitialData();
+  }, [fetchInitialData]);
+
+  // Real-time updates
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleStatusUpdate = (data: BotStatus) => {
+      setStatus(data);
+    };
+
+    socket.on('status_update', handleStatusUpdate);
+
+    return () => {
+      socket.off('status_update', handleStatusUpdate);
+    };
+  }, [socket]);
 
   if (loading && !status) {
     return (
@@ -144,7 +158,7 @@ export default function BotStatusPage() {
             Configuration
           </Button>
           <Tooltip title="Rafraîchir">
-            <IconButton onClick={fetchData} disabled={loading}>
+            <IconButton onClick={fetchInitialData} disabled={loading}>
               <RefreshIcon />
             </IconButton>
           </Tooltip>

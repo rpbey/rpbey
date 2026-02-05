@@ -160,7 +160,11 @@ export default function DeckRedirectPage() {
                   borderColor: 'divider',
                 }}
               >
-                <Chip label="/aleatoire" color="secondary" sx={{ fontWeight: 'bold' }} />
+                <Chip
+                  label="/aleatoire"
+                  color="secondary"
+                  sx={{ fontWeight: 'bold' }}
+                />
                 <Typography variant="body2">
                   Génère un combo complet avec ses stats !
                 </Typography>

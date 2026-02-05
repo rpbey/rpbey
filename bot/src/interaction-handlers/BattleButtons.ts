@@ -12,7 +12,11 @@ import {
 import { Colors, RPB } from '../lib/constants.js';
 import prisma from '../lib/prisma.js';
 import { pendingBattles } from '../lib/state.js';
-import { getDeckStats, getRandomStats, runBattleSimulation } from '../lib/battle-utils.js';
+import {
+  getDeckStats,
+  getRandomStats,
+  runBattleSimulation,
+} from '../lib/battle-utils.js';
 
 export class BattleButtonHandler extends InteractionHandler {
   public constructor(context: InteractionHandler.LoaderContext) {
@@ -92,26 +96,26 @@ export class BattleButtonHandler extends InteractionHandler {
 
     // Check Decks
     const [statsA, statsB] = await Promise.all([
-        getDeckStats(challenger.id),
-        getDeckStats(interaction.user.id)
+      getDeckStats(challenger.id),
+      getDeckStats(interaction.user.id),
     ]);
 
     if (!statsA || !statsB) {
-        const embed = new EmbedBuilder()
-          .setTitle('⚠️ Decks manquants')
-          .setDescription(
-            `L'un des joueurs (ou les deux) n'a pas de deck actif.\nVoulez-vous lancer un **Combat Aléatoire** ?`
-          )
-          .setColor(Colors.Warning);
+      const embed = new EmbedBuilder()
+        .setTitle('⚠️ Decks manquants')
+        .setDescription(
+          `L'un des joueurs (ou les deux) n'a pas de deck actif.\nVoulez-vous lancer un **Combat Aléatoire** ?`,
+        )
+        .setColor(Colors.Warning);
 
-        const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
-          new ButtonBuilder()
-            .setCustomId(`battle-random-${challenger.id}`)
-            .setLabel('🎲 Combat Aléatoire')
-            .setStyle(ButtonStyle.Primary)
-        );
+      const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
+        new ButtonBuilder()
+          .setCustomId(`battle-random-${challenger.id}`)
+          .setLabel('🎲 Combat Aléatoire')
+          .setStyle(ButtonStyle.Primary),
+      );
 
-        return interaction.update({ embeds: [embed], components: [row] });
+      return interaction.update({ embeds: [embed], components: [row] });
     }
 
     // Start battle animation
@@ -133,41 +137,59 @@ export class BattleButtonHandler extends InteractionHandler {
     // Simulate battle
     await this.sleep(2500);
 
-    return runBattleSimulation(interaction, challenger, interaction.user, statsA, statsB);
+    return runBattleSimulation(
+      interaction,
+      challenger,
+      interaction.user,
+      statsA,
+      statsB,
+    );
   }
 
   private async handleRandom(interaction: ButtonInteraction, targetId: string) {
-      // Determine who is who
-      // In prompt, targetId is the "other" person.
-      // If triggered by Quick Battle prompt (Challenger clicked), targetId is Opponent.
-      // If triggered by Accept prompt (Opponent clicked), targetId is Challenger.
-      
-      const target = await interaction.client.users.fetch(targetId).catch(() => null);
-      if (!target) return interaction.reply({ content: '❌ Erreur joueur introuvable.', ephemeral: true });
+    // Determine who is who
+    // In prompt, targetId is the "other" person.
+    // If triggered by Quick Battle prompt (Challenger clicked), targetId is Opponent.
+    // If triggered by Accept prompt (Opponent clicked), targetId is Challenger.
 
-      // Identify Challenger/Opponent purely for visual consistency? 
-      // Let's just treat interaction.user as Player A and target as Player B.
-      
-      const statsA = getRandomStats();
-      const statsB = getRandomStats();
-
-      await interaction.update({
-        content: null,
-        embeds: [
-            new EmbedBuilder()
-            .setTitle('🎲 Combat Aléatoire !')
-            .setDescription(
-                `**${interaction.user.displayName}** VS **${target.displayName}**\n\n` +
-                'Génération de combos aléatoires...\n' +
-                '🌀 3... 2... 1... **LET IT RIP !**'
-            )
-            .setColor(Colors.Secondary)
-        ],
-        components: []
+    const target = await interaction.client.users
+      .fetch(targetId)
+      .catch(() => null);
+    if (!target)
+      return interaction.reply({
+        content: '❌ Erreur joueur introuvable.',
+        ephemeral: true,
       });
 
-      await this.sleep(2000);
-      return runBattleSimulation(interaction, interaction.user, target, statsA, statsB);
+    // Identify Challenger/Opponent purely for visual consistency?
+    // Let's just treat interaction.user as Player A and target as Player B.
+
+    const statsA = getRandomStats();
+    const statsB = getRandomStats();
+
+    await interaction.update({
+      content: null,
+      embeds: [
+        new EmbedBuilder()
+          .setTitle('🎲 Combat Aléatoire !')
+          .setDescription(
+            `**${interaction.user.displayName}** VS **${target.displayName}**\n\n` +
+              'Génération de combos aléatoires...\n' +
+              '🌀 3... 2... 1... **LET IT RIP !**',
+          )
+          .setColor(Colors.Secondary),
+      ],
+      components: [],
+    });
+
+    await this.sleep(2000);
+    return runBattleSimulation(
+      interaction,
+      interaction.user,
+      target,
+      statsA,
+      statsB,
+    );
   }
 
   private async handleDecline(

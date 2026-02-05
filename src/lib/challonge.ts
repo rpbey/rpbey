@@ -237,6 +237,12 @@ class ChallongeService {
       body: body ? JSON.stringify(body) : undefined,
     });
 
+    if (response.status === 429) {
+      // Simple backoff
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      return this.request(method, endpoint, body, userToken);
+    }
+
     if (!response.ok) {
       const error = await response.text();
       throw new Error(`Challonge API Error (${response.status}): ${error}`);
@@ -302,6 +308,44 @@ class ChallongeService {
       params?.userToken,
     );
     return this.unwrap<ChallongeTournament[]>(response);
+  }
+
+  /**
+   * Fetches ALL tournaments for a community by paginating automatically.
+   */
+  async fetchAllCommunityTournaments(
+    communityId: string,
+    params?: {
+      state?: 'pending' | 'in_progress' | 'ended';
+      userToken?: string;
+    },
+  ): Promise<ChallongeTournament[]> {
+    let page = 1;
+    const perPage = 25; // Challonge max per page default
+    let allTournaments: ChallongeTournament[] = [];
+    let hasMore = true;
+
+    while (hasMore) {
+      const tournaments = await this.listCommunityTournaments(communityId, {
+        ...params,
+        page,
+        perPage,
+      });
+
+      if (tournaments.length === 0) {
+        break;
+      }
+
+      allTournaments = [...allTournaments, ...tournaments];
+
+      if (tournaments.length < perPage) {
+        hasMore = false;
+      } else {
+        page++;
+      }
+    }
+
+    return allTournaments;
   }
 
   async getTournament(

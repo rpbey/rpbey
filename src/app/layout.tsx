@@ -4,6 +4,8 @@ import type { Metadata, Viewport } from 'next';
 import { JsonLd } from '@/components/seo/JsonLd';
 import ThemeRegistry from '@/components/theme/ThemeRegistry';
 import { SmoothScroll } from '@/components/ui/SmoothScroll';
+import { Toaster } from '@/components/ui/Toaster';
+import { SocketProvider } from '@/components/providers/SocketProvider';
 import { googleSansFlex } from '@/lib/fonts';
 import { generateWebsiteJsonLd } from '@/lib/seo-utils';
 import './globals.css';
@@ -111,7 +113,8 @@ export default function RootLayout({
         <JsonLd data={generateWebsiteJsonLd()} />
         <ThemeRegistry>
           <SmoothScroll />
-          {children}
+          <Toaster />
+          <SocketProvider>{children}</SocketProvider>
         </ThemeRegistry>
       </body>
     </html>

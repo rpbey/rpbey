@@ -60,7 +60,16 @@ export async function PATCH(request: Request) {
       bio,
       challongeUsername,
       deckBoxImage,
+      image, // Add image (avatar)
     } = body;
+
+    // Update User first if image is provided
+    if (image) {
+      await prisma.user.update({
+        where: { id: session.user.id },
+        data: { image },
+      });
+    }
 
     const profile = await prisma.profile.upsert({
       where: { userId: session.user.id },

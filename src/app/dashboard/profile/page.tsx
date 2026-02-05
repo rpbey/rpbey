@@ -7,7 +7,7 @@ export default async function MyProfilePage() {
     headers: await headers(),
   });
 
-  // Si pas de session, le DashboardLayout (AuthGuard) s'en occupera aussi, 
+  // Si pas de session, le DashboardLayout (AuthGuard) s'en occupera aussi,
   // mais on assure la redirection ici vers la page de connexion au cas où.
   if (!session) {
     redirect('/sign-in');

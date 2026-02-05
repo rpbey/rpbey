@@ -19,6 +19,7 @@ import Typography from '@mui/material/Typography';
 import { headers } from 'next/headers';
 import Link from 'next/link';
 import { QuickActions } from '@/components/admin/QuickActions';
+import { FadeIn, FadeInStagger, ScaleOnHover } from '@/components/ui/FadeIn';
 import { TrophyIcon } from '@/components/ui/Icons';
 import { getBotStatus } from '@/lib/bot';
 import { prisma } from '@/lib/prisma';
@@ -137,184 +138,198 @@ export default async function AdminDashboardPage() {
 
   return (
     <Box component="main" sx={{ py: 4 }}>
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          mb: 4,
-        }}
-      >
-        <Box>
-          <Typography
-            variant="h4"
-            component="h1"
-            fontWeight="bold"
-            gutterBottom
-          >
-            Vue d'ensemble
-          </Typography>
-          <Typography variant="body1" color="text.secondary">
-            Bienvenue sur le panel d'administration RPB
-          </Typography>
+      <FadeIn>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            mb: 4,
+          }}
+        >
+          <Box>
+            <Typography
+              variant="h4"
+              component="h1"
+              fontWeight="bold"
+              gutterBottom
+            >
+              Vue d'ensemble
+            </Typography>
+            <Typography variant="body1" color="text.secondary">
+              Bienvenue sur le panel d'administration RPB
+            </Typography>
+          </Box>
+          <Chip
+            icon={botStatus ? <CheckCircle /> : <ErrorIcon />}
+            label={botStatus ? 'Systèmes Opérationnels' : 'Bot Hors Ligne'}
+            color={botStatus ? 'success' : 'error'}
+            variant="outlined"
+            sx={{ borderRadius: 2, fontWeight: 'bold' }}
+          />
         </Box>
-        <Chip
-          icon={botStatus ? <CheckCircle /> : <ErrorIcon />}
-          label={botStatus ? 'Systèmes Opérationnels' : 'Bot Hors Ligne'}
-          color={botStatus ? 'success' : 'error'}
-          variant="outlined"
-          sx={{ borderRadius: 2, fontWeight: 'bold' }}
-        />
-      </Box>
+      </FadeIn>
 
       {/* Stats Grid */}
-      <Grid
-        container
-        spacing={3}
-        sx={{ mb: 4 }}
-        role="list"
-        aria-label="Statistiques clés"
-      >
-        {stats.map((stat) => {
-          const Icon = stat.icon;
-          return (
-            <Grid
-              key={stat.label}
-              size={{ xs: 12, sm: 6, lg: 3 }}
-              role="listitem"
-            >
-              <Card
-                variant="outlined"
-                sx={{
-                  transition: 'all 0.2s',
-                  '&:hover': { transform: 'translateY(-4px)', boxShadow: 4 },
-                  borderLeft: `4px solid ${stat.color}`,
-                }}
-                role="article"
-                aria-label={`Statistique: ${stat.label}`}
+      <FadeInStagger>
+        <Grid
+          container
+          spacing={3}
+          sx={{ mb: 4 }}
+          role="list"
+          aria-label="Statistiques clés"
+        >
+          {stats.map((stat) => {
+            const Icon = stat.icon;
+            return (
+              <Grid
+                key={stat.label}
+                size={{ xs: 12, sm: 6, lg: 3 }}
+                role="listitem"
               >
-                <CardContent sx={{ p: 3 }}>
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'flex-start',
-                    }}
-                  >
-                    <Box>
-                      <Typography
-                        variant="body2"
-                        color="text.secondary"
-                        gutterBottom
-                        fontWeight="bold"
-                      >
-                        {stat.label}
-                      </Typography>
-                      <Typography variant="h4" fontWeight="bold">
-                        {stat.value}
-                      </Typography>
-                      <Box
-                        sx={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 0.5,
-                          mt: 1,
-                        }}
-                      >
-                        <Typography
-                          variant="caption"
-                          color={stat.trendColor}
-                          fontWeight="bold"
-                        >
-                          {stat.change}
-                        </Typography>
-                      </Box>
-                    </Box>
-                    <Box
+                <FadeIn>
+                  <ScaleOnHover>
+                    <Card
+                      variant="outlined"
                       sx={{
-                        p: 1.5,
-                        borderRadius: 2,
-                        bgcolor: `${stat.color}20`,
+                        transition: 'all 0.2s',
+                        '&:hover': {
+                          transform: 'translateY(-4px)',
+                          boxShadow: 4,
+                        },
+                        borderLeft: `4px solid ${stat.color}`,
+                        height: '100%',
                       }}
-                      aria-hidden="true"
+                      role="article"
+                      aria-label={`Statistique: ${stat.label}`}
                     >
-                      <Icon sx={{ color: stat.color }} />
-                    </Box>
-                  </Box>
-                </CardContent>
-              </Card>
-            </Grid>
-          );
-        })}
-      </Grid>
+                      <CardContent sx={{ p: 3 }}>
+                        <Box
+                          sx={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'flex-start',
+                          }}
+                        >
+                          <Box>
+                            <Typography
+                              variant="body2"
+                              color="text.secondary"
+                              gutterBottom
+                              fontWeight="bold"
+                            >
+                              {stat.label}
+                            </Typography>
+                            <Typography variant="h4" fontWeight="bold">
+                              {stat.value}
+                            </Typography>
+                            <Box
+                              sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 0.5,
+                                mt: 1,
+                              }}
+                            >
+                              <Typography
+                                variant="caption"
+                                color={stat.trendColor}
+                                fontWeight="bold"
+                              >
+                                {stat.change}
+                              </Typography>
+                            </Box>
+                          </Box>
+                          <Box
+                            sx={{
+                              p: 1.5,
+                              borderRadius: 2,
+                              bgcolor: `${stat.color}20`,
+                            }}
+                            aria-hidden="true"
+                          >
+                            <Icon sx={{ color: stat.color }} />
+                          </Box>
+                        </Box>
+                      </CardContent>
+                    </Card>
+                  </ScaleOnHover>
+                </FadeIn>
+              </Grid>
+            );
+          })}
+        </Grid>
+      </FadeInStagger>
 
       <Grid container spacing={3}>
         {/* Recent Activity */}
         <Grid size={{ xs: 12, lg: 8 }}>
-          <Card
-            variant="elevated"
-            sx={{ height: '100%' }}
-            role="region"
-            aria-labelledby="recent-activity-title"
-          >
-            <CardContent sx={{ p: 4 }}>
-              <Typography
-                variant="h6"
-                fontWeight="bold"
-                gutterBottom
-                sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}
-                id="recent-activity-title"
-                component="h2"
-              >
-                <History aria-hidden="true" /> Activité récente
-              </Typography>
-              <Box
-                component="ul"
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 2,
-                  p: 0,
-                  m: 0,
-                  listStyle: 'none',
-                }}
-              >
-                {recentActivity.length > 0 ? (
-                  recentActivity.map((activity, index) => (
-                    <Box
-                      component="li"
-                      key={`${activity.type}-${index}`}
-                      sx={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        p: 2,
-                        borderRadius: 2,
-                        bgcolor: 'background.default',
-                      }}
-                    >
-                      <Typography variant="body2">
-                        {activity.message}
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        {formatDateTime(activity.date)}
+          <FadeIn delay={0.2} duration={0.6} direction="up" fullWidth>
+            <Card
+              variant="elevated"
+              sx={{ height: '100%' }}
+              role="region"
+              aria-labelledby="recent-activity-title"
+            >
+              <CardContent sx={{ p: 4 }}>
+                <Typography
+                  variant="h6"
+                  fontWeight="bold"
+                  gutterBottom
+                  sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}
+                  id="recent-activity-title"
+                  component="h2"
+                >
+                  <History aria-hidden="true" /> Activité récente
+                </Typography>
+                <Box
+                  component="ul"
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 2,
+                    p: 0,
+                    m: 0,
+                    listStyle: 'none',
+                  }}
+                >
+                  {recentActivity.length > 0 ? (
+                    recentActivity.map((activity, index) => (
+                      <Box
+                        component="li"
+                        key={`${activity.type}-${index}`}
+                        sx={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          p: 2,
+                          borderRadius: 2,
+                          bgcolor: 'background.default',
+                        }}
+                      >
+                        <Typography variant="body2">
+                          {activity.message}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          {formatDateTime(activity.date)}
+                        </Typography>
+                      </Box>
+                    ))
+                  ) : (
+                    <Box component="li">
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ p: 2, textAlign: 'center' }}
+                      >
+                        Aucune activité récente
                       </Typography>
                     </Box>
-                  ))
-                ) : (
-                  <Box component="li">
-                    <Typography
-                      variant="body2"
-                      color="text.secondary"
-                      sx={{ p: 2, textAlign: 'center' }}
-                    >
-                      Aucune activité récente
-                    </Typography>
-                  </Box>
-                )}
-              </Box>
-            </CardContent>
-          </Card>
+                  )}
+                </Box>
+              </CardContent>
+            </Card>
+          </FadeIn>
         </Grid>
 
         {/* Right Column: Next Tournament & Quick Actions */}
@@ -322,126 +337,136 @@ export default async function AdminDashboardPage() {
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
             {/* Next Tournament Card */}
             {nextTournament && (
+              <FadeIn delay={0.3} direction="left">
+                <Card
+                  variant="outlined"
+                  sx={{ borderColor: 'primary.main', borderWidth: 2 }}
+                >
+                  <CardContent sx={{ p: 3 }}>
+                    <Typography
+                      variant="h6"
+                      fontWeight="bold"
+                      gutterBottom
+                      sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
+                    >
+                      <Event color="primary" /> Prochain Tournoi
+                    </Typography>
+                    <Typography
+                      variant="subtitle1"
+                      fontWeight="bold"
+                      noWrap
+                      title={nextTournament.name}
+                    >
+                      {nextTournament.name}
+                    </Typography>
+                    <Box sx={{ display: 'flex', gap: 2, mt: 2, mb: 2 }}>
+                      <Chip
+                        label={nextTournament.status}
+                        size="small"
+                        color={
+                          nextTournament.status === 'REGISTRATION_OPEN'
+                            ? 'success'
+                            : 'default'
+                        }
+                      />
+                      <Typography variant="body2" color="text.secondary">
+                        {formatDateTime(nextTournament.date)}
+                      </Typography>
+                    </Box>
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                      }}
+                    >
+                      <Typography variant="body2">
+                        <strong>{nextTournament._count.participants}</strong>{' '}
+                        participants
+                      </Typography>
+                      <Link
+                        href={`/admin/tournaments/${nextTournament.id}`}
+                        style={{ textDecoration: 'none' }}
+                      >
+                        <Button size="small" variant="contained">
+                          Gérer
+                        </Button>
+                      </Link>
+                    </Box>
+                  </CardContent>
+                </Card>
+              </FadeIn>
+            )}
+
+            <FadeIn delay={0.4} direction="left">
               <Card
-                variant="outlined"
-                sx={{ borderColor: 'primary.main', borderWidth: 2 }}
+                variant="elevated"
+                role="region"
+                aria-labelledby="quick-actions-title"
               >
-                <CardContent sx={{ p: 3 }}>
+                <CardContent sx={{ p: 4 }}>
                   <Typography
                     variant="h6"
                     fontWeight="bold"
                     gutterBottom
+                    sx={{ mb: 3 }}
+                    id="quick-actions-title"
+                    component="h2"
+                  >
+                    Actions rapides
+                  </Typography>
+                  <QuickActions />
+                </CardContent>
+              </Card>
+            </FadeIn>
+
+            <FadeIn delay={0.5} direction="left">
+              <Card variant="outlined">
+                <CardContent sx={{ p: 3 }}>
+                  <Typography
+                    variant="subtitle2"
+                    color="text.secondary"
+                    gutterBottom
                     sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
                   >
-                    <Event color="primary" /> Prochain Tournoi
+                    <Dns fontSize="small" /> État des Services
                   </Typography>
-                  <Typography
-                    variant="subtitle1"
-                    fontWeight="bold"
-                    noWrap
-                    title={nextTournament.name}
-                  >
-                    {nextTournament.name}
-                  </Typography>
-                  <Box sx={{ display: 'flex', gap: 2, mt: 2, mb: 2 }}>
-                    <Chip
-                      label={nextTournament.status}
-                      size="small"
-                      color={
-                        nextTournament.status === 'REGISTRATION_OPEN'
-                          ? 'success'
-                          : 'default'
-                      }
-                    />
-                    <Typography variant="body2" color="text.secondary">
-                      {formatDateTime(nextTournament.date)}
-                    </Typography>
-                  </Box>
                   <Box
                     sx={{
                       display: 'flex',
                       justifyContent: 'space-between',
-                      alignItems: 'center',
+                      mt: 1,
                     }}
                   >
-                    <Typography variant="body2">
-                      <strong>{nextTournament._count.participants}</strong>{' '}
-                      participants
+                    <Typography variant="caption">Database</Typography>
+                    <Typography variant="caption" color="success.main">
+                      Connecté
                     </Typography>
-                    <Link
-                      href={`/admin/tournaments/${nextTournament.id}`}
-                      style={{ textDecoration: 'none' }}
+                  </Box>
+                  <Divider sx={{ my: 1 }} />
+                  <Box
+                    sx={{ display: 'flex', justifyContent: 'space-between' }}
+                  >
+                    <Typography variant="caption">Bot Discord</Typography>
+                    <Typography
+                      variant="caption"
+                      color={botStatus ? 'success.main' : 'error.main'}
                     >
-                      <Button size="small" variant="contained">
-                        Gérer
-                      </Button>
-                    </Link>
+                      {botStatus ? `${botStatus.ping}ms` : 'Offline'}
+                    </Typography>
+                  </Box>
+                  <Divider sx={{ my: 1 }} />
+                  <Box
+                    sx={{ display: 'flex', justifyContent: 'space-between' }}
+                  >
+                    <Typography variant="caption">Gemini Agent</Typography>
+                    <Typography variant="caption" color="success.main">
+                      Actif
+                    </Typography>
                   </Box>
                 </CardContent>
               </Card>
-            )}
-
-            <Card
-              variant="elevated"
-              role="region"
-              aria-labelledby="quick-actions-title"
-            >
-              <CardContent sx={{ p: 4 }}>
-                <Typography
-                  variant="h6"
-                  fontWeight="bold"
-                  gutterBottom
-                  sx={{ mb: 3 }}
-                  id="quick-actions-title"
-                  component="h2"
-                >
-                  Actions rapides
-                </Typography>
-                <QuickActions />
-              </CardContent>
-            </Card>
-
-            <Card variant="outlined">
-              <CardContent sx={{ p: 3 }}>
-                <Typography
-                  variant="subtitle2"
-                  color="text.secondary"
-                  gutterBottom
-                  sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
-                >
-                  <Dns fontSize="small" /> État des Services
-                </Typography>
-                <Box
-                  sx={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    mt: 1,
-                  }}
-                >
-                  <Typography variant="caption">Database</Typography>
-                  <Typography variant="caption" color="success.main">
-                    Connecté
-                  </Typography>
-                </Box>
-                <Divider sx={{ my: 1 }} />
-                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <Typography variant="caption">Bot Discord</Typography>
-                  <Typography
-                    variant="caption"
-                    color={botStatus ? 'success.main' : 'error.main'}
-                  >
-                    {botStatus ? `${botStatus.ping}ms` : 'Offline'}
-                  </Typography>
-                </Box>
-                <Divider sx={{ my: 1 }} />
-                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <Typography variant="caption">Gemini Agent</Typography>
-                  <Typography variant="caption" color="success.main">
-                    Actif
-                  </Typography>
-                </Box>
-              </CardContent>
-            </Card>
+            </FadeIn>
           </Box>
         </Grid>
       </Grid>

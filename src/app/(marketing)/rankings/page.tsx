@@ -1,5 +1,9 @@
 import Container from '@mui/material/Container';
+import Alert from '@mui/material/Alert';
+import Box from '@mui/material/Box';
+import InfoIcon from '@mui/icons-material/Info';
 import { RankingsTable } from '@/components/rankings/RankingsTable';
+import RankingSearch from '@/components/rankings/RankingSearch';
 import SeasonSelector from '@/components/rankings/SeasonSelector';
 import { PageHeader } from '@/components/ui';
 import { prisma } from '@/lib/prisma';
@@ -27,6 +31,10 @@ export default async function RankingsPage({
     typeof resolvedSearchParams.season === 'string'
       ? resolvedSearchParams.season
       : null;
+  const searchQuery =
+    typeof resolvedSearchParams.search === 'string'
+      ? resolvedSearchParams.search
+      : '';
 
   // Fetch available seasons
   const seasons = await getSeasons();
@@ -41,9 +49,26 @@ export default async function RankingsPage({
     const seasonData = await getSeasonStandings(seasonSlug);
     if (seasonData) {
       title = `Classement - ${seasonData.name}`;
-      totalCount = seasonData.entries.length;
+
+      let entries = seasonData.entries;
+
+      // Filter by search locally for historical data (since it's a fixed array in the action)
+      if (searchQuery) {
+        entries = entries.filter(
+          (e) =>
+            e.user.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            e.user.username
+              ?.toLowerCase()
+              .includes(searchQuery.toLowerCase()) ||
+            e.user.discordTag
+              ?.toLowerCase()
+              .includes(searchQuery.toLowerCase()),
+        );
+      }
+
+      totalCount = entries.length;
       // Manually paginate the entries
-      profiles = seasonData.entries
+      profiles = entries
         .slice((page - 1) * pageSize, page * pageSize)
         .map((entry) => ({
           id: entry.id,
@@ -61,7 +86,7 @@ export default async function RankingsPage({
     // Current Season (Live Profile Data)
 
     // 1. Récupération optimisée avec pagination
-    const whereCondition = {
+    const whereCondition: any = {
       userId: {
         notIn: [
           'Y5gdJ6ZpfAHfsNcJQc0PMbAqyVeQAiHE', // Yoyo
@@ -73,6 +98,17 @@ export default async function RankingsPage({
         name: { notIn: ['Yoyo', 'Loteux', '𝓡𝓟𝓑 | LOTTEUX!'] },
       },
     };
+
+    if (searchQuery) {
+      whereCondition.OR = [
+        { bladerName: { contains: searchQuery, mode: 'insensitive' } },
+        { user: { name: { contains: searchQuery, mode: 'insensitive' } } },
+        { user: { username: { contains: searchQuery, mode: 'insensitive' } } },
+        {
+          user: { discordTag: { contains: searchQuery, mode: 'insensitive' } },
+        },
+      ];
+    }
 
     const [liveProfiles, count] = await Promise.all([
       prisma.profile.findMany({
@@ -114,7 +150,37 @@ export default async function RankingsPage({
         }
       />
 
-      <SeasonSelector seasons={seasons} />
+      <Box
+        sx={{
+          mb: 4,
+          display: 'flex',
+          flexDirection: { xs: 'column', md: 'row' },
+          gap: 2,
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}
+      >
+        <SeasonSelector seasons={seasons} />
+        <Box sx={{ width: { xs: '100%', md: 400 } }}>
+          <RankingSearch defaultValue={searchQuery} />
+        </Box>
+      </Box>
+
+      <Alert
+        severity="info"
+        icon={<InfoIcon />}
+        sx={{
+          mb: 3,
+          borderRadius: 3,
+          bgcolor: 'primary.main',
+          color: 'white',
+          '& .MuiAlert-icon': { color: 'white' },
+        }}
+      >
+        Cliquez sur le nom d&apos;un <strong>Blader</strong> pour consulter ses
+        statistiques détaillées, son historique de matchs et ses pièces
+        favorites.
+      </Alert>
 
       <RankingsTable
         profiles={profiles}

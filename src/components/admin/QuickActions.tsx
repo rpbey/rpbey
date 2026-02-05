@@ -1,6 +1,6 @@
 'use client';
 
-import { SmartToy } from '@mui/icons-material';
+import { Leaderboard, People, SmartToy } from '@mui/icons-material';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { useRouter } from 'next/navigation';
@@ -39,6 +39,16 @@ export function QuickActions() {
       label: 'Créer un tournoi',
       icon: TrophyIcon,
       onClick: () => router.push('/admin/tournaments?action=new'),
+    },
+    {
+      label: 'Gérer les utilisateurs',
+      icon: People,
+      onClick: () => router.push('/admin/users'),
+    },
+    {
+      label: 'Ajuster les points',
+      icon: Leaderboard,
+      onClick: () => router.push('/admin/rankings'),
     },
     {
       label: isRestarting ? 'Redémarrage...' : 'Redémarrer le bot',

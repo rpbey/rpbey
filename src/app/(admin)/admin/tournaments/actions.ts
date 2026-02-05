@@ -26,14 +26,10 @@ export async function syncCommunityTournaments() {
 
   const service = getChallongeService();
 
-  // Fetch tournaments from Challonge (pending and in_progress)
-  // We fetch multiple pages if needed, but for now let's just get the first page of 25
-  const challongeTournaments = await service.listCommunityTournaments(
-    communityId,
-    {
-      perPage: 25,
-    },
-  );
+  // Fetch ALL tournaments from Challonge using the new pagination method
+  // We don't filter by state to get everything available (including past ones we might have missed)
+  const challongeTournaments =
+    await service.fetchAllCommunityTournaments(communityId);
 
   // Get existing tournaments to avoid duplicates
   const existingTournaments = await prisma.tournament.findMany({
@@ -44,9 +40,16 @@ export async function syncCommunityTournaments() {
   });
 
   const existingIds = new Set(existingTournaments.map((t) => t.challongeId));
+
+  // Filter out existing tournaments
+  // Also filter out tournaments that are "pending" but created a long time ago if needed (optional)
   const newTournaments = challongeTournaments.filter(
     (t) => !existingIds.has(t.id),
   );
+
+  // Sort by created date desc to show newest first
+  // Note: Challonge API doesn't guarantee order in bulk fetch if not specified
+  // We can sort client side if needed, but the UI will handle it.
 
   return newTournaments;
 }

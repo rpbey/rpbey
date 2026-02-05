@@ -20,10 +20,12 @@ import {
 } from '@mui/material';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import useSWR, { mutate } from 'swr';
 import { SecuritySettings } from '@/components/profile';
+import { AvatarUpload } from '@/components/profile/AvatarUpload'; // Import new component
 import { DeckBoxUpload } from '@/components/profile/DeckBoxUpload';
+import { RichTextEditor } from '@/components/ui/RichTextEditor'; // Import RichTextEditor
 import { useToast } from '@/components/ui';
 import { useAuth } from '@/hooks';
 
@@ -34,6 +36,7 @@ interface ProfileFormData {
   favoriteType: string;
   challongeUsername?: string;
   deckBoxImage?: string;
+  image?: string; // Add image field
 }
 
 const BEYBLADE_TYPES = [
@@ -85,10 +88,12 @@ export default function EditProfilePage() {
     handleSubmit,
     setValue,
     watch,
+    control, // Destructure control
     formState: { errors },
   } = useForm<ProfileFormData>();
 
   const watchedDeckBoxImage = watch('deckBoxImage');
+  const watchedImage = watch('image');
 
   useEffect(() => {
     if (profileData) {
@@ -98,6 +103,11 @@ export default function EditProfilePage() {
       setValue('favoriteType', profileData.favoriteType || 'BALANCE');
       setValue('challongeUsername', profileData.challongeUsername || '');
       setValue('deckBoxImage', profileData.deckBoxImage || '');
+
+      // Initialize avatar from User object included in Profile response
+      if (profileData.user?.image) {
+        setValue('image', profileData.user.image);
+      }
     }
   }, [profileData, setValue]);
 
@@ -190,6 +200,21 @@ export default function EditProfilePage() {
                     </Box>
 
                     <Grid container spacing={3}>
+                      {/* Avatar Upload Section - NEW */}
+                      <Grid
+                        size={{ xs: 12 }}
+                        display="flex"
+                        justifyContent="center"
+                        mb={2}
+                      >
+                        <AvatarUpload
+                          currentImage={watchedImage}
+                          onUpload={(url) =>
+                            setValue('image', url, { shouldDirty: true })
+                          }
+                        />
+                      </Grid>
+
                       <Grid size={{ xs: 12 }}>
                         <TextField
                           fullWidth
@@ -279,16 +304,22 @@ export default function EditProfilePage() {
                         </TextField>
                       </Grid>
                       <Grid size={{ xs: 12 }}>
-                        <TextField
-                          fullWidth
-                          multiline
-                          rows={4}
-                          label="Biographie"
-                          placeholder="Dis-nous en plus sur ton style de jeu..."
-                          {...register('bio')}
-                          sx={{
-                            '& .MuiOutlinedInput-root': { borderRadius: 3 },
-                          }}
+                        <Typography
+                          variant="caption"
+                          color="text.secondary"
+                          sx={{ mb: 1, display: 'block' }}
+                        >
+                          Biographie
+                        </Typography>
+                        <Controller
+                          name="bio"
+                          control={control}
+                          render={({ field }) => (
+                            <RichTextEditor
+                              value={field.value}
+                              onChange={field.onChange}
+                            />
+                          )}
                         />
                       </Grid>
                     </Grid>

@@ -11,12 +11,11 @@ import type {
   GuildMember,
   GuildTextBasedChannel,
 } from 'discord.js';
-import { type RawData, WebSocket, WebSocketServer } from 'ws';
 import { Colors, RPB } from './constants.js';
+import { SocketManager } from './socket-manager.js';
 
 const logs: { timestamp: string; level: string; message: string }[] = [];
 const MAX_LOGS = 1000;
-let wss: WebSocketServer | null = null;
 let isPlaying = false; // Global flag to prevent transcription during playback
 
 // Member fetch throttling
@@ -56,14 +55,10 @@ export function addLog(level: string, message: string) {
   logs.push(logEntry);
   if (logs.length > MAX_LOGS) logs.shift();
 
-  // Broadcast to WS clients
-  if (wss) {
-    const payload = JSON.stringify({ type: 'log', data: logEntry });
-    wss.clients.forEach((client: WebSocket) => {
-      if (client.readyState === WebSocket.OPEN) {
-        client.send(payload);
-      }
-    });
+  // Broadcast to WS clients via Socket.io
+  const socketManager = SocketManager.getInstance();
+  if (socketManager.io) {
+    socketManager.emit('log_new', logEntry);
   }
 }
 
@@ -946,107 +941,9 @@ export function startApiServer(port = 3001) {
     void handleRequest(req, res);
   });
 
-  // Initialize WebSocket Server
-  wss = new WebSocketServer({ server });
-
-  wss.on('connection', (ws: WebSocket) => {
-    container.logger.info('[WS] Client connected');
-    ws.send(JSON.stringify({ type: 'info', message: 'Connected to RPB Bot' }));
-
-    // Send recent logs
-    ws.send(JSON.stringify({ type: 'logs_history', data: getLogs(20) }));
-
-    ws.on('message', async (message: RawData) => {
-      try {
-        const raw = message.toString();
-        const payload = JSON.parse(raw);
-        container.logger.info(`[WS] Received: ${payload.type}`);
-
-        switch (payload.type) {
-          case 'speak': {
-            // { type: 'speak', channelId: '...', content: '...' }
-            const { channelId, content } = payload;
-            if (channelId && content) {
-              const channel = container.client.channels.cache.get(channelId);
-              if (channel?.isTextBased()) {
-                await (channel as GuildTextBasedChannel).send(content);
-                ws.send(
-                  JSON.stringify({
-                    type: 'response',
-                    success: true,
-                    action: 'speak',
-                  }),
-                );
-              } else {
-                ws.send(
-                  JSON.stringify({
-                    type: 'error',
-                    message: 'Invalid channel',
-                  }),
-                );
-              }
-            }
-            break;
-          }
-
-          case 'launch_gemini': {
-            // { type: 'launch_gemini', args: ['-p', '...'] }
-            const args = payload.args || [];
-            container.logger.info(
-              `[WS] Launching Gemini with args: ${args.join(' ')}`,
-            );
-
-            const child = spawn('gemini', args, {
-              shell: true,
-              env: { ...process.env },
-            });
-
-            child.stdout.on('data', (data) => {
-              ws.send(
-                JSON.stringify({
-                  type: 'gemini_stdout',
-                  data: data.toString(),
-                }),
-              );
-            });
-
-            child.stderr.on('data', (data) => {
-              ws.send(
-                JSON.stringify({
-                  type: 'gemini_stderr',
-                  data: data.toString(),
-                }),
-              );
-            });
-
-            child.on('close', (code) => {
-              ws.send(
-                JSON.stringify({
-                  type: 'gemini_exit',
-                  code,
-                }),
-              );
-            });
-            break;
-          }
-
-          case 'eval': {
-            // Dangerous, but useful for 'modifying code' or hot-patching?
-            // User asked to 'modify code of the bot in case of error'.
-            // That usually implies editing files. I (Gemini) can do that via filesystem tools.
-            // This 'eval' might be for runtime inspection.
-            // I'll leave it out for security unless explicitly requested.
-            break;
-          }
-
-          default:
-            ws.send(JSON.stringify({ type: 'error', message: 'Unknown type' }));
-        }
-      } catch (e) {
-        ws.send(JSON.stringify({ type: 'error', message: String(e) }));
-      }
-    });
-  });
+  // Initialize Socket.IO
+  const socketManager = SocketManager.getInstance();
+  socketManager.init(server);
 
   server.listen(port, '0.0.0.0', () => {
     container.logger.info(`Bot API server listening on port ${port}`);

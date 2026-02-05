@@ -1,13 +1,9 @@
 'use client';
 
-import SearchOffIcon from '@mui/icons-material/SearchOff';
 import { Box, Button, Container, Typography } from '@mui/material';
 import Link from 'next/link';
-import { useThemeMode } from '@/components/theme/ThemeRegistry';
 
 export default function NotFound() {
-  const { backgroundImage } = useThemeMode();
-
   return (
     <Box
       sx={{
@@ -15,9 +11,7 @@ export default function NotFound() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundImage: `url(${backgroundImage})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
+        bgcolor: '#000',
       }}
     >
       <Container maxWidth="sm">
@@ -29,28 +23,29 @@ export default function NotFound() {
             justifyContent: 'center',
             textAlign: 'center',
             gap: 3,
-            bgcolor: 'rgba(0,0,0,0.6)',
-            backdropFilter: 'blur(8px)',
-            borderRadius: 4,
             p: 6,
           }}
         >
-          <SearchOffIcon sx={{ fontSize: 80, color: 'text.disabled' }} />
-          <Typography variant="h2" component="h1" fontWeight="bold">
+          <Typography
+            variant="h1"
+            fontWeight="bold"
+            sx={{ color: '#dc2626', mb: 2 }}
+          >
             404
           </Typography>
-          <Typography variant="h5" gutterBottom>
+          <Typography
+            variant="h4"
+            component="h2"
+            gutterBottom
+            sx={{ color: 'white' }}
+          >
             Page introuvable
-          </Typography>
-          <Typography variant="body1" color="text.secondary">
-            La page que tu cherches n&apos;existe pas ou a été déplacée.
           </Typography>
           <Button
             component={Link}
             href="/"
             variant="contained"
-            color="primary"
-            size="large"
+            sx={{ mt: 2, bgcolor: '#fbbf24', color: 'black' }}
           >
             Retour à l&apos;accueil
           </Button>

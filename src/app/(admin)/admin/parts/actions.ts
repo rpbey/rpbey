@@ -45,7 +45,7 @@ export async function upsertPart(data: Partial<Part>) {
   const generatedId = `${data.type}-${data.name}`
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-');
-  
+
   const externalId = data.externalId || generatedId;
 
   if (data.id) {

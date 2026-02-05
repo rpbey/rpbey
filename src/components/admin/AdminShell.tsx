@@ -22,6 +22,7 @@ import {
   alpha,
   Box,
   Button,
+  Chip, // Added
   Drawer,
   IconButton,
   List,
@@ -36,8 +37,10 @@ import {
 } from '@mui/material';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { CacheBuster } from '@/components/system/CacheBuster';
+import { useSocket } from '@/components/providers/SocketProvider';
+import { useToast } from '@/components/ui';
 import { TrophyIcon } from '@/components/ui/Icons';
 import { PageTransition } from '@/components/ui/PageTransition';
 import { RpbLogo } from '@/components/ui/RpbLogo';
@@ -67,6 +70,50 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const { data: session } = useSession();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [ping, setPing] = useState<number | null>(null);
+  const { socket } = useSocket();
+  const { showToast } = useToast();
+
+  // Global Admin Notifications & Ping
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleStatus = (status: { ping: number }) => {
+      setPing(status.ping);
+    };
+
+    socket.on('status_update', handleStatus);
+
+    return () => {
+      socket.off('status_update', handleStatus);
+    };
+  }, [socket]);
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleSystemMessage = (msg: { type: string; message: string }) => {
+      if (msg.type === 'error') {
+        showToast(msg.message, 'error');
+      } else {
+        showToast(msg.message, 'info');
+      }
+    };
+
+    const handleLog = (log: { level: string; message: string }) => {
+      // Alert admins on critical errors instantly
+      if (log.level === 'ERROR') {
+        showToast(`Bot Error: ${log.message}`, 'error');
+      }
+    };
+
+    socket.on('system_message', handleSystemMessage);
+    socket.on('log_new', handleLog);
+
+    return () => {
+      socket.off('system_message', handleSystemMessage);
+      socket.off('log_new', handleLog);
+    };
+  }, [socket, showToast]);
 
   const handleSignOut = async () => {
     await signOut();
@@ -79,8 +126,8 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
-        bgcolor: '#1e1e1e',
-        color: 'white',
+        bgcolor: 'background.paper',
+        color: 'text.primary',
       }}
     >
       {/* Header Sidebar */}
@@ -95,7 +142,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
             color: 'inherit',
           }}
         >
-          <RpbLogo size={32} />
+          <RpbLogo size={32} animated />
           <Box>
             <Typography variant="h6" fontWeight="800" letterSpacing="-0.02em">
               RPB Admin
@@ -243,7 +290,8 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
       sx={{
         display: 'flex',
         minHeight: '100vh',
-        bgcolor: '#f3f4f6', // Light gray background for content
+        bgcolor: 'background.default',
+        color: 'text.primary',
       }}
     >
       <CacheBuster />
@@ -264,8 +312,9 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
             '& .MuiDrawer-paper': {
               boxSizing: 'border-box',
               width: RAIL_WIDTH,
-              bgcolor: '#1e1e1e',
-              borderRight: '1px solid rgba(255,255,255,0.1)',
+              bgcolor: 'background.paper',
+              borderRight: '1px solid',
+              borderColor: 'divider',
             },
           }}
           open
@@ -285,7 +334,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
           '& .MuiDrawer-paper': {
             boxSizing: 'border-box',
             width: RAIL_WIDTH,
-            bgcolor: '#1e1e1e',
+            bgcolor: 'background.paper',
           },
         }}
       >
@@ -309,7 +358,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
           position="sticky"
           elevation={0}
           sx={{
-            bgcolor: 'white',
+            bgcolor: 'background.paper',
             borderBottom: '1px solid',
             borderColor: 'divider',
             color: 'text.primary',
@@ -330,9 +379,37 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
               variant="h6"
               fontWeight="800"
               color="text.primary"
-              sx={{ flexGrow: 1 }}
+              sx={{
+                flexGrow: 1,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 2,
+              }}
             >
               Administration
+              {ping !== null && (
+                <Chip
+                  label={`${Math.round(ping)}ms`}
+                  size="small"
+                  color={
+                    ping < 100 ? 'success' : ping < 300 ? 'warning' : 'error'
+                  }
+                  variant="outlined"
+                  sx={{
+                    height: 20,
+                    fontSize: '0.7rem',
+                    fontWeight: 'bold',
+                    borderColor:
+                      ping < 100
+                        ? 'success.main'
+                        : ping < 300
+                          ? 'warning.main'
+                          : 'error.main',
+                    bgcolor:
+                      ping < 100 ? 'rgba(34, 197, 94, 0.1)' : 'transparent',
+                  }}
+                />
+              )}
             </Typography>
 
             <Stack direction="row" spacing={2} alignItems="center">

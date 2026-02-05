@@ -23,6 +23,8 @@ import {
   Typography,
 } from '@mui/material';
 import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { TextFieldElement } from 'react-hook-form-mui';
 import {
   createTournamentCategory,
   deleteTournamentCategory,
@@ -54,7 +56,6 @@ export default function RankingSettingsForm({
   initialConfig: RankingConfig;
   initialCategories: Category[];
 }) {
-  const [config, setConfig] = useState(initialConfig);
   const [categories, setCategories] = useState(initialCategories);
   const [newCat, setNewCat] = useState({ name: '', multiplier: 1.0 });
   const [loading, setLoading] = useState(false);
@@ -64,20 +65,26 @@ export default function RankingSettingsForm({
     text: string;
   } | null>(null);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setConfig((prev) => ({
-      ...prev,
-      [name]: parseInt(value, 10) || 0,
-    }));
-  };
+  const { control, handleSubmit } = useForm<RankingConfig>({
+    defaultValues: initialConfig,
+  });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit = async (data: RankingConfig) => {
     setLoading(true);
     setMessage(null);
     try {
-      await updateRankingConfig(config);
+      // Parse numbers as form might return strings if type="number" isn't strictly enforced by browser
+      const numericData = {
+        participation: Number(data.participation),
+        firstPlace: Number(data.firstPlace),
+        secondPlace: Number(data.secondPlace),
+        thirdPlace: Number(data.thirdPlace),
+        top8: Number(data.top8),
+        matchWinWinner: Number(data.matchWinWinner),
+        matchWinLoser: Number(data.matchWinLoser),
+      };
+
+      await updateRankingConfig(numericData);
       setMessage({
         type: 'success',
         text: 'Configuration enregistrée avec succès.',
@@ -152,7 +159,7 @@ export default function RankingSettingsForm({
 
       <Grid container spacing={3}>
         <Grid size={{ xs: 12, md: 8 }}>
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit(onSubmit)}>
             <Card>
               <CardHeader
                 title="Configuration des Points de Base"
@@ -162,35 +169,32 @@ export default function RankingSettingsForm({
               <CardContent>
                 <Grid container spacing={3}>
                   <Grid size={{ xs: 12, sm: 6 }}>
-                    <TextField
+                    <TextFieldElement
+                      control={control}
                       fullWidth
                       label="Participation"
                       name="participation"
                       type="number"
-                      value={config.participation}
-                      onChange={handleChange}
                       helperText="Points attribués pour la participation à un tournoi"
                     />
                   </Grid>
                   <Grid size={{ xs: 12, sm: 6 }}>
-                    <TextField
+                    <TextFieldElement
+                      control={control}
                       fullWidth
                       label="Victoire Winner Bracket"
                       name="matchWinWinner"
                       type="number"
-                      value={config.matchWinWinner}
-                      onChange={handleChange}
                       helperText="Points par victoire en Winner Bracket"
                     />
                   </Grid>
                   <Grid size={{ xs: 12, sm: 6 }}>
-                    <TextField
+                    <TextFieldElement
+                      control={control}
                       fullWidth
                       label="Victoire Loser Bracket"
                       name="matchWinLoser"
                       type="number"
-                      value={config.matchWinLoser}
-                      onChange={handleChange}
                       helperText="Points par victoire en Loser Bracket"
                     />
                   </Grid>
@@ -205,43 +209,39 @@ export default function RankingSettingsForm({
                   </Grid>
 
                   <Grid size={{ xs: 12, sm: 4 }}>
-                    <TextField
+                    <TextFieldElement
+                      control={control}
                       fullWidth
                       label="1ère Place"
                       name="firstPlace"
                       type="number"
-                      value={config.firstPlace}
-                      onChange={handleChange}
                     />
                   </Grid>
                   <Grid size={{ xs: 12, sm: 4 }}>
-                    <TextField
+                    <TextFieldElement
+                      control={control}
                       fullWidth
                       label="2ème Place"
                       name="secondPlace"
                       type="number"
-                      value={config.secondPlace}
-                      onChange={handleChange}
                     />
                   </Grid>
                   <Grid size={{ xs: 12, sm: 4 }}>
-                    <TextField
+                    <TextFieldElement
+                      control={control}
                       fullWidth
                       label="3ème Place"
                       name="thirdPlace"
                       type="number"
-                      value={config.thirdPlace}
-                      onChange={handleChange}
                     />
                   </Grid>
                   <Grid size={{ xs: 12, sm: 6 }}>
-                    <TextField
+                    <TextFieldElement
+                      control={control}
                       fullWidth
                       label="Top 8"
                       name="top8"
                       type="number"
-                      value={config.top8}
-                      onChange={handleChange}
                       helperText="Points bonus pour avoir atteint le Top 8"
                     />
                   </Grid>

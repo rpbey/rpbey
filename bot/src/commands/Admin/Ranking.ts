@@ -38,13 +38,17 @@ export class RankingCommand extends Subcommand {
             .addIntegerOption((option) =>
               option
                 .setName('victoire_winner')
-                .setDescription('Points par victoire en Winner Bracket (ex: 1000)')
+                .setDescription(
+                  'Points par victoire en Winner Bracket (ex: 1000)',
+                )
                 .setRequired(true),
             )
             .addIntegerOption((option) =>
               option
                 .setName('victoire_loser')
-                .setDescription('Points par victoire en Loser Bracket (ex: 500)')
+                .setDescription(
+                  'Points par victoire en Loser Bracket (ex: 500)',
+                )
                 .setRequired(true),
             )
             .addIntegerOption((option) =>
@@ -110,8 +114,14 @@ export class RankingCommand extends Subcommand {
   ) {
     await interaction.deferReply({ ephemeral: true });
 
-    const matchWinWinner = interaction.options.getInteger('victoire_winner', true);
-    const matchWinLoser = interaction.options.getInteger('victoire_loser', true);
+    const matchWinWinner = interaction.options.getInteger(
+      'victoire_winner',
+      true,
+    );
+    const matchWinLoser = interaction.options.getInteger(
+      'victoire_loser',
+      true,
+    );
     const participation = interaction.options.getInteger('participation', true);
     const top8 = interaction.options.getInteger('top8', true);
     const thirdPlace = interaction.options.getInteger('troisieme', true);

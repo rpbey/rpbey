@@ -22,12 +22,24 @@ const pages = [
   { label: 'Tableau de bord', href: '/dashboard' },
   { label: 'Tournois', href: '/tournaments' },
   { label: 'Classements', href: '/rankings' },
+  { label: 'Yoyo', href: '/yoyo' },
 ];
 
 export function Header() {
   const { data: session } = useSession();
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
+
+  const isYoyo = session?.user && (
+    session.user.username?.toLowerCase().includes('yoyo') || 
+    (session.user as any).discordId === '281114294152724491' ||
+    session.user.role === 'admin' || 
+    session.user.role === 'superadmin'
+  );
+
+  const visiblePages = pages.filter(page => 
+    page.href !== '/yoyo' || isYoyo
+  );
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
@@ -88,7 +100,7 @@ export function Header() {
               onClose={handleCloseNavMenu}
               sx={{ display: { xs: 'block', md: 'none' } }}
             >
-              {pages.map((page) => (
+              {visiblePages.map((page) => (
                 <MenuItem
                   key={page.href}
                   component={Link}
@@ -124,7 +136,7 @@ export function Header() {
           <Box
             sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' }, gap: 1 }}
           >
-            {pages.map((page) => (
+            {visiblePages.map((page) => (
               <Button
                 key={page.href}
                 component={Link}

@@ -64,7 +64,9 @@ function BeyLine({ bey }: { bey: DeckBey }) {
         gap: 2,
       }}
     >
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexGrow: 1 }}>
+      <Box
+        sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexGrow: 1 }}
+      >
         <Avatar
           src={bey.blade?.imageUrl || undefined}
           variant="rounded"

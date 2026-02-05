@@ -54,8 +54,8 @@ declare module '@mui/material/Paper' {
 // Constants (Material Design 3 & Brand Colors)
 // ----------------------------------------------------------------------
 
-const RPB_RED = RoleColors.DEFAULT.primary; // Brand Primary
-const RPB_GOLD = RoleColors.DEFAULT.secondary; // Brand Secondary
+const RPB_RED = '#dc2626'; // RPB Brand Red
+const RPB_GOLD = '#fbbf24'; // RPB Brand Gold
 
 // M3 Dark Surface Tones
 const SURFACE_DARK = {
@@ -306,10 +306,16 @@ const commonOptions: ThemeOptions = {
     MuiContainer: {
       styleOverrides: {
         root: {
-          // Force a minimum padding on mobile if not specified
-          '@media (max-width:600px)': {
-            paddingLeft: '16px',
-            paddingRight: '16px',
+          // Responsive padding for better mobile experience
+          paddingLeft: '16px',
+          paddingRight: '16px',
+          '@media (min-width:600px)': {
+            paddingLeft: '24px',
+            paddingRight: '24px',
+          },
+          '@media (min-width:1200px)': {
+            paddingLeft: '32px',
+            paddingRight: '32px',
           },
         },
       },

@@ -244,10 +244,7 @@ export async function getUserStats(userId: string): Promise<UserStats | null> {
     totalMatches: wins + losses,
     wins: wins,
     losses: losses,
-    winRate:
-      wins + losses > 0
-        ? (wins / (wins + losses)) * 100
-        : 0,
+    winRate: wins + losses > 0 ? (wins / (wins + losses)) * 100 : 0,
     tournamentsPlayed: participations.length,
     tournamentsWon: tournamentWins,
     currentStreak,

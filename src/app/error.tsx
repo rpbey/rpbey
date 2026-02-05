@@ -3,7 +3,6 @@
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import { Box, Button, Container, Typography } from '@mui/material';
 import { useEffect } from 'react';
-import { useThemeMode } from '@/components/theme/ThemeRegistry';
 
 export default function ErrorPage({
   error,
@@ -12,8 +11,6 @@ export default function ErrorPage({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  const { backgroundImage } = useThemeMode();
-
   useEffect(() => {
     console.error('Application error:', error);
   }, [error]);
@@ -25,9 +22,8 @@ export default function ErrorPage({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundImage: `url(${backgroundImage})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
+        bgcolor: 'black',
+        color: 'white',
       }}
     >
       <Container maxWidth="sm">
