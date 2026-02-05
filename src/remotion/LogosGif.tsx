@@ -4,6 +4,7 @@ import {
   useVideoConfig,
   staticFile,
   interpolate,
+  Img,
 } from 'remotion';
 
 export const LogosGif: React.FC = () => {
@@ -22,32 +23,22 @@ export const LogosGif: React.FC = () => {
   const logoIndex = Math.floor(frame / durationPerLogo) % logos.length;
   const currentLogo = logos[logoIndex];
 
-  // Optional: subtle fade transition
-  const logoFrame = frame % durationPerLogo;
-  const opacity = interpolate(
-    logoFrame,
-    [0, 5, durationPerLogo - 5, durationPerLogo],
-    [0, 1, 1, 0],
-  );
-
   return (
     <AbsoluteFill
       style={{
-        backgroundColor: 'transparent',
+        backgroundColor: '#ff00ff',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
       }}
     >
-      <img
+      <Img
         src={staticFile(currentLogo || '/logo.png')}
         style={{
           height: '80%',
           width: 'auto',
           objectFit: 'contain',
-          opacity,
         }}
-        alt="RPB Logo"
       />
     </AbsoluteFill>
   );

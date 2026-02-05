@@ -28,14 +28,13 @@ export const AphrodyGif: React.FC = () => {
   const currentImage = AVATAR_IMAGES[imageIndex];
 
   return (
-    <AbsoluteFill style={{ backgroundColor: 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    <AbsoluteFill style={{ backgroundColor: '#ff00ff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <Img
         src={staticFile(`/yoyo-model/${currentImage}`)}
         style={{
           width: '100%',
           height: '100%',
           objectFit: 'contain',
-          filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.3))' // Légère ombre pour le relief
         }}
       />
     </AbsoluteFill>
