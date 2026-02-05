@@ -11,7 +11,6 @@ import {
   People,
   PersonAdd,
   Settings,
-  VideogameAsset,
 } from '@mui/icons-material';
 import {
   alpha,
@@ -46,7 +45,6 @@ const navItems = [
   { icon: TrophyIcon, label: 'Tournois', href: '/tournaments' },
   { icon: BarChart, label: 'Classements', href: '/rankings' },
   { icon: LiveTv, label: 'TV', href: '/tv' },
-  { icon: VideogameAsset, label: 'Yoyo', href: '/yoyo' },
   { icon: People, label: "L'équipe", href: '/notre-equipe' },
 ];
 
@@ -55,17 +53,6 @@ export function IconNav() {
   const { data: session } = useSession();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
-
-  const isYoyo = session?.user && (
-    session.user.username?.toLowerCase().includes('yoyo') || 
-    (session.user as any).discordId === '281114294152724491' ||
-    session.user.role === 'admin' || 
-    session.user.role === 'superadmin'
-  );
-
-  const visibleNavItems = navItems.filter(item => 
-    item.href !== '/yoyo' || isYoyo
-  );
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -137,7 +124,7 @@ export function IconNav() {
         sx={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 1 }}
       >
         {/* Nav items */}
-        {visibleNavItems.map((item) => {
+        {navItems.map((item) => {
           const Icon = item.icon;
           const isActive =
             pathname === item.href ||
@@ -339,18 +326,10 @@ export function MobileNav() {
     session?.user?.role === 'admin' ||
     (session?.user as { role: string } | undefined)?.role === 'superadmin';
 
-  const isYoyo = session?.user && (
-    session.user.username?.toLowerCase().includes('yoyo') || 
-    (session.user as any).discordId === '281114294152724491' ||
-    session.user.role === 'admin' || 
-    session.user.role === 'superadmin'
-  );
-
   const getActiveValue = () => {
     if (pathname === '/') return '/';
     if (pathname.startsWith('/tournaments')) return '/tournaments';
     if (pathname.startsWith('/tv')) return '/tv';
-    if (pathname.startsWith('/yoyo')) return '/yoyo';
     if (pathname.startsWith('/rankings')) return '/rankings';
     if (pathname.startsWith('/admin')) return '/admin';
     if (
@@ -448,13 +427,6 @@ export function MobileNav() {
             value="/rankings"
             icon={<BarChart />}
           />
-          {isYoyo && (
-            <BottomNavigationAction
-              label="Yoyo"
-              value="/yoyo"
-              icon={<VideogameAsset />}
-            />
-          )}
         </BottomNavigation>
       </Paper>
     </Slide>

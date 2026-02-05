@@ -6,7 +6,7 @@ import HomeClient from './HomeClient';
 
 export default async function HomePage() {
   await connection(); // Force dynamic rendering
-  const [stats, team, activeTournament, heroContent] = await Promise.all([
+  const [stats, team, activeTournament, heroContent, rankings] = await Promise.all([
     getDiscordStats(),
     getDiscordTeam(),
     prisma.tournament.findFirst({
@@ -20,6 +20,32 @@ export default async function HomePage() {
       select: { id: true, challongeUrl: true, name: true },
     }),
     getContent('home-hero-text'),
+    prisma.profile.findMany({
+      where: {
+        rankingPoints: { gt: 0 },
+        userId: {
+          notIn: [
+            'Y5gdJ6ZpfAHfsNcJQc0PMbAqyVeQAiHE', // Yoyo
+            'O3Q8olZegE8dfLZTbrQtuD5T3ZqVUkxJ', // Loteux
+          ],
+        },
+      },
+      take: 5,
+      orderBy: [
+        { rankingPoints: 'desc' },
+        { tournamentWins: 'desc' },
+        { wins: 'desc' },
+      ],
+      include: {
+        user: {
+          include: {
+            _count: {
+              select: { tournaments: true },
+            },
+          },
+        },
+      },
+    }),
   ]);
 
   return (
@@ -28,6 +54,7 @@ export default async function HomePage() {
       discordTeam={team}
       activeTournament={activeTournament}
       heroContent={heroContent?.content}
+      topRankings={rankings as any}
     />
   );
 }

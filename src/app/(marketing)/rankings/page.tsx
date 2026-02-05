@@ -87,6 +87,7 @@ export default async function RankingsPage({
 
     // 1. Récupération optimisée avec pagination
     const whereCondition: any = {
+      rankingPoints: { gt: 0 },
       userId: {
         notIn: [
           'Y5gdJ6ZpfAHfsNcJQc0PMbAqyVeQAiHE', // Yoyo

@@ -16,7 +16,11 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
 import { DynamicBlock } from '@/components/cms/DynamicBlock';
-import { FeedMyPartnership, TournamentVideo } from '@/components/marketing';
+import {
+  FeedMyPartnership,
+  RankingPreview,
+  TournamentVideo,
+} from '@/components/marketing';
 import { useThemeMode } from '@/components/theme/ThemeRegistry';
 import { FadeIn, ScaleOnHover } from '@/components/ui/FadeIn';
 import { useSession } from '@/lib/auth-client';
@@ -77,6 +81,7 @@ interface HomeClientProps {
   heroContent?: string;
   discordStats?: DiscordStats | null;
   discordTeam?: TeamGroup[];
+  topRankings?: any[];
 }
 
 export default function HomeClient({
@@ -84,6 +89,7 @@ export default function HomeClient({
   heroContent,
   discordStats,
   discordTeam,
+  topRankings = [],
 }: HomeClientProps) {
   const { backgroundImage, mode } = useThemeMode();
   const { data: session } = useSession();
@@ -296,7 +302,7 @@ export default function HomeClient({
       <Box sx={{ bgcolor: 'surface.low', py: 10 }}>
         <Container maxWidth="lg">
           <Grid container spacing={4}>
-            <Grid size={{ xs: 12, md: 4 }}>
+            <Grid size={{ xs: 12, md: 5 }}>
               <ScaleOnHover>
                 <Card
                   variant="filled"
@@ -304,36 +310,55 @@ export default function HomeClient({
                     bgcolor: 'surface.high',
                     borderRadius: '32px',
                     height: '100%',
-                    p: 2,
+                    p: 1,
+                    overflow: 'hidden',
+                    border: '1px solid',
+                    borderColor: 'divider',
                   }}
                 >
                   <CardContent>
-                    <Typography
-                      variant="h5"
-                      fontWeight={800}
-                      gutterBottom
-                      color="secondary.main"
+                    <Stack
+                      direction="row"
+                      justifyContent="space-between"
+                      alignItems="center"
+                      sx={{ mb: 3 }}
                     >
-                      Classement Live
-                    </Typography>
-                    <Typography variant="body1" color="text.secondary">
-                      Suivez l'évolution des meilleurs Bladers de France en
-                      temps réel.
-                    </Typography>
-                    <Button
-                      component={Link}
-                      href="/rankings"
-                      variant="text"
-                      sx={{ mt: 2, fontWeight: 700 }}
-                    >
-                      Voir le ranking →
-                    </Button>
+                      <Box>
+                        <Typography
+                          variant="h5"
+                          fontWeight={900}
+                          color="text.primary"
+                          sx={{ letterSpacing: '-0.02em' }}
+                        >
+                          Classement Live
+                        </Typography>
+                        <Typography
+                          variant="caption"
+                          color="text.secondary"
+                          fontWeight={600}
+                        >
+                          TOP 5 BLADERS - SAISON 2
+                        </Typography>
+                      </Box>
+                      <Box
+                        sx={{
+                          width: 8,
+                          height: 8,
+                          borderRadius: '50%',
+                          bgcolor: '#22c55e',
+                          boxShadow: '0 0 12px #22c55e',
+                          animation: 'pulse 2s infinite',
+                        }}
+                      />
+                    </Stack>
+
+                    <RankingPreview rankings={topRankings} />
                   </CardContent>
                 </Card>
               </ScaleOnHover>
             </Grid>
 
-            <Grid size={{ xs: 12, md: 8 }}>
+            <Grid size={{ xs: 12, md: 7 }}>
               <DiscordStatusCard
                 initialStats={discordStats}
                 initialTeam={discordTeam}
@@ -342,6 +367,14 @@ export default function HomeClient({
           </Grid>
         </Container>
       </Box>
+
+      <style jsx global>{`
+        @keyframes pulse {
+          0% { transform: scale(0.95); opacity: 0.7; }
+          70% { transform: scale(1.1); opacity: 1; }
+          100% { transform: scale(0.95); opacity: 0.7; }
+        }
+      `}</style>
 
       <TournamentVideo videoId="nIVOi5NFjAM" />
 
