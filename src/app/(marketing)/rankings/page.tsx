@@ -120,6 +120,7 @@ export default async function RankingsPage({
           { rankingPoints: 'desc' },
           { tournamentWins: 'desc' },
           { wins: 'desc' },
+          { bladerName: 'asc' },
         ],
         include: {
           user: {

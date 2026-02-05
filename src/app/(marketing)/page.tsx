@@ -35,6 +35,7 @@ export default async function HomePage() {
         { rankingPoints: 'desc' },
         { tournamentWins: 'desc' },
         { wins: 'desc' },
+        { bladerName: 'asc' },
       ],
       include: {
         user: {

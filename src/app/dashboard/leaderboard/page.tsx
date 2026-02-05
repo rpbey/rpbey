@@ -77,6 +77,7 @@ export default async function LeaderboardPage({
           { rankingPoints: 'desc' },
           { tournamentWins: 'desc' },
           { wins: 'desc' },
+          { bladerName: 'asc' },
         ],
         include: {
           user: {
