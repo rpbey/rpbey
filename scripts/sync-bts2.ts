@@ -15,6 +15,13 @@ async function main() {
     console.log('🕵️ Démarrage du scraping pour B_TS2...');
     const result = await scraper.scrape('fr/B_TS2');
     console.log(`✅ Données récupérées : ${result.metadata.name} (${result.participants.length} participants)`);
+    console.log(`📡 État Challonge : ${result.metadata.state}`);
+
+    // Map Challonge state to RPB status
+    let status = 'REGISTRATION_OPEN';
+    if (result.metadata.state === 'complete') status = 'COMPLETE';
+    else if (result.metadata.state === 'underway') status = 'UNDERWAY';
+    else if (result.metadata.state === 'awaiting_review') status = 'COMPLETE';
 
     // 2. Upsert Tournament
     const tournamentQuery = `
@@ -32,37 +39,33 @@ async function main() {
       RETURNING id;
     `;
 
-    // Generate a clean CUID-like ID or use the name-based one if preferred.
-    // For BTS2 let's use a consistent ID.
     const tournamentId = 'cm-bts2-auto-imported'; 
     const tournamentDate = new Date('2026-02-08T13:00:00Z');
+    const tournamentName = 'Bey-Tamashii Séries #2';
 
     await db.query(tournamentQuery, [
       tournamentId,
-      result.metadata.name,
+      tournamentName,
       "Tournoi qualificatif pour la collaboration LFBX ! Premier des quatre tournois qualificatifs.",
       tournamentDate,
       "Dernier Bar Avant la Fin du Monde, 19 Avenue Victoria, 75001 Paris",
       "3on3 Double Elimination",
       "https://challonge.com/fr/B_TS2",
-      "REGISTRATION_OPEN"
+      status
     ]);
 
-    console.log('🏆 Tournoi créé/mis à jour dans la DB.');
+    console.log(`🏆 Tournoi mis à jour: ${tournamentName} (Status: ${status})`);
 
     // Map: Challonge Participant ID -> RPB User ID
     const challongeIdToUserId = new Map<number, string>();
+    const activeParticipantUserIds = new Set<string>();
 
     // 3. Sync Participants (Simple name-based sync for now)
     console.log('👥 Synchronisation des participants...');
     for (const p of result.participants) {
-        // Tenter de trouver un utilisateur existant par nom ou tag
-        // On cherche aussi par "profile.challongeUsername" si possible, mais ici c'est du SQL brut/pg
-        // Simplification : Nom exact ou username
         const userRes = await db.query('SELECT id FROM users WHERE name = $1 OR username = $1', [p.name]);
         let userId = userRes.rows[0]?.id;
 
-        // Create stub user if not found
         if (!userId) {
             const cleanName = p.name.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
             const stubUsername = `bts2_${cleanName}`.substring(0, 30);
@@ -72,25 +75,27 @@ async function main() {
                 const createRes = await db.query(`
                     INSERT INTO users (id, name, username, email, role, image, "createdAt", "updatedAt")
                     VALUES (gen_random_uuid(), $1, $2, $3, 'user', '/logo.png', NOW(), NOW())
-                    ON CONFLICT (email) DO UPDATE SET name = EXCLUDED.name -- Just to return ID
+                    ON CONFLICT (email) DO UPDATE SET name = EXCLUDED.name
                     RETURNING id
                 `, [p.name, stubUsername, stubEmail]);
                 userId = createRes.rows[0]?.id;
-                console.log(`➕ Stub user créé/récupéré: ${p.name} -> ${userId}`);
             } catch (e) {
                 console.warn(`⚠️ Erreur création stub user pour ${p.name}:`, e);
-                // Fallback: try to find by email if unique constraint failed on username?
-                // For now, skip if failed
             }
         }
         
         if (userId) {
             challongeIdToUserId.set(p.id, userId);
+            activeParticipantUserIds.add(userId);
+
+            // Mark as checkedIn if tournament is started or complete
+            const isCheckedIn = status === 'UNDERWAY' || status === 'COMPLETE' || status === 'ARCHIVED';
 
             await db.query(`
-                INSERT INTO tournament_participants (id, "tournamentId", "userId", "challongeParticipantId", seed, "finalPlacement", "createdAt", "updatedAt")
-                VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW())
+                INSERT INTO tournament_participants (id, "tournamentId", "userId", "challongeParticipantId", "checkedIn", seed, "finalPlacement", "createdAt", "updatedAt")
+                VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), NOW())
                 ON CONFLICT ("tournamentId", "userId") DO UPDATE SET
+                    "checkedIn" = EXCLUDED."checkedIn",
                     seed = EXCLUDED.seed,
                     "challongeParticipantId" = EXCLUDED."challongeParticipantId",
                     "finalPlacement" = EXCLUDED."finalPlacement",
@@ -100,11 +105,28 @@ async function main() {
                 tournamentId,
                 userId,
                 String(p.id),
+                isCheckedIn,
                 p.seed,
                 p.finalRank || null
             ]);
         }
     }
+
+    // --- CLEANUP STALE PARTICIPANTS ---
+    console.log('🧹 Nettoyage des participants fantômes...');
+    const currentParticipants = await db.query('SELECT "userId", id FROM tournament_participants WHERE "tournamentId" = $1', [tournamentId]);
+    let deletedCount = 0;
+    for (const row of currentParticipants.rows) {
+        if (!activeParticipantUserIds.has(row.userId)) {
+            await db.query('DELETE FROM tournament_participants WHERE id = $1', [row.id]);
+            deletedCount++;
+        }
+    }
+    if (deletedCount > 0) {
+        console.log(`🗑️ ${deletedCount} participants fantômes supprimés.`);
+    }
+
+    console.log(`✅ ${challongeIdToUserId.size} participants actifs synchronisés.`);
 
     console.log(`✅ ${challongeIdToUserId.size} participants liés à des comptes RPB.`);
 

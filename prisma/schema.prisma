@@ -1,5 +1,5 @@
 generator client {
-  provider = "prisma-client-js"
+  provider   = "prisma-client-js"
   engineType = "library"
 }
 
@@ -179,75 +179,75 @@ model Verification {
 }
 
 model Profile {
-  id             String          @id @default(cuid())
-  userId         String          @unique
-  bladerName     String?
-  favoriteType   BeyType?
-  experience     ExperienceLevel @default(BEGINNER)
-  bio            String?
-  wins           Int             @default(0)
-  losses         Int             @default(0)
-  tournamentWins Int             @default(0)
-  twitterHandle  String?
-  tiktokHandle   String?
+  id                String          @id @default(cuid())
+  userId            String          @unique
+  bladerName        String?
+  favoriteType      BeyType?
+  experience        ExperienceLevel @default(BEGINNER)
+  bio               String?
+  wins              Int             @default(0)
+  losses            Int             @default(0)
+  tournamentWins    Int             @default(0)
+  twitterHandle     String?
+  tiktokHandle      String?
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  rankingPoints     Int             @default(0)
   challongeUsername String?
-  deckBoxImage   String?
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
-  rankingPoints  Int             @default(0)
-  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  deckBoxImage      String?
+  user              User            @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("profiles")
 }
 
 model RankingSystem {
-  id            String   @id @default(cuid())
-  participation Int      @default(5)
-  firstPlace    Int      @default(20)
-  secondPlace   Int      @default(15)
-  thirdPlace    Int      @default(10)
-  top8          Int      @default(5)
-  matchWin      Int      @default(2) // Deprecated
-  matchWinWinner Int     @default(1000)
-  matchWinLoser  Int     @default(500)
-  updatedAt     DateTime @updatedAt
+  id             String   @id @default(cuid())
+  participation  Int      @default(5)
+  firstPlace     Int      @default(20)
+  secondPlace    Int      @default(15)
+  thirdPlace     Int      @default(10)
+  top8           Int      @default(5)
+  matchWin       Int      @default(2)
+  updatedAt      DateTime @updatedAt
+  matchWinLoser  Int      @default(500)
+  matchWinWinner Int      @default(1000)
 
   @@map("ranking_system")
 }
 
 model Part {
-  id           String     @id @default(cuid())
-  externalId   String     @unique
-  name         String
-  nameJp       String?
-  type         PartType
-  beyType      BeyType?
-  weight       Float?
-  attack       String?
-  defense      String?
-  stamina      String?
-  burst        String?
-  dash         String?
-  height       Int?
-  protrusions  Int?
-  gearRatio    String?
-  shaftWidth   String?
-  tipType      String?
-  releaseDate  DateTime?
-  imageUrl     String?
-  rarity       String?
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
-  modelUrl     String?
-  textureUrl   String?
+  id            String     @id @default(cuid())
+  externalId    String     @unique
+  name          String
+  nameJp        String?
+  type          PartType
+  beyType       BeyType?
+  weight        Float?
+  attack        String?
+  defense       String?
+  stamina       String?
+  burst         String?
+  dash          String?
+  height        Int?
+  protrusions   Int?
+  gearRatio     String?
+  shaftWidth    String?
+  tipType       String?
+  releaseDate   DateTime?
+  imageUrl      String?
+  rarity        String?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  modelUrl      String?
+  textureUrl    String?
   spinDirection String?
-  system       String?
-  beyBits      Beyblade[] @relation("BeyBitRelation")
-  beyBlades    Beyblade[] @relation("BeyBladeRelation")
-  beyRatchets  Beyblade[] @relation("BeyRatchetRelation")
-  deckBits     DeckItem[] @relation("BitRelation")
-  deckBlades   DeckItem[] @relation("BladeRelation")
-  deckRatchets DeckItem[] @relation("RatchetRelation")
+  system        String?
+  beyBits       Beyblade[] @relation("BeyBitRelation")
+  beyBlades     Beyblade[] @relation("BeyBladeRelation")
+  beyRatchets   Beyblade[] @relation("BeyRatchetRelation")
+  deckBits      DeckItem[] @relation("BitRelation")
+  deckBlades    DeckItem[] @relation("BladeRelation")
+  deckRatchets  DeckItem[] @relation("RatchetRelation")
 
   @@index([type])
   @@index([beyType])
@@ -441,8 +441,6 @@ model Product {
   name          String
   nameEn        String?
   nameFr        String?
-  nameHasbro    String?
-  hasbroCode    String?
   productType   ProductType
   productLine   ProductLine
   price         Int?
@@ -456,6 +454,8 @@ model Product {
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
   description   String?
+  hasbroCode    String?
+  nameHasbro    String?
   beyblades     Beyblade[]
 
   @@index([productLine])
@@ -504,19 +504,19 @@ model DiscordChannel {
 }
 
 model YouTubeVideo {
-  id          String   @id
-  title       String
-  channelName String
-  channelId   String
+  id            String   @id
+  title         String
+  channelName   String
+  channelId     String
   channelAvatar String?
-  views       Int
-  thumbnail   String
-  url         String
-  duration    String
-  publishedAt DateTime
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  isFeatured  Boolean  @default(true)
+  views         Int
+  thumbnail     String
+  url           String
+  duration      String
+  publishedAt   DateTime
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  isFeatured    Boolean  @default(true)
 
   @@map("youtube_videos")
 }

@@ -92,7 +92,7 @@ export async function recalculateRankings() {
   // 1. Fetch data
   const tournaments = await prisma.tournament.findMany({
     where: {
-      status: { in: ['COMPLETE', 'ARCHIVED'] },
+      status: { in: ['COMPLETE', 'ARCHIVED', 'UNDERWAY'] },
       date: { gte: startDate },
     },
     include: {
@@ -117,9 +117,9 @@ export async function recalculateRankings() {
 
     for (const participant of tournament.participants) {
       if (!participant.user.profile) continue;
-      if (!participant.checkedIn && tournament.status !== 'ARCHIVED') continue; 
-      // Note: for ARCHIVED, we assume they participated if they were in the final list, 
-      // but checkedIn is safer if the data is clean.
+      
+      const isFinished = tournament.status === 'COMPLETE' || tournament.status === 'ARCHIVED';
+      if (!participant.checkedIn && !isFinished) continue; 
 
       const userId = participant.userId;
       let points = 0;
@@ -173,8 +173,12 @@ export async function recalculateRankings() {
     { timeout: 20000 },
   );
 
-  revalidatePath('/rankings');
-  revalidatePath('/admin/rankings');
+  try {
+    revalidatePath('/rankings');
+    revalidatePath('/admin/rankings');
+  } catch (e) {
+    // Ignore error if revalidatePath is called outside of Next.js context
+  }
   // revalidateTag('rankings-live');
 
   return {
