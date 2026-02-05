@@ -35,10 +35,10 @@ export const auth = betterAuth({
 
   // Session configuration
   session: {
-    expiresIn: 60 * 60 * 24 * 7, // 7 days
+    expiresIn: 60 * 60 * 24 * 30, // 30 days
     updateAge: 60 * 60 * 24, // 1 day
     cookieCache: {
-      enabled: false,
+      enabled: true,
       maxAge: 5 * 60, // 5 minutes
     },
   },
@@ -74,6 +74,7 @@ export const auth = betterAuth({
   // Advanced configuration
   advanced: {
     useSecureCookies: true, // Force secure cookies for production behind proxy
+    cookiePrefix: 'rpb-auth',
   },
 
   // Callbacks
