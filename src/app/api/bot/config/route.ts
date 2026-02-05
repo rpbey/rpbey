@@ -28,11 +28,14 @@ export async function GET() {
   } catch {
     console.warn('Bot offline, returning default config');
     data = {
-      prefix: '!',
-      language: 'fr',
-      ownerIds: [],
-      // Add other minimal default fields if necessary based on BotConfig type
-    } as unknown as BotConfig;
+      env: {},
+      constants: {
+        RPB: {},
+        Colors: {},
+        Channels: {},
+        Roles: {},
+      },
+    };
   }
 
   return NextResponse.json(data);
