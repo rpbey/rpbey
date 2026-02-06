@@ -1,7 +1,6 @@
 'use client';
 
-import { AdminPanelSettings } from '@mui/icons-material';
-import { GlobalStyles, useMediaQuery, useTheme } from '@mui/material';
+import { useMediaQuery, useTheme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
@@ -10,11 +9,10 @@ import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { AnimatePresence, type MotionStyle, motion } from 'framer-motion';
+import { type MotionStyle, motion } from 'framer-motion';
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react';
 import { DynamicBlock } from '@/components/cms/DynamicBlock';
 import {
   FeedMyPartnership,
@@ -23,21 +21,9 @@ import {
 } from '@/components/marketing';
 import { useThemeMode } from '@/components/theme/ThemeRegistry';
 import { FadeIn, ScaleOnHover } from '@/components/ui/FadeIn';
-import { useSession } from '@/lib/auth-client';
 import type { DiscordStats, TeamGroup } from '@/lib/discord-data';
 
 // Dynamic imports for heavy components below the fold
-const ChallongeBracket = dynamic(
-  () =>
-    import('@/components/tournaments/ChallongeBracket').then(
-      (mod) => mod.ChallongeBracket,
-    ),
-  {
-    loading: () => <Box sx={{ height: 600, bgcolor: 'background.paper' }} />,
-    ssr: false, // Client-side only
-  },
-);
-
 const DiscordStatusCard = dynamic(
   () =>
     import('@/components/ui/DiscordStatusCard').then(
@@ -62,16 +48,6 @@ const EASE = {
   EXPRESSIVE: [0.34, 1.56, 0.64, 1] as const,
 };
 
-// MD3 Expressive spring configs
-const SPRING = {
-  // Snappy for interactions
-  snappy: { stiffness: 400, damping: 30, mass: 1 },
-  // Bouncy for playful elements
-  bouncy: { stiffness: 300, damping: 20, mass: 1.2 },
-  // Gentle for large elements
-  gentle: { stiffness: 100, damping: 20, mass: 1 },
-};
-
 interface HomeClientProps {
   activeTournament?: {
     id: string;
@@ -81,24 +57,19 @@ interface HomeClientProps {
   heroContent?: string;
   discordStats?: DiscordStats | null;
   discordTeam?: TeamGroup[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   topRankings?: any[];
 }
 
 export default function HomeClient({
-  activeTournament,
   heroContent,
   discordStats,
   discordTeam,
   topRankings = [],
 }: HomeClientProps) {
   const { backgroundImage, mode } = useThemeMode();
-  const { data: session } = useSession();
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const isTablet = useMediaQuery(theme.breakpoints.down('md'));
-  const [activeHeroTab, setActiveHeroTab] = useState<'tournament' | 'discord'>(
-    'tournament',
-  );
   const heroOpacity = 1;
 
   return (
@@ -368,6 +339,7 @@ export default function HomeClient({
         </Container>
       </Box>
 
+      {/* eslint-disable-next-line react/no-unknown-property */}
       <style jsx global>{`
         @keyframes pulse {
           0% { transform: scale(0.95); opacity: 0.7; }

@@ -133,7 +133,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             color: 'inherit',
           }}
         >
-          <RpbLogo size={32} />
+          <RpbLogo size={32} animated />
           <Typography variant="h6" fontWeight="800" letterSpacing="-0.02em">
             RPB Dashboard
           </Typography>
@@ -364,7 +364,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                 mr: 2,
               }}
             >
-              <RpbLogo size={28} />
+              <RpbLogo size={28} animated />
             </Box>
 
             {/* Page Title & Back Button */}

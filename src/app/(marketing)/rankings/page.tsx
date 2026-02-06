@@ -86,6 +86,7 @@ export default async function RankingsPage({
     // Current Season (Live Profile Data)
 
     // 1. Récupération optimisée avec pagination
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const whereCondition: any = {
       rankingPoints: { gt: 0 },
       userId: {

@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import type { Socket } from 'socket.io-client';
 import { getSocket } from '@/lib/socket';
-import { useToast } from '@/components/ui';
+
 
 interface SocketContextType {
   socket: Socket | null;
@@ -20,8 +20,6 @@ export const useSocket = () => useContext(SocketContext);
 export function SocketProvider({ children }: { children: React.ReactNode }) {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
-  const { showToast } = useToast();
-
   useEffect(() => {
     const socketInstance = getSocket();
 

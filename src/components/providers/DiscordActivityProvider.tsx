@@ -5,6 +5,7 @@ import { DiscordSDK } from '@discord/embedded-app-sdk';
 
 interface DiscordActivityContextType {
   sdk: DiscordSDK | null;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   auth: any | null;
   status: 'loading' | 'ready' | 'error';
 }
@@ -23,6 +24,7 @@ export function DiscordActivityProvider({
   children: React.ReactNode;
 }) {
   const [sdk, setSdk] = useState<DiscordSDK | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [auth, setAuth] = useState<any>(null);
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>(
     'loading',

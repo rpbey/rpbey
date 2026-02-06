@@ -2,7 +2,6 @@
 
 import { createTheme, type ThemeOptions } from '@mui/material/styles';
 import { fontFamily } from './fonts';
-import { RoleColors } from './role-colors';
 
 // ----------------------------------------------------------------------
 // Type Augmentation

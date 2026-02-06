@@ -7,11 +7,16 @@
 
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
+import HistoryIcon from '@mui/icons-material/History';
+import LeaderboardIcon from '@mui/icons-material/Leaderboard';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import PeopleIcon from '@mui/icons-material/People';
 import PeopleOutlineIcon from '@mui/icons-material/PeopleOutline';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import RadarIcon from '@mui/icons-material/Radar';
+import SensorsIcon from '@mui/icons-material/Sensors';
 import SyncIcon from '@mui/icons-material/Sync';
 import TableViewIcon from '@mui/icons-material/TableView';
 import Alert from '@mui/material/Alert';
@@ -28,7 +33,7 @@ import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import Typography from '@mui/material/Typography';
 import Link from 'next/link';
-import { use, useState } from 'react';
+import { use, useCallback, useEffect, useState } from 'react';
 import useSWR, { mutate } from 'swr';
 import { ParticipantList, TournamentBracket } from '@/components/tournaments';
 import { reportChallongeMatch } from './actions';
@@ -130,12 +135,44 @@ function getStatusLabel(status: string) {
   }
 }
 
+interface LiveData {
+  standings: Array<{
+    rank: number;
+    name: string;
+    challongeUsername?: string;
+    challongeProfileUrl?: string;
+    wins: number;
+    losses: number;
+  }>;
+  stations: Array<{
+    stationId: number | string;
+    name: string;
+    currentMatch?: {
+      matchId: number;
+      identifier: string;
+      round: number;
+      player1: string | null;
+      player2: string | null;
+      scores: string;
+      state: string;
+    } | null;
+    status: 'idle' | 'active' | 'paused';
+  }>;
+  activityLog: Array<{
+    timestamp: string;
+    type: string;
+    message: string;
+  }>;
+  lastUpdated: string;
+}
+
 export default function TournamentDetailPage({
   params,
 }: TournamentDetailPageProps) {
   const { id } = use(params);
   const [tab, setTab] = useState(0);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [liveData, setLiveData] = useState<LiveData | null>(null);
 
   const { data, isLoading, error } = useSWR<{ data: Tournament }>(
     `/api/tournaments/${id}`,
@@ -143,6 +180,22 @@ export default function TournamentDetailPage({
   );
 
   const tournament = data?.data;
+
+  const fetchLiveData = useCallback(async () => {
+    try {
+      const res = await fetch(`/api/tournaments/${id}/live`);
+      if (res.ok) {
+        const response = await res.json();
+        setLiveData(response.data);
+      }
+    } catch {
+      // Silently fail
+    }
+  }, [id]);
+
+  useEffect(() => {
+    fetchLiveData();
+  }, [fetchLiveData]);
 
   const handleReportMatch = async (
     matchId: string,
@@ -194,6 +247,33 @@ export default function TournamentDetailPage({
       mutate(`/api/tournaments/${id}`);
     } catch (err) {
       console.error('Failed to remove participant:', err);
+    }
+  };
+
+  const handleScrapeLive = async () => {
+    setActionLoading('scrape');
+    try {
+      const response = await fetch(`/api/tournaments/${id}/live`, {
+        method: 'POST',
+      });
+      if (response.ok) {
+        const result = await response.json();
+        setLiveData({
+          standings: result.data.standings,
+          stations: result.data.stations,
+          activityLog: result.data.activityLog,
+          lastUpdated: new Date().toISOString(),
+        });
+        mutate(`/api/tournaments/${id}`);
+      } else {
+        const err = await response.json();
+        alert(`Erreur scrape: ${err.error || 'Scrape échoué'}`);
+      }
+    } catch (err) {
+      console.error('Scrape failed:', err);
+      alert('Erreur lors du scrape live');
+    } finally {
+      setActionLoading(null);
     }
   };
 
@@ -402,6 +482,21 @@ export default function TournamentDetailPage({
                 </Button>
               )}
 
+              {tournament.challongeUrl && (
+                <Button
+                  size="small"
+                  variant="contained"
+                  startIcon={<RadarIcon />}
+                  onClick={handleScrapeLive}
+                  disabled={actionLoading !== null}
+                  color="warning"
+                >
+                  {actionLoading === 'scrape'
+                    ? 'Scraping...'
+                    : 'Scrape Live'}
+                </Button>
+              )}
+
               <Button
                 size="small"
                 variant="outlined"
@@ -421,6 +516,21 @@ export default function TournamentDetailPage({
       <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ mb: 3 }}>
         <Tab label="Bracket" />
         <Tab label={`Participants (${tournament.participants.length})`} />
+        <Tab
+          icon={<LeaderboardIcon sx={{ fontSize: 16 }} />}
+          iconPosition="start"
+          label={`Classement (${liveData?.standings?.length ?? 0})`}
+        />
+        <Tab
+          icon={<SensorsIcon sx={{ fontSize: 16 }} />}
+          iconPosition="start"
+          label={`Stations (${liveData?.stations?.length ?? 0})`}
+        />
+        <Tab
+          icon={<HistoryIcon sx={{ fontSize: 16 }} />}
+          iconPosition="start"
+          label={`Journal (${liveData?.activityLog?.length ?? 0})`}
+        />
       </Tabs>
 
       {/* Tab Panels */}
@@ -448,6 +558,225 @@ export default function TournamentDetailPage({
           </Grid>
         </Grid>
       )}
+
+      {/* Standings Tab */}
+      {tab === 2 && (
+        <Card>
+          <CardContent>
+            {liveData?.standings && liveData.standings.length > 0 ? (
+              <Box>
+                <Box
+                  sx={{
+                    display: 'grid',
+                    gridTemplateColumns: '50px 1fr 100px 100px',
+                    gap: 1,
+                    px: 2,
+                    py: 1,
+                    borderBottom: '2px solid',
+                    borderColor: 'divider',
+                    mb: 1,
+                  }}
+                >
+                  <Typography variant="caption" fontWeight={800}>#</Typography>
+                  <Typography variant="caption" fontWeight={800}>Joueur</Typography>
+                  <Typography variant="caption" fontWeight={800} textAlign="center">W / L</Typography>
+                  <Typography variant="caption" fontWeight={800} textAlign="right">Challonge</Typography>
+                </Box>
+                {liveData.standings.map((s) => (
+                  <Box
+                    key={s.rank}
+                    sx={{
+                      display: 'grid',
+                      gridTemplateColumns: '50px 1fr 100px 100px',
+                      gap: 1,
+                      px: 2,
+                      py: 1,
+                      alignItems: 'center',
+                      '&:hover': { bgcolor: 'action.hover' },
+                    }}
+                  >
+                    <Chip
+                      label={s.rank}
+                      size="small"
+                      color={s.rank <= 3 ? 'primary' : 'default'}
+                      sx={{ width: 32, fontWeight: 900 }}
+                    />
+                    <Box>
+                      <Typography variant="body2" fontWeight={700}>
+                        {s.name}
+                      </Typography>
+                      {s.challongeUsername && (
+                        <Typography variant="caption" color="text.secondary">
+                          @{s.challongeUsername}
+                        </Typography>
+                      )}
+                    </Box>
+                    <Typography variant="body2" textAlign="center">
+                      <strong style={{ color: '#4caf50' }}>{s.wins}</strong>
+                      {' / '}
+                      <strong style={{ color: '#f44336' }}>{s.losses}</strong>
+                    </Typography>
+                    <Box sx={{ textAlign: 'right' }}>
+                      {s.challongeProfileUrl && (
+                        <Button
+                          size="small"
+                          endIcon={<OpenInNewIcon sx={{ fontSize: 12 }} />}
+                          href={s.challongeProfileUrl}
+                          target="_blank"
+                          rel="noopener"
+                          sx={{ fontSize: '0.7rem', textTransform: 'none' }}
+                        >
+                          Profil
+                        </Button>
+                      )}
+                    </Box>
+                  </Box>
+                ))}
+              </Box>
+            ) : (
+              <Alert severity="info">
+                Aucun classement disponible. Lancez un &quot;Scrape Live&quot; pour récupérer les données.
+              </Alert>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Stations Tab */}
+      {tab === 3 && (
+        <Grid container spacing={2}>
+          {liveData?.stations && liveData.stations.length > 0 ? (
+            liveData.stations.map((station) => {
+              const isActive = station.status === 'active';
+              const isPaused = station.status === 'paused';
+              return (
+                <Grid key={station.stationId} size={{ xs: 12, sm: 6, md: 4 }}>
+                  <Card
+                    sx={{
+                      border: '2px solid',
+                      borderColor: isActive
+                        ? 'success.main'
+                        : isPaused
+                          ? 'warning.main'
+                          : 'divider',
+                    }}
+                  >
+                    <CardContent>
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          mb: 1,
+                        }}
+                      >
+                        <Typography variant="subtitle2" fontWeight={800}>
+                          {station.name}
+                        </Typography>
+                        <Chip
+                          icon={<FiberManualRecordIcon sx={{ fontSize: 8 }} />}
+                          label={isActive ? 'En cours' : isPaused ? 'Pause' : 'Libre'}
+                          size="small"
+                          color={isActive ? 'success' : isPaused ? 'warning' : 'default'}
+                        />
+                      </Box>
+                      {station.currentMatch ? (
+                        <Box sx={{ p: 1.5, bgcolor: 'action.hover', borderRadius: 1 }}>
+                          <Typography variant="body2" fontWeight={700} textAlign="center">
+                            {station.currentMatch.player1 ?? '???'}
+                            {' '}
+                            <Chip
+                              label={station.currentMatch.scores || 'VS'}
+                              size="small"
+                              color="primary"
+                              sx={{ fontWeight: 900, mx: 1 }}
+                            />
+                            {' '}
+                            {station.currentMatch.player2 ?? '???'}
+                          </Typography>
+                          {station.currentMatch.round !== 0 && (
+                            <Typography variant="caption" color="text.secondary" textAlign="center" sx={{ display: 'block', mt: 0.5 }}>
+                              Round {station.currentMatch.round}
+                            </Typography>
+                          )}
+                        </Box>
+                      ) : (
+                        <Typography variant="body2" color="text.secondary" textAlign="center">
+                          Aucun match
+                        </Typography>
+                      )}
+                    </CardContent>
+                  </Card>
+                </Grid>
+              );
+            })
+          ) : (
+            <Grid size={{ xs: 12 }}>
+              <Alert severity="info">
+                Aucune station disponible. Lancez un &quot;Scrape Live&quot; pour récupérer les données.
+              </Alert>
+            </Grid>
+          )}
+        </Grid>
+      )}
+
+      {/* Activity Log Tab */}
+      {tab === 4 && (
+        <Card>
+          <CardContent>
+            {liveData?.activityLog && liveData.activityLog.length > 0 ? (
+              <Box>
+                {liveData.activityLog.map((entry, i) => (
+                  <Box
+                    key={i}
+                    sx={{
+                      display: 'flex',
+                      gap: 2,
+                      py: 1,
+                      borderBottom: i < liveData.activityLog.length - 1 ? '1px solid' : 'none',
+                      borderColor: 'divider',
+                    }}
+                  >
+                    <Typography variant="caption" color="text.secondary" sx={{ minWidth: 60, flexShrink: 0 }}>
+                      {entry.timestamp ? formatLogTime(entry.timestamp) : '—'}
+                    </Typography>
+                    <Chip
+                      label={entry.type}
+                      size="small"
+                      variant="outlined"
+                      sx={{ fontSize: '0.65rem', height: 20, fontWeight: 700, flexShrink: 0 }}
+                    />
+                    <Typography variant="body2" sx={{ flex: 1 }}>
+                      {entry.message}
+                    </Typography>
+                  </Box>
+                ))}
+              </Box>
+            ) : (
+              <Alert severity="info">
+                Aucun journal disponible. Lancez un &quot;Scrape Live&quot; pour récupérer les données.
+              </Alert>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Last updated */}
+      {liveData?.lastUpdated && (
+        <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 2, textAlign: 'right' }}>
+          Dernière mise à jour live : {new Date(liveData.lastUpdated).toLocaleString('fr-FR')}
+        </Typography>
+      )}
     </Box>
   );
+}
+
+function formatLogTime(ts: string): string {
+  try {
+    const date = new Date(ts);
+    if (isNaN(date.getTime())) return ts;
+    return date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+  } catch {
+    return ts;
+  }
 }

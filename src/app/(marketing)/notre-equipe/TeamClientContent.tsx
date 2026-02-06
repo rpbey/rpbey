@@ -11,6 +11,7 @@ import {
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import type { StaffMember } from '@prisma/client';
+import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
 import { StaffCard } from '@/components/cards';
@@ -22,13 +23,24 @@ interface TeamClientContentProps {
 }
 
 const TEAM_LOGOS: Record<string, string> = {
-  admin: '/logo-admin.png',
-  rh: '/logo-rh.png',
-  modo: '/logo-modo.png',
-  staff: '/logo-staff.png',
-  dev: '/logo-staff.png',
-  event: '/logo-staff.png',
-  media: '/logo-staff.png',
+  ADMIN: '/logo-admin.png',
+  RH: '/logo-rh.png',
+  MODO: '/logo-modo.png',
+  STAFF: '/logo-staff.png',
+  ARBITRE: '/logo-staff.png',
+  DEV: '/logo-staff.png',
+  EVENT: '/logo-staff.png',
+  MEDIA: '/logo-staff.png',
+};
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
 };
 
 export function TeamClientContent({
@@ -139,7 +151,15 @@ export function TeamClientContent({
                 />
               </Box>
 
-              <Grid container spacing={4}>
+              <Grid
+                container
+                spacing={4}
+                component={motion.div}
+                variants={containerVariants}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, margin: '-100px' }}
+              >
                 {teamMembers.map((member) => (
                   <Grid key={member.id} size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
                     <StaffCard member={member} />
@@ -151,6 +171,11 @@ export function TeamClientContent({
         })}
 
         <Box
+          component={motion.div}
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
           sx={{
             textAlign: 'center',
             mt: 4,
@@ -214,3 +239,4 @@ export function TeamClientContent({
     </Box>
   );
 }
+

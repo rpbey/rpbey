@@ -55,6 +55,7 @@ export default async function HomePage() {
       discordTeam={team}
       activeTournament={activeTournament}
       heroContent={heroContent?.content}
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       topRankings={rankings as any}
     />
   );

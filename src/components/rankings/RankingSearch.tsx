@@ -82,7 +82,7 @@ export default function RankingSearch({
     startTransition(() => {
       router.push(`/rankings?${params.toString()}`);
     });
-  }, [debouncedValue, router, searchParams, defaultValue]);
+  }, [debouncedValue, value, router, searchParams, defaultValue]);
 
   return (
     <Autocomplete

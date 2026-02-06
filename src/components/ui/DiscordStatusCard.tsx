@@ -11,7 +11,6 @@ import { alpha } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
 import useSWR from 'swr';
 import type { DiscordStats, TeamGroup } from '@/lib/discord-data';
 import { RoleColors } from '@/lib/role-colors';
@@ -110,7 +109,7 @@ export function DiscordStatusCard({
             }}
           >
             <Image
-              src="/logos_rpb.gif"
+              src="/rpb-3d.gif"
               alt="RPB Animated Logos"
               width={48}
               height={48}

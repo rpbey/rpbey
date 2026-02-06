@@ -13,6 +13,7 @@ export async function GET() {
           id: 'scoring',
           title: 'Système de Points',
           items: Object.entries(rulesLogic.scoring).map(
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             ([key, val]: [string, any]) => ({
               name: key.replace('_', ' ').toUpperCase(),
               points: val.points,
@@ -24,6 +25,7 @@ export async function GET() {
           id: 'battle_types',
           title: 'Types de Combats',
           items: Object.entries(rulesLogic.battle_types).map(
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             ([key, val]: [string, any]) => ({
               name: key,
               description: val.description,

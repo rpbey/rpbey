@@ -1,7 +1,6 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { cacheTag } from 'next/cache';
 import { headers } from 'next/headers';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
@@ -176,7 +175,7 @@ export async function recalculateRankings() {
   try {
     revalidatePath('/rankings');
     revalidatePath('/admin/rankings');
-  } catch (e) {
+  } catch {
     // Ignore error if revalidatePath is called outside of Next.js context
   }
   // revalidateTag('rankings-live');

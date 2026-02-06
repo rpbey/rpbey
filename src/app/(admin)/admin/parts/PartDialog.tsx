@@ -11,7 +11,7 @@ import {
   Stack,
   TextField,
 } from '@mui/material';
-import type { Part } from '@prisma/client';
+import type { BeyType, Part, PartType } from '@prisma/client';
 import { useEffect, useState } from 'react';
 
 interface PartDialogProps {
@@ -59,9 +59,8 @@ export function PartDialog({
                 label="Type"
                 fullWidth
                 value={form.type || 'BLADE'}
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 onChange={(e) =>
-                  setForm({ ...form, type: e.target.value as any })
+                  setForm({ ...form, type: e.target.value as PartType })
                 }
               >
                 <MenuItem value="BLADE">Blade</MenuItem>
@@ -113,9 +112,8 @@ export function PartDialog({
                 label="Type Bey"
                 fullWidth
                 value={form.beyType || ''}
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 onChange={(e) =>
-                  setForm({ ...form, beyType: e.target.value as any })
+                  setForm({ ...form, beyType: e.target.value as BeyType })
                 }
               >
                 <MenuItem value="">-</MenuItem>

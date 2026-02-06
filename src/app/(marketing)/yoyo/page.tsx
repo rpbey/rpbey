@@ -21,6 +21,7 @@ export default async function YoyoPage() {
   // Restriction: Only accessible by user 'yoyo' or specific Discord ID
   const isYoyo = session?.user && (
     session.user.username?.toLowerCase().includes('yoyo') || 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (session.user as any).discordId === '281114294152724491' ||
     session.user.role === 'admin' || 
     session.user.role === 'superadmin'

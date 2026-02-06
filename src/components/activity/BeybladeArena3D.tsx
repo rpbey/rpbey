@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unknown-property */
 'use client';
 
 import { Suspense, useRef } from 'react';
@@ -9,7 +10,7 @@ import {
   ContactShadows,
   PerspectiveCamera,
 } from '@react-three/drei';
-import * as THREE from 'three';
+import type * as THREE from 'three';
 import { Box, CircularProgress, Typography } from '@mui/material';
 
 // 3D Stadium Component

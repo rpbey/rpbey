@@ -338,6 +338,9 @@ model Tournament {
   updatedAt             DateTime                @updatedAt
   weight                Float                   @default(1.0)
   categoryId            String?
+  standings             Json?
+  stations              Json?
+  activityLog           Json?
   matches               TournamentMatch[]
   participants          TournamentParticipant[]
   category              TournamentCategory?     @relation(fields: [categoryId], references: [id])

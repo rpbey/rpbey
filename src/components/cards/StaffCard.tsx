@@ -26,19 +26,19 @@ interface StaffCardProps {
 }
 
 const TEAM_COLORS: Record<string, string> = {
-  admin: RoleColors.ADMIN.hex,
-  rh: RoleColors.RH.hex,
-  mod: RoleColors.MODO.hex,
-  modo: RoleColors.MODO.hex,
-  staff: RoleColors.STAFF.hex,
-  dev: '#10b981',
-  event: '#f59e0b',
-  media: '#8b5cf6',
+  ADMIN: RoleColors.ADMIN.hex,
+  RH: RoleColors.RH.hex,
+  MODO: RoleColors.MODO.hex,
+  STAFF: RoleColors.STAFF.hex,
+  ARBITRE: RoleColors.ARBITRE.hex,
+  DEV: '#10b981',
+  EVENT: '#f59e0b',
+  MEDIA: '#8b5cf6',
 };
 
 export function StaffCard({ member }: StaffCardProps) {
   const theme = useTheme();
-  const color = TEAM_COLORS[member.teamId] || theme.palette.primary.main;
+  const color = TEAM_COLORS[member.role] || theme.palette.primary.main;
 
   return (
     <Card

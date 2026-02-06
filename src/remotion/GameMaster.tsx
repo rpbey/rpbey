@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import {
   AbsoluteFill,
   Img,
@@ -52,7 +52,7 @@ const GlitchText: React.FC<{ text: string; fontSize: number; color: string; y: n
 
 export const GameMaster: React.FC = () => {
   const frame = useCurrentFrame();
-  const { fps, width, height } = useVideoConfig();
+  const { fps, height } = useVideoConfig();
 
   // Animation de la séquence d'images (boucle)
   const imagesPerSecond = 12; // Vitesse de l'animation

@@ -3,7 +3,6 @@ import {
   useCurrentFrame,
   useVideoConfig,
   staticFile,
-  interpolate,
   Img,
 } from 'remotion';
 

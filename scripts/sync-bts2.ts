@@ -26,20 +26,23 @@ async function main() {
     // 2. Upsert Tournament
     const tournamentQuery = `
       INSERT INTO tournaments (
-        id, name, description, date, location, format, "challongeUrl", status, "createdAt", "updatedAt"
+        id, name, description, date, location, format, "challongeUrl", status, standings, stations, "activityLog", "createdAt", "updatedAt"
       ) VALUES (
-        $1, $2, $3, $4, $5, $6, $7, $8, NOW(), NOW()
+        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, NOW(), NOW()
       )
       ON CONFLICT (id) DO UPDATE SET
         name = EXCLUDED.name,
         description = EXCLUDED.description,
         date = EXCLUDED.date,
         status = EXCLUDED.status,
+        standings = EXCLUDED.standings,
+        stations = EXCLUDED.stations,
+        "activityLog" = EXCLUDED."activityLog",
         "updatedAt" = NOW()
       RETURNING id;
     `;
 
-    const tournamentId = 'cm-bts2-auto-imported'; 
+    const tournamentId = 'cm-bts2-auto-imported';
     const tournamentDate = new Date('2026-02-08T13:00:00Z');
     const tournamentName = 'Bey-Tamashii Séries #2';
 
@@ -51,7 +54,10 @@ async function main() {
       "Dernier Bar Avant la Fin du Monde, 19 Avenue Victoria, 75001 Paris",
       "3on3 Double Elimination",
       "https://challonge.com/fr/B_TS2",
-      status
+      status,
+      JSON.stringify(result.standings),
+      JSON.stringify(result.stations),
+      JSON.stringify(result.log),
     ]);
 
     console.log(`🏆 Tournoi mis à jour: ${tournamentName} (Status: ${status})`);

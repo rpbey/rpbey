@@ -7,7 +7,6 @@ import {
   Button,
   Card,
   CardContent,
-  Collapse,
   Container,
   Divider,
   IconButton,
@@ -16,7 +15,6 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useState } from 'react';
 import { TwitchButton } from '@/components/auth';

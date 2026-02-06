@@ -61,7 +61,7 @@ export default function BotStatusPage() {
   const [commands, setCommands] = useState<NativeCommand[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { socket, isConnected } = useSocket();
+  const { socket } = useSocket();
 
   const fetchInitialData = useCallback(async () => {
     try {

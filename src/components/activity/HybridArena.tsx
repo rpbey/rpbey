@@ -109,7 +109,7 @@ export default function HybridArena() {
       // Game State
       let p1Score = 0;
       let p2Score = 0;
-      const WIN_SCORE = 4;
+      // const WIN_SCORE = 4;
 
       // Scoreboard
       const scoreText = new PIXI.Text({

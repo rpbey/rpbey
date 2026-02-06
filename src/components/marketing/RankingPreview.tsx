@@ -14,6 +14,7 @@ import Link from 'next/link';
 import { getInitials } from '@/lib/utils';
 
 interface RankingPreviewProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   rankings: any[];
 }
 
