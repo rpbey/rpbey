@@ -4,10 +4,10 @@
   "description": "Dashboard officiel de la République Populaire du Beyblade",
   "private": true,
   "scripts": {
-    "dev": "NODE_OPTIONS='--max-old-space-size=4096' next dev",
+    "dev": "NODE_OPTIONS='--max-old-space-size=8192' next dev",
     "dev:all": "pnpm run bot:dev & next dev",
-    "build": "NODE_OPTIONS='--max-old-space-size=4096' next build --webpack",
-    "start": "NODE_OPTIONS='--max-old-space-size=4096' next start",
+    "build": "NODE_OPTIONS='--max-old-space-size=8192' next build --webpack",
+    "start": "NODE_OPTIONS='--max-old-space-size=8192' next start",
     "lint": "eslint .",
     "format": "biome format --write .",
     "check": "biome check --write .",

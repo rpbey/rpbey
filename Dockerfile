@@ -35,27 +35,21 @@ FROM build-base AS deps
 RUN --mount=type=cache,target=/root/.local/share/pnpm/store pnpm install --frozen-lockfile
 
 # ============================================
-# Production Dependencies stage
-# ============================================
-FROM build-base AS prod-deps
-
-COPY pnpm-workspace.yaml pnpm-lock.yaml package.json ./
-RUN --mount=type=cache,target=/root/.local/share/pnpm/store pnpm install --prod --frozen-lockfile
-
-# ============================================
 # Builder stage
 # ============================================
 FROM build-base AS builder
 
+# Increase memory limit for build
+ENV NODE_OPTIONS="--max-old-space-size=8192"
+ENV NEXT_TELEMETRY_DISABLED=1
+
 COPY --from=deps /app ./
 COPY . .
 
-# Generate Prisma Client using the CLI directly
-# This avoids the @prisma/dev ESM issue by using node with ESM flag
-RUN node --experimental-require-module ./node_modules/prisma/build/index.js generate
+# Generate Prisma Client
+RUN pnpm run db:generate
 
 # Build Next.js
-# Mount the .next/cache directory to speed up subsequent builds
 RUN --mount=type=cache,target=/app/.next/cache pnpm run build
 
 # ============================================
@@ -86,14 +80,16 @@ RUN mkdir -p public/uploads/avatars public/uploads/deckboxes && \
 # https://nextjs.org/docs/advanced-features/output-file-tracing
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+# Standalone mode needs node_modules for some features but it's usually included in .next/standalone/node_modules
+# We copy public files again to be sure they are there
+COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 
-# Install Chromium for Puppeteer
-# Clean up apt cache to reduce image size
+# Install Chromium for Puppeteer and clean up
 RUN apt-get update && apt-get install -y --no-install-recommends \
     chromium \
     fonts-liberation \
     && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /root/.cache
 
 USER nextjs
 

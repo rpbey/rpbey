@@ -126,8 +126,8 @@ export async function generateProfileCard(data: ProfileCardData) {
 
   // Dark overlay
   const gradient = ctx.createLinearGradient(0, 0, width, 0);
-  gradient.addColorStop(0, 'rgba(0, 0, 0, 0.85)');
-  gradient.addColorStop(1, 'rgba(0, 0, 0, 0.6)');
+  gradient.addColorStop(0, 'rgba(0, 0, 0, 0.75)');
+  gradient.addColorStop(1, 'rgba(0, 0, 0, 0.45)');
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, width, height);
 
@@ -617,8 +617,8 @@ export async function generateLeaderboardCard(entries: LeaderboardEntry[]) {
 
   // Overlay
   const gradient = ctx.createLinearGradient(0, 0, 0, height);
-  gradient.addColorStop(0, 'rgba(0, 0, 0, 0.85)');
-  gradient.addColorStop(1, 'rgba(0, 0, 0, 0.95)');
+  gradient.addColorStop(0, 'rgba(0, 0, 0, 0.65)');
+  gradient.addColorStop(1, 'rgba(0, 0, 0, 0.85)');
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, width, height);
 
