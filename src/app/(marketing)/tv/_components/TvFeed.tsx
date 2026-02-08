@@ -123,6 +123,10 @@ export function TvFeed({
             // Skarn is a major creator, often has recent videos
           />
           <TikTokCard 
+            username="sunafterthereign" 
+            url="https://www.tiktok.com/@sunafterthereign"
+          />
+          <TikTokCard 
             username="rpbeyblade1" 
             url="https://www.tiktok.com/@rpbeyblade1?lang=fr"
           />
