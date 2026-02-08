@@ -594,6 +594,7 @@ export default function TournamentDetailPage() {
                   {standings.slice(0, 5).map((s, i) => {
                     const colors = ['#fbbf24', '#94a3b8', '#d97706'];
                     const isPodium = i < 3;
+                    const color = colors[i] || '#cbd5e1';
                     return (
                       <Box
                         key={s.rank}
@@ -603,10 +604,10 @@ export default function TournamentDetailPage() {
                           gap: 1.5,
                           p: 1.5,
                           borderRadius: 3,
-                          bgcolor: isPodium ? alpha(colors[i], 0.08) : 'transparent',
+                          bgcolor: isPodium ? alpha(color, 0.08) : 'transparent',
                         }}
                       >
-                        <Typography variant="body2" fontWeight={900} sx={{ width: 20, color: isPodium ? colors[i] : 'text.disabled' }}>
+                        <Typography variant="body2" fontWeight={900} sx={{ width: 20, color: isPodium ? color : 'text.disabled' }}>
                           {s.rank}
                         </Typography>
                         <Typography variant="body2" fontWeight={800} sx={{ flex: 1 }} noWrap>
@@ -670,7 +671,7 @@ function StandingsPanel({ standings }: { standings: Standing[] }) {
         {standings.map((s) => {
           const isTop3 = s.rank <= 3;
           const rankColors = ['#fbbf24', '#94a3b8', '#d97706'];
-          const rankColor = isTop3 ? rankColors[s.rank - 1] : 'transparent';
+          const rankColor = (isTop3 ? rankColors[s.rank - 1] : undefined) || 'transparent';
           
           const wins = s.stats?.wins ?? s.wins;
           const losses = s.stats?.losses ?? s.losses;

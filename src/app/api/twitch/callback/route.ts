@@ -5,7 +5,7 @@ export async function GET(req: Request) {
   const code = searchParams.get('code');
 
   if (!code) {
-    return new NextResponse('Aucun code trouvé dans l'URL.', { status: 400 });
+    return new NextResponse("Aucun code trouvé dans l'URL.", { status: 400 });
   }
 
   return new NextResponse(`
