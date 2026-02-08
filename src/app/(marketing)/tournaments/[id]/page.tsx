@@ -396,7 +396,7 @@ export default function TournamentDetailPage() {
                     <Tab
                       icon={<Sensors sx={{ fontSize: 18 }} />}
                       iconPosition="start"
-                      label={`Stations (${stations.length})`}
+                      label={`Stadiums (${stations.length})`}
                     />
                   )}
                   <Tab
@@ -421,9 +421,9 @@ export default function TournamentDetailPage() {
                     <StandingsPanel standings={standings} />
                   )}
 
-                  {/* Stations Tab */}
+                  {/* Stadiums Tab */}
                   {stations.length > 0 && activeTab === 2 && (
-                    <StationsPanel stations={stations} isLive={isLive} />
+                    <StadiumsPanel stations={stations} isLive={isLive} />
                   )}
 
                   {/* Activity Log Tab */}
@@ -801,9 +801,9 @@ function StandingsPanel({ standings }: { standings: Standing[] }) {
   );
 }
 
-// ─── Stations Panel ─────────────────────────────────────────────────────────
+// ─── Stadiums Panel ─────────────────────────────────────────────────────────
 
-function StationsPanel({
+function StadiumsPanel({
   stations,
   isLive,
 }: {

@@ -17,7 +17,14 @@ export default async function HomePage() {
         challongeUrl: { not: null },
       },
       orderBy: { date: 'desc' },
-      select: { id: true, challongeUrl: true, name: true },
+      select: {
+        id: true,
+        challongeUrl: true,
+        name: true,
+        standings: true,
+        stations: true,
+        activityLog: true,
+      },
     }),
     getContent('home-hero-text'),
     prisma.profile.findMany({

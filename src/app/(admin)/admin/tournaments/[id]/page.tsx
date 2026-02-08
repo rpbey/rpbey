@@ -524,7 +524,7 @@ export default function TournamentDetailPage({
         <Tab
           icon={<SensorsIcon sx={{ fontSize: 16 }} />}
           iconPosition="start"
-          label={`Stations (${liveData?.stations?.length ?? 0})`}
+          label={`Stadiums (${liveData?.stations?.length ?? 0})`}
         />
         <Tab
           icon={<HistoryIcon sx={{ fontSize: 16 }} />}
@@ -642,7 +642,7 @@ export default function TournamentDetailPage({
         </Card>
       )}
 
-      {/* Stations Tab */}
+      {/* Stadiums Tab */}
       {tab === 3 && (
         <Grid container spacing={2}>
           {liveData?.stations && liveData.stations.length > 0 ? (
@@ -713,7 +713,7 @@ export default function TournamentDetailPage({
           ) : (
             <Grid size={{ xs: 12 }}>
               <Alert severity="info">
-                Aucune station disponible. Lancez un &quot;Scrape Live&quot; pour récupérer les données.
+                Aucun stadium disponible. Lancez un &quot;Scrape Live&quot; pour récupérer les données.
               </Alert>
             </Grid>
           )}

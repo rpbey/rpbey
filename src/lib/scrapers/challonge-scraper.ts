@@ -482,8 +482,8 @@ export class ChallongeScraper {
       const store = await this.extractStore(page);
       if (store) {
         const ts = store['TournamentStore'];
-        const ss = store['StandingsStore'];
-        const storeStandings = ss?.standings || ts?.standings;
+        const ss = store['StandingsStore'] || store['RankingStore'];
+        const storeStandings = ss?.standings || ts?.standings || ss?.rankings;
         if (storeStandings?.length > 0) {
           console.log('📦 Standings extraits depuis le Store JS');
           return storeStandings.map((s: any, i: number) => ({
@@ -503,11 +503,19 @@ export class ChallongeScraper {
       // Tentative 2 : HTML — extraction enrichie du tableau
       const standings = (await page.evaluate(`
         (function() {
-          var rows = Array.from(document.querySelectorAll('table tbody tr'));
+          // Cibler spécifiquement le tableau de classement dans le contenu principal
+          var container = document.querySelector('.standings-content, .ranking-content, #main-content, main');
+          if (!container) container = document;
+          
+          var rows = Array.from(container.querySelectorAll('table tbody tr'));
+          // Exclure les lignes qui n'ont pas assez de colonnes ou qui sont dans la nav
+          rows = rows.filter(function(row) {
+            return row.querySelectorAll('td').length >= 2 && !row.closest('.tournament-nav, .side-nav');
+          });
+
           return rows.map(function(row) {
             var cells = row.querySelectorAll('td');
-            if (cells.length < 2) return null;
-
+            
             var rank = parseInt(cells[0].innerText.trim().replace('.', ''), 10);
 
             // Cellule du nom : chercher un lien profil
@@ -578,7 +586,7 @@ export class ChallongeScraper {
       const store = await this.extractStore(page);
       if (store) {
         const ts = store['TournamentStore'];
-        const ss = store['StationsStore'];
+        const ss = store['StationsStore'] || store['StationStore'];
         const storeStations = ss?.stations || ts?.stations;
         if (storeStations?.length > 0) {
           console.log('📦 Stations extraites depuis le Store JS');
@@ -614,27 +622,47 @@ export class ChallongeScraper {
       // Tentative 2 : HTML
       const stations = (await page.evaluate(`
         (function() {
+          // Chercher spécifiquement dans le conteneur de stations
+          var container = document.querySelector('.stations-container, .station-list, #main-content, main');
+          if (!container) container = document;
+
           // Chercher des cartes/blocs de stations
-          var stationEls = Array.from(document.querySelectorAll(
-            '[class*="station"], [class*="Station"], [data-station], table tbody tr'
+          var stationEls = Array.from(container.querySelectorAll(
+            '[class*="station-card"], [class*="StationCard"], [data-station-id]'
           ));
-          if (stationEls.length === 0) return [];
+          
+          if (stationEls.length === 0) {
+            // Fallback table, mais uniquement si c'est probablement un tableau de stations
+            var tables = Array.from(container.querySelectorAll('table'));
+            var stationTable = tables.find(function(t) { 
+              return t.innerText.toLowerCase().includes('station') || t.innerText.toLowerCase().includes('match');
+            });
+            if (stationTable) {
+               stationEls = Array.from(stationTable.querySelectorAll('tbody tr'));
+            }
+          }
 
           return stationEls.map(function(el, i) {
+            // Exclure les éléments de navigation au cas où
+            if (el.closest('.tournament-nav, .side-nav, #top-nav')) return null;
+
             var text = el.textContent.trim();
             if (!text) return null;
 
             // Extraire le nom de la station
-            var nameEl = el.querySelector('[class*="name"], [class*="title"], th, td:first-child');
+            var nameEl = el.querySelector('[class*="name"], [class*="title"], th, td:first-child, .station-number');
             var name = nameEl ? nameEl.textContent.trim() : 'Station ' + (i + 1);
+            
+            // Si le nom est juste un menu, l'ignorer
+            if (name === 'Arbre' || name === 'Classement' || name === 'Participants') return null;
 
             // Extraire les joueurs
-            var players = el.querySelectorAll('[class*="player"], [class*="participant"]');
+            var players = el.querySelectorAll('[class*="player"], [class*="participant"], .player-name');
             var p1 = players[0] ? players[0].textContent.trim() : null;
             var p2 = players[1] ? players[1].textContent.trim() : null;
 
             // Extraire le score
-            var scoreEl = el.querySelector('[class*="score"], [class*="Score"]');
+            var scoreEl = el.querySelector('[class*="score"], [class*="Score"], .match-score');
             var scores = scoreEl ? scoreEl.textContent.trim() : '0-0';
 
             // Statut : actif si des joueurs sont listés
@@ -654,7 +682,7 @@ export class ChallongeScraper {
               } : null,
               status: isActive ? 'active' : 'idle'
             };
-          }).filter(function(x) { return x; });
+          }).filter(function(x) { return x && x.name; });
         })()
       `)) as any[];
 
@@ -679,18 +707,21 @@ export class ChallongeScraper {
       const store = await this.extractStore(page);
       if (store) {
         const ts = store['TournamentStore'];
-        const ls = store['LogStore'] || store['ActivityStore'];
-        const storeLog = ls?.entries || ls?.log || ts?.log || ts?.activity_log;
+        const ls = store['LogStore'] || store['ActivityStore'] || store['LogEntryListStore'];
+        
+        // LogEntryListStore est souvent une liste directe (Array)
+        const storeLog = Array.isArray(ls) ? ls : (ls?.entries || ls?.log || ts?.log || ts?.activity_log);
+        
         if (storeLog?.length > 0) {
           console.log('📦 Log extrait depuis le Store JS');
           return storeLog.map((entry: any) => ({
             timestamp: entry.created_at || entry.timestamp || entry.date || '',
-            type: entry.type || entry.action || entry.event_type || 'unknown',
+            type: entry.key || entry.type || entry.action || entry.event_type || 'activity',
             message:
               entry.message ||
               entry.description ||
               entry.text ||
-              JSON.stringify(entry),
+              (entry.key ? entry.key.replace('.', ' ') : JSON.stringify(entry)),
             raw: entry,
           }));
         }
@@ -699,16 +730,24 @@ export class ChallongeScraper {
       // Tentative 2 : HTML
       const logEntries = (await page.evaluate(`
         (function() {
+          // Chercher dans le contenu principal uniquement
+          var container = document.querySelector('.log-entry-list, .activity-feed, .activity-log, #main-content, main');
+          if (!container) container = document;
+
           // Chercher des éléments de log (liste, tableau, feed)
-          var rows = Array.from(document.querySelectorAll(
-            'table tbody tr, [class*="log"] li, [class*="activity"] li, [class*="feed"] > div, [class*="Log"] li'
+          var rows = Array.from(container.querySelectorAll(
+            '.activity-feed-item, .log-entry, tr.log-entry, li.activity-item'
           ));
+          
           if (rows.length === 0) {
-            // Fallback : tout le contenu texte structuré
-            rows = Array.from(document.querySelectorAll('main li, .content li, article li'));
+            // Fallback plus ciblé pour éviter les menus
+            rows = Array.from(container.querySelectorAll('.log-entries-controller li, .log-entry-list > div'));
           }
 
           return rows.map(function(el) {
+            // Exclure navigation
+            if (el.closest('.tournament-nav, .side-nav, #top-nav')) return null;
+
             var text = el.textContent.trim();
             if (!text || text.length < 3) return null;
 
@@ -719,12 +758,23 @@ export class ChallongeScraper {
               : '';
 
             // Chercher un type/badge
-            var badgeEl = el.querySelector('[class*="badge"], [class*="type"], [class*="label"], strong');
-            var type = badgeEl ? badgeEl.textContent.trim() : 'activity';
+            var badgeEl = el.querySelector('[class*="badge"], [class*="type"], [class*="label"], strong, .activity-feed-item--image i');
+            var type = 'activity';
+            if (badgeEl) {
+               if (badgeEl.tagName === 'I') {
+                 // Extraire le type de l'icône FontAwesome
+                 var iconClass = badgeEl.className.match(/fa-([\\w-]+)/);
+                 type = iconClass ? iconClass[1] : 'activity';
+               } else {
+                 type = badgeEl.textContent.trim();
+               }
+            }
 
-            // Le message = tout le texte sans le timestamp
-            var message = text;
-            if (timestamp && !timeEl?.getAttribute('datetime')) {
+            // Le message
+            var messageEl = el.querySelector('.activity-feed-item--text, .content, .message');
+            var message = messageEl ? messageEl.textContent.trim() : text;
+            
+            if (timestamp && !messageEl) {
               message = text.replace(timestamp, '').trim();
             }
 
@@ -733,7 +783,7 @@ export class ChallongeScraper {
               type: type,
               message: message
             };
-          }).filter(function(x) { return x && x.message; });
+          }).filter(function(x) { return x && x.message && x.message.length > 2; });
         })()
       `)) as any[];
 

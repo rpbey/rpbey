@@ -17,6 +17,7 @@ import { DynamicBlock } from '@/components/cms/DynamicBlock';
 import {
   FeedMyPartnership,
   RankingPreview,
+  TournamentLiveCarousel,
   TournamentVideo,
 } from '@/components/marketing';
 import { useThemeMode } from '@/components/theme/ThemeRegistry';
@@ -53,6 +54,12 @@ interface HomeClientProps {
     id: string;
     name: string;
     challongeUrl: string | null;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    standings: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    stations: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    activityLog: any;
   } | null;
   heroContent?: string;
   discordStats?: DiscordStats | null;
@@ -62,6 +69,7 @@ interface HomeClientProps {
 }
 
 export default function HomeClient({
+  activeTournament,
   heroContent,
   discordStats,
   discordTeam,
@@ -249,18 +257,22 @@ export default function HomeClient({
                       border: '1px solid rgba(255,255,255,0.1)',
                     }}
                   >
-                    <Image
-                      src="/canvas.png"
-                      alt="RPB Tournament"
-                      width={600}
-                      height={800}
-                      style={{
-                        objectFit: 'cover',
-                        width: '100%',
-                        height: 'auto',
-                      }}
-                      priority
-                    />
+                    {activeTournament ? (
+                      <TournamentLiveCarousel tournament={activeTournament} />
+                    ) : (
+                      <Image
+                        src="/canvas.png"
+                        alt="RPB Tournament"
+                        width={600}
+                        height={800}
+                        style={{
+                          objectFit: 'cover',
+                          width: '100%',
+                          height: 'auto',
+                        }}
+                        priority
+                      />
+                    )}
                   </Box>
                 </FadeIn>
               </Grid>
