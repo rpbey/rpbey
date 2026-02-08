@@ -1,17 +1,26 @@
 'use client';
 
-import { OpenInNew as OpenInNewIcon } from '@mui/icons-material';
-import { Avatar, Box, Button, Card, CardContent, Stack, Typography } from '@mui/material';
-import { TikTokEmbed } from 'react-social-media-embed';
+import { Box, Card } from '@mui/material';
+import Script from 'next/script';
+import { useEffect, useState } from 'react';
 
 interface TikTokCardProps {
   username: string;
-  url: string;
+  url?: string;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   featuredVideoUrl?: string;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   avatarUrl?: string;
 }
 
-export function TikTokCard({ username, url, featuredVideoUrl, avatarUrl }: TikTokCardProps) {
+export function TikTokCard({ username }: TikTokCardProps) {
+  // Force re-render of script on mount
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   return (
     <Card 
       variant="outlined" 
@@ -21,47 +30,31 @@ export function TikTokCard({ username, url, featuredVideoUrl, avatarUrl }: TikTo
         overflow: 'hidden',
         border: '1px solid',
         borderColor: 'divider',
-        '&:hover': {
-          borderColor: 'primary.main',
-          boxShadow: '0 8px 24px rgba(0,0,0,0.1)'
-        }
+        minHeight: 500, // Give it space for the feed
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'start',
+        p: 1
       }}
     >
-      <CardContent sx={{ p: 2 }}>
-        <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }}>
-          <Avatar 
-            src={avatarUrl} 
-            sx={{ width: 48, height: 48, bgcolor: 'grey.200' }}
-          >
-            {username.charAt(0).toUpperCase()}
-          </Avatar>
-          <Box sx={{ flex: 1 }}>
-            <Typography variant="subtitle1" fontWeight="900">
-              @{username}
-            </Typography>
-            <Typography variant="caption" color="text.secondary">
-              TikTok Creator
-            </Typography>
-          </Box>
-          <Button 
-            size="small" 
-            variant="contained" 
-            color="primary"
-            href={url}
-            target="_blank"
-            startIcon={<OpenInNewIcon sx={{ fontSize: 16 }} />}
-            sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 700 }}
-          >
-            Voir
-          </Button>
-        </Stack>
-
-        {featuredVideoUrl && (
-          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 1, borderRadius: 2, overflow: 'hidden' }}>
-            <TikTokEmbed url={featuredVideoUrl} width="100%" />
-          </Box>
+      <Box sx={{ width: '100%', maxWidth: 325 }}>
+        {mounted && (
+          <blockquote 
+            className="tiktok-embed" 
+            cite={`https://www.tiktok.com/@${username}`} 
+            data-unique-id={username} 
+            data-embed-type="creator" 
+            style={{ maxWidth: 780, minWidth: 288 }}
+          > 
+            <section> 
+              <a target="_blank" href={`https://www.tiktok.com/@${username}`} rel="noreferrer">
+                @{username}
+              </a> 
+            </section> 
+          </blockquote>
         )}
-      </CardContent>
+        <Script src="https://www.tiktok.com/embed.js" strategy="lazyOnload" />
+      </Box>
     </Card>
   );
 }
