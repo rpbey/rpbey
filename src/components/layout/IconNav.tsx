@@ -87,7 +87,7 @@ export function IconNav() {
         boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
         border: '1px solid',
         borderColor: 'divider',
-        width: 80,
+        width: ICON_NAV_WIDTH,
       }}
     >
       {/* Logo */}
