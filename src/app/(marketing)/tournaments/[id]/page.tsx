@@ -171,6 +171,14 @@ export default function TournamentDetailPage() {
     day: 'numeric',
   });
 
+  const [hostname, setHostname] = useState<string>('rpbey.fr');
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setHostname(window.location.hostname);
+    }
+  }, []);
+
   const standings = (liveData?.standings ?? []) as Standing[];
   const stations = (liveData?.stations ?? []) as Station[];
   const activityLog = (liveData?.activityLog ?? []) as LogEntry[];
@@ -328,7 +336,7 @@ export default function TournamentDetailPage() {
             </Box>
             <Box sx={{ position: 'relative', pt: '56.25%', width: '100%' }}>
               <iframe
-                src="https://player.twitch.tv/?channel=tv_rpb&parent=rpbey.fr&parent=localhost&parent=46.224.145.55&autoplay=true"
+                src={`https://player.twitch.tv/?channel=tv_rpb&parent=${hostname}&parent=rpbey.fr&parent=www.rpbey.fr&parent=localhost&parent=46.224.145.55&autoplay=true`}
                 title="Twitch Player"
                 style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }}
                 allowFullScreen
