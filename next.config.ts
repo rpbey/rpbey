@@ -80,7 +80,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/api/bot/socket/:path*",
-        destination: "http://10.0.1.1:3001/socket.io/:path*",
+        destination: "http://46.224.145.55:3001/socket.io/:path*",
       },
     ];
   },
