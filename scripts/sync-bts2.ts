@@ -1,3 +1,4 @@
+
 import 'dotenv/config';
 import { ChallongeScraper } from '../src/lib/scrapers/challonge-scraper';
 import pg from 'pg';
@@ -20,6 +21,12 @@ async function main() {
     console.log(`✅ Données récupérées : ${result.metadata.name} (${result.participants.length} participants)`);
     console.log(`📡 État Challonge : ${result.metadata.state}`);
 
+    // Map: Challonge Participant ID -> Participant Name
+    const participantIdToName = new Map<number, string>();
+    for (const p of result.participants) {
+      participantIdToName.set(p.id, p.name);
+    }
+
     // Map Challonge state to RPB status
     let status = 'REGISTRATION_OPEN';
     if (result.metadata.state === 'complete') status = 'COMPLETE';
@@ -37,7 +44,43 @@ async function main() {
       console.log(`🔔 ${newEntries.length} nouvelles entrées de log détectées.`);
       
       for (const entry of newEntries) {
-        const msg = `📢 [Challonge] ${entry.message}`;
+        let msg = `📢 [Challonge] ${entry.message}`;
+
+        // Enrich using textParams if available (Challonge usually provides this)
+        if (entry.raw?.textParams) {
+          const tp = entry.raw.textParams;
+          const p1 = tp.player1_display_name?.replace('✅', '') || '???';
+          const p2 = tp.player2_display_name?.replace('✅', '') || '???';
+          const scores = tp.scores || '';
+          const winner = tp.winner_display_name?.replace('✅', '') || '';
+
+          if (entry.raw.key === 'match.create' || entry.type === 'match.create') {
+            msg = `📢 [Nouveau Match] ${p1} vs ${p2}`;
+          } else if (entry.raw.key === 'match.start' || entry.type === 'match.start') {
+            msg = `📢 [Match Lancé] ${p1} vs ${p2}`;
+          } else if (entry.raw.key === 'match.complete' || entry.type === 'match.complete') {
+            msg = `📢 [Match Terminé] ${p1} vs ${p2} -> Victoire de **${winner}** (${scores})`;
+          }
+        } else if (entry.raw && (entry.type?.includes('match') || entry.message?.includes('match'))) {
+           // Fallback to manual match lookup if textParams is missing
+           const matchId = entry.raw.trackable?.match?.id || entry.raw.match_id || entry.raw.id;
+           const match = result.matches.find(m => m.id === matchId);
+           if (match) {
+              const p1 = participantIdToName.get(match.player1Id || 0) || '???';
+              const p2 = participantIdToName.get(match.player2Id || 0) || '???';
+              const identifier = match.identifier || '';
+              
+              if (entry.message === 'match create' || entry.type === 'match.create') {
+                msg = `📢 [Match Créé] Match ${identifier} : ${p1} vs ${p2}`;
+              } else if (entry.message === 'match start' || entry.type === 'match.start') {
+                msg = `📢 [Match Lancé] Match ${identifier} : ${p1} vs ${p2}`;
+              } else if (entry.message === 'match complete' || entry.type === 'match.complete') {
+                const winner = participantIdToName.get(match.winnerId || 0) || '???';
+                msg = `📢 [Match Terminé] Match ${identifier} : ${p1} vs ${p2} -> Victoire de **${winner}** (${match.scores})`;
+              }
+           }
+        }
+
         try {
           await fetch('http://localhost:3001/api/twitch/announce', {
             method: 'POST',
@@ -75,6 +118,47 @@ async function main() {
         }
       }
     }
+
+    // --- CALCULATE REAL-TIME STANDINGS FROM MATCHES ---
+    // The scraper's fetchStandings() might be inaccurate for real-time W/L.
+    // We'll rebuild it using the fresh matches data we just scraped.
+    const calculatedStats = new Map<number, { wins: number; losses: number }>();
+
+    for (const m of result.matches) {
+      if (m.state === 'complete' && m.winnerId) {
+        // Winner
+        const winnerStats = calculatedStats.get(m.winnerId) || { wins: 0, losses: 0 };
+        winnerStats.wins++;
+        calculatedStats.set(m.winnerId, winnerStats);
+
+        // Loser
+        const loserId = m.loserId;
+        if (loserId) {
+          const loserStats = calculatedStats.get(loserId) || { wins: 0, losses: 0 };
+          loserStats.losses++;
+          calculatedStats.set(loserId, loserStats);
+        }
+      }
+    }
+
+    // Merge calculated stats into result.standings
+    result.standings = result.standings.map(s => {
+      // Find ID for this standing name
+      const pId = [...participantIdToName.entries()].find(([_, name]) => name === s.name)?.[0];
+      
+      if (pId && calculatedStats.has(pId)) {
+        const stats = calculatedStats.get(pId)!;
+        return {
+          ...s,
+          wins: stats.wins,
+          losses: stats.losses,
+          stats: { ...s.stats, wins: stats.wins, losses: stats.losses }
+        };
+      }
+      return s;
+    });
+    
+    console.log('📊 Classement recalculé en temps réel avec succès.');
 
     // 3. Upsert Tournament
     const tournamentQuery = `

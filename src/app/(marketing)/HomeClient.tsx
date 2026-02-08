@@ -1,10 +1,12 @@
 'use client';
 
+import { FiberManualRecord } from '@mui/icons-material';
 import { useMediaQuery, useTheme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
+import Chip from '@mui/material/Chip';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
@@ -137,6 +139,38 @@ export default function HomeClient({
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.8, ease: EASE.EMPHASIZED }}
               >
+                {activeTournament && (
+                  <FadeIn delay={0.2}>
+                    <Chip
+                      icon={<FiberManualRecord sx={{ fontSize: 12, animation: 'pulse 1.5s infinite' }} />}
+                      label={`EN DIRECT : ${activeTournament.name}`}
+                      component={Link}
+                      href={`/tournaments/${activeTournament.id}`}
+                      sx={{
+                        mb: 3,
+                        px: 1,
+                        py: 2.5,
+                        borderRadius: '24px',
+                        bgcolor: 'rgba(220, 38, 38, 0.1)',
+                        color: '#ef4444',
+                        fontWeight: 800,
+                        border: '1px solid rgba(220, 38, 38, 0.3)',
+                        backdropFilter: 'blur(8px)',
+                        cursor: 'pointer',
+                        '&:hover': {
+                          bgcolor: 'rgba(220, 38, 38, 0.2)',
+                          borderColor: '#ef4444',
+                        },
+                        '@keyframes pulse': {
+                          '0%': { opacity: 1 },
+                          '50%': { opacity: 0.5 },
+                          '100%': { opacity: 1 },
+                        }
+                      }}
+                    />
+                  </FadeIn>
+                )}
+
                 <Typography
                   variant="h1"
                   sx={{
@@ -288,7 +322,7 @@ export default function HomeClient({
             <Grid size={{ xs: 12, md: 5 }}>
               <ScaleOnHover>
                 <Card
-                  variant="filled"
+                  variant="elevation"
                   sx={{
                     bgcolor: 'surface.high',
                     borderRadius: '32px',
@@ -351,8 +385,8 @@ export default function HomeClient({
         </Container>
       </Box>
 
-      {/* eslint-disable-next-line react/no-unknown-property */}
-      <style jsx global>{`
+      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+      <style {...({ jsx: true, global: true } as any)}>{`
         @keyframes pulse {
           0% { transform: scale(0.95); opacity: 0.7; }
           70% { transform: scale(1.1); opacity: 1; }
