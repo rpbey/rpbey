@@ -1,6 +1,5 @@
 'use server';
 
-import { cacheTag, revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 
@@ -23,8 +22,6 @@ const ArchiveSeasonSchema = z.object({
 
 // Cached Data Fetching
 export async function getCurrentSeason() {
-  'use cache';
-  cacheTag('seasons');
   const season = await prisma.rankingSeason.findFirst({
     where: { isActive: true },
   });
@@ -32,16 +29,12 @@ export async function getCurrentSeason() {
 }
 
 export async function getSeasons() {
-  'use cache';
-  cacheTag('seasons');
   return await prisma.rankingSeason.findMany({
     orderBy: { startDate: 'desc' },
   });
 }
 
 export async function getSeasonStandings(slug: string) {
-  'use cache';
-  cacheTag(`season-standings-${slug}`);
   const season = await prisma.rankingSeason.findUnique({
     where: { slug },
     include: {

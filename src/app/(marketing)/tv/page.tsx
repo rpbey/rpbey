@@ -28,7 +28,6 @@ export default async function TVPage() {
   };
 
   // Fetch all media in parallel with individual safety and logging
-  const start = Date.now();
   const [clips, rpbVideos, beyTubeVideos, rpbTikTok, skarnTikTok, sunTikTok] = await Promise.all([
     safeFetch(getRPBClips(20), []),
     safeFetch(getRecentYouTubeVideos(undefined, 20), []),
@@ -37,7 +36,6 @@ export default async function TVPage() {
     safeFetch(getTikTokVideos('skarngamemaster'), []),
     safeFetch(getTikTokVideos('sunafterthereign'), []),
   ]);
-  console.log(`[TV Page] Fetch took ${Date.now() - start}ms`);
 
   // Merge and sort TikTok videos by date (newest first)
   const tikTokVideos: TikTokVideo[] = [...rpbTikTok, ...skarnTikTok, ...sunTikTok]

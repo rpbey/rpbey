@@ -188,7 +188,7 @@ export function RankingsTable({
                     ? ((profile.wins / totalMatches) * 100).toFixed(1)
                     : '0';
                 
-                const isStub = profile.user.username?.startsWith('bts2_') || !profile.user.discordId;
+                const isStub = profile.user?.username?.startsWith('bts2_') || !profile.user?.discordId;
                 const isClaimable = isStub && session?.user;
 
                 return (
@@ -221,7 +221,7 @@ export function RankingsTable({
                           }}
                         >
                           <Avatar
-                            src={profile.user.image || undefined}
+                            src={profile.user?.image || undefined}
                             sx={{
                               width: 48,
                               height: 48,
@@ -230,7 +230,7 @@ export function RankingsTable({
                             }}
                           >
                             {getInitials(
-                              profile.bladerName || profile.user.name,
+                              profile.bladerName || profile.user?.name,
                             )}
                           </Avatar>
                           <Box>
@@ -246,7 +246,7 @@ export function RankingsTable({
                               }}
                             >
                               {profile.bladerName ||
-                                profile.user.name ||
+                                profile.user?.name ||
                                 'Anonyme'}
                             </Typography>
                             <Typography
