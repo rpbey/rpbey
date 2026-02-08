@@ -133,6 +133,32 @@ export class TwitchBot {
     // Hardcoded Commands
     if (lowerText === '!discord') {
       await this.announce(`Rejoignez la plus grande communauté française de Beyblade X sur Discord ! 🌀 ${RPB.Discord}`);
+      return;
+    }
+
+    // AI Chatbot Commands (!ask or !demander)
+    if (lowerText.startsWith('!ask ') || lowerText.startsWith('!demander ')) {
+      const question = text.split(' ').slice(1).join(' ').trim();
+      if (!question) return;
+
+      try {
+        const { aiService } = await import('./ai.js');
+        const context = aiService.getKnowledgeBase();
+        
+        if (context) {
+          const answers = await aiService.answerQuestion(question, context);
+          if (answers && answers.length > 0 && answers[0].score > 0.4) {
+            const reply = `@${user} 🤖 ${answers[0].text}`;
+            // Truncate if too long for Twitch
+            await this.announce(reply.substring(0, 450));
+          } else {
+            await this.announce(`@${user} 🤔 Je n'ai pas trouvé de réponse précise dans ma base de connaissances. Posez votre question sur Discord !`);
+          }
+        }
+      } catch (error) {
+        log('error', 'Twitch AI error:', error);
+      }
+      return;
     }
 
     // Dynamic commands from DB (model BotCommand)
