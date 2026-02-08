@@ -109,6 +109,10 @@ export async function recalculateRankings() {
   });
 
   const playerPoints = new Map<string, number>();
+  const playerStats = new Map<
+    string,
+    { wins: number; losses: number; tournamentWins: number }
+  >();
 
   // 2. Calculate points
   for (const tournament of tournaments) {
@@ -124,6 +128,21 @@ export async function recalculateRankings() {
 
       const userId = participant.userId;
       let points = 0;
+
+      // Stats Aggregation (Only for finished tournaments)
+      if (isFinished) {
+        const stats = playerStats.get(userId) || {
+          wins: 0,
+          losses: 0,
+          tournamentWins: 0,
+        };
+        stats.wins += participant.wins || 0;
+        stats.losses += participant.losses || 0;
+        if (participant.finalPlacement === 1) {
+          stats.tournamentWins += 1;
+        }
+        playerStats.set(userId, stats);
+      }
 
       // Points de participation (Base)
       points += config.participation;
@@ -156,17 +175,32 @@ export async function recalculateRankings() {
   // 4. Batch update
   await prisma.$transaction(
     async (tx) => {
+      // Reset stats first
       await tx.profile.updateMany({
-        data: { rankingPoints: 0 },
+        data: { rankingPoints: 0, wins: 0, losses: 0, tournamentWins: 0 },
       });
 
       for (const [userId, points] of playerPoints.entries()) {
+        const stats = playerStats.get(userId) || {
+          wins: 0,
+          losses: 0,
+          tournamentWins: 0,
+        };
+
         await tx.profile.upsert({
           where: { userId },
-          update: { rankingPoints: points },
+          update: {
+            rankingPoints: points,
+            wins: stats.wins,
+            losses: stats.losses,
+            tournamentWins: stats.tournamentWins,
+          },
           create: {
             userId,
             rankingPoints: points,
+            wins: stats.wins,
+            losses: stats.losses,
+            tournamentWins: stats.tournamentWins,
           },
         });
       }

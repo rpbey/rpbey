@@ -1,6 +1,14 @@
 'use client';
 
-import { useMediaQuery, useTheme } from '@mui/material';
+import {
+  Link as LinkIcon,
+} from '@mui/icons-material';
+import {
+  Button,
+  Tooltip,
+  useMediaQuery,
+  useTheme,
+} from '@mui/material';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Pagination from '@mui/material/Pagination';
@@ -15,7 +23,10 @@ import Typography from '@mui/material/Typography';
 import type { Profile, User } from '@prisma/client';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { toast } from 'sonner';
+import { authClient } from '@/lib/auth-client';
 import { getInitials } from '@/lib/utils';
+import { claimProfile } from '@/server/actions/claim-profile';
 
 type ProfileWithUser = Profile & {
   user: User & {
@@ -45,6 +56,7 @@ export function RankingsTable({
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { data: session } = authClient.useSession();
 
   const handlePageChange = (
     _event: React.ChangeEvent<unknown>,
@@ -53,6 +65,28 @@ export function RankingsTable({
     const params = new URLSearchParams(searchParams);
     params.set('page', value.toString());
     router.push(`${baseUrl}?${params.toString()}`);
+  };
+
+  const handleClaim = async (stubUserId: string, stubName: string) => {
+    if (!session) {
+      toast.error("Vous devez être connecté pour lier un compte.");
+      return;
+    }
+
+    const confirm = window.confirm(`Voulez-vous vraiment lier le profil "${stubName}" à votre compte actuel ? Cette action est irréversible.`);
+    if (!confirm) return;
+
+    toast.promise(claimProfile(stubUserId), {
+      loading: 'Liaison en cours...',
+      success: (data) => {
+        if (data.success) {
+            router.refresh();
+            return data.message;
+        }
+        throw new Error(data.message);
+      },
+      error: (err) => err.message || "Erreur lors de la liaison"
+    });
   };
 
   const getRankColor = (index: number) => {
@@ -148,6 +182,7 @@ export function RankingsTable({
                 Matchs
               </TableCell>
               <TableCell align="center">Winrate</TableCell>
+              <TableCell align="center">Action</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -158,6 +193,9 @@ export function RankingsTable({
                   totalMatches > 0
                     ? ((profile.wins / totalMatches) * 100).toFixed(1)
                     : '0';
+                
+                const isStub = profile.user.username?.startsWith('bts2_') || !profile.user.discordId;
+                const isClaimable = isStub && session?.user;
 
                 return (
                   <TableRow
@@ -307,12 +345,28 @@ export function RankingsTable({
                         </Typography>
                       </Box>
                     </TableCell>
+                    <TableCell align="center">
+                      {isClaimable && (
+                        <Tooltip title="C'est vous ? Liez ce compte au vôtre">
+                          <Button 
+                            variant="outlined" 
+                            size="small" 
+                            color="warning"
+                            onClick={() => handleClaim(profile.userId, profile.bladerName || 'Inconnu')}
+                            startIcon={<LinkIcon />}
+                            sx={{ borderRadius: 4, textTransform: 'none', fontSize: '0.75rem', py: 0.5 }}
+                          >
+                            Lier
+                          </Button>
+                        </Tooltip>
+                      )}
+                    </TableCell>
                   </TableRow>
                 );
               })
             ) : (
               <TableRow>
-                <TableCell colSpan={6} align="center" sx={{ py: 8 }}>
+                <TableCell colSpan={8} align="center" sx={{ py: 8 }}>
                   <Typography variant="h6" color="text.secondary" gutterBottom>
                     Aucun blader trouvé
                   </Typography>

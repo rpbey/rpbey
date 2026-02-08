@@ -46,6 +46,8 @@ model User {
   roles            Json?                   @default("[]")
   serverAvatar     String?
   status           String?
+  ipAddress        String? // Current/Last known IP
+  lastIpAddress    String? // Previous IP for history
   accounts         Account[]
   botConversations BotConversation[]
   decks            Deck[]

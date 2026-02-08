@@ -31,6 +31,7 @@ import dynamic from 'next/dynamic';
 import { useParams } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 import { ChallongeBracket } from '@/components/tournaments';
+import { DownloadBracketButton } from '@/components/tournaments/DownloadBracketButton';
 import { type TournamentStatus, TournamentStatusChip } from '@/components/ui';
 
 const TournamentMap = dynamic<{
@@ -96,16 +97,9 @@ export default function TournamentDetailPage() {
   const [activeTab, setActiveTab] = useState(0);
   const [isMounted, setIsMounted] = useState(false);
   const [formattedDate, setFormattedDate] = useState<string>('');
-  const [hostname, setHostname] = useState<string>('rpbey.fr');
 
   useEffect(() => {
     setIsMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      setHostname(window.location.hostname);
-    }
   }, []);
 
   useEffect(() => {
@@ -158,7 +152,7 @@ export default function TournamentDetailPage() {
           day: 'numeric',
         });
         setFormattedDate(date);
-      } catch (e) {
+      } catch (_e) {
         setFormattedDate('Date non définie');
       }
     }
@@ -200,9 +194,6 @@ export default function TournamentDetailPage() {
   const standings = (liveData?.standings || []) as Standing[];
   const stations = (liveData?.stations || []) as Station[];
   const activityLog = (liveData?.activityLog || []) as LogEntry[];
-
-  const hasLiveData =
-    standings.length > 0 || stations.length > 0 || activityLog.length > 0;
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
@@ -584,6 +575,7 @@ export default function TournamentDetailPage() {
 
           {/* Tabs Content */}
           <Paper
+            id="tournament-view"
             elevation={0}
             sx={{
               borderRadius: 6,
@@ -782,6 +774,10 @@ export default function TournamentDetailPage() {
                 >
                   REJOINDRE LE DISCORD
                 </Button>
+                <DownloadBracketButton
+                  targetId="tournament-view"
+                  fileName={tournament.id || 'tournoi-rpb'}
+                />
               </Stack>
             </Paper>
 

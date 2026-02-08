@@ -2,6 +2,7 @@ import { Box, Container, Typography } from '@mui/material';
 import { getBeyTubeFeatured } from '@/lib/beytube';
 import { getRPBClips } from '@/lib/twitch';
 import { getRecentYouTubeVideos } from '@/lib/youtube';
+import { getTikTokVideos, type TikTokVideo } from '@/lib/tiktok';
 import { TvFeed } from './_components/TvFeed';
 
 export const metadata = {
@@ -17,11 +18,19 @@ export default async function TVPage() {
   const domain = process.env.NEXT_PUBLIC_DOMAIN || 'rpbey.fr';
 
   // Fetch all media in parallel
-  const [clips, rpbVideos, beyTubeVideos] = await Promise.all([
+  const [clips, rpbVideos, beyTubeVideos, rpbTikTok, skarnTikTok, sunTikTok] = await Promise.all([
     getRPBClips(20),
     getRecentYouTubeVideos(undefined, 20),
     getBeyTubeFeatured(),
+    getTikTokVideos('rpbeyblade1'),
+    getTikTokVideos('skarngamemaster'),
+    getTikTokVideos('sunafterthereign'),
   ]);
+
+  // Merge and sort TikTok videos by date (newest first)
+  const tikTokVideos: TikTokVideo[] = [...rpbTikTok, ...skarnTikTok, ...sunTikTok]
+    .sort((a, b) => b.createTime - a.createTime)
+    .slice(0, 20); // Limit to 20
 
   return (
     <Container maxWidth="lg" sx={{ py: 4, px: { xs: 0, sm: 3 } }}>
@@ -48,6 +57,7 @@ export default async function TVPage() {
         clips={clips}
         rpbVideos={rpbVideos}
         beyTubeVideos={beyTubeVideos}
+        tikTokVideos={tikTokVideos}
         domain={domain}
       />
     </Container>

@@ -14,14 +14,17 @@ import { useState } from 'react';
 import type { BeyTubeVideo } from '@/lib/beytube';
 import type { VideoInfo } from '@/lib/twitch';
 import { MediaCard } from './MediaCard';
-import { TikTokCard } from './TikTokCard';
+// import { TikTokCard } from './TikTokCard'; // Deprecated
 import { VideoPlayerModal } from './VideoPlayerModal';
 import { YouTubeMobileCard } from './YouTubeMobileCard';
+import type { TikTokVideo } from '@/lib/tiktok';
+import { TikTokVideoCard } from './TikTokVideoCard';
 
 interface TvFeedProps {
   clips: VideoInfo[];
   rpbVideos: VideoInfo[];
   beyTubeVideos: BeyTubeVideo[];
+  tikTokVideos: TikTokVideo[];
   domain: string;
 }
 
@@ -29,6 +32,7 @@ export function TvFeed({
   clips,
   rpbVideos,
   beyTubeVideos,
+  tikTokVideos,
   domain,
 }: TvFeedProps) {
   const theme = useTheme();
@@ -117,19 +121,15 @@ export function TvFeed({
       label: 'TikTok RPB',
       content: (
         <Stack spacing={3}>
-          <TikTokCard
-            username="skarngamemaster"
-            url="https://www.tiktok.com/@skarngamemaster"
-            // Skarn is a major creator, often has recent videos
-          />
-          <TikTokCard
-            username="sunafterthereign"
-            url="https://www.tiktok.com/@sunafterthereign"
-          />
-          <TikTokCard
-            username="rpbeyblade1"
-            url="https://www.tiktok.com/@rpbeyblade1?lang=fr"
-          />
+          {tikTokVideos.length > 0 ? (
+            tikTokVideos.map((video) => (
+              <TikTokVideoCard key={video.id} video={video} />
+            ))
+          ) : (
+            <Typography textAlign="center" color="text.secondary" py={4}>
+              Aucune vidéo TikTok disponible.
+            </Typography>
+          )}
         </Stack>
       ),
     },
