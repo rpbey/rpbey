@@ -341,9 +341,12 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse) {
           try {
             const { message } = JSON.parse(body);
             if (!message) return sendError(res, 'Missing message');
-            
+
             await twitchBot.announce(message);
-            return sendJSON(res, { success: true, message: 'Announcement sent' });
+            return sendJSON(res, {
+              success: true,
+              message: 'Announcement sent',
+            });
           } catch (e) {
             container.logger.error('[Twitch] Error sending announcement:', e);
             sendError(res, `Internal Error: ${String(e)}`, 500);
@@ -363,8 +366,9 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse) {
           try {
             const data = JSON.parse(body);
             if (data.event?.type === 'video.upload') {
-              const channel =
-                container.client.channels.cache.get(RPB.Channels.Social);
+              const channel = container.client.channels.cache.get(
+                RPB.Channels.Social,
+              );
 
               if (channel?.isTextBased()) {
                 const { title, authorName, url } = data.event;

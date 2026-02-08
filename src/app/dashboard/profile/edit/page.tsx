@@ -25,8 +25,8 @@ import useSWR, { mutate } from 'swr';
 import { SecuritySettings } from '@/components/profile';
 import { AvatarUpload } from '@/components/profile/AvatarUpload'; // Import new component
 import { DeckBoxUpload } from '@/components/profile/DeckBoxUpload';
-import { RichTextEditor } from '@/components/ui/RichTextEditor'; // Import RichTextEditor
 import { useToast } from '@/components/ui';
+import { RichTextEditor } from '@/components/ui/RichTextEditor'; // Import RichTextEditor
 import { useAuth } from '@/hooks';
 
 interface ProfileFormData {

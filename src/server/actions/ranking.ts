@@ -2,9 +2,9 @@
 
 import { revalidatePath } from 'next/cache';
 import { headers } from 'next/headers';
+import { z } from 'zod';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import { z } from 'zod';
 
 // Zod Schemas
 const RankingConfigSchema = z.object({
@@ -112,13 +112,15 @@ export async function recalculateRankings() {
 
   // 2. Calculate points
   for (const tournament of tournaments) {
-    const multiplier = tournament.category?.multiplier ?? tournament.weight ?? 1.0;
+    const multiplier =
+      tournament.category?.multiplier ?? tournament.weight ?? 1.0;
 
     for (const participant of tournament.participants) {
       if (!participant.user.profile) continue;
-      
-      const isFinished = tournament.status === 'COMPLETE' || tournament.status === 'ARCHIVED';
-      if (!participant.checkedIn && !isFinished) continue; 
+
+      const isFinished =
+        tournament.status === 'COMPLETE' || tournament.status === 'ARCHIVED';
+      if (!participant.checkedIn && !isFinished) continue;
 
       const userId = participant.userId;
       let points = 0;
@@ -134,7 +136,7 @@ export async function recalculateRankings() {
         points += config.top8;
 
       // Points de victoire (Matches)
-      // Note: matchWinWinner is applied to all wins for now. 
+      // Note: matchWinWinner is applied to all wins for now.
       // If we have distinct winner/loser bracket wins in the future, we can refine this.
       points += (participant.wins || 0) * config.matchWinWinner;
 

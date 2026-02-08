@@ -1,9 +1,8 @@
 'use server';
 
-import { revalidatePath } from 'next/cache';
-import { cacheTag } from 'next/cache';
-import { prisma } from '@/lib/prisma';
+import { cacheTag, revalidatePath } from 'next/cache';
 import { z } from 'zod';
+import { prisma } from '@/lib/prisma';
 
 // Zod Schemas
 const CreateSeasonSchema = z.object({

@@ -65,10 +65,7 @@ export class LiveTournamentSyncTask extends ScheduledTask {
 
       this.container.logger.info('[LiveSync] Sync live terminé.');
     } catch (error) {
-      this.container.logger.error(
-        '[LiveSync] Erreur sync live:',
-        error,
-      );
+      this.container.logger.error('[LiveSync] Erreur sync live:', error);
     }
   }
 }

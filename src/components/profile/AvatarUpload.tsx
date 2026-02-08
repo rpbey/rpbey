@@ -1,12 +1,7 @@
 'use client';
 
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
-import {
-  Box,
-  Button,
-  CircularProgress,
-  useTheme,
-} from '@mui/material';
+import { Box, Button, CircularProgress, useTheme } from '@mui/material';
 import { useState } from 'react';
 import { useToast } from '@/components/ui';
 

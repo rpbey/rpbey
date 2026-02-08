@@ -117,17 +117,17 @@ export function TvFeed({
       label: 'TikTok RPB',
       content: (
         <Stack spacing={3}>
-          <TikTokCard 
-            username="skarngamemaster" 
+          <TikTokCard
+            username="skarngamemaster"
             url="https://www.tiktok.com/@skarngamemaster"
             // Skarn is a major creator, often has recent videos
           />
-          <TikTokCard 
-            username="sunafterthereign" 
+          <TikTokCard
+            username="sunafterthereign"
             url="https://www.tiktok.com/@sunafterthereign"
           />
-          <TikTokCard 
-            username="rpbeyblade1" 
+          <TikTokCard
+            username="rpbeyblade1"
             url="https://www.tiktok.com/@rpbeyblade1?lang=fr"
           />
         </Stack>
@@ -243,4 +243,3 @@ export function TvFeed({
     </Box>
   );
 }
-

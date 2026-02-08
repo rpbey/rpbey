@@ -1,5 +1,5 @@
-import { Server, Socket } from 'socket.io';
 import { container } from '@sapphire/framework';
+import { Server, type Socket } from 'socket.io';
 
 export class SocketManager {
   private static instance: SocketManager;

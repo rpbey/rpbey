@@ -239,4 +239,3 @@ export function TeamClientContent({
     </Box>
   );
 }
-

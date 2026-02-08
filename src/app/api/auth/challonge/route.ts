@@ -21,14 +21,17 @@ export async function GET(request: Request) {
     const clientId = process.env.CHALLONGE_CLIENT_ID;
     if (!clientId) {
       console.error('Challonge OAuth: CHALLONGE_CLIENT_ID is missing in .env');
-      return new NextResponse('Configuration Error: Challonge Client ID missing', { status: 500 });
+      return new NextResponse(
+        'Configuration Error: Challonge Client ID missing',
+        { status: 500 },
+      );
     }
 
     const { searchParams } = new URL(request.url);
     const returnTo = searchParams.get('returnTo') || '/admin/settings';
 
     const challonge = getChallongeService();
-    
+
     // Generate a random state for security
     const state = Buffer.from(
       JSON.stringify({

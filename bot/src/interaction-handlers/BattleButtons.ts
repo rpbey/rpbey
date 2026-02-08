@@ -9,14 +9,14 @@ import {
   ButtonStyle,
   EmbedBuilder,
 } from 'discord.js';
-import { Colors, RPB } from '../lib/constants.js';
-import prisma from '../lib/prisma.js';
-import { pendingBattles } from '../lib/state.js';
 import {
   getDeckStats,
   getRandomStats,
   runBattleSimulation,
 } from '../lib/battle-utils.js';
+import { Colors, RPB } from '../lib/constants.js';
+import prisma from '../lib/prisma.js';
+import { pendingBattles } from '../lib/state.js';
 
 export class BattleButtonHandler extends InteractionHandler {
   public constructor(context: InteractionHandler.LoaderContext) {

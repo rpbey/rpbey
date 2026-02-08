@@ -1,15 +1,19 @@
-import { RefreshingAuthProvider, StaticAuthProvider } from '@twurple/auth';
-import { ChatClient } from '@twurple/chat';
-import { ApiClient } from '@twurple/api';
 import { container } from '@sapphire/framework';
+import type { ApiClient } from '@twurple/api';
+import { RefreshingAuthProvider, StaticAuthProvider } from '@twurple/auth';
+import type { ChatClient } from '@twurple/chat';
 import { promises as fs } from 'fs';
 import path from 'path';
-import { prisma } from './prisma.js';
 import { RPB } from './constants.js';
+import { prisma } from './prisma.js';
 
 const TOKEN_PATH = path.join(process.cwd(), 'data', 'twitch-tokens.json');
 
-const log = (level: 'info' | 'warn' | 'error', message: string, error?: any) => {
+const log = (
+  level: 'info' | 'warn' | 'error',
+  message: string,
+  error?: any,
+) => {
   if (container.logger) {
     if (error) container.logger[level](message, error);
     else container.logger[level](message);
@@ -26,7 +30,10 @@ export class TwitchBot {
   private timer: NodeJS.Timeout | null = null;
 
   constructor() {
-    this.channel = process.env.TWITCH_CHANNEL || process.env.NEXT_PUBLIC_TWITCH_CHANNEL || 'tv_rpb';
+    this.channel =
+      process.env.TWITCH_CHANNEL ||
+      process.env.NEXT_PUBLIC_TWITCH_CHANNEL ||
+      'tv_rpb';
   }
 
   public async init() {
@@ -35,7 +42,11 @@ export class TwitchBot {
     return;
   }
 
-  private async handleChatMessage(_channel: string, user: string, text: string) {
+  private async handleChatMessage(
+    _channel: string,
+    user: string,
+    text: string,
+  ) {
     // Disabled
   }
 

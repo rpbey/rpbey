@@ -1,8 +1,11 @@
-import { container } from '@sapphire/framework';
 import type { Prisma } from '@prisma/client';
+import { container } from '@sapphire/framework';
 import { getChallongeClient } from './challonge.js';
 import prisma from './prisma.js';
-import { ChallongeScraper, type ScrapedLogEntry } from './scrapers/challonge-scraper.js';
+import {
+  ChallongeScraper,
+  type ScrapedLogEntry,
+} from './scrapers/challonge-scraper.js';
 import { twitchBot } from './twitch-bot.js';
 
 /**
@@ -55,9 +58,18 @@ export async function scrapeAndSyncTournament(
         status,
         challongeUrl: meta.url,
         challongeState: meta.state,
-        standings: result.standings.length > 0 ? (result.standings as unknown as Prisma.InputJsonValue) : undefined,
-        stations: result.stations.length > 0 ? (result.stations as unknown as Prisma.InputJsonValue) : undefined,
-        activityLog: result.log.length > 0 ? (result.log as unknown as Prisma.InputJsonValue) : undefined,
+        standings:
+          result.standings.length > 0
+            ? (result.standings as unknown as Prisma.InputJsonValue)
+            : undefined,
+        stations:
+          result.stations.length > 0
+            ? (result.stations as unknown as Prisma.InputJsonValue)
+            : undefined,
+        activityLog:
+          result.log.length > 0
+            ? (result.log as unknown as Prisma.InputJsonValue)
+            : undefined,
       },
       create: {
         challongeId,
@@ -68,9 +80,18 @@ export async function scrapeAndSyncTournament(
         challongeUrl: meta.url,
         challongeState: meta.state,
         maxPlayers: raw.signup_cap || 64,
-        standings: result.standings.length > 0 ? (result.standings as unknown as Prisma.InputJsonValue) : undefined,
-        stations: result.stations.length > 0 ? (result.stations as unknown as Prisma.InputJsonValue) : undefined,
-        activityLog: result.log.length > 0 ? (result.log as unknown as Prisma.InputJsonValue) : undefined,
+        standings:
+          result.standings.length > 0
+            ? (result.standings as unknown as Prisma.InputJsonValue)
+            : undefined,
+        stations:
+          result.stations.length > 0
+            ? (result.stations as unknown as Prisma.InputJsonValue)
+            : undefined,
+        activityLog:
+          result.log.length > 0
+            ? (result.log as unknown as Prisma.InputJsonValue)
+            : undefined,
       },
     });
 
@@ -301,8 +322,9 @@ export async function getUnderwayTournaments(): Promise<
     select: { challongeId: true, challongeUrl: true },
   });
 
-  return tournaments
-    .filter((t): t is typeof t & { challongeId: string } => t.challongeId !== null);
+  return tournaments.filter(
+    (t): t is typeof t & { challongeId: string } => t.challongeId !== null,
+  );
 }
 
 /**

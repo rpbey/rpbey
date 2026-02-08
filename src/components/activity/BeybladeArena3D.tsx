@@ -1,17 +1,17 @@
 /* eslint-disable react/no-unknown-property */
 'use client';
 
-import { Suspense, useRef } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
-import {
-  useGLTF,
-  OrbitControls,
-  Environment,
-  ContactShadows,
-  PerspectiveCamera,
-} from '@react-three/drei';
-import type * as THREE from 'three';
 import { Box, CircularProgress, Typography } from '@mui/material';
+import {
+  ContactShadows,
+  Environment,
+  OrbitControls,
+  PerspectiveCamera,
+  useGLTF,
+} from '@react-three/drei';
+import { Canvas, useFrame } from '@react-three/fiber';
+import { Suspense, useRef } from 'react';
+import type * as THREE from 'three';
 
 // 3D Stadium Component
 function Stadium() {

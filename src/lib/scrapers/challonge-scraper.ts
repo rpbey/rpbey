@@ -9,10 +9,7 @@ import StealthPlugin from 'puppeteer-extra-plugin-stealth';
 (puppeteerExtra as any).use(StealthPlugin());
 
 // Chemin par défaut du fichier de cookies
-const DEFAULT_COOKIE_PATH = resolve(
-  process.cwd(),
-  'challonge_cookie.json',
-);
+const DEFAULT_COOKIE_PATH = resolve(process.cwd(), 'challonge_cookie.json');
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -367,8 +364,7 @@ export class ChallongeScraper {
           const data = p.participant || p;
           return {
             id: data.id,
-            display_name:
-              data.display_name || data.name || data.username || '',
+            display_name: data.display_name || data.name || data.username || '',
             seed: data.seed ?? 0,
             username: data.username || data.challonge_username || null,
             challongeUsername: data.username || data.challonge_username || null,
@@ -593,28 +589,30 @@ export class ChallongeScraper {
           return storeStations.map((s: any) => ({
             stationId: s.id ?? s.station_id ?? s.number,
             name: s.name || s.label || `Station ${s.number ?? s.id}`,
-            currentMatch: s.current_match || s.match
-              ? {
-                  matchId: (s.current_match || s.match)?.id,
-                  identifier: (s.current_match || s.match)?.identifier || '',
-                  round: (s.current_match || s.match)?.round || 0,
-                  player1:
-                    (s.current_match || s.match)?.player1?.display_name ||
-                    null,
-                  player2:
-                    (s.current_match || s.match)?.player2?.display_name ||
-                    null,
-                  scores: ((s.current_match || s.match)?.scores || []).join(
-                    '-',
-                  ) || '0-0',
-                  state: (s.current_match || s.match)?.state || 'open',
-                }
-              : null,
-            status: s.state === 'active' || s.current_match
-              ? 'active'
-              : s.state === 'paused'
-                ? 'paused'
-                : 'idle',
+            currentMatch:
+              s.current_match || s.match
+                ? {
+                    matchId: (s.current_match || s.match)?.id,
+                    identifier: (s.current_match || s.match)?.identifier || '',
+                    round: (s.current_match || s.match)?.round || 0,
+                    player1:
+                      (s.current_match || s.match)?.player1?.display_name ||
+                      null,
+                    player2:
+                      (s.current_match || s.match)?.player2?.display_name ||
+                      null,
+                    scores:
+                      ((s.current_match || s.match)?.scores || []).join('-') ||
+                      '0-0',
+                    state: (s.current_match || s.match)?.state || 'open',
+                  }
+                : null,
+            status:
+              s.state === 'active' || s.current_match
+                ? 'active'
+                : s.state === 'paused'
+                  ? 'paused'
+                  : 'idle',
           }));
         }
       }
@@ -707,16 +705,26 @@ export class ChallongeScraper {
       const store = await this.extractStore(page);
       if (store) {
         const ts = store['TournamentStore'];
-        const ls = store['LogStore'] || store['ActivityStore'] || store['LogEntryListStore'];
-        
+        const ls =
+          store['LogStore'] ||
+          store['ActivityStore'] ||
+          store['LogEntryListStore'];
+
         // LogEntryListStore est souvent une liste directe (Array)
-        const storeLog = Array.isArray(ls) ? ls : (ls?.entries || ls?.log || ts?.log || ts?.activity_log);
-        
+        const storeLog = Array.isArray(ls)
+          ? ls
+          : ls?.entries || ls?.log || ts?.log || ts?.activity_log;
+
         if (storeLog?.length > 0) {
           console.log('📦 Log extrait depuis le Store JS');
           return storeLog.map((entry: any) => ({
             timestamp: entry.created_at || entry.timestamp || entry.date || '',
-            type: entry.key || entry.type || entry.action || entry.event_type || 'activity',
+            type:
+              entry.key ||
+              entry.type ||
+              entry.action ||
+              entry.event_type ||
+              'activity',
             message:
               entry.message ||
               entry.description ||

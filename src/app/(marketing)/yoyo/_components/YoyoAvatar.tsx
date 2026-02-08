@@ -1,18 +1,36 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { alpha, Box } from '@mui/material';
+import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
-import { Box, alpha } from '@mui/material';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useEffect, useState } from 'react';
 
 const AVATAR_IMAGES = [
-  '1000062223.png', '1000062224.png', '1000062225.png', '1000062226.png',
-  '1000062227.png', '1000062228.png', '1000062229.png', '1000062230.png',
-  '1000062231.png', '1000062233.png', '1000062237.png', '1000062238.png',
-  '1000062239.png', '1000062240.png', '1000062241.png', '1000062243.png',
-  '1000062244.png', '1000062245.png', '1000062246.png', '1000062248.png',
-  '1000062249.png', '1000062250.png', '1000062252.png', '1000062253.png',
-  '1000062254.png'
+  '1000062223.png',
+  '1000062224.png',
+  '1000062225.png',
+  '1000062226.png',
+  '1000062227.png',
+  '1000062228.png',
+  '1000062229.png',
+  '1000062230.png',
+  '1000062231.png',
+  '1000062233.png',
+  '1000062237.png',
+  '1000062238.png',
+  '1000062239.png',
+  '1000062240.png',
+  '1000062241.png',
+  '1000062243.png',
+  '1000062244.png',
+  '1000062245.png',
+  '1000062246.png',
+  '1000062248.png',
+  '1000062249.png',
+  '1000062250.png',
+  '1000062252.png',
+  '1000062253.png',
+  '1000062254.png',
 ];
 
 interface YoyoAvatarProps {
@@ -49,8 +67,10 @@ export function YoyoAvatar({ size = 400 }: YoyoAvatarProps) {
           scale: isHovered ? 1.05 : 1,
         }}
         transition={{
-          y: isHovered ? { duration: 0.2 } : { repeat: Infinity, duration: 3, ease: "easeInOut" },
-          scale: { duration: 0.3 }
+          y: isHovered
+            ? { duration: 0.2 }
+            : { repeat: Infinity, duration: 3, ease: 'easeInOut' },
+          scale: { duration: 0.3 },
         }}
         style={{
           width: '100%',
@@ -82,7 +102,8 @@ export function YoyoAvatar({ size = 400 }: YoyoAvatarProps) {
               left: 0,
               right: 0,
               bottom: 0,
-              background: 'radial-gradient(circle, rgba(251, 191, 36, 0.2) 0%, transparent 70%)',
+              background:
+                'radial-gradient(circle, rgba(251, 191, 36, 0.2) 0%, transparent 70%)',
               zIndex: -1,
             }}
           />

@@ -1,6 +1,6 @@
 'use client';
 
-import { type AlertColor } from '@mui/material/Alert';
+import type { AlertColor } from '@mui/material/Alert';
 import { createContext, type ReactNode, useCallback, useContext } from 'react';
 import { toast } from 'sonner';
 

@@ -1,9 +1,9 @@
-import React from 'react';
+import type React from 'react';
 import { Composition } from 'remotion';
-import { BeybladeIntro } from './Composition';
-import { LogosGif } from './LogosGif';
-import { GameMaster } from './GameMaster';
 import { AphrodyGif } from './AphrodyGif';
+import { BeybladeIntro } from './Composition';
+import { GameMaster } from './GameMaster';
+import { LogosGif } from './LogosGif';
 
 export const RemotionRoot: React.FC = () => {
   return (

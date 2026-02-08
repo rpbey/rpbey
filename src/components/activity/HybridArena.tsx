@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { Box, CircularProgress, Typography } from '@mui/material';
 import * as PIXI from 'pixi.js';
+import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { Box, CircularProgress, Typography } from '@mui/material';
 import { useSocket } from '@/components/providers/SocketProvider';
 
 export default function HybridArena() {

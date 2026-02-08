@@ -237,7 +237,9 @@ class ChallongeService {
       body: body ? JSON.stringify(body) : undefined,
     });
 
-    console.log(`[Challonge API] ${method} ${finalEndpoint} - Status: ${response.status}`);
+    console.log(
+      `[Challonge API] ${method} ${finalEndpoint} - Status: ${response.status}`,
+    );
 
     if (response.status === 429) {
       // Simple backoff

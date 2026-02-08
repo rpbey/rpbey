@@ -4,7 +4,10 @@ import { EmbedBuilder, PermissionFlagsBits } from 'discord.js';
 import { scrapeAndSyncTournament } from '../../lib/challonge-sync.js';
 import { Colors } from '../../lib/constants.js';
 import prisma from '../../lib/prisma.js';
-import type { ScrapedStanding, ScrapedStation } from '../../lib/scrapers/challonge-scraper.js';
+import type {
+  ScrapedStanding,
+  ScrapedStation,
+} from '../../lib/scrapers/challonge-scraper.js';
 
 @ApplyOptions<Subcommand.Options>({
   description: 'Gérer les tournois Challonge',
@@ -43,7 +46,7 @@ export class TournamentCommand extends Subcommand {
         .addSubcommand((command) =>
           command
             .setName('live')
-            .setDescription('Affiche le statut live d\'un tournoi en cours')
+            .setDescription("Affiche le statut live d'un tournoi en cours")
             .addStringOption((option) =>
               option
                 .setName('tournoi')
@@ -124,7 +127,8 @@ export class TournamentCommand extends Subcommand {
         );
       }
 
-      const standings = (tournament.standings as ScrapedStanding[] | null) || [];
+      const standings =
+        (tournament.standings as ScrapedStanding[] | null) || [];
       const stations = (tournament.stations as ScrapedStation[] | null) || [];
       const participantCount = await prisma.tournamentParticipant.count({
         where: { tournamentId: tournament.id },
@@ -138,22 +142,28 @@ export class TournamentCommand extends Subcommand {
 
       // Top 5 standings
       const top5 = standings.slice(0, 5);
-      const standingsText = top5.length > 0
-        ? top5.map((s) =>
-            `**${s.rank}.** ${s.name} (${s.wins}W - ${s.losses}L)`,
-          ).join('\n')
-        : '*Standings non disponibles*';
+      const standingsText =
+        top5.length > 0
+          ? top5
+              .map(
+                (s) => `**${s.rank}.** ${s.name} (${s.wins}W - ${s.losses}L)`,
+              )
+              .join('\n')
+          : '*Standings non disponibles*';
 
       // Stations actives
       const activeStations = stations.filter((s) => s.status === 'active');
-      const stationsText = activeStations.length > 0
-        ? activeStations.map((s) => {
-            const match = s.currentMatch;
-            return match
-              ? `**${s.name}** : ${match.player1 || '?'} vs ${match.player2 || '?'} (${match.scores})`
-              : `**${s.name}** : En cours`;
-          }).join('\n')
-        : '*Aucune station active*';
+      const stationsText =
+        activeStations.length > 0
+          ? activeStations
+              .map((s) => {
+                const match = s.currentMatch;
+                return match
+                  ? `**${s.name}** : ${match.player1 || '?'} vs ${match.player2 || '?'} (${match.scores})`
+                  : `**${s.name}** : En cours`;
+              })
+              .join('\n')
+          : '*Aucune station active*';
 
       const embed = new EmbedBuilder()
         .setTitle(`🏆 ${tournament.name}`)

@@ -1,7 +1,7 @@
 import { Subcommand } from '@sapphire/plugin-subcommands';
 import {
   ActionRowBuilder,
-  AutocompleteInteraction,
+  type AutocompleteInteraction,
   ButtonBuilder,
   ButtonStyle,
   EmbedBuilder,
@@ -351,7 +351,7 @@ export class DeckCommand extends Subcommand {
 
       // Update slot
       // Check if slot exists
-      let item = activeDeck.items.find((i) => i.position === slot);
+      const item = activeDeck.items.find((i) => i.position === slot);
 
       if (item) {
         await prisma.deckItem.update({

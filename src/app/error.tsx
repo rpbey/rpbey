@@ -46,15 +46,30 @@ export default function ErrorPage({
             Une erreur est survenue
           </Typography>
           <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
-            {error.message || 'Désolé, quelque chose s\'est mal passé. Veuillez réessayer.'}
+            {error.message ||
+              "Désolé, quelque chose s'est mal passé. Veuillez réessayer."}
           </Typography>
           {error.digest && (
-            <Typography variant="caption" color="text.disabled" sx={{ display: 'block', mb: 2 }}>
+            <Typography
+              variant="caption"
+              color="text.disabled"
+              sx={{ display: 'block', mb: 2 }}
+            >
               ID: {error.digest}
             </Typography>
           )}
           {process.env.NODE_ENV === 'development' && error.stack && (
-            <Box sx={{ textAlign: 'left', bgcolor: 'rgba(255,255,255,0.05)', p: 2, borderRadius: 1, overflow: 'auto', maxWidth: '100%', mb: 3 }}>
+            <Box
+              sx={{
+                textAlign: 'left',
+                bgcolor: 'rgba(255,255,255,0.05)',
+                p: 2,
+                borderRadius: 1,
+                overflow: 'auto',
+                maxWidth: '100%',
+                mb: 3,
+              }}
+            >
               <pre style={{ fontSize: '0.7rem', margin: 0 }}>{error.stack}</pre>
             </Box>
           )}

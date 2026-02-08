@@ -1,0 +1,131 @@
+
+> rpb-dashboard@1.0.0 build /root/rpb-dashboard
+> NODE_OPTIONS='--max-old-space-size=4096' next build --webpack
+
+▲ Next.js 16.1.4 (webpack, Cache Components)
+- Environments: .env
+- Experiments (use with caution):
+  · optimizePackageImports
+  · serverActions
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 53s
+  Running TypeScript ...
+  Collecting page data using 7 workers ...
+  Generating static pages using 7 workers (0/79) ...
+  Generating static pages using 7 workers (19/79) 
+  Generating static pages using 7 workers (39/79) 
+  Generating static pages using 7 workers (59/79) 
+prisma:query SELECT "public"."tournaments"."id", "public"."tournaments"."updatedAt" FROM "public"."tournaments" WHERE 1=1 ORDER BY "public"."tournaments"."updatedAt" DESC LIMIT $1 OFFSET $2
+prisma:query SELECT "public"."profiles"."id", "public"."profiles"."userId", "public"."profiles"."updatedAt" FROM "public"."profiles" WHERE 1=1 ORDER BY "public"."profiles"."updatedAt" DESC LIMIT $1 OFFSET $2
+prisma:query SELECT "public"."tournaments"."id", "public"."tournaments"."updatedAt" FROM "public"."tournaments" WHERE 1=1 ORDER BY "public"."tournaments"."updatedAt" DESC LIMIT $1 OFFSET $2
+prisma:query SELECT "public"."profiles"."id", "public"."profiles"."userId", "public"."profiles"."updatedAt" FROM "public"."profiles" WHERE 1=1 ORDER BY "public"."profiles"."updatedAt" DESC LIMIT $1 OFFSET $2
+✓ Generating static pages using 7 workers (79/79) in 4.1s
+  Finalizing page optimization ...
+  Collecting build traces ...
+
+Route (app)                             Revalidate  Expire
+┌ ◐ /
+├ ○ /_not-found
+├ ◐ /a-propos
+├ ○ /activity
+├ ◐ /admin
+├ ◐ /admin/bot
+├ ◐ /admin/bot/commands
+├ ◐ /admin/bot/config
+├ ◐ /admin/bot/logs
+├ ◐ /admin/content
+├ ◐ /admin/discord
+├ ◐ /admin/parts
+├ ◐ /admin/rankings
+├ ◐ /admin/settings
+├ ◐ /admin/staff
+├ ◐ /admin/stats
+├ ◐ /admin/tournaments
+├ ◐ /admin/tournaments/[id]
+│ └ /admin/tournaments/[id]
+├ ◐ /admin/twitch
+├ ◐ /admin/users
+├ ○ /api/activity/rules
+├ ƒ /api/admin/bot/message
+├ ƒ /api/admin/bot/restart
+├ ƒ /api/admin/config
+├ ƒ /api/admin/export/rankings
+├ ƒ /api/admin/export/tournament/[id]
+├ ƒ /api/admin/integrations/challonge
+├ ƒ /api/admin/ranking
+├ ƒ /api/auth/[...all]
+├ ƒ /api/auth/callback/challonge
+├ ƒ /api/auth/challonge
+├ ƒ /api/auth/dev-login
+├ ƒ /api/bot/chat
+├ ƒ /api/bot/commands
+├ ƒ /api/bot/config
+├ ƒ /api/bot/logs
+├ ƒ /api/bot/public-status
+├ ƒ /api/bot/status
+├ ƒ /api/decks
+├ ƒ /api/decks/[id]
+├ ƒ /api/decks/[id]/activate
+├ ƒ /api/discord/activity/auth
+├ ƒ /api/discord/stats
+├ ƒ /api/discord/team
+├ ○ /api/health
+├ ○ /api/marketing/feedmy                       1h      1y
+├ ƒ /api/parts
+├ ƒ /api/parts/[id]
+├ ƒ /api/parts/random
+├ ƒ /api/profile
+├ ƒ /api/stats
+├ ƒ /api/tournaments
+├ ƒ /api/tournaments/[id]
+├ ƒ /api/tournaments/[id]/live
+├ ƒ /api/tournaments/[id]/matches
+├ ƒ /api/tournaments/[id]/participants
+├ ƒ /api/tournaments/[id]/register
+├ ƒ /api/twitch/callback
+├ ƒ /api/upload
+├ ƒ /api/upload/avatar
+├ ƒ /api/users/[id]
+├ ƒ /api/users/[id]/card
+├ ƒ /api/users/[id]/matches
+├ ƒ /api/users/[id]/sync
+├ ƒ /api/webhooks/twitch
+├ ƒ /api/webhooks/youtube
+├ ○ /bey
+├ ◐ /dashboard
+├ ◐ /dashboard/bot
+├ ◐ /dashboard/deck
+├ ◐ /dashboard/leaderboard
+├ ◐ /dashboard/profile
+├ ◐ /dashboard/profile/[id]
+│ └ /dashboard/profile/[id]
+├ ◐ /dashboard/profile/edit
+├ ◐ /dashboard/random
+├ ◐ /dashboard/settings
+├ ○ /db
+├ ◐ /notre-equipe
+├ ○ /privacy
+├ ○ /profile
+├ ◐ /profile/[id]
+│ └ /profile/[id]
+├ ◐ /rankings
+├ ○ /reglement
+├ ○ /robots.txt
+├ ○ /sign-in
+├ ○ /sign-up
+├ ƒ /sitemap.xml
+├ ○ /tournaments
+├ ◐ /tournaments/[id]
+│ └ /tournaments/[id]
+├ ◐ /tv
+├ ○ /two-factor
+└ ◐ /yoyo
+
+
+ƒ Proxy (Middleware)
+
+○  (Static)             prerendered as static content
+◐  (Partial Prerender)  prerendered as static HTML with dynamic server-streamed content
+ƒ  (Dynamic)            server-rendered on demand
+

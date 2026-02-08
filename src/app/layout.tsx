@@ -1,11 +1,11 @@
 import InitColorSchemeScript from '@mui/material/InitColorSchemeScript';
 import { GoogleTagManager } from '@next/third-parties/google';
 import type { Metadata, Viewport } from 'next';
+import { SocketProvider } from '@/components/providers/SocketProvider';
 import { JsonLd } from '@/components/seo/JsonLd';
 import ThemeRegistry from '@/components/theme/ThemeRegistry';
 import { SmoothScroll } from '@/components/ui/SmoothScroll';
 import { Toaster } from '@/components/ui/Toaster';
-import { SocketProvider } from '@/components/providers/SocketProvider';
 import { googleSansFlex } from '@/lib/fonts';
 import { generateWebsiteJsonLd } from '@/lib/seo-utils';
 import './globals.css';

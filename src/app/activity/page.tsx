@@ -1,11 +1,11 @@
 'use client';
 
+import { Box, Typography } from '@mui/material';
+import dynamic from 'next/dynamic';
 import {
   DiscordActivityProvider,
   useDiscordActivity,
 } from '@/components/providers/DiscordActivityProvider';
-import { Box, Typography } from '@mui/material';
-import dynamic from 'next/dynamic';
 
 const HybridArena = dynamic(() => import('@/components/activity/HybridArena'), {
   ssr: false,

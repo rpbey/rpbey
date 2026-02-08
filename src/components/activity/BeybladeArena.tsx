@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
 import { Box, CircularProgress, Typography } from '@mui/material';
 import * as PIXI from 'pixi.js';
+import { useEffect, useRef, useState } from 'react';
 import { BeybladeAssembler } from './BeybladeAssembler';
 
 export function BeybladeArena() {

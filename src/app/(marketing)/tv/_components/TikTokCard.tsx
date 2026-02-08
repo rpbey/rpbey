@@ -22,10 +22,10 @@ export function TikTokCard({ username }: TikTokCardProps) {
   }, []);
 
   return (
-    <Card 
-      variant="outlined" 
-      sx={{ 
-        borderRadius: 4, 
+    <Card
+      variant="outlined"
+      sx={{
+        borderRadius: 4,
         bgcolor: 'background.paper',
         overflow: 'hidden',
         border: '1px solid',
@@ -34,23 +34,27 @@ export function TikTokCard({ username }: TikTokCardProps) {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'start',
-        p: 1
+        p: 1,
       }}
     >
       <Box sx={{ width: '100%', maxWidth: 325 }}>
         {mounted && (
-          <blockquote 
-            className="tiktok-embed" 
-            cite={`https://www.tiktok.com/@${username}`} 
-            data-unique-id={username} 
-            data-embed-type="creator" 
+          <blockquote
+            className="tiktok-embed"
+            cite={`https://www.tiktok.com/@${username}`}
+            data-unique-id={username}
+            data-embed-type="creator"
             style={{ maxWidth: 780, minWidth: 288 }}
-          > 
-            <section> 
-              <a target="_blank" href={`https://www.tiktok.com/@${username}`} rel="noreferrer">
+          >
+            <section>
+              <a
+                target="_blank"
+                href={`https://www.tiktok.com/@${username}`}
+                rel="noreferrer"
+              >
                 @{username}
-              </a> 
-            </section> 
+              </a>
+            </section>
           </blockquote>
         )}
         <Script src="https://www.tiktok.com/embed.js" strategy="lazyOnload" />

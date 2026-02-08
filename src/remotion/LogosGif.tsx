@@ -1,9 +1,9 @@
 import {
   AbsoluteFill,
+  Img,
+  staticFile,
   useCurrentFrame,
   useVideoConfig,
-  staticFile,
-  Img,
 } from 'remotion';
 
 export const LogosGif: React.FC = () => {

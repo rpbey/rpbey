@@ -2,10 +2,10 @@
 
 import {
   AbsoluteFill,
-  useVideoConfig,
   interpolate,
   spring,
   useCurrentFrame,
+  useVideoConfig,
 } from 'remotion';
 
 export const BeybladeIntro: React.FC<{ title: string; subtitle: string }> = ({

@@ -142,7 +142,14 @@ export default function HomeClient({
                 {activeTournament && (
                   <FadeIn delay={0.2}>
                     <Chip
-                      icon={<FiberManualRecord sx={{ fontSize: 12, animation: 'pulse 1.5s infinite' }} />}
+                      icon={
+                        <FiberManualRecord
+                          sx={{
+                            fontSize: 12,
+                            animation: 'pulse 1.5s infinite',
+                          }}
+                        />
+                      }
                       label={`EN DIRECT : ${activeTournament.name}`}
                       component={Link}
                       href={`/tournaments/${activeTournament.id}`}
@@ -165,7 +172,7 @@ export default function HomeClient({
                           '0%': { opacity: 1 },
                           '50%': { opacity: 0.5 },
                           '100%': { opacity: 1 },
-                        }
+                        },
                       }}
                     />
                   </FadeIn>

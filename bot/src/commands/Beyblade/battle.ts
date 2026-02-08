@@ -5,9 +5,9 @@ import {
   ButtonStyle,
   EmbedBuilder,
 } from 'discord.js';
+import { getDeckStats, runBattleSimulation } from '../../lib/battle-utils.js';
 import { Colors, RPB } from '../../lib/constants.js';
 import { pendingBattles } from '../../lib/state.js';
-import { getDeckStats, runBattleSimulation } from '../../lib/battle-utils.js';
 
 export class BattleCommand extends Command {
   constructor(context: Command.LoaderContext, options: Command.Options) {

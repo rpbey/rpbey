@@ -1,9 +1,9 @@
-import Container from '@mui/material/Container';
+import InfoIcon from '@mui/icons-material/Info';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
-import InfoIcon from '@mui/icons-material/Info';
-import { RankingsTable } from '@/components/rankings/RankingsTable';
+import Container from '@mui/material/Container';
 import RankingSearch from '@/components/rankings/RankingSearch';
+import { RankingsTable } from '@/components/rankings/RankingsTable';
 import SeasonSelector from '@/components/rankings/SeasonSelector';
 import { PageHeader } from '@/components/ui';
 import { prisma } from '@/lib/prisma';

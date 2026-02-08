@@ -1,13 +1,13 @@
 'use client';
 
-import { 
-  Box, 
-  Typography, 
-  Avatar, 
-  Stack, 
-  alpha, 
+import {
+  Avatar,
+  alpha,
+  Box,
+  Button,
+  Stack,
+  Typography,
   useTheme,
-  Button
 } from '@mui/material';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
@@ -27,7 +27,14 @@ export function RankingPreview({ rankings }: RankingPreviewProps) {
         {rankings.map((profile, index) => {
           const rank = index + 1;
           const isTop3 = rank <= 3;
-          const rankColor = rank === 1 ? '#FFD700' : rank === 2 ? '#C0C0C0' : rank === 3 ? '#CD7F32' : 'transparent';
+          const rankColor =
+            rank === 1
+              ? '#FFD700'
+              : rank === 2
+                ? '#C0C0C0'
+                : rank === 3
+                  ? '#CD7F32'
+                  : 'transparent';
 
           return (
             <motion.div
@@ -55,7 +62,7 @@ export function RankingPreview({ rankings }: RankingPreviewProps) {
                     bgcolor: alpha(theme.palette.primary.main, 0.05),
                     borderColor: theme.palette.primary.main,
                     transform: 'translateX(8px)',
-                  }
+                  },
                 }}
               >
                 {/* Rank Badge */}
@@ -72,7 +79,9 @@ export function RankingPreview({ rankings }: RankingPreviewProps) {
                     fontWeight: 900,
                     fontSize: '0.9rem',
                     flexShrink: 0,
-                    boxShadow: isTop3 ? `0 0 12px ${alpha(rankColor, 0.4)}` : 'none'
+                    boxShadow: isTop3
+                      ? `0 0 12px ${alpha(rankColor, 0.4)}`
+                      : 'none',
                   }}
                 >
                   {rank}
@@ -89,16 +98,27 @@ export function RankingPreview({ rankings }: RankingPreviewProps) {
                   <Typography variant="body2" fontWeight={800} noWrap>
                     {profile.bladerName || profile.user.name}
                   </Typography>
-                  <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
+                  <Typography
+                    variant="caption"
+                    color="text.secondary"
+                    sx={{ display: 'block' }}
+                  >
                     {profile.favoriteType || 'Standard'}
                   </Typography>
                 </Box>
 
                 <Box sx={{ textAlign: 'right' }}>
-                  <Typography variant="subtitle2" fontWeight={900} color="primary.main">
+                  <Typography
+                    variant="subtitle2"
+                    fontWeight={900}
+                    color="primary.main"
+                  >
                     {profile.rankingPoints}
                   </Typography>
-                  <Typography variant="caption" sx={{ fontSize: '0.6rem', opacity: 0.7 }}>
+                  <Typography
+                    variant="caption"
+                    sx={{ fontSize: '0.6rem', opacity: 0.7 }}
+                  >
                     PTS
                   </Typography>
                 </Box>
@@ -113,15 +133,15 @@ export function RankingPreview({ rankings }: RankingPreviewProps) {
         href="/rankings"
         fullWidth
         variant="outlined"
-        sx={{ 
-          mt: 3, 
-          borderRadius: 3, 
+        sx={{
+          mt: 3,
+          borderRadius: 3,
           fontWeight: 800,
           borderColor: alpha(theme.palette.divider, 0.1),
           '&:hover': {
             borderColor: 'primary.main',
-            bgcolor: alpha(theme.palette.primary.main, 0.05)
-          }
+            bgcolor: alpha(theme.palette.primary.main, 0.05),
+          },
         }}
       >
         Voir tout le classement

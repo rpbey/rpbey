@@ -1,7 +1,7 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState } from 'react';
 import { DiscordSDK } from '@discord/embedded-app-sdk';
+import { createContext, useContext, useEffect, useState } from 'react';
 
 interface DiscordActivityContextType {
   sdk: DiscordSDK | null;

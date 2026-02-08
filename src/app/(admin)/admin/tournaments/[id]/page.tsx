@@ -491,9 +491,7 @@ export default function TournamentDetailPage({
                   disabled={actionLoading !== null}
                   color="warning"
                 >
-                  {actionLoading === 'scrape'
-                    ? 'Scraping...'
-                    : 'Scrape Live'}
+                  {actionLoading === 'scrape' ? 'Scraping...' : 'Scrape Live'}
                 </Button>
               )}
 
@@ -577,10 +575,26 @@ export default function TournamentDetailPage({
                     mb: 1,
                   }}
                 >
-                  <Typography variant="caption" fontWeight={800}>#</Typography>
-                  <Typography variant="caption" fontWeight={800}>Joueur</Typography>
-                  <Typography variant="caption" fontWeight={800} textAlign="center">W / L</Typography>
-                  <Typography variant="caption" fontWeight={800} textAlign="right">Challonge</Typography>
+                  <Typography variant="caption" fontWeight={800}>
+                    #
+                  </Typography>
+                  <Typography variant="caption" fontWeight={800}>
+                    Joueur
+                  </Typography>
+                  <Typography
+                    variant="caption"
+                    fontWeight={800}
+                    textAlign="center"
+                  >
+                    W / L
+                  </Typography>
+                  <Typography
+                    variant="caption"
+                    fontWeight={800}
+                    textAlign="right"
+                  >
+                    Challonge
+                  </Typography>
                 </Box>
                 {liveData.standings.map((s) => (
                   <Box
@@ -635,7 +649,8 @@ export default function TournamentDetailPage({
               </Box>
             ) : (
               <Alert severity="info">
-                Aucun classement disponible. Lancez un &quot;Scrape Live&quot; pour récupérer les données.
+                Aucun classement disponible. Lancez un &quot;Scrape Live&quot;
+                pour récupérer les données.
               </Alert>
             )}
           </CardContent>
@@ -675,33 +690,58 @@ export default function TournamentDetailPage({
                         </Typography>
                         <Chip
                           icon={<FiberManualRecordIcon sx={{ fontSize: 8 }} />}
-                          label={isActive ? 'En cours' : isPaused ? 'Pause' : 'Libre'}
+                          label={
+                            isActive ? 'En cours' : isPaused ? 'Pause' : 'Libre'
+                          }
                           size="small"
-                          color={isActive ? 'success' : isPaused ? 'warning' : 'default'}
+                          color={
+                            isActive
+                              ? 'success'
+                              : isPaused
+                                ? 'warning'
+                                : 'default'
+                          }
                         />
                       </Box>
                       {station.currentMatch ? (
-                        <Box sx={{ p: 1.5, bgcolor: 'action.hover', borderRadius: 1 }}>
-                          <Typography variant="body2" fontWeight={700} textAlign="center">
-                            {station.currentMatch.player1 ?? '???'}
-                            {' '}
+                        <Box
+                          sx={{
+                            p: 1.5,
+                            bgcolor: 'action.hover',
+                            borderRadius: 1,
+                          }}
+                        >
+                          <Typography
+                            variant="body2"
+                            fontWeight={700}
+                            textAlign="center"
+                          >
+                            {station.currentMatch.player1 ?? '???'}{' '}
                             <Chip
                               label={station.currentMatch.scores || 'VS'}
                               size="small"
                               color="primary"
                               sx={{ fontWeight: 900, mx: 1 }}
-                            />
-                            {' '}
+                            />{' '}
                             {station.currentMatch.player2 ?? '???'}
                           </Typography>
                           {station.currentMatch.round !== 0 && (
-                            <Typography variant="caption" color="text.secondary" textAlign="center" sx={{ display: 'block', mt: 0.5 }}>
+                            <Typography
+                              variant="caption"
+                              color="text.secondary"
+                              textAlign="center"
+                              sx={{ display: 'block', mt: 0.5 }}
+                            >
                               Round {station.currentMatch.round}
                             </Typography>
                           )}
                         </Box>
                       ) : (
-                        <Typography variant="body2" color="text.secondary" textAlign="center">
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          textAlign="center"
+                        >
                           Aucun match
                         </Typography>
                       )}
@@ -713,7 +753,8 @@ export default function TournamentDetailPage({
           ) : (
             <Grid size={{ xs: 12 }}>
               <Alert severity="info">
-                Aucun stadium disponible. Lancez un &quot;Scrape Live&quot; pour récupérer les données.
+                Aucun stadium disponible. Lancez un &quot;Scrape Live&quot; pour
+                récupérer les données.
               </Alert>
             </Grid>
           )}
@@ -733,18 +774,30 @@ export default function TournamentDetailPage({
                       display: 'flex',
                       gap: 2,
                       py: 1,
-                      borderBottom: i < liveData.activityLog.length - 1 ? '1px solid' : 'none',
+                      borderBottom:
+                        i < liveData.activityLog.length - 1
+                          ? '1px solid'
+                          : 'none',
                       borderColor: 'divider',
                     }}
                   >
-                    <Typography variant="caption" color="text.secondary" sx={{ minWidth: 60, flexShrink: 0 }}>
+                    <Typography
+                      variant="caption"
+                      color="text.secondary"
+                      sx={{ minWidth: 60, flexShrink: 0 }}
+                    >
                       {entry.timestamp ? formatLogTime(entry.timestamp) : '—'}
                     </Typography>
                     <Chip
                       label={entry.type}
                       size="small"
                       variant="outlined"
-                      sx={{ fontSize: '0.65rem', height: 20, fontWeight: 700, flexShrink: 0 }}
+                      sx={{
+                        fontSize: '0.65rem',
+                        height: 20,
+                        fontWeight: 700,
+                        flexShrink: 0,
+                      }}
                     />
                     <Typography variant="body2" sx={{ flex: 1 }}>
                       {entry.message}
@@ -754,7 +807,8 @@ export default function TournamentDetailPage({
               </Box>
             ) : (
               <Alert severity="info">
-                Aucun journal disponible. Lancez un &quot;Scrape Live&quot; pour récupérer les données.
+                Aucun journal disponible. Lancez un &quot;Scrape Live&quot; pour
+                récupérer les données.
               </Alert>
             )}
           </CardContent>
@@ -763,8 +817,13 @@ export default function TournamentDetailPage({
 
       {/* Last updated */}
       {liveData?.lastUpdated && (
-        <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 2, textAlign: 'right' }}>
-          Dernière mise à jour live : {new Date(liveData.lastUpdated).toLocaleString('fr-FR')}
+        <Typography
+          variant="caption"
+          color="text.secondary"
+          sx={{ display: 'block', mt: 2, textAlign: 'right' }}
+        >
+          Dernière mise à jour live :{' '}
+          {new Date(liveData.lastUpdated).toLocaleString('fr-FR')}
         </Typography>
       )}
     </Box>
@@ -775,7 +834,10 @@ function formatLogTime(ts: string): string {
   try {
     const date = new Date(ts);
     if (isNaN(date.getTime())) return ts;
-    return date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+    return date.toLocaleTimeString('fr-FR', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
   } catch {
     return ts;
   }
