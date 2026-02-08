@@ -21,3 +21,4 @@ gha-creds-*.json
 dist
 logs/*.log
 check-data.ts
+*.log
