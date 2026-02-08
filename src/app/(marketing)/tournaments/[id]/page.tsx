@@ -93,6 +93,11 @@ export default function TournamentDetailPage() {
   const [loading, setLoading] = useState(true);
   const [liveData, setLiveData] = useState<LiveData | null>(null);
   const [activeTab, setActiveTab] = useState(0);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   useEffect(() => {
     async function fetchTournament() {
@@ -164,19 +169,23 @@ export default function TournamentDetailPage() {
 
   const mapPosition: [number, number] = [48.85785, 2.34623];
 
-  let formattedDate = 'Date non définie';
-  try {
-    if (tournament.date) {
-      formattedDate = new Date(tournament.date).toLocaleDateString('fr-FR', {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      });
+  const [formattedDate, setFormattedDate] = useState<string>('');
+
+  useEffect(() => {
+    if (tournament?.date) {
+      try {
+        const date = new Date(tournament.date).toLocaleDateString('fr-FR', {
+          weekday: 'long',
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        });
+        setFormattedDate(date);
+      } catch (e) {
+        setFormattedDate('Date non définie');
+      }
     }
-  } catch (e) {
-    console.error('Invalid date:', tournament.date);
-  }
+  }, [tournament?.date]);
 
   const [hostname, setHostname] = useState<string>('rpbey.fr');
 
@@ -310,49 +319,51 @@ export default function TournamentDetailPage() {
         <Grid size={{ xs: 12, md: 8 }}>
           
           {/* --- TWITCH PLAYER --- */}
-          <Paper
-            elevation={0}
-            sx={{
-              mb: 4,
-              borderRadius: 5,
-              overflow: 'hidden',
-              bgcolor: 'black',
-              border: '1px solid',
-              borderColor: alpha('#9146ff', 0.3),
-              boxShadow: '0 20px 50px rgba(0,0,0,0.3)',
-            }}
-          >
-            <Box sx={{ p: 2, bgcolor: alpha('#9146ff', 0.1), display: 'flex', alignItems: 'center', gap: 1.5, justifyContent: 'space-between' }}>
-              <Stack direction="row" spacing={1.5} alignItems="center">
-                <Sensors sx={{ color: '#9146ff' }} />
-                <Typography variant="subtitle2" fontWeight={900} sx={{ color: '#fff', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                  DIFFUSION EN DIRECT
-                </Typography>
-              </Stack>
-              <Chip 
-                label="LIVE" 
-                size="small" 
-                sx={{ 
-                  bgcolor: '#9146ff', 
-                  color: 'white', 
-                  fontWeight: 900, 
-                  fontSize: '0.65rem',
-                  height: 20
-                }} 
-              />
-            </Box>
-            <Box sx={{ position: 'relative', pt: '56.25%', width: '100%' }}>
-              <iframe
-                src={`https://player.twitch.tv/?channel=tv_rpb&parent=${hostname}&parent=rpbey.fr&parent=www.rpbey.fr&parent=localhost&parent=46.224.145.55&autoplay=true`}
-                title="Twitch Player"
-                style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }}
-                allowFullScreen
-              />
-            </Box>
-          </Paper>
+          {isLive && isMounted && (
+            <Paper
+              elevation={0}
+              sx={{
+                mb: 4,
+                borderRadius: 5,
+                overflow: 'hidden',
+                bgcolor: 'black',
+                border: '1px solid',
+                borderColor: alpha('#9146ff', 0.3),
+                boxShadow: '0 20px 50px rgba(0,0,0,0.3)',
+              }}
+            >
+              <Box sx={{ p: 2, bgcolor: alpha('#9146ff', 0.1), display: 'flex', alignItems: 'center', gap: 1.5, justifyContent: 'space-between' }}>
+                <Stack direction="row" spacing={1.5} alignItems="center">
+                  <Sensors sx={{ color: '#9146ff' }} />
+                  <Typography variant="subtitle2" fontWeight={900} sx={{ color: '#fff', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    DIFFUSION EN DIRECT
+                  </Typography>
+                </Stack>
+                <Chip 
+                  label="LIVE" 
+                  size="small" 
+                  sx={{ 
+                    bgcolor: '#9146ff', 
+                    color: 'white', 
+                    fontWeight: 900, 
+                    fontSize: '0.65rem',
+                    height: 20
+                  }} 
+                />
+              </Box>
+              <Box sx={{ position: 'relative', pt: '56.25%', width: '100%' }}>
+                <iframe
+                  src={`https://player.twitch.tv/?channel=tv_rpb&parent=${hostname}&parent=rpbey.fr&parent=www.rpbey.fr&parent=localhost&parent=46.224.145.55&autoplay=true`}
+                  title="Twitch Player"
+                  style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }}
+                  allowFullScreen
+                />
+              </Box>
+            </Paper>
+          )}
 
           {/* Live Stadiums Section */}
-          {isLive && stations.length > 0 && (
+          {isLive && isMounted && stations.length > 0 && (
             <Paper
               elevation={0}
               sx={{
@@ -545,7 +556,7 @@ export default function TournamentDetailPage() {
               )}
             </Box>
 
-            {liveData?.lastUpdated && (
+            {liveData?.lastUpdated && isMounted && (
               <Box sx={{ px: 4, py: 2, borderTop: '1px solid', borderColor: 'divider', bgcolor: alpha(theme.palette.background.default, 0.4) }}>
                 <Stack direction="row" spacing={1} alignItems="center">
                   <FiberManualRecord sx={{ fontSize: 8, color: isLive ? 'success.main' : 'text.disabled' }} />
@@ -909,9 +920,11 @@ function ActivityLogPanel({ log }: { log: LogEntry[] }) {
               <Box sx={{ flex: 1 }}>
                 <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 0.5 }}>
                    <Typography variant="caption" fontWeight={900} sx={{ textTransform: 'uppercase' }}>{entry.type}</Typography>
-                   <Typography variant="caption" color="text.secondary" fontWeight={600}>
-                      {formatLogTimestamp(entry.timestamp)}
-                   </Typography>
+                   {isMounted && (
+                     <Typography variant="caption" color="text.secondary" fontWeight={600}>
+                        {formatLogTimestamp(entry.timestamp)}
+                     </Typography>
+                   )}
                 </Stack>
                 <Typography variant="body2" fontWeight={600} sx={{ lineHeight: 1.5 }}>{entry.message}</Typography>
               </Box>
