@@ -1,17 +1,8 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
-import { Box } from '@mui/material';
+import { Box, CircularProgress } from '@mui/material';
 
 export default function Loading() {
-  const videoRef = useRef<HTMLVideoElement>(null);
-
-  useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.playbackRate = 2.5;
-    }
-  }, []);
-
   return (
     <Box
       sx={{
@@ -19,25 +10,11 @@ export default function Loading() {
         justifyContent: 'center',
         alignItems: 'center',
         minHeight: '100vh',
-        bgcolor: '#000',
+        bgcolor: 'background.default', // Use theme background instead of hardcoded black
         zIndex: 9999,
       }}
     >
-      <Box
-        component="video"
-        ref={videoRef}
-        src="/rpb.mp4"
-        autoPlay
-        muted
-        loop
-        playsInline
-        sx={{
-          width: { xs: '80%', md: '40%' },
-          maxWidth: '500px',
-          height: 'auto',
-          filter: 'drop-shadow(0 0 20px rgba(220, 38, 38, 0.5))',
-        }}
-      />
+      <CircularProgress size={60} sx={{ color: '#dc2626' }} />
     </Box>
   );
 }

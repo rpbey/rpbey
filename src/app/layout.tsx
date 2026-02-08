@@ -5,7 +5,6 @@ import { Suspense } from 'react';
 import { SocketProvider } from '@/components/providers/SocketProvider';
 import { JsonLd } from '@/components/seo/JsonLd';
 import ThemeRegistry from '@/components/theme/ThemeRegistry';
-import { VideoLoader } from '@/components/ui/VideoLoader';
 import { SmoothScroll } from '@/components/ui/SmoothScroll';
 import { Toaster } from '@/components/ui/Toaster';
 import { googleSansFlex } from '@/lib/fonts';
@@ -114,9 +113,6 @@ export default function RootLayout({
         <InitColorSchemeScript attribute="class" defaultMode="dark" />
         <JsonLd data={generateWebsiteJsonLd()} />
         <ThemeRegistry>
-          <Suspense fallback={null}>
-            <VideoLoader />
-          </Suspense>
           <SmoothScroll />
           <Toaster />
           <SocketProvider>{children}</SocketProvider>
