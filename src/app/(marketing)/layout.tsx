@@ -1,12 +1,12 @@
 import Box from '@mui/material/Box';
 import type { Metadata } from 'next';
 import {
-  ICON_NAV_WIDTH,
   IconFooter,
   IconNav,
   MarketingHeader,
   MobileNav,
 } from '@/components/layout';
+import { ICON_NAV_WIDTH } from '@/components/layout/constants';
 
 export const metadata: Metadata = {
   title: {

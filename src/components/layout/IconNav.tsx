@@ -36,9 +36,7 @@ import { useState } from 'react';
 import { ThemeSwitcher } from '@/components/theme/ThemeSwitcher';
 import { TrophyIcon } from '@/components/ui/Icons';
 import { signOut, useSession } from '@/lib/auth-client';
-
-// Width of the icon navigation sidebar (48px icon + 16px padding each side)
-export const ICON_NAV_WIDTH = 80;
+import { ICON_NAV_WIDTH } from './constants';
 
 const navItems = [
   { icon: Home, label: 'Accueil', href: '/' },
