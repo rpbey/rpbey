@@ -14,6 +14,7 @@ import { useState } from 'react';
 import type { BeyTubeVideo } from '@/lib/beytube';
 import type { VideoInfo } from '@/lib/twitch';
 import { MediaCard } from './MediaCard';
+import { TikTokCard } from './TikTokCard';
 import { VideoPlayerModal } from './VideoPlayerModal';
 import { YouTubeMobileCard } from './YouTubeMobileCard';
 
@@ -112,16 +113,32 @@ export function TvFeed({
         </Stack>
       ),
     },
+    {
+      label: 'TikTok RPB',
+      content: (
+        <Stack spacing={3}>
+          <TikTokCard 
+            username="skarngamemaster" 
+            url="https://www.tiktok.com/@skarngamemaster"
+            // Skarn is a major creator, often has recent videos
+          />
+          <TikTokCard 
+            username="rpbeyblade1" 
+            url="https://www.tiktok.com/@rpbeyblade1?lang=fr"
+          />
+        </Stack>
+      ),
+    },
   ];
 
   if (isDesktop) {
     return (
       <Box sx={{ width: '100%', mb: 10 }}>
-        <Grid container spacing={4}>
+        <Grid container spacing={3}>
           {Sections.map((section, idx) => (
-            <Grid key={idx} size={{ xs: 12, md: 4 }}>
+            <Grid key={idx} size={{ xs: 12, md: 3 }}>
               <Typography
-                variant="h5"
+                variant="h6"
                 fontWeight="900"
                 sx={{
                   mb: 3,
@@ -130,10 +147,11 @@ export function TvFeed({
                   display: 'flex',
                   alignItems: 'center',
                   gap: 1.5,
+                  fontSize: '0.9rem',
                   '&::before': {
                     content: '""',
                     width: 4,
-                    height: 24,
+                    height: 20,
                     bgcolor: 'primary.main',
                     borderRadius: 1,
                   },
@@ -189,20 +207,23 @@ export function TvFeed({
         <Tabs
           value={tab}
           onChange={(_, v) => setTab(v)}
-          variant="fullWidth"
+          variant="scrollable"
+          scrollButtons="auto"
           textColor="primary"
           indicatorColor="primary"
           sx={{
             '& .MuiTab-root': {
               fontWeight: 800,
               textTransform: 'uppercase',
-              fontSize: '0.9rem',
+              fontSize: '0.8rem',
+              minWidth: 100,
             },
           }}
         >
           <Tab label="Clips" />
           <Tab label="Rediff" />
           <Tab label="BeyTube" />
+          <Tab label="TikTok" />
         </Tabs>
       </Box>
 
