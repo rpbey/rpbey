@@ -165,12 +165,6 @@ export function RankingsTable({
               <TableCell align="center">Points</TableCell>
               <TableCell
                 align="center"
-                sx={{ display: { xs: 'none', md: 'table-cell' } }}
-              >
-                Participations
-              </TableCell>
-              <TableCell
-                align="center"
                 sx={{ display: { xs: 'none', sm: 'table-cell' } }}
               >
                 Tournois Gagnés
@@ -287,14 +281,6 @@ export function RankingsTable({
                     </TableCell>
                     <TableCell
                       align="center"
-                      sx={{ display: { xs: 'none', md: 'table-cell' } }}
-                    >
-                      <Typography fontWeight="bold">
-                        {profile.user._count.tournaments}
-                      </Typography>
-                    </TableCell>
-                    <TableCell
-                      align="center"
                       sx={{ display: { xs: 'none', sm: 'table-cell' } }}
                     >
                       {profile.tournamentWins > 0 ? (
@@ -366,7 +352,7 @@ export function RankingsTable({
               })
             ) : (
               <TableRow>
-                <TableCell colSpan={8} align="center" sx={{ py: 8 }}>
+                <TableCell colSpan={7} align="center" sx={{ py: 8 }}>
                   <Typography variant="h6" color="text.secondary" gutterBottom>
                     Aucun blader trouvé
                   </Typography>

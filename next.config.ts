@@ -8,7 +8,7 @@ const nextConfig: NextConfig = {
   output: "standalone",
 
   // Cache Components (Next.js 16+)
-  cacheComponents: true, // Keep enabled for 'use cache' directives
+  cacheComponents: false, // Disabled due to instability with external scraping
 
   // External packages for server (Puppeteer/Crawlee)
   serverExternalPackages: [

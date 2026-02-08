@@ -20,12 +20,17 @@ export interface TikTokVideo {
 }
 
 export async function getTikTokVideos(username: string): Promise<TikTokVideo[]> {
-  'use cache';
-  cacheLife('hours');
-
   try {
-    const result = await GetUserPosts(username);
-    
+    // Timeout promise (5 seconds)
+    const timeout = new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error('TikTok Timeout')), 5000),
+    );
+
+    const result = (await Promise.race([
+      GetUserPosts(username),
+      timeout,
+    ])) as any;
+
     if (result.status !== 'success' || !result.result) {
       console.error(`Failed to fetch TikTok posts for ${username}:`, result);
       return [];

@@ -17,15 +17,27 @@ export default async function TVPage() {
   await connection();
   const domain = process.env.NEXT_PUBLIC_DOMAIN || 'rpbey.fr';
 
-  // Fetch all media in parallel
+  // Helper to fetch with timeout and safety
+  const safeFetch = async <T,>(promise: Promise<T>, fallback: T): Promise<T> => {
+    try {
+      return await promise;
+    } catch (e) {
+      console.error('SafeFetch error:', e);
+      return fallback;
+    }
+  };
+
+  // Fetch all media in parallel with individual safety and logging
+  const start = Date.now();
   const [clips, rpbVideos, beyTubeVideos, rpbTikTok, skarnTikTok, sunTikTok] = await Promise.all([
-    getRPBClips(20),
-    getRecentYouTubeVideos(undefined, 20),
-    getBeyTubeFeatured(),
-    getTikTokVideos('rpbeyblade1'),
-    getTikTokVideos('skarngamemaster'),
-    getTikTokVideos('sunafterthereign'),
+    safeFetch(getRPBClips(20), []),
+    safeFetch(getRecentYouTubeVideos(undefined, 20), []),
+    safeFetch(getBeyTubeFeatured(), []),
+    safeFetch(getTikTokVideos('rpbeyblade1'), []),
+    safeFetch(getTikTokVideos('skarngamemaster'), []),
+    safeFetch(getTikTokVideos('sunafterthereign'), []),
   ]);
+  console.log(`[TV Page] Fetch took ${Date.now() - start}ms`);
 
   // Merge and sort TikTok videos by date (newest first)
   const tikTokVideos: TikTokVideo[] = [...rpbTikTok, ...skarnTikTok, ...sunTikTok]
