@@ -75,6 +75,15 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+
+  async rewrites() {
+    return [
+      {
+        source: "/api/bot/socket/:path*",
+        destination: "http://10.0.1.1:3001/socket.io/:path*",
+      },
+    ];
+  },
 };
 
 export default nextConfig;
