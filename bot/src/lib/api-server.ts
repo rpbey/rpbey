@@ -13,6 +13,7 @@ import type {
 } from 'discord.js';
 import { Colors, RPB } from './constants.js';
 import { SocketManager } from './socket-manager.js';
+import { twitchBot } from './twitch-bot.js';
 
 const logs: { timestamp: string; level: string; message: string }[] = [];
 const MAX_LOGS = 1000;
@@ -313,8 +314,8 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse) {
                 RPB.Channels.Social,
               );
               if (channel?.isTextBased()) {
-                const mention = RPB.Roles.Events
-                  ? `<@&${RPB.Roles.Events}>`
+                const mention = RPB.Roles.Reseaux
+                  ? `<@&${RPB.Roles.Reseaux}>`
                   : '@everyone';
                 await (channel as GuildTextBasedChannel).send({
                   content: `${mention} 🔴 **${data.event.broadcaster_user_name} est en LIVE !**\nhttps://www.twitch.tv/${data.event.broadcaster_user_login}`,
@@ -324,6 +325,28 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse) {
             sendJSON(res, { ok: true });
           } catch {
             sendError(res, 'Invalid JSON', 400);
+          }
+        });
+        return;
+      }
+
+      case '/api/twitch/announce': {
+        if (req.method !== 'POST')
+          return sendError(res, 'Method not allowed', 405);
+        let body = '';
+        req.on('data', (chunk) => {
+          body += chunk;
+        });
+        req.on('end', async () => {
+          try {
+            const { message } = JSON.parse(body);
+            if (!message) return sendError(res, 'Missing message');
+            
+            await twitchBot.announce(message);
+            return sendJSON(res, { success: true, message: 'Announcement sent' });
+          } catch (e) {
+            container.logger.error('[Twitch] Error sending announcement:', e);
+            sendError(res, `Internal Error: ${String(e)}`, 500);
           }
         });
         return;
@@ -340,22 +363,20 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse) {
           try {
             const data = JSON.parse(body);
             if (data.event?.type === 'video.upload') {
-              // Channel ID provided by user: 1333203623471087708
-              // or fallback to Social channel if configured
-              const targetChannelId = '1333203623471087708';
-
               const channel =
-                container.client.channels.cache.get(targetChannelId);
+                container.client.channels.cache.get(RPB.Channels.Social);
 
               if (channel?.isTextBased()) {
                 const { title, authorName, url } = data.event;
-                // You might want to mention a role here too if desired
-                const content = `🎥 **Nouvelle vidéo de ${authorName} !**\n**${title}**\n${url}`;
+                const mention = RPB.Roles.Reseaux
+                  ? `<@&${RPB.Roles.Reseaux}>`
+                  : '@everyone';
+                const content = `${mention} 🎥 **Nouvelle vidéo de ${authorName} !**\n**${title}**\n${url}`;
 
                 await (channel as GuildTextBasedChannel).send({ content });
               } else {
                 container.logger.warn(
-                  `[YouTube] Channel ${targetChannelId} not found or not text-based.`,
+                  `[YouTube] Channel ${RPB.Channels.Social} not found or not text-based.`,
                 );
               }
             }

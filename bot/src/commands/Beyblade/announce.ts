@@ -8,6 +8,7 @@ import {
 } from 'discord.js';
 import { getChallongeClient } from '../../lib/challonge.js';
 import { Colors, RPB } from '../../lib/constants.js';
+import { twitchBot } from '../../lib/twitch-bot.js';
 
 export class AnnounceCommand extends Command {
   constructor(context: Command.LoaderContext, options: Command.Options) {
@@ -351,6 +352,12 @@ export class AnnounceCommand extends Command {
         sentMessage.react('❌'),
         sentMessage.react('❓'),
       ]);
+
+      // Announce on Twitch
+      if (twitchBot.chatClient?.isConnected) {
+        const twitchMessage = `🏆 Annonce : Le tournoi ${t.attributes.name} est annoncé ! Inscrivez-vous : https://challonge.com/${t.attributes.url} #BeybladeX`;
+        await twitchBot.announce(twitchMessage);
+      }
 
       // If it's an announcement channel, try to publish
       if ('type' in channel && channel.type === ChannelType.GuildAnnouncement) {

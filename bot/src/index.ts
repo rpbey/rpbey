@@ -16,6 +16,7 @@ import { Player } from 'discord-player';
 import { startApiServer } from './lib/api-server.js';
 import { generateCustomCommands } from './lib/command-generator.js';
 import { setupLogCapture } from './lib/log-capture.js';
+import { twitchBot } from './lib/twitch-bot.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -35,6 +36,9 @@ if (process.env.GUILD_ID) {
 try {
   // Generate custom commands from DB before starting
   await generateCustomCommands();
+
+  // Initialize Twitch Bot
+  await twitchBot.init();
 
   const client = new SapphireClient({
     baseUserDirectory: __dirname,
