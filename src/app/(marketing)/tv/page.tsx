@@ -1,4 +1,4 @@
-import { Container } from '@mui/material';
+import { Container, Typography, Box } from '@mui/material';
 import { getBeyTubeFeatured } from '@/lib/beytube';
 import { getRPBClips } from '@/lib/twitch';
 import { getRecentYouTubeVideos } from '@/lib/youtube';
@@ -24,7 +24,26 @@ export default async function TVPage() {
   ]);
 
   return (
-    <Container maxWidth="md" sx={{ py: 2, px: 0 }}>
+    <Container maxWidth="lg" sx={{ py: 4, px: { xs: 0, sm: 3 } }}>
+      <Box sx={{ mb: 4, px: { xs: 2, sm: 0 } }}>
+        <Typography
+          variant="h2"
+          fontWeight="900"
+          sx={{
+            textTransform: 'uppercase',
+            letterSpacing: '-0.02em',
+            background: 'linear-gradient(135deg, #dc2626 0%, #fbbf24 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+          }}
+        >
+          RPB TV
+        </Typography>
+        <Typography variant="subtitle1" color="text.secondary" fontWeight="600">
+          Clips, Rediffusions et BeyTube FR
+        </Typography>
+      </Box>
+
       <TvFeed
         clips={clips}
         rpbVideos={rpbVideos}
