@@ -2,7 +2,6 @@
 
 import { Download } from '@mui/icons-material';
 import { Button } from '@mui/material';
-import html2canvas from 'html2canvas';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
@@ -28,6 +27,7 @@ export function DownloadBracketButton({ targetId, fileName = 'tournament-export'
       // Add a small delay to ensure rendering
       await new Promise(r => setTimeout(r, 100));
 
+      const { default: html2canvas } = await import('html2canvas');
       const canvas = await html2canvas(element, {
         useCORS: true,
         backgroundColor: '#121212', // Dark background by default

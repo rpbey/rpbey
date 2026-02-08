@@ -20,41 +20,33 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
   try {
     const { id } = await params;
 
-    let tournament = await prisma.tournament.findUnique({
-      where: { id },
-      include: {
-        participants: {
-          include: {
-            user: {
-              include: {
-                profile: true,
-                decks: {
-                  where: { isActive: true },
-                  include: {
-                    items: {
-                      include: {
-                        bey: true,
-                        blade: true,
-                        ratchet: true,
-                        bit: true,
-                      },
-                    },
-                  },
-                },
-              },
+    const includeRelations = {
+      participants: {
+        include: {
+          user: {
+            include: {
+              profile: true,
             },
           },
-          orderBy: { seed: 'asc' },
         },
-        matches: {
-          include: {
-            player1: { include: { profile: true } },
-            player2: { include: { profile: true } },
-            winner: { include: { profile: true } },
-          },
-          orderBy: [{ round: 'asc' }, { createdAt: 'asc' }],
-        },
+        orderBy: { seed: 'asc' } as const,
       },
+      matches: {
+        include: {
+          player1: { include: { profile: true } },
+          player2: { include: { profile: true } },
+          winner: { include: { profile: true } },
+        },
+        orderBy: [
+          { round: 'asc' } as const,
+          { createdAt: 'asc' } as const,
+        ],
+      },
+    };
+
+    let tournament = await prisma.tournament.findUnique({
+      where: { id },
+      include: includeRelations,
     });
 
     // Fallback: Try searching by challongeId or challongeUrl slug
@@ -63,39 +55,7 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
         where: {
           OR: [{ challongeId: id }, { challongeUrl: { contains: id } }],
         },
-        include: {
-          participants: {
-            include: {
-              user: {
-                include: {
-                  profile: true,
-                  decks: {
-                    where: { isActive: true },
-                    include: {
-                      items: {
-                        include: {
-                          bey: true,
-                          blade: true,
-                          ratchet: true,
-                          bit: true,
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-            orderBy: { seed: 'asc' },
-          },
-          matches: {
-            include: {
-              player1: { include: { profile: true } },
-              player2: { include: { profile: true } },
-              winner: { include: { profile: true } },
-            },
-            orderBy: [{ round: 'asc' }, { createdAt: 'asc' }],
-          },
-        },
+        include: includeRelations,
       });
     }
 

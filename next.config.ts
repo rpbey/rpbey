@@ -12,12 +12,13 @@ const nextConfig: NextConfig = {
 
   // External packages for server (Puppeteer/Crawlee)
   serverExternalPackages: [
-    "puppeteer", 
-    "puppeteer-extra", 
-    "puppeteer-extra-plugin-stealth", 
-    "crawlee", 
-    "turndown", 
-    "@napi-rs/canvas"
+    "puppeteer",
+    "puppeteer-extra",
+    "puppeteer-extra-plugin-stealth",
+    "crawlee",
+    "turndown",
+    "@napi-rs/canvas",
+    "@tobyg74/tiktok-api-dl"
   ],
 
   // Experimental features
