@@ -9,6 +9,8 @@ import { PageHeader } from '@/components/ui';
 import { prisma } from '@/lib/prisma';
 import { getSeasonStandings, getSeasons } from '@/server/actions/season';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata = {
   title: 'Classements | RPB',
   description:
@@ -25,6 +27,7 @@ export default async function RankingsPage({
   searchParams,
 }: RankingsPageProps) {
   const resolvedSearchParams = await searchParams;
+  console.log('RankingsPage Params:', resolvedSearchParams);
   const page = Number(resolvedSearchParams.page) || 1;
   const pageSize = 20;
   const seasonSlug =

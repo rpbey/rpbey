@@ -80,6 +80,7 @@ export async function updateRankingConfig(data: {
 export async function recalculateRankings() {
   // This operation is heavy and shouldn't be cached, but its result affects everything
   const config = await getRankingConfig(); // Cached read is fine here
+  console.log('⚙️ Ranking Config:', config);
 
   // Get current season
   const currentSeason = await prisma.rankingSeason.findFirst({
@@ -89,6 +90,8 @@ export async function recalculateRankings() {
   const startDate = currentSeason?.startDate || new Date(0);
 
   // 1. Fetch data
+  console.log(`🔍 Season: ${currentSeason?.name}, Start: ${startDate}`);
+  
   const tournaments = await prisma.tournament.findMany({
     where: {
       status: { in: ['COMPLETE', 'ARCHIVED', 'UNDERWAY'] },
@@ -108,6 +111,8 @@ export async function recalculateRankings() {
     },
   });
 
+  console.log(`📊 Found ${tournaments.length} tournaments to process.`);
+
   const playerPoints = new Map<string, number>();
   const playerStats = new Map<
     string,
@@ -116,11 +121,15 @@ export async function recalculateRankings() {
 
   // 2. Calculate points
   for (const tournament of tournaments) {
+    console.log(`  > Processing "${tournament.name}" (${tournament.participants.length} participants)`);
     const multiplier =
       tournament.category?.multiplier ?? tournament.weight ?? 1.0;
 
     for (const participant of tournament.participants) {
-      if (!participant.user.profile) continue;
+      if (!participant.user.profile) {
+        // console.log(`    ⚠️ Skipping ${participant.userId}: No profile`);
+        continue;
+      }
 
       const isFinished =
         tournament.status === 'COMPLETE' || tournament.status === 'ARCHIVED';
@@ -162,6 +171,8 @@ export async function recalculateRankings() {
       const weightedPoints = Math.round(points * multiplier);
       const currentPoints = playerPoints.get(userId) || 0;
       playerPoints.set(userId, currentPoints + weightedPoints);
+      
+      console.log(`    -> ${participant.user.username}: ${weightedPoints} pts`);
     }
   }
 
@@ -171,6 +182,9 @@ export async function recalculateRankings() {
     const currentPoints = playerPoints.get(adj.userId) || 0;
     playerPoints.set(adj.userId, currentPoints + adj.points);
   }
+
+  console.log(`💾 Saving points for ${playerPoints.size} players...`);
+  console.log('Sample points:', Array.from(playerPoints.entries()).slice(0, 3));
 
   // 4. Batch update
   await prisma.$transaction(
