@@ -4,6 +4,8 @@ import { ApiClient } from '@twurple/api';
 import { container } from '@sapphire/framework';
 import { promises as fs } from 'fs';
 import path from 'path';
+import { prisma } from './prisma.js';
+import { RPB } from './constants.js';
 
 const TOKEN_PATH = path.join(process.cwd(), 'data', 'twitch-tokens.json');
 
@@ -21,6 +23,7 @@ export class TwitchBot {
   public chatClient: ChatClient | null = null;
   public apiClient: ApiClient | null = null;
   private channel: string;
+  private timer: NodeJS.Timeout | null = null;
 
   constructor() {
     this.channel = process.env.TWITCH_CHANNEL || process.env.NEXT_PUBLIC_TWITCH_CHANNEL || 'tv_rpb';
@@ -82,7 +85,7 @@ export class TwitchBot {
           refreshToken,
           expiresIn: null, 
           obtainmentTimestamp: 0
-        }, ['chat:read', 'chat:edit']);
+        }, ['chat']);
         
         this.authProvider = authProvider;
 
@@ -95,15 +98,22 @@ export class TwitchBot {
 
       this.chatClient = new ChatClient({
         authProvider: this.authProvider,
+        authIntents: ['chat'],
         channels: [this.channel]
       });
 
       this.chatClient.onConnect(() => {
         log('info', `Connected to chat channel: ${this.channel}`);
+        this.startTimer();
+      });
+
+      this.chatClient.onMessage(async (channel, user, text) => {
+        await this.handleChatMessage(channel, user, text);
       });
 
       this.chatClient.onDisconnect((manually, reason) => {
         log('warn', `Disconnected from chat. Manual: ${manually}, Reason: ${reason}`);
+        this.stopTimer();
       });
       
       this.chatClient.onAuthenticationFailure((text, retryCount) => {
@@ -114,6 +124,44 @@ export class TwitchBot {
 
     } catch (error) {
       log('error', 'Failed to initialize:', error);
+    }
+  }
+
+  private async handleChatMessage(_channel: string, user: string, text: string) {
+    const lowerText = text.toLowerCase().trim();
+    
+    // Hardcoded Commands
+    if (lowerText === '!discord') {
+      await this.announce(`Rejoignez la plus grande communauté française de Beyblade X sur Discord ! 🌀 ${RPB.Discord}`);
+    }
+
+    // Dynamic commands from DB (model BotCommand)
+    if (lowerText.startsWith('!')) {
+      const cmdName = lowerText.slice(1);
+      try {
+        const customCmd = await prisma.botCommand.findUnique({
+          where: { name: cmdName }
+        });
+        if (customCmd && customCmd.enabled) {
+          await this.announce(customCmd.response);
+        }
+      } catch (error) {
+        log('error', `Error fetching custom command ${cmdName}:`, error);
+      }
+    }
+  }
+
+  private startTimer() {
+    this.stopTimer();
+    this.timer = setInterval(async () => {
+      await this.announce(`🌀 Envie de discuter Beyblade X ? Rejoins notre Discord officiel : ${RPB.Discord}`);
+    }, 30 * 60 * 1000); // 30 minutes
+  }
+
+  private stopTimer() {
+    if (this.timer) {
+      clearInterval(this.timer);
+      this.timer = null;
     }
   }
 

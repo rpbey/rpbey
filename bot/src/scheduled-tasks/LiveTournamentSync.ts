@@ -43,6 +43,7 @@ export class LiveTournamentSyncTask extends ScheduledTask {
 
       for (const t of tournaments) {
         const target = t.challongeUrl || t.challongeId;
+        if (!target) continue;
 
         this.container.logger.info(`[LiveSync] Scraping ${target}...`);
 

@@ -2,7 +2,8 @@ import { container } from '@sapphire/framework';
 import type { Prisma } from '@prisma/client';
 import { getChallongeClient } from './challonge.js';
 import prisma from './prisma.js';
-import { ChallongeScraper } from './scrapers/challonge-scraper.js';
+import { ChallongeScraper, type ScrapedLogEntry } from './scrapers/challonge-scraper.js';
+import { twitchBot } from './twitch-bot.js';
 
 /**
  * Service de synchronisation Challonge

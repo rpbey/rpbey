@@ -1,4 +1,3 @@
-
 import 'dotenv/config';
 import { ChallongeScraper } from '../src/lib/scrapers/challonge-scraper';
 import pg from 'pg';
@@ -6,6 +5,10 @@ import pg from 'pg';
 async function main() {
   const scraper = new ChallongeScraper();
   const db = new pg.Client({ connectionString: process.env.DATABASE_URL });
+
+  const tournamentId = 'cm-bts2-auto-imported';
+  const tournamentDate = new Date('2026-02-08T13:00:00Z');
+  const tournamentName = 'Bey-Tamashii Séries #2';
 
   try {
     await db.connect();
@@ -23,7 +26,57 @@ async function main() {
     else if (result.metadata.state === 'underway') status = 'UNDERWAY';
     else if (result.metadata.state === 'awaiting_review') status = 'COMPLETE';
 
-    // 2. Upsert Tournament
+    // 2. Get existing data to compare before update
+    const existingRes = await db.query('SELECT "activityLog", stations FROM tournaments WHERE id = $1', [tournamentId]);
+    const oldLog = existingRes.rows[0]?.activityLog || [];
+    const oldStations = existingRes.rows[0]?.stations || [];
+    
+    // Detect new log entries
+    if (result.log.length > oldLog.length) {
+      const newEntries = result.log.slice(0, result.log.length - oldLog.length);
+      console.log(`🔔 ${newEntries.length} nouvelles entrées de log détectées.`);
+      
+      for (const entry of newEntries) {
+        const msg = `📢 [Challonge] ${entry.message}`;
+        try {
+          await fetch('http://localhost:3001/api/twitch/announce', {
+            method: 'POST',
+            headers: { 
+              'Content-Type': 'application/json',
+              'x-api-key': process.env.BOT_API_KEY || ''
+            },
+            body: JSON.stringify({ message: msg })
+          });
+        } catch (e) {
+          console.warn('⚠️ Échec de l\'envoi de la notification Twitch:', e.message);
+        }
+      }
+    }
+
+    // Detect station changes
+    for (const newStation of result.stations) {
+      const oldStation = oldStations.find((s: any) => s.stationId === newStation.stationId);
+      if (newStation.currentMatch && (!oldStation || !oldStation.currentMatch || oldStation.currentMatch.matchId !== newStation.currentMatch.matchId)) {
+        // New match assigned to station
+        const m = newStation.currentMatch;
+        const msg = `🏟️ [STADIUM] ${newStation.name} : ${m.player1 || '???'} vs ${m.player2 || '???'} (Match ${m.identifier})`;
+        console.log(`🏟️ Notification Station : ${msg}`);
+        try {
+          await fetch('http://localhost:3001/api/twitch/announce', {
+            method: 'POST',
+            headers: { 
+              'Content-Type': 'application/json',
+              'x-api-key': process.env.BOT_API_KEY || ''
+            },
+            body: JSON.stringify({ message: msg })
+          });
+        } catch (e) {
+          // ignore
+        }
+      }
+    }
+
+    // 3. Upsert Tournament
     const tournamentQuery = `
       INSERT INTO tournaments (
         id, name, description, date, location, format, "challongeUrl", status, standings, stations, "activityLog", "createdAt", "updatedAt"
@@ -41,10 +94,6 @@ async function main() {
         "updatedAt" = NOW()
       RETURNING id;
     `;
-
-    const tournamentId = 'cm-bts2-auto-imported';
-    const tournamentDate = new Date('2026-02-08T13:00:00Z');
-    const tournamentName = 'Bey-Tamashii Séries #2';
 
     await db.query(tournamentQuery, [
       tournamentId,
@@ -66,7 +115,7 @@ async function main() {
     const challongeIdToUserId = new Map<number, string>();
     const activeParticipantUserIds = new Set<string>();
 
-    // 3. Sync Participants (Simple name-based sync for now)
+    // 4. Sync Participants (Simple name-based sync for now)
     console.log('👥 Synchronisation des participants...');
     for (const p of result.participants) {
         const userRes = await db.query('SELECT id FROM users WHERE name = $1 OR username = $1', [p.name]);
@@ -136,14 +185,11 @@ async function main() {
 
     console.log(`✅ ${challongeIdToUserId.size} participants liés à des comptes RPB.`);
 
-    // 4. Sync Matches
+    // 5. Sync Matches
     console.log(`⚔️ Synchronisation des ${result.matches.length} matchs...`);
     let matchesImported = 0;
 
     for (const m of result.matches) {
-        // On ne sync que si au moins un des joueurs est connu (ou on stocke tout ?)
-        // Mieux vaut stocker tout pour l'arbre complet, même si les users sont null
-        
         const p1UserId = m.player1Id ? challongeIdToUserId.get(m.player1Id) : null;
         const p2UserId = m.player2Id ? challongeIdToUserId.get(m.player2Id) : null;
         const winnerUserId = m.winnerId ? challongeIdToUserId.get(m.winnerId) : null;

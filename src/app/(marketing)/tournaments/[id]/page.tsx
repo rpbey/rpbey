@@ -358,6 +358,59 @@ export default function TournamentDetailPage() {
             </Grid>
           </Grid>
 
+          {/* Live Stadiums Section (Always visible if live) */}
+          {isLive && stations.length > 0 && (
+            <Paper
+              elevation={0}
+              sx={{
+                p: 3,
+                mb: 3,
+                borderRadius: 4,
+                border: '2px solid',
+                borderColor: 'error.main',
+                bgcolor: alpha(theme.palette.error.main, 0.02),
+              }}
+            >
+              <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 2 }}>
+                <Sensors color="error" />
+                <Typography variant="h6" fontWeight="900" color="error.main">
+                  STADIUMS EN DIRECT
+                </Typography>
+              </Stack>
+              <Grid container spacing={2}>
+                {stations.filter(s => s.status === 'active').slice(0, 3).map((station) => (
+                  <Grid key={station.stationId} size={{ xs: 12, sm: 4 }}>
+                    <Box sx={{ p: 1.5, borderRadius: 3, bgcolor: 'background.paper', border: '1px solid', borderColor: 'divider' }}>
+                      <Typography variant="caption" fontWeight={800} color="text.secondary" sx={{ display: 'block', mb: 0.5 }}>
+                        {station.name}
+                      </Typography>
+                      {station.currentMatch ? (
+                        <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={1}>
+                          <Typography variant="body2" fontWeight={700} noWrap sx={{ maxWidth: '45%' }}>
+                            {station.currentMatch.player1 ?? '???'}
+                          </Typography>
+                          <Typography variant="caption" fontWeight={900} color="primary">VS</Typography>
+                          <Typography variant="body2" fontWeight={700} noWrap sx={{ maxWidth: '45%' }} textAlign="right">
+                            {station.currentMatch.player2 ?? '???'}
+                          </Typography>
+                        </Stack>
+                      ) : (
+                        <Typography variant="body2" color="text.disabled">Libre</Typography>
+                      )}
+                    </Box>
+                  </Grid>
+                ))}
+                {stations.filter(s => s.status === 'active').length === 0 && (
+                  <Grid size={12}>
+                    <Typography variant="body2" color="text.secondary" textAlign="center" sx={{ py: 1 }}>
+                      En attente du lancement des prochains matchs...
+                    </Typography>
+                  </Grid>
+                )}
+              </Grid>
+            </Paper>
+          )}
+
           {/* Tabs: Bracket + Live Data */}
           {hasLiveData ? (
             <>
