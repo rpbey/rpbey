@@ -114,7 +114,7 @@ export class LeaderboardCommand extends Command {
         }
 
         return interaction.editReply({
-          content,
+          content: `${content}\n🏆 **Classement complet :** https://rpbey.fr/rankings`,
           files: [attachment],
         });
       }
