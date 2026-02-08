@@ -1,5 +1,4 @@
 import { GetUserPosts } from '@tobyg74/tiktok-api-dl';
-import { cacheLife } from 'next/cache';
 
 export interface TikTokVideo {
   id: string;

@@ -7,9 +7,7 @@ import { useEffect, useState } from 'react';
 interface TikTokCardProps {
   username: string;
   url?: string;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   featuredVideoUrl?: string;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   avatarUrl?: string;
 }
 

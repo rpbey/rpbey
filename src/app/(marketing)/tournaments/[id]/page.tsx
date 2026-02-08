@@ -152,7 +152,7 @@ export default function TournamentDetailPage() {
           day: 'numeric',
         });
         setFormattedDate(date);
-      } catch (_e) {
+      } catch {
         setFormattedDate('Date non définie');
       }
     }
@@ -644,7 +644,7 @@ export default function TournamentDetailPage() {
               {activeTab === 1 && <StandingsPanel standings={standings} />}
 
               {activeTab === 2 && stations.length > 0 && (
-                <StadiumsPanel stations={stations} isLive={isLive} />
+                <StadiumsPanel stations={stations} />
               )}
 
               {activeTab === (stations.length > 0 ? 3 : 2) && (
@@ -1018,10 +1018,8 @@ function StandingsPanel({ standings }: { standings: Standing[] }) {
 
 function StadiumsPanel({
   stations,
-  isLive,
 }: {
   stations: Station[];
-  isLive: boolean;
 }) {
   const theme = useTheme();
 
