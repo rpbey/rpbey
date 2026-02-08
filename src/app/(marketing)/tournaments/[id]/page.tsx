@@ -164,12 +164,19 @@ export default function TournamentDetailPage() {
 
   const mapPosition: [number, number] = [48.85785, 2.34623];
 
-  const formattedDate = new Date(tournament.date).toLocaleDateString('fr-FR', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
+  let formattedDate = 'Date non définie';
+  try {
+    if (tournament.date) {
+      formattedDate = new Date(tournament.date).toLocaleDateString('fr-FR', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      });
+    }
+  } catch (e) {
+    console.error('Invalid date:', tournament.date);
+  }
 
   const [hostname, setHostname] = useState<string>('rpbey.fr');
 
@@ -179,9 +186,9 @@ export default function TournamentDetailPage() {
     }
   }, []);
 
-  const standings = (liveData?.standings ?? []) as Standing[];
-  const stations = (liveData?.stations ?? []) as Station[];
-  const activityLog = (liveData?.activityLog ?? []) as LogEntry[];
+  const standings = (liveData?.standings || []) as Standing[];
+  const stations = (liveData?.stations || []) as Station[];
+  const activityLog = (liveData?.activityLog || []) as LogEntry[];
 
   const hasLiveData = standings.length > 0 || stations.length > 0 || activityLog.length > 0;
 
