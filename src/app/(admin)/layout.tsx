@@ -3,6 +3,7 @@ import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { connection } from 'next/server';
 import { AdminShell } from '@/components/admin/AdminShell';
+import { SocketProvider } from '@/components/providers/SocketProvider';
 import { auth } from '@/lib/auth';
 
 export const metadata: Metadata = {
@@ -35,5 +36,9 @@ export default async function AdminLayout({
     redirect('/dashboard');
   }
 
-  return <AdminShell>{children}</AdminShell>;
+  return (
+    <SocketProvider>
+      <AdminShell>{children}</AdminShell>
+    </SocketProvider>
+  );
 }

@@ -1,6 +1,12 @@
 'use client';
 
-import { motion, useReducedMotion, type Variants } from 'framer-motion';
+import {
+  LazyMotion,
+  domAnimation,
+  m,
+  useReducedMotion,
+  type Variants,
+} from 'framer-motion';
 import type { ReactNode } from 'react';
 
 export function FadeIn({
@@ -39,15 +45,17 @@ export function FadeIn({
   };
 
   return (
-    <motion.div
-      initial="hidden"
-      animate="visible"
-      variants={variants}
-      className={className}
-      style={{ width: fullWidth ? '100%' : 'auto' }}
-    >
-      {children}
-    </motion.div>
+    <LazyMotion features={domAnimation}>
+      <m.div
+        initial="hidden"
+        animate="visible"
+        variants={variants}
+        className={className}
+        style={{ width: fullWidth ? '100%' : 'auto' }}
+      >
+        {children}
+      </m.div>
+    </LazyMotion>
   );
 }
 
@@ -61,20 +69,22 @@ export function FadeInStagger({
   className?: string;
 }) {
   return (
-    <motion.div
-      initial="hidden"
-      animate="visible"
-      variants={{
-        visible: {
-          transition: {
-            staggerChildren: faster ? 0.05 : 0.1,
+    <LazyMotion features={domAnimation}>
+      <m.div
+        initial="hidden"
+        animate="visible"
+        variants={{
+          visible: {
+            transition: {
+              staggerChildren: faster ? 0.05 : 0.1,
+            },
           },
-        },
-      }}
-      className={className}
-    >
-      {children}
-    </motion.div>
+        }}
+        className={className}
+      >
+        {children}
+      </m.div>
+    </LazyMotion>
   );
 }
 
@@ -88,14 +98,16 @@ export function ScaleOnHover({
   className?: string;
 }) {
   return (
-    <motion.div
-      whileHover={{ scale }}
-      whileTap={{ scale: 0.98 }}
-      transition={{ type: 'spring', stiffness: 400, damping: 17 }}
-      className={className}
-      style={{ height: '100%' }}
-    >
-      {children}
-    </motion.div>
+    <LazyMotion features={domAnimation}>
+      <m.div
+        whileHover={{ scale }}
+        whileTap={{ scale: 0.98 }}
+        transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+        className={className}
+        style={{ height: '100%' }}
+      >
+        {children}
+      </m.div>
+    </LazyMotion>
   );
 }

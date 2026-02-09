@@ -76,6 +76,7 @@ export function PartsBrowser() {
       <Box sx={{ mb: 4, textAlign: 'center' }}>
         <Typography
           variant="h2"
+          component="h1"
           fontWeight="900"
           sx={{ mb: 2, fontSize: { xs: '2.5rem', md: '3.5rem' } }}
         >

@@ -1,11 +1,8 @@
 import InitColorSchemeScript from '@mui/material/InitColorSchemeScript';
-import { GoogleTagManager } from '@next/third-parties/google';
+import Script from 'next/script';
 import type { Metadata, Viewport } from 'next';
-import { Suspense } from 'react';
-import { SocketProvider } from '@/components/providers/SocketProvider';
 import { JsonLd } from '@/components/seo/JsonLd';
 import ThemeRegistry from '@/components/theme/ThemeRegistry';
-import { SmoothScroll } from '@/components/ui/SmoothScroll';
 import { Toaster } from '@/components/ui/Toaster';
 import { googleSansFlex } from '@/lib/fonts';
 import { generateWebsiteJsonLd } from '@/lib/seo-utils';
@@ -99,7 +96,6 @@ export default function RootLayout({
       className={googleSansFlex.variable}
       suppressHydrationWarning
     >
-      <GoogleTagManager gtmId="GTM-WQTHQZM9" />
       <body>
         <noscript>
           <iframe
@@ -110,12 +106,18 @@ export default function RootLayout({
             title="gtm"
           />
         </noscript>
+        <Script
+          id="gtm"
+          strategy="lazyOnload"
+          dangerouslySetInnerHTML={{
+            __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-WQTHQZM9');`,
+          }}
+        />
         <InitColorSchemeScript attribute="class" defaultMode="dark" />
         <JsonLd data={generateWebsiteJsonLd()} />
         <ThemeRegistry>
-          <SmoothScroll />
           <Toaster />
-          <SocketProvider>{children}</SocketProvider>
+          {children}
         </ThemeRegistry>
       </body>
     </html>

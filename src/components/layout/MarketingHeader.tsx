@@ -72,6 +72,7 @@ export function MarketingHeader() {
             <IconButton
               component={Link}
               href={session ? '/dashboard' : '/sign-in'}
+              aria-label={session ? 'Mon compte' : 'Se connecter'}
               sx={{
                 p: 0.5,
                 border: '1px solid',
@@ -87,6 +88,7 @@ export function MarketingHeader() {
               {session?.user?.image ? (
                 <Avatar
                   src={session.user.image}
+                  alt={session.user.name || 'Avatar'}
                   sx={{ width: 28, height: 28, border: '1px solid #fbbf24' }}
                 />
               ) : (

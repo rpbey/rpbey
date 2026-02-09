@@ -204,6 +204,7 @@ export default async function AboutPage() {
         <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
           <Typography
             variant="h2"
+            component="h1"
             fontWeight="bold"
             textAlign="center"
             sx={{ mb: 2 }}
@@ -224,7 +225,7 @@ export default async function AboutPage() {
       <Container maxWidth="lg" sx={{ py: 8 }}>
         {/* Notre Histoire */}
         <Box sx={{ mb: 10 }}>
-          <Typography variant="h4" fontWeight="bold" sx={{ mb: 3 }}>
+          <Typography variant="h4" component="h2" fontWeight="bold" sx={{ mb: 3 }}>
             Notre Histoire
           </Typography>
           <Grid container spacing={4}>
@@ -264,6 +265,7 @@ export default async function AboutPage() {
         <Box sx={{ mb: 10 }}>
           <Typography
             variant="h4"
+            component="h2"
             fontWeight="bold"
             sx={{ mb: 4, textAlign: 'center' }}
           >
@@ -322,7 +324,7 @@ export default async function AboutPage() {
           <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 4 }}>
             <Gavel sx={{ fontSize: 40, color: 'primary.main' }} />
             <Box>
-              <Typography variant="h4" fontWeight="bold">
+              <Typography variant="h4" component="h2" fontWeight="bold">
                 Règlement
               </Typography>
               <Typography variant="body1" color="text.secondary">
@@ -400,7 +402,7 @@ export default async function AboutPage() {
         <Box sx={{ py: 6 }}>
           <Grid container spacing={6} alignItems="center">
             <Grid size={{ xs: 12, md: 7 }}>
-              <Typography variant="h4" fontWeight="bold" sx={{ mb: 2 }}>
+              <Typography variant="h4" component="h2" fontWeight="bold" sx={{ mb: 2 }}>
                 Prêt à rejoindre l'aventure ?
               </Typography>
               <Typography

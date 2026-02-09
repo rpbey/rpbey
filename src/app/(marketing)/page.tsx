@@ -1,11 +1,11 @@
-import { connection } from 'next/server';
 import { getDiscordStats, getDiscordTeam } from '@/lib/discord-data';
 import { prisma } from '@/lib/prisma';
 import { getContent } from '@/server/actions/cms';
 import HomeClient from './HomeClient';
 
+export const revalidate = 60;
+
 export default async function HomePage() {
-  await connection(); // Force dynamic rendering
   const [stats, team, activeTournament, heroContent, rankings] =
     await Promise.all([
       getDiscordStats(),

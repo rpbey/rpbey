@@ -36,15 +36,12 @@ export default function ThemeRegistry({
   children: React.ReactNode;
 }) {
   const [mode, setModeState] = React.useState<ThemeMode>('dark');
-  const [mounted, setMounted] = React.useState(false);
-
   // Load theme from localStorage on mount
   React.useEffect(() => {
     const savedMode = localStorage.getItem('rpb-theme-mode') as ThemeMode;
     if (savedMode && (savedMode === 'dark' || savedMode === 'tournament')) {
       setModeState(savedMode);
     }
-    setMounted(true);
   }, []);
 
   const setTheme = React.useCallback((newMode: ThemeMode) => {
@@ -57,7 +54,7 @@ export default function ThemeRegistry({
     setTheme(newMode);
   }, [mode, setTheme]);
 
-  const backgroundImage = mode === 'tournament' ? '/blue.jpeg' : '/red.jpeg';
+  const backgroundImage = mode === 'tournament' ? '/blue.webp' : '/red.webp';
 
   const activeTheme = mode === 'tournament' ? tournamentTheme : darkTheme;
 
@@ -70,31 +67,6 @@ export default function ThemeRegistry({
     }),
     [mode, toggleTheme, setTheme, backgroundImage],
   );
-
-  // Prevent hydration mismatch by rendering a basic wrapper until mounted
-  if (!mounted) {
-    return (
-      <AppRouterCacheProvider>
-        <ThemeContext.Provider
-          value={{
-            mode: 'dark',
-            toggleTheme: () => {},
-            setTheme: () => {},
-            backgroundImage: '/red.jpeg',
-          }}
-        >
-          <ThemeProvider theme={darkTheme}>
-            <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="fr">
-              <ToastProvider>
-                <CssBaseline />
-                <Box sx={{ visibility: 'hidden' }}>{children}</Box>
-              </ToastProvider>
-            </LocalizationProvider>
-          </ThemeProvider>
-        </ThemeContext.Provider>
-      </AppRouterCacheProvider>
-    );
-  }
 
   return (
     <AppRouterCacheProvider>
@@ -110,15 +82,4 @@ export default function ThemeRegistry({
       </ThemeContext.Provider>
     </AppRouterCacheProvider>
   );
-}
-
-// Internal helper for the loading state
-function Box({
-  children,
-  sx,
-}: {
-  children: React.ReactNode;
-  sx?: React.CSSProperties;
-}) {
-  return <div style={sx}>{children}</div>;
 }

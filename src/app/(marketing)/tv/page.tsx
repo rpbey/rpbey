@@ -47,6 +47,7 @@ export default async function TVPage() {
       <Box sx={{ mb: 4, px: { xs: 2, sm: 0 } }}>
         <Typography
           variant="h2"
+          component="h1"
           fontWeight="900"
           sx={{
             textTransform: 'uppercase',

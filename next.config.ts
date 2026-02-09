@@ -24,10 +24,13 @@ const nextConfig: NextConfig = {
   // Experimental features
   experimental: {
     optimizePackageImports: [
+      "@mui/material",
+      "@mui/icons-material",
       "@mui/x-charts",
       "@mui/x-data-grid",
       "@mui/x-date-pickers",
       "@mui/x-tree-view",
+      "framer-motion",
     ],
     serverActions: {
       allowedOrigins: [
@@ -45,6 +48,7 @@ const nextConfig: NextConfig = {
 
   // Image optimization
   images: {
+    formats: ['image/avif', 'image/webp'],
     remotePatterns: [
       {
         protocol: "https",
@@ -75,6 +79,36 @@ const nextConfig: NextConfig = {
         hostname: "img.youtube.com",
       },
     ],
+  },
+
+  async headers() {
+    return [
+      {
+        source: "/(.*)",
+        headers: [
+          {
+            key: "Strict-Transport-Security",
+            value: "max-age=63072000; includeSubDomains; preload",
+          },
+          {
+            key: "X-Content-Type-Options",
+            value: "nosniff",
+          },
+          {
+            key: "X-Frame-Options",
+            value: "SAMEORIGIN",
+          },
+          {
+            key: "Referrer-Policy",
+            value: "strict-origin-when-cross-origin",
+          },
+          {
+            key: "Permissions-Policy",
+            value: "camera=(), microphone=(), geolocation=()",
+          },
+        ],
+      },
+    ];
   },
 
   async rewrites() {

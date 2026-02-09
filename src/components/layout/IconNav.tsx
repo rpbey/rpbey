@@ -188,6 +188,7 @@ export function IconNav() {
         <Tooltip title="Compte" placement="right">
           <IconButton
             onClick={handleMenuOpen}
+            aria-label="Menu compte"
             sx={{
               width: 56,
               height: 56,

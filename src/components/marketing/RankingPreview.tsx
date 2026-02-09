@@ -89,6 +89,7 @@ export function RankingPreview({ rankings }: RankingPreviewProps) {
 
                 <Avatar
                   src={profile.user.image || undefined}
+                  alt={profile.bladerName || profile.user.name || 'Joueur'}
                   sx={{ width: 40, height: 40, border: '2px solid white' }}
                 >
                   {getInitials(profile.bladerName || profile.user.name)}

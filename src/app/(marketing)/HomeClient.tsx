@@ -11,7 +11,7 @@ import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { type MotionStyle, motion } from 'framer-motion';
+import { type MotionStyle, LazyMotion, domAnimation, m } from 'framer-motion';
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -83,10 +83,10 @@ export default function HomeClient({
   const heroOpacity = 1;
 
   return (
-    <>
+    <LazyMotion features={domAnimation}>
       {/* Hero Section - MD3 Expressive 2026 */}
       <Box
-        component={motion.div}
+        component={m.div}
         style={{ opacity: heroOpacity } as MotionStyle}
         sx={{
           position: 'relative',
@@ -134,7 +134,7 @@ export default function HomeClient({
           <Grid container spacing={6} alignItems="center">
             <Grid size={{ xs: 12, md: 7 }}>
               <Box
-                component={motion.div}
+                component={m.div}
                 initial={{ opacity: 0, x: -30 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.8, ease: EASE.EMPHASIZED }}
@@ -302,10 +302,11 @@ export default function HomeClient({
                       <TournamentLiveCarousel tournament={activeTournament} />
                     ) : (
                       <Image
-                        src="/canvas.png"
+                        src="/canvas.webp"
                         alt="RPB Tournament"
                         width={600}
                         height={800}
+                        sizes="(max-width: 768px) 100vw, 40vw"
                         style={{
                           objectFit: 'cover',
                           width: '100%',
@@ -350,6 +351,7 @@ export default function HomeClient({
                       <Box>
                         <Typography
                           variant="h5"
+                          component="h2"
                           fontWeight={900}
                           color="text.primary"
                           sx={{ letterSpacing: '-0.02em' }}
@@ -406,6 +408,6 @@ export default function HomeClient({
       <Container maxWidth="lg" sx={{ py: 10 }}>
         <FeedMyPartnership />
       </Container>
-    </>
+    </LazyMotion>
   );
 }

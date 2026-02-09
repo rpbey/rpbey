@@ -7,6 +7,7 @@ import {
   MobileNav,
 } from '@/components/layout';
 import { ICON_NAV_WIDTH } from '@/components/layout/constants';
+import { SmoothScroll } from '@/components/ui/SmoothScroll';
 
 export const metadata: Metadata = {
   title: {
@@ -24,6 +25,7 @@ export default function MarketingLayout({
 }) {
   return (
     <Box sx={{ display: 'flex', minHeight: '100vh' }}>
+      <SmoothScroll />
       {/* Desktop: Left icon navigation */}
       <IconNav />
 

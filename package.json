@@ -7,7 +7,7 @@
     "dev": "NODE_OPTIONS='--max-old-space-size=8192' next dev",
     "dev:all": "pnpm run bot:dev & next dev",
     "build": "NODE_OPTIONS='--max-old-space-size=8192' next build --webpack",
-    "start": "NODE_OPTIONS='--max-old-space-size=8192' next start",
+    "start": "NODE_OPTIONS='--max-old-space-size=512' next start",
     "lint": "eslint .",
     "format": "biome format --write .",
     "check": "biome check --write .",

@@ -11,7 +11,7 @@ if (connectionString && connectionString.includes('10.0.1.8')) {
   connectionString = connectionString.replace('10.0.1.8', '10.0.1.4');
 }
 
-const pool = new pg.Pool({ connectionString });
+const pool = new pg.Pool({ connectionString, max: 5 });
 const adapter = new PrismaPg(pool);
 
 export const prisma =
