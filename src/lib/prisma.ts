@@ -4,12 +4,7 @@ import pg from 'pg';
 
 const globalForPrisma = global as unknown as { prisma: PrismaClient };
 
-// Runtime fix for floating IP change in Coolify/Docker
-let connectionString = process.env.DATABASE_URL;
-if (connectionString && connectionString.includes('10.0.1.8')) {
-  console.log('Patching DATABASE_URL: 10.0.1.8 -> 10.0.1.4');
-  connectionString = connectionString.replace('10.0.1.8', '10.0.1.4');
-}
+const connectionString = process.env.DATABASE_URL;
 
 const pool = new pg.Pool({ connectionString, max: 5 });
 const adapter = new PrismaPg(pool);
