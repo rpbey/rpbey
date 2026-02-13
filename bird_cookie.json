@@ -1,0 +1,24 @@
+[
+  {
+    "name": "auth_token",
+    "value": "9000c2088bb028e4145f7f67a58e3aeb18ba03fc",
+    "domain": ".x.com",
+    "path": "/",
+    "expires": "2027-02-04T19:37:07.261Z",
+    "httpOnly": true,
+    "secure": true,
+    "sameSite": "None",
+    "priority": "Medium"
+  },
+  {
+    "name": "ct0",
+    "value": "67356117450550b221d118b396d88a6ab9861fe3a6c9b1fbfa536113ff5baf24d1ab5b248c51403b54b86042bf1227f88e6144dedae8562f62666b79e1ecee34940cbf5d6caf25b9aca2357cab2e5fca",
+    "domain": ".x.com",
+    "path": "/",
+    "expires": "2027-02-04T19:37:07.678Z",
+    "httpOnly": false,
+    "secure": true,
+    "sameSite": "Lax",
+    "priority": "Medium"
+  }
+]
