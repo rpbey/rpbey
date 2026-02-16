@@ -66,15 +66,15 @@ export default function TournamentsPage() {
       >
           <Box sx={{ 
               position: 'relative', 
-              width: { xs: 180, md: 240 }, 
-              height: { xs: 100, md: 130 },
+              width: { xs: 120, md: 160 }, 
+              height: { xs: 65, md: 85 },
               flexShrink: 0
           }}>
               <Image 
                 src="/satr-logo.webp" 
                 alt="SATR Logo" 
                 fill 
-                style={{ objectFit: 'contain', mixBlendMode: 'screen', filter: 'drop-shadow(0 0 20px rgba(251, 191, 36, 0.15))' }} 
+                style={{ objectFit: 'contain', mixBlendMode: 'screen' }} 
               />
           </Box>
 

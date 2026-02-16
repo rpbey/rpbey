@@ -171,12 +171,12 @@ export default async function SatrPage({ searchParams }: SatrPageProps) {
                         justifyContent: { xs: 'center', md: 'flex-start' },
                         width: '100%'
                     }}>
-                        <Box sx={{ position: 'relative', width: { xs: 120, md: 180 }, height: { xs: 60, md: 80 } }}>
+                        <Box sx={{ position: 'relative', width: { xs: 90, md: 130 }, height: { xs: 45, md: 60 } }}>
                             <Image 
                                 src="/satr-logo.webp" 
                                 alt="SATR 2 Logo" 
                                 fill 
-                                style={{ objectFit: 'contain', mixBlendMode: 'screen', filter: 'drop-shadow(0 0 20px rgba(220, 38, 38, 0.2))' }} 
+                                style={{ objectFit: 'contain', mixBlendMode: 'screen' }} 
                                 priority 
                             />
                         </Box>
