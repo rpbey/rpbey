@@ -119,3 +119,16 @@ export async function linkSatrBladers() {
             return { success: false, error: String(error) };
         }
     }
+
+export async function getSatrBladerByName(name: string) {
+    try {
+        const blader = await prisma.satrBlader.findFirst({
+            where: {
+                name: { equals: name, mode: 'insensitive' }
+            }
+        });
+        return { success: true, data: blader };
+    } catch (error) {
+        return { success: false, error: String(error) };
+    }
+}

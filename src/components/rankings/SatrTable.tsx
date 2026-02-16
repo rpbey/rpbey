@@ -11,9 +11,13 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 import Pagination from '@mui/material/Pagination';
-import type { SatrRanking } from '@prisma/client';
+import type { SatrRanking, SatrBlader } from '@prisma/client';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
+import { useState } from 'react';
+import { SatrBladerDialog } from './SatrBladerDialog';
+import { getSatrBladerByName } from '@/server/actions/satr';
+import { toast } from 'sonner';
 
 interface SatrTableProps {
   rankings: SatrRanking[];
@@ -26,6 +30,8 @@ export function SatrTable({ rankings, totalPages, currentPage }: SatrTableProps)
   const theme = useTheme();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [selectedBlader, setSelectedBlader] = useState<SatrBlader | null>(null);
+  const [loadingBlader, setLoadingBlader] = useState(false);
 
   const handlePageChange = (
     _event: React.ChangeEvent<unknown>,
@@ -34,6 +40,22 @@ export function SatrTable({ rankings, totalPages, currentPage }: SatrTableProps)
     const params = new URLSearchParams(searchParams.toString());
     params.set('page', value.toString());
     router.push(`/tournaments/satr?${params.toString()}`);
+  };
+
+  const handleRowClick = async (name: string) => {
+      setLoadingBlader(true);
+      try {
+          const res = await getSatrBladerByName(name);
+          if (res.success && res.data) {
+              setSelectedBlader(res.data as SatrBlader);
+          } else {
+              toast.error(`Historique introuvable pour ${name}`);
+          }
+      } catch (e) {
+          toast.error("Erreur lors de la récupération de l'historique");
+      } finally {
+          setLoadingBlader(false);
+      }
   };
 
   const getRankBadge = (rank: number) => {
@@ -109,9 +131,11 @@ export function SatrTable({ rankings, totalPages, currentPage }: SatrTableProps)
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         hover 
+                        onClick={() => handleRowClick(row.playerName)}
                         sx={{ 
                             '& td': { py: 1, borderBottom: '1px solid rgba(255,255,255,0.02)' },
-                            '&:hover': { bgcolor: 'rgba(255,255,255,0.03) !important' }
+                            '&:hover': { bgcolor: 'rgba(255,255,255,0.03) !important' },
+                            cursor: loadingBlader ? 'wait' : 'pointer'
                         }}
                     >
                     <TableCell align="center">{getRankBadge(row.rank)}</TableCell>
@@ -180,6 +204,12 @@ export function SatrTable({ rankings, totalPages, currentPage }: SatrTableProps)
             />
             </Box>
         )}
+
+        <SatrBladerDialog 
+            blader={selectedBlader}
+            open={!!selectedBlader}
+            onClose={() => setSelectedBlader(null)}
+        />
     </Box>
   );
 }

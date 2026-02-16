@@ -5,6 +5,7 @@ import { SatrTable } from '@/components/rankings/SatrTable';
 import { SatrBladersTable } from '@/components/rankings/SatrBladersTable';
 import { SatrHallOfFame } from '@/components/rankings/SatrHallOfFame';
 import { SatrTabs } from '@/components/rankings/SatrTabs';
+import { SatrCharts } from '@/components/rankings/SatrCharts';
 import RankingSearch from '@/components/rankings/RankingSearch';
 import { prisma } from '@/lib/prisma';
 import Image from 'next/image';
@@ -92,18 +93,19 @@ export default async function SatrPage({ searchParams }: SatrPageProps) {
                 const whereCondition = searchQuery ? {
                     name: { contains: searchQuery, mode: 'insensitive' as const }
                 } : {};
-                            const [bladers, count] = await Promise.all([
-                                prisma.satrBlader.findMany({
-                                    where: whereCondition,
-                                    orderBy: [
-                                        { tournamentWins: 'desc' },
-                                        { totalWins: 'desc' }
-                                    ],
-                                    take: pageSize,
-                                    skip: (page - 1) * pageSize,
-                                }),
-                                prisma.satrBlader.count({ where: whereCondition })
-                            ]);                return { items: bladers, total: count };
+                const [bladers, count] = await Promise.all([
+                    prisma.satrBlader.findMany({
+                        where: whereCondition,
+                        orderBy: [
+                            { tournamentWins: 'desc' },
+                            { totalWins: 'desc' }
+                        ],
+                        take: pageSize,
+                        skip: (page - 1) * pageSize,
+                    }),
+                    prisma.satrBlader.count({ where: whereCondition })
+                ]);
+                return { items: bladers, total: count };
               }
           } catch (e) {
               console.error('Data fetch error:', e);
@@ -239,6 +241,8 @@ export default async function SatrPage({ searchParams }: SatrPageProps) {
                 )}
 
                 <Box sx={{ mt: 2 }}>
+                    {mode === 'career' && <SatrCharts bladers={rankingData.items as any[]} />}
+                    
                     {mode === 'ranking' ? (
                         <SatrTable rankings={rankingData.items as any[]} totalPages={totalPages} currentPage={page} totalCount={rankingData.total} />
                     ) : (
