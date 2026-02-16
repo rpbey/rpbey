@@ -48,34 +48,40 @@ export default function TournamentsPage() {
         description="Découvrez et inscrivez-vous aux prochains tournois Beyblade X."
       />
 
-      {/* Simplified BBT / SATR Section */}
-      <Paper 
+      {/* Simplified BBT / SATR Section - Matching Card Style */}
+      <Card 
         elevation={0}
         sx={{ 
             mb: 8, 
-            p: { xs: 3, md: 4 },
+            p: { xs: 2, md: 3 },
             borderRadius: 4, 
-            background: 'linear-gradient(145deg, #111 0%, #050505 100%)',
-            border: '1px solid rgba(255,255,255,0.05)',
+            border: '1px solid',
+            borderColor: 'divider',
             display: 'flex',
-            flexDirection: { xs: 'column', md: 'row' },
+            flexDirection: { xs: 'column', sm: 'row' },
             alignItems: 'center',
-            justifyContent: 'center',
-            gap: { xs: 3, md: 8 }
+            justifyContent: 'space-between',
+            gap: 3
         }}
       >
-          <Box sx={{ 
-              position: 'relative', 
-              width: { xs: 120, md: 160 }, 
-              height: { xs: 65, md: 85 },
-              flexShrink: 0
-          }}>
-              <Image 
-                src="/satr-logo.webp" 
-                alt="SATR Logo" 
-                fill 
-                style={{ objectFit: 'contain', mixBlendMode: 'screen' }} 
-              />
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 3, width: '100%' }}>
+              <Box sx={{ 
+                  position: 'relative', 
+                  width: { xs: 100, md: 140 }, 
+                  height: { xs: 50, md: 70 },
+                  flexShrink: 0
+              }}>
+                  <Image 
+                    src="/satr-logo.webp" 
+                    alt="SATR Logo" 
+                    fill 
+                    style={{ objectFit: 'contain', mixBlendMode: 'screen' }} 
+                  />
+              </Box>
+              <Box>
+                  <Typography variant="h6" fontWeight="bold">Série Officielle SATR</Typography>
+                  <Typography variant="body2" color="text.secondary">Accédez aux classements et à l'historique des BBT.</Typography>
+              </Box>
           </Box>
 
           <Button 
@@ -86,24 +92,17 @@ export default function TournamentsPage() {
             sx={{ 
                 borderRadius: 2, 
                 fontWeight: 900, 
-                px: 6, 
-                py: 2,
+                px: 4, 
+                py: 1.2,
                 bgcolor: '#fbbf24',
                 color: '#000',
-                fontSize: '1rem',
-                letterSpacing: 1,
-                boxShadow: '0 0 20px rgba(251, 191, 36, 0.2)',
-                '&:hover': { 
-                    bgcolor: '#f59e0b',
-                    transform: 'translateY(-2px)',
-                    boxShadow: '0 5px 25px rgba(251, 191, 36, 0.3)',
-                },
-                transition: 'all 0.3s ease'
+                whiteSpace: 'nowrap',
+                '&:hover': { bgcolor: '#f59e0b' }
             }}
           >
-              VOIR LES TOURNOIS SATR
+              VOIR LE CLASSEMENT
           </Button>
-      </Paper>
+      </Card>
 
       <Typography variant="h5" fontWeight="900" sx={{ mb: 4, letterSpacing: -0.5 }}>
           Tous les <span style={{ color: '#dc2626' }}>Tournois</span>
