@@ -1,6 +1,6 @@
 'use client';
 
-import { useTheme } from '@mui/material';
+import { useTheme, alpha } from '@mui/material';
 import Box from '@mui/material/Box';
 import Pagination from '@mui/material/Pagination';
 import Paper from '@mui/material/Paper';
@@ -17,6 +17,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { TrophyIcon } from '@/components/ui/Icons';
 import { SatrBladerDialog } from './SatrBladerDialog';
+import { motion } from 'framer-motion';
 
 interface SatrBladersTableProps {
   bladers: SatrBlader[];
@@ -30,7 +31,6 @@ export function SatrBladersTable({
   totalPages,
   currentPage,
 }: SatrBladersTableProps) {
-  const _theme = useTheme();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [selectedBlader, setSelectedBlader] = useState<SatrBlader | null>(null);
@@ -50,37 +50,31 @@ export function SatrBladersTable({
         component={Paper}
         elevation={0}
         sx={{
-          border: '1px solid',
-          borderColor: 'divider',
-          borderRadius: 2,
-          overflowX: 'auto',
-          mb: 2,
+            background: 'rgba(255,255,255,0.02)',
+            backdropFilter: 'blur(10px)',
+            border: '1px solid rgba(255,255,255,0.05)',
+            borderRadius: 4,
+            overflowX: 'auto',
+            mb: 3,
         }}
       >
         <Table size="small">
           <TableHead>
-            <TableRow sx={{ bgcolor: 'action.hover' }}>
-              <TableCell width={60} align="center" sx={{ py: 1 }}>
+            <TableRow sx={{ bgcolor: 'rgba(255,255,255,0.03)' }}>
+              <TableCell width={60} align="center" sx={{ py: 2, fontWeight: 900, textTransform: 'uppercase', fontSize: '0.7rem' }}>
                 #
               </TableCell>
-              <TableCell sx={{ py: 1 }}>Blader</TableCell>
-              <TableCell align="center" sx={{ py: 1 }}>
-                Total Wins
-              </TableCell>
-              <TableCell align="center" sx={{ py: 1 }}>
-                Total Losses
-              </TableCell>
-              <TableCell align="center" sx={{ py: 1 }}>
-                Winrate
-              </TableCell>
-              <TableCell align="center" sx={{ py: 1 }}>
-                Tournois
-              </TableCell>
+              <TableCell sx={{ py: 2, fontWeight: 900, textTransform: 'uppercase', fontSize: '0.7rem' }}>Blader</TableCell>
+              <TableCell align="center" sx={{ py: 2, fontWeight: 900, textTransform: 'uppercase', fontSize: '0.7rem' }}>Titres</TableCell>
+              <TableCell align="center" sx={{ py: 2, fontWeight: 900, textTransform: 'uppercase', fontSize: '0.7rem' }}>Wins</TableCell>
+              <TableCell align="center" sx={{ py: 2, fontWeight: 900, textTransform: 'uppercase', fontSize: '0.7rem' }}>Losses</TableCell>
+              <TableCell align="center" sx={{ py: 2, fontWeight: 900, textTransform: 'uppercase', fontSize: '0.7rem' }}>Winrate</TableCell>
+              <TableCell align="center" sx={{ py: 2, fontWeight: 900, textTransform: 'uppercase', fontSize: '0.7rem' }}>Tournois</TableCell>
               <TableCell
                 align="center"
-                sx={{ py: 1, display: { xs: 'none', md: 'table-cell' } }}
+                sx={{ py: 2, display: { xs: 'none', md: 'table-cell' }, fontWeight: 900, textTransform: 'uppercase', fontSize: '0.7rem' }}
               >
-                Historique
+                Forme
               </TableCell>
             </TableRow>
           </TableHead>
@@ -95,72 +89,69 @@ export function SatrBladersTable({
                 const history = row.history as any[];
                 const absoluteIndex = (currentPage - 1) * 100 + index + 1;
 
-                // Vérifier si le joueur a déjà fini dans le Top 3 d'un tournoi
                 const hasPodium = history.some((h) => h.rank && h.rank <= 3);
-                const hasWinner = history.some((h) => h.rank === 1);
+                const tournamentWins = row.tournamentWins || 0;
 
                 return (
                   <TableRow
                     key={row.id}
+                    component={motion.tr}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
                     hover
                     onClick={() => setSelectedBlader(row)}
                     sx={{
-                      '& td': { py: 0.5 },
+                      '& td': { py: 1, borderBottom: '1px solid rgba(255,255,255,0.02)' },
                       cursor: 'pointer',
+                      '&:hover': { bgcolor: 'rgba(255,255,255,0.03) !important' }
                     }}
                   >
                     <TableCell align="center">
-                      <Typography variant="caption" color="text.secondary">
+                      <Typography variant="caption" sx={{ fontWeight: 900, opacity: 0.5 }}>
                         #{absoluteIndex}
                       </Typography>
                     </TableCell>
                     <TableCell>
-                      <Box
-                        sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
-                      >
-                        <Typography
-                          fontWeight="bold"
-                          variant="body2"
-                          sx={{ fontSize: '0.85rem' }}
-                        >
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                        <Typography fontWeight="800" sx={{ fontSize: '0.9rem', color: '#fff' }}>
                           {row.name}
                         </Typography>
-                        {hasWinner ? (
-                          <Tooltip title="Champion SATR">
-                            <Box sx={{ display: 'flex', color: '#FFD700' }}>
-                                <TrophyIcon fontSize={16} />
-                            </Box>
-                          </Tooltip>
-                        ) : hasPodium ? (
+                        {!tournamentWins && hasPodium && (
                           <Tooltip title="Podium SATR">
                             <Box sx={{ display: 'flex', color: '#C0C0C0', opacity: 0.8 }}>
-                                <TrophyIcon fontSize={14} />
+                                <TrophyIcon fontSize="small" />
                             </Box>
                           </Tooltip>
-                        ) : null}
+                        )}
                       </Box>
                     </TableCell>
                     <TableCell align="center">
-                      <Typography
-                        color="success.main"
-                        variant="body2"
-                        fontWeight="bold"
-                      >
+                        {tournamentWins > 0 && (
+                            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 0.5 }}>
+                                <TrophyIcon fontSize="small" sx={{ color: '#FFD700', filter: 'drop-shadow(0 0 5px rgba(255,215,0,0.5))' }} />
+                                {tournamentWins > 1 && (
+                                    <Typography variant="caption" sx={{ fontWeight: 900, color: '#FFD700' }}>x{tournamentWins}</Typography>
+                                )}
+                            </Box>
+                        )}
+                    </TableCell>
+                    <TableCell align="center">
+                      <Typography color="success.main" fontWeight="bold" sx={{ fontSize: '0.9rem' }}>
                         {row.totalWins}
                       </Typography>
                     </TableCell>
                     <TableCell align="center">
-                      <Typography color="error.main" variant="body2">
+                      <Typography color="error.main" sx={{ fontSize: '0.9rem', opacity: 0.8 }}>
                         {row.totalLosses}
                       </Typography>
                     </TableCell>
                     <TableCell align="center">
-                      <Typography variant="body2" fontWeight="bold">
+                      <Typography fontWeight="900" sx={{ fontSize: '0.9rem' }}>
                         {winRate}%
                       </Typography>
                     </TableCell>
                     <TableCell align="center">
-                      <Typography variant="body2">
+                      <Typography fontWeight="700" sx={{ fontSize: '0.9rem', opacity: 0.9 }}>
                         {row.tournamentsCount}
                       </Typography>
                     </TableCell>
@@ -168,30 +159,18 @@ export function SatrBladersTable({
                       align="center"
                       sx={{ display: { xs: 'none', md: 'table-cell' } }}
                     >
-                      <Box
-                        sx={{
-                          display: 'flex',
-                          gap: 0.5,
-                          justifyContent: 'center',
-                        }}
-                      >
+                      <Box sx={{ display: 'flex', gap: 0.75, justifyContent: 'center' }}>
                         {history.slice(-5).map((h, i) => (
-                          <Tooltip
-                            key={i}
-                            title={`${h.tournament}: Rang ${h.rank || '?'}`}
-                          >
-                            <Box
-                              sx={{
-                                width: 8,
-                                height: 8,
-                                borderRadius: '50%',
-                                bgcolor:
-                                  h.wins > h.losses
-                                    ? 'success.main'
-                                    : 'error.main',
-                                opacity: 0.6,
-                              }}
-                            />
+                          <Tooltip key={i} title={`${h.tournament.toUpperCase()}: Rang ${h.rank || '?'}`}>
+                            <Box sx={{
+                                width: 10,
+                                height: 10,
+                                borderRadius: '2px',
+                                rotate: '45deg',
+                                bgcolor: h.wins > h.losses ? 'success.main' : h.wins < h.losses ? 'error.main' : 'warning.main',
+                                opacity: 0.7,
+                                border: '1px solid rgba(255,255,255,0.1)'
+                            }} />
                           </Tooltip>
                         ))}
                       </Box>
@@ -201,10 +180,8 @@ export function SatrBladersTable({
               })
             ) : (
               <TableRow>
-                <TableCell colSpan={7} align="center" sx={{ py: 4 }}>
-                  <Typography variant="body2" color="text.secondary">
-                    Aucun blader trouvé
-                  </Typography>
+                <TableCell colSpan={8} align="center" sx={{ py: 10 }}>
+                  <Typography color="text.secondary">Aucun blader trouvé</Typography>
                 </TableCell>
               </TableRow>
             )}
@@ -213,25 +190,32 @@ export function SatrBladersTable({
       </TableContainer>
 
       {totalPages > 1 && (
-        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4, mb: 4 }}>
           <Pagination
             count={totalPages}
             page={currentPage}
             onChange={handlePageChange}
             color="primary"
-            size="small"
+            size="large"
             showFirstButton
             showLastButton
-            shape="rounded"
+            sx={{
+                '& .MuiPaginationItem-root': {
+                    fontWeight: 900,
+                    borderRadius: 2,
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    '&.Mui-selected': {
+                        bgcolor: '#fbbf24',
+                        color: '#000',
+                        '&:hover': { bgcolor: '#f59e0b' }
+                    }
+                }
+            }}
           />
         </Box>
       )}
 
-      <SatrBladerDialog
-        blader={selectedBlader}
-        open={!!selectedBlader}
-        onClose={() => setSelectedBlader(null)}
-      />
+      <SatrBladerDialog blader={selectedBlader} open={!!selectedBlader} onClose={() => setSelectedBlader(null)} />
     </Box>
   );
 }

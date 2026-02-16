@@ -66,7 +66,7 @@ export class SatrCommand {
 
   @Slash({
     name: 'profil',
-    description: 'Voir les statistiques de carrière SATR',
+    description: "Voir l'historique des BBT",
   })
   async profile(
     @SlashOption({

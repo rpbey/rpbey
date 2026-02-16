@@ -41,12 +41,13 @@ async function run() {
         if (linkedUserId) linkedCount++;
 
         await client.query(
-          'INSERT INTO satr_bladers (id, name, "totalWins", "totalLosses", "tournamentsCount", history, "linkedUserId", "updatedAt") VALUES ($1, $2, $3, $4, $5, $6, $7, NOW())',
+          'INSERT INTO satr_bladers (id, name, "totalWins", "totalLosses", "tournamentWins", "tournamentsCount", history, "linkedUserId", "updatedAt") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW())',
           [
             `blader_${Math.random().toString(36).substr(2, 9)}`,
             p.name,
             p.totalWins,
             p.totalLosses,
+            p.tournamentWins || 0,
             p.tournamentsPlayed,
             JSON.stringify(p.history),
             linkedUserId

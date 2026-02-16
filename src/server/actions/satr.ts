@@ -90,9 +90,32 @@ export async function linkSatrBladers() {
       }
     }
 
-    revalidatePath('/tournaments/satr');
-    return { success: true, linkedCount };
-  } catch (error) {
-    return { success: false, error: String(error) };
-  }
-}
+            revalidatePath('/tournaments/satr');
+            return { success: true, linkedCount };
+        } catch (error) {
+            return { success: false, error: String(error) };
+        }
+    }
+    
+    export async function getTournamentTop10(slug: string) {
+        try {
+            const { readFile } = await import('node:fs/promises');
+            const { join } = await import('node:path');
+            const path = join(process.cwd(), 'data', 'satr_history', `${slug.toLowerCase()}.json`);
+            const content = await readFile(path, 'utf-8');
+            const data = JSON.parse(content);
+            
+            const top10 = data.participants
+                .filter((p: any) => p.finalRank && p.finalRank <= 10)
+                .sort((a: any, b: any) => a.finalRank - b.finalRank)
+                .slice(0, 10)
+                .map((p: any) => ({
+                    rank: p.finalRank,
+                    name: p.name,
+                }));
+                
+            return { success: true, data: top10 };
+        } catch (error) {
+            return { success: false, error: String(error) };
+        }
+    }

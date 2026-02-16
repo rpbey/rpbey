@@ -29,6 +29,7 @@ interface BladerProfile {
   name: string;
   totalWins: number;
   totalLosses: number;
+  tournamentWins: number;
   tournamentsPlayed: number;
   history: Array<{
     tournament: string;
@@ -59,6 +60,7 @@ async function run() {
           name,
           totalWins: 0,
           totalLosses: 0,
+          tournamentWins: 0,
           tournamentsPlayed: 0,
           history: [],
         });
@@ -77,6 +79,7 @@ async function run() {
 
       profile.totalWins += tWins;
       profile.totalLosses += tLosses;
+      if (p.finalRank === 1) profile.tournamentWins += 1;
       profile.tournamentsPlayed += 1;
       profile.history.push({
         tournament: tournamentName,

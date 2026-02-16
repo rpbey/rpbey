@@ -36,8 +36,9 @@ services:
       BOT_API_URL: http://bot:3001
       NODE_ENV: production
     volumes:
-      # Persist user uploads
+      # Persist user uploads and data
       - ./public/uploads:/app/public/uploads
+      - ./data:/app/data
     depends_on:
       db:
         condition: service_healthy
@@ -63,6 +64,7 @@ services:
     volumes:
       # Bot might need access to uploads? Or its own data
       - ./bot/data:/app/bot/data
+      - ./data:/app/data
       - ./public/uploads:/app/public/uploads
     networks:
       - rpb-network

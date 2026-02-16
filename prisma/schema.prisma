@@ -564,6 +564,7 @@ model SatrBlader {
   name             String   @unique
   totalWins        Int      @default(0)
   totalLosses      Int      @default(0)
+  tournamentWins   Int      @default(0)
   tournamentsCount Int      @default(0)
   history          Json
   linkedUserId     String?
