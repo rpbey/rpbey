@@ -170,11 +170,11 @@ export function MatchHistory({ userId }: MatchHistoryProps) {
             sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}
           >
             {filteredMatches.slice(0, 10).map((match) => {
-              const isPlayer1 = match.player1.id === userId;
+              const isPlayer1 = match.player1?.id === userId;
               const opponent = isPlayer1 ? match.player2 : match.player1;
               const isWin = match.winner?.id === userId;
               const opponentName =
-                opponent.profile?.bladerName ?? opponent.name;
+                opponent?.profile?.bladerName ?? opponent?.name ?? 'Adversaire inconnu';
 
               return (
                 <ListItem
@@ -194,7 +194,7 @@ export function MatchHistory({ userId }: MatchHistoryProps) {
                 >
                   <ListItemAvatar>
                     <Avatar
-                      src={opponent.profile?.avatarUrl}
+                      src={opponent?.profile?.avatarUrl}
                       sx={{
                         bgcolor: isWin ? 'success.main' : 'error.main',
                         border: '2px solid',
