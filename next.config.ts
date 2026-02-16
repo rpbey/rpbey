@@ -37,7 +37,8 @@ const nextConfig: NextConfig = {
         process.env.NEXT_PUBLIC_APP_URL?.replace("https://", "").replace("http://", "") || "localhost:3000",
         "rpbey.fr", 
         "localhost:3000",
-        "localhost:8000"
+        "localhost:8000",
+        "46.224.145.55"
       ],
     },
   },
@@ -45,7 +46,8 @@ const nextConfig: NextConfig = {
   // Dev origins
   allowedDevOrigins: [
     process.env.NEXT_PUBLIC_APP_URL?.replace("https://", "").replace("http://", "").split(":")[0] || "localhost",
-    "rpbey.fr"
+    "rpbey.fr",
+    "46.224.145.55"
   ],
 
   // Image optimization
