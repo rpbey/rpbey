@@ -71,11 +71,6 @@ export function MobileBottomNav() {
               icon={<Leaderboard />}
             />
             <BottomNavigationAction
-              label="SATR"
-              value="/tournaments/satr"
-              icon={<WorkspacePremium />}
-            />
-            <BottomNavigationAction
               label={session ? 'Profil' : 'Connexion'}
               value={session ? '/dashboard' : '/sign-in'}
               icon={<Person />}

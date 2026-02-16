@@ -43,7 +43,6 @@ const navItems = [
   { icon: Home, label: 'Accueil', href: '/' },
   { icon: TrophyIcon, label: 'Tournois', href: '/tournaments' },
   { icon: BarChart, label: 'Classements', href: '/rankings' },
-  { icon: WorkspacePremium, label: 'SATR', href: '/tournaments/satr' },
   { icon: LiveTv, label: 'TV', href: '/tv' },
   { icon: People, label: "L'équipe", href: '/notre-equipe' },
 ];
