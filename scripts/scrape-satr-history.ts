@@ -3,7 +3,7 @@ import { join } from 'node:path';
 import { ChallongeScraper } from '../bot/src/lib/scrapers/challonge-scraper.js';
 
 /**
- * Script pour scraper l'historique des tournois SATR (BBT 14 à 21)
+ * Script pour scraper l'historique des tournois SATR (BBT 12 à 21)
  */
 
 async function run() {
@@ -20,6 +20,8 @@ async function run() {
     'satr_bbt16',
     'satr_bbt15',
     'satr_bbt14',
+    'satr_bbt13',
+    'satr_bbt12',
   ];
 
   console.log(`🎯 Tournois ciblés (${uniqueSlugs.length}) :`, uniqueSlugs);

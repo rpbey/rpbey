@@ -11,7 +11,6 @@ import {
   People,
   PersonAdd,
   Settings,
-  WorkspacePremium,
 } from '@mui/icons-material';
 import {
   alpha,
@@ -331,7 +330,6 @@ export function MobileNav() {
     if (pathname.startsWith('/tournaments')) return '/tournaments';
     if (pathname.startsWith('/tv')) return '/tv';
     if (pathname.startsWith('/rankings')) return '/rankings';
-    if (pathname.startsWith('/tournaments/satr')) return '/tournaments/satr';
     if (pathname.startsWith('/admin')) return '/admin';
     if (
       pathname.startsWith('/dashboard') ||
@@ -427,11 +425,6 @@ export function MobileNav() {
             label="Classements"
             value="/rankings"
             icon={<BarChart />}
-          />
-          <BottomNavigationAction
-            label="SATR"
-            value="/tournaments/satr"
-            icon={<WorkspacePremium />}
           />
         </BottomNavigation>
       </Paper>
