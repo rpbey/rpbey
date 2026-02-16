@@ -1,6 +1,6 @@
 'use client';
 
-import { useTheme, alpha } from '@mui/material';
+import { useTheme, alpha, useMediaQuery } from '@mui/material';
 import Box from '@mui/material/Box';
 import Pagination from '@mui/material/Pagination';
 import Paper from '@mui/material/Paper';
@@ -28,6 +28,7 @@ interface SatrTableProps {
 
 export function SatrTable({ rankings, totalPages, currentPage }: SatrTableProps) {
   const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const router = useRouter();
   const searchParams = useSearchParams();
   const [selectedBlader, setSelectedBlader] = useState<SatrBlader | null>(null);
