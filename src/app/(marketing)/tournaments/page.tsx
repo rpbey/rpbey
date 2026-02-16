@@ -4,12 +4,13 @@ import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Skeleton from '@mui/material/Skeleton';
 import Typography from '@mui/material/Typography';
+import Card from '@mui/material/Card';
+import Button from '@mui/material/Button';
 import type { Tournament } from '@prisma/client';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { TournamentCardGrid } from '@/components/cards/TournamentCard';
 import { PageHeader, type TournamentStatus } from '@/components/ui';
-import { Button, Paper } from '@mui/material';
 import Link from 'next/link';
 import Image from 'next/image';
 
