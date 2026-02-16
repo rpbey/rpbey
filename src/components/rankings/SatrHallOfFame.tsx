@@ -46,43 +46,43 @@ export function SatrHallOfFame({ champions }: SatrHallOfFameProps) {
   };
 
   return (
-    <Box sx={{ mb: 6 }}>
-      <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 2, px: 1 }}>
+    <Box sx={{ mb: 4 }}>
+      <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1.5, px: 1 }}>
           <Box sx={{ display: 'flex', color: '#fbbf24' }}>
-              <TrophyIcon size={20} />
+              <TrophyIcon size={18} />
           </Box>
-          <Typography variant="overline" sx={{ fontWeight: 900, letterSpacing: 2, color: '#fbbf24' }}>
+          <Typography variant="overline" sx={{ fontWeight: 900, letterSpacing: 1.5, color: '#fbbf24', fontSize: '0.65rem' }}>
             Hall of Fame
           </Typography>
       </Stack>
       
       <Stack 
         direction="row" 
-        spacing={2.5} 
+        spacing={1.5} 
         sx={{ 
             overflowX: 'auto', 
-            pb: 3, 
+            pb: 2, 
             px: 1,
-            pt: 1,
-            '&::-webkit-scrollbar': { height: '4px' },
+            pt: 0.5,
+            '&::-webkit-scrollbar': { height: '3px' },
             '&::-webkit-scrollbar-thumb': { bgcolor: 'rgba(251, 191, 36, 0.3)', borderRadius: '4px' },
-            maskImage: 'linear-gradient(to right, black 85%, transparent 100%)'
+            maskImage: 'linear-gradient(to right, black 90%, transparent 100%)'
         }}
       >
         {champions.map((c, i) => (
           <Box
             key={i}
             component={motion.div}
-            whileHover={{ y: -8, scale: 1.02 }}
+            whileHover={{ y: -4, scale: 1.02 }}
             sx={{
-              p: 2,
-              minWidth: 180,
-              borderRadius: 4,
+              p: 1.5,
+              minWidth: 140,
+              borderRadius: 3,
               position: 'relative',
               background: 'linear-gradient(145deg, #1a1a1a 0%, #0a0a0a 100%)',
               border: '1px solid',
               borderColor: 'rgba(251, 191, 36, 0.2)',
-              boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
+              boxShadow: '0 4px 15px rgba(0,0,0,0.4)',
               overflow: 'hidden',
               '&::before': {
                   content: '""',
@@ -90,34 +90,38 @@ export function SatrHallOfFame({ champions }: SatrHallOfFameProps) {
                   top: 0,
                   left: 0,
                   right: 0,
-                  height: '2px',
+                  height: '1px',
                   background: 'linear-gradient(90deg, transparent, #fbbf24, transparent)',
-                  opacity: 0.5
+                  opacity: 0.4
               }
             }}
           >
             <Box sx={{ 
                 position: 'absolute', 
-                top: -20, 
-                right: -20, 
+                top: -10, 
+                right: -10, 
                 opacity: 0.05,
                 transform: 'rotate(15deg)',
                 color: '#fbbf24'
             }}>
-                <TrophyIcon size={100} />
+                <TrophyIcon size={60} />
             </Box>
 
-            <Typography variant="caption" sx={{ display: 'block', color: 'rgba(251, 191, 36, 0.7)', fontWeight: 800, mb: 0.5, fontSize: '0.7rem', textTransform: 'uppercase' }}>
+            <Typography variant="caption" sx={{ display: 'block', color: 'rgba(251, 191, 36, 0.7)', fontWeight: 800, mb: 0.25, fontSize: '0.6rem', textTransform: 'uppercase' }}>
               {c.date}
             </Typography>
             <Typography 
-                variant="body1" 
+                variant="body2" 
                 fontWeight="900" 
                 onClick={() => handleChampionClick(c.winner)}
                 sx={{ 
                     color: '#fff', 
-                    textShadow: '0 2px 4px rgba(0,0,0,0.5)',
+                    textShadow: '0 1px 2px rgba(0,0,0,0.5)',
                     cursor: 'pointer',
+                    fontSize: '0.8rem',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
                     '&:hover': { color: '#fbbf24' }
                 }}
             >
@@ -130,36 +134,38 @@ export function SatrHallOfFame({ champions }: SatrHallOfFameProps) {
                 variant="text" 
                 onClick={() => handleShowTop10(c.tournament)}
                 sx={{ 
-                    mt: 1, 
-                    fontSize: '0.65rem', 
+                    mt: 0.5, 
+                    fontSize: '0.6rem', 
                     fontWeight: 900, 
                     color: 'rgba(255,255,255,0.3)',
+                    minHeight: 0,
+                    p: 0,
                     '&:hover': { color: '#fbbf24', bgcolor: 'transparent' }
                 }}
             >
-                Voir Top 10
+                TOP 10
             </Button>
           </Box>
         ))}
       </Stack>
 
       <Modal open={openTop10} onClose={() => setOpenTop10(false)} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <Paper sx={{ p: 3, width: '100%', maxWidth: 350, borderRadius: 4, bgcolor: '#111', border: '1px solid rgba(255,255,255,0.1)' }}>
+          <Paper sx={{ p: 2.5, width: '100%', maxWidth: 320, borderRadius: 4, bgcolor: '#111', border: '1px solid rgba(255,255,255,0.1)' }}>
               <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
-                  <Typography variant="h6" fontWeight="900" color="#fbbf24">TOP 10 • {selectedTournament?.replace('SATR_', '').toUpperCase()}</Typography>
+                  <Typography variant="subtitle1" fontWeight="900" color="#fbbf24" sx={{ fontSize: '0.9rem', letterSpacing: 0.5 }}>TOP 10 • {selectedTournament?.replace('SATR_', '').toUpperCase()}</Typography>
                   <IconButton onClick={() => setOpenTop10(false)} size="small" sx={{ color: 'rgba(255,255,255,0.5)' }}>
-                      <CloseIcon />
+                      <CloseIcon fontSize="small" />
                   </IconButton>
               </Stack>
               
               {loading ? (
-                  <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}><CircularProgress size={30} color="warning" /></Box>
+                  <Box sx={{ display: 'flex', justifyContent: 'center', py: 3 }}><CircularProgress size={24} color="warning" /></Box>
               ) : (
-                  <Stack spacing={1}>
+                  <Stack spacing={0.75}>
                       {top10Data.map((p, i) => (
-                          <Box key={i} sx={{ display: 'flex', justifyContent: 'space-between', p: 1, borderRadius: 2, bgcolor: p.rank === 1 ? 'rgba(251, 191, 36, 0.1)' : 'transparent' }}>
-                              <Typography variant="body2" sx={{ fontWeight: p.rank === 1 ? 900 : 500 }}>{p.rank}. {p.name}</Typography>
-                              {p.rank === 1 && <TrophyIcon size={16} color="#fbbf24" />}
+                          <Box key={i} sx={{ display: 'flex', justifyContent: 'space-between', p: 0.75, px: 1.5, borderRadius: 1.5, bgcolor: p.rank === 1 ? 'rgba(251, 191, 36, 0.1)' : 'rgba(255,255,255,0.02)' }}>
+                              <Typography variant="body2" sx={{ fontWeight: p.rank === 1 ? 900 : 500, fontSize: '0.8rem' }}>{p.rank}. {p.name}</Typography>
+                              {p.rank === 1 && <TrophyIcon size={14} color="#fbbf24" />}
                           </Box>
                       ))}
                   </Stack>
