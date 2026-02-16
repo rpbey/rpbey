@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+
 import type { Browser, CookieParam } from 'puppeteer';
 import puppeteerExtra from 'puppeteer-extra';
 import StealthPlugin from 'puppeteer-extra-plugin-stealth';
@@ -438,8 +439,8 @@ export class ChallongeScraper {
       // Tentative 4 : _initialStoreState (fallback classique)
       const store = await this.extractStore(page);
       if (store) {
-        const ts = store['TournamentStore'];
-        const ps = store['ParticipantsStore'];
+        const ts = store.TournamentStore;
+        const ps = store.ParticipantsStore;
         const candidates =
           ts?.participants ||
           ts?.tournament?.participants ||
@@ -477,8 +478,8 @@ export class ChallongeScraper {
       // Tentative 1 : Store JS (peut contenir des standings structurés)
       const store = await this.extractStore(page);
       if (store) {
-        const ts = store['TournamentStore'];
-        const ss = store['StandingsStore'];
+        const ts = store.TournamentStore;
+        const ss = store.StandingsStore;
         const storeStandings = ss?.standings || ts?.standings;
         if (storeStandings?.length > 0) {
           console.log('📦 Standings extraits depuis le Store JS');
@@ -573,8 +574,8 @@ export class ChallongeScraper {
       // Tentative 1 : Store JS
       const store = await this.extractStore(page);
       if (store) {
-        const ts = store['TournamentStore'];
-        const ss = store['StationsStore'];
+        const ts = store.TournamentStore;
+        const ss = store.StationsStore;
         const storeStations = ss?.stations || ts?.stations;
         if (storeStations?.length > 0) {
           console.log('📦 Stations extraites depuis le Store JS');
@@ -676,8 +677,8 @@ export class ChallongeScraper {
       // Tentative 1 : Store JS
       const store = await this.extractStore(page);
       if (store) {
-        const ts = store['TournamentStore'];
-        const ls = store['LogStore'] || store['ActivityStore'];
+        const ts = store.TournamentStore;
+        const ls = store.LogStore || store.ActivityStore;
         const storeLog = ls?.entries || ls?.log || ts?.log || ts?.activity_log;
         if (storeLog?.length > 0) {
           console.log('📦 Log extrait depuis le Store JS');

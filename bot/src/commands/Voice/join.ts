@@ -1,25 +1,11 @@
 import { joinVoiceChannel } from '@discordjs/voice';
-import { Command } from '@sapphire/framework';
-import type { GuildMember } from 'discord.js';
+import type { CommandInteraction, GuildMember } from 'discord.js';
+import { Discord, Slash } from 'discordx';
 
-export class JoinCommand extends Command {
-  public constructor(context: Command.LoaderContext, options: Command.Options) {
-    super(context, {
-      ...options,
-      name: 'rejoindre',
-      description: 'Rejoint votre salon vocal',
-    });
-  }
-
-  public override registerApplicationCommands(registry: Command.Registry) {
-    registry.registerChatInputCommand((builder) =>
-      builder.setName(this.name).setDescription(this.description),
-    );
-  }
-
-  public override async chatInputRun(
-    interaction: Command.ChatInputCommandInteraction,
-  ) {
+@Discord()
+export class JoinCommand {
+  @Slash({ name: 'rejoindre', description: 'Rejoint votre salon vocal' })
+  async join(interaction: CommandInteraction) {
     if (!interaction.guild || !interaction.member) return;
 
     const member = interaction.member as GuildMember;
@@ -35,8 +21,6 @@ export class JoinCommand extends Command {
     joinVoiceChannel({
       channelId: channel.id,
       guildId: interaction.guild.id,
-      // biome-ignore lint/suspicious/noExplicitAny: Mismatched types in library
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       adapterCreator: interaction.guild.voiceAdapterCreator as any,
       selfDeaf: false,
     });

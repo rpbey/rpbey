@@ -1,14 +1,7 @@
 'use client';
 
-import {
-  Link as LinkIcon,
-} from '@mui/icons-material';
-import {
-  Button,
-  Tooltip,
-  useMediaQuery,
-  useTheme,
-} from '@mui/material';
+import { Link as LinkIcon } from '@mui/icons-material';
+import { Button, Tooltip, useMediaQuery, useTheme } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Pagination from '@mui/material/Pagination';
@@ -69,23 +62,25 @@ export function RankingsTable({
 
   const handleClaim = async (stubUserId: string, stubName: string) => {
     if (!session) {
-      toast.error("Vous devez être connecté pour lier un compte.");
+      toast.error('Vous devez être connecté pour lier un compte.');
       return;
     }
 
-    const confirm = window.confirm(`Voulez-vous vraiment lier le profil "${stubName}" à votre compte actuel ? Cette action est irréversible.`);
+    const confirm = window.confirm(
+      `Voulez-vous vraiment lier le profil "${stubName}" à votre compte actuel ? Cette action est irréversible.`,
+    );
     if (!confirm) return;
 
     toast.promise(claimProfile(stubUserId), {
       loading: 'Liaison en cours...',
       success: (data) => {
         if (data.success) {
-            router.refresh();
-            return data.message;
+          router.refresh();
+          return data.message;
         }
         throw new Error(data.message);
       },
-      error: (err) => err.message || "Erreur lors de la liaison"
+      error: (err) => err.message || 'Erreur lors de la liaison',
     });
   };
 
@@ -187,8 +182,10 @@ export function RankingsTable({
                   totalMatches > 0
                     ? ((profile.wins / totalMatches) * 100).toFixed(1)
                     : '0';
-                
-                const isStub = profile.user?.username?.startsWith('bts2_') || !profile.user?.discordId;
+
+                const isStub =
+                  profile.user?.username?.startsWith('bts2_') ||
+                  !profile.user?.discordId;
                 const isClaimable = isStub && session?.user;
 
                 return (
@@ -334,13 +331,23 @@ export function RankingsTable({
                     <TableCell align="center">
                       {isClaimable && (
                         <Tooltip title="C'est vous ? Liez ce compte au vôtre">
-                          <Button 
-                            variant="outlined" 
-                            size="small" 
+                          <Button
+                            variant="outlined"
+                            size="small"
                             color="warning"
-                            onClick={() => handleClaim(profile.userId, profile.bladerName || 'Inconnu')}
+                            onClick={() =>
+                              handleClaim(
+                                profile.userId,
+                                profile.bladerName || 'Inconnu',
+                              )
+                            }
                             startIcon={<LinkIcon />}
-                            sx={{ borderRadius: 4, textTransform: 'none', fontSize: '0.75rem', py: 0.5 }}
+                            sx={{
+                              borderRadius: 4,
+                              textTransform: 'none',
+                              fontSize: '0.75rem',
+                              py: 0.5,
+                            }}
                           >
                             Lier
                           </Button>

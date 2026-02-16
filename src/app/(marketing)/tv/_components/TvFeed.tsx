@@ -12,13 +12,13 @@ import {
 } from '@mui/material';
 import { useState } from 'react';
 import type { BeyTubeVideo } from '@/lib/beytube';
+import type { TikTokVideo } from '@/lib/tiktok';
 import type { VideoInfo } from '@/lib/twitch';
 import { MediaCard } from './MediaCard';
+import { TikTokVideoCard } from './TikTokVideoCard';
 // import { TikTokCard } from './TikTokCard'; // Deprecated
 import { VideoPlayerModal } from './VideoPlayerModal';
 import { YouTubeMobileCard } from './YouTubeMobileCard';
-import type { TikTokVideo } from '@/lib/tiktok';
-import { TikTokVideoCard } from './TikTokVideoCard';
 
 interface TvFeedProps {
   clips: VideoInfo[];

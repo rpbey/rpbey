@@ -123,7 +123,7 @@ import { execSync } from "child_process";
 function runSeed(script: string) {
   console.log(`\n▶ Running ${script}...`);
   try {
-    execSync(`npx tsx prisma/${script}`, { stdio: "inherit" });
+    execSync(`pnpm exec tsx prisma/${script}`, { stdio: "inherit" });
   } catch (error) {
     console.error(`❌ Failed to run ${script}`);
     throw error;

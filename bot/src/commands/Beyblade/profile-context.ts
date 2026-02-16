@@ -1,40 +1,27 @@
-import { Command } from '@sapphire/framework';
 import {
   ActionRowBuilder,
   ApplicationCommandType,
   ButtonBuilder,
   ButtonStyle,
   EmbedBuilder,
+  type User,
+  type UserContextMenuCommandInteraction,
 } from 'discord.js';
+import { ContextMenu, Discord } from 'discordx';
+
 import { Colors, RPB } from '../../lib/constants.js';
+import { logger } from '../../lib/logger.js';
 import prisma from '../../lib/prisma.js';
 
-export class ProfileContextMenuCommand extends Command {
-  constructor(context: Command.LoaderContext, options: Command.Options) {
-    super(context, {
-      ...options,
-      description: "Voir le profil Beyblade d'un utilisateur",
-    });
-  }
-
-  override registerApplicationCommands(registry: Command.Registry) {
-    // User context menu (right-click on user)
-    registry.registerContextMenuCommand((builder) =>
-      builder.setName('Profil Beyblade').setType(ApplicationCommandType.User),
-    );
-  }
-
-  override async contextMenuRun(
-    interaction: Command.ContextMenuCommandInteraction,
-  ) {
-    if (!interaction.isUserContextMenuCommand()) return;
-
+@Discord()
+export class ProfileContextMenuCommand {
+  @ContextMenu({ name: 'Profil Beyblade', type: ApplicationCommandType.User })
+  async userHandler(interaction: UserContextMenuCommandInteraction) {
     await interaction.deferReply({ ephemeral: true });
 
-    const targetUser = interaction.targetUser;
+    const targetUser: User = interaction.targetUser;
 
     try {
-      // Find user in database
       const user = await prisma.user.findFirst({
         where: { discordId: targetUser.id },
         include: {
@@ -98,7 +85,6 @@ export class ProfileContextMenuCommand extends Command {
           },
         );
 
-      // Add recent tournaments
       if (user.tournaments.length > 0) {
         const recentTournaments = user.tournaments
           .map(
@@ -114,7 +100,6 @@ export class ProfileContextMenuCommand extends Command {
         });
       }
 
-      // Add social links
       const socials: string[] = [];
       if (profile.twitterHandle) socials.push(`🐦 @${profile.twitterHandle}`);
       if (profile.tiktokHandle) socials.push(`🎵 @${profile.tiktokHandle}`);
@@ -142,7 +127,7 @@ export class ProfileContextMenuCommand extends Command {
 
       return interaction.editReply({ embeds: [embed], components: [row] });
     } catch (error) {
-      this.container.logger.error('Profile context menu error:', error);
+      logger.error('Profile context menu error:', error);
       return interaction.editReply({
         content: '❌ Erreur lors de la récupération du profil.',
       });

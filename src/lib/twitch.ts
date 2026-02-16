@@ -131,7 +131,7 @@ export async function getRPBClips(limit = 6): Promise<VideoInfo[]> {
       thumbnailUrl: clip.thumbnailUrl
         .replace('{width}', '640')
         .replace('{height}', '360'),
-      duration: Math.round(clip.duration).toString() + 's',
+      duration: `${Math.round(clip.duration).toString()}s`,
       publishedAt: clip.creationDate,
       viewCount: clip.views,
       channelLogo: user.profilePictureUrl,

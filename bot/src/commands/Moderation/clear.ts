@@ -1,49 +1,50 @@
-import { Command } from '@sapphire/framework';
 import {
+  ApplicationCommandOptionType,
+  type CommandInteraction,
   EmbedBuilder,
+  GuildMember,
   PermissionFlagsBits,
   type TextChannel,
+  type User,
 } from 'discord.js';
+import { Discord, Guard, Slash, SlashOption } from 'discordx';
 
-export class ClearCommand extends Command {
-  constructor(context: Command.LoaderContext, options: Command.Options) {
-    super(context, {
-      ...options,
-      description: 'Supprimer plusieurs messages à la fois',
-      preconditions: ['ModeratorOnly'],
-    });
-  }
+import { ModeratorOnly } from '../../guards/ModeratorOnly.js';
+import { logger } from '../../lib/logger.js';
 
-  override registerApplicationCommands(registry: Command.Registry) {
-    registry.registerChatInputCommand((builder) =>
-      builder
-        .setName('effacer')
-        .setDescription('Supprimer plusieurs messages à la fois')
-        .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages)
-        .setContexts(0)
-        .addIntegerOption((opt) =>
-          opt
-            .setName('nombre')
-            .setDescription('Nombre de messages à supprimer (1-100)')
-            .setRequired(true)
-            .setMinValue(1)
-            .setMaxValue(100),
-        )
-        .addUserOption((opt) =>
-          opt
-            .setName('utilisateur')
-            .setDescription(
-              'Supprimer uniquement les messages de cet utilisateur',
-            ),
-        ),
-    );
-  }
-
-  override async chatInputRun(
-    interaction: Command.ChatInputCommandInteraction,
+@Discord()
+@Guard(ModeratorOnly)
+export class ClearCommand {
+  @Slash({
+    name: 'effacer',
+    description: 'Supprimer plusieurs messages à la fois',
+    defaultMemberPermissions: PermissionFlagsBits.ManageMessages,
+  })
+  async clear(
+    @SlashOption({
+      name: 'nombre',
+      description: 'Nombre de messages à supprimer (1-100)',
+      required: true,
+      type: ApplicationCommandOptionType.Integer,
+      minValue: 1,
+      maxValue: 100,
+    })
+    amount: number,
+    @SlashOption({
+      name: 'utilisateur',
+      description: 'Supprimer uniquement les messages de cet utilisateur',
+      required: false,
+      type: ApplicationCommandOptionType.User,
+    })
+    targetOption: User | GuildMember | undefined,
+    interaction: CommandInteraction,
   ) {
-    const amount = interaction.options.getInteger('nombre', true);
-    const targetUser = interaction.options.getUser('utilisateur');
+    let targetUser: User | undefined;
+    if (targetOption) {
+      targetUser =
+        targetOption instanceof GuildMember ? targetOption.user : targetOption;
+    }
+
     const channel = interaction.channel as TextChannel;
 
     if (!channel || !('bulkDelete' in channel)) {
@@ -62,7 +63,6 @@ export class ClearCommand extends Command {
         messages = messages.filter((m) => m.author.id === targetUser.id);
       }
 
-      // Filtrer les messages de plus de 14 jours (limite de suppression en masse)
       const twoWeeksAgo = Date.now() - 14 * 24 * 60 * 60 * 1000;
       messages = messages.filter((m) => m.createdTimestamp > twoWeeksAgo);
 
@@ -91,7 +91,7 @@ export class ClearCommand extends Command {
 
       return interaction.editReply({ embeds: [embed] });
     } catch (error) {
-      this.container.logger.error('Clear command error:', error);
+      logger.error('Clear command error:', error);
       return interaction.editReply({
         content: '❌ Échec de la suppression des messages.',
       });

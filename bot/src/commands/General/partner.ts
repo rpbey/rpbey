@@ -1,5 +1,10 @@
-import { Command } from '@sapphire/framework';
-import { EmbedBuilder } from 'discord.js';
+import {
+  ApplicationCommandOptionType,
+  type CommandInteraction,
+  EmbedBuilder,
+} from 'discord.js';
+import { Discord, Slash, SlashChoice, SlashOption } from 'discordx';
+
 import { Colors, RPB } from '../../lib/constants.js';
 
 interface PartnerInfo {
@@ -10,50 +15,40 @@ interface PartnerInfo {
   Website?: string;
 }
 
-export class PartnerCommand extends Command {
-  constructor(context: Command.LoaderContext, options: Command.Options) {
-    super(context, {
-      ...options,
-      description: "Affiche les informations d'un serveur partenaire",
-    });
-  }
-
-  override registerApplicationCommands(registry: Command.Registry) {
-    const partners = Object.entries(RPB.Partners).map(([key, p]) => ({
-      name: p.Name,
-      value: key,
-    }));
-
-    registry.registerChatInputCommand((builder) =>
-      builder
-        .setName('partenaire')
-        .setDescription("Affiche les informations d'un partenaire")
-        .addStringOption((opt) =>
-          opt
-            .setName('nom')
-            .setDescription('Le partenaire à afficher')
-            .setRequired(true)
-            .addChoices(...partners),
-        ),
-    );
-  }
-
-  override async chatInputRun(
-    interaction: Command.ChatInputCommandInteraction,
+@Discord()
+export class PartnerCommand {
+  @Slash({
+    name: 'partenaire',
+    description: "Affiche les informations d'un partenaire",
+  })
+  async partner(
+    @SlashChoice(
+      ...Object.entries(RPB.Partners).map(([key, p]) => ({
+        name: p.Name,
+        value: key,
+      })),
+    )
+    @SlashOption({
+      name: 'nom',
+      description: 'Le partenaire à afficher',
+      required: true,
+      type: ApplicationCommandOptionType.String,
+    })
+    partnerKey: string,
+    interaction: CommandInteraction,
   ) {
-    const partnerKey = interaction.options.getString(
-      'nom',
-      true,
-    ) as keyof typeof RPB.Partners;
-    // Cast to unknown first then PartnerInfo to satisfy TS if RPB.Partners types are too strict/literal
-    const partner = RPB.Partners[partnerKey] as unknown as PartnerInfo;
-
-    if (!partner) {
+    // Check if key is valid manually since we didn't use Choices enum yet (easy to add but need to map RPB.Partners keys)
+    // Actually, let's just cast for now as we did before, but better:
+    if (!(partnerKey in RPB.Partners)) {
       return interaction.reply({
         content: '❌ Partenaire non trouvé.',
         ephemeral: true,
       });
     }
+
+    const partner = RPB.Partners[
+      partnerKey as keyof typeof RPB.Partners
+    ] as unknown as PartnerInfo;
 
     await interaction.deferReply();
 
@@ -64,8 +59,7 @@ export class PartnerCommand extends Command {
       .setTimestamp();
 
     try {
-      // Try to fetch invite details for rich embed
-      const invite = await this.container.client.fetchInvite(partner.Invite);
+      const invite = await interaction.client.fetchInvite(partner.Invite);
       const guild = invite.guild;
 
       if (guild) {
@@ -85,14 +79,12 @@ export class PartnerCommand extends Command {
           { name: '🆔 ID', value: guild.id, inline: true },
         );
 
-        // Use guild description if available, otherwise just the name and link
         const desc = guild.description
           ? `*${guild.description}*`
           : 'Serveur Partenaire Officiel';
 
         let description = `**${guild.name}**\n\n${desc}\n\n🔗 **[Clique ici pour rejoindre !](${partner.Invite})**`;
 
-        // Add Challonge link if available
         if (partner.Challonge) {
           description += `\n🏆 **[Page Challonge](${partner.Challonge})**`;
         }
@@ -107,7 +99,6 @@ export class PartnerCommand extends Command {
 
         embed.setDescription(description);
       } else {
-        // Fallback if guild info missing in invite
         let description = `Serveur Partenaire : ${partner.Name}\n\n🔗 **[Rejoindre le serveur](${partner.Invite})**`;
         if (partner.Challonge) {
           description += `\n🏆 **[Page Challonge](${partner.Challonge})**`;
@@ -121,7 +112,6 @@ export class PartnerCommand extends Command {
         embed.setDescription(description);
       }
     } catch {
-      // Fallback if invite fetch fails
       let description = `Serveur Partenaire : ${partner.Name}\n\n🔗 **[Rejoindre le serveur](${partner.Invite})**`;
       if (partner.Challonge) {
         description += `\n🏆 **[Page Challonge](${partner.Challonge})**`;

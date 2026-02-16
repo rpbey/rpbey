@@ -1,69 +1,42 @@
-import { ApplyOptions } from '@sapphire/decorators';
-import { Subcommand } from '@sapphire/plugin-subcommands';
-import { EmbedBuilder, PermissionFlagsBits } from 'discord.js';
+import {
+  ApplicationCommandOptionType,
+  type CommandInteraction,
+  EmbedBuilder,
+  PermissionFlagsBits,
+} from 'discord.js';
+import { Discord, Slash, SlashGroup, SlashOption } from 'discordx';
+
 import { scrapeAndSyncTournament } from '../../lib/challonge-sync.js';
 import { Colors } from '../../lib/constants.js';
+import { logger } from '../../lib/logger.js';
 import prisma from '../../lib/prisma.js';
 import type {
   ScrapedStanding,
   ScrapedStation,
 } from '../../lib/scrapers/challonge-scraper.js';
 
-@ApplyOptions<Subcommand.Options>({
-  description: 'Gérer les tournois Challonge',
-  preconditions: ['GuildOnly'],
-  subcommands: [
-    {
-      name: 'synchroniser',
-      chatInputRun: 'chatInputSynchroniser',
-    },
-    {
-      name: 'live',
-      chatInputRun: 'chatInputLive',
-    },
-  ],
+@Discord()
+@SlashGroup({
+  name: 'tournoi',
+  description: 'Commandes de gestion des tournois',
+  defaultMemberPermissions: PermissionFlagsBits.ManageEvents,
 })
-export class TournamentCommand extends Subcommand {
-  public override registerApplicationCommands(registry: Subcommand.Registry) {
-    registry.registerChatInputCommand((builder) =>
-      builder
-        .setName('tournoi')
-        .setDescription('Commandes de gestion des tournois')
-        .setDefaultMemberPermissions(PermissionFlagsBits.ManageEvents)
-        .addSubcommand((command) =>
-          command
-            .setName('synchroniser')
-            .setDescription('Synchronisation profonde via scraping furtif')
-            .addStringOption((option) =>
-              option
-                .setName('url')
-                .setDescription(
-                  'URL complète ou slug du tournoi (ex: fr/B_TS2)',
-                )
-                .setRequired(true),
-            ),
-        )
-        .addSubcommand((command) =>
-          command
-            .setName('live')
-            .setDescription("Affiche le statut live d'un tournoi en cours")
-            .addStringOption((option) =>
-              option
-                .setName('tournoi')
-                .setDescription(
-                  'Nom ou ID Challonge du tournoi (par défaut: premier tournoi en cours)',
-                )
-                .setRequired(false),
-            ),
-        ),
-    );
-  }
-
-  public async chatInputSynchroniser(
-    interaction: Subcommand.ChatInputCommandInteraction,
+@SlashGroup('tournoi')
+export class TournamentCommand {
+  @Slash({
+    name: 'synchroniser',
+    description: 'Synchronisation profonde via scraping furtif',
+  })
+  async sync(
+    @SlashOption({
+      name: 'url',
+      description: 'URL complète ou slug du tournoi (ex: fr/B_TS2)',
+      required: true,
+      type: ApplicationCommandOptionType.String,
+    })
+    url: string,
+    interaction: CommandInteraction,
   ) {
-    const url = interaction.options.getString('url', true);
-
     await interaction.deferReply({ ephemeral: false });
 
     try {
@@ -90,18 +63,28 @@ export class TournamentCommand extends Subcommand {
         );
       }
     } catch (error) {
-      this.container.logger.error('[TournamentSync]', error);
+      logger.error('[TournamentSync]', error);
       return interaction.editReply(
         `💥 **Erreur critique lors de l'opération.**\n\`${error instanceof Error ? error.message : String(error)}\``,
       );
     }
   }
 
-  public async chatInputLive(
-    interaction: Subcommand.ChatInputCommandInteraction,
+  @Slash({
+    name: 'live',
+    description: "Affiche le statut live d'un tournoi en cours",
+  })
+  async live(
+    @SlashOption({
+      name: 'tournoi',
+      description:
+        'Nom ou ID Challonge du tournoi (par défaut: premier tournoi en cours)',
+      required: false,
+      type: ApplicationCommandOptionType.String,
+    })
+    search: string | undefined,
+    interaction: CommandInteraction,
   ) {
-    const search = interaction.options.getString('tournoi');
-
     await interaction.deferReply({ ephemeral: false });
 
     try {
@@ -127,9 +110,12 @@ export class TournamentCommand extends Subcommand {
         );
       }
 
+      // @ts-ignore
       const standings =
-        (tournament.standings as ScrapedStanding[] | null) || [];
-      const stations = (tournament.stations as ScrapedStation[] | null) || [];
+        (tournament.standings as unknown as ScrapedStanding[] | null) || [];
+      // @ts-ignore
+      const stations =
+        (tournament.stations as unknown as ScrapedStation[] | null) || [];
       const participantCount = await prisma.tournamentParticipant.count({
         where: { tournamentId: tournament.id },
       });
@@ -194,7 +180,7 @@ export class TournamentCommand extends Subcommand {
 
       return interaction.editReply({ embeds: [embed] });
     } catch (error) {
-      this.container.logger.error('[TournamentLive]', error);
+      logger.error('[TournamentLive]', error);
       return interaction.editReply(
         `💥 **Erreur lors de la récupération des données live.**\n\`${error instanceof Error ? error.message : String(error)}\``,
       );

@@ -16,12 +16,20 @@ fi
 
 # Run database migrations
 echo ">>> RUNNING DATABASE MIGRATIONS..."
-npx prisma migrate deploy || echo ">>> WARNING: Migrations failed or not needed."
+./node_modules/.bin/prisma migrate deploy || echo ">>> WARNING: Migrations failed or not needed."
 
 if [ "$RUN_BOT" = "true" ]; then
   echo ">>> STARTING DISCORD BOT..."
   exec node bot/dist/index.js
 else
   echo ">>> STARTING DASHBOARD SERVICE (Next.js)..."
-  exec node server.js
+  # Clean standalone entrypoint (files are in root)
+  if [ -f "server.js" ]; then
+    exec node server.js
+  elif [ -f ".next/standalone/server.js" ]; then
+    exec node .next/standalone/server.js
+  else
+    echo "ERROR: server.js not found!"
+    exit 1
+  fi
 fi

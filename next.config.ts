@@ -34,8 +34,7 @@ const nextConfig: NextConfig = {
     ],
     serverActions: {
       allowedOrigins: [
-        "46.224.145.55:3000", 
-        "46.224.145.55:8000",
+        process.env.NEXT_PUBLIC_APP_URL?.replace("https://", "").replace("http://", "") || "localhost:3000",
         "rpbey.fr", 
         "localhost:3000",
         "localhost:8000"
@@ -44,7 +43,10 @@ const nextConfig: NextConfig = {
   },
 
   // Dev origins
-  allowedDevOrigins: ["46.224.145.55", "rpbey.fr"],
+  allowedDevOrigins: [
+    process.env.NEXT_PUBLIC_APP_URL?.replace("https://", "").replace("http://", "").split(":")[0] || "localhost",
+    "rpbey.fr"
+  ],
 
   // Image optimization
   images: {
@@ -112,10 +114,15 @@ const nextConfig: NextConfig = {
   },
 
   async rewrites() {
+    const botUrl = process.env.BOT_API_URL || "http://localhost:3001";
     return [
       {
         source: "/api/bot/socket/:path*",
-        destination: "http://46.224.145.55:3001/socket.io/:path*",
+        destination: `${botUrl}/socket.io/:path*`,
+      },
+      {
+        source: "/api/bot/:path*",
+        destination: `${botUrl}/api/:path*`,
       },
     ];
   },

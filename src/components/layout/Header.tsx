@@ -22,6 +22,7 @@ const pages = [
   { label: 'Tableau de bord', href: '/dashboard' },
   { label: 'Tournois', href: '/tournaments' },
   { label: 'Classements', href: '/rankings' },
+  { label: 'SATR', href: '/tournaments/satr' },
 ];
 
 export function Header() {

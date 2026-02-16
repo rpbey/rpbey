@@ -1,88 +1,51 @@
-import { Command } from '@sapphire/framework';
-import { ChannelType, EmbedBuilder, PermissionFlagsBits } from 'discord.js';
+import {
+  ApplicationCommandOptionType,
+  ChannelType,
+  type CommandInteraction,
+  EmbedBuilder,
+  type GuildMember,
+  PermissionFlagsBits,
+} from 'discord.js';
+import { Discord, Guard, Slash, SlashGroup, SlashOption } from 'discordx';
 
-// Salon visible pour les utilisateurs mutés
+import { ModeratorOnly } from '../../guards/ModeratorOnly.js';
+import { logger } from '../../lib/logger.js';
+
 const MUTED_CHANNEL_ID = process.env.MUTED_CHANNEL_ID ?? '1456761597245784260';
 const MUTED_ROLE_NAME = 'Muted';
 
-export class MuteCommand extends Command {
-  constructor(context: Command.LoaderContext, options: Command.Options) {
-    super(context, {
-      ...options,
-      description: "Mute un membre (ne peut voir qu'un seul salon)",
-      preconditions: ['ModeratorOnly'],
-    });
-  }
-
-  override registerApplicationCommands(registry: Command.Registry) {
-    registry.registerChatInputCommand((builder) =>
-      builder
-        .setName('muet')
-        .setDescription("Gérer le mute d'un membre")
-        .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers)
-        .setContexts(0)
-        .addSubcommand((sub) =>
-          sub
-            .setName('ajouter')
-            .setDescription("Mute un membre (ne peut voir qu'un seul salon)")
-            .addUserOption((opt) =>
-              opt
-                .setName('membre')
-                .setDescription('Le membre à mute')
-                .setRequired(true),
-            )
-            .addStringOption((opt) =>
-              opt.setName('raison').setDescription('Raison du mute'),
-            ),
-        )
-        .addSubcommand((sub) =>
-          sub
-            .setName('retirer')
-            .setDescription("Retire le mute d'un membre")
-            .addUserOption((opt) =>
-              opt
-                .setName('membre')
-                .setDescription('Le membre à unmute')
-                .setRequired(true),
-            ),
-        )
-        .addSubcommand((sub) =>
-          sub
-            .setName('config')
-            .setDescription(
-              'Configure le rôle Muted et les permissions des salons',
-            ),
-        ),
-    );
-  }
-
-  override async chatInputRun(
-    interaction: Command.ChatInputCommandInteraction,
+@Discord()
+@SlashGroup({
+  name: 'muet',
+  description: "Gérer le mute d'un membre",
+  defaultMemberPermissions: PermissionFlagsBits.ModerateMembers,
+})
+@SlashGroup('muet')
+@Guard(ModeratorOnly)
+export class MuteCommand {
+  @Slash({
+    name: 'ajouter',
+    description: "Mute un membre (ne peut voir qu'un seul salon)",
+  })
+  async mute(
+    @SlashOption({
+      name: 'membre',
+      description: 'Le membre à mute',
+      required: true,
+      type: ApplicationCommandOptionType.User,
+    })
+    target:
+      | GuildMember
+      | { id: string; tag: string; displayAvatarURL: () => string },
+    @SlashOption({
+      name: 'raison',
+      description: 'Raison du mute',
+      required: false,
+      type: ApplicationCommandOptionType.String,
+    })
+    reason: string = 'Aucune raison fournie',
+    interaction: CommandInteraction,
   ) {
-    const subcommand = interaction.options.getSubcommand();
-
-    switch (subcommand) {
-      case 'ajouter':
-        return this.muteUser(interaction);
-      case 'retirer':
-        return this.unmuteUser(interaction);
-      case 'config':
-        return this.setupMutedRole(interaction);
-      default:
-        return interaction.reply({
-          content: '❌ Sous-commande inconnue.',
-          ephemeral: true,
-        });
-    }
-  }
-
-  /**
-   * Mute un utilisateur en lui attribuant le rôle Muted
-   */
-  private async muteUser(interaction: Command.ChatInputCommandInteraction) {
-    const target = interaction.options.getUser('membre', true);
-    const reason =
-      interaction.options.getString('raison') ?? 'Aucune raison fournie';
     const guild = interaction.guild;
 
     if (!guild) {
@@ -100,18 +63,16 @@ export class MuteCommand extends Command {
       });
     }
 
-    // Vérifier si le rôle Muted existe
     const mutedRole = guild.roles.cache.find((r) => r.name === MUTED_ROLE_NAME);
 
     if (!mutedRole) {
       return interaction.reply({
         content:
-          "❌ Le rôle **Muted** n'existe pas. Utilisez `/mute setup` d'abord.",
+          "❌ Le rôle **Muted** n'existe pas. Utilisez `/muet config` d'abord.",
         ephemeral: true,
       });
     }
 
-    // Vérifier si l'utilisateur est déjà mute
     if (member.roles.cache.has(mutedRole.id)) {
       return interaction.reply({
         content: '⚠️ Ce membre est déjà mute.',
@@ -125,13 +86,19 @@ export class MuteCommand extends Command {
         `Mute par ${interaction.user.tag}: ${reason}`,
       );
 
+      const userTag = 'tag' in target ? target.tag : target.user.tag;
+      const avatarURL =
+        'displayAvatarURL' in target
+          ? target.displayAvatarURL()
+          : (target as GuildMember).displayAvatarURL();
+
       const embed = new EmbedBuilder()
         .setTitle('🔇 Membre mute')
         .setColor(0xff6b00)
         .addFields(
           {
             name: 'Membre',
-            value: `${target.tag} (${target.id})`,
+            value: `${userTag} (${target.id})`,
             inline: true,
           },
           { name: 'Modérateur', value: interaction.user.tag, inline: true },
@@ -142,31 +109,12 @@ export class MuteCommand extends Command {
             inline: true,
           },
         )
-        .setThumbnail(target.displayAvatarURL())
+        .setThumbnail(avatarURL)
         .setTimestamp();
-
-      // DM l'utilisateur
-      try {
-        await target.send({
-          embeds: [
-            new EmbedBuilder()
-              .setTitle('🔇 Vous avez été mute')
-              .setColor(0xff6b00)
-              .setDescription(
-                `Vous avez été mute sur **${guild.name}**.\n\n` +
-                  `**Raison:** ${reason}\n\n` +
-                  `Vous pouvez uniquement accéder au salon <#${MUTED_CHANNEL_ID}>.`,
-              )
-              .setTimestamp(),
-          ],
-        });
-      } catch {
-        // L'utilisateur a peut-être les DMs fermés
-      }
 
       return interaction.reply({ embeds: [embed] });
     } catch (error) {
-      this.container.logger.error('Mute command error:', error);
+      logger.error('Mute command error:', error);
       return interaction.reply({
         content: '❌ Échec du mute. Vérifiez mes permissions.',
         ephemeral: true,
@@ -174,11 +122,19 @@ export class MuteCommand extends Command {
     }
   }
 
-  /**
-   * Retire le mute d'un utilisateur
-   */
-  private async unmuteUser(interaction: Command.ChatInputCommandInteraction) {
-    const target = interaction.options.getUser('membre', true);
+  @Slash({ name: 'retirer', description: "Retire le mute d'un membre" })
+  async unmute(
+    @SlashOption({
+      name: 'membre',
+      description: 'Le membre à unmute',
+      required: true,
+      type: ApplicationCommandOptionType.User,
+    })
+    target:
+      | GuildMember
+      | { id: string; tag: string; displayAvatarURL: () => string },
+    interaction: CommandInteraction,
+  ) {
     const guild = interaction.guild;
 
     if (!guild) {
@@ -211,41 +167,29 @@ export class MuteCommand extends Command {
         `Unmute par ${interaction.user.tag}`,
       );
 
+      const userTag = 'tag' in target ? target.tag : target.user.tag;
+      const avatarURL =
+        'displayAvatarURL' in target
+          ? target.displayAvatarURL()
+          : (target as GuildMember).displayAvatarURL();
+
       const embed = new EmbedBuilder()
         .setTitle('🔊 Membre unmute')
         .setColor(0x00ff00)
         .addFields(
           {
             name: 'Membre',
-            value: `${target.tag} (${target.id})`,
+            value: `${userTag} (${target.id})`,
             inline: true,
           },
           { name: 'Modérateur', value: interaction.user.tag, inline: true },
         )
-        .setThumbnail(target.displayAvatarURL())
+        .setThumbnail(avatarURL)
         .setTimestamp();
-
-      // DM l'utilisateur
-      try {
-        await target.send({
-          embeds: [
-            new EmbedBuilder()
-              .setTitle('🔊 Vous avez été unmute')
-              .setColor(0x00ff00)
-              .setDescription(
-                `Votre mute sur **${guild.name}** a été levé.\n` +
-                  `Vous pouvez à nouveau accéder à tous les salons.`,
-              )
-              .setTimestamp(),
-          ],
-        });
-      } catch {
-        // L'utilisateur a peut-être les DMs fermés
-      }
 
       return interaction.reply({ embeds: [embed] });
     } catch (error) {
-      this.container.logger.error('Unmute command error:', error);
+      logger.error('Unmute command error:', error);
       return interaction.reply({
         content: '❌ Échec du unmute. Vérifiez mes permissions.',
         ephemeral: true,
@@ -253,12 +197,11 @@ export class MuteCommand extends Command {
     }
   }
 
-  /**
-   * Configure le rôle Muted et les permissions de tous les salons
-   */
-  private async setupMutedRole(
-    interaction: Command.ChatInputCommandInteraction,
-  ) {
+  @Slash({
+    name: 'config',
+    description: 'Configure le rôle Muted et les permissions des salons',
+  })
+  async setupMutedRole(interaction: CommandInteraction) {
     const guild = interaction.guild;
 
     if (!guild) {
@@ -271,7 +214,6 @@ export class MuteCommand extends Command {
     await interaction.deferReply();
 
     try {
-      // Créer ou récupérer le rôle Muted
       const existingRole = guild.roles.cache.find(
         (r) => r.name === MUTED_ROLE_NAME,
       );
@@ -282,14 +224,13 @@ export class MuteCommand extends Command {
           name: MUTED_ROLE_NAME,
           color: 0x808080,
           reason: 'Rôle pour les utilisateurs mutes',
-          permissions: [], // Aucune permission
+          permissions: [],
         }));
 
       if (!existingRole) {
-        this.container.logger.info(`Rôle ${MUTED_ROLE_NAME} créé`);
+        logger.info(`Rôle ${MUTED_ROLE_NAME} créé`);
       }
 
-      // Configurer les permissions pour chaque salon
       const channels = guild.channels.cache.filter(
         (c) =>
           c.type === ChannelType.GuildText ||
@@ -304,7 +245,6 @@ export class MuteCommand extends Command {
       for (const [, channel] of channels) {
         try {
           if (channel.id === MUTED_CHANNEL_ID) {
-            // Salon accessible aux mutés : autoriser View + Send
             await channel.permissionOverwrites.edit(mutedRole, {
               ViewChannel: true,
               SendMessages: true,
@@ -313,7 +253,6 @@ export class MuteCommand extends Command {
               EmbedLinks: false,
             });
           } else {
-            // Autres salons : refuser View
             await channel.permissionOverwrites.edit(mutedRole, {
               ViewChannel: false,
               SendMessages: false,
@@ -322,7 +261,7 @@ export class MuteCommand extends Command {
           updated++;
         } catch (err) {
           errors++;
-          this.container.logger.warn(
+          logger.warn(
             `Impossible de modifier les permissions de ${channel.name}:`,
             err,
           );
@@ -359,7 +298,7 @@ export class MuteCommand extends Command {
 
       return interaction.editReply({ embeds: [embed] });
     } catch (error) {
-      this.container.logger.error('Setup muted role error:', error);
+      logger.error('Setup muted role error:', error);
       return interaction.editReply({
         content:
           "❌ Échec de la configuration. Vérifiez que j'ai la permission de gérer les rôles et les salons.",

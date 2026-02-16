@@ -1,48 +1,51 @@
-import { Command } from '@sapphire/framework';
-import { EmbedBuilder, PermissionFlagsBits } from 'discord.js';
+import {
+  ApplicationCommandOptionType,
+  type CommandInteraction,
+  EmbedBuilder,
+  type GuildMember,
+  PermissionFlagsBits,
+} from 'discord.js';
+import { Discord, Guard, Slash, SlashOption } from 'discordx';
 
-export class BanCommand extends Command {
-  constructor(context: Command.LoaderContext, options: Command.Options) {
-    super(context, {
-      ...options,
-      description: 'Bannir un membre du serveur',
-      preconditions: ['ModeratorOnly'],
-    });
-  }
+import { ModeratorOnly } from '../../guards/ModeratorOnly.js';
+import { logger } from '../../lib/logger.js';
 
-  override registerApplicationCommands(registry: Command.Registry) {
-    registry.registerChatInputCommand((builder) =>
-      builder
-        .setName('bannir')
-        .setDescription('Bannir un membre du serveur')
-        .setDefaultMemberPermissions(PermissionFlagsBits.BanMembers)
-        .setContexts(0)
-        .addUserOption((opt) =>
-          opt
-            .setName('membre')
-            .setDescription('Le membre à bannir')
-            .setRequired(true),
-        )
-        .addStringOption((opt) =>
-          opt.setName('raison').setDescription('Raison du bannissement'),
-        )
-        .addIntegerOption((opt) =>
-          opt
-            .setName('supprimer_jours')
-            .setDescription('Jours de messages à supprimer (0-7)')
-            .setMinValue(0)
-            .setMaxValue(7),
-        ),
-    );
-  }
-
-  override async chatInputRun(
-    interaction: Command.ChatInputCommandInteraction,
+@Discord()
+@Guard(ModeratorOnly)
+export class BanCommand {
+  @Slash({
+    name: 'bannir',
+    description: 'Bannir un membre du serveur',
+    defaultMemberPermissions: PermissionFlagsBits.BanMembers,
+  })
+  async ban(
+    @SlashOption({
+      name: 'membre',
+      description: 'Le membre à bannir',
+      required: true,
+      type: ApplicationCommandOptionType.User,
+    })
+    target:
+      | GuildMember
+      | { id: string; tag: string; displayAvatarURL: () => string },
+    @SlashOption({
+      name: 'raison',
+      description: 'Raison du bannissement',
+      required: false,
+      type: ApplicationCommandOptionType.String,
+    })
+    reason: string = 'Aucune raison fournie',
+    @SlashOption({
+      name: 'supprimer_jours',
+      description: 'Jours de messages à supprimer (0-7)',
+      required: false,
+      type: ApplicationCommandOptionType.Integer,
+      minValue: 0,
+      maxValue: 7,
+    })
+    deleteDays: number = 0,
+    interaction: CommandInteraction,
   ) {
-    const target = interaction.options.getUser('membre', true);
-    const reason =
-      interaction.options.getString('raison') ?? 'Aucune raison fournie';
-    const deleteDays = interaction.options.getInteger('supprimer_jours') ?? 0;
     const member = interaction.guild?.members.cache.get(target.id);
 
     if (member && !member.bannable) {
@@ -58,13 +61,19 @@ export class BanCommand extends Command {
         deleteMessageSeconds: deleteDays * 24 * 60 * 60,
       });
 
+      const userTag = 'tag' in target ? target.tag : target.user.tag;
+      const avatarURL =
+        'displayAvatarURL' in target
+          ? target.displayAvatarURL()
+          : (target as GuildMember).displayAvatarURL();
+
       const embed = new EmbedBuilder()
         .setTitle('🔨 Membre banni')
         .setColor(0xff0000)
         .addFields(
           {
             name: 'Membre',
-            value: `${target.tag} (${target.id})`,
+            value: `${userTag} (${target.id})`,
             inline: true,
           },
           { name: 'Modérateur', value: interaction.user.tag, inline: true },
@@ -75,12 +84,12 @@ export class BanCommand extends Command {
             inline: true,
           },
         )
-        .setThumbnail(target.displayAvatarURL())
+        .setThumbnail(avatarURL)
         .setTimestamp();
 
       return interaction.reply({ embeds: [embed] });
     } catch (error) {
-      this.container.logger.error('Ban command error:', error);
+      logger.error('Ban command error:', error);
       return interaction.reply({
         content: '❌ Échec du bannissement du membre.',
         ephemeral: true,

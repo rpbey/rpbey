@@ -1,31 +1,23 @@
-import { Command } from '@sapphire/framework';
-import { AttachmentBuilder, EmbedBuilder } from 'discord.js';
+import {
+  AttachmentBuilder,
+  type CommandInteraction,
+  EmbedBuilder,
+} from 'discord.js';
+import { Discord, Slash } from 'discordx';
+
 import { generateComboCard } from '../../lib/canvas-utils.js';
 import { RPB } from '../../lib/constants.js';
 import prisma from '../../lib/prisma.js';
 
-export class RandomBeyCommand extends Command {
-  constructor(context: Command.LoaderContext, options: Command.Options) {
-    super(context, {
-      ...options,
-      description: 'Génère une combinaison Beyblade aléatoire !',
-    });
-  }
-
-  override registerApplicationCommands(registry: Command.Registry) {
-    registry.registerChatInputCommand((builder) =>
-      builder
-        .setName('aleatoire')
-        .setDescription('Génère une combinaison Beyblade X aléatoire !'),
-    );
-  }
-
-  override async chatInputRun(
-    interaction: Command.ChatInputCommandInteraction,
-  ) {
+@Discord()
+export class RandomBeyCommand {
+  @Slash({
+    name: 'aleatoire',
+    description: 'Génère une combinaison Beyblade X aléatoire !',
+  })
+  async random(interaction: CommandInteraction) {
     await interaction.deferReply();
 
-    // Fetch parts from DB
     const [blades, ratchets, bits] = await Promise.all([
       prisma.part.findMany({ where: { type: 'BLADE' } }),
       prisma.part.findMany({ where: { type: 'RATCHET' } }),
@@ -38,17 +30,15 @@ export class RandomBeyCommand extends Command {
       );
     }
 
-    const blade = this.random(blades);
-    const ratchet = this.random(ratchets);
-    const bit = this.random(bits);
+    const blade = this.pickRandom(blades);
+    const ratchet = this.pickRandom(ratchets);
+    const bit = this.pickRandom(bits);
 
     const combo = `${blade.name} ${ratchet.name} ${bit.name}`;
 
-    // Helper to parse stats
     const p = (val: string | null) => parseInt(val || '0', 10);
     const w = (val: number | null) => val || 0;
 
-    // Calculate real stats
     const attack = p(blade.attack) + p(ratchet.attack) + p(bit.attack);
     const defense = p(blade.defense) + p(ratchet.defense) + p(bit.defense);
     const stamina = p(blade.stamina) + p(ratchet.stamina) + p(bit.stamina);
@@ -59,7 +49,6 @@ export class RandomBeyCommand extends Command {
       w(bit.weight)
     ).toFixed(1);
 
-    // Determine type based on Blade (or Bit as fallback)
     const typeMap: Record<
       string,
       { name: string; emoji: string; color: number }
@@ -73,7 +62,6 @@ export class RandomBeyCommand extends Command {
     const typeKey = blade.beyType || bit.beyType || 'BALANCE';
     const type = typeMap[typeKey] || typeMap.BALANCE;
 
-    // Generate visual combo card
     const cardBuffer = await generateComboCard({
       name: combo,
       blade: blade.name,
@@ -105,14 +93,10 @@ export class RandomBeyCommand extends Command {
     });
   }
 
-  private random<T>(array: readonly T[]): T {
+  private pickRandom<T>(array: readonly T[]): T {
     const index = Math.floor(Math.random() * array.length);
     const item = array[index];
     if (item === undefined) throw new Error('Array is empty');
     return item;
-  }
-
-  private randomStat(): number {
-    return Math.floor(Math.random() * 60) + 40; // 40-100
   }
 }

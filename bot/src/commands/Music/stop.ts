@@ -1,23 +1,16 @@
-import { ApplyOptions } from '@sapphire/decorators';
-import { Command } from '@sapphire/framework';
+import type { CommandInteraction } from 'discord.js';
 import { useQueue } from 'discord-player';
+import { Discord, Slash } from 'discordx';
 
-@ApplyOptions<Command.Options>({
-  description: "Arrête la musique et vide la file d'attente",
-  preconditions: ['GuildOnly'],
-})
-export class StopCommand extends Command {
-  public override registerApplicationCommands(registry: Command.Registry) {
-    registry.registerChatInputCommand((builder) =>
-      builder.setName('arreter').setDescription(this.description),
-    );
-  }
-
-  public override async chatInputRun(
-    interaction: Command.ChatInputCommandInteraction,
-  ) {
-    // biome-ignore lint/style/noNonNullAssertion: Guarded by GuildOnly
-    const queue = useQueue(interaction.guildId!);
+@Discord()
+export class StopCommand {
+  @Slash({
+    name: 'arreter',
+    description: "Arrête la musique et vide la file d'attente",
+  })
+  async stop(interaction: CommandInteraction) {
+    if (!interaction.guildId) return;
+    const queue = useQueue(interaction.guildId);
 
     if (!queue) {
       return interaction.reply({

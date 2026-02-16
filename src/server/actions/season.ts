@@ -1,7 +1,7 @@
 'use server';
 
-import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
+import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 
 // Zod Schemas
@@ -61,7 +61,7 @@ export async function createSeason(name: string, slug: string) {
   // Validate input
   const result = CreateSeasonSchema.safeParse({ name, slug });
   if (!result.success) {
-    throw new Error('Invalid input: ' + result.error.message);
+    throw new Error(`Invalid input: ${result.error.message}`);
   }
 
   // Deactivate current season if exists
@@ -94,7 +94,7 @@ export async function archiveCurrentSeason(
     nextSeasonSlug,
   });
   if (!result.success) {
-    throw new Error('Invalid input: ' + result.error.message);
+    throw new Error(`Invalid input: ${result.error.message}`);
   }
 
   const currentSeason = await getCurrentSeason();

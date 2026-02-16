@@ -1,40 +1,42 @@
-import { Command } from '@sapphire/framework';
-import { EmbedBuilder, PermissionFlagsBits } from 'discord.js';
+import {
+  ApplicationCommandOptionType,
+  type CommandInteraction,
+  EmbedBuilder,
+  type GuildMember,
+  PermissionFlagsBits,
+} from 'discord.js';
+import { Discord, Guard, Slash, SlashOption } from 'discordx';
 
-export class KickCommand extends Command {
-  constructor(context: Command.LoaderContext, options: Command.Options) {
-    super(context, {
-      ...options,
-      description: 'Expulser un membre du serveur',
-      preconditions: ['ModeratorOnly'],
-    });
-  }
+import { ModeratorOnly } from '../../guards/ModeratorOnly.js';
+import { logger } from '../../lib/logger.js';
 
-  override registerApplicationCommands(registry: Command.Registry) {
-    registry.registerChatInputCommand((builder) =>
-      builder
-        .setName('expulser')
-        .setDescription('Expulser un membre du serveur')
-        .setDefaultMemberPermissions(PermissionFlagsBits.KickMembers)
-        .setContexts(0)
-        .addUserOption((opt) =>
-          opt
-            .setName('membre')
-            .setDescription('Le membre à expulser')
-            .setRequired(true),
-        )
-        .addStringOption((opt) =>
-          opt.setName('raison').setDescription("Raison de l'expulsion"),
-        ),
-    );
-  }
-
-  override async chatInputRun(
-    interaction: Command.ChatInputCommandInteraction,
+@Discord()
+@Guard(ModeratorOnly)
+export class KickCommand {
+  @Slash({
+    name: 'expulser',
+    description: 'Expulser un membre du serveur',
+    defaultMemberPermissions: PermissionFlagsBits.KickMembers,
+  })
+  async kick(
+    @SlashOption({
+      name: 'membre',
+      description: 'Le membre à expulser',
+      required: true,
+      type: ApplicationCommandOptionType.User,
+    })
+    target:
+      | GuildMember
+      | { id: string; tag: string; displayAvatarURL: () => string },
+    @SlashOption({
+      name: 'raison',
+      description: "Raison de l'expulsion",
+      required: false,
+      type: ApplicationCommandOptionType.String,
+    })
+    reason: string = 'Aucune raison fournie',
+    interaction: CommandInteraction,
   ) {
-    const target = interaction.options.getUser('membre', true);
-    const reason =
-      interaction.options.getString('raison') ?? 'Aucune raison fournie';
     const member = interaction.guild?.members.cache.get(target.id);
 
     if (!member) {
@@ -54,24 +56,30 @@ export class KickCommand extends Command {
     try {
       await member.kick(`${reason} | Expulsé par ${interaction.user.tag}`);
 
+      const userTag = 'tag' in target ? target.tag : target.user.tag;
+      const avatarURL =
+        'displayAvatarURL' in target
+          ? target.displayAvatarURL()
+          : (target as GuildMember).displayAvatarURL();
+
       const embed = new EmbedBuilder()
         .setTitle('👢 Membre expulsé')
         .setColor(0xffa500)
         .addFields(
           {
             name: 'Membre',
-            value: `${target.tag} (${target.id})`,
+            value: `${userTag} (${target.id})`,
             inline: true,
           },
           { name: 'Modérateur', value: interaction.user.tag, inline: true },
           { name: 'Raison', value: reason },
         )
-        .setThumbnail(target.displayAvatarURL())
+        .setThumbnail(avatarURL)
         .setTimestamp();
 
       return interaction.reply({ embeds: [embed] });
     } catch (error) {
-      this.container.logger.error('Kick command error:', error);
+      logger.error('Kick command error:', error);
       return interaction.reply({
         content: "❌ Échec de l'expulsion du membre.",
         ephemeral: true,

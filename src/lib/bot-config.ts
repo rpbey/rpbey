@@ -11,8 +11,8 @@ export function getBotApiUrl() {
     if (url && !url.includes('localhost') && !url.includes('127.0.0.1')) {
       return url;
     }
-    // Fallback to Host Public IP for reliability
-    return 'http://46.224.145.55:3001';
+    // Fallback if URL is missing or points to localhost in prod
+    return url || 'http://localhost:3001';
   }
 
   if (url) {

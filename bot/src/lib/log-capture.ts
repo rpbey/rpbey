@@ -1,17 +1,17 @@
-import { container } from '@sapphire/framework';
 import { addLog } from './api-server.js';
+import { logger } from './logger.js';
 
-// Wrap the Sapphire logger to capture logs
+// Wrap the logger to capture logs
 export function setupLogCapture() {
-  const originalLogger = container.logger;
-
   // Create proxy for each log level
-  const levels = ['trace', 'debug', 'info', 'warn', 'error', 'fatal'] as const;
+  const levels = ['info', 'warn', 'error', 'debug'] as const;
 
   for (const level of levels) {
-    const originalMethod = originalLogger[level].bind(originalLogger);
+    const originalMethod = logger[level];
 
-    originalLogger[level] = (...args: unknown[]) => {
+    // Override the static method
+    // @ts-ignore
+    logger[level] = (...args: unknown[]) => {
       // Call original method
       originalMethod(...args);
 

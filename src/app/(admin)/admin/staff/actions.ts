@@ -1,9 +1,9 @@
 'use server';
 
-import { exec } from 'child_process';
+import { exec } from 'node:child_process';
+import { promisify } from 'node:util';
 import { revalidatePath } from 'next/cache';
 import { headers } from 'next/headers';
-import { promisify } from 'util';
 import { auth } from '@/lib/auth';
 import {
   getMembersByRole as getBotMembersByRole,
@@ -89,7 +89,7 @@ export async function syncStaffFromDiscord() {
 
   try {
     const { stdout, stderr } = await execAsync(
-      'npx tsx scripts/sync-staff-db.ts',
+      'pnpm exec tsx scripts/sync-staff-db.ts',
     );
 
     console.log('[SyncStaff] Script output:', stdout);
@@ -102,8 +102,8 @@ export async function syncStaffFromDiscord() {
     revalidatePath('/notre-equipe');
 
     return {
-      added: addedMatch?.[1] ? parseInt(addedMatch[1]) : 0,
-      updated: updatedMatch?.[1] ? parseInt(updatedMatch[1]) : 0,
+      added: addedMatch?.[1] ? parseInt(addedMatch[1], 10) : 0,
+      updated: updatedMatch?.[1] ? parseInt(updatedMatch[1], 10) : 0,
       success: true,
     };
   } catch (error) {

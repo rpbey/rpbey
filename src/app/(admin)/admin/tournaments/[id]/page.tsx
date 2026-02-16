@@ -833,7 +833,7 @@ export default function TournamentDetailPage({
 function formatLogTime(ts: string): string {
   try {
     const date = new Date(ts);
-    if (isNaN(date.getTime())) return ts;
+    if (Number.isNaN(date.getTime())) return ts;
     return date.toLocaleTimeString('fr-FR', {
       hour: '2-digit',
       minute: '2-digit',

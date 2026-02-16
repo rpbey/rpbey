@@ -1,82 +1,35 @@
-import { Command } from '@sapphire/framework';
-import { version as djsVersion, EmbedBuilder } from 'discord.js';
+import {
+  ApplicationCommandOptionType,
+  type CommandInteraction,
+  version as djsVersion,
+  EmbedBuilder,
+  GuildMember,
+  type User,
+} from 'discord.js';
+import { Discord, Slash, SlashGroup, SlashOption } from 'discordx';
+
 import { Colors, RPB } from '../../lib/constants.js';
 import prisma from '../../lib/prisma.js';
 
-const sapphireVersion = '5.4.0'; // @sapphire/framework version
-
-export class InfoCommand extends Command {
-  constructor(context: Command.LoaderContext, options: Command.Options) {
-    super(context, {
-      ...options,
-      description: 'Affiche les informations du bot et du serveur',
-    });
-  }
-
-  override registerApplicationCommands(registry: Command.Registry) {
-    registry.registerChatInputCommand((builder) =>
-      builder
-        .setName('info')
-        .setDescription('Affiche les informations')
-        .addSubcommand((sub) =>
-          sub.setName('bot').setDescription('Statistiques et infos du bot'),
-        )
-        .addSubcommand((sub) =>
-          sub.setName('serveur').setDescription('Informations sur le serveur'),
-        )
-        .addSubcommand((sub) =>
-          sub
-            .setName('membre')
-            .setDescription('Informations sur un membre')
-            .addUserOption((opt) =>
-              opt.setName('cible').setDescription('Le membre à afficher'),
-            ),
-        )
-        .addSubcommand((sub) =>
-          sub.setName('staff').setDescription('Affiche la liste du staff RPB'),
-        ),
-    );
-  }
-
-  override async chatInputRun(
-    interaction: Command.ChatInputCommandInteraction,
-  ) {
-    const subcommand = interaction.options.getSubcommand();
-
-    switch (subcommand) {
-      case 'bot':
-        return this.botInfo(interaction);
-      case 'serveur':
-        return this.serverInfo(interaction);
-      case 'membre':
-        return this.userInfo(interaction);
-      case 'staff':
-        return this.staffInfo(interaction);
-      default:
-        return interaction.reply({
-          content: '❌ Sous-commande inconnue.',
-          ephemeral: true,
-        });
-    }
-  }
-
-  private async botInfo(interaction: Command.ChatInputCommandInteraction) {
-    const { client } = this.container;
+@Discord()
+@SlashGroup({ name: 'info', description: 'Affiche les informations' })
+@SlashGroup('info')
+export class InfoCommand {
+  @Slash({ name: 'bot', description: 'Statistiques et infos du bot' })
+  async bot(interaction: CommandInteraction) {
+    const client = interaction.client;
     const memoryUsage = process.memoryUsage();
 
-    // Calculate total users across all guilds (more accurate than cache)
     const totalUsers = client.guilds.cache.reduce(
       (acc, guild) => acc + guild.memberCount,
       0,
     );
 
-    // Calculate total channels across all guilds
     const totalChannels = client.guilds.cache.reduce(
       (acc, guild) => acc + guild.channels.cache.size,
       0,
     );
 
-    // Calculate uptime
     const uptime = client.uptime ?? 0;
     const days = Math.floor(uptime / (1000 * 60 * 60 * 24));
     const hours = Math.floor(
@@ -106,7 +59,7 @@ export class InfoCommand extends Command {
           inline: true,
         },
         { name: '📦 Discord.js', value: `v${djsVersion}`, inline: true },
-        { name: '⚡ Sapphire', value: `v${sapphireVersion}`, inline: true },
+        { name: '⚡ Discordx', value: `v11`, inline: true },
         { name: '🟢 Node.js', value: process.version, inline: true },
         {
           name: '💾 Mémoire',
@@ -130,7 +83,8 @@ export class InfoCommand extends Command {
     return interaction.reply({ embeds: [embed] });
   }
 
-  private async serverInfo(interaction: Command.ChatInputCommandInteraction) {
+  @Slash({ name: 'serveur', description: 'Informations sur le serveur' })
+  async server(interaction: CommandInteraction) {
     const { guild } = interaction;
     if (!guild) {
       return interaction.reply({
@@ -141,10 +95,8 @@ export class InfoCommand extends Command {
 
     await interaction.deferReply();
 
-    // Fetch fresh guild data to ensure accurate counts
     const fetchedGuild = await guild.fetch();
 
-    // Count channels by type
     const textChannels = guild.channels.cache.filter(
       (c) => c.isTextBased() && !c.isThread(),
     ).size;
@@ -153,7 +105,6 @@ export class InfoCommand extends Command {
     ).size;
     const categories = guild.channels.cache.filter((c) => c.type === 4).size;
 
-    // Count online members (requires presence intent, fallback gracefully)
     let onlineCount = 0;
     try {
       const members = await guild.members.fetch({ withPresences: true });
@@ -161,7 +112,6 @@ export class InfoCommand extends Command {
         (m) => m.presence?.status && m.presence.status !== 'offline',
       ).size;
     } catch {
-      // Presence intent might not be enabled, that's okay
       onlineCount = 0;
     }
 
@@ -216,7 +166,6 @@ export class InfoCommand extends Command {
       .setFooter({ text: `ID: ${fetchedGuild.id}` })
       .setTimestamp();
 
-    // Add banner if available
     if (fetchedGuild.bannerURL()) {
       embed.setImage(fetchedGuild.bannerURL({ size: 512 }));
     }
@@ -224,12 +173,28 @@ export class InfoCommand extends Command {
     return interaction.editReply({ embeds: [embed] });
   }
 
-  private async userInfo(interaction: Command.ChatInputCommandInteraction) {
-    const target = interaction.options.getUser('cible') ?? interaction.user;
-    const member = interaction.guild?.members.cache.get(target.id);
+  @Slash({ name: 'membre', description: 'Informations sur un membre' })
+  async member(
+    @SlashOption({
+      name: 'cible',
+      description: 'Le membre à afficher',
+      required: false,
+      type: ApplicationCommandOptionType.User,
+    })
+    targetOption: User | GuildMember | undefined,
+    interaction: CommandInteraction,
+  ) {
+    let target: User;
+    if (!targetOption) {
+      target = interaction.user;
+    } else if (targetOption instanceof GuildMember) {
+      target = targetOption.user;
+    } else {
+      target = targetOption;
+    }
 
-    // Fetch user to get banner (force fetch to ensure banner is available)
-    const fetchedUser = await this.container.client.users.fetch(target.id, {
+    const member = interaction.guild?.members.cache.get(target.id);
+    const fetchedUser = await interaction.client.users.fetch(target.id, {
       force: true,
     });
 
@@ -257,7 +222,6 @@ export class InfoCommand extends Command {
     }
 
     if (member) {
-      // Status
       const statusMap: Record<string, string> = {
         online: '🟢 En ligne',
         idle: '🌙 Absent',
@@ -270,12 +234,10 @@ export class InfoCommand extends Command {
         (member.presence?.status && statusMap[member.presence.status]) ||
         '⚫ Hors ligne';
 
-      // Activity
       const activity = member.presence?.activities[0];
       let activityText = 'Aucune activité';
       if (activity) {
         if (activity.type === 4 && activity.state) {
-          // Custom Status
           activityText = `${activity.emoji ? `${activity.emoji.name} ` : ''}${activity.state}`;
         } else {
           activityText = `${activity.name} ${activity.details ? `(${activity.details})` : ''}`;
@@ -310,12 +272,11 @@ export class InfoCommand extends Command {
         });
       }
 
-      // Roles (exclude everyone)
       const roles = member.roles.cache
         .filter((r) => r.name !== '@everyone')
         .sort((a, b) => b.position - a.position)
         .map((r) => r.toString())
-        .slice(0, 10); // Limit to top 10 roles
+        .slice(0, 10);
 
       if (roles.length > 0) {
         embed.addFields({
@@ -331,7 +292,8 @@ export class InfoCommand extends Command {
     return interaction.reply({ embeds: [embed] });
   }
 
-  private async staffInfo(interaction: Command.ChatInputCommandInteraction) {
+  @Slash({ name: 'staff', description: 'Affiche la liste du staff RPB' })
+  async staff(interaction: CommandInteraction) {
     await interaction.deferReply();
 
     try {
@@ -358,15 +320,12 @@ export class InfoCommand extends Command {
         .setFooter({ text: RPB.FullName })
         .setTimestamp();
 
-      // Group by team
       const teams: Record<string, typeof staffMembers> = {};
       for (const member of staffMembers) {
         if (!teams[member.teamId]) teams[member.teamId] = [];
-        const team = teams[member.teamId];
-        if (team) team.push(member);
+        teams[member.teamId].push(member);
       }
 
-      // Format teams
       const teamNames: Record<string, string> = {
         admin: '⭐ Administration',
         mod: '🛡️ Modération',
@@ -391,7 +350,7 @@ export class InfoCommand extends Command {
 
       return interaction.editReply({ embeds: [embed] });
     } catch (error) {
-      this.container.logger.error('Staff info error:', error);
+      console.error('Staff info error:', error);
       return interaction.editReply({
         content: "❌ Erreur lors de la récupération de l'équipe.",
       });

@@ -43,7 +43,7 @@ export function RandomCombo() {
   // Initial load
   useEffect(() => {
     if (!combo) generateCombo();
-  }, [combo]);
+  }, [combo, generateCombo]);
 
   return (
     <Card

@@ -1,6 +1,5 @@
 # RPB Dashboard - Dockerfile for Coolify deployment
-# This Dockerfile bypasses Nixpacks to avoid ESM/CJS issues with Prisma 7
-# Build: 2026-01-07-v3
+# Build: 2026-02-15-v7 - Final Clean Standalone
 
 FROM node:24-slim AS base
 
@@ -12,9 +11,6 @@ RUN corepack enable && corepack prepare pnpm@10.27.0 --activate
 
 WORKDIR /app
 
-# Copy package files first (for better layer caching)
-COPY pnpm-workspace.yaml pnpm-lock.yaml package.json ./
-
 # ============================================
 # Build Base stage (with compilers)
 # ============================================
@@ -24,33 +20,44 @@ FROM base AS build-base
 RUN apt-get update && apt-get install -y --no-install-recommends \
     python3 \
     build-essential \
+    libcairo2-dev \
+    libpango1.0-dev \
+    libjpeg-dev \
+    libgif-dev \
+    librsvg2-dev \
+    pkg-config \
     && rm -rf /var/lib/apt/lists/*
-
-# ============================================
-# Dependencies stage
-# ============================================
-FROM build-base AS deps
-
-# Install dependencies
-RUN --mount=type=cache,target=/root/.local/share/pnpm/store pnpm install --frozen-lockfile
 
 # ============================================
 # Builder stage
 # ============================================
 FROM build-base AS builder
 
-# Increase memory limit for build
-ENV NODE_OPTIONS="--max-old-space-size=8192"
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV NODE_OPTIONS="--max-old-space-size=8192"
 
-COPY --from=deps /app ./
+# Copy all files
 COPY . .
+
+# Install dependencies
+RUN --mount=type=cache,target=/root/.local/share/pnpm/store pnpm install --frozen-lockfile
 
 # Generate Prisma Client
 RUN pnpm run db:generate
 
 # Build Next.js
-RUN --mount=type=cache,target=/app/.next/cache pnpm run build
+ENV BETTER_AUTH_SECRET="dummy_secret_for_build"
+ENV DATABASE_URL="postgresql://postgres:postgres@db:5432/rpb_dashboard"
+ENV PRISMA_CLIENT_ENGINE_TYPE=library
+RUN pnpm run build
+
+# Build Bot
+RUN pnpm run bot:build
+
+# Prepare standalone static files
+RUN cp -r public .next/standalone/public && \
+    mkdir -p .next/standalone/.next && \
+    cp -r .next/static .next/standalone/.next/static
 
 # ============================================
 # Production stage
@@ -58,7 +65,6 @@ RUN --mount=type=cache,target=/app/.next/cache pnpm run build
 FROM base AS runner
 
 ENV NODE_ENV=production
-# Disable Next.js telemetry during runtime
 ENV NEXT_TELEMETRY_DISABLED=1
 
 # Create non-root user for security
@@ -67,27 +73,41 @@ RUN addgroup --system --gid 1001 nodejs && \
 
 WORKDIR /app
 
-# Copy necessary files and set ownership
-COPY --from=builder --chown=nextjs:nodejs /app/public ./public
-COPY --from=builder /app/package.json ./package.json
-
-# Ensure uploads directory exists and is writable
-RUN mkdir -p public/uploads/avatars public/uploads/deckboxes && \
-    chown -R nextjs:nodejs public && \
-    chmod -R 775 public/uploads
-
-# Automatically leverage output traces to reduce image size
-# https://nextjs.org/docs/advanced-features/output-file-tracing
+# Copy EVERYTHING from standalone to the root
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
-# Standalone mode needs node_modules for some features but it's usually included in .next/standalone/node_modules
-# We copy public files again to be sure they are there
-COPY --from=builder --chown=nextjs:nodejs /app/public ./public
+# This already includes server.js, node_modules (dashboard), public, and .next/static (thanks to the prepared steps in builder)
 
-# Install Chromium for Puppeteer and clean up
+# Copy bot artifacts explicitly into its own folder
+COPY --from=builder --chown=nextjs:nodejs /app/bot/dist ./bot/dist
+COPY --from=builder --chown=nextjs:nodejs /app/bot/package.json ./bot/package.json
+COPY --from=builder --chown=nextjs:nodejs /app/bot/data ./bot/data
+
+# Prisma schema and config for migrations
+COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
+COPY --from=builder --chown=nextjs:nodejs /app/prisma.config.ts ./prisma.config.ts
+
+# We need the full node_modules for the bot because standalone only includes dashboard deps
+# BUT standalone already has its own node_modules. 
+# Let's merge them or just use the full one from builder if needed.
+# Since we want a robust bot, let's copy the full node_modules but avoid overwriting standalone's special links
+# Actually, pnpm workspace links are tricky.
+# Best approach: Copy full node_modules from builder.
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules ./node_modules
+
+# Re-copy prepared public/static into the root to be absolutely sure
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone/.next/static ./.next/static
+
+# Install Chromium for Puppeteer and runtime libs for canvas
 RUN apt-get update && apt-get install -y --no-install-recommends \
     chromium \
     fonts-liberation \
+    libcairo2 \
+    libpango-1.0-0 \
+    libpangocairo-1.0-0 \
+    libjpeg62-turbo \
+    libgif7 \
+    librsvg2-2 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /root/.cache
 
@@ -102,11 +122,10 @@ ENV HOSTNAME="0.0.0.0"
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 
-# Health check to allow Coolify/Docker to detect unhealthy containers
+# Health check
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
   CMD node -e "const port = process.env.PORT || 3000; const path = process.env.HEALTHCHECK_PATH || '/api/health'; fetch('http://localhost:' + port + path).then(r => {if(!r.ok) throw new Error(r.statusText)})"
 
-# Use start script to handle conditional startup
 COPY --chown=nextjs:nodejs scripts/start-entrypoint.sh ./start-entrypoint.sh
 RUN chmod +x ./start-entrypoint.sh
 

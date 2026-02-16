@@ -71,7 +71,7 @@ export function RyugaChat({ user }: RyugaChatProps) {
 
   useLayoutEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [scrollToBottom]);
 
   const sendMessage = async () => {
     if (!input.trim() || isLoading) return;

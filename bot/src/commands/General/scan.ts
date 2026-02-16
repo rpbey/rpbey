@@ -1,63 +1,51 @@
-import { Command } from '@sapphire/framework';
 import {
+  ApplicationCommandOptionType,
   ChannelType,
+  type CommandInteraction,
   EmbedBuilder,
-  type Guild,
   PermissionFlagsBits,
 } from 'discord.js';
+import {
+  Discord,
+  Guard,
+  Slash,
+  SlashChoice,
+  SlashGroup,
+  SlashOption,
+} from 'discordx';
+
+import { OwnerOnly } from '../../guards/OwnerOnly.js';
 import { Colors, RPB } from '../../lib/constants.js';
 
-export class ScanCommand extends Command {
-  constructor(context: Command.LoaderContext, options: Command.Options) {
-    super(context, {
-      ...options,
-      description: 'Scanner les IDs des salons et rôles du serveur',
-      preconditions: ['OwnerOnly'],
-    });
-  }
-
-  override registerApplicationCommands(registry: Command.Registry) {
-    registry.registerChatInputCommand((builder) =>
-      builder
-        .setName('scanner')
-        .setDescription('Scanner les IDs des salons et rôles')
-        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
-        .addSubcommand((sub) =>
-          sub
-            .setName('salons')
-            .setDescription('Liste tous les salons avec leurs IDs')
-            .addStringOption((opt) =>
-              opt
-                .setName('type')
-                .setDescription('Type de salon à filtrer')
-                .addChoices(
-                  { name: '📝 Tous', value: 'all' },
-                  { name: '💬 Textuels', value: 'text' },
-                  { name: '🔊 Vocaux', value: 'voice' },
-                  { name: '📂 Catégories', value: 'category' },
-                  { name: '📢 Annonces', value: 'announcement' },
-                  { name: '🧵 Forums', value: 'forum' },
-                ),
-            ),
-        )
-        .addSubcommand((sub) =>
-          sub
-            .setName('roles')
-            .setDescription('Liste tous les rôles avec leurs IDs'),
-        )
-        .addSubcommand((sub) =>
-          sub
-            .setName('tout')
-            .setDescription('Exporte salons + rôles en fichier'),
-        ),
-    );
-  }
-
-  override async chatInputRun(
-    interaction: Command.ChatInputCommandInteraction,
+@Discord()
+@SlashGroup({
+  name: 'scanner',
+  description: 'Scanner les IDs des salons et rôles',
+  defaultMemberPermissions: PermissionFlagsBits.Administrator,
+})
+@SlashGroup('scanner')
+@Guard(OwnerOnly)
+export class ScanCommand {
+  @Slash({
+    name: 'salons',
+    description: 'Liste tous les salons avec leurs IDs',
+  })
+  async scanChannels(
+    @SlashChoice({ name: '📝 Tous', value: 'all' })
+    @SlashChoice({ name: '💬 Textuels', value: 'text' })
+    @SlashChoice({ name: '🔊 Vocaux', value: 'voice' })
+    @SlashChoice({ name: '📂 Catégories', value: 'category' })
+    @SlashChoice({ name: '📢 Annonces', value: 'announcement' })
+    @SlashChoice({ name: '🧵 Forums', value: 'forum' })
+    @SlashOption({
+      name: 'type',
+      description: 'Type de salon à filtrer',
+      required: false,
+      type: ApplicationCommandOptionType.String,
+    })
+    filterType: string = 'all',
+    interaction: CommandInteraction,
   ) {
-    const subcommand = interaction.options.getSubcommand();
-
     if (!interaction.guild) {
       return interaction.reply({
         content: '❌ Cette commande doit être utilisée dans un serveur.',
@@ -66,28 +54,6 @@ export class ScanCommand extends Command {
     }
 
     const { guild } = interaction;
-
-    switch (subcommand) {
-      case 'salons':
-        return this.scanChannels(interaction, guild);
-      case 'roles':
-        return this.scanRoles(interaction, guild);
-      case 'tout':
-        return this.scanAll(interaction, guild);
-      default:
-        return interaction.reply({
-          content: '❌ Sous-commande inconnue.',
-          ephemeral: true,
-        });
-    }
-  }
-
-  private async scanChannels(
-    interaction: Command.ChatInputCommandInteraction,
-    guild: Guild,
-  ) {
-    const filterType = interaction.options.getString('type') ?? 'all';
-
     await interaction.deferReply({ ephemeral: true });
 
     // Fetch all channels
@@ -186,10 +152,10 @@ export class ScanCommand extends Command {
     return interaction.editReply({ content });
   }
 
-  private async scanRoles(
-    interaction: Command.ChatInputCommandInteraction,
-    guild: Guild,
-  ) {
+  @Slash({ name: 'roles', description: 'Liste tous les rôles avec leurs IDs' })
+  async scanRoles(interaction: CommandInteraction) {
+    if (!interaction.guild) return;
+    const { guild } = interaction;
     await interaction.deferReply({ ephemeral: true });
 
     // Fetch all roles
@@ -237,10 +203,10 @@ export class ScanCommand extends Command {
     return interaction.editReply({ content });
   }
 
-  private async scanAll(
-    interaction: Command.ChatInputCommandInteraction,
-    guild: Guild,
-  ) {
+  @Slash({ name: 'tout', description: 'Exporte salons + rôles en fichier' })
+  async scanAll(interaction: CommandInteraction) {
+    if (!interaction.guild) return;
+    const { guild } = interaction;
     await interaction.deferReply({ ephemeral: true });
 
     const [channels, roles] = await Promise.all([

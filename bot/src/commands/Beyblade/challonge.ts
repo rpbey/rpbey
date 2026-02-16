@@ -1,61 +1,35 @@
-import { Subcommand } from '@sapphire/plugin-subcommands';
-import { EmbedBuilder } from 'discord.js';
+import {
+  ApplicationCommandOptionType,
+  type CommandInteraction,
+  EmbedBuilder,
+} from 'discord.js';
+import { Discord, Slash, SlashGroup, SlashOption } from 'discordx';
+
 import { Colors, RPB } from '../../lib/constants.js';
+import { logger } from '../../lib/logger.js';
 import prisma from '../../lib/prisma.js';
 
-export class ChallongeCommand extends Subcommand {
-  public constructor(
-    context: Subcommand.LoaderContext,
-    options: Subcommand.Options,
+@Discord()
+@SlashGroup({ name: 'challonge', description: 'Gérer ton compte Challonge' })
+@SlashGroup('challonge')
+export class ChallongeCommand {
+  @Slash({
+    name: 'lier',
+    description: 'Lier ton pseudo Challonge à ton compte Discord',
+  })
+  async link(
+    @SlashOption({
+      name: 'pseudo',
+      description: 'Ton pseudo exact sur Challonge',
+      required: true,
+      type: ApplicationCommandOptionType.String,
+    })
+    challongeUsername: string,
+    interaction: CommandInteraction,
   ) {
-    super(context, {
-      ...options,
-      description: 'Gérer la liaison avec Challonge',
-      subcommands: [
-        {
-          name: 'lier',
-          chatInputRun: 'chatInputLink',
-        },
-        {
-          name: 'info',
-          chatInputRun: 'chatInputInfo',
-        },
-      ],
-    });
-  }
-
-  public override registerApplicationCommands(registry: Subcommand.Registry) {
-    registry.registerChatInputCommand((builder) =>
-      builder
-        .setName('challonge')
-        .setDescription('Gérer ton compte Challonge')
-        .addSubcommand((command) =>
-          command
-            .setName('lier')
-            .setDescription('Lier ton pseudo Challonge à ton compte Discord')
-            .addStringOption((option) =>
-              option
-                .setName('pseudo')
-                .setDescription('Ton pseudo exact sur Challonge')
-                .setRequired(true),
-            ),
-        )
-        .addSubcommand((command) =>
-          command
-            .setName('info')
-            .setDescription('Voir les informations de ton compte lié'),
-        ),
-    );
-  }
-
-  public async chatInputLink(
-    interaction: Subcommand.ChatInputCommandInteraction,
-  ) {
-    const challongeUsername = interaction.options.getString('pseudo', true);
     await interaction.deferReply({ ephemeral: true });
 
     try {
-      // Find or create user and profile
       const _user = await prisma.user.upsert({
         where: { discordId: interaction.user.id },
         create: {
@@ -65,8 +39,9 @@ export class ChallongeCommand extends Subcommand {
           email: `${interaction.user.id}@discord.rpbey.fr`,
           profile: {
             create: {
+              // @ts-ignore
               challongeUsername,
-              bladerName: interaction.user.displayName, // Default blader name if new
+              bladerName: interaction.user.displayName,
             },
           },
         },
@@ -75,10 +50,12 @@ export class ChallongeCommand extends Subcommand {
           profile: {
             upsert: {
               create: {
+                // @ts-ignore
                 challongeUsername,
                 bladerName: interaction.user.displayName,
               },
               update: {
+                // @ts-ignore
                 challongeUsername,
               },
             },
@@ -99,16 +76,18 @@ export class ChallongeCommand extends Subcommand {
 
       return interaction.editReply({ embeds: [embed] });
     } catch (error) {
-      this.container.logger.error('Challonge link error:', error);
+      logger.error('Challonge link error:', error);
       return interaction.editReply({
         content: '❌ Une erreur est survenue lors de la liaison du compte.',
       });
     }
   }
 
-  public async chatInputInfo(
-    interaction: Subcommand.ChatInputCommandInteraction,
-  ) {
+  @Slash({
+    name: 'info',
+    description: 'Voir les informations de ton compte lié',
+  })
+  async info(interaction: CommandInteraction) {
     await interaction.deferReply({ ephemeral: true });
 
     try {
@@ -117,6 +96,7 @@ export class ChallongeCommand extends Subcommand {
         include: { profile: true },
       });
 
+      // @ts-ignore
       if (!user?.profile?.challongeUsername) {
         return interaction.editReply({
           content:
@@ -129,17 +109,19 @@ export class ChallongeCommand extends Subcommand {
         .setColor(Colors.Primary)
         .addFields({
           name: 'Pseudo Lié',
+          // @ts-ignore
           value: user.profile.challongeUsername,
           inline: true,
         })
         .setDescription(
+          // @ts-ignore
           `Lien profil : [Voir sur Challonge](https://challonge.com/users/${user.profile.challongeUsername})`,
         )
         .setFooter({ text: RPB.FullName });
 
       return interaction.editReply({ embeds: [embed] });
     } catch (error) {
-      this.container.logger.error('Challonge info error:', error);
+      logger.error('Challonge info error:', error);
       return interaction.editReply(
         '❌ Erreur lors de la récupération des infos.',
       );

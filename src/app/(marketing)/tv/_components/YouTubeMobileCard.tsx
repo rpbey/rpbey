@@ -2,7 +2,6 @@
 
 import { MoreVert as MoreVertIcon } from '@mui/icons-material';
 import { Avatar, Box, CardMedia, IconButton, Typography } from '@mui/material';
-import React from 'react';
 
 interface YouTubeMobileCardProps {
   video: {

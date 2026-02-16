@@ -18,7 +18,9 @@ export interface TikTokVideo {
   url: string;
 }
 
-export async function getTikTokVideos(username: string): Promise<TikTokVideo[]> {
+export async function getTikTokVideos(
+  username: string,
+): Promise<TikTokVideo[]> {
   try {
     // Timeout promise (5 seconds)
     const timeout = new Promise<never>((_, reject) =>

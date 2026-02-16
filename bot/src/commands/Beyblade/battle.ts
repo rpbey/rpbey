@@ -1,49 +1,41 @@
-import { Command } from '@sapphire/framework';
 import {
   ActionRowBuilder,
+  ApplicationCommandOptionType,
   ButtonBuilder,
   ButtonStyle,
+  type CommandInteraction,
   EmbedBuilder,
+  type User,
 } from 'discord.js';
+import { Discord, Slash, SlashOption } from 'discordx';
+
 import { getDeckStats, runBattleSimulation } from '../../lib/battle-utils.js';
 import { Colors, RPB } from '../../lib/constants.js';
 import { pendingBattles } from '../../lib/state.js';
 
-export class BattleCommand extends Command {
-  constructor(context: Command.LoaderContext, options: Command.Options) {
-    super(context, {
-      ...options,
-      description: 'Lance un combat Beyblade virtuel !',
-    });
-  }
-
-  override registerApplicationCommands(registry: Command.Registry) {
-    registry.registerChatInputCommand((builder) =>
-      builder
-        .setName('combat')
-        .setDescription(
-          'Lance un combat Beyblade virtuel contre un autre membre !',
-        )
-        .addUserOption((opt) =>
-          opt
-            .setName('adversaire')
-            .setDescription('Ton adversaire')
-            .setRequired(true),
-        )
-        .addBooleanOption((opt) =>
-          opt
-            .setName('rapide')
-            .setDescription('Combat rapide sans confirmation')
-            .setRequired(false),
-        ),
-    );
-  }
-
-  override async chatInputRun(
-    interaction: Command.ChatInputCommandInteraction,
+@Discord()
+export class BattleCommand {
+  @Slash({
+    name: 'combat',
+    description: 'Lance un combat Beyblade virtuel contre un autre membre !',
+  })
+  async battle(
+    @SlashOption({
+      name: 'adversaire',
+      description: 'Ton adversaire',
+      required: true,
+      type: ApplicationCommandOptionType.User,
+    })
+    opponent: User,
+    @SlashOption({
+      name: 'rapide',
+      description: 'Combat rapide sans confirmation',
+      required: false,
+      type: ApplicationCommandOptionType.Boolean,
+    })
+    quickBattle: boolean = false,
+    interaction: CommandInteraction,
   ) {
-    const opponent = interaction.options.getUser('adversaire', true);
-    const quickBattle = interaction.options.getBoolean('rapide') ?? false;
     const challenger = interaction.user;
 
     if (opponent.id === challenger.id) {
@@ -60,7 +52,6 @@ export class BattleCommand extends Command {
       });
     }
 
-    // Quick battle mode
     if (quickBattle) {
       await interaction.deferReply();
 
@@ -87,7 +78,6 @@ export class BattleCommand extends Command {
         return interaction.editReply({ embeds: [embed], components: [row] });
       }
 
-      // Start Simulation
       const startEmbed = new EmbedBuilder()
         .setTitle('⚔️ Combat Beyblade !')
         .setDescription(
@@ -108,7 +98,6 @@ export class BattleCommand extends Command {
       );
     }
 
-    // Challenge mode (Standard)
     pendingBattles.set(challenger.id, {
       opponentId: opponent.id,
       channelId: interaction.channelId,

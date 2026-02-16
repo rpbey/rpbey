@@ -48,11 +48,11 @@ export function PartDetailModal({ part, onClose }: PartDetailModalProps) {
   if (!part) return null;
 
   const stats = [
-    parseInt(part.attack || '0'),
-    parseInt(part.defense || '0'),
-    parseInt(part.stamina || '0'),
-    parseInt(part.dash || '0'),
-    parseInt(part.burst || '0'),
+    parseInt(part.attack || '0', 10),
+    parseInt(part.defense || '0', 10),
+    parseInt(part.stamina || '0', 10),
+    parseInt(part.dash || '0', 10),
+    parseInt(part.burst || '0', 10),
   ];
 
   return (

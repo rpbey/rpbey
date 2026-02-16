@@ -56,6 +56,7 @@ model User {
   profile          Profile?
   seasonEntries    SeasonEntry[]
   sessions         Session[]
+  tickets          Ticket[]
   player1Matches   TournamentMatch[]       @relation("Player1Matches")
   player2Matches   TournamentMatch[]       @relation("Player2Matches")
   winnerMatches    TournamentMatch[]       @relation("WinnerMatches")
@@ -197,9 +198,24 @@ model Profile {
   rankingPoints     Int             @default(0)
   challongeUsername String?
   deckBoxImage      String?
+  currency          Int             @default(0)
+  lastDaily         DateTime?
   user              User            @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("profiles")
+}
+
+model Ticket {
+  id        String    @id @default(cuid())
+  channelId String    @unique
+  userId    String
+  type      String
+  status    String    @default("OPEN")
+  createdAt DateTime  @default(now())
+  closedAt  DateTime?
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("tickets")
 }
 
 model RankingSystem {
@@ -524,6 +540,38 @@ model YouTubeVideo {
   isFeatured    Boolean  @default(true)
 
   @@map("youtube_videos")
+}
+
+model SatrRanking {
+  id            String   @id @default(cuid())
+  rank          Int
+  playerName    String
+  score         Int
+  wins          Int
+  participation Int
+  winRate       String
+  pointsAverage String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([playerName])
+  @@index([score])
+  @@map("satr_rankings")
+}
+
+model SatrBlader {
+  id               String   @id @default(cuid())
+  name             String   @unique
+  totalWins        Int      @default(0)
+  totalLosses      Int      @default(0)
+  tournamentsCount Int      @default(0)
+  history          Json
+  linkedUserId     String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([name])
+  @@map("satr_bladers")
 }
 
 enum BeyType {

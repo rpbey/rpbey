@@ -1,96 +1,44 @@
-import { Command } from '@sapphire/framework';
 import {
   ActionRowBuilder,
+  ApplicationCommandOptionType,
   ButtonBuilder,
   ButtonStyle,
+  type CommandInteraction,
   ComponentType,
   EmbedBuilder,
 } from 'discord.js';
+import { Discord, Slash, SlashGroup, SlashOption } from 'discordx';
+
 import { getChallongeClient } from '../../lib/challonge.js';
 import { Colors, RPB } from '../../lib/constants.js';
+import { logger } from '../../lib/logger.js';
 import prisma from '../../lib/prisma.js';
 
-export class RegisterCommand extends Command {
-  constructor(context: Command.LoaderContext, options: Command.Options) {
-    super(context, {
-      ...options,
-      description: "S'inscrire ou se désinscrire d'un tournoi",
-    });
-  }
-
-  override registerApplicationCommands(registry: Command.Registry) {
-    registry.registerChatInputCommand((builder) =>
-      builder
-        .setName('inscription')
-        .setDescription('Gestion des inscriptions aux tournois')
-        .addSubcommand((sub) =>
-          sub
-            .setName('rejoindre')
-            .setDescription("S'inscrire à un tournoi")
-            .addStringOption((opt) =>
-              opt
-                .setName('tournoi')
-                .setDescription('ID du tournoi (ex: B_TS1)')
-                .setRequired(true),
-            )
-            .addStringOption((opt) =>
-              opt
-                .setName('pseudo')
-                .setDescription(
-                  'Ton pseudo de joueur (si différent de Discord)',
-                ),
-            ),
-        )
-        .addSubcommand((sub) =>
-          sub
-            .setName('quitter')
-            .setDescription("Se désinscrire d'un tournoi")
-            .addStringOption((opt) =>
-              opt
-                .setName('tournoi')
-                .setDescription('ID du tournoi')
-                .setRequired(true),
-            ),
-        )
-        .addSubcommand((sub) =>
-          sub
-            .setName('statut')
-            .setDescription("Vérifie ton statut d'inscription")
-            .addStringOption((opt) =>
-              opt
-                .setName('tournoi')
-                .setDescription('ID du tournoi')
-                .setRequired(true),
-            ),
-        ),
-    );
-  }
-
-  override async chatInputRun(
-    interaction: Command.ChatInputCommandInteraction,
+@Discord()
+@SlashGroup({
+  name: 'inscription',
+  description: 'Gestion des inscriptions aux tournois',
+})
+@SlashGroup('inscription')
+export class RegisterCommand {
+  @Slash({ name: 'rejoindre', description: "S'inscrire à un tournoi" })
+  async join(
+    @SlashOption({
+      name: 'tournoi',
+      description: 'ID du tournoi (ex: B_TS1)',
+      required: true,
+      type: ApplicationCommandOptionType.String,
+    })
+    tournamentId: string,
+    @SlashOption({
+      name: 'pseudo',
+      description: 'Ton pseudo de joueur (si différent de Discord)',
+      required: false,
+      type: ApplicationCommandOptionType.String,
+    })
+    customName: string | undefined,
+    interaction: CommandInteraction,
   ) {
-    const subcommand = interaction.options.getSubcommand();
-
-    switch (subcommand) {
-      case 'rejoindre':
-        return this.joinTournament(interaction);
-      case 'quitter':
-        return this.leaveTournament(interaction);
-      case 'statut':
-        return this.checkStatus(interaction);
-      default:
-        return interaction.reply({
-          content: '❌ Sous-commande inconnue.',
-          ephemeral: true,
-        });
-    }
-  }
-
-  private async joinTournament(
-    interaction: Command.ChatInputCommandInteraction,
-  ) {
-    const tournamentId = interaction.options.getString('tournoi', true);
-    const customName = interaction.options.getString('pseudo');
     const playerName = customName ?? interaction.user.displayName;
 
     await interaction.deferReply({ ephemeral: true });
@@ -98,7 +46,6 @@ export class RegisterCommand extends Command {
     try {
       const challonge = getChallongeClient();
 
-      // Check if tournament exists and is open
       const tournamentRes = await challonge.getTournament(tournamentId);
       const tournament = tournamentRes.data;
 
@@ -108,7 +55,6 @@ export class RegisterCommand extends Command {
         });
       }
 
-      // Check if already registered
       const participantsRes = await challonge.listParticipants(tournamentId);
       const existingParticipant = participantsRes.data?.find(
         (p) =>
@@ -122,15 +68,12 @@ export class RegisterCommand extends Command {
         });
       }
 
-      // Register the participant on Challonge
       await challonge.createParticipant(tournamentId, {
         name: playerName,
-        misc: interaction.user.id, // Store Discord ID for reference
+        misc: interaction.user.id,
       });
 
-      // Sync to database
       try {
-        // Get or create user first
         const user = await prisma.user.upsert({
           where: { discordId: interaction.user.id },
           update: { discordTag: interaction.user.tag },
@@ -142,7 +85,6 @@ export class RegisterCommand extends Command {
           },
         });
 
-        // Get or create profile
         await prisma.profile.upsert({
           where: { userId: user.id },
           update: { bladerName: playerName },
@@ -153,7 +95,6 @@ export class RegisterCommand extends Command {
           },
         });
 
-        // Get or create tournament in DB
         const dbTournament = await prisma.tournament.upsert({
           where: { challongeId: tournamentId },
           update: { name: tournament.attributes.name },
@@ -167,7 +108,6 @@ export class RegisterCommand extends Command {
           },
         });
 
-        // Register participant in DB
         await prisma.tournamentParticipant.upsert({
           where: {
             tournamentId_userId: {
@@ -183,8 +123,7 @@ export class RegisterCommand extends Command {
           },
         });
       } catch (dbError) {
-        // Database sync is optional, log but don't fail
-        this.container.logger.warn('DB sync failed:', dbError);
+        logger.warn('DB sync failed:', dbError);
       }
 
       const embed = new EmbedBuilder()
@@ -222,24 +161,29 @@ export class RegisterCommand extends Command {
 
       return interaction.editReply({ embeds: [embed], components: [row] });
     } catch (error) {
-      this.container.logger.error('Join tournament error:', error);
+      logger.error('Join tournament error:', error);
       return interaction.editReply(
         "❌ Erreur lors de l'inscription. Le tournoi existe-t-il ?",
       );
     }
   }
 
-  private async leaveTournament(
-    interaction: Command.ChatInputCommandInteraction,
+  @Slash({ name: 'quitter', description: "Se désinscrire d'un tournoi" })
+  async leave(
+    @SlashOption({
+      name: 'tournoi',
+      description: 'ID du tournoi',
+      required: true,
+      type: ApplicationCommandOptionType.String,
+    })
+    tournamentId: string,
+    interaction: CommandInteraction,
   ) {
-    const tournamentId = interaction.options.getString('tournoi', true);
-
     await interaction.deferReply({ ephemeral: true });
 
     try {
       const challonge = getChallongeClient();
 
-      // Get tournament info
       const tournamentRes = await challonge.getTournament(tournamentId);
       const tournament = tournamentRes.data;
 
@@ -250,7 +194,6 @@ export class RegisterCommand extends Command {
         });
       }
 
-      // Find participant by Discord ID
       const participantsRes = await challonge.listParticipants(tournamentId);
       const participant = participantsRes.data?.find(
         (p) => p.attributes.misc === interaction.user.id,
@@ -262,7 +205,6 @@ export class RegisterCommand extends Command {
         });
       }
 
-      // Confirm with button
       const confirmEmbed = new EmbedBuilder()
         .setTitle('⚠️ Confirmation')
         .setDescription(
@@ -324,14 +266,22 @@ export class RegisterCommand extends Command {
         });
       }
     } catch (error) {
-      this.container.logger.error('Leave tournament error:', error);
+      logger.error('Leave tournament error:', error);
       return interaction.editReply('❌ Erreur lors de la désinscription.');
     }
   }
 
-  private async checkStatus(interaction: Command.ChatInputCommandInteraction) {
-    const tournamentId = interaction.options.getString('tournoi', true);
-
+  @Slash({ name: 'statut', description: "Vérifie ton statut d'inscription" })
+  async status(
+    @SlashOption({
+      name: 'tournoi',
+      description: 'ID du tournoi',
+      required: true,
+      type: ApplicationCommandOptionType.String,
+    })
+    tournamentId: string,
+    interaction: CommandInteraction,
+  ) {
     await interaction.deferReply({ ephemeral: true });
 
     try {
@@ -396,7 +346,7 @@ export class RegisterCommand extends Command {
 
       return interaction.editReply({ embeds: [embed] });
     } catch (error) {
-      this.container.logger.error('Check status error:', error);
+      logger.error('Check status error:', error);
       return interaction.editReply(
         '❌ Erreur lors de la vérification du statut.',
       );

@@ -1,7 +1,7 @@
-import { mkdir, writeFile } from 'fs/promises';
+import { mkdir, writeFile } from 'node:fs/promises';
+import path from 'node:path';
 import { headers } from 'next/headers';
 import { NextResponse } from 'next/server';
-import path from 'path';
 import { auth } from '@/lib/auth';
 
 export async function POST(request: Request) {

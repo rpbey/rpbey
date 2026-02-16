@@ -1,34 +1,27 @@
-import { ApplyOptions } from '@sapphire/decorators';
-import { Command } from '@sapphire/framework';
+import {
+  ApplicationCommandOptionType,
+  type CommandInteraction,
+} from 'discord.js';
 import { useQueue } from 'discord-player';
+import { Discord, Slash, SlashOption } from 'discordx';
 
-@ApplyOptions<Command.Options>({
-  description: 'Ajuste le volume de la musique',
-  preconditions: ['GuildOnly'],
-})
-export class VolumeCommand extends Command {
-  public override registerApplicationCommands(registry: Command.Registry) {
-    registry.registerChatInputCommand((builder) =>
-      builder
-        .setName('volume')
-        .setDescription(this.description)
-        .addIntegerOption((option) =>
-          option
-            .setName('niveau')
-            .setDescription('Volume entre 0 et 100')
-            .setRequired(true)
-            .setMinValue(0)
-            .setMaxValue(100),
-        ),
-    );
-  }
-
-  public override async chatInputRun(
-    interaction: Command.ChatInputCommandInteraction,
+@Discord()
+export class VolumeCommand {
+  @Slash({ name: 'volume', description: 'Ajuste le volume de la musique' })
+  async volume(
+    @SlashOption({
+      name: 'niveau',
+      description: 'Volume entre 0 et 100',
+      required: true,
+      type: ApplicationCommandOptionType.Integer,
+      minValue: 0,
+      maxValue: 100,
+    })
+    volume: number,
+    interaction: CommandInteraction,
   ) {
-    // biome-ignore lint/style/noNonNullAssertion: Guarded by GuildOnly
-    const queue = useQueue(interaction.guildId!);
-    const volume = interaction.options.getInteger('niveau', true);
+    if (!interaction.guildId) return;
+    const queue = useQueue(interaction.guildId);
 
     if (!queue || !queue.isPlaying()) {
       return interaction.reply({

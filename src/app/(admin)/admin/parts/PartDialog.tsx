@@ -36,7 +36,7 @@ export function PartDialog({
     } else {
       setForm({ type: 'BLADE', system: 'BX' });
     }
-  }, [initialData, open]);
+  }, [initialData]);
 
   const handleSubmit = async () => {
     setLoading(true);

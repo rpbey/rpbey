@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { getContent } from '@/server/actions/cms';
 import HomeClient from './HomeClient';
 
+export const dynamic = 'force-dynamic';
 export const revalidate = 60;
 
 export default async function HomePage() {

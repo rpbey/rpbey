@@ -1,21 +1,9 @@
 import type { Prisma } from '@prisma/client';
-import { container } from '@sapphire/framework';
-import { getChallongeClient } from './challonge.js';
-import prisma from './prisma.js';
-import {
-  ChallongeScraper,
-  type ScrapedLogEntry,
-} from './scrapers/challonge-scraper.js';
-import { twitchBot } from './twitch-bot.js';
 
-/**
- * Service de synchronisation Challonge
- *
- * Stratégie économe en requêtes API (limite 500/mois):
- * - Import initial: 2 requêtes (tournoi + participants)
- * - Sync temps réel: Activé uniquement 24h avant le tournoi
- * - Cache DB: Utiliser la DB comme source principale
- */
+import { getChallongeClient } from './challonge.js';
+import { logger } from './logger.js';
+import prisma from './prisma.js';
+import { ChallongeScraper } from './scrapers/challonge-scraper.js';
 
 export interface SyncResult {
   success: boolean;
@@ -29,18 +17,12 @@ export interface SyncResult {
   apiRequestsUsed: number;
 }
 
-/**
- * Scrape un tournoi et synchronise TOUT (participants, matchs, classements)
- * Utilise Puppeteer-Stealth pour contourner Cloudflare.
- */
 export async function scrapeAndSyncTournament(
   urlId: string,
 ): Promise<SyncResult> {
   const scraper = new ChallongeScraper();
   try {
-    container.logger.info(
-      `[Sync] Démarrage du scraping deep-sync pour: ${urlId}`,
-    );
+    logger.info(`[Sync] Démarrage du scraping deep-sync pour: ${urlId}`);
     const result = await scraper.scrape(urlId);
 
     // 1. Upsert Tournament
@@ -58,10 +40,12 @@ export async function scrapeAndSyncTournament(
         status,
         challongeUrl: meta.url,
         challongeState: meta.state,
+        // @ts-ignore
         standings:
           result.standings.length > 0
             ? (result.standings as unknown as Prisma.InputJsonValue)
             : undefined,
+        // @ts-ignore
         stations:
           result.stations.length > 0
             ? (result.stations as unknown as Prisma.InputJsonValue)
@@ -80,10 +64,12 @@ export async function scrapeAndSyncTournament(
         challongeUrl: meta.url,
         challongeState: meta.state,
         maxPlayers: raw.signup_cap || 64,
+        // @ts-ignore
         standings:
           result.standings.length > 0
             ? (result.standings as unknown as Prisma.InputJsonValue)
             : undefined,
+        // @ts-ignore
         stations:
           result.stations.length > 0
             ? (result.stations as unknown as Prisma.InputJsonValue)
@@ -100,7 +86,6 @@ export async function scrapeAndSyncTournament(
     let importedParticipants = 0;
 
     for (const p of result.participants) {
-      // Recherche par pseudo exact ou ChallongeUsername
       let user = await prisma.user.findFirst({
         where: {
           OR: [
@@ -108,6 +93,7 @@ export async function scrapeAndSyncTournament(
             { username: { equals: p.name, mode: 'insensitive' } },
             {
               profile: {
+                // @ts-ignore
                 challongeUsername: { equals: p.name, mode: 'insensitive' },
               },
             },
@@ -115,7 +101,6 @@ export async function scrapeAndSyncTournament(
         },
       });
 
-      // Création stub si manquant
       if (!user) {
         const cleanName = p.name.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
         const stubEmail = `${cleanName}@import.bot`;
@@ -145,7 +130,7 @@ export async function scrapeAndSyncTournament(
             challongeParticipantId: String(p.id),
             seed: p.seed,
             finalPlacement: p.finalRank || null,
-            checkedIn: true, // Scraped participants are usually checked in or active
+            checkedIn: true,
           },
           create: {
             tournamentId: dbTournament.id,
@@ -203,7 +188,7 @@ export async function scrapeAndSyncTournament(
       importedMatches++;
     }
 
-    container.logger.info(
+    logger.info(
       `[Sync] Deep-Sync réussi pour ${dbTournament.name}: ${importedParticipants} joueurs, ${importedMatches} matchs, ${result.standings.length} standings, ${result.stations.length} stations, ${result.log.length} log.`,
     );
 
@@ -218,7 +203,7 @@ export async function scrapeAndSyncTournament(
       apiRequestsUsed: 0,
     };
   } catch (error) {
-    container.logger.error('[Sync] Erreur Deep-Sync Scraping:', error);
+    logger.error('[Sync] Erreur Deep-Sync Scraping:', error);
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Erreur inconnue',
@@ -229,9 +214,6 @@ export async function scrapeAndSyncTournament(
   }
 }
 
-/**
- * Pousse un participant local vers Challonge (1 requête API)
- */
 export async function pushParticipantToChallonge(
   challongeId: string,
   discordId: string,
@@ -242,7 +224,7 @@ export async function pushParticipantToChallonge(
   try {
     const result = await challonge.createParticipant(challongeId, {
       name: playerName,
-      misc: discordId, // Stocke l'ID Discord pour le mapping
+      misc: discordId,
     });
 
     return {
@@ -257,10 +239,6 @@ export async function pushParticipantToChallonge(
   }
 }
 
-/**
- * Vérifie si un tournoi doit être synchronisé en temps réel
- * (24h avant le début)
- */
 export async function shouldSyncRealtime(
   tournamentId: string,
 ): Promise<boolean> {
@@ -275,7 +253,6 @@ export async function shouldSyncRealtime(
   const hoursUntilTournament =
     (tournamentDate.getTime() - now.getTime()) / (1000 * 60 * 60);
 
-  // Sync temps réel si le tournoi est dans moins de 24h et pas terminé
   return (
     hoursUntilTournament <= 24 &&
     hoursUntilTournament > -6 &&
@@ -283,9 +260,6 @@ export async function shouldSyncRealtime(
   );
 }
 
-/**
- * Récupère les tournois qui nécessitent un sync temps réel
- */
 export async function getTournamentsNeedingSync(): Promise<string[]> {
   const now = new Date();
   const in24Hours = new Date(now.getTime() + 24 * 60 * 60 * 1000);
@@ -308,9 +282,6 @@ export async function getTournamentsNeedingSync(): Promise<string[]> {
     .filter((id): id is string => id !== null);
 }
 
-/**
- * Récupère les tournois actuellement en cours (UNDERWAY)
- */
 export async function getUnderwayTournaments(): Promise<
   Array<{ challongeId: string; challongeUrl: string | null }>
 > {
@@ -327,9 +298,6 @@ export async function getUnderwayTournaments(): Promise<
   );
 }
 
-/**
- * Mappe l'état Challonge vers notre enum TournamentStatus
- */
 function mapChallongeState(
   state: string,
 ):
@@ -356,12 +324,6 @@ function mapChallongeState(
   }
 }
 
-/**
- * Estimation du nombre de requêtes API restantes ce mois
- * (À implémenter avec un compteur en DB si nécessaire)
- */
 export function getApiRequestsRemaining(): number {
-  // TODO: Implémenter un compteur en DB
-  // Pour l'instant, on suppose 500 - estimations
   return 500;
 }

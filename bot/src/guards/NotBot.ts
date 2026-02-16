@@ -1,0 +1,22 @@
+import type {
+  AutocompleteInteraction,
+  ButtonInteraction,
+  CommandInteraction,
+  ContextMenuCommandInteraction,
+  ModalSubmitInteraction,
+  SelectMenuInteraction,
+} from 'discord.js';
+import type { GuardFunction } from 'discordx';
+
+export const NotBot: GuardFunction<
+  | CommandInteraction
+  | AutocompleteInteraction
+  | ButtonInteraction
+  | SelectMenuInteraction
+  | ContextMenuCommandInteraction
+  | ModalSubmitInteraction
+> = async (interaction, _client, next) => {
+  if (!interaction.user.bot) {
+    await next();
+  }
+};

@@ -1,70 +1,31 @@
-import { Subcommand } from '@sapphire/plugin-subcommands';
-import { EmbedBuilder } from 'discord.js';
+import {
+  ApplicationCommandOptionType,
+  type CommandInteraction,
+  EmbedBuilder,
+} from 'discord.js';
+import { Discord, Slash, SlashGroup, SlashOption } from 'discordx';
+
 import prisma from '../../lib/prisma.js';
 
-export class PartCommand extends Subcommand {
-  public constructor(
-    context: Subcommand.LoaderContext,
-    options: Subcommand.Options,
-  ) {
-    super(context, {
-      ...options,
-      name: 'piece',
-      description: "Obtenir les statistiques d'une pièce",
-      subcommands: [
-        { name: 'blade', chatInputRun: 'chatInputBlade' },
-        { name: 'ratchet', chatInputRun: 'chatInputRatchet' },
-        { name: 'bit', chatInputRun: 'chatInputBit' },
-      ],
-    });
-  }
-
-  override registerApplicationCommands(registry: Subcommand.Registry) {
-    registry.registerChatInputCommand((builder) =>
-      builder
-        .setName('piece')
-        .setDescription("Obtenir les statistiques d'une pièce")
-        .addSubcommand((command) =>
-          command
-            .setName('blade')
-            .setDescription("Statistiques d'une Blade")
-            .addStringOption((option) =>
-              option
-                .setName('nom')
-                .setDescription('Nom de la Blade (ex: Dran Sword)')
-                .setRequired(true),
-            ),
-        )
-        .addSubcommand((command) =>
-          command
-            .setName('ratchet')
-            .setDescription("Statistiques d'un Ratchet")
-            .addStringOption((option) =>
-              option
-                .setName('nom')
-                .setDescription('Nom du Ratchet (ex: 3-60)')
-                .setRequired(true),
-            ),
-        )
-        .addSubcommand((command) =>
-          command
-            .setName('bit')
-            .setDescription("Statistiques d'un Bit")
-            .addStringOption((option) =>
-              option
-                .setName('nom')
-                .setDescription('Nom du Bit (ex: Flat)')
-                .setRequired(true),
-            ),
-        ),
-    );
-  }
-
-  public async chatInputBlade(
-    interaction: Subcommand.ChatInputCommandInteraction,
+@Discord()
+@SlashGroup({
+  name: 'piece',
+  description: "Obtenir les statistiques d'une pièce",
+})
+@SlashGroup('piece')
+export class PartCommand {
+  @Slash({ name: 'blade', description: "Statistiques d'une Blade" })
+  async blade(
+    @SlashOption({
+      name: 'nom',
+      description: 'Nom de la Blade (ex: Dran Sword)',
+      required: true,
+      type: ApplicationCommandOptionType.String,
+    })
+    query: string,
+    interaction: CommandInteraction,
   ) {
     await interaction.deferReply();
-    const query = interaction.options.getString('nom', true);
 
     const part = await prisma.part.findFirst({
       where: {
@@ -78,6 +39,7 @@ export class PartCommand extends Subcommand {
     }
 
     const embed = new EmbedBuilder()
+      // @ts-ignore
       .setTitle(`${part.system || 'BX'} | ${part.name}`)
       .setColor(0xdc2626)
       .addFields(
@@ -85,6 +47,7 @@ export class PartCommand extends Subcommand {
         { name: 'Poids', value: `${part.weight || '?'}g`, inline: true },
         {
           name: 'Rotation',
+          // @ts-ignore
           value: part.spinDirection || 'Right',
           inline: true,
         },
@@ -101,11 +64,18 @@ export class PartCommand extends Subcommand {
     return interaction.editReply({ embeds: [embed] });
   }
 
-  public async chatInputRatchet(
-    interaction: Subcommand.ChatInputCommandInteraction,
+  @Slash({ name: 'ratchet', description: "Statistiques d'un Ratchet" })
+  async ratchet(
+    @SlashOption({
+      name: 'nom',
+      description: 'Nom du Ratchet (ex: 3-60)',
+      required: true,
+      type: ApplicationCommandOptionType.String,
+    })
+    query: string,
+    interaction: CommandInteraction,
   ) {
     await interaction.deferReply();
-    const query = interaction.options.getString('nom', true);
 
     const part = await prisma.part.findFirst({
       where: {
@@ -119,6 +89,7 @@ export class PartCommand extends Subcommand {
     }
 
     const embed = new EmbedBuilder()
+      // @ts-ignore
       .setTitle(`${part.system || 'BX'} | ${part.name}`)
       .setColor(0x3b82f6)
       .addFields(
@@ -142,11 +113,18 @@ export class PartCommand extends Subcommand {
     return interaction.editReply({ embeds: [embed] });
   }
 
-  public async chatInputBit(
-    interaction: Subcommand.ChatInputCommandInteraction,
+  @Slash({ name: 'bit', description: "Statistiques d'un Bit" })
+  async bit(
+    @SlashOption({
+      name: 'nom',
+      description: 'Nom du Bit (ex: Flat)',
+      required: true,
+      type: ApplicationCommandOptionType.String,
+    })
+    query: string,
+    interaction: CommandInteraction,
   ) {
     await interaction.deferReply();
-    const query = interaction.options.getString('nom', true);
 
     const part = await prisma.part.findFirst({
       where: {
@@ -160,6 +138,7 @@ export class PartCommand extends Subcommand {
     }
 
     const embed = new EmbedBuilder()
+      // @ts-ignore
       .setTitle(`${part.system || 'BX'} | ${part.name}`)
       .setColor(0x22c55e)
       .addFields(

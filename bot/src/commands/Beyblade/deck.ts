@@ -1,124 +1,35 @@
-import { Subcommand } from '@sapphire/plugin-subcommands';
 import {
   ActionRowBuilder,
+  ApplicationCommandOptionType,
   type AutocompleteInteraction,
   ButtonBuilder,
   ButtonStyle,
+  type CommandInteraction,
   EmbedBuilder,
 } from 'discord.js';
+import { Discord, Slash, SlashGroup, SlashOption } from 'discordx';
+
 import { Colors } from '../../lib/constants.js';
+import { logger } from '../../lib/logger.js';
 import prisma from '../../lib/prisma.js';
 
-// Helper to parse stats
 const parseStat = (val: string | number | null | undefined): number => {
   if (typeof val === 'number') return val;
   if (!val) return 0;
   const parsed = parseInt(val, 10);
-  return isNaN(parsed) ? 0 : parsed;
+  return Number.isNaN(parsed) ? 0 : parsed;
 };
 
-export class DeckCommand extends Subcommand {
-  constructor(context: Subcommand.LoaderContext, options: Subcommand.Options) {
-    super(context, {
-      ...options,
-      description: 'Gérer tes decks Beyblade X',
-      subcommands: [
-        {
-          name: 'list',
-          chatInputRun: 'chatInputList',
-          default: true,
-        },
-        {
-          name: 'create',
-          chatInputRun: 'chatInputCreate',
-        },
-        {
-          name: 'edit',
-          chatInputRun: 'chatInputEdit',
-        },
-        {
-          name: 'active',
-          chatInputRun: 'chatInputActive',
-        },
-      ],
-    });
-  }
-
-  override registerApplicationCommands(registry: Subcommand.Registry) {
-    registry.registerChatInputCommand((builder) =>
-      builder
-        .setName('deck')
-        .setDescription('Gérer tes decks Beyblade X')
-        .addSubcommand((command) =>
-          command.setName('list').setDescription('Lister tes decks'),
-        )
-        .addSubcommand((command) =>
-          command
-            .setName('create')
-            .setDescription('Créer un nouveau deck')
-            .addStringOption((option) =>
-              option
-                .setName('nom')
-                .setDescription('Le nom de ton deck')
-                .setRequired(true),
-            ),
-        )
-        .addSubcommand((command) =>
-          command
-            .setName('edit')
-            .setDescription('Modifier le deck ACTIF')
-            .addIntegerOption((option) =>
-              option
-                .setName('slot')
-                .setDescription('Emplacement (1, 2 ou 3)')
-                .setRequired(true)
-                .setMinValue(1)
-                .setMaxValue(3),
-            )
-            .addStringOption((option) =>
-              option
-                .setName('blade')
-                .setDescription('La Blade (anneau)')
-                .setRequired(true)
-                .setAutocomplete(true),
-            )
-            .addStringOption((option) =>
-              option
-                .setName('ratchet')
-                .setDescription('Le Ratchet (axe)')
-                .setRequired(true)
-                .setAutocomplete(true),
-            )
-            .addStringOption((option) =>
-              option
-                .setName('bit')
-                .setDescription('Le Bit (pointe)')
-                .setRequired(true)
-                .setAutocomplete(true),
-            ),
-        )
-        .addSubcommand((command) =>
-          command
-            .setName('active')
-            .setDescription('Choisir ton deck actif')
-            .addStringOption((option) =>
-              option
-                .setName('deck')
-                .setDescription('Le deck à activer')
-                .setRequired(true)
-                .setAutocomplete(true),
-            ),
-        ),
-    );
-  }
-
-  // --- AUTOCOMPLETE ---
-  public async autocompleteRun(interaction: AutocompleteInteraction) {
+@Discord()
+@SlashGroup({ name: 'deck', description: 'Gérer tes decks Beyblade X' })
+@SlashGroup('deck')
+export class DeckCommand {
+  // Autocomplete handler
+  static async autocomplete(interaction: AutocompleteInteraction) {
     const focusedOption = interaction.options.getFocused(true);
     const query = focusedOption.value.toLowerCase();
 
     if (focusedOption.name === 'deck') {
-      // Search user's decks
       const user = await prisma.user.findUnique({
         where: { discordId: interaction.user.id },
         include: { decks: true },
@@ -134,7 +45,6 @@ export class DeckCommand extends Subcommand {
       );
     }
 
-    // Search Parts
     let type: 'BLADE' | 'RATCHET' | 'BIT' = 'BLADE';
     if (focusedOption.name === 'ratchet') type = 'RATCHET';
     if (focusedOption.name === 'bit') type = 'BIT';
@@ -153,10 +63,8 @@ export class DeckCommand extends Subcommand {
     );
   }
 
-  // --- LIST ---
-  public async chatInputList(
-    interaction: Subcommand.ChatInputCommandInteraction,
-  ) {
+  @Slash({ name: 'list', description: 'Lister tes decks' })
+  async list(interaction: CommandInteraction) {
     await interaction.deferReply({ ephemeral: true });
 
     try {
@@ -230,17 +138,23 @@ export class DeckCommand extends Subcommand {
         embeds: embeds,
         components: [row],
       });
-    } catch (error) {
+    } catch (_error) {
       return interaction.editReply('❌ Erreur lors de la récupération.');
     }
   }
 
-  // --- CREATE ---
-  public async chatInputCreate(
-    interaction: Subcommand.ChatInputCommandInteraction,
+  @Slash({ name: 'create', description: 'Créer un nouveau deck' })
+  async create(
+    @SlashOption({
+      name: 'nom',
+      description: 'Le nom de ton deck',
+      required: true,
+      type: ApplicationCommandOptionType.String,
+    })
+    name: string,
+    interaction: CommandInteraction,
   ) {
     await interaction.deferReply({ ephemeral: true });
-    const name = interaction.options.getString('nom', true);
 
     try {
       const user = await prisma.user.findUnique({
@@ -249,13 +163,11 @@ export class DeckCommand extends Subcommand {
 
       if (!user) return interaction.editReply("❌ Tu n'es pas inscrit.");
 
-      // Check deck count limit (e.g. 10)
       const count = await prisma.deck.count({ where: { userId: user.id } });
       if (count >= 10) {
         return interaction.editReply('❌ Tu as atteint la limite de 10 decks.');
       }
 
-      // If first deck, make it active
       const isActive = count === 0;
 
       const deck = await prisma.deck.create({
@@ -263,7 +175,6 @@ export class DeckCommand extends Subcommand {
           userId: user.id,
           name,
           isActive,
-          // Create 3 empty slots
           items: {
             create: [{ position: 1 }, { position: 2 }, { position: 3 }],
           },
@@ -273,51 +184,49 @@ export class DeckCommand extends Subcommand {
       return interaction.editReply(
         `✅ Deck **${deck.name}** créé ! Utilise \`/deck edit\` pour ajouter des Beys.`,
       );
-    } catch (e) {
+    } catch (_e) {
       return interaction.editReply('❌ Erreur création deck.');
     }
   }
 
-  // --- ACTIVE ---
-  public async chatInputActive(
-    interaction: Subcommand.ChatInputCommandInteraction,
+  @Slash({ name: 'edit', description: 'Modifier le deck ACTIF' })
+  async edit(
+    @SlashOption({
+      name: 'slot',
+      description: 'Emplacement (1, 2 ou 3)',
+      required: true,
+      type: ApplicationCommandOptionType.Integer,
+      minValue: 1,
+      maxValue: 3,
+    })
+    slot: number,
+    @SlashOption({
+      name: 'blade',
+      description: 'La Blade (anneau)',
+      required: true,
+      type: ApplicationCommandOptionType.String,
+      autocomplete: DeckCommand.autocomplete,
+    })
+    bladeId: string,
+    @SlashOption({
+      name: 'ratchet',
+      description: 'Le Ratchet (axe)',
+      required: true,
+      type: ApplicationCommandOptionType.String,
+      autocomplete: DeckCommand.autocomplete,
+    })
+    ratchetId: string,
+    @SlashOption({
+      name: 'bit',
+      description: 'Le Bit (pointe)',
+      required: true,
+      type: ApplicationCommandOptionType.String,
+      autocomplete: DeckCommand.autocomplete,
+    })
+    bitId: string,
+    interaction: CommandInteraction,
   ) {
     await interaction.deferReply({ ephemeral: true });
-    const deckId = interaction.options.getString('deck', true);
-
-    try {
-      const user = await prisma.user.findUnique({
-        where: { discordId: interaction.user.id },
-      });
-      if (!user) return interaction.editReply('❌ Inconnu.');
-
-      // Deactivate all
-      await prisma.deck.updateMany({
-        where: { userId: user.id },
-        data: { isActive: false },
-      });
-
-      // Activate target
-      const deck = await prisma.deck.update({
-        where: { id: deckId, userId: user.id },
-        data: { isActive: true },
-      });
-
-      return interaction.editReply(`⭐ Deck **${deck.name}** activé !`);
-    } catch (e) {
-      return interaction.editReply('❌ Deck introuvable ou erreur.');
-    }
-  }
-
-  // --- EDIT ---
-  public async chatInputEdit(
-    interaction: Subcommand.ChatInputCommandInteraction,
-  ) {
-    await interaction.deferReply({ ephemeral: true });
-    const slot = interaction.options.getInteger('slot', true);
-    const bladeId = interaction.options.getString('blade', true);
-    const ratchetId = interaction.options.getString('ratchet', true);
-    const bitId = interaction.options.getString('bit', true);
 
     try {
       const user = await prisma.user.findUnique({
@@ -336,7 +245,6 @@ export class DeckCommand extends Subcommand {
         );
       }
 
-      // Verify parts exist
       const [blade, ratchet, bit] = await Promise.all([
         prisma.part.findUnique({ where: { id: bladeId, type: 'BLADE' } }),
         prisma.part.findUnique({ where: { id: ratchetId, type: 'RATCHET' } }),
@@ -349,8 +257,6 @@ export class DeckCommand extends Subcommand {
         );
       }
 
-      // Update slot
-      // Check if slot exists
       const item = activeDeck.items.find((i) => i.position === slot);
 
       if (item) {
@@ -359,7 +265,6 @@ export class DeckCommand extends Subcommand {
           data: { bladeId, ratchetId, bitId },
         });
       } else {
-        // Should exist from creation, but safety fallback
         await prisma.deckItem.create({
           data: {
             deckId: activeDeck.id,
@@ -376,8 +281,44 @@ export class DeckCommand extends Subcommand {
         `✅ Slot ${slot} mis à jour : **${beyName}**`,
       );
     } catch (e) {
-      this.container.logger.error(e);
+      logger.error(e);
       return interaction.editReply('❌ Erreur lors de la modification.');
+    }
+  }
+
+  @Slash({ name: 'active', description: 'Choisir ton deck actif' })
+  async active(
+    @SlashOption({
+      name: 'deck',
+      description: 'Le deck à activer',
+      required: true,
+      type: ApplicationCommandOptionType.String,
+      autocomplete: DeckCommand.autocomplete,
+    })
+    deckId: string,
+    interaction: CommandInteraction,
+  ) {
+    await interaction.deferReply({ ephemeral: true });
+
+    try {
+      const user = await prisma.user.findUnique({
+        where: { discordId: interaction.user.id },
+      });
+      if (!user) return interaction.editReply('❌ Inconnu.');
+
+      await prisma.deck.updateMany({
+        where: { userId: user.id },
+        data: { isActive: false },
+      });
+
+      const deck = await prisma.deck.update({
+        where: { id: deckId, userId: user.id },
+        data: { isActive: true },
+      });
+
+      return interaction.editReply(`⭐ Deck **${deck.name}** activé !`);
+    } catch (_e) {
+      return interaction.editReply('❌ Deck introuvable ou erreur.');
     }
   }
 }

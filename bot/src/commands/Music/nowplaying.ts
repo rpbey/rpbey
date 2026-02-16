@@ -1,24 +1,16 @@
-import { ApplyOptions } from '@sapphire/decorators';
-import { Command } from '@sapphire/framework';
-import { EmbedBuilder } from 'discord.js';
+import { type CommandInteraction, EmbedBuilder } from 'discord.js';
 import { useQueue } from 'discord-player';
+import { Discord, Slash } from 'discordx';
 
-@ApplyOptions<Command.Options>({
-  description: 'Affiche la musique en cours de lecture',
-  preconditions: ['GuildOnly'],
-})
-export class NowPlayingCommand extends Command {
-  public override registerApplicationCommands(registry: Command.Registry) {
-    registry.registerChatInputCommand((builder) =>
-      builder.setName('en-cours').setDescription(this.description),
-    );
-  }
-
-  public override async chatInputRun(
-    interaction: Command.ChatInputCommandInteraction,
-  ) {
-    // biome-ignore lint/style/noNonNullAssertion: Guarded by GuildOnly
-    const queue = useQueue(interaction.guildId!);
+@Discord()
+export class NowPlayingCommand {
+  @Slash({
+    name: 'en-cours',
+    description: 'Affiche la musique en cours de lecture',
+  })
+  async nowPlaying(interaction: CommandInteraction) {
+    if (!interaction.guildId) return;
+    const queue = useQueue(interaction.guildId);
 
     if (!queue || !queue.currentTrack) {
       return interaction.reply({

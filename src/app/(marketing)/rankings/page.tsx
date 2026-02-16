@@ -114,9 +114,13 @@ export default async function RankingsPage({
         whereCondition.OR = [
           { bladerName: { contains: searchQuery, mode: 'insensitive' } },
           { user: { name: { contains: searchQuery, mode: 'insensitive' } } },
-          { user: { username: { contains: searchQuery, mode: 'insensitive' } } },
           {
-            user: { discordTag: { contains: searchQuery, mode: 'insensitive' } },
+            user: { username: { contains: searchQuery, mode: 'insensitive' } },
+          },
+          {
+            user: {
+              discordTag: { contains: searchQuery, mode: 'insensitive' },
+            },
           },
         ];
       }

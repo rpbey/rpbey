@@ -1,8 +1,8 @@
 'use client';
 
 import {
-  LazyMotion,
   domAnimation,
+  LazyMotion,
   m,
   useReducedMotion,
   type Variants,

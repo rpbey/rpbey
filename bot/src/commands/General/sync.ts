@@ -1,30 +1,20 @@
-import { Command } from '@sapphire/framework';
-import { ChannelType, PermissionFlagsBits } from 'discord.js';
+import {
+  ChannelType,
+  type CommandInteraction,
+  PermissionFlagsBits,
+} from 'discord.js';
+import { Discord, Slash } from 'discordx';
+
 import prisma from '../../lib/prisma.js';
 
-export class SyncCommand extends Command {
-  public constructor(context: Command.LoaderContext, options: Command.Options) {
-    super(context, {
-      ...options,
-      name: 'synchroniser',
-      description:
-        'Synchronise rôles, salons et membres avec la base de données',
-      requiredUserPermissions: [PermissionFlagsBits.Administrator],
-    });
-  }
-
-  public override registerApplicationCommands(registry: Command.Registry) {
-    registry.registerChatInputCommand((builder) =>
-      builder
-        .setName(this.name)
-        .setDescription(this.description)
-        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
-    );
-  }
-
-  public override async chatInputRun(
-    interaction: Command.ChatInputCommandInteraction,
-  ) {
+@Discord()
+export class SyncCommand {
+  @Slash({
+    name: 'synchroniser',
+    description: 'Synchronise rôles, salons et membres avec la base de données',
+    defaultMemberPermissions: PermissionFlagsBits.Administrator,
+  })
+  async sync(interaction: CommandInteraction) {
     const { guild } = interaction;
 
     if (!guild) {

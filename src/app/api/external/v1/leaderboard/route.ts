@@ -1,3 +1,4 @@
+import crypto from 'node:crypto';
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
@@ -7,7 +8,7 @@ export async function OPTIONS() {
   return new NextResponse(null, {
     status: 204,
     headers: {
-      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Origin': 'https://rpbey.fr',
       'Access-Control-Allow-Methods': 'GET, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type, x-api-key',
     },
@@ -15,18 +16,24 @@ export async function OPTIONS() {
 }
 
 export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
   const apiKey = request.headers.get('x-api-key');
-  const expectedApiKey = process.env.EXTERNAL_API_KEY;
+  const expectedApiKey = process.env.EXTERNAL_PARTNER_KEY;
 
   if (!expectedApiKey) {
     return NextResponse.json(
       { error: 'API key not configured on server' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 
-  if (apiKey !== expectedApiKey) {
+  // Security: Constant-time comparison
+  const providedKeyBuffer = Buffer.from(apiKey || '', 'utf8');
+  const expectedKeyBuffer = Buffer.from(expectedApiKey, 'utf8');
+
+  if (
+    providedKeyBuffer.length !== expectedKeyBuffer.length ||
+    !crypto.timingSafeEqual(providedKeyBuffer, expectedKeyBuffer)
+  ) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -111,7 +118,7 @@ export async function GET(request: Request) {
       },
     });
 
-  const response = NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       timestamp: new Date().toISOString(),
       config: rankingConfig,
@@ -155,16 +162,19 @@ export async function GET(request: Request) {
     });
 
     // Add CORS headers
-    response.headers.set('Access-Control-Allow-Origin', '*');
+    response.headers.set('Access-Control-Allow-Origin', 'https://rpbey.fr');
     response.headers.set('Access-Control-Allow-Methods', 'GET, OPTIONS');
-    response.headers.set('Access-Control-Allow-Headers', 'Content-Type, x-api-key');
+    response.headers.set(
+      'Access-Control-Allow-Headers',
+      'Content-Type, x-api-key',
+    );
 
     return response;
   } catch (error) {
     console.error('External API Error:', error);
     return NextResponse.json(
       { error: 'Internal Server Error', details: (error as Error).message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

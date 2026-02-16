@@ -11,6 +11,7 @@ import {
   People,
   PersonAdd,
   Settings,
+  WorkspacePremium,
 } from '@mui/icons-material';
 import {
   alpha,
@@ -42,6 +43,7 @@ const navItems = [
   { icon: Home, label: 'Accueil', href: '/' },
   { icon: TrophyIcon, label: 'Tournois', href: '/tournaments' },
   { icon: BarChart, label: 'Classements', href: '/rankings' },
+  { icon: WorkspacePremium, label: 'SATR', href: '/tournaments/satr' },
   { icon: LiveTv, label: 'TV', href: '/tv' },
   { icon: People, label: "L'équipe", href: '/notre-equipe' },
 ];
@@ -330,6 +332,7 @@ export function MobileNav() {
     if (pathname.startsWith('/tournaments')) return '/tournaments';
     if (pathname.startsWith('/tv')) return '/tv';
     if (pathname.startsWith('/rankings')) return '/rankings';
+    if (pathname.startsWith('/tournaments/satr')) return '/tournaments/satr';
     if (pathname.startsWith('/admin')) return '/admin';
     if (
       pathname.startsWith('/dashboard') ||
@@ -425,6 +428,11 @@ export function MobileNav() {
             label="Classements"
             value="/rankings"
             icon={<BarChart />}
+          />
+          <BottomNavigationAction
+            label="SATR"
+            value="/tournaments/satr"
+            icon={<WorkspacePremium />}
           />
         </BottomNavigation>
       </Paper>

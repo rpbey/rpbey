@@ -5,17 +5,17 @@ import {
   ButtonStyle,
   EmbedBuilder,
 } from 'discord.js';
+
 import { generateBattleCard } from './canvas-utils.js';
 import { Colors, RPB } from './constants.js';
 import prisma from './prisma.js';
-import { pickRandom } from './utils.js';
 
 // Helper to parse stats
 export const p = (val: string | number | null | undefined): number => {
   if (typeof val === 'number') return val;
   if (!val) return 0;
   const parsed = parseInt(val, 10);
-  return isNaN(parsed) ? 0 : parsed;
+  return Number.isNaN(parsed) ? 0 : parsed;
 };
 
 const battleResults = [

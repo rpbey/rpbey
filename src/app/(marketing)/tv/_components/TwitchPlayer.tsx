@@ -22,11 +22,11 @@ export default function TwitchPlayer({
     if (typeof window !== 'undefined') {
       setHostname(window.location.hostname);
     }
-  }, [domain]);
+  }, []);
 
   const playerBaseUrl = 'https://player.twitch.tv/';
   // Note: 'parent' must match the embedding domain.
-  const parentParam = `&parent=${hostname}&parent=${domain}&parent=www.${domain}&parent=localhost&parent=46.224.145.55`;
+  const parentParam = `&parent=${hostname}&parent=${domain}&parent=www.${domain}&parent=localhost`;
   const autoplayParam = '&autoplay=true';
 
   let playerSrc = `${playerBaseUrl}?channel=${channelName}${parentParam}${autoplayParam}`;

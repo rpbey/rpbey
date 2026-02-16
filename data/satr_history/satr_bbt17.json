@@ -1,0 +1,5820 @@
+{
+  "metadata": {
+    "id": 16798908,
+    "name": "Tournoi Importé",
+    "url": "https://challonge.com/satr_bbt17",
+    "state": "complete",
+    "type": "double elimination",
+    "participantsCount": 30
+  },
+  "participants": [
+    {
+      "id": 273431369,
+      "name": "La Triple S (KingJoker · Chad Light · Legoshi)",
+      "seed": 25,
+      "finalRank": 2
+    },
+    {
+      "id": 273431373,
+      "name": "Forever (Mag · Bandit · Gundam)",
+      "seed": 29,
+      "finalRank": 3
+    },
+    {
+      "id": 273431354,
+      "name": "Rising Volt Tacklers (Younsi · Shishi · Hane Hoshi)",
+      "seed": 30,
+      "finalRank": 4
+    },
+    {
+      "id": 273431382,
+      "name": "La Brigade Fantôme (Xeno · Kayman · Masterz)",
+      "seed": 22,
+      "finalRank": 5
+    },
+    {
+      "id": 273431359,
+      "name": "Hitadaki Yoshiro (Gelofy · Mini Gelofy · Yaya)",
+      "seed": 7,
+      "finalRank": 7
+    },
+    {
+      "id": 273431358,
+      "name": "Team Matcha (Yoorushi · Yorel · zeLn)",
+      "seed": 3,
+      "finalRank": 7
+    },
+    {
+      "id": 273431364,
+      "name": "Les Gorilles (Kipik · Eox · Ender)",
+      "seed": 21,
+      "finalRank": 9
+    },
+    {
+      "id": 273431371,
+      "name": "Les Gardiens Sentinelles (Rock Lee · darkhoumous · Alice)",
+      "seed": 14,
+      "finalRank": 9
+    },
+    {
+      "id": 273431375,
+      "name": "Chrono Storme (Phénixio · kyronnah · Dimitard)",
+      "seed": 1,
+      "finalRank": 9
+    },
+    {
+      "id": 273431383,
+      "name": "Drill Soul (Berserk · PridefulLord · Aspen)",
+      "seed": 2,
+      "finalRank": 9
+    },
+    {
+      "id": 273431357,
+      "name": "Team Steve 2.0 (Eiko · Hane Hoshi · Spider_Agent42)",
+      "seed": 16,
+      "finalRank": 13
+    },
+    {
+      "id": 273431360,
+      "name": "Zit Zitoun (Zeikuo · Tategami · Kaious)",
+      "seed": 5,
+      "finalRank": 13
+    },
+    {
+      "id": 273431381,
+      "name": "Neo Beyknight (D8J6 · Rami · OursDuBeyblade)",
+      "seed": 27,
+      "finalRank": 13
+    },
+    {
+      "id": 273431363,
+      "name": "Inazuma Japon (Inazo · Illu · Blader Mystérieux )",
+      "seed": 17,
+      "finalRank": 17
+    },
+    {
+      "id": 273431362,
+      "name": "Spin Slayer (Berguiny · X Shark · Aiger)",
+      "seed": 8,
+      "finalRank": 17
+    },
+    {
+      "id": 273431368,
+      "name": "Leteessegoat (Xymore · Clemence · Simon)",
+      "seed": 20,
+      "finalRank": 17
+    },
+    {
+      "id": 273431377,
+      "name": "Wild Flower (Kamen 99 · Narugo · Kamen A)",
+      "seed": 15,
+      "finalRank": 17
+    },
+    {
+      "id": 273431370,
+      "name": "Kurenai (Kineria · 56 · Geats)",
+      "seed": 18,
+      "finalRank": 17
+    },
+    {
+      "id": 273431356,
+      "name": "Les Pilleurs de la Ludothèque (Vincent · Grand Golem Serpent · Saucisson Solide)",
+      "seed": 23,
+      "finalRank": 17
+    },
+    {
+      "id": 273431361,
+      "name": "Team Koizumi (JojoKirino · Ilou · Flower)",
+      "seed": 6,
+      "finalRank": 17
+    },
+    {
+      "id": 273431379,
+      "name": "Élite Royale (Mewxy · MTS · Snowpye)",
+      "seed": 9,
+      "finalRank": 25
+    },
+    {
+      "id": 273431374,
+      "name": "La Nébuleuse Noire (IceTea · RoroDela · StarKnight)",
+      "seed": 13,
+      "finalRank": 25
+    },
+    {
+      "id": 273431376,
+      "name": "Noblesse Oblige (Leirya · Merope · Snipblast)",
+      "seed": 12,
+      "finalRank": 25
+    },
+    {
+      "id": 273431365,
+      "name": "Raging Bulls (Nthanb · levroi · Lc_37z)",
+      "seed": 10,
+      "finalRank": 25
+    },
+    {
+      "id": 273431355,
+      "name": "Les Gros Salamis (Azure · Fabien Le Ceratops · sewpoo_0192)",
+      "seed": 19,
+      "finalRank": 25
+    },
+    {
+      "id": 273431372,
+      "name": "L'équipe Fury (Equalizer · L'artiste · Antoine)",
+      "seed": 11,
+      "finalRank": 25
+    },
+    {
+      "id": 273431367,
+      "name": "Blue Phoenix (Stella · Paimy  · Sabo)",
+      "seed": 24
+    },
+    {
+      "id": 273431366,
+      "name": "Les Wilds Phoenix  (Fulguris95 · Wolfi · Rayou_95)",
+      "seed": 4
+    },
+    {
+      "id": 273431380,
+      "name": "Tiramisu gang  (Sarah · Masamune · Hyakutake)",
+      "seed": 28
+    },
+    {
+      "id": 273431378,
+      "name": "Team Vortex  (Flanders · Skarn · Ares)",
+      "seed": 26
+    }
+  ],
+  "matches": [
+    {
+      "id": 427806571,
+      "identifier": 1,
+      "round": 1,
+      "player1Id": 273431357,
+      "player2Id": 273431363,
+      "winnerId": 273431363,
+      "loserId": 273431357,
+      "scores": "1-3",
+      "state": "complete"
+    },
+    {
+      "id": 427806572,
+      "identifier": 2,
+      "round": 1,
+      "player1Id": 273431362,
+      "player2Id": 273431369,
+      "winnerId": 273431369,
+      "loserId": 273431362,
+      "scores": "0-3",
+      "state": "complete"
+    },
+    {
+      "id": 427806573,
+      "identifier": 3,
+      "round": 1,
+      "player1Id": 273431379,
+      "player2Id": 273431367,
+      "winnerId": 273431367,
+      "loserId": 273431379,
+      "scores": "1-3",
+      "state": "complete"
+    },
+    {
+      "id": 427806574,
+      "identifier": 4,
+      "round": 1,
+      "player1Id": 273431366,
+      "player2Id": 273431373,
+      "winnerId": 273431366,
+      "loserId": 273431373,
+      "scores": "3-0",
+      "state": "complete"
+    },
+    {
+      "id": 427806575,
+      "identifier": 5,
+      "round": 1,
+      "player1Id": 273431374,
+      "player2Id": 273431368,
+      "winnerId": 273431368,
+      "loserId": 273431374,
+      "scores": "0-3",
+      "state": "complete"
+    },
+    {
+      "id": 427806576,
+      "identifier": 6,
+      "round": 1,
+      "player1Id": 273431360,
+      "player2Id": 273431380,
+      "winnerId": 273431360,
+      "loserId": 273431380,
+      "scores": "3-2",
+      "state": "complete"
+    },
+    {
+      "id": 427806577,
+      "identifier": 7,
+      "round": 1,
+      "player1Id": 273431376,
+      "player2Id": 273431364,
+      "winnerId": 273431364,
+      "loserId": 273431376,
+      "scores": "0-3",
+      "state": "complete"
+    },
+    {
+      "id": 427806578,
+      "identifier": 8,
+      "round": 1,
+      "player1Id": 273431377,
+      "player2Id": 273431370,
+      "winnerId": 273431377,
+      "loserId": 273431370,
+      "scores": "3-1",
+      "state": "complete"
+    },
+    {
+      "id": 427806579,
+      "identifier": 9,
+      "round": 1,
+      "player1Id": 273431359,
+      "player2Id": 273431378,
+      "winnerId": 273431378,
+      "loserId": 273431359,
+      "scores": "0-3",
+      "state": "complete"
+    },
+    {
+      "id": 427806580,
+      "identifier": 10,
+      "round": 1,
+      "player1Id": 273431365,
+      "player2Id": 273431356,
+      "winnerId": 273431356,
+      "loserId": 273431365,
+      "scores": "1-3",
+      "state": "complete"
+    },
+    {
+      "id": 427806581,
+      "identifier": 11,
+      "round": 1,
+      "player1Id": 273431358,
+      "player2Id": 273431354,
+      "winnerId": 273431358,
+      "loserId": 273431354,
+      "scores": "3-2",
+      "state": "complete"
+    },
+    {
+      "id": 427806582,
+      "identifier": 12,
+      "round": 1,
+      "player1Id": 273431371,
+      "player2Id": 273431355,
+      "winnerId": 273431371,
+      "loserId": 273431355,
+      "scores": "3-0",
+      "state": "complete"
+    },
+    {
+      "id": 427806583,
+      "identifier": 13,
+      "round": 1,
+      "player1Id": 273431361,
+      "player2Id": 273431381,
+      "winnerId": 273431361,
+      "loserId": 273431381,
+      "scores": "3-2",
+      "state": "complete"
+    },
+    {
+      "id": 427806584,
+      "identifier": 14,
+      "round": 1,
+      "player1Id": 273431372,
+      "player2Id": 273431382,
+      "winnerId": 273431382,
+      "loserId": 273431372,
+      "scores": "2-3",
+      "state": "complete"
+    },
+    {
+      "id": 427806585,
+      "identifier": 21,
+      "round": 2,
+      "player1Id": 273431375,
+      "player2Id": 273431363,
+      "winnerId": 273431375,
+      "loserId": 273431363,
+      "scores": "3-1",
+      "state": "complete"
+    },
+    {
+      "id": 427806586,
+      "identifier": 22,
+      "round": 2,
+      "player1Id": 273431369,
+      "player2Id": 273431367,
+      "winnerId": 273431369,
+      "loserId": 273431367,
+      "scores": "3-2",
+      "state": "complete"
+    },
+    {
+      "id": 427806587,
+      "identifier": 23,
+      "round": 2,
+      "player1Id": 273431366,
+      "player2Id": 273431368,
+      "winnerId": 273431366,
+      "loserId": 273431368,
+      "scores": "3-0",
+      "state": "complete"
+    },
+    {
+      "id": 427806588,
+      "identifier": 24,
+      "round": 2,
+      "player1Id": 273431360,
+      "player2Id": 273431364,
+      "winnerId": 273431364,
+      "loserId": 273431360,
+      "scores": "0-3",
+      "state": "complete"
+    },
+    {
+      "id": 427806589,
+      "identifier": 25,
+      "round": 2,
+      "player1Id": 273431383,
+      "player2Id": 273431377,
+      "winnerId": 273431383,
+      "loserId": 273431377,
+      "scores": "3-0",
+      "state": "complete"
+    },
+    {
+      "id": 427806590,
+      "identifier": 26,
+      "round": 2,
+      "player1Id": 273431378,
+      "player2Id": 273431356,
+      "winnerId": 273431378,
+      "loserId": 273431356,
+      "scores": "3-2",
+      "state": "complete"
+    },
+    {
+      "id": 427806591,
+      "identifier": 27,
+      "round": 2,
+      "player1Id": 273431358,
+      "player2Id": 273431371,
+      "winnerId": 273431371,
+      "loserId": 273431358,
+      "scores": "1-3",
+      "state": "complete"
+    },
+    {
+      "id": 427806592,
+      "identifier": 28,
+      "round": 2,
+      "player1Id": 273431361,
+      "player2Id": 273431382,
+      "winnerId": 273431382,
+      "loserId": 273431361,
+      "scores": "1-3",
+      "state": "complete"
+    },
+    {
+      "id": 427806593,
+      "identifier": 41,
+      "round": 3,
+      "player1Id": 273431375,
+      "player2Id": 273431369,
+      "winnerId": 273431369,
+      "loserId": 273431375,
+      "scores": "0-3",
+      "state": "complete"
+    },
+    {
+      "id": 427806594,
+      "identifier": 42,
+      "round": 3,
+      "player1Id": 273431366,
+      "player2Id": 273431364,
+      "winnerId": 273431366,
+      "loserId": 273431364,
+      "scores": "3-2",
+      "state": "complete"
+    },
+    {
+      "id": 427806595,
+      "identifier": 43,
+      "round": 3,
+      "player1Id": 273431383,
+      "player2Id": 273431378,
+      "winnerId": 273431378,
+      "loserId": 273431383,
+      "scores": "1-3",
+      "state": "complete"
+    },
+    {
+      "id": 427806596,
+      "identifier": 44,
+      "round": 3,
+      "player1Id": 273431371,
+      "player2Id": 273431382,
+      "winnerId": 273431382,
+      "loserId": 273431371,
+      "scores": "2-3",
+      "state": "complete"
+    },
+    {
+      "id": 427806597,
+      "identifier": 51,
+      "round": 4,
+      "player1Id": 273431369,
+      "player2Id": 273431366,
+      "winnerId": 273431369,
+      "loserId": 273431366,
+      "scores": "3-2",
+      "state": "complete"
+    },
+    {
+      "id": 427806598,
+      "identifier": 52,
+      "round": 4,
+      "player1Id": 273431378,
+      "player2Id": 273431382,
+      "winnerId": 273431378,
+      "loserId": 273431382,
+      "scores": "3-2",
+      "state": "complete"
+    },
+    {
+      "id": 427806599,
+      "identifier": 56,
+      "round": 5,
+      "player1Id": 273431369,
+      "player2Id": 273431378,
+      "winnerId": 273431369,
+      "loserId": 273431378,
+      "scores": "3-1",
+      "state": "complete"
+    },
+    {
+      "id": 427806628,
+      "identifier": 58,
+      "round": 6,
+      "player1Id": 273431369,
+      "player2Id": 273431378,
+      "winnerId": 273431378,
+      "loserId": 273431369,
+      "scores": "0-3",
+      "state": "complete"
+    },
+    {
+      "id": 427806629,
+      "identifier": 59,
+      "round": 6,
+      "player1Id": 273431378,
+      "player2Id": 273431369,
+      "winnerId": 273431378,
+      "loserId": 273431369,
+      "scores": "3-0",
+      "state": "complete"
+    },
+    {
+      "id": 427806600,
+      "identifier": 15,
+      "round": -1,
+      "player1Id": 273431362,
+      "player2Id": 273431379,
+      "winnerId": 273431362,
+      "loserId": 273431379,
+      "scores": "3-1",
+      "state": "complete"
+    },
+    {
+      "id": 427806601,
+      "identifier": 16,
+      "round": -1,
+      "player1Id": 273431373,
+      "player2Id": 273431374,
+      "winnerId": 273431373,
+      "loserId": 273431374,
+      "scores": "3-0",
+      "state": "complete"
+    },
+    {
+      "id": 427806602,
+      "identifier": 17,
+      "round": -1,
+      "player1Id": 273431380,
+      "player2Id": 273431376,
+      "winnerId": 273431380,
+      "loserId": 273431376,
+      "scores": "3-0",
+      "state": "complete"
+    },
+    {
+      "id": 427806603,
+      "identifier": 18,
+      "round": -1,
+      "player1Id": 273431359,
+      "player2Id": 273431365,
+      "winnerId": 273431359,
+      "loserId": 273431365,
+      "scores": "3-2",
+      "state": "complete"
+    },
+    {
+      "id": 427806604,
+      "identifier": 19,
+      "round": -1,
+      "player1Id": 273431354,
+      "player2Id": 273431355,
+      "winnerId": 273431354,
+      "loserId": 273431355,
+      "scores": "3-1",
+      "state": "complete"
+    },
+    {
+      "id": 427806605,
+      "identifier": 20,
+      "round": -1,
+      "player1Id": 273431381,
+      "player2Id": 273431372,
+      "winnerId": 273431381,
+      "loserId": 273431372,
+      "scores": "3-0",
+      "state": "complete"
+    },
+    {
+      "id": 427806606,
+      "identifier": 36,
+      "round": -2,
+      "player1Id": 273431361,
+      "player2Id": 273431357,
+      "winnerId": 273431357,
+      "loserId": 273431361,
+      "scores": "0-3",
+      "state": "complete"
+    },
+    {
+      "id": 427806607,
+      "identifier": 35,
+      "round": -2,
+      "player1Id": 273431358,
+      "player2Id": 273431362,
+      "winnerId": 273431358,
+      "loserId": 273431362,
+      "scores": "3-1",
+      "state": "complete"
+    },
+    {
+      "id": 427806608,
+      "identifier": 34,
+      "round": -2,
+      "player1Id": 273431356,
+      "player2Id": 273431373,
+      "winnerId": 273431373,
+      "loserId": 273431356,
+      "scores": "2-3",
+      "state": "complete"
+    },
+    {
+      "id": 427806609,
+      "identifier": 33,
+      "round": -2,
+      "player1Id": 273431377,
+      "player2Id": 273431380,
+      "winnerId": 273431380,
+      "loserId": 273431377,
+      "scores": "0-3",
+      "state": "complete"
+    },
+    {
+      "id": 427806610,
+      "identifier": 32,
+      "round": -2,
+      "player1Id": 273431360,
+      "player2Id": 273431370,
+      "winnerId": 273431360,
+      "loserId": 273431370,
+      "scores": "3-2",
+      "state": "complete"
+    },
+    {
+      "id": 427806611,
+      "identifier": 31,
+      "round": -2,
+      "player1Id": 273431368,
+      "player2Id": 273431359,
+      "winnerId": 273431359,
+      "loserId": 273431368,
+      "scores": "2-3",
+      "state": "complete"
+    },
+    {
+      "id": 427806612,
+      "identifier": 30,
+      "round": -2,
+      "player1Id": 273431367,
+      "player2Id": 273431354,
+      "winnerId": 273431354,
+      "loserId": 273431367,
+      "scores": "2-3",
+      "state": "complete"
+    },
+    {
+      "id": 427806613,
+      "identifier": 29,
+      "round": -2,
+      "player1Id": 273431363,
+      "player2Id": 273431381,
+      "winnerId": 273431381,
+      "loserId": 273431363,
+      "scores": "0-3",
+      "state": "complete"
+    },
+    {
+      "id": 427806614,
+      "identifier": 40,
+      "round": -3,
+      "player1Id": 273431357,
+      "player2Id": 273431358,
+      "winnerId": 273431358,
+      "loserId": 273431357,
+      "scores": "1-3",
+      "state": "complete"
+    },
+    {
+      "id": 427806615,
+      "identifier": 39,
+      "round": -3,
+      "player1Id": 273431373,
+      "player2Id": 273431380,
+      "winnerId": 273431373,
+      "loserId": 273431380,
+      "scores": "3-1",
+      "state": "complete"
+    },
+    {
+      "id": 427806616,
+      "identifier": 38,
+      "round": -3,
+      "player1Id": 273431360,
+      "player2Id": 273431359,
+      "winnerId": 273431359,
+      "loserId": 273431360,
+      "scores": "2-3",
+      "state": "complete"
+    },
+    {
+      "id": 427806617,
+      "identifier": 37,
+      "round": -3,
+      "player1Id": 273431354,
+      "player2Id": 273431381,
+      "winnerId": 273431354,
+      "loserId": 273431381,
+      "scores": "3-0",
+      "state": "complete"
+    },
+    {
+      "id": 427806618,
+      "identifier": 46,
+      "round": -4,
+      "player1Id": 273431364,
+      "player2Id": 273431358,
+      "winnerId": 273431358,
+      "loserId": 273431364,
+      "scores": "1-3",
+      "state": "complete"
+    },
+    {
+      "id": 427806619,
+      "identifier": 45,
+      "round": -4,
+      "player1Id": 273431375,
+      "player2Id": 273431373,
+      "winnerId": 273431373,
+      "loserId": 273431375,
+      "scores": "1-3",
+      "state": "complete"
+    },
+    {
+      "id": 427806620,
+      "identifier": 48,
+      "round": -4,
+      "player1Id": 273431371,
+      "player2Id": 273431359,
+      "winnerId": 273431359,
+      "loserId": 273431371,
+      "scores": "1-3",
+      "state": "complete"
+    },
+    {
+      "id": 427806621,
+      "identifier": 47,
+      "round": -4,
+      "player1Id": 273431383,
+      "player2Id": 273431354,
+      "winnerId": 273431354,
+      "loserId": 273431383,
+      "scores": "1-3",
+      "state": "complete"
+    },
+    {
+      "id": 427806622,
+      "identifier": 49,
+      "round": -5,
+      "player1Id": 273431358,
+      "player2Id": 273431373,
+      "winnerId": 273431373,
+      "loserId": 273431358,
+      "scores": "2-3",
+      "state": "complete"
+    },
+    {
+      "id": 427806623,
+      "identifier": 50,
+      "round": -5,
+      "player1Id": 273431359,
+      "player2Id": 273431354,
+      "winnerId": 273431354,
+      "loserId": 273431359,
+      "scores": "2-3",
+      "state": "complete"
+    },
+    {
+      "id": 427806624,
+      "identifier": 54,
+      "round": -6,
+      "player1Id": 273431382,
+      "player2Id": 273431373,
+      "winnerId": 273431373,
+      "loserId": 273431382,
+      "scores": "0-3",
+      "state": "complete"
+    },
+    {
+      "id": 427806625,
+      "identifier": 53,
+      "round": -6,
+      "player1Id": 273431366,
+      "player2Id": 273431354,
+      "winnerId": 273431354,
+      "loserId": 273431366,
+      "scores": "1-3",
+      "state": "complete"
+    },
+    {
+      "id": 427806626,
+      "identifier": 55,
+      "round": -7,
+      "player1Id": 273431373,
+      "player2Id": 273431354,
+      "winnerId": 273431373,
+      "loserId": 273431354,
+      "scores": "3-1",
+      "state": "complete"
+    },
+    {
+      "id": 427806627,
+      "identifier": 57,
+      "round": -8,
+      "player1Id": 273431378,
+      "player2Id": 273431373,
+      "winnerId": 273431378,
+      "loserId": 273431373,
+      "scores": "3-2",
+      "state": "complete"
+    }
+  ],
+  "standings": [
+    {
+      "rank": 1,
+      "name": "Team Vortex (Flanders · Skarn · Ares)",
+      "challongeUsername": null,
+      "challongeProfileUrl": null,
+      "wins": 0,
+      "losses": 0,
+      "stats": {
+        "wins": 0,
+        "losses": 0
+      }
+    },
+    {
+      "rank": 2,
+      "name": "La Triple S (KingJoker · Chad Light · Legoshi)",
+      "challongeUsername": null,
+      "challongeProfileUrl": null,
+      "wins": 0,
+      "losses": 0,
+      "stats": {
+        "wins": 0,
+        "losses": 0
+      }
+    },
+    {
+      "rank": 3,
+      "name": "Forever (Mag · Bandit · Gundam)",
+      "challongeUsername": null,
+      "challongeProfileUrl": null,
+      "wins": 0,
+      "losses": 0,
+      "stats": {
+        "wins": 0,
+        "losses": 0
+      }
+    },
+    {
+      "rank": 4,
+      "name": "Rising Volt Tacklers (Younsi · Shishi · Hane Hoshi)",
+      "challongeUsername": null,
+      "challongeProfileUrl": null,
+      "wins": 0,
+      "losses": 0,
+      "stats": {
+        "wins": 0,
+        "losses": 0
+      }
+    },
+    {
+      "rank": 5,
+      "name": "La Brigade Fantôme (Xeno · Kayman · Masterz)",
+      "challongeUsername": null,
+      "challongeProfileUrl": null,
+      "wins": 0,
+      "losses": 0,
+      "stats": {
+        "wins": 0,
+        "losses": 0
+      }
+    },
+    {
+      "rank": 5,
+      "name": "Les Wilds Phoenix (Fulguris95 · Wolfi · Rayou_95)",
+      "challongeUsername": null,
+      "challongeProfileUrl": null,
+      "wins": 0,
+      "losses": 0,
+      "stats": {
+        "wins": 0,
+        "losses": 0
+      }
+    },
+    {
+      "rank": 7,
+      "name": "Hitadaki Yoshiro (Gelofy · Mini Gelofy · Yaya)",
+      "challongeUsername": null,
+      "challongeProfileUrl": null,
+      "wins": 0,
+      "losses": 0,
+      "stats": {
+        "wins": 0,
+        "losses": 0
+      }
+    },
+    {
+      "rank": 7,
+      "name": "Team Matcha (Yoorushi · Yorel · zeLn)",
+      "challongeUsername": null,
+      "challongeProfileUrl": null,
+      "wins": 0,
+      "losses": 0,
+      "stats": {
+        "wins": 0,
+        "losses": 0
+      }
+    },
+    {
+      "rank": 9,
+      "name": "Chrono Storme (Phénixio · kyronnah · Dimitard)",
+      "challongeUsername": null,
+      "challongeProfileUrl": null,
+      "wins": 0,
+      "losses": 0,
+      "stats": {
+        "wins": 0,
+        "losses": 0
+      }
+    },
+    {
+      "rank": 9,
+      "name": "Drill Soul (Berserk · PridefulLord · Aspen)",
+      "challongeUsername": null,
+      "challongeProfileUrl": null,
+      "wins": 0,
+      "losses": 0,
+      "stats": {
+        "wins": 0,
+        "losses": 0
+      }
+    },
+    {
+      "rank": 9,
+      "name": "Les Gardiens Sentinelles (Rock Lee · darkhoumous · Alice)",
+      "challongeUsername": null,
+      "challongeProfileUrl": null,
+      "wins": 0,
+      "losses": 0,
+      "stats": {
+        "wins": 0,
+        "losses": 0
+      }
+    },
+    {
+      "rank": 9,
+      "name": "Les Gorilles (Kipik · Eox · Ender)",
+      "challongeUsername": null,
+      "challongeProfileUrl": null,
+      "wins": 0,
+      "losses": 0,
+      "stats": {
+        "wins": 0,
+        "losses": 0
+      }
+    },
+    {
+      "rank": 13,
+      "name": "Neo Beyknight (D8J6 · Rami · OursDuBeyblade)",
+      "challongeUsername": null,
+      "challongeProfileUrl": null,
+      "wins": 0,
+      "losses": 0,
+      "stats": {
+        "wins": 0,
+        "losses": 0
+      }
+    },
+    {
+      "rank": 13,
+      "name": "Team Steve 2.0 (Eiko · Hane Hoshi · Spider_Agent42)",
+      "challongeUsername": null,
+      "challongeProfileUrl": null,
+      "wins": 0,
+      "losses": 0,
+      "stats": {
+        "wins": 0,
+        "losses": 0
+      }
+    },
+    {
+      "rank": 13,
+      "name": "Tiramisu gang (Sarah · Masamune · Hyakutake)",
+      "challongeUsername": null,
+      "challongeProfileUrl": null,
+      "wins": 0,
+      "losses": 0,
+      "stats": {
+        "wins": 0,
+        "losses": 0
+      }
+    },
+    {
+      "rank": 13,
+      "name": "Zit Zitoun (Zeikuo · Tategami · Kaious)",
+      "challongeUsername": null,
+      "challongeProfileUrl": null,
+      "wins": 0,
+      "losses": 0,
+      "stats": {
+        "wins": 0,
+        "losses": 0
+      }
+    },
+    {
+      "rank": 17,
+      "name": "Blue Phoenix (Stella · Paimy · Sabo)",
+      "challongeUsername": null,
+      "challongeProfileUrl": null,
+      "wins": 0,
+      "losses": 0,
+      "stats": {
+        "wins": 0,
+        "losses": 0
+      }
+    },
+    {
+      "rank": 17,
+      "name": "Inazuma Japon (Inazo · Illu · Blader Mystérieux )",
+      "challongeUsername": null,
+      "challongeProfileUrl": null,
+      "wins": 0,
+      "losses": 0,
+      "stats": {
+        "wins": 0,
+        "losses": 0
+      }
+    },
+    {
+      "rank": 17,
+      "name": "Kurenai (Kineria · 56 · Geats)",
+      "challongeUsername": null,
+      "challongeProfileUrl": null,
+      "wins": 0,
+      "losses": 0,
+      "stats": {
+        "wins": 0,
+        "losses": 0
+      }
+    },
+    {
+      "rank": 17,
+      "name": "Les Pilleurs de la Ludothèque (Vincent · Grand Golem Serpent · Saucisson Solide)",
+      "challongeUsername": null,
+      "challongeProfileUrl": null,
+      "wins": 0,
+      "losses": 0,
+      "stats": {
+        "wins": 0,
+        "losses": 0
+      }
+    },
+    {
+      "rank": 17,
+      "name": "Leteessegoat (Xymore · Clemence · Simon)",
+      "challongeUsername": null,
+      "challongeProfileUrl": null,
+      "wins": 0,
+      "losses": 0,
+      "stats": {
+        "wins": 0,
+        "losses": 0
+      }
+    },
+    {
+      "rank": 17,
+      "name": "Spin Slayer (Berguiny · X Shark · Aiger)",
+      "challongeUsername": null,
+      "challongeProfileUrl": null,
+      "wins": 0,
+      "losses": 0,
+      "stats": {
+        "wins": 0,
+        "losses": 0
+      }
+    },
+    {
+      "rank": 17,
+      "name": "Team Koizumi (JojoKirino · Ilou · Flower)",
+      "challongeUsername": null,
+      "challongeProfileUrl": null,
+      "wins": 0,
+      "losses": 0,
+      "stats": {
+        "wins": 0,
+        "losses": 0
+      }
+    },
+    {
+      "rank": 17,
+      "name": "Wild Flower (Kamen 99 · Narugo · Kamen A)",
+      "challongeUsername": null,
+      "challongeProfileUrl": null,
+      "wins": 0,
+      "losses": 0,
+      "stats": {
+        "wins": 0,
+        "losses": 0
+      }
+    },
+    {
+      "rank": 25,
+      "name": "L'équipe Fury (Equalizer · L'artiste · Antoine)",
+      "challongeUsername": null,
+      "challongeProfileUrl": null,
+      "wins": 0,
+      "losses": 0,
+      "stats": {
+        "wins": 0,
+        "losses": 0
+      }
+    },
+    {
+      "rank": 25,
+      "name": "La Nébuleuse Noire (IceTea · RoroDela · StarKnight)",
+      "challongeUsername": null,
+      "challongeProfileUrl": null,
+      "wins": 0,
+      "losses": 0,
+      "stats": {
+        "wins": 0,
+        "losses": 0
+      }
+    },
+    {
+      "rank": 25,
+      "name": "Les Gros Salamis (Azure · Fabien Le Ceratops · sewpoo_0192)",
+      "challongeUsername": null,
+      "challongeProfileUrl": null,
+      "wins": 0,
+      "losses": 0,
+      "stats": {
+        "wins": 0,
+        "losses": 0
+      }
+    },
+    {
+      "rank": 25,
+      "name": "Noblesse Oblige (Leirya · Merope · Snipblast)",
+      "challongeUsername": null,
+      "challongeProfileUrl": null,
+      "wins": 0,
+      "losses": 0,
+      "stats": {
+        "wins": 0,
+        "losses": 0
+      }
+    },
+    {
+      "rank": 25,
+      "name": "Raging Bulls (Nthanb · levroi · Lc_37z)",
+      "challongeUsername": null,
+      "challongeProfileUrl": null,
+      "wins": 0,
+      "losses": 0,
+      "stats": {
+        "wins": 0,
+        "losses": 0
+      }
+    },
+    {
+      "rank": 25,
+      "name": "Élite Royale (Mewxy · MTS · Snowpye)",
+      "challongeUsername": null,
+      "challongeProfileUrl": null,
+      "wins": 0,
+      "losses": 0,
+      "stats": {
+        "wins": 0,
+        "losses": 0
+      }
+    }
+  ],
+  "stations": [
+    {
+      "stationId": 1,
+      "name": "BEYDAY - Beyblade Battle Tournament #17 - Predictions",
+      "currentMatch": null,
+      "status": "idle"
+    },
+    {
+      "stationId": 2,
+      "name": "Stadium 1",
+      "currentMatch": null,
+      "status": "idle"
+    },
+    {
+      "stationId": 3,
+      "name": "Stadium 1",
+      "currentMatch": null,
+      "status": "idle"
+    },
+    {
+      "stationId": 4,
+      "name": "Station 4",
+      "currentMatch": null,
+      "status": "idle"
+    },
+    {
+      "stationId": 5,
+      "name": "Station 5",
+      "currentMatch": null,
+      "status": "idle"
+    },
+    {
+      "stationId": 6,
+      "name": "Stadium 2",
+      "currentMatch": null,
+      "status": "idle"
+    },
+    {
+      "stationId": 7,
+      "name": "Station 7",
+      "currentMatch": null,
+      "status": "idle"
+    },
+    {
+      "stationId": 8,
+      "name": "Station 8",
+      "currentMatch": null,
+      "status": "idle"
+    },
+    {
+      "stationId": 9,
+      "name": "Stadium 3",
+      "currentMatch": null,
+      "status": "idle"
+    },
+    {
+      "stationId": 10,
+      "name": "Station 10",
+      "currentMatch": null,
+      "status": "idle"
+    },
+    {
+      "stationId": 11,
+      "name": "Station 11",
+      "currentMatch": null,
+      "status": "idle"
+    }
+  ],
+  "log": [
+    {
+      "timestamp": "",
+      "type": "activity",
+      "message": "Dashboard",
+      "raw": null
+    },
+    {
+      "timestamp": "",
+      "type": "activity",
+      "message": "Public Profile",
+      "raw": null
+    },
+    {
+      "timestamp": "",
+      "type": "activity",
+      "message": "Paramètres",
+      "raw": null
+    },
+    {
+      "timestamp": "",
+      "type": "activity",
+      "message": "Messages (0)",
+      "raw": null
+    },
+    {
+      "timestamp": "",
+      "type": "activity",
+      "message": "News (2)",
+      "raw": null
+    },
+    {
+      "timestamp": "",
+      "type": "",
+      "message": "Upgrade to Premier",
+      "raw": null
+    },
+    {
+      "timestamp": "",
+      "type": "activity",
+      "message": "Déconnexion",
+      "raw": null
+    },
+    {
+      "timestamp": "",
+      "type": "activity",
+      "message": "Arbre",
+      "raw": null
+    },
+    {
+      "timestamp": "",
+      "type": "activity",
+      "message": "Classement",
+      "raw": null
+    },
+    {
+      "timestamp": "",
+      "type": "activity",
+      "message": "Historique (120)",
+      "raw": null
+    },
+    {
+      "timestamp": "",
+      "type": "activity",
+      "message": "Stations",
+      "raw": null
+    },
+    {
+      "timestamp": "",
+      "type": "activity",
+      "message": "Arbre",
+      "raw": null
+    },
+    {
+      "timestamp": "",
+      "type": "activity",
+      "message": "Classement",
+      "raw": null
+    },
+    {
+      "timestamp": "",
+      "type": "activity",
+      "message": "Historique (120)",
+      "raw": null
+    },
+    {
+      "timestamp": "",
+      "type": "activity",
+      "message": "Stations",
+      "raw": null
+    },
+    {
+      "timestamp": "",
+      "type": "activity",
+      "message": "Copy Link",
+      "raw": null
+    },
+    {
+      "timestamp": "",
+      "type": "activity",
+      "message": "Facebook",
+      "raw": null
+    },
+    {
+      "timestamp": "",
+      "type": "activity",
+      "message": "Twitter",
+      "raw": null
+    },
+    {
+      "timestamp": "",
+      "type": "activity",
+      "message": "Create template from this tournament",
+      "raw": null
+    },
+    {
+      "timestamp": "",
+      "type": "activity",
+      "message": "Arbre",
+      "raw": null
+    },
+    {
+      "timestamp": "",
+      "type": "activity",
+      "message": "Classement",
+      "raw": null
+    },
+    {
+      "timestamp": "",
+      "type": "activity",
+      "message": "Historique (120)",
+      "raw": null
+    },
+    {
+      "timestamp": "",
+      "type": "activity",
+      "message": "Stations",
+      "raw": null
+    },
+    {
+      "timestamp": "",
+      "type": "Joueurs",
+      "message": "Joueurs\n30",
+      "raw": null
+    },
+    {
+      "timestamp": "",
+      "type": "Format",
+      "message": "Format\nDouble Elimination",
+      "raw": null
+    },
+    {
+      "timestamp": "",
+      "type": "Jeu",
+      "message": "Jeu\nBeyblade X",
+      "raw": null
+    },
+    {
+      "timestamp": "20 September 2025 à 12:00 CEST",
+      "type": "Date de départ\n\nDebut",
+      "message": "Date de départ\n\nDebut",
+      "raw": null
+    },
+    {
+      "timestamp": "",
+      "type": "activity",
+      "message": "1 / 6",
+      "raw": null
+    },
+    {
+      "timestamp": "il y a environ 5 mois",
+      "type": "activity",
+      "message": "Terminer ce tournoi",
+      "raw": null
+    },
+    {
+      "timestamp": "il y a environ 5 mois",
+      "type": "activity",
+      "message": "Terminer ce tournoi",
+      "raw": null
+    },
+    {
+      "timestamp": "il y a environ 5 mois",
+      "type": "activity",
+      "message": "Youns3A rapporté une victoire de 3-0 pour Team Vortex  (Flanders · Skarn · Ares) contre La Triple S (KingJoker · Chad Light · Legoshi)",
+      "raw": null
+    },
+    {
+      "timestamp": "il y a environ 5 mois",
+      "type": "activity",
+      "message": "Youns3A rapporté une victoire de 3-0 pour Team Vortex  (Flanders · Skarn · Ares) contre La Triple S (KingJoker · Chad Light · Legoshi)",
+      "raw": null
+    },
+    {
+      "timestamp": "il y a environ 5 mois",
+      "type": "activity",
+      "message": "Youns3A commencé le match Team Vortex  (Flanders · Skarn · Ares) contre La Triple S (KingJoker · Chad Light · Legoshi)",
+      "raw": null
+    },
+    {
+      "timestamp": "il y a environ 5 mois",
+      "type": "activity",
+      "message": "Youns3A commencé le match Team Vortex  (Flanders · Skarn · Ares) contre La Triple S (KingJoker · Chad Light · Legoshi)",
+      "raw": null
+    },
+    {
+      "timestamp": "il y a environ 5 mois",
+      "type": "activity",
+      "message": "Youns3A mis en pause le match Team Vortex  (Flanders · Skarn · Ares) contre La Triple S (KingJoker · Chad Light · Legoshi)",
+      "raw": null
+    },
+    {
+      "timestamp": "il y a environ 5 mois",
+      "type": "activity",
+      "message": "Youns3A mis en pause le match Team Vortex  (Flanders · Skarn · Ares) contre La Triple S (KingJoker · Chad Light · Legoshi)",
+      "raw": null
+    },
+    {
+      "timestamp": "il y a environ 5 mois",
+      "type": "activity",
+      "message": "Youns3A commencé le match Team Vortex  (Flanders · Skarn · Ares) contre La Triple S (KingJoker · Chad Light · Legoshi)",
+      "raw": null
+    },
+    {
+      "timestamp": "il y a environ 5 mois",
+      "type": "activity",
+      "message": "Youns3A commencé le match Team Vortex  (Flanders · Skarn · Ares) contre La Triple S (KingJoker · Chad Light · Legoshi)",
+      "raw": null
+    },
+    {
+      "timestamp": "il y a environ 5 mois",
+      "type": "activity",
+      "message": "Youns3A rapporté une victoire de 0-3 pour Team Vortex  (Flanders · Skarn · Ares) contre La Triple S (KingJoker · Chad Light · Legoshi)",
+      "raw": null
+    },
+    {
+      "timestamp": "il y a environ 5 mois",
+      "type": "activity",
+      "message": "Youns3A rapporté une victoire de 0-3 pour Team Vortex  (Flanders · Skarn · Ares) contre La Triple S (KingJoker · Chad Light · Legoshi)",
+      "raw": null
+    },
+    {
+      "timestamp": "il y a environ 5 mois",
+      "type": "activity",
+      "message": "Youns3A commencé le match La Triple S (KingJoker · Chad Light · Legoshi) contre Team Vortex  (Flanders · Skarn · Ares)",
+      "raw": null
+    },
+    {
+      "timestamp": "il y a environ 5 mois",
+      "type": "activity",
+      "message": "Youns3A commencé le match La Triple S (KingJoker · Chad Light · Legoshi) contre Team Vortex  (Flanders · Skarn · Ares)",
+      "raw": null
+    },
+    {
+      "timestamp": "il y a environ 5 mois",
+      "type": "activity",
+      "message": "Youns3A rapporté une victoire de 3-2 pour Team Vortex  (Flanders · Skarn · Ares) contre Forever (Mag · Bandit · Gundam)",
+      "raw": null
+    },
+    {
+      "timestamp": "il y a environ 5 mois",
+      "type": "activity",
+      "message": "Youns3A rapporté une victoire de 3-2 pour Team Vortex  (Flanders · Skarn · Ares) contre Forever (Mag · Bandit · Gundam)",
+      "raw": null
+    },
+    {
+      "timestamp": "il y a environ 5 mois",
+      "type": "activity",
+      "message": "Youns3A commencé le match Team Vortex  (Flanders · Skarn · Ares) contre Forever (Mag · Bandit · Gundam)",
+      "raw": null
+    },
+    {
+      "timestamp": "il y a environ 5 mois",
+      "type": "activity",
+      "message": "Youns3A commencé le match Team Vortex  (Flanders · Skarn · Ares) contre Forever (Mag · Bandit · Gundam)",
+      "raw": null
+    },
+    {
+      "timestamp": "il y a environ 5 mois",
+      "type": "activity",
+      "message": "SAtrEikoA rapporté une victoire de 3-1 pour Forever (Mag · Bandit · Gundam) contre Rising Volt Tacklers (Younsi · Shishi · Hane Hoshi)",
+      "raw": null
+    },
+    {
+      "timestamp": "il y a environ 5 mois",
+      "type": "activity",
+      "message": "SAtrEikoA rapporté une victoire de 3-1 pour Forever (Mag · Bandit · Gundam) contre Rising Volt Tacklers (Younsi · Shishi · Hane Hoshi)",
+      "raw": null
+    },
+    {
+      "timestamp": "il y a environ 5 mois",
+      "type": "activity",
+      "message": "LeiryaA rapporté une victoire de 3-1 pour La Triple S (KingJoker · Chad Light · Legoshi) contre Team Vortex  (Flanders · Skarn · Ares)",
+      "raw": null
+    },
+    {
+      "timestamp": "il y a environ 5 mois",
+      "type": "activity",
+      "message": "LeiryaA rapporté une victoire de 3-1 pour La Triple S (KingJoker · Chad Light · Legoshi) contre Team Vortex  (Flanders · Skarn · Ares)",
+      "raw": null
+    },
+    {
+      "timestamp": "il y a environ 5 mois",
+      "type": "activity",
+      "message": "SAtrEikoA commencé le match Forever (Mag · Bandit · Gundam) contre Rising Volt Tacklers (Younsi · Shishi · Hane Hoshi)",
+      "raw": null
+    },
+    {
+      "timestamp": "il y a environ 5 mois",
+      "type": "activity",
+      "message": "SAtrEikoA commencé le match Forever (Mag · Bandit · Gundam) contre Rising Volt Tacklers (Younsi · Shishi · Hane Hoshi)",
+      "raw": null
+    },
+    {
+      "timestamp": "il y a environ 5 mois",
+      "type": "activity",
+      "message": "SAtrEikoA rapporté une victoire de 1-3 pour Rising Volt Tacklers (Younsi · Shishi · Hane Hoshi) contre Les Wilds Phoenix  (Fulguris95 · Wolfi · Rayou_95)",
+      "raw": null
+    },
+    {
+      "timestamp": "il y a environ 5 mois",
+      "type": "activity",
+      "message": "SAtrEikoA rapporté une victoire de 1-3 pour Rising Volt Tacklers (Younsi · Shishi · Hane Hoshi) contre Les Wilds Phoenix  (Fulguris95 · Wolfi · Rayou_95)",
+      "raw": null
+    },
+    {
+      "timestamp": "il y a environ 5 mois",
+      "type": "activity",
+      "message": "SAtrEikoA rapporté une victoire de 0-3 pour Forever (Mag · Bandit · Gundam) contre La Brigade Fantôme (Xeno · Kayman · Masterz)",
+      "raw": null
+    },
+    {
+      "timestamp": "il y a environ 5 mois",
+      "type": "activity",
+      "message": "SAtrEikoA rapporté une victoire de 0-3 pour Forever (Mag · Bandit · Gundam) contre La Brigade Fantôme (Xeno · Kayman · Masterz)",
+      "raw": null
+    },
+    {
+      "timestamp": "il y a environ 5 mois",
+      "type": "activity",
+      "message": "SAtrEikoA commencé le match La Brigade Fantôme (Xeno · Kayman · Masterz) contre Forever (Mag · Bandit · Gundam)",
+      "raw": null
+    },
+    {
+      "timestamp": "il y a environ 5 mois",
+      "type": "activity",
+      "message": "SAtrEikoA commencé le match La Brigade Fantôme (Xeno · Kayman · Masterz) contre Forever (Mag · Bandit · Gundam)",
+      "raw": null
+    },
+    {
+      "timestamp": "il y a environ 5 mois",
+      "type": "activity",
+      "message": "LeiryaA commencé le match La Triple S (KingJoker · Chad Light · Legoshi) contre Team Vortex  (Flanders · Skarn · Ares)",
+      "raw": null
+    },
+    {
+      "timestamp": "il y a environ 5 mois",
+      "type": "activity",
+      "message": "LeiryaA commencé le match La Triple S (KingJoker · Chad Light · Legoshi) contre Team Vortex  (Flanders · Skarn · Ares)",
+      "raw": null
+    },
+    {
+      "timestamp": "il y a environ 5 mois",
+      "type": "activity",
+      "message": "LeiryaA rapporté une victoire de 3-2 pour Team Vortex  (Flanders · Skarn · Ares) contre La Brigade Fantôme (Xeno · Kayman · Masterz)",
+      "raw": null
+    },
+    {
+      "timestamp": "il y a environ 5 mois",
+      "type": "activity",
+      "message": "LeiryaA rapporté une victoire de 3-2 pour Team Vortex  (Flanders · Skarn · Ares) contre La Brigade Fantôme (Xeno · Kayman · Masterz)",
+      "raw": null
+    },
+    {
+      "timestamp": "il y a environ 5 mois",
+      "type": "activity",
+      "message": "SAtrEikoA mis à jour la victoire de Rising Volt Tacklers (Younsi · Shishi · Hane Hoshi) contre Hitadaki Yoshiro (Gelofy · Mini Gelofy · Yaya) à 2-3",
+      "raw": null
+    },
+    {
+      "timestamp": "il y a environ 5 mois",
+      "type": "activity",
+      "message": "SAtrEikoA mis à jour la victoire de Rising Volt Tacklers (Younsi · Shishi · Hane Hoshi) contre Hitadaki Yoshiro (Gelofy · Mini Gelofy · Yaya) à 2-3",
+      "raw": null
+    },
+    {
+      "timestamp": "il y a environ 5 mois",
+      "type": "activity",
+      "message": "SAtrEikoA rapporté une victoire de 0-3 pour Rising Volt Tacklers (Younsi · Shishi · Hane Hoshi) contre Hitadaki Yoshiro (Gelofy · Mini Gelofy · Yaya)",
+      "raw": null
+    },
+    {
+      "timestamp": "il y a environ 5 mois",
+      "type": "activity",
+      "message": "SAtrEikoA rapporté une victoire de 0-3 pour Rising Volt Tacklers (Younsi · Shishi · Hane Hoshi) contre Hitadaki Yoshiro (Gelofy · Mini Gelofy · Yaya)",
+      "raw": null
+    },
+    {
+      "timestamp": "il y a environ 5 mois",
+      "type": "activity",
+      "message": "SAtrEikoA commencé le match Hitadaki Yoshiro (Gelofy · Mini Gelofy · Yaya) contre Rising Volt Tacklers (Younsi · Shishi · Hane Hoshi)",
+      "raw": null
+    },
+    {
+      "timestamp": "il y a environ 5 mois",
+      "type": "activity",
+      "message": "SAtrEikoA commencé le match Hitadaki Yoshiro (Gelofy · Mini Gelofy · Yaya) contre Rising Volt Tacklers (Younsi · Shishi · Hane Hoshi)",
+      "raw": null
+    },
+    {
+      "timestamp": "",
+      "type": "activity",
+      "message": "1 / 6",
+      "raw": null
+    },
+    {
+      "timestamp": "",
+      "type": "activity",
+      "message": "العَرَبِيَّة",
+      "raw": null
+    },
+    {
+      "timestamp": "",
+      "type": "activity",
+      "message": "Čeština",
+      "raw": null
+    },
+    {
+      "timestamp": "",
+      "type": "activity",
+      "message": "Dansk",
+      "raw": null
+    },
+    {
+      "timestamp": "",
+      "type": "activity",
+      "message": "Deutsch",
+      "raw": null
+    },
+    {
+      "timestamp": "",
+      "type": "activity",
+      "message": "English",
+      "raw": null
+    },
+    {
+      "timestamp": "",
+      "type": "activity",
+      "message": "Español",
+      "raw": null
+    },
+    {
+      "timestamp": "",
+      "type": "activity",
+      "message": "Suomi",
+      "raw": null
+    },
+    {
+      "timestamp": "",
+      "type": "activity",
+      "message": "Magyar",
+      "raw": null
+    },
+    {
+      "timestamp": "",
+      "type": "activity",
+      "message": "Bahasa Indonesia",
+      "raw": null
+    },
+    {
+      "timestamp": "",
+      "type": "activity",
+      "message": "Italiano",
+      "raw": null
+    },
+    {
+      "timestamp": "",
+      "type": "activity",
+      "message": "日本語",
+      "raw": null
+    },
+    {
+      "timestamp": "",
+      "type": "activity",
+      "message": "한국어",
+      "raw": null
+    },
+    {
+      "timestamp": "",
+      "type": "activity",
+      "message": "Latviešu",
+      "raw": null
+    },
+    {
+      "timestamp": "",
+      "type": "activity",
+      "message": "Nederlands",
+      "raw": null
+    },
+    {
+      "timestamp": "",
+      "type": "activity",
+      "message": "norsk",
+      "raw": null
+    },
+    {
+      "timestamp": "",
+      "type": "activity",
+      "message": "Polski",
+      "raw": null
+    },
+    {
+      "timestamp": "",
+      "type": "activity",
+      "message": "Português",
+      "raw": null
+    },
+    {
+      "timestamp": "",
+      "type": "activity",
+      "message": "Português Br.",
+      "raw": null
+    },
+    {
+      "timestamp": "",
+      "type": "activity",
+      "message": "Limba română",
+      "raw": null
+    },
+    {
+      "timestamp": "",
+      "type": "activity",
+      "message": "Русский",
+      "raw": null
+    },
+    {
+      "timestamp": "",
+      "type": "activity",
+      "message": "slovenčina",
+      "raw": null
+    },
+    {
+      "timestamp": "",
+      "type": "activity",
+      "message": "svenska",
+      "raw": null
+    },
+    {
+      "timestamp": "",
+      "type": "activity",
+      "message": "ภาษาไทย",
+      "raw": null
+    },
+    {
+      "timestamp": "",
+      "type": "activity",
+      "message": "Türkçe",
+      "raw": null
+    },
+    {
+      "timestamp": "",
+      "type": "activity",
+      "message": "українська",
+      "raw": null
+    },
+    {
+      "timestamp": "",
+      "type": "activity",
+      "message": "Tiếng Việt",
+      "raw": null
+    },
+    {
+      "timestamp": "",
+      "type": "activity",
+      "message": "简体中文",
+      "raw": null
+    },
+    {
+      "timestamp": "",
+      "type": "activity",
+      "message": "繁體中文",
+      "raw": null
+    },
+    {
+      "timestamp": "",
+      "type": "activity",
+      "message": "Aidez à la Traduction",
+      "raw": null
+    },
+    {
+      "timestamp": "",
+      "type": "activity",
+      "message": "Deutsch",
+      "raw": null
+    },
+    {
+      "timestamp": "",
+      "type": "activity",
+      "message": "English",
+      "raw": null
+    },
+    {
+      "timestamp": "",
+      "type": "activity",
+      "message": "Español",
+      "raw": null
+    },
+    {
+      "timestamp": "",
+      "type": "activity",
+      "message": "Français",
+      "raw": null
+    },
+    {
+      "timestamp": "",
+      "type": "activity",
+      "message": "Italiano",
+      "raw": null
+    },
+    {
+      "timestamp": "",
+      "type": "activity",
+      "message": "Nederlands",
+      "raw": null
+    },
+    {
+      "timestamp": "",
+      "type": "activity",
+      "message": "Polski",
+      "raw": null
+    },
+    {
+      "timestamp": "",
+      "type": "activity",
+      "message": "Português",
+      "raw": null
+    },
+    {
+      "timestamp": "",
+      "type": "activity",
+      "message": "Limba română",
+      "raw": null
+    }
+  ],
+  "raw": {
+    "requested_plotter": "DoubleEliminationBracketPlotter",
+    "tournament": {
+      "id": 16798908,
+      "state": "complete",
+      "tournament_type": "double elimination",
+      "quick_advance": false,
+      "hide_seeds": false,
+      "hide_identifiers": false,
+      "show_station_and_time": false,
+      "animated": true,
+      "accept_attachments": false,
+      "participant_count_to_advance": 1,
+      "owner_ids": [
+        2788862,
+        2788862,
+        6793364
+      ],
+      "admin_ids": [
+        2788862,
+        6911314,
+        7708629,
+        7085495,
+        7002393,
+        2788862,
+        7067260,
+        7067274,
+        2142658,
+        5122402,
+        6793364,
+        7047730,
+        7002355,
+        7070870,
+        7047834,
+        7512405,
+        4978902
+      ],
+      "participants_swappable": false,
+      "progress_meter": 100,
+      "group_stage_progress_meter": 0,
+      "grand_finals_modifier": null,
+      "predict_the_losers_bracket": false,
+      "voting_underway": false,
+      "is_team": false,
+      "split_participants": false,
+      "participants_per_match": 2,
+      "only_start_matches_with_stations": false
+    },
+    "rounds": [
+      {
+        "id": null,
+        "stage_type": "Tournament",
+        "stage_id": 16798908,
+        "number": 1,
+        "title": "Round 1",
+        "description": null,
+        "best_of": 1,
+        "created_at": null,
+        "updated_at": null,
+        "group_index": null,
+        "title_lines": [
+          "Round 1"
+        ],
+        "href": "/tournaments/16798908/rounds/new_or_edit?number=1&title=Round+1"
+      },
+      {
+        "id": null,
+        "stage_type": "Tournament",
+        "stage_id": 16798908,
+        "number": 2,
+        "title": "Round 2",
+        "description": null,
+        "best_of": 1,
+        "created_at": null,
+        "updated_at": null,
+        "group_index": null,
+        "title_lines": [
+          "Round 2"
+        ],
+        "href": "/tournaments/16798908/rounds/new_or_edit?number=2&title=Round+2"
+      },
+      {
+        "id": null,
+        "stage_type": "Tournament",
+        "stage_id": 16798908,
+        "number": 3,
+        "title": "Round 3",
+        "description": null,
+        "best_of": 1,
+        "created_at": null,
+        "updated_at": null,
+        "group_index": null,
+        "title_lines": [
+          "Round 3"
+        ],
+        "href": "/tournaments/16798908/rounds/new_or_edit?number=3&title=Round+3"
+      },
+      {
+        "id": null,
+        "stage_type": "Tournament",
+        "stage_id": 16798908,
+        "number": 4,
+        "title": "Round 4",
+        "description": null,
+        "best_of": 1,
+        "created_at": null,
+        "updated_at": null,
+        "group_index": null,
+        "title_lines": [
+          "Round 4"
+        ],
+        "href": "/tournaments/16798908/rounds/new_or_edit?number=4&title=Round+4"
+      },
+      {
+        "id": null,
+        "stage_type": "Tournament",
+        "stage_id": 16798908,
+        "number": 5,
+        "title": "Semifinals",
+        "description": null,
+        "best_of": 1,
+        "created_at": null,
+        "updated_at": null,
+        "group_index": null,
+        "title_lines": [
+          "Semifinals"
+        ],
+        "href": "/tournaments/16798908/rounds/new_or_edit?number=5&title=Semifinals"
+      },
+      {
+        "id": null,
+        "stage_type": "Tournament",
+        "stage_id": 16798908,
+        "number": 6,
+        "title": "Finals",
+        "description": null,
+        "best_of": 1,
+        "created_at": null,
+        "updated_at": null,
+        "group_index": null,
+        "title_lines": [
+          "Finals"
+        ],
+        "href": "/tournaments/16798908/rounds/new_or_edit?number=6&title=Finals"
+      },
+      {
+        "id": null,
+        "stage_type": "Tournament",
+        "stage_id": 16798908,
+        "number": -1,
+        "title": "Losers Round 1",
+        "description": null,
+        "best_of": 1,
+        "created_at": null,
+        "updated_at": null,
+        "group_index": null,
+        "title_lines": [
+          "Losers Round 1"
+        ],
+        "href": "/tournaments/16798908/rounds/new_or_edit?number=-1&title=Losers+Round+1"
+      },
+      {
+        "id": null,
+        "stage_type": "Tournament",
+        "stage_id": 16798908,
+        "number": -2,
+        "title": "Losers Round 2",
+        "description": null,
+        "best_of": 1,
+        "created_at": null,
+        "updated_at": null,
+        "group_index": null,
+        "title_lines": [
+          "Losers Round 2"
+        ],
+        "href": "/tournaments/16798908/rounds/new_or_edit?number=-2&title=Losers+Round+2"
+      },
+      {
+        "id": null,
+        "stage_type": "Tournament",
+        "stage_id": 16798908,
+        "number": -3,
+        "title": "Losers Round 3",
+        "description": null,
+        "best_of": 1,
+        "created_at": null,
+        "updated_at": null,
+        "group_index": null,
+        "title_lines": [
+          "Losers Round 3"
+        ],
+        "href": "/tournaments/16798908/rounds/new_or_edit?number=-3&title=Losers+Round+3"
+      },
+      {
+        "id": null,
+        "stage_type": "Tournament",
+        "stage_id": 16798908,
+        "number": -4,
+        "title": "Losers Round 4",
+        "description": null,
+        "best_of": 1,
+        "created_at": null,
+        "updated_at": null,
+        "group_index": null,
+        "title_lines": [
+          "Losers Round 4"
+        ],
+        "href": "/tournaments/16798908/rounds/new_or_edit?number=-4&title=Losers+Round+4"
+      },
+      {
+        "id": null,
+        "stage_type": "Tournament",
+        "stage_id": 16798908,
+        "number": -5,
+        "title": "Losers Round 5",
+        "description": null,
+        "best_of": 1,
+        "created_at": null,
+        "updated_at": null,
+        "group_index": null,
+        "title_lines": [
+          "Losers Round 5"
+        ],
+        "href": "/tournaments/16798908/rounds/new_or_edit?number=-5&title=Losers+Round+5"
+      },
+      {
+        "id": null,
+        "stage_type": "Tournament",
+        "stage_id": 16798908,
+        "number": -6,
+        "title": "Losers Round 6",
+        "description": null,
+        "best_of": 1,
+        "created_at": null,
+        "updated_at": null,
+        "group_index": null,
+        "title_lines": [
+          "Losers Round 6"
+        ],
+        "href": "/tournaments/16798908/rounds/new_or_edit?number=-6&title=Losers+Round+6"
+      },
+      {
+        "id": null,
+        "stage_type": "Tournament",
+        "stage_id": 16798908,
+        "number": -7,
+        "title": "Losers Round 7",
+        "description": null,
+        "best_of": 1,
+        "created_at": null,
+        "updated_at": null,
+        "group_index": null,
+        "title_lines": [
+          "Losers Round 7"
+        ],
+        "href": "/tournaments/16798908/rounds/new_or_edit?number=-7&title=Losers+Round+7"
+      },
+      {
+        "id": null,
+        "stage_type": "Tournament",
+        "stage_id": 16798908,
+        "number": -8,
+        "title": "Losers Round 8",
+        "description": null,
+        "best_of": 1,
+        "created_at": null,
+        "updated_at": null,
+        "group_index": null,
+        "title_lines": [
+          "Losers Round 8"
+        ],
+        "href": "/tournaments/16798908/rounds/new_or_edit?number=-8&title=Losers+Round+8"
+      }
+    ],
+    "third_place_match": null,
+    "consolation_matches": [],
+    "matches_by_round": {
+      "1": [
+        {
+          "id": 427806571,
+          "tournament_id": 16798908,
+          "identifier": 1,
+          "raw_identifier": "A",
+          "round": 1,
+          "state": "complete",
+          "underway_at": "2025-09-20T13:40:44.289+02:00",
+          "games": [
+            [
+              1,
+              3
+            ]
+          ],
+          "editable_by_user_ids": [],
+          "has_attachment": false,
+          "is_group_match": false,
+          "forfeited": null,
+          "station": null,
+          "queued_for_station": null,
+          "scheduled_time": null,
+          "shareable": false,
+          "has_chat": false,
+          "player1": {
+            "id": 273431357,
+            "seed": 16,
+            "display_name": "Team Steve 2.0 (Eiko · Hane Hoshi · Spider_Agent42)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player2": {
+            "id": 273431363,
+            "seed": 17,
+            "display_name": "Inazuma Japon (Inazo · Illu · Blader Mystérieux )",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player1_prereq_identifier": null,
+          "player2_prereq_identifier": null,
+          "player1_is_prereq_match_loser": false,
+          "player2_is_prereq_match_loser": false,
+          "player1_placeholder_text": null,
+          "player2_placeholder_text": null,
+          "scores": [
+            1,
+            3
+          ],
+          "winner_id": 273431363,
+          "loser_id": 273431357,
+          "md5": "224bfa92e0db7ae23b42f7b4ac3410ef"
+        },
+        {
+          "id": 427806572,
+          "tournament_id": 16798908,
+          "identifier": 2,
+          "raw_identifier": "B",
+          "round": 1,
+          "state": "complete",
+          "underway_at": "2025-09-20T13:42:47.680+02:00",
+          "games": [
+            [
+              0,
+              3
+            ]
+          ],
+          "editable_by_user_ids": [],
+          "has_attachment": false,
+          "is_group_match": false,
+          "forfeited": null,
+          "station": null,
+          "queued_for_station": null,
+          "scheduled_time": null,
+          "shareable": false,
+          "has_chat": false,
+          "player1": {
+            "id": 273431362,
+            "seed": 8,
+            "display_name": "Spin Slayer (Berguiny · X Shark · Aiger)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player2": {
+            "id": 273431369,
+            "seed": 25,
+            "display_name": "La Triple S (KingJoker · Chad Light · Legoshi)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player1_prereq_identifier": null,
+          "player2_prereq_identifier": null,
+          "player1_is_prereq_match_loser": false,
+          "player2_is_prereq_match_loser": false,
+          "player1_placeholder_text": null,
+          "player2_placeholder_text": null,
+          "scores": [
+            0,
+            3
+          ],
+          "winner_id": 273431369,
+          "loser_id": 273431362,
+          "md5": "ccd074400d51bcc435acd2964f5e42d5"
+        },
+        {
+          "id": 427806573,
+          "tournament_id": 16798908,
+          "identifier": 3,
+          "raw_identifier": "C",
+          "round": 1,
+          "state": "complete",
+          "underway_at": "2025-09-20T13:42:48.366+02:00",
+          "games": [
+            [
+              1,
+              3
+            ]
+          ],
+          "editable_by_user_ids": [],
+          "has_attachment": false,
+          "is_group_match": false,
+          "forfeited": null,
+          "station": null,
+          "queued_for_station": null,
+          "scheduled_time": null,
+          "shareable": false,
+          "has_chat": false,
+          "player1": {
+            "id": 273431379,
+            "seed": 9,
+            "display_name": "Élite Royale (Mewxy · MTS · Snowpye)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player2": {
+            "id": 273431367,
+            "seed": 24,
+            "display_name": "Blue Phoenix (Stella · Paimy  · Sabo)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player1_prereq_identifier": null,
+          "player2_prereq_identifier": null,
+          "player1_is_prereq_match_loser": false,
+          "player2_is_prereq_match_loser": false,
+          "player1_placeholder_text": null,
+          "player2_placeholder_text": null,
+          "scores": [
+            1,
+            3
+          ],
+          "winner_id": 273431367,
+          "loser_id": 273431379,
+          "md5": "b73dbe870be92f330deaaf30d791bfab"
+        },
+        {
+          "id": 427806574,
+          "tournament_id": 16798908,
+          "identifier": 4,
+          "raw_identifier": "D",
+          "round": 1,
+          "state": "complete",
+          "underway_at": "2025-09-20T13:40:05.913+02:00",
+          "games": [
+            [
+              3,
+              0
+            ]
+          ],
+          "editable_by_user_ids": [],
+          "has_attachment": false,
+          "is_group_match": false,
+          "forfeited": null,
+          "station": null,
+          "queued_for_station": null,
+          "scheduled_time": null,
+          "shareable": false,
+          "has_chat": false,
+          "player1": {
+            "id": 273431366,
+            "seed": 4,
+            "display_name": "Les Wilds Phoenix  (Fulguris95 · Wolfi · Rayou_95)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player2": {
+            "id": 273431373,
+            "seed": 29,
+            "display_name": "Forever (Mag · Bandit · Gundam)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player1_prereq_identifier": null,
+          "player2_prereq_identifier": null,
+          "player1_is_prereq_match_loser": false,
+          "player2_is_prereq_match_loser": false,
+          "player1_placeholder_text": null,
+          "player2_placeholder_text": null,
+          "scores": [
+            3,
+            0
+          ],
+          "winner_id": 273431366,
+          "loser_id": 273431373,
+          "md5": "e7708274c874669000cf1ff2b9b15b6b"
+        },
+        {
+          "id": 427806575,
+          "tournament_id": 16798908,
+          "identifier": 5,
+          "raw_identifier": "E",
+          "round": 1,
+          "state": "complete",
+          "underway_at": null,
+          "games": [
+            [
+              0,
+              3
+            ]
+          ],
+          "editable_by_user_ids": [],
+          "has_attachment": false,
+          "is_group_match": false,
+          "forfeited": null,
+          "station": null,
+          "queued_for_station": null,
+          "scheduled_time": null,
+          "shareable": false,
+          "has_chat": false,
+          "player1": {
+            "id": 273431374,
+            "seed": 13,
+            "display_name": "La Nébuleuse Noire (IceTea · RoroDela · StarKnight)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player2": {
+            "id": 273431368,
+            "seed": 20,
+            "display_name": "Leteessegoat (Xymore · Clemence · Simon)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player1_prereq_identifier": null,
+          "player2_prereq_identifier": null,
+          "player1_is_prereq_match_loser": false,
+          "player2_is_prereq_match_loser": false,
+          "player1_placeholder_text": null,
+          "player2_placeholder_text": null,
+          "scores": [
+            0,
+            3
+          ],
+          "winner_id": 273431368,
+          "loser_id": 273431374,
+          "md5": "2b3d8a5007c416b54b571adce00f9e43"
+        },
+        {
+          "id": 427806576,
+          "tournament_id": 16798908,
+          "identifier": 6,
+          "raw_identifier": "F",
+          "round": 1,
+          "state": "complete",
+          "underway_at": "2025-09-20T13:51:31.430+02:00",
+          "games": [
+            [
+              3,
+              2
+            ]
+          ],
+          "editable_by_user_ids": [],
+          "has_attachment": false,
+          "is_group_match": false,
+          "forfeited": null,
+          "station": null,
+          "queued_for_station": null,
+          "scheduled_time": null,
+          "shareable": false,
+          "has_chat": false,
+          "player1": {
+            "id": 273431360,
+            "seed": 5,
+            "display_name": "Zit Zitoun (Zeikuo · Tategami · Kaious)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player2": {
+            "id": 273431380,
+            "seed": 28,
+            "display_name": "Tiramisu gang  (Sarah · Masamune · Hyakutake)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player1_prereq_identifier": null,
+          "player2_prereq_identifier": null,
+          "player1_is_prereq_match_loser": false,
+          "player2_is_prereq_match_loser": false,
+          "player1_placeholder_text": null,
+          "player2_placeholder_text": null,
+          "scores": [
+            3,
+            2
+          ],
+          "winner_id": 273431360,
+          "loser_id": 273431380,
+          "md5": "83a22bcefb15ac337f74ca8523e7fce2"
+        },
+        {
+          "id": 427806577,
+          "tournament_id": 16798908,
+          "identifier": 7,
+          "raw_identifier": "G",
+          "round": 1,
+          "state": "complete",
+          "underway_at": "2025-09-20T13:48:22.515+02:00",
+          "games": [
+            [
+              0,
+              3
+            ]
+          ],
+          "editable_by_user_ids": [],
+          "has_attachment": false,
+          "is_group_match": false,
+          "forfeited": null,
+          "station": null,
+          "queued_for_station": null,
+          "scheduled_time": null,
+          "shareable": false,
+          "has_chat": false,
+          "player1": {
+            "id": 273431376,
+            "seed": 12,
+            "display_name": "Noblesse Oblige (Leirya · Merope · Snipblast)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player2": {
+            "id": 273431364,
+            "seed": 21,
+            "display_name": "Les Gorilles (Kipik · Eox · Ender)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player1_prereq_identifier": null,
+          "player2_prereq_identifier": null,
+          "player1_is_prereq_match_loser": false,
+          "player2_is_prereq_match_loser": false,
+          "player1_placeholder_text": null,
+          "player2_placeholder_text": null,
+          "scores": [
+            0,
+            3
+          ],
+          "winner_id": 273431364,
+          "loser_id": 273431376,
+          "md5": "cfb4a3063ee8f69eea6b9a5db90c0518"
+        },
+        {
+          "id": 427806578,
+          "tournament_id": 16798908,
+          "identifier": 8,
+          "raw_identifier": "H",
+          "round": 1,
+          "state": "complete",
+          "underway_at": null,
+          "games": [
+            [
+              3,
+              1
+            ]
+          ],
+          "editable_by_user_ids": [],
+          "has_attachment": false,
+          "is_group_match": false,
+          "forfeited": null,
+          "station": null,
+          "queued_for_station": null,
+          "scheduled_time": null,
+          "shareable": false,
+          "has_chat": false,
+          "player1": {
+            "id": 273431377,
+            "seed": 15,
+            "display_name": "Wild Flower (Kamen 99 · Narugo · Kamen A)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player2": {
+            "id": 273431370,
+            "seed": 18,
+            "display_name": "Kurenai (Kineria · 56 · Geats)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player1_prereq_identifier": null,
+          "player2_prereq_identifier": null,
+          "player1_is_prereq_match_loser": false,
+          "player2_is_prereq_match_loser": false,
+          "player1_placeholder_text": null,
+          "player2_placeholder_text": null,
+          "scores": [
+            3,
+            1
+          ],
+          "winner_id": 273431377,
+          "loser_id": 273431370,
+          "md5": "e40b2fde0d0282fc4ea63d9dd71d1358"
+        },
+        {
+          "id": 427806579,
+          "tournament_id": 16798908,
+          "identifier": 9,
+          "raw_identifier": "I",
+          "round": 1,
+          "state": "complete",
+          "underway_at": "2025-09-20T13:55:55.653+02:00",
+          "games": [
+            [
+              0,
+              3
+            ]
+          ],
+          "editable_by_user_ids": [],
+          "has_attachment": false,
+          "is_group_match": false,
+          "forfeited": null,
+          "station": null,
+          "queued_for_station": null,
+          "scheduled_time": null,
+          "shareable": false,
+          "has_chat": false,
+          "player1": {
+            "id": 273431359,
+            "seed": 7,
+            "display_name": "Hitadaki Yoshiro (Gelofy · Mini Gelofy · Yaya)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player2": {
+            "id": 273431378,
+            "seed": 26,
+            "display_name": "Team Vortex  (Flanders · Skarn · Ares)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player1_prereq_identifier": null,
+          "player2_prereq_identifier": null,
+          "player1_is_prereq_match_loser": false,
+          "player2_is_prereq_match_loser": false,
+          "player1_placeholder_text": null,
+          "player2_placeholder_text": null,
+          "scores": [
+            0,
+            3
+          ],
+          "winner_id": 273431378,
+          "loser_id": 273431359,
+          "md5": "f2aa9b4562c82bc5b3cde970741246d2"
+        },
+        {
+          "id": 427806580,
+          "tournament_id": 16798908,
+          "identifier": 10,
+          "raw_identifier": "J",
+          "round": 1,
+          "state": "complete",
+          "underway_at": null,
+          "games": [
+            [
+              1,
+              3
+            ]
+          ],
+          "editable_by_user_ids": [],
+          "has_attachment": false,
+          "is_group_match": false,
+          "forfeited": false,
+          "station": null,
+          "queued_for_station": null,
+          "scheduled_time": null,
+          "shareable": false,
+          "has_chat": false,
+          "player1": {
+            "id": 273431365,
+            "seed": 10,
+            "display_name": "Raging Bulls (Nthanb · levroi · Lc_37z)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player2": {
+            "id": 273431356,
+            "seed": 23,
+            "display_name": "Les Pilleurs de la Ludothèque (Vincent · Grand Golem Serpent · Saucisson Solide)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player1_prereq_identifier": null,
+          "player2_prereq_identifier": null,
+          "player1_is_prereq_match_loser": false,
+          "player2_is_prereq_match_loser": false,
+          "player1_placeholder_text": null,
+          "player2_placeholder_text": null,
+          "scores": [
+            1,
+            3
+          ],
+          "winner_id": 273431356,
+          "loser_id": 273431365,
+          "md5": "f118308803fe0a6ebad8adacaefc1ef8"
+        },
+        {
+          "id": 427806581,
+          "tournament_id": 16798908,
+          "identifier": 11,
+          "raw_identifier": "K",
+          "round": 1,
+          "state": "complete",
+          "underway_at": "2025-09-20T14:00:15.531+02:00",
+          "games": [
+            [
+              3,
+              2
+            ]
+          ],
+          "editable_by_user_ids": [],
+          "has_attachment": false,
+          "is_group_match": false,
+          "forfeited": null,
+          "station": null,
+          "queued_for_station": null,
+          "scheduled_time": null,
+          "shareable": false,
+          "has_chat": false,
+          "player1": {
+            "id": 273431358,
+            "seed": 3,
+            "display_name": "Team Matcha (Yoorushi · Yorel · zeLn)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player2": {
+            "id": 273431354,
+            "seed": 30,
+            "display_name": "Rising Volt Tacklers (Younsi · Shishi · Hane Hoshi)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player1_prereq_identifier": null,
+          "player2_prereq_identifier": null,
+          "player1_is_prereq_match_loser": false,
+          "player2_is_prereq_match_loser": false,
+          "player1_placeholder_text": null,
+          "player2_placeholder_text": null,
+          "scores": [
+            3,
+            2
+          ],
+          "winner_id": 273431358,
+          "loser_id": 273431354,
+          "md5": "826c9f052ad2b2bd7007366ee4867b5f"
+        },
+        {
+          "id": 427806582,
+          "tournament_id": 16798908,
+          "identifier": 12,
+          "raw_identifier": "L",
+          "round": 1,
+          "state": "complete",
+          "underway_at": "2025-09-20T14:02:51.064+02:00",
+          "games": [
+            [
+              3,
+              0
+            ]
+          ],
+          "editable_by_user_ids": [],
+          "has_attachment": false,
+          "is_group_match": false,
+          "forfeited": null,
+          "station": null,
+          "queued_for_station": null,
+          "scheduled_time": null,
+          "shareable": false,
+          "has_chat": false,
+          "player1": {
+            "id": 273431371,
+            "seed": 14,
+            "display_name": "Les Gardiens Sentinelles (Rock Lee · darkhoumous · Alice)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player2": {
+            "id": 273431355,
+            "seed": 19,
+            "display_name": "Les Gros Salamis (Azure · Fabien Le Ceratops · sewpoo_0192)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player1_prereq_identifier": null,
+          "player2_prereq_identifier": null,
+          "player1_is_prereq_match_loser": false,
+          "player2_is_prereq_match_loser": false,
+          "player1_placeholder_text": null,
+          "player2_placeholder_text": null,
+          "scores": [
+            3,
+            0
+          ],
+          "winner_id": 273431371,
+          "loser_id": 273431355,
+          "md5": "101e6e3e52aeb8400bb4326240407bed"
+        },
+        {
+          "id": 427806583,
+          "tournament_id": 16798908,
+          "identifier": 13,
+          "raw_identifier": "M",
+          "round": 1,
+          "state": "complete",
+          "underway_at": null,
+          "games": [
+            [
+              3,
+              2
+            ]
+          ],
+          "editable_by_user_ids": [],
+          "has_attachment": false,
+          "is_group_match": false,
+          "forfeited": null,
+          "station": null,
+          "queued_for_station": null,
+          "scheduled_time": null,
+          "shareable": false,
+          "has_chat": false,
+          "player1": {
+            "id": 273431361,
+            "seed": 6,
+            "display_name": "Team Koizumi (JojoKirino · Ilou · Flower)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player2": {
+            "id": 273431381,
+            "seed": 27,
+            "display_name": "Neo Beyknight (D8J6 · Rami · OursDuBeyblade)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player1_prereq_identifier": null,
+          "player2_prereq_identifier": null,
+          "player1_is_prereq_match_loser": false,
+          "player2_is_prereq_match_loser": false,
+          "player1_placeholder_text": null,
+          "player2_placeholder_text": null,
+          "scores": [
+            3,
+            2
+          ],
+          "winner_id": 273431361,
+          "loser_id": 273431381,
+          "md5": "86687e0009159c4a0417fd356ebbfb1d"
+        },
+        {
+          "id": 427806584,
+          "tournament_id": 16798908,
+          "identifier": 14,
+          "raw_identifier": "N",
+          "round": 1,
+          "state": "complete",
+          "underway_at": "2025-09-20T14:09:42.502+02:00",
+          "games": [
+            [
+              2,
+              3
+            ]
+          ],
+          "editable_by_user_ids": [],
+          "has_attachment": false,
+          "is_group_match": false,
+          "forfeited": null,
+          "station": null,
+          "queued_for_station": null,
+          "scheduled_time": null,
+          "shareable": false,
+          "has_chat": false,
+          "player1": {
+            "id": 273431372,
+            "seed": 11,
+            "display_name": "L'équipe Fury (Equalizer · L'artiste · Antoine)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player2": {
+            "id": 273431382,
+            "seed": 22,
+            "display_name": "La Brigade Fantôme (Xeno · Kayman · Masterz)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player1_prereq_identifier": null,
+          "player2_prereq_identifier": null,
+          "player1_is_prereq_match_loser": false,
+          "player2_is_prereq_match_loser": false,
+          "player1_placeholder_text": null,
+          "player2_placeholder_text": null,
+          "scores": [
+            2,
+            3
+          ],
+          "winner_id": 273431382,
+          "loser_id": 273431372,
+          "md5": "2ee291b4f0aa549d01cf3f7af4b7995a"
+        }
+      ],
+      "2": [
+        {
+          "id": 427806585,
+          "tournament_id": 16798908,
+          "identifier": 21,
+          "raw_identifier": "O",
+          "round": 2,
+          "state": "complete",
+          "underway_at": "2025-09-20T14:34:29.753+02:00",
+          "games": [
+            [
+              3,
+              1
+            ]
+          ],
+          "editable_by_user_ids": [],
+          "has_attachment": false,
+          "is_group_match": false,
+          "forfeited": null,
+          "station": null,
+          "queued_for_station": null,
+          "scheduled_time": null,
+          "shareable": false,
+          "has_chat": false,
+          "player1": {
+            "id": 273431375,
+            "seed": 1,
+            "display_name": "Chrono Storme (Phénixio · kyronnah · Dimitard)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player2": {
+            "id": 273431363,
+            "seed": 17,
+            "display_name": "Inazuma Japon (Inazo · Illu · Blader Mystérieux )",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player1_prereq_identifier": null,
+          "player2_prereq_identifier": 1,
+          "player1_is_prereq_match_loser": false,
+          "player2_is_prereq_match_loser": false,
+          "player1_placeholder_text": null,
+          "player2_placeholder_text": null,
+          "scores": [
+            3,
+            1
+          ],
+          "winner_id": 273431375,
+          "loser_id": 273431363,
+          "md5": "36b49c2c5b70410d8445384ccbde0737"
+        },
+        {
+          "id": 427806586,
+          "tournament_id": 16798908,
+          "identifier": 22,
+          "raw_identifier": "P",
+          "round": 2,
+          "state": "complete",
+          "underway_at": null,
+          "games": [
+            [
+              3,
+              2
+            ]
+          ],
+          "editable_by_user_ids": [],
+          "has_attachment": false,
+          "is_group_match": false,
+          "forfeited": null,
+          "station": null,
+          "queued_for_station": null,
+          "scheduled_time": null,
+          "shareable": false,
+          "has_chat": false,
+          "player1": {
+            "id": 273431369,
+            "seed": 25,
+            "display_name": "La Triple S (KingJoker · Chad Light · Legoshi)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player2": {
+            "id": 273431367,
+            "seed": 24,
+            "display_name": "Blue Phoenix (Stella · Paimy  · Sabo)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player1_prereq_identifier": 2,
+          "player2_prereq_identifier": 3,
+          "player1_is_prereq_match_loser": false,
+          "player2_is_prereq_match_loser": false,
+          "player1_placeholder_text": null,
+          "player2_placeholder_text": null,
+          "scores": [
+            3,
+            2
+          ],
+          "winner_id": 273431369,
+          "loser_id": 273431367,
+          "md5": "ecef5d995b4302014cbdfbc554b77187"
+        },
+        {
+          "id": 427806587,
+          "tournament_id": 16798908,
+          "identifier": 23,
+          "raw_identifier": "Q",
+          "round": 2,
+          "state": "complete",
+          "underway_at": null,
+          "games": [
+            [
+              3,
+              0
+            ]
+          ],
+          "editable_by_user_ids": [],
+          "has_attachment": false,
+          "is_group_match": false,
+          "forfeited": null,
+          "station": null,
+          "queued_for_station": null,
+          "scheduled_time": null,
+          "shareable": false,
+          "has_chat": false,
+          "player1": {
+            "id": 273431366,
+            "seed": 4,
+            "display_name": "Les Wilds Phoenix  (Fulguris95 · Wolfi · Rayou_95)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player2": {
+            "id": 273431368,
+            "seed": 20,
+            "display_name": "Leteessegoat (Xymore · Clemence · Simon)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player1_prereq_identifier": 4,
+          "player2_prereq_identifier": 5,
+          "player1_is_prereq_match_loser": false,
+          "player2_is_prereq_match_loser": false,
+          "player1_placeholder_text": null,
+          "player2_placeholder_text": null,
+          "scores": [
+            3,
+            0
+          ],
+          "winner_id": 273431366,
+          "loser_id": 273431368,
+          "md5": "298b3cb0be5b8e537e7611a0391bac33"
+        },
+        {
+          "id": 427806588,
+          "tournament_id": 16798908,
+          "identifier": 24,
+          "raw_identifier": "R",
+          "round": 2,
+          "state": "complete",
+          "underway_at": "2025-09-20T14:44:32.006+02:00",
+          "games": [
+            [
+              0,
+              3
+            ]
+          ],
+          "editable_by_user_ids": [],
+          "has_attachment": false,
+          "is_group_match": false,
+          "forfeited": null,
+          "station": null,
+          "queued_for_station": null,
+          "scheduled_time": null,
+          "shareable": false,
+          "has_chat": false,
+          "player1": {
+            "id": 273431360,
+            "seed": 5,
+            "display_name": "Zit Zitoun (Zeikuo · Tategami · Kaious)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player2": {
+            "id": 273431364,
+            "seed": 21,
+            "display_name": "Les Gorilles (Kipik · Eox · Ender)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player1_prereq_identifier": 6,
+          "player2_prereq_identifier": 7,
+          "player1_is_prereq_match_loser": false,
+          "player2_is_prereq_match_loser": false,
+          "player1_placeholder_text": null,
+          "player2_placeholder_text": null,
+          "scores": [
+            0,
+            3
+          ],
+          "winner_id": 273431364,
+          "loser_id": 273431360,
+          "md5": "246a989aed3537c214c746d7d4667469"
+        },
+        {
+          "id": 427806589,
+          "tournament_id": 16798908,
+          "identifier": 25,
+          "raw_identifier": "S",
+          "round": 2,
+          "state": "complete",
+          "underway_at": null,
+          "games": [
+            [
+              3,
+              0
+            ]
+          ],
+          "editable_by_user_ids": [],
+          "has_attachment": false,
+          "is_group_match": false,
+          "forfeited": null,
+          "station": null,
+          "queued_for_station": null,
+          "scheduled_time": null,
+          "shareable": false,
+          "has_chat": false,
+          "player1": {
+            "id": 273431383,
+            "seed": 2,
+            "display_name": "Drill Soul (Berserk · PridefulLord · Aspen)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player2": {
+            "id": 273431377,
+            "seed": 15,
+            "display_name": "Wild Flower (Kamen 99 · Narugo · Kamen A)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player1_prereq_identifier": null,
+          "player2_prereq_identifier": 8,
+          "player1_is_prereq_match_loser": false,
+          "player2_is_prereq_match_loser": false,
+          "player1_placeholder_text": null,
+          "player2_placeholder_text": null,
+          "scores": [
+            3,
+            0
+          ],
+          "winner_id": 273431383,
+          "loser_id": 273431377,
+          "md5": "b32e7bd59ed801ca2fdad145ab422b96"
+        },
+        {
+          "id": 427806590,
+          "tournament_id": 16798908,
+          "identifier": 26,
+          "raw_identifier": "T",
+          "round": 2,
+          "state": "complete",
+          "underway_at": "2025-09-20T14:45:46.243+02:00",
+          "games": [
+            [
+              3,
+              2
+            ]
+          ],
+          "editable_by_user_ids": [],
+          "has_attachment": false,
+          "is_group_match": false,
+          "forfeited": false,
+          "station": null,
+          "queued_for_station": null,
+          "scheduled_time": null,
+          "shareable": false,
+          "has_chat": false,
+          "player1": {
+            "id": 273431378,
+            "seed": 26,
+            "display_name": "Team Vortex  (Flanders · Skarn · Ares)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player2": {
+            "id": 273431356,
+            "seed": 23,
+            "display_name": "Les Pilleurs de la Ludothèque (Vincent · Grand Golem Serpent · Saucisson Solide)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player1_prereq_identifier": 9,
+          "player2_prereq_identifier": 10,
+          "player1_is_prereq_match_loser": false,
+          "player2_is_prereq_match_loser": false,
+          "player1_placeholder_text": null,
+          "player2_placeholder_text": null,
+          "scores": [
+            3,
+            2
+          ],
+          "winner_id": 273431378,
+          "loser_id": 273431356,
+          "md5": "57660da7b3790be545ccd161e7061016"
+        },
+        {
+          "id": 427806591,
+          "tournament_id": 16798908,
+          "identifier": 27,
+          "raw_identifier": "U",
+          "round": 2,
+          "state": "complete",
+          "underway_at": "2025-09-20T14:49:25.971+02:00",
+          "games": [
+            [
+              1,
+              3
+            ]
+          ],
+          "editable_by_user_ids": [],
+          "has_attachment": false,
+          "is_group_match": false,
+          "forfeited": null,
+          "station": null,
+          "queued_for_station": null,
+          "scheduled_time": null,
+          "shareable": false,
+          "has_chat": false,
+          "player1": {
+            "id": 273431358,
+            "seed": 3,
+            "display_name": "Team Matcha (Yoorushi · Yorel · zeLn)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player2": {
+            "id": 273431371,
+            "seed": 14,
+            "display_name": "Les Gardiens Sentinelles (Rock Lee · darkhoumous · Alice)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player1_prereq_identifier": 11,
+          "player2_prereq_identifier": 12,
+          "player1_is_prereq_match_loser": false,
+          "player2_is_prereq_match_loser": false,
+          "player1_placeholder_text": null,
+          "player2_placeholder_text": null,
+          "scores": [
+            1,
+            3
+          ],
+          "winner_id": 273431371,
+          "loser_id": 273431358,
+          "md5": "ebded148eb180b947c8121d56d267e64"
+        },
+        {
+          "id": 427806592,
+          "tournament_id": 16798908,
+          "identifier": 28,
+          "raw_identifier": "V",
+          "round": 2,
+          "state": "complete",
+          "underway_at": null,
+          "games": [
+            [
+              1,
+              3
+            ]
+          ],
+          "editable_by_user_ids": [],
+          "has_attachment": false,
+          "is_group_match": false,
+          "forfeited": null,
+          "station": null,
+          "queued_for_station": null,
+          "scheduled_time": null,
+          "shareable": false,
+          "has_chat": false,
+          "player1": {
+            "id": 273431361,
+            "seed": 6,
+            "display_name": "Team Koizumi (JojoKirino · Ilou · Flower)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player2": {
+            "id": 273431382,
+            "seed": 22,
+            "display_name": "La Brigade Fantôme (Xeno · Kayman · Masterz)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player1_prereq_identifier": 13,
+          "player2_prereq_identifier": 14,
+          "player1_is_prereq_match_loser": false,
+          "player2_is_prereq_match_loser": false,
+          "player1_placeholder_text": null,
+          "player2_placeholder_text": null,
+          "scores": [
+            1,
+            3
+          ],
+          "winner_id": 273431382,
+          "loser_id": 273431361,
+          "md5": "c609acee5079f766f0eb8879a9831bc8"
+        }
+      ],
+      "3": [
+        {
+          "id": 427806593,
+          "tournament_id": 16798908,
+          "identifier": 41,
+          "raw_identifier": "W",
+          "round": 3,
+          "state": "complete",
+          "underway_at": "2025-09-20T16:03:47.952+02:00",
+          "games": [
+            [
+              0,
+              3
+            ]
+          ],
+          "editable_by_user_ids": [],
+          "has_attachment": false,
+          "is_group_match": false,
+          "forfeited": null,
+          "station": null,
+          "queued_for_station": null,
+          "scheduled_time": null,
+          "shareable": false,
+          "has_chat": false,
+          "player1": {
+            "id": 273431375,
+            "seed": 1,
+            "display_name": "Chrono Storme (Phénixio · kyronnah · Dimitard)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player2": {
+            "id": 273431369,
+            "seed": 25,
+            "display_name": "La Triple S (KingJoker · Chad Light · Legoshi)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player1_prereq_identifier": 21,
+          "player2_prereq_identifier": 22,
+          "player1_is_prereq_match_loser": false,
+          "player2_is_prereq_match_loser": false,
+          "player1_placeholder_text": null,
+          "player2_placeholder_text": null,
+          "scores": [
+            0,
+            3
+          ],
+          "winner_id": 273431369,
+          "loser_id": 273431375,
+          "md5": "bd60cdbac13b10a06ce2ff88538482d3"
+        },
+        {
+          "id": 427806594,
+          "tournament_id": 16798908,
+          "identifier": 42,
+          "raw_identifier": "X",
+          "round": 3,
+          "state": "complete",
+          "underway_at": "2025-09-20T16:04:20.720+02:00",
+          "games": [
+            [
+              3,
+              2
+            ]
+          ],
+          "editable_by_user_ids": [],
+          "has_attachment": false,
+          "is_group_match": false,
+          "forfeited": null,
+          "station": null,
+          "queued_for_station": null,
+          "scheduled_time": null,
+          "shareable": false,
+          "has_chat": false,
+          "player1": {
+            "id": 273431366,
+            "seed": 4,
+            "display_name": "Les Wilds Phoenix  (Fulguris95 · Wolfi · Rayou_95)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player2": {
+            "id": 273431364,
+            "seed": 21,
+            "display_name": "Les Gorilles (Kipik · Eox · Ender)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player1_prereq_identifier": 23,
+          "player2_prereq_identifier": 24,
+          "player1_is_prereq_match_loser": false,
+          "player2_is_prereq_match_loser": false,
+          "player1_placeholder_text": null,
+          "player2_placeholder_text": null,
+          "scores": [
+            3,
+            2
+          ],
+          "winner_id": 273431366,
+          "loser_id": 273431364,
+          "md5": "cd2e1425f1e59ea88bc1e2c48555b446"
+        },
+        {
+          "id": 427806595,
+          "tournament_id": 16798908,
+          "identifier": 43,
+          "raw_identifier": "Y",
+          "round": 3,
+          "state": "complete",
+          "underway_at": "2025-09-20T16:04:25.649+02:00",
+          "games": [
+            [
+              1,
+              3
+            ]
+          ],
+          "editable_by_user_ids": [],
+          "has_attachment": false,
+          "is_group_match": false,
+          "forfeited": null,
+          "station": null,
+          "queued_for_station": null,
+          "scheduled_time": null,
+          "shareable": false,
+          "has_chat": false,
+          "player1": {
+            "id": 273431383,
+            "seed": 2,
+            "display_name": "Drill Soul (Berserk · PridefulLord · Aspen)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player2": {
+            "id": 273431378,
+            "seed": 26,
+            "display_name": "Team Vortex  (Flanders · Skarn · Ares)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player1_prereq_identifier": 25,
+          "player2_prereq_identifier": 26,
+          "player1_is_prereq_match_loser": false,
+          "player2_is_prereq_match_loser": false,
+          "player1_placeholder_text": null,
+          "player2_placeholder_text": null,
+          "scores": [
+            1,
+            3
+          ],
+          "winner_id": 273431378,
+          "loser_id": 273431383,
+          "md5": "48b5e53756e3ac2477d790453dcf442c"
+        },
+        {
+          "id": 427806596,
+          "tournament_id": 16798908,
+          "identifier": 44,
+          "raw_identifier": "Z",
+          "round": 3,
+          "state": "complete",
+          "underway_at": "2025-09-20T16:04:56.270+02:00",
+          "games": [
+            [
+              2,
+              3
+            ]
+          ],
+          "editable_by_user_ids": [],
+          "has_attachment": false,
+          "is_group_match": false,
+          "forfeited": null,
+          "station": null,
+          "queued_for_station": null,
+          "scheduled_time": null,
+          "shareable": false,
+          "has_chat": false,
+          "player1": {
+            "id": 273431371,
+            "seed": 14,
+            "display_name": "Les Gardiens Sentinelles (Rock Lee · darkhoumous · Alice)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player2": {
+            "id": 273431382,
+            "seed": 22,
+            "display_name": "La Brigade Fantôme (Xeno · Kayman · Masterz)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player1_prereq_identifier": 27,
+          "player2_prereq_identifier": 28,
+          "player1_is_prereq_match_loser": false,
+          "player2_is_prereq_match_loser": false,
+          "player1_placeholder_text": null,
+          "player2_placeholder_text": null,
+          "scores": [
+            2,
+            3
+          ],
+          "winner_id": 273431382,
+          "loser_id": 273431371,
+          "md5": "011dda164e4c4f8fe4dcc45451d7ce51"
+        }
+      ],
+      "4": [
+        {
+          "id": 427806597,
+          "tournament_id": 16798908,
+          "identifier": 51,
+          "raw_identifier": "AA",
+          "round": 4,
+          "state": "complete",
+          "underway_at": null,
+          "games": [
+            [
+              3,
+              2
+            ]
+          ],
+          "editable_by_user_ids": [],
+          "has_attachment": false,
+          "is_group_match": false,
+          "forfeited": false,
+          "station": null,
+          "queued_for_station": null,
+          "scheduled_time": null,
+          "shareable": false,
+          "has_chat": false,
+          "player1": {
+            "id": 273431369,
+            "seed": 25,
+            "display_name": "La Triple S (KingJoker · Chad Light · Legoshi)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player2": {
+            "id": 273431366,
+            "seed": 4,
+            "display_name": "Les Wilds Phoenix  (Fulguris95 · Wolfi · Rayou_95)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player1_prereq_identifier": 41,
+          "player2_prereq_identifier": 42,
+          "player1_is_prereq_match_loser": false,
+          "player2_is_prereq_match_loser": false,
+          "player1_placeholder_text": null,
+          "player2_placeholder_text": null,
+          "scores": [
+            3,
+            2
+          ],
+          "winner_id": 273431369,
+          "loser_id": 273431366,
+          "md5": "429bd5ec8e58c0bd376f95bedab80b9a"
+        },
+        {
+          "id": 427806598,
+          "tournament_id": 16798908,
+          "identifier": 52,
+          "raw_identifier": "AB",
+          "round": 4,
+          "state": "complete",
+          "underway_at": "2025-09-20T16:30:33.771+02:00",
+          "games": [
+            [
+              3,
+              2
+            ]
+          ],
+          "editable_by_user_ids": [],
+          "has_attachment": false,
+          "is_group_match": false,
+          "forfeited": null,
+          "station": null,
+          "queued_for_station": null,
+          "scheduled_time": null,
+          "shareable": false,
+          "has_chat": false,
+          "player1": {
+            "id": 273431378,
+            "seed": 26,
+            "display_name": "Team Vortex  (Flanders · Skarn · Ares)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player2": {
+            "id": 273431382,
+            "seed": 22,
+            "display_name": "La Brigade Fantôme (Xeno · Kayman · Masterz)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player1_prereq_identifier": 43,
+          "player2_prereq_identifier": 44,
+          "player1_is_prereq_match_loser": false,
+          "player2_is_prereq_match_loser": false,
+          "player1_placeholder_text": null,
+          "player2_placeholder_text": null,
+          "scores": [
+            3,
+            2
+          ],
+          "winner_id": 273431378,
+          "loser_id": 273431382,
+          "md5": "7f5ace4a06d68f4c7521d076a89d2fb2"
+        }
+      ],
+      "5": [
+        {
+          "id": 427806599,
+          "tournament_id": 16798908,
+          "identifier": 56,
+          "raw_identifier": "AC",
+          "round": 5,
+          "state": "complete",
+          "underway_at": "2025-09-20T16:40:03.833+02:00",
+          "games": [
+            [
+              3,
+              1
+            ]
+          ],
+          "editable_by_user_ids": [],
+          "has_attachment": false,
+          "is_group_match": false,
+          "forfeited": false,
+          "station": null,
+          "queued_for_station": null,
+          "scheduled_time": null,
+          "shareable": false,
+          "has_chat": false,
+          "player1": {
+            "id": 273431369,
+            "seed": 25,
+            "display_name": "La Triple S (KingJoker · Chad Light · Legoshi)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player2": {
+            "id": 273431378,
+            "seed": 26,
+            "display_name": "Team Vortex  (Flanders · Skarn · Ares)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player1_prereq_identifier": 51,
+          "player2_prereq_identifier": 52,
+          "player1_is_prereq_match_loser": false,
+          "player2_is_prereq_match_loser": false,
+          "player1_placeholder_text": null,
+          "player2_placeholder_text": null,
+          "scores": [
+            3,
+            1
+          ],
+          "winner_id": 273431369,
+          "loser_id": 273431378,
+          "md5": "ad02d42df786480d5899befca642e454"
+        }
+      ],
+      "6": [
+        {
+          "id": 427806628,
+          "tournament_id": 16798908,
+          "identifier": 58,
+          "raw_identifier": "AD",
+          "round": 6,
+          "state": "complete",
+          "underway_at": "2025-09-20T17:04:52.269+02:00",
+          "games": [
+            [
+              0,
+              3
+            ]
+          ],
+          "editable_by_user_ids": [],
+          "has_attachment": false,
+          "is_group_match": false,
+          "forfeited": null,
+          "station": null,
+          "queued_for_station": null,
+          "scheduled_time": null,
+          "shareable": false,
+          "has_chat": false,
+          "player1": {
+            "id": 273431369,
+            "seed": 25,
+            "display_name": "La Triple S (KingJoker · Chad Light · Legoshi)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player2": {
+            "id": 273431378,
+            "seed": 26,
+            "display_name": "Team Vortex  (Flanders · Skarn · Ares)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player1_prereq_identifier": 56,
+          "player2_prereq_identifier": 57,
+          "player1_is_prereq_match_loser": false,
+          "player2_is_prereq_match_loser": false,
+          "player1_placeholder_text": null,
+          "player2_placeholder_text": null,
+          "scores": [
+            0,
+            3
+          ],
+          "winner_id": 273431378,
+          "loser_id": 273431369,
+          "md5": "67aaea96c4a77a46e591e1c99fbaa28a"
+        },
+        {
+          "id": 427806629,
+          "tournament_id": 16798908,
+          "identifier": 59,
+          "raw_identifier": "AE",
+          "round": 6,
+          "state": "complete",
+          "underway_at": "2025-09-20T17:10:17.555+02:00",
+          "games": [
+            [
+              3,
+              0
+            ]
+          ],
+          "editable_by_user_ids": [],
+          "has_attachment": false,
+          "is_group_match": false,
+          "forfeited": null,
+          "station": null,
+          "queued_for_station": null,
+          "scheduled_time": null,
+          "shareable": false,
+          "has_chat": false,
+          "player1": {
+            "id": 273431378,
+            "seed": 26,
+            "display_name": "Team Vortex  (Flanders · Skarn · Ares)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player2": {
+            "id": 273431369,
+            "seed": 25,
+            "display_name": "La Triple S (KingJoker · Chad Light · Legoshi)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player1_prereq_identifier": 58,
+          "player2_prereq_identifier": 58,
+          "player1_is_prereq_match_loser": false,
+          "player2_is_prereq_match_loser": true,
+          "player1_placeholder_text": null,
+          "player2_placeholder_text": null,
+          "scores": [
+            3,
+            0
+          ],
+          "winner_id": 273431378,
+          "loser_id": 273431369,
+          "md5": "5a301eda20fb3d7dc13ce9586dd9e729"
+        }
+      ],
+      "-1": [
+        {
+          "id": 427806600,
+          "tournament_id": 16798908,
+          "identifier": 15,
+          "raw_identifier": "AF",
+          "round": -1,
+          "state": "complete",
+          "underway_at": "2025-09-20T14:14:44.704+02:00",
+          "games": [
+            [
+              3,
+              1
+            ]
+          ],
+          "editable_by_user_ids": [],
+          "has_attachment": false,
+          "is_group_match": false,
+          "forfeited": null,
+          "station": null,
+          "queued_for_station": null,
+          "scheduled_time": null,
+          "shareable": false,
+          "has_chat": false,
+          "player1": {
+            "id": 273431362,
+            "seed": 8,
+            "display_name": "Spin Slayer (Berguiny · X Shark · Aiger)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player2": {
+            "id": 273431379,
+            "seed": 9,
+            "display_name": "Élite Royale (Mewxy · MTS · Snowpye)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player1_prereq_identifier": 2,
+          "player2_prereq_identifier": 3,
+          "player1_is_prereq_match_loser": true,
+          "player2_is_prereq_match_loser": true,
+          "player1_placeholder_text": null,
+          "player2_placeholder_text": null,
+          "scores": [
+            3,
+            1
+          ],
+          "winner_id": 273431362,
+          "loser_id": 273431379,
+          "md5": "359946e1e8c990e3a183a44354700278"
+        },
+        {
+          "id": 427806601,
+          "tournament_id": 16798908,
+          "identifier": 16,
+          "raw_identifier": "AG",
+          "round": -1,
+          "state": "complete",
+          "underway_at": "2025-09-20T14:17:27.126+02:00",
+          "games": [
+            [
+              3,
+              0
+            ]
+          ],
+          "editable_by_user_ids": [],
+          "has_attachment": false,
+          "is_group_match": false,
+          "forfeited": null,
+          "station": null,
+          "queued_for_station": null,
+          "scheduled_time": null,
+          "shareable": false,
+          "has_chat": false,
+          "player1": {
+            "id": 273431373,
+            "seed": 29,
+            "display_name": "Forever (Mag · Bandit · Gundam)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player2": {
+            "id": 273431374,
+            "seed": 13,
+            "display_name": "La Nébuleuse Noire (IceTea · RoroDela · StarKnight)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player1_prereq_identifier": 4,
+          "player2_prereq_identifier": 5,
+          "player1_is_prereq_match_loser": true,
+          "player2_is_prereq_match_loser": true,
+          "player1_placeholder_text": null,
+          "player2_placeholder_text": null,
+          "scores": [
+            3,
+            0
+          ],
+          "winner_id": 273431373,
+          "loser_id": 273431374,
+          "md5": "265adb4588956164ba89292e1acce324"
+        },
+        {
+          "id": 427806602,
+          "tournament_id": 16798908,
+          "identifier": 17,
+          "raw_identifier": "AH",
+          "round": -1,
+          "state": "complete",
+          "underway_at": "2025-09-20T14:22:10.727+02:00",
+          "games": [
+            [
+              3,
+              0
+            ]
+          ],
+          "editable_by_user_ids": [],
+          "has_attachment": false,
+          "is_group_match": false,
+          "forfeited": null,
+          "station": null,
+          "queued_for_station": null,
+          "scheduled_time": null,
+          "shareable": false,
+          "has_chat": false,
+          "player1": {
+            "id": 273431380,
+            "seed": 28,
+            "display_name": "Tiramisu gang  (Sarah · Masamune · Hyakutake)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player2": {
+            "id": 273431376,
+            "seed": 12,
+            "display_name": "Noblesse Oblige (Leirya · Merope · Snipblast)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player1_prereq_identifier": 6,
+          "player2_prereq_identifier": 7,
+          "player1_is_prereq_match_loser": true,
+          "player2_is_prereq_match_loser": true,
+          "player1_placeholder_text": null,
+          "player2_placeholder_text": null,
+          "scores": [
+            3,
+            0
+          ],
+          "winner_id": 273431380,
+          "loser_id": 273431376,
+          "md5": "3cc04b40cfd13702e6c49a2cd76136f5"
+        },
+        {
+          "id": 427806603,
+          "tournament_id": 16798908,
+          "identifier": 18,
+          "raw_identifier": "AI",
+          "round": -1,
+          "state": "complete",
+          "underway_at": null,
+          "games": [
+            [
+              3,
+              2
+            ]
+          ],
+          "editable_by_user_ids": [],
+          "has_attachment": false,
+          "is_group_match": false,
+          "forfeited": false,
+          "station": null,
+          "queued_for_station": null,
+          "scheduled_time": null,
+          "shareable": false,
+          "has_chat": false,
+          "player1": {
+            "id": 273431359,
+            "seed": 7,
+            "display_name": "Hitadaki Yoshiro (Gelofy · Mini Gelofy · Yaya)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player2": {
+            "id": 273431365,
+            "seed": 10,
+            "display_name": "Raging Bulls (Nthanb · levroi · Lc_37z)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player1_prereq_identifier": 9,
+          "player2_prereq_identifier": 10,
+          "player1_is_prereq_match_loser": true,
+          "player2_is_prereq_match_loser": true,
+          "player1_placeholder_text": null,
+          "player2_placeholder_text": null,
+          "scores": [
+            3,
+            2
+          ],
+          "winner_id": 273431359,
+          "loser_id": 273431365,
+          "md5": "ab42c90475c0e4ccf02822210966fda0"
+        },
+        {
+          "id": 427806604,
+          "tournament_id": 16798908,
+          "identifier": 19,
+          "raw_identifier": "AJ",
+          "round": -1,
+          "state": "complete",
+          "underway_at": "2025-09-20T14:32:53.140+02:00",
+          "games": [
+            [
+              3,
+              1
+            ]
+          ],
+          "editable_by_user_ids": [],
+          "has_attachment": false,
+          "is_group_match": false,
+          "forfeited": null,
+          "station": null,
+          "queued_for_station": null,
+          "scheduled_time": null,
+          "shareable": false,
+          "has_chat": false,
+          "player1": {
+            "id": 273431354,
+            "seed": 30,
+            "display_name": "Rising Volt Tacklers (Younsi · Shishi · Hane Hoshi)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player2": {
+            "id": 273431355,
+            "seed": 19,
+            "display_name": "Les Gros Salamis (Azure · Fabien Le Ceratops · sewpoo_0192)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player1_prereq_identifier": 11,
+          "player2_prereq_identifier": 12,
+          "player1_is_prereq_match_loser": true,
+          "player2_is_prereq_match_loser": true,
+          "player1_placeholder_text": null,
+          "player2_placeholder_text": null,
+          "scores": [
+            3,
+            1
+          ],
+          "winner_id": 273431354,
+          "loser_id": 273431355,
+          "md5": "b57e56172a8584fd3b634ab9ed6c4ee8"
+        },
+        {
+          "id": 427806605,
+          "tournament_id": 16798908,
+          "identifier": 20,
+          "raw_identifier": "AK",
+          "round": -1,
+          "state": "complete",
+          "underway_at": "2025-09-20T14:33:46.016+02:00",
+          "games": [
+            [
+              3,
+              0
+            ]
+          ],
+          "editable_by_user_ids": [],
+          "has_attachment": false,
+          "is_group_match": false,
+          "forfeited": null,
+          "station": null,
+          "queued_for_station": null,
+          "scheduled_time": null,
+          "shareable": false,
+          "has_chat": false,
+          "player1": {
+            "id": 273431381,
+            "seed": 27,
+            "display_name": "Neo Beyknight (D8J6 · Rami · OursDuBeyblade)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player2": {
+            "id": 273431372,
+            "seed": 11,
+            "display_name": "L'équipe Fury (Equalizer · L'artiste · Antoine)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player1_prereq_identifier": 13,
+          "player2_prereq_identifier": 14,
+          "player1_is_prereq_match_loser": true,
+          "player2_is_prereq_match_loser": true,
+          "player1_placeholder_text": null,
+          "player2_placeholder_text": null,
+          "scores": [
+            3,
+            0
+          ],
+          "winner_id": 273431381,
+          "loser_id": 273431372,
+          "md5": "0e194bc027631501762a8e74e1e3ec6e"
+        }
+      ],
+      "-2": [
+        {
+          "id": 427806606,
+          "tournament_id": 16798908,
+          "identifier": 36,
+          "raw_identifier": "AL",
+          "round": -2,
+          "state": "complete",
+          "underway_at": "2025-09-20T15:14:38.379+02:00",
+          "games": [
+            [
+              0,
+              3
+            ]
+          ],
+          "editable_by_user_ids": [],
+          "has_attachment": false,
+          "is_group_match": false,
+          "forfeited": null,
+          "station": null,
+          "queued_for_station": null,
+          "scheduled_time": null,
+          "shareable": false,
+          "has_chat": false,
+          "player1": {
+            "id": 273431361,
+            "seed": 6,
+            "display_name": "Team Koizumi (JojoKirino · Ilou · Flower)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player2": {
+            "id": 273431357,
+            "seed": 16,
+            "display_name": "Team Steve 2.0 (Eiko · Hane Hoshi · Spider_Agent42)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player1_prereq_identifier": 28,
+          "player2_prereq_identifier": 1,
+          "player1_is_prereq_match_loser": true,
+          "player2_is_prereq_match_loser": true,
+          "player1_placeholder_text": null,
+          "player2_placeholder_text": null,
+          "scores": [
+            0,
+            3
+          ],
+          "winner_id": 273431357,
+          "loser_id": 273431361,
+          "md5": "0bac22ce73a81687ebe2e819307c09c0"
+        },
+        {
+          "id": 427806607,
+          "tournament_id": 16798908,
+          "identifier": 35,
+          "raw_identifier": "AM",
+          "round": -2,
+          "state": "complete",
+          "underway_at": "2025-09-20T15:17:04.831+02:00",
+          "games": [
+            [
+              3,
+              1
+            ]
+          ],
+          "editable_by_user_ids": [],
+          "has_attachment": false,
+          "is_group_match": false,
+          "forfeited": null,
+          "station": null,
+          "queued_for_station": null,
+          "scheduled_time": null,
+          "shareable": false,
+          "has_chat": false,
+          "player1": {
+            "id": 273431358,
+            "seed": 3,
+            "display_name": "Team Matcha (Yoorushi · Yorel · zeLn)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player2": {
+            "id": 273431362,
+            "seed": 8,
+            "display_name": "Spin Slayer (Berguiny · X Shark · Aiger)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player1_prereq_identifier": 27,
+          "player2_prereq_identifier": 15,
+          "player1_is_prereq_match_loser": true,
+          "player2_is_prereq_match_loser": false,
+          "player1_placeholder_text": null,
+          "player2_placeholder_text": null,
+          "scores": [
+            3,
+            1
+          ],
+          "winner_id": 273431358,
+          "loser_id": 273431362,
+          "md5": "199a93691d1f56c4e7f6896db6ab0e9e"
+        },
+        {
+          "id": 427806608,
+          "tournament_id": 16798908,
+          "identifier": 34,
+          "raw_identifier": "AN",
+          "round": -2,
+          "state": "complete",
+          "underway_at": "2025-09-20T15:14:29.727+02:00",
+          "games": [
+            [
+              2,
+              3
+            ]
+          ],
+          "editable_by_user_ids": [],
+          "has_attachment": false,
+          "is_group_match": false,
+          "forfeited": null,
+          "station": null,
+          "queued_for_station": null,
+          "scheduled_time": null,
+          "shareable": false,
+          "has_chat": false,
+          "player1": {
+            "id": 273431356,
+            "seed": 23,
+            "display_name": "Les Pilleurs de la Ludothèque (Vincent · Grand Golem Serpent · Saucisson Solide)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player2": {
+            "id": 273431373,
+            "seed": 29,
+            "display_name": "Forever (Mag · Bandit · Gundam)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player1_prereq_identifier": 26,
+          "player2_prereq_identifier": 16,
+          "player1_is_prereq_match_loser": true,
+          "player2_is_prereq_match_loser": false,
+          "player1_placeholder_text": null,
+          "player2_placeholder_text": null,
+          "scores": [
+            2,
+            3
+          ],
+          "winner_id": 273431373,
+          "loser_id": 273431356,
+          "md5": "64deca8751fd923fccd355e9110e0c3e"
+        },
+        {
+          "id": 427806609,
+          "tournament_id": 16798908,
+          "identifier": 33,
+          "raw_identifier": "AO",
+          "round": -2,
+          "state": "complete",
+          "underway_at": "2025-09-20T15:04:55.836+02:00",
+          "games": [
+            [
+              0,
+              3
+            ]
+          ],
+          "editable_by_user_ids": [],
+          "has_attachment": false,
+          "is_group_match": false,
+          "forfeited": null,
+          "station": null,
+          "queued_for_station": null,
+          "scheduled_time": null,
+          "shareable": false,
+          "has_chat": false,
+          "player1": {
+            "id": 273431377,
+            "seed": 15,
+            "display_name": "Wild Flower (Kamen 99 · Narugo · Kamen A)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player2": {
+            "id": 273431380,
+            "seed": 28,
+            "display_name": "Tiramisu gang  (Sarah · Masamune · Hyakutake)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player1_prereq_identifier": 25,
+          "player2_prereq_identifier": 17,
+          "player1_is_prereq_match_loser": true,
+          "player2_is_prereq_match_loser": false,
+          "player1_placeholder_text": null,
+          "player2_placeholder_text": null,
+          "scores": [
+            0,
+            3
+          ],
+          "winner_id": 273431380,
+          "loser_id": 273431377,
+          "md5": "28a896e918b2081c04e713bce1017fc1"
+        },
+        {
+          "id": 427806610,
+          "tournament_id": 16798908,
+          "identifier": 32,
+          "raw_identifier": "AP",
+          "round": -2,
+          "state": "complete",
+          "underway_at": "2025-09-20T15:03:21.326+02:00",
+          "games": [
+            [
+              3,
+              2
+            ]
+          ],
+          "editable_by_user_ids": [],
+          "has_attachment": false,
+          "is_group_match": false,
+          "forfeited": null,
+          "station": null,
+          "queued_for_station": null,
+          "scheduled_time": null,
+          "shareable": false,
+          "has_chat": false,
+          "player1": {
+            "id": 273431360,
+            "seed": 5,
+            "display_name": "Zit Zitoun (Zeikuo · Tategami · Kaious)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player2": {
+            "id": 273431370,
+            "seed": 18,
+            "display_name": "Kurenai (Kineria · 56 · Geats)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player1_prereq_identifier": 24,
+          "player2_prereq_identifier": 8,
+          "player1_is_prereq_match_loser": true,
+          "player2_is_prereq_match_loser": true,
+          "player1_placeholder_text": null,
+          "player2_placeholder_text": null,
+          "scores": [
+            3,
+            2
+          ],
+          "winner_id": 273431360,
+          "loser_id": 273431370,
+          "md5": "d3017a40803e2791797d283a4e1c3f62"
+        },
+        {
+          "id": 427806611,
+          "tournament_id": 16798908,
+          "identifier": 31,
+          "raw_identifier": "AQ",
+          "round": -2,
+          "state": "complete",
+          "underway_at": null,
+          "games": [
+            [
+              2,
+              3
+            ]
+          ],
+          "editable_by_user_ids": [],
+          "has_attachment": false,
+          "is_group_match": false,
+          "forfeited": null,
+          "station": null,
+          "queued_for_station": null,
+          "scheduled_time": null,
+          "shareable": false,
+          "has_chat": false,
+          "player1": {
+            "id": 273431368,
+            "seed": 20,
+            "display_name": "Leteessegoat (Xymore · Clemence · Simon)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player2": {
+            "id": 273431359,
+            "seed": 7,
+            "display_name": "Hitadaki Yoshiro (Gelofy · Mini Gelofy · Yaya)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player1_prereq_identifier": 23,
+          "player2_prereq_identifier": 18,
+          "player1_is_prereq_match_loser": true,
+          "player2_is_prereq_match_loser": false,
+          "player1_placeholder_text": null,
+          "player2_placeholder_text": null,
+          "scores": [
+            2,
+            3
+          ],
+          "winner_id": 273431359,
+          "loser_id": 273431368,
+          "md5": "8fad821efd4886b8810138e03c720e93"
+        },
+        {
+          "id": 427806612,
+          "tournament_id": 16798908,
+          "identifier": 30,
+          "raw_identifier": "AR",
+          "round": -2,
+          "state": "complete",
+          "underway_at": "2025-09-20T14:56:28.122+02:00",
+          "games": [
+            [
+              2,
+              3
+            ]
+          ],
+          "editable_by_user_ids": [],
+          "has_attachment": false,
+          "is_group_match": false,
+          "forfeited": null,
+          "station": null,
+          "queued_for_station": null,
+          "scheduled_time": null,
+          "shareable": false,
+          "has_chat": false,
+          "player1": {
+            "id": 273431367,
+            "seed": 24,
+            "display_name": "Blue Phoenix (Stella · Paimy  · Sabo)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player2": {
+            "id": 273431354,
+            "seed": 30,
+            "display_name": "Rising Volt Tacklers (Younsi · Shishi · Hane Hoshi)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player1_prereq_identifier": 22,
+          "player2_prereq_identifier": 19,
+          "player1_is_prereq_match_loser": true,
+          "player2_is_prereq_match_loser": false,
+          "player1_placeholder_text": null,
+          "player2_placeholder_text": null,
+          "scores": [
+            2,
+            3
+          ],
+          "winner_id": 273431354,
+          "loser_id": 273431367,
+          "md5": "1366e272f403110661bbce6171faf269"
+        },
+        {
+          "id": 427806613,
+          "tournament_id": 16798908,
+          "identifier": 29,
+          "raw_identifier": "AS",
+          "round": -2,
+          "state": "complete",
+          "underway_at": "2025-09-20T14:55:29.459+02:00",
+          "games": [
+            [
+              0,
+              3
+            ]
+          ],
+          "editable_by_user_ids": [],
+          "has_attachment": false,
+          "is_group_match": false,
+          "forfeited": null,
+          "station": null,
+          "queued_for_station": null,
+          "scheduled_time": null,
+          "shareable": false,
+          "has_chat": false,
+          "player1": {
+            "id": 273431363,
+            "seed": 17,
+            "display_name": "Inazuma Japon (Inazo · Illu · Blader Mystérieux )",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player2": {
+            "id": 273431381,
+            "seed": 27,
+            "display_name": "Neo Beyknight (D8J6 · Rami · OursDuBeyblade)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player1_prereq_identifier": 21,
+          "player2_prereq_identifier": 20,
+          "player1_is_prereq_match_loser": true,
+          "player2_is_prereq_match_loser": false,
+          "player1_placeholder_text": null,
+          "player2_placeholder_text": null,
+          "scores": [
+            0,
+            3
+          ],
+          "winner_id": 273431381,
+          "loser_id": 273431363,
+          "md5": "cdb0f2040f3d67bd6134e12cd66b701a"
+        }
+      ],
+      "-3": [
+        {
+          "id": 427806614,
+          "tournament_id": 16798908,
+          "identifier": 40,
+          "raw_identifier": "AT",
+          "round": -3,
+          "state": "complete",
+          "underway_at": null,
+          "games": [
+            [
+              1,
+              3
+            ]
+          ],
+          "editable_by_user_ids": [],
+          "has_attachment": false,
+          "is_group_match": false,
+          "forfeited": null,
+          "station": null,
+          "queued_for_station": null,
+          "scheduled_time": null,
+          "shareable": false,
+          "has_chat": false,
+          "player1": {
+            "id": 273431357,
+            "seed": 16,
+            "display_name": "Team Steve 2.0 (Eiko · Hane Hoshi · Spider_Agent42)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player2": {
+            "id": 273431358,
+            "seed": 3,
+            "display_name": "Team Matcha (Yoorushi · Yorel · zeLn)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player1_prereq_identifier": 36,
+          "player2_prereq_identifier": 35,
+          "player1_is_prereq_match_loser": false,
+          "player2_is_prereq_match_loser": false,
+          "player1_placeholder_text": null,
+          "player2_placeholder_text": null,
+          "scores": [
+            1,
+            3
+          ],
+          "winner_id": 273431358,
+          "loser_id": 273431357,
+          "md5": "9736eaeec5986436c44c2ffdb8b514de"
+        },
+        {
+          "id": 427806615,
+          "tournament_id": 16798908,
+          "identifier": 39,
+          "raw_identifier": "AU",
+          "round": -3,
+          "state": "complete",
+          "underway_at": "2025-09-20T15:58:21.286+02:00",
+          "games": [
+            [
+              3,
+              1
+            ]
+          ],
+          "editable_by_user_ids": [],
+          "has_attachment": false,
+          "is_group_match": false,
+          "forfeited": null,
+          "station": null,
+          "queued_for_station": null,
+          "scheduled_time": null,
+          "shareable": false,
+          "has_chat": false,
+          "player1": {
+            "id": 273431373,
+            "seed": 29,
+            "display_name": "Forever (Mag · Bandit · Gundam)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player2": {
+            "id": 273431380,
+            "seed": 28,
+            "display_name": "Tiramisu gang  (Sarah · Masamune · Hyakutake)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player1_prereq_identifier": 34,
+          "player2_prereq_identifier": 33,
+          "player1_is_prereq_match_loser": false,
+          "player2_is_prereq_match_loser": false,
+          "player1_placeholder_text": null,
+          "player2_placeholder_text": null,
+          "scores": [
+            3,
+            1
+          ],
+          "winner_id": 273431373,
+          "loser_id": 273431380,
+          "md5": "06c5eea258580db3127e35520bcc7445"
+        },
+        {
+          "id": 427806616,
+          "tournament_id": 16798908,
+          "identifier": 38,
+          "raw_identifier": "AV",
+          "round": -3,
+          "state": "complete",
+          "underway_at": "2025-09-20T15:55:39.965+02:00",
+          "games": [
+            [
+              2,
+              3
+            ]
+          ],
+          "editable_by_user_ids": [],
+          "has_attachment": false,
+          "is_group_match": false,
+          "forfeited": null,
+          "station": null,
+          "queued_for_station": null,
+          "scheduled_time": null,
+          "shareable": false,
+          "has_chat": false,
+          "player1": {
+            "id": 273431360,
+            "seed": 5,
+            "display_name": "Zit Zitoun (Zeikuo · Tategami · Kaious)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player2": {
+            "id": 273431359,
+            "seed": 7,
+            "display_name": "Hitadaki Yoshiro (Gelofy · Mini Gelofy · Yaya)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player1_prereq_identifier": 32,
+          "player2_prereq_identifier": 31,
+          "player1_is_prereq_match_loser": false,
+          "player2_is_prereq_match_loser": false,
+          "player1_placeholder_text": null,
+          "player2_placeholder_text": null,
+          "scores": [
+            2,
+            3
+          ],
+          "winner_id": 273431359,
+          "loser_id": 273431360,
+          "md5": "773fbaca043d4b63da755bf6c2eb8686"
+        },
+        {
+          "id": 427806617,
+          "tournament_id": 16798908,
+          "identifier": 37,
+          "raw_identifier": "AW",
+          "round": -3,
+          "state": "complete",
+          "underway_at": "2025-09-20T15:55:20.593+02:00",
+          "games": [
+            [
+              3,
+              0
+            ]
+          ],
+          "editable_by_user_ids": [],
+          "has_attachment": false,
+          "is_group_match": false,
+          "forfeited": null,
+          "station": null,
+          "queued_for_station": null,
+          "scheduled_time": null,
+          "shareable": false,
+          "has_chat": false,
+          "player1": {
+            "id": 273431354,
+            "seed": 30,
+            "display_name": "Rising Volt Tacklers (Younsi · Shishi · Hane Hoshi)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player2": {
+            "id": 273431381,
+            "seed": 27,
+            "display_name": "Neo Beyknight (D8J6 · Rami · OursDuBeyblade)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player1_prereq_identifier": 30,
+          "player2_prereq_identifier": 29,
+          "player1_is_prereq_match_loser": false,
+          "player2_is_prereq_match_loser": false,
+          "player1_placeholder_text": null,
+          "player2_placeholder_text": null,
+          "scores": [
+            3,
+            0
+          ],
+          "winner_id": 273431354,
+          "loser_id": 273431381,
+          "md5": "754582e265055a9e084accd6c069148d"
+        }
+      ],
+      "-4": [
+        {
+          "id": 427806618,
+          "tournament_id": 16798908,
+          "identifier": 46,
+          "raw_identifier": "AX",
+          "round": -4,
+          "state": "complete",
+          "underway_at": "2025-09-20T16:15:00.154+02:00",
+          "games": [
+            [
+              1,
+              3
+            ]
+          ],
+          "editable_by_user_ids": [],
+          "has_attachment": false,
+          "is_group_match": false,
+          "forfeited": null,
+          "station": null,
+          "queued_for_station": null,
+          "scheduled_time": null,
+          "shareable": false,
+          "has_chat": false,
+          "player1": {
+            "id": 273431364,
+            "seed": 21,
+            "display_name": "Les Gorilles (Kipik · Eox · Ender)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player2": {
+            "id": 273431358,
+            "seed": 3,
+            "display_name": "Team Matcha (Yoorushi · Yorel · zeLn)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player1_prereq_identifier": 42,
+          "player2_prereq_identifier": 40,
+          "player1_is_prereq_match_loser": true,
+          "player2_is_prereq_match_loser": false,
+          "player1_placeholder_text": null,
+          "player2_placeholder_text": null,
+          "scores": [
+            1,
+            3
+          ],
+          "winner_id": 273431358,
+          "loser_id": 273431364,
+          "md5": "761bff991a2a4958de9ce9e0a8cf92f8"
+        },
+        {
+          "id": 427806619,
+          "tournament_id": 16798908,
+          "identifier": 45,
+          "raw_identifier": "AY",
+          "round": -4,
+          "state": "complete",
+          "underway_at": "2025-09-20T16:11:13.508+02:00",
+          "games": [
+            [
+              1,
+              3
+            ]
+          ],
+          "editable_by_user_ids": [],
+          "has_attachment": false,
+          "is_group_match": false,
+          "forfeited": null,
+          "station": null,
+          "queued_for_station": null,
+          "scheduled_time": null,
+          "shareable": false,
+          "has_chat": false,
+          "player1": {
+            "id": 273431375,
+            "seed": 1,
+            "display_name": "Chrono Storme (Phénixio · kyronnah · Dimitard)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player2": {
+            "id": 273431373,
+            "seed": 29,
+            "display_name": "Forever (Mag · Bandit · Gundam)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player1_prereq_identifier": 41,
+          "player2_prereq_identifier": 39,
+          "player1_is_prereq_match_loser": true,
+          "player2_is_prereq_match_loser": false,
+          "player1_placeholder_text": null,
+          "player2_placeholder_text": null,
+          "scores": [
+            1,
+            3
+          ],
+          "winner_id": 273431373,
+          "loser_id": 273431375,
+          "md5": "cd102f6d2889aafd5c59fc541e77573c"
+        },
+        {
+          "id": 427806620,
+          "tournament_id": 16798908,
+          "identifier": 48,
+          "raw_identifier": "AZ",
+          "round": -4,
+          "state": "complete",
+          "underway_at": "2025-09-20T16:21:09.103+02:00",
+          "games": [
+            [
+              1,
+              3
+            ]
+          ],
+          "editable_by_user_ids": [],
+          "has_attachment": false,
+          "is_group_match": false,
+          "forfeited": null,
+          "station": null,
+          "queued_for_station": null,
+          "scheduled_time": null,
+          "shareable": false,
+          "has_chat": false,
+          "player1": {
+            "id": 273431371,
+            "seed": 14,
+            "display_name": "Les Gardiens Sentinelles (Rock Lee · darkhoumous · Alice)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player2": {
+            "id": 273431359,
+            "seed": 7,
+            "display_name": "Hitadaki Yoshiro (Gelofy · Mini Gelofy · Yaya)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player1_prereq_identifier": 44,
+          "player2_prereq_identifier": 38,
+          "player1_is_prereq_match_loser": true,
+          "player2_is_prereq_match_loser": false,
+          "player1_placeholder_text": null,
+          "player2_placeholder_text": null,
+          "scores": [
+            1,
+            3
+          ],
+          "winner_id": 273431359,
+          "loser_id": 273431371,
+          "md5": "fb1537a13a80c9aa5970c096564e6a7a"
+        },
+        {
+          "id": 427806621,
+          "tournament_id": 16798908,
+          "identifier": 47,
+          "raw_identifier": "BA",
+          "round": -4,
+          "state": "complete",
+          "underway_at": null,
+          "games": [
+            [
+              1,
+              3
+            ]
+          ],
+          "editable_by_user_ids": [],
+          "has_attachment": false,
+          "is_group_match": false,
+          "forfeited": null,
+          "station": null,
+          "queued_for_station": null,
+          "scheduled_time": null,
+          "shareable": false,
+          "has_chat": false,
+          "player1": {
+            "id": 273431383,
+            "seed": 2,
+            "display_name": "Drill Soul (Berserk · PridefulLord · Aspen)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player2": {
+            "id": 273431354,
+            "seed": 30,
+            "display_name": "Rising Volt Tacklers (Younsi · Shishi · Hane Hoshi)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player1_prereq_identifier": 43,
+          "player2_prereq_identifier": 37,
+          "player1_is_prereq_match_loser": true,
+          "player2_is_prereq_match_loser": false,
+          "player1_placeholder_text": null,
+          "player2_placeholder_text": null,
+          "scores": [
+            1,
+            3
+          ],
+          "winner_id": 273431354,
+          "loser_id": 273431383,
+          "md5": "f868472784770d93c5ada02304cb6ca4"
+        }
+      ],
+      "-5": [
+        {
+          "id": 427806622,
+          "tournament_id": 16798908,
+          "identifier": 49,
+          "raw_identifier": "BB",
+          "round": -5,
+          "state": "complete",
+          "underway_at": "2025-09-20T16:25:19.315+02:00",
+          "games": [
+            [
+              2,
+              3
+            ]
+          ],
+          "editable_by_user_ids": [],
+          "has_attachment": false,
+          "is_group_match": false,
+          "forfeited": null,
+          "station": null,
+          "queued_for_station": null,
+          "scheduled_time": null,
+          "shareable": false,
+          "has_chat": false,
+          "player1": {
+            "id": 273431358,
+            "seed": 3,
+            "display_name": "Team Matcha (Yoorushi · Yorel · zeLn)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player2": {
+            "id": 273431373,
+            "seed": 29,
+            "display_name": "Forever (Mag · Bandit · Gundam)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player1_prereq_identifier": 46,
+          "player2_prereq_identifier": 45,
+          "player1_is_prereq_match_loser": false,
+          "player2_is_prereq_match_loser": false,
+          "player1_placeholder_text": null,
+          "player2_placeholder_text": null,
+          "scores": [
+            2,
+            3
+          ],
+          "winner_id": 273431373,
+          "loser_id": 273431358,
+          "md5": "4445fd5f640143b0ff4b8b4ba2745777"
+        },
+        {
+          "id": 427806623,
+          "tournament_id": 16798908,
+          "identifier": 50,
+          "raw_identifier": "BC",
+          "round": -5,
+          "state": "complete",
+          "underway_at": "2025-09-20T16:34:42.237+02:00",
+          "games": [
+            [
+              2,
+              3
+            ]
+          ],
+          "editable_by_user_ids": [],
+          "has_attachment": false,
+          "is_group_match": false,
+          "forfeited": null,
+          "station": null,
+          "queued_for_station": null,
+          "scheduled_time": null,
+          "shareable": false,
+          "has_chat": false,
+          "player1": {
+            "id": 273431359,
+            "seed": 7,
+            "display_name": "Hitadaki Yoshiro (Gelofy · Mini Gelofy · Yaya)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player2": {
+            "id": 273431354,
+            "seed": 30,
+            "display_name": "Rising Volt Tacklers (Younsi · Shishi · Hane Hoshi)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player1_prereq_identifier": 48,
+          "player2_prereq_identifier": 47,
+          "player1_is_prereq_match_loser": false,
+          "player2_is_prereq_match_loser": false,
+          "player1_placeholder_text": null,
+          "player2_placeholder_text": null,
+          "scores": [
+            2,
+            3
+          ],
+          "winner_id": 273431354,
+          "loser_id": 273431359,
+          "md5": "7c8dc8f2951552746093a211c04957d0"
+        }
+      ],
+      "-6": [
+        {
+          "id": 427806624,
+          "tournament_id": 16798908,
+          "identifier": 54,
+          "raw_identifier": "BD",
+          "round": -6,
+          "state": "complete",
+          "underway_at": "2025-09-20T16:40:30.843+02:00",
+          "games": [
+            [
+              0,
+              3
+            ]
+          ],
+          "editable_by_user_ids": [],
+          "has_attachment": false,
+          "is_group_match": false,
+          "forfeited": null,
+          "station": null,
+          "queued_for_station": null,
+          "scheduled_time": null,
+          "shareable": false,
+          "has_chat": false,
+          "player1": {
+            "id": 273431382,
+            "seed": 22,
+            "display_name": "La Brigade Fantôme (Xeno · Kayman · Masterz)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player2": {
+            "id": 273431373,
+            "seed": 29,
+            "display_name": "Forever (Mag · Bandit · Gundam)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player1_prereq_identifier": 52,
+          "player2_prereq_identifier": 49,
+          "player1_is_prereq_match_loser": true,
+          "player2_is_prereq_match_loser": false,
+          "player1_placeholder_text": null,
+          "player2_placeholder_text": null,
+          "scores": [
+            0,
+            3
+          ],
+          "winner_id": 273431373,
+          "loser_id": 273431382,
+          "md5": "4dd394ad91b3bfc80e3d3feb9e8674ff"
+        },
+        {
+          "id": 427806625,
+          "tournament_id": 16798908,
+          "identifier": 53,
+          "raw_identifier": "BE",
+          "round": -6,
+          "state": "complete",
+          "underway_at": null,
+          "games": [
+            [
+              1,
+              3
+            ]
+          ],
+          "editable_by_user_ids": [],
+          "has_attachment": false,
+          "is_group_match": false,
+          "forfeited": false,
+          "station": null,
+          "queued_for_station": null,
+          "scheduled_time": null,
+          "shareable": false,
+          "has_chat": false,
+          "player1": {
+            "id": 273431366,
+            "seed": 4,
+            "display_name": "Les Wilds Phoenix  (Fulguris95 · Wolfi · Rayou_95)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player2": {
+            "id": 273431354,
+            "seed": 30,
+            "display_name": "Rising Volt Tacklers (Younsi · Shishi · Hane Hoshi)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player1_prereq_identifier": 51,
+          "player2_prereq_identifier": 50,
+          "player1_is_prereq_match_loser": true,
+          "player2_is_prereq_match_loser": false,
+          "player1_placeholder_text": null,
+          "player2_placeholder_text": null,
+          "scores": [
+            1,
+            3
+          ],
+          "winner_id": 273431354,
+          "loser_id": 273431366,
+          "md5": "17c02e16af066998d632a7d1d36e3190"
+        }
+      ],
+      "-7": [
+        {
+          "id": 427806626,
+          "tournament_id": 16798908,
+          "identifier": 55,
+          "raw_identifier": "BF",
+          "round": -7,
+          "state": "complete",
+          "underway_at": "2025-09-20T16:48:08.188+02:00",
+          "games": [
+            [
+              3,
+              1
+            ]
+          ],
+          "editable_by_user_ids": [],
+          "has_attachment": false,
+          "is_group_match": false,
+          "forfeited": null,
+          "station": null,
+          "queued_for_station": null,
+          "scheduled_time": null,
+          "shareable": false,
+          "has_chat": false,
+          "player1": {
+            "id": 273431373,
+            "seed": 29,
+            "display_name": "Forever (Mag · Bandit · Gundam)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player2": {
+            "id": 273431354,
+            "seed": 30,
+            "display_name": "Rising Volt Tacklers (Younsi · Shishi · Hane Hoshi)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player1_prereq_identifier": 54,
+          "player2_prereq_identifier": 53,
+          "player1_is_prereq_match_loser": false,
+          "player2_is_prereq_match_loser": false,
+          "player1_placeholder_text": null,
+          "player2_placeholder_text": null,
+          "scores": [
+            3,
+            1
+          ],
+          "winner_id": 273431373,
+          "loser_id": 273431354,
+          "md5": "f90ce003fa0cb1b059160e5f74f30b45"
+        }
+      ],
+      "-8": [
+        {
+          "id": 427806627,
+          "tournament_id": 16798908,
+          "identifier": 57,
+          "raw_identifier": "BG",
+          "round": -8,
+          "state": "complete",
+          "underway_at": "2025-09-20T16:56:28.979+02:00",
+          "games": [
+            [
+              3,
+              2
+            ]
+          ],
+          "editable_by_user_ids": [],
+          "has_attachment": false,
+          "is_group_match": false,
+          "forfeited": null,
+          "station": null,
+          "queued_for_station": null,
+          "scheduled_time": null,
+          "shareable": false,
+          "has_chat": false,
+          "player1": {
+            "id": 273431378,
+            "seed": 26,
+            "display_name": "Team Vortex  (Flanders · Skarn · Ares)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player2": {
+            "id": 273431373,
+            "seed": 29,
+            "display_name": "Forever (Mag · Bandit · Gundam)",
+            "portrait_url": null,
+            "participant_id": null,
+            "quick_added": false,
+            "team_members": null,
+            "active": true,
+            "misc": null,
+            "integration_uids": null
+          },
+          "player1_prereq_identifier": 56,
+          "player2_prereq_identifier": 55,
+          "player1_is_prereq_match_loser": true,
+          "player2_is_prereq_match_loser": false,
+          "player1_placeholder_text": null,
+          "player2_placeholder_text": null,
+          "scores": [
+            3,
+            2
+          ],
+          "winner_id": 273431378,
+          "loser_id": 273431373,
+          "md5": "1c66ae2f463be334233c069bf2f37660"
+        }
+      ]
+    },
+    "groups": []
+  }
+}

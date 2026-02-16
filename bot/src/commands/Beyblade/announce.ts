@@ -1,286 +1,73 @@
-import { Command } from '@sapphire/framework';
 import {
+  ApplicationCommandOptionType,
+  type Attachment,
   ChannelType,
+  type CommandInteraction,
   EmbedBuilder,
   type NewsChannel,
   PermissionFlagsBits,
+  type Role,
   type TextChannel,
 } from 'discord.js';
+import {
+  Discord,
+  Guard,
+  Slash,
+  SlashChoice,
+  SlashGroup,
+  SlashOption,
+} from 'discordx';
+
+import { ModeratorOnly } from '../../guards/ModeratorOnly.js';
 import { getChallongeClient } from '../../lib/challonge.js';
 import { Colors, RPB } from '../../lib/constants.js';
+import { logger } from '../../lib/logger.js';
 import { twitchBot } from '../../lib/twitch-bot.js';
 
-export class AnnounceCommand extends Command {
-  constructor(context: Command.LoaderContext, options: Command.Options) {
-    super(context, {
-      ...options,
-      description: "Système d'annonces pour les tournois",
-      preconditions: ['ModeratorOnly'],
-    });
-  }
-
-  override registerApplicationCommands(registry: Command.Registry) {
-    registry.registerChatInputCommand((builder) =>
-      builder
-        .setName('annonce')
-        .setDescription("Système d'annonces pour les tournois")
-        .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages)
-        .addSubcommand((sub) =>
-          sub
-            .setName('tournoi')
-            .setDescription('Annonce un tournoi Challonge')
-            .addStringOption((opt) =>
-              opt
-                .setName('id')
-                .setDescription('ID ou URL du tournoi Challonge (ex: B_TS1)')
-                .setRequired(true),
-            )
-            .addChannelOption((opt) =>
-              opt
-                .setName('salon')
-                .setDescription("Salon où envoyer l'annonce")
-                .addChannelTypes(
-                  ChannelType.GuildText,
-                  ChannelType.GuildAnnouncement,
-                ),
-            )
-            .addRoleOption((opt) =>
-              opt.setName('mention').setDescription('Rôle à mentionner'),
-            )
-            .addAttachmentOption((opt) =>
-              opt
-                .setName('image')
-                .setDescription("Image à ajouter à l'annonce"),
-            ),
-        )
-        .addSubcommand((sub) =>
-          sub
-            .setName('rappel')
-            .setDescription('Envoie un rappel pour un tournoi')
-            .addStringOption((opt) =>
-              opt
-                .setName('id')
-                .setDescription('ID ou URL du tournoi Challonge')
-                .setRequired(true),
-            )
-            .addStringOption((opt) =>
-              opt
-                .setName('message')
-                .setDescription('Message personnalisé pour le rappel'),
-            )
-            .addChannelOption((opt) =>
-              opt
-                .setName('salon')
-                .setDescription('Salon où envoyer le rappel')
-                .addChannelTypes(
-                  ChannelType.GuildText,
-                  ChannelType.GuildAnnouncement,
-                ),
-            )
-            .addAttachmentOption((opt) =>
-              opt.setName('image').setDescription('Image à ajouter au rappel'),
-            ),
-        )
-        .addSubcommand((sub) =>
-          sub
-            .setName('résultats')
-            .setDescription("Annonce les résultats d'un tournoi terminé")
-            .addStringOption((opt) =>
-              opt
-                .setName('id')
-                .setDescription('ID ou URL du tournoi Challonge')
-                .setRequired(true),
-            )
-            .addChannelOption((opt) =>
-              opt
-                .setName('salon')
-                .setDescription('Salon où envoyer les résultats')
-                .addChannelTypes(
-                  ChannelType.GuildText,
-                  ChannelType.GuildAnnouncement,
-                ),
-            )
-            .addAttachmentOption((opt) =>
-              opt
-                .setName('image')
-                .setDescription('Image à ajouter aux résultats'),
-            ),
-        )
-        .addSubcommand((sub) =>
-          sub
-            .setName('custom')
-            .setDescription('Envoie une annonce personnalisée')
-            .addStringOption((opt) =>
-              opt
-                .setName('titre')
-                .setDescription("Titre de l'annonce")
-                .setRequired(true),
-            )
-            .addStringOption((opt) =>
-              opt
-                .setName('message')
-                .setDescription("Contenu de l'annonce")
-                .setRequired(true),
-            )
-            .addChannelOption((opt) =>
-              opt
-                .setName('salon')
-                .setDescription("Salon où envoyer l'annonce")
-                .addChannelTypes(
-                  ChannelType.GuildText,
-                  ChannelType.GuildAnnouncement,
-                ),
-            )
-            .addRoleOption((opt) =>
-              opt.setName('mention').setDescription('Rôle à mentionner'),
-            )
-            .addStringOption((opt) =>
-              opt
-                .setName('couleur')
-                .setDescription("Couleur de l'embed (hex)")
-                .addChoices(
-                  { name: '🔴 Rouge RPB', value: 'dc2626' },
-                  { name: '🟡 Or RPB', value: 'fbbf24' },
-                  { name: '🟢 Succès', value: '22c55e' },
-                  { name: '🔵 Info', value: '3b82f6' },
-                  { name: '🟣 Beyblade', value: '8b5cf6' },
-                ),
-            )
-            .addAttachmentOption((opt) =>
-              opt
-                .setName('image')
-                .setDescription("Image à ajouter à l'annonce"),
-            ),
-        )
-        .addSubcommand((sub) =>
-          sub
-            .setName('générer')
-            .setDescription('Génère une annonce officielle style RPB')
-            .addStringOption((opt) =>
-              opt
-                .setName('nom')
-                .setDescription('Nom du tournoi (ex: Bey-Tamashii Series #2)')
-                .setRequired(true),
-            )
-            .addStringOption((opt) =>
-              opt
-                .setName('date')
-                .setDescription(
-                  'Date du tournoi (ex: Dimanche 15 février 2026)',
-                )
-                .setRequired(true),
-            )
-            .addStringOption((opt) =>
-              opt
-                .setName('heure')
-                .setDescription('Heure de début (ex: 14h00)')
-                .setRequired(true),
-            )
-            .addStringOption((opt) =>
-              opt
-                .setName('lieu')
-                .setDescription('Lieu du tournoi')
-                .setRequired(true),
-            )
-            .addStringOption((opt) =>
-              opt
-                .setName('challonge')
-                .setDescription('Lien ou ID Challonge')
-                .setRequired(true),
-            )
-            .addStringOption((opt) =>
-              opt
-                .setName('format')
-                .setDescription('Format du tournoi')
-                .addChoices(
-                  {
-                    name: '3on3 Double Élimination',
-                    value: '3on3 classique en Double Élimination',
-                  },
-                  {
-                    name: '3on3 Simple Élimination',
-                    value: '3on3 en Simple Élimination',
-                  },
-                  {
-                    name: '1on1 Double Élimination',
-                    value: '1on1 en Double Élimination',
-                  },
-                  { name: 'Round Robin', value: 'Round Robin' },
-                ),
-            )
-            .addIntegerOption((opt) =>
-              opt
-                .setName('places')
-                .setDescription('Nombre de places max (ex: 64)')
-                .setMinValue(8)
-                .setMaxValue(256),
-            )
-            .addStringOption((opt) =>
-              opt
-                .setName('checkin')
-                .setDescription("Heure d'ouverture check-in (ex: 13h00)"),
-            )
-            .addStringOption((opt) =>
-              opt
-                .setName('intro')
-                .setDescription("Texte d'introduction personnalisé"),
-            )
-            .addChannelOption((opt) =>
-              opt
-                .setName('salon')
-                .setDescription('Salon où envoyer')
-                .addChannelTypes(
-                  ChannelType.GuildText,
-                  ChannelType.GuildAnnouncement,
-                ),
-            )
-            .addBooleanOption((opt) =>
-              opt
-                .setName('preview')
-                .setDescription('Aperçu sans envoyer (défaut: true)'),
-            )
-            .addAttachmentOption((opt) =>
-              opt
-                .setName('image')
-                .setDescription("Image à ajouter à l'annonce"),
-            ),
-        ),
-    );
-  }
-
-  override async chatInputRun(
-    interaction: Command.ChatInputCommandInteraction,
+@Discord()
+@SlashGroup({
+  name: 'annonce',
+  description: "Système d'annonces pour les tournois",
+  defaultMemberPermissions: PermissionFlagsBits.ManageMessages,
+})
+@SlashGroup('annonce')
+@Guard(ModeratorOnly)
+export class AnnounceCommand {
+  @Slash({ name: 'tournoi', description: 'Annonce un tournoi Challonge' })
+  async tournament(
+    @SlashOption({
+      name: 'id',
+      description: 'ID ou URL du tournoi Challonge (ex: B_TS1)',
+      required: true,
+      type: ApplicationCommandOptionType.String,
+    })
+    tournamentId: string,
+    @SlashOption({
+      name: 'salon',
+      description: "Salon où envoyer l'annonce",
+      required: false,
+      type: ApplicationCommandOptionType.Channel,
+      channelTypes: [ChannelType.GuildText, ChannelType.GuildAnnouncement],
+    })
+    channelOption: TextChannel | NewsChannel | undefined,
+    @SlashOption({
+      name: 'mention',
+      description: 'Rôle à mentionner',
+      required: false,
+      type: ApplicationCommandOptionType.Role,
+    })
+    mentionRole: Role | undefined,
+    @SlashOption({
+      name: 'image',
+      description: "Image à ajouter à l'annonce",
+      required: false,
+      type: ApplicationCommandOptionType.Attachment,
+    })
+    image: Attachment | undefined,
+    interaction: CommandInteraction,
   ) {
-    const subcommand = interaction.options.getSubcommand();
-
-    switch (subcommand) {
-      case 'tournoi':
-        return this.announceTournament(interaction);
-      case 'rappel':
-        return this.sendReminder(interaction);
-      case 'résultats':
-        return this.announceResults(interaction);
-      case 'custom':
-        return this.sendCustom(interaction);
-      case 'générer':
-        return this.generateAnnouncement(interaction);
-      default:
-        return interaction.reply({
-          content: '❌ Sous-commande inconnue.',
-          ephemeral: true,
-        });
-    }
-  }
-
-  private async announceTournament(
-    interaction: Command.ChatInputCommandInteraction,
-  ) {
-    const tournamentId = interaction.options.getString('id', true);
-    const channel = (interaction.options.getChannel('salon') ??
-      interaction.channel) as TextChannel | NewsChannel;
-    const mentionRole = interaction.options.getRole('mention');
-    const image = interaction.options.getAttachment('image');
-
+    const channel =
+      channelOption ?? (interaction.channel as TextChannel | NewsChannel);
     await interaction.deferReply({ ephemeral: true });
 
     try {
@@ -346,48 +133,71 @@ export class AnnounceCommand extends Command {
 
       const sentMessage = await channel.send({ content, embeds: [embed] });
 
-      // Add reactions for interaction
       await Promise.allSettled([
         sentMessage.react('✅'),
         sentMessage.react('❌'),
         sentMessage.react('❓'),
       ]);
 
-      // Announce on Twitch
       if (twitchBot.chatClient?.isConnected) {
         const twitchMessage = `🏆 Annonce : Le tournoi ${t.attributes.name} est annoncé ! Inscrivez-vous : https://challonge.com/${t.attributes.url} #BeybladeX`;
         await twitchBot.announce(twitchMessage);
       }
 
-      // If it's an announcement channel, try to publish
-      if ('type' in channel && channel.type === ChannelType.GuildAnnouncement) {
+      if (channel.type === ChannelType.GuildAnnouncement) {
         try {
-          const messages = await channel.messages.fetch({ limit: 1 });
-          const lastMessage = messages.first();
-          if (lastMessage?.crosspostable) {
-            await lastMessage.crosspost();
+          if (sentMessage.crosspostable) {
+            await sentMessage.crosspost();
           }
         } catch {
-          // Ignore crosspost errors
+          // Ignore
         }
       }
 
       return interaction.editReply(`✅ Annonce envoyée dans ${channel} !`);
     } catch (error) {
-      this.container.logger.error('Announce tournament error:', error);
+      logger.error('Announce tournament error:', error);
       return interaction.editReply(
         '❌ Erreur lors de la récupération du tournoi.',
       );
     }
   }
 
-  private async sendReminder(interaction: Command.ChatInputCommandInteraction) {
-    const tournamentId = interaction.options.getString('id', true);
-    const customMessage = interaction.options.getString('message');
-    const channel = (interaction.options.getChannel('salon') ??
-      interaction.channel) as TextChannel | NewsChannel;
-    const image = interaction.options.getAttachment('image');
-
+  @Slash({ name: 'rappel', description: 'Envoie un rappel pour un tournoi' })
+  async reminder(
+    @SlashOption({
+      name: 'id',
+      description: 'ID ou URL du tournoi Challonge',
+      required: true,
+      type: ApplicationCommandOptionType.String,
+    })
+    tournamentId: string,
+    @SlashOption({
+      name: 'message',
+      description: 'Message personnalisé pour le rappel',
+      required: false,
+      type: ApplicationCommandOptionType.String,
+    })
+    customMessage: string | undefined,
+    @SlashOption({
+      name: 'salon',
+      description: 'Salon où envoyer le rappel',
+      required: false,
+      type: ApplicationCommandOptionType.Channel,
+      channelTypes: [ChannelType.GuildText, ChannelType.GuildAnnouncement],
+    })
+    channelOption: TextChannel | NewsChannel | undefined,
+    @SlashOption({
+      name: 'image',
+      description: 'Image à ajouter au rappel',
+      required: false,
+      type: ApplicationCommandOptionType.Attachment,
+    })
+    image: Attachment | undefined,
+    interaction: CommandInteraction,
+  ) {
+    const channel =
+      channelOption ?? (interaction.channel as TextChannel | NewsChannel);
     await interaction.deferReply({ ephemeral: true });
 
     try {
@@ -440,7 +250,6 @@ export class AnnounceCommand extends Command {
 
       const sentMessage = await channel.send({ embeds: [embed] });
 
-      // Add reactions for interaction
       await Promise.allSettled([
         sentMessage.react('✅'),
         sentMessage.react('❌'),
@@ -449,19 +258,42 @@ export class AnnounceCommand extends Command {
 
       return interaction.editReply(`✅ Rappel envoyé dans ${channel} !`);
     } catch (error) {
-      this.container.logger.error('Send reminder error:', error);
+      logger.error('Send reminder error:', error);
       return interaction.editReply("❌ Erreur lors de l'envoi du rappel.");
     }
   }
 
-  private async announceResults(
-    interaction: Command.ChatInputCommandInteraction,
+  @Slash({
+    name: 'résultats',
+    description: "Annonce les résultats d'un tournoi terminé",
+  })
+  async results(
+    @SlashOption({
+      name: 'id',
+      description: 'ID ou URL du tournoi Challonge',
+      required: true,
+      type: ApplicationCommandOptionType.String,
+    })
+    tournamentId: string,
+    @SlashOption({
+      name: 'salon',
+      description: 'Salon où envoyer les résultats',
+      required: false,
+      type: ApplicationCommandOptionType.Channel,
+      channelTypes: [ChannelType.GuildText, ChannelType.GuildAnnouncement],
+    })
+    channelOption: TextChannel | NewsChannel | undefined,
+    @SlashOption({
+      name: 'image',
+      description: 'Image à ajouter aux résultats',
+      required: false,
+      type: ApplicationCommandOptionType.Attachment,
+    })
+    image: Attachment | undefined,
+    interaction: CommandInteraction,
   ) {
-    const tournamentId = interaction.options.getString('id', true);
-    const channel = (interaction.options.getChannel('salon') ??
-      interaction.channel) as TextChannel | NewsChannel;
-    const image = interaction.options.getAttachment('image');
-
+    const channel =
+      channelOption ?? (interaction.channel as TextChannel | NewsChannel);
     await interaction.deferReply({ ephemeral: true });
 
     try {
@@ -474,7 +306,6 @@ export class AnnounceCommand extends Command {
       const t = tournamentRes.data;
       const participants = participantsRes.data ?? [];
 
-      // Sort by final rank (seed after tournament)
       const ranked = participants
         .filter((p) => p.attributes.active)
         .sort((a, b) => a.attributes.seed - b.attributes.seed);
@@ -529,22 +360,67 @@ export class AnnounceCommand extends Command {
 
       return interaction.editReply(`✅ Résultats envoyés dans ${channel} !`);
     } catch (error) {
-      this.container.logger.error('Announce results error:', error);
+      logger.error('Announce results error:', error);
       return interaction.editReply(
         "❌ Erreur lors de l'annonce des résultats.",
       );
     }
   }
 
-  private async sendCustom(interaction: Command.ChatInputCommandInteraction) {
-    const title = interaction.options.getString('titre', true);
-    const message = interaction.options.getString('message', true);
-    const channel = (interaction.options.getChannel('salon') ??
-      interaction.channel) as TextChannel | NewsChannel;
-    const mentionRole = interaction.options.getRole('mention');
-    const colorHex = interaction.options.getString('couleur') ?? 'dc2626';
-    const image = interaction.options.getAttachment('image');
-
+  @Slash({ name: 'custom', description: 'Envoie une annonce personnalisée' })
+  async custom(
+    @SlashOption({
+      name: 'titre',
+      description: "Titre de l'annonce",
+      required: true,
+      type: ApplicationCommandOptionType.String,
+    })
+    title: string,
+    @SlashOption({
+      name: 'message',
+      description: "Contenu de l'annonce",
+      required: true,
+      type: ApplicationCommandOptionType.String,
+    })
+    message: string,
+    @SlashOption({
+      name: 'salon',
+      description: "Salon où envoyer l'annonce",
+      required: false,
+      type: ApplicationCommandOptionType.Channel,
+      channelTypes: [ChannelType.GuildText, ChannelType.GuildAnnouncement],
+    })
+    channelOption: TextChannel | NewsChannel | undefined,
+    @SlashOption({
+      name: 'mention',
+      description: 'Rôle à mentionner',
+      required: false,
+      type: ApplicationCommandOptionType.Role,
+    })
+    mentionRole: Role | undefined,
+    @SlashChoice({ name: '🔴 Rouge RPB', value: 'dc2626' })
+    @SlashChoice({ name: '🟡 Or RPB', value: 'fbbf24' })
+    @SlashChoice({ name: '🟢 Succès', value: '22c55e' })
+    @SlashChoice({ name: '🔵 Info', value: '3b82f6' })
+    @SlashChoice({ name: '🟣 Beyblade', value: '8b5cf6' })
+    @SlashOption({
+      name: 'couleur',
+      description: "Couleur de l'embed (hex)",
+      required: false,
+      type: ApplicationCommandOptionType.String,
+    })
+    colorHex: string = 'dc2626',
+    @SlashOption({
+      name: 'image',
+      description: "Image à ajouter à l'annonce",
+      required: false,
+      type: ApplicationCommandOptionType.Attachment,
+    })
+    image: Attachment | undefined,
+    interaction: CommandInteraction,
+  ) {
+    const channel =
+      channelOption ?? (interaction.channel as TextChannel | NewsChannel);
     await interaction.deferReply({ ephemeral: true });
 
     const embed = new EmbedBuilder()
@@ -562,20 +438,16 @@ export class AnnounceCommand extends Command {
 
     const sentMessage = await channel.send({ content, embeds: [embed] });
 
-    // Add reactions for interaction
     await Promise.allSettled([
       sentMessage.react('✅'),
       sentMessage.react('❌'),
       sentMessage.react('❓'),
     ]);
 
-    // Try to publish if announcement channel
-    if ('type' in channel && channel.type === ChannelType.GuildAnnouncement) {
+    if (channel.type === ChannelType.GuildAnnouncement) {
       try {
-        const messages = await channel.messages.fetch({ limit: 1 });
-        const lastMessage = messages.first();
-        if (lastMessage?.crosspostable) {
-          await lastMessage.crosspost();
+        if (sentMessage.crosspostable) {
+          await sentMessage.crosspost();
         }
       } catch {
         // Ignore
@@ -585,31 +457,120 @@ export class AnnounceCommand extends Command {
     return interaction.editReply(`✅ Annonce envoyée dans ${channel} !`);
   }
 
-  private async generateAnnouncement(
-    interaction: Command.ChatInputCommandInteraction,
+  @Slash({
+    name: 'générer',
+    description: 'Génère une annonce officielle style RPB',
+  })
+  async generate(
+    @SlashOption({
+      name: 'nom',
+      description: 'Nom du tournoi (ex: Bey-Tamashii Series #2)',
+      required: true,
+      type: ApplicationCommandOptionType.String,
+    })
+    nom: string,
+    @SlashOption({
+      name: 'date',
+      description: 'Date du tournoi (ex: Dimanche 15 février 2026)',
+      required: true,
+      type: ApplicationCommandOptionType.String,
+    })
+    date: string,
+    @SlashOption({
+      name: 'heure',
+      description: 'Heure de début (ex: 14h00)',
+      required: true,
+      type: ApplicationCommandOptionType.String,
+    })
+    heure: string,
+    @SlashOption({
+      name: 'lieu',
+      description: 'Lieu du tournoi',
+      required: true,
+      type: ApplicationCommandOptionType.String,
+    })
+    lieu: string,
+    @SlashOption({
+      name: 'challonge',
+      description: 'Lien ou ID Challonge',
+      required: true,
+      type: ApplicationCommandOptionType.String,
+    })
+    challonge: string,
+    @SlashChoice({
+      name: '3on3 Double Élimination',
+      value: '3on3 classique en Double Élimination',
+    })
+    @SlashChoice({
+      name: '3on3 Simple Élimination',
+      value: '3on3 en Simple Élimination',
+    })
+    @SlashChoice({
+      name: '1on1 Double Élimination',
+      value: '1on1 en Double Élimination',
+    })
+    @SlashChoice({ name: 'Round Robin', value: 'Round Robin' })
+    @SlashOption({
+      name: 'format',
+      description: 'Format du tournoi',
+      required: false,
+      type: ApplicationCommandOptionType.String,
+    })
+    format: string = '3on3 classique en Double Élimination',
+    @SlashOption({
+      name: 'places',
+      description: 'Nombre de places max (ex: 64)',
+      required: false,
+      type: ApplicationCommandOptionType.Integer,
+      minValue: 8,
+      maxValue: 256,
+    })
+    places: number = 64,
+    @SlashOption({
+      name: 'checkin',
+      description: "Heure d'ouverture check-in (ex: 13h00)",
+      required: false,
+      type: ApplicationCommandOptionType.String,
+    })
+    checkin: string | undefined,
+    @SlashOption({
+      name: 'intro',
+      description: "Texte d'introduction personnalisé",
+      required: false,
+      type: ApplicationCommandOptionType.String,
+    })
+    customIntro: string | undefined,
+    @SlashOption({
+      name: 'salon',
+      description: 'Salon où envoyer',
+      required: false,
+      type: ApplicationCommandOptionType.Channel,
+      channelTypes: [ChannelType.GuildText, ChannelType.GuildAnnouncement],
+    })
+    channelOption: TextChannel | NewsChannel | undefined,
+    @SlashOption({
+      name: 'preview',
+      description: 'Aperçu sans envoyer (défaut: true)',
+      required: false,
+      type: ApplicationCommandOptionType.Boolean,
+    })
+    preview: boolean = true,
+    @SlashOption({
+      name: 'image',
+      description: "Image à ajouter à l'annonce",
+      required: false,
+      type: ApplicationCommandOptionType.Attachment,
+    })
+    image: Attachment | undefined,
+    interaction: CommandInteraction,
   ) {
-    const nom = interaction.options.getString('nom', true);
-    const date = interaction.options.getString('date', true);
-    const heure = interaction.options.getString('heure', true);
-    const lieu = interaction.options.getString('lieu', true);
-    const challonge = interaction.options.getString('challonge', true);
-    const format =
-      interaction.options.getString('format') ??
-      '3on3 classique en Double Élimination';
-    const places = interaction.options.getInteger('places') ?? 64;
-    const checkin = interaction.options.getString('checkin');
-    const customIntro = interaction.options.getString('intro');
-    const channel = (interaction.options.getChannel('salon') ??
-      interaction.channel) as TextChannel | NewsChannel;
-    const preview = interaction.options.getBoolean('preview') ?? true;
-    const image = interaction.options.getAttachment('image');
+    const channel =
+      channelOption ?? (interaction.channel as TextChannel | NewsChannel);
 
-    // Générer le lien Challonge complet
     const challongeUrl = challonge.startsWith('http')
       ? challonge
       : `https://challonge.com/${challonge}`;
 
-    // Intro narrative style RPB
     const defaultIntro =
       `La **${RPB.FullName}** continue d'écrire son histoire ! ` +
       `Après des mois d'attente et de préparation, nous sommes fiers de vous annoncer ` +
@@ -617,7 +578,6 @@ export class AnnounceCommand extends Command {
 
     const intro = customIntro ?? defaultIntro;
 
-    // Construction du message style RPB
     const announcement = [
       `<@&${RPB.Roles.TournoiNotification}>`,
       ``,
@@ -650,7 +610,6 @@ export class AnnounceCommand extends Command {
       `*La suite ? Vous n'êtes pas prêts... 👀*`,
     ].join('\n');
 
-    // Embed pour l'aperçu
     const embed = new EmbedBuilder()
       .setTitle(`📋 Aperçu : ${nom}`)
       .setDescription(
@@ -674,13 +633,11 @@ export class AnnounceCommand extends Command {
       .setFooter({ text: RPB.FullName })
       .setTimestamp();
 
-    const files = image ? [image.url] : [];
     if (image) {
       embed.setImage(image.url);
     }
 
     if (preview) {
-      // Envoyer l'aperçu en éphémère
       await interaction.reply({
         content: `### Aperçu de l'annonce :\n\n${announcement}`,
         embeds: [embed],
@@ -689,20 +646,18 @@ export class AnnounceCommand extends Command {
       return;
     }
 
-    // Envoyer l'annonce dans le salon cible
     await interaction.deferReply({ ephemeral: true });
 
     try {
+      const files = image ? [image.url] : [];
       const sentMessage = await channel.send({ content: announcement, files });
 
-      // Add reactions for interaction
       await Promise.allSettled([
         sentMessage.react('✅'),
         sentMessage.react('❌'),
         sentMessage.react('❓'),
       ]);
 
-      // Publier si c'est un salon d'annonces
       if (
         channel.type === ChannelType.GuildAnnouncement &&
         sentMessage.crosspostable
@@ -710,7 +665,7 @@ export class AnnounceCommand extends Command {
         try {
           await sentMessage.crosspost();
         } catch {
-          // Ignore crosspost errors
+          // Ignore
         }
       }
 
@@ -719,7 +674,7 @@ export class AnnounceCommand extends Command {
         embeds: [embed],
       });
     } catch (error) {
-      this.container.logger.error('Generate announcement error:', error);
+      logger.error('Generate announcement error:', error);
       return interaction.editReply("❌ Erreur lors de l'envoi de l'annonce.");
     }
   }

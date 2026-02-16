@@ -1,37 +1,35 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import { Command } from '@sapphire/framework';
+
 import { CheerioCrawler } from 'crawlee';
-import { PermissionFlagsBits } from 'discord.js';
+import {
+  ApplicationCommandOptionType,
+  type CommandInteraction,
+  PermissionFlagsBits,
+} from 'discord.js';
+import { Discord, Guard, Slash, SlashOption } from 'discordx';
 
-export class ScrapeCommand extends Command {
-  constructor(context: Command.LoaderContext, options: Command.Options) {
-    super(context, {
-      ...options,
-      description: 'Scrape une page web pour enrichir la base de connaissances',
-      preconditions: ['ModeratorOnly'],
-    });
-  }
+import { ModeratorOnly } from '../../guards/ModeratorOnly.js';
+import { logger } from '../../lib/logger.js';
 
-  override registerApplicationCommands(registry: Command.Registry) {
-    registry.registerChatInputCommand((builder) =>
-      builder
-        .setName('aspirer')
-        .setDescription("Aspire le contenu d'une page web pour l'IA")
-        .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages)
-        .addStringOption((opt) =>
-          opt
-            .setName('url')
-            .setDescription("L'URL de la page à analyser (ex: Wiki Beyblade)")
-            .setRequired(true),
-        ),
-    );
-  }
-
-  override async chatInputRun(
-    interaction: Command.ChatInputCommandInteraction,
+@Discord()
+@Guard(ModeratorOnly)
+export class ScrapeCommand {
+  @Slash({
+    name: 'aspirer',
+    description: "Aspire le contenu d'une page web pour l'IA",
+    defaultMemberPermissions: PermissionFlagsBits.ManageMessages,
+  })
+  async scrape(
+    @SlashOption({
+      name: 'url',
+      description: "L'URL de la page à analyser (ex: Wiki Beyblade)",
+      required: true,
+      type: ApplicationCommandOptionType.String,
+    })
+    url: string,
+    interaction: CommandInteraction,
   ) {
-    const url = interaction.options.getString('url', true);
     await interaction.deferReply({ ephemeral: true });
 
     try {
@@ -76,7 +74,7 @@ export class ScrapeCommand extends Command {
         "✅ **Succès !**\nLe contenu de la page a été ajouté à la base de connaissances.\nL'IA peut maintenant répondre aux questions sur ce sujet !",
       );
     } catch (error) {
-      this.container.logger.error('[Scrape] Error:', error);
+      logger.error('[Scrape] Error:', error);
       return interaction.editReply(
         '❌ Une erreur est survenue lors du scraping.',
       );

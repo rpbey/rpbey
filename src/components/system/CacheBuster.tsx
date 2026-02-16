@@ -23,7 +23,7 @@ export function CacheBuster() {
         const lastReload = sessionStorage.getItem('last_chunk_reload');
         const now = Date.now();
 
-        if (!lastReload || now - parseInt(lastReload) > 10000) {
+        if (!lastReload || now - parseInt(lastReload, 10) > 10000) {
           sessionStorage.setItem('last_chunk_reload', String(now));
           window.location.reload();
         }

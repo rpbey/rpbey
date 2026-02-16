@@ -1,34 +1,23 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+
 import { prisma } from './prisma.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const CUSTOM_COMMANDS_DIR = path.join(__dirname, '../commands/Custom');
 
 const COMMAND_TEMPLATE = (
   name: string,
   description: string,
   response: string,
 ) => `
-import { Command } from '@sapphire/framework';
+import { CommandInteraction } from 'discord.js';
+import { Discord, Slash } from 'discordx';
 
-export class CustomCommand extends Command {
-  public constructor(context: Command.LoaderContext, options: Command.Options) {
-    super(context, {
-      ...options,
-      name: '${name}',
-      description: '${description.replace(/'/g, "'")}',
-    });
-  }
-
-  public override registerApplicationCommands(registry: Command.Registry) {
-    registry.registerChatInputCommand((builder) =>
-      builder.setName(this.name).setDescription(this.description)
-    );
-  }
-
-  public override async chatInputRun(interaction: Command.ChatInputCommandInteraction) {
+@Discord()
+export class ${name.replace(/[^a-zA-Z0-9]/g, '')}Command {
+  @Slash({ name: '${name}', description: '${description.replace(/'/g, "\\'")}' })
+  async chatInputRun(interaction: CommandInteraction) {
     const response = \`${response.replace(/`/g, '\\`').replace(/\${/g, '\\${')}\`;
     
     // Check if response is JSON (simple check)
@@ -46,17 +35,41 @@ export class CustomCommand extends Command {
 `;
 
 export async function generateCustomCommands() {
+  // In production, we don't want to generate .ts files in dist at runtime
+  // because they won't be compiled and will cause syntax errors.
+  // We only generate them if we are in a dev environment or if we want to
+  // persist them for the next build.
+
+  const isProd = process.env.NODE_ENV === 'production';
+
+  // If we are in dist, __dirname is .../dist/lib
+  const srcDir = path.resolve(__dirname, '../../src/commands/Custom');
+  const distDir = path.resolve(__dirname, '../commands/Custom');
+
   console.log('Generating custom commands...');
 
   try {
-    // Ensure directory exists
-    await fs.mkdir(CUSTOM_COMMANDS_DIR, { recursive: true });
+    // We always try to update src if it exists
+    const _targetDir = srcDir;
 
-    // Clear existing commands (except if we want to keep some static ones? No, this dir is for dynamic ones)
-    const existingFiles = await fs.readdir(CUSTOM_COMMANDS_DIR);
+    try {
+      await fs.access(srcDir);
+    } catch {
+      // If src doesn't exist, we might be in a strictly production build
+      if (isProd) {
+        console.log(
+          'Production mode: skipping custom command generation (src not found).',
+        );
+        return;
+      }
+      await fs.mkdir(srcDir, { recursive: true });
+    }
+
+    // Clear existing commands in src
+    const existingFiles = await fs.readdir(srcDir);
     for (const file of existingFiles) {
-      if (file.endsWith('.ts') || file.endsWith('.js')) {
-        await fs.unlink(path.join(CUSTOM_COMMANDS_DIR, file));
+      if (file.endsWith('.ts')) {
+        await fs.unlink(path.join(srcDir, file));
       }
     }
 
@@ -65,23 +78,27 @@ export async function generateCustomCommands() {
     });
 
     // Get list of existing hardcoded commands to avoid duplicates
-    // We check other directories in src/commands/
-    const hardcodedDirs = ['Beyblade', 'General', 'Moderation'];
+    const hardcodedDirs = [
+      'Beyblade',
+      'General',
+      'Moderation',
+      'Admin',
+      'Music',
+      'Voice',
+    ];
     const hardcodedCommands = new Set<string>();
 
     for (const dir of hardcodedDirs) {
       try {
-        const dirPath = path.join(__dirname, '../commands', dir);
+        const dirPath = path.resolve(__dirname, '../commands', dir);
         const files = await fs.readdir(dirPath);
         for (const file of files) {
           if (file.endsWith('.ts') || file.endsWith('.js')) {
             const content = await fs.readFile(path.join(dirPath, file), 'utf8');
-            // Try to find .setName('commandName') in the file content
-            const match = content.match(/\.setName\(['"]([^'"]+)['"]\)/);
+            const match = content.match(/name:\s*['"]([^'"]+)['"]/);
             if (match?.[1]) {
               hardcodedCommands.add(match[1].toLowerCase());
             } else {
-              // Fallback to filename if .setName is not found
               const filename = file.split('.')[0];
               if (filename) {
                 hardcodedCommands.add(filename.toLowerCase());
@@ -90,35 +107,41 @@ export async function generateCustomCommands() {
           }
         }
       } catch {
-        // Directory might not exist or be inaccessible
+        // Ignore errors
       }
     }
 
     for (const cmd of commands) {
-      // Sanitize name: lowercase, only alphanumeric and dashes
       const sanitizedName = cmd.name
         .toLowerCase()
         .replace(/[^a-z0-9-]/g, '-')
-        .replace(/-+/g, '-') // replace multiple dashes with one
-        .replace(/^-|-$/g, ''); // remove leading/trailing dashes
+        .replace(/-+/g, '-')
+        .replace(/^-|-$/g, '');
 
       if (hardcodedCommands.has(sanitizedName)) {
-        console.log(
-          `Skipping custom command "${cmd.name}" (sanitized: "${sanitizedName}") because it conflicts with a hardcoded command.`,
-        );
         continue;
       }
 
-      const filePath = path.join(CUSTOM_COMMANDS_DIR, `${cmd.name}.ts`);
+      const filePath = path.join(srcDir, `${cmd.name}.ts`);
       await fs.writeFile(
         filePath,
         COMMAND_TEMPLATE(sanitizedName, cmd.description, cmd.response),
       );
     }
 
-    console.log(
-      `Generated ${commands.length} custom commands in ${CUSTOM_COMMANDS_DIR}`,
-    );
+    console.log(`Generated ${commands.length} custom commands in ${srcDir}`);
+
+    // IF WE ARE IN PRODUCTION, we might also need to clean up any accidental .ts files in dist
+    try {
+      const distFiles = await fs.readdir(distDir);
+      for (const file of distFiles) {
+        if (file.endsWith('.ts')) {
+          await fs.unlink(path.join(distDir, file));
+        }
+      }
+    } catch {
+      // distDir might not exist yet
+    }
   } catch (error) {
     console.error('Failed to generate custom commands:', error);
   }

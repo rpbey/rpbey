@@ -1,7 +1,10 @@
 import { io, type Socket } from 'socket.io-client';
 
 // Use relative URL to leverage Next.js proxy
-export const BOT_SOCKET_URL = typeof window !== 'undefined' ? '' : 'http://46.224.145.55:3001';
+export const BOT_SOCKET_URL =
+  typeof window !== 'undefined'
+    ? ''
+    : process.env.BOT_API_URL || 'http://localhost:3001';
 
 // Shared socket instance
 let socket: Socket | null = null;

@@ -1,4 +1,5 @@
 import { ButtonStyle } from 'discord.js';
+
 import { RPB } from './constants.js';
 
 export interface RoleButtonConfig {

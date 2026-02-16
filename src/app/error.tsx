@@ -27,20 +27,24 @@ export default function ErrorPage({
       <Typography variant="h4" fontWeight="bold" color="error">
         Une erreur est survenue
       </Typography>
-      
+
       <Typography variant="body1" color="text.secondary">
         Désolé, impossible d'afficher cette page pour le moment.
       </Typography>
 
       {error.digest && (
-        <Typography variant="caption" color="text.disabled" fontFamily="monospace">
+        <Typography
+          variant="caption"
+          color="text.disabled"
+          fontFamily="monospace"
+        >
           ID: {error.digest}
         </Typography>
       )}
 
-      <Button 
-        variant="contained" 
-        onClick={reset} 
+      <Button
+        variant="contained"
+        onClick={reset}
         color="primary"
         sx={{ mt: 2 }}
       >

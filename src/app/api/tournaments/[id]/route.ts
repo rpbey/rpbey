@@ -37,10 +37,7 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
           player2: { include: { profile: true } },
           winner: { include: { profile: true } },
         },
-        orderBy: [
-          { round: 'asc' } as const,
-          { createdAt: 'asc' } as const,
-        ],
+        orderBy: [{ round: 'asc' } as const, { createdAt: 'asc' } as const],
       },
     };
 

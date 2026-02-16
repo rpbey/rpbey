@@ -161,7 +161,7 @@ a {
   .MuiContainer-root,
   .MuiGrid-container,
   .MuiBox-root {
-    max-width: 100% !important;
+    max-width: 100%;
     overflow-x: hidden;
   }
 }

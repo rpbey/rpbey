@@ -225,7 +225,12 @@ export default async function AboutPage() {
       <Container maxWidth="lg" sx={{ py: 8 }}>
         {/* Notre Histoire */}
         <Box sx={{ mb: 10 }}>
-          <Typography variant="h4" component="h2" fontWeight="bold" sx={{ mb: 3 }}>
+          <Typography
+            variant="h4"
+            component="h2"
+            fontWeight="bold"
+            sx={{ mb: 3 }}
+          >
             Notre Histoire
           </Typography>
           <Grid container spacing={4}>
@@ -402,7 +407,12 @@ export default async function AboutPage() {
         <Box sx={{ py: 6 }}>
           <Grid container spacing={6} alignItems="center">
             <Grid size={{ xs: 12, md: 7 }}>
-              <Typography variant="h4" component="h2" fontWeight="bold" sx={{ mb: 2 }}>
+              <Typography
+                variant="h4"
+                component="h2"
+                fontWeight="bold"
+                sx={{ mb: 2 }}
+              >
                 Prêt à rejoindre l'aventure ?
               </Typography>
               <Typography

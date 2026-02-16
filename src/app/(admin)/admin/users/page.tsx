@@ -110,7 +110,7 @@ export default function AdminUsersPage() {
       field: 'tournaments',
       headerName: 'Tournois',
       width: 100,
-      valueGetter: (value, row) => row._count.tournaments,
+      valueGetter: (_value, row) => row._count.tournaments,
     },
     {
       field: 'actions',

@@ -76,11 +76,25 @@ export function TikTokVideoCard({ video }: TikTokVideoCardProps) {
               gap: 1,
             }}
           >
-            <Typography variant="caption" fontWeight="bold" sx={{ color: 'white' }}>
-              ▶ {new Intl.NumberFormat('fr-FR', { notation: 'compact' }).format(video.stats.playCount)}
+            <Typography
+              variant="caption"
+              fontWeight="bold"
+              sx={{ color: 'white' }}
+            >
+              ▶{' '}
+              {new Intl.NumberFormat('fr-FR', { notation: 'compact' }).format(
+                video.stats.playCount,
+              )}
             </Typography>
-            <Typography variant="caption" fontWeight="bold" sx={{ color: 'white' }}>
-              ♥ {new Intl.NumberFormat('fr-FR', { notation: 'compact' }).format(video.stats.diggCount)}
+            <Typography
+              variant="caption"
+              fontWeight="bold"
+              sx={{ color: 'white' }}
+            >
+              ♥{' '}
+              {new Intl.NumberFormat('fr-FR', { notation: 'compact' }).format(
+                video.stats.diggCount,
+              )}
             </Typography>
           </Box>
 

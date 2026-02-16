@@ -1,0 +1,116 @@
+services:
+  # Database (Migrated from Coolify)
+  db:
+    image: postgres:17-alpine
+    container_name: rpb-db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: rpb_password
+      POSTGRES_DB: rpb_dashboard
+    volumes:
+      - rpb-db:/var/lib/postgresql/data
+    networks:
+      rpb-network:
+        aliases:
+          - b0o4000oo8g80cws8gsoogk4
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Next.js Dashboard
+  dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: rpb-dashboard
+    restart: always
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://postgres:rpb_password@db:5432/rpb_dashboard
+      NEXT_PUBLIC_APP_URL: https://rpbey.fr
+      BOT_API_URL: http://bot:3001
+      NODE_ENV: production
+    volumes:
+      # Persist user uploads
+      - ./public/uploads:/app/public/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+      bot:
+        condition: service_started
+    networks:
+      - rpb-network
+
+  # Discord Bot
+  bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        RUN_BOT: "true"
+    container_name: rpb-bot
+    restart: always
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://postgres:rpb_password@db:5432/rpb_dashboard
+      NODE_ENV: production
+      RUN_BOT: "true"
+    volumes:
+      # Bot might need access to uploads? Or its own data
+      - ./bot/data:/app/bot/data
+      - ./public/uploads:/app/public/uploads
+    networks:
+      - rpb-network
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"fetch('http://localhost:3001/api/status', { headers: { 'x-api-key': 'rpb-bot-api-secret-key-2026' } }).then(r => {if(!r.ok) throw new Error()})\""]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    # Expose port for Nginx upstream
+    expose:
+      - "3001"
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: rpb-nginx
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+      - ./public/uploads:/app/public/uploads:ro # Nginx serves uploads directly (read-only)
+    depends_on:
+      - dashboard
+      - bot
+    networks:
+      - rpb-network
+
+  # Certbot for SSL (One-off or scheduled)
+  certbot:
+    image: certbot/certbot
+    container_name: rpb-certbot
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+
+networks:
+  rpb-network:
+    driver: bridge
+
+volumes:
+  rpb-db:
+    external: true

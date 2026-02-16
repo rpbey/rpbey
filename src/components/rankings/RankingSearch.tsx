@@ -10,7 +10,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState, useTransition } from 'react';
 import { useDebounce } from '@/hooks/use-debounce';
 import { searchBladers } from '@/server/actions/search';
@@ -26,6 +26,7 @@ export default function RankingSearch({
   defaultValue?: string;
 }) {
   const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
   const [value, setValue] = useState(defaultValue);
@@ -71,7 +72,7 @@ export default function RankingSearch({
     // We don't want to trigger on initial load if defaultValue is present
     if (value === defaultValue && !searchParams.get('search')) return;
 
-    const params = new URLSearchParams(searchParams);
+    const params = new URLSearchParams(searchParams.toString());
     if (debouncedValue) {
       params.set('search', debouncedValue);
     } else {
@@ -80,9 +81,9 @@ export default function RankingSearch({
     params.delete('page');
 
     startTransition(() => {
-      router.push(`/rankings?${params.toString()}`);
+      router.push(`${pathname}?${params.toString()}`);
     });
-  }, [debouncedValue, value, router, searchParams, defaultValue]);
+  }, [debouncedValue, value, router, pathname, searchParams, defaultValue]);
 
   return (
     <Autocomplete

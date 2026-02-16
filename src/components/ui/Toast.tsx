@@ -38,7 +38,6 @@ export function ToastProvider({ children }: ToastProviderProps) {
         case 'warning':
           toast.warning(message, options);
           break;
-        case 'info':
         default:
           toast.info(message, options);
           break;

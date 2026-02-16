@@ -1,5 +1,7 @@
-import { container } from '@sapphire/framework';
 import { Server, type Socket } from 'socket.io';
+
+import { bot } from './bot.js';
+import { logger } from './logger.js';
 
 export class SocketManager {
   private static instance: SocketManager;
@@ -19,20 +21,19 @@ export class SocketManager {
   public init(server: any) {
     this.io = new Server(server, {
       cors: {
-        origin: '*', // Allow connections from Dashboard
+        origin: '*',
         methods: ['GET', 'POST'],
         allowedHeaders: ['x-api-key'],
       },
     });
 
     this.io.on('connection', (socket: Socket) => {
-      container.logger.info(`[Socket] New connection: ${socket.id}`);
+      logger.info(`[Socket] New connection: ${socket.id}`);
 
-      // Basic Auth Handshake
       const apiKey =
         socket.handshake.auth.token || socket.handshake.headers['x-api-key'];
       if (apiKey !== process.env.BOT_API_KEY) {
-        container.logger.warn(
+        logger.warn(
           `[Socket] Unauthorized connection attempt from ${socket.id}`,
         );
         socket.disconnect(true);
@@ -42,13 +43,12 @@ export class SocketManager {
       socket.on('admin_action', (data: any) => {
         if (data.type === 'update_score') {
           this.p1 += data.points;
-          // Broadcast to ALL connected clients
           this.io?.emit('game_score_update', {
             p1: this.p1,
             p2: this.p2,
             label: data.label,
           });
-          container.logger.info(
+          logger.info(
             `[Socket] Score updated: ${this.p1} - ${this.p2} (${data.label})`,
           );
         }
@@ -65,14 +65,13 @@ export class SocketManager {
       });
 
       socket.on('disconnect', () => {
-        container.logger.info(`[Socket] Disconnected: ${socket.id}`);
+        logger.info(`[Socket] Disconnected: ${socket.id}`);
       });
 
-      // Send immediate status on connect
       this.emitStatusUpdate();
     });
 
-    container.logger.info('[Socket] Socket.IO initialized');
+    logger.info('[Socket] Socket.IO initialized');
   }
 
   public emit(event: string, data: any) {
@@ -82,12 +81,10 @@ export class SocketManager {
   }
 
   public emitStatusUpdate() {
-    if (!this.io || !container.client) return;
+    if (!this.io || !bot) return;
 
-    const client = container.client;
     const uptime = process.uptime();
 
-    // Format uptime
     const d = Math.floor(uptime / (3600 * 24));
     const h = Math.floor((uptime % (3600 * 24)) / 3600);
     const m = Math.floor((uptime % 3600) / 60);
@@ -98,9 +95,9 @@ export class SocketManager {
       status: 'running',
       uptime: process.uptime(),
       uptimeFormatted,
-      guilds: client.guilds.cache.size,
-      users: client.users.cache.size,
-      ping: client.ws.ping,
+      guilds: bot.guilds.cache.size,
+      users: bot.users.cache.size,
+      ping: bot.ws.ping,
       memoryUsage: `${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)} MB`,
       nodeVersion: process.version,
     };

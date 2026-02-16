@@ -1,8 +1,8 @@
 import { Box, Container, Typography } from '@mui/material';
 import { getBeyTubeFeatured } from '@/lib/beytube';
+import { getTikTokVideos, type TikTokVideo } from '@/lib/tiktok';
 import { getRPBClips } from '@/lib/twitch';
 import { getRecentYouTubeVideos } from '@/lib/youtube';
-import { getTikTokVideos, type TikTokVideo } from '@/lib/tiktok';
 import { TvFeed } from './_components/TvFeed';
 
 export const metadata = {
@@ -18,7 +18,10 @@ export default async function TVPage() {
   const domain = process.env.NEXT_PUBLIC_DOMAIN || 'rpbey.fr';
 
   // Helper to fetch with timeout and safety
-  const safeFetch = async <T,>(promise: Promise<T>, fallback: T): Promise<T> => {
+  const safeFetch = async <T,>(
+    promise: Promise<T>,
+    fallback: T,
+  ): Promise<T> => {
     try {
       return await promise;
     } catch (e) {
@@ -28,17 +31,22 @@ export default async function TVPage() {
   };
 
   // Fetch all media in parallel with individual safety and logging
-  const [clips, rpbVideos, beyTubeVideos, rpbTikTok, skarnTikTok, sunTikTok] = await Promise.all([
-    safeFetch(getRPBClips(20), []),
-    safeFetch(getRecentYouTubeVideos(undefined, 20), []),
-    safeFetch(getBeyTubeFeatured(), []),
-    safeFetch(getTikTokVideos('rpbeyblade1'), []),
-    safeFetch(getTikTokVideos('skarngamemaster'), []),
-    safeFetch(getTikTokVideos('sunafterthereign'), []),
-  ]);
+  const [clips, rpbVideos, beyTubeVideos, rpbTikTok, skarnTikTok, sunTikTok] =
+    await Promise.all([
+      safeFetch(getRPBClips(20), []),
+      safeFetch(getRecentYouTubeVideos(undefined, 20), []),
+      safeFetch(getBeyTubeFeatured(), []),
+      safeFetch(getTikTokVideos('rpbeyblade1'), []),
+      safeFetch(getTikTokVideos('skarngamemaster'), []),
+      safeFetch(getTikTokVideos('sunafterthereign'), []),
+    ]);
 
   // Merge and sort TikTok videos by date (newest first)
-  const tikTokVideos: TikTokVideo[] = [...rpbTikTok, ...skarnTikTok, ...sunTikTok]
+  const tikTokVideos: TikTokVideo[] = [
+    ...rpbTikTok,
+    ...skarnTikTok,
+    ...sunTikTok,
+  ]
     .sort((a, b) => b.createTime - a.createTime)
     .slice(0, 20); // Limit to 20
 

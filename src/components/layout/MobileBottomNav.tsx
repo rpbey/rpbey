@@ -1,6 +1,12 @@
 'use client';
 
-import { EmojiEvents, Home, Leaderboard, Person } from '@mui/icons-material';
+import {
+  EmojiEvents,
+  Home,
+  Leaderboard,
+  Person,
+  WorkspacePremium,
+} from '@mui/icons-material';
 import {
   BottomNavigation,
   BottomNavigationAction,
@@ -63,6 +69,11 @@ export function MobileBottomNav() {
               label="Classements"
               value="/rankings"
               icon={<Leaderboard />}
+            />
+            <BottomNavigationAction
+              label="SATR"
+              value="/tournaments/satr"
+              icon={<WorkspacePremium />}
             />
             <BottomNavigationAction
               label={session ? 'Profil' : 'Connexion'}

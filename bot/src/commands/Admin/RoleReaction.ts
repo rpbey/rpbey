@@ -1,43 +1,43 @@
-import { ApplyOptions } from '@sapphire/decorators';
-import { Command } from '@sapphire/framework';
 import {
   ActionRowBuilder,
+  ApplicationCommandOptionType,
   ButtonBuilder,
   ChannelType,
+  type CommandInteraction,
   EmbedBuilder,
   PermissionFlagsBits,
   type TextChannel,
 } from 'discord.js';
+import { Discord, Guard, Slash, SlashOption } from 'discordx';
+
+import { OwnerOnly } from '../../guards/OwnerOnly.js';
 import { RPB } from '../../lib/constants.js';
+import { logger } from '../../lib/logger.js';
 import { ROLE_PANELS } from '../../lib/role-panels.js';
 
-@ApplyOptions<Command.Options>({
-  description: 'Poste les panneaux de rôles réaction',
-  preconditions: ['GuildOnly', 'OwnerOnly'],
-})
-export class UserCommand extends Command {
-  public override registerApplicationCommands(registry: Command.Registry) {
-    registry.registerChatInputCommand((builder) =>
-      builder
-        .setName('config-roles')
-        .setDescription('Configure les messages de rôles réaction')
-        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
-        .addChannelOption((opt) =>
-          opt
-            .setName('salon')
-            .setDescription('Le salon où envoyer les panneaux (défaut: #rôles)')
-            .addChannelTypes(ChannelType.GuildText),
-        ),
-    );
-  }
-
-  public override async chatInputRun(
-    interaction: Command.ChatInputCommandInteraction,
+@Discord()
+@Guard(OwnerOnly)
+export class RoleReactionCommand {
+  @Slash({
+    name: 'config-roles',
+    description: 'Configure les messages de rôles réaction',
+    defaultMemberPermissions: PermissionFlagsBits.Administrator,
+  })
+  async configRoles(
+    @SlashOption({
+      name: 'salon',
+      description: 'Le salon où envoyer les panneaux (défaut: #rôles)',
+      required: false,
+      type: ApplicationCommandOptionType.Channel,
+      channelTypes: [ChannelType.GuildText],
+    })
+    channelOption: TextChannel | undefined,
+    interaction: CommandInteraction,
   ) {
     await interaction.deferReply({ ephemeral: true });
 
     const defaultChannelId = RPB.Channels.Roles;
-    const channel = (interaction.options.getChannel('salon') ??
+    const channel = (channelOption ??
       interaction.guild?.channels.cache.get(defaultChannelId)) as TextChannel;
 
     if (!channel) {
@@ -82,7 +82,7 @@ export class UserCommand extends Command {
         `✅ ${sentCount} panneaux de rôles envoyés dans ${channel} !`,
       );
     } catch (error) {
-      this.container.logger.error('Setup roles error:', error);
+      logger.error('Setup roles error:', error);
       return interaction.editReply(
         "❌ Une erreur est survenue lors de l'envoi des panneaux.",
       );

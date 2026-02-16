@@ -122,7 +122,7 @@ export function PartCard({ part }: { part: Part }) {
             const val = part[stat as keyof Part];
             if (!val) return null;
             const numericVal =
-              typeof val === 'number' ? val : parseInt(String(val));
+              typeof val === 'number' ? val : parseInt(String(val), 10);
             return (
               <Box
                 key={stat}

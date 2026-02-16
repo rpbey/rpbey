@@ -1,26 +1,20 @@
-import { Command } from '@sapphire/framework';
-import { EmbedBuilder, TimestampStyles, time } from 'discord.js';
+import {
+  type CommandInteraction,
+  EmbedBuilder,
+  TimestampStyles,
+  time,
+} from 'discord.js';
+import { Discord, Slash } from 'discordx';
+
 import { Colors, RPB } from '../../lib/constants.js';
 
-export class PingCommand extends Command {
-  constructor(context: Command.LoaderContext, options: Command.Options) {
-    super(context, {
-      ...options,
-      description: 'Vérifie la latence du bot',
-    });
-  }
-
-  override registerApplicationCommands(registry: Command.Registry) {
-    registry.registerChatInputCommand((builder) =>
-      builder
-        .setName('ping')
-        .setDescription('Vérifie la latence du bot et le temps de réponse'),
-    );
-  }
-
-  override async chatInputRun(
-    interaction: Command.ChatInputCommandInteraction,
-  ) {
+@Discord()
+export class PingCommand {
+  @Slash({
+    description: 'Vérifie la latence du bot et le temps de réponse',
+    name: 'ping',
+  })
+  async ping(interaction: CommandInteraction) {
     const sent = await interaction.reply({
       content: '🏓 Ping en cours...',
       withResponse: true,
@@ -29,7 +23,8 @@ export class PingCommand extends Command {
     const roundtrip =
       (sent.resource?.message?.createdTimestamp ?? Date.now()) -
       interaction.createdTimestamp;
-    const wsLatency = Math.round(this.container.client.ws.ping);
+
+    const wsLatency = Math.round(interaction.client.ws.ping);
 
     const embed = new EmbedBuilder()
       .setTitle('🏓 Pong!')
@@ -46,7 +41,7 @@ export class PingCommand extends Command {
         {
           name: '🕐 En ligne depuis',
           value: time(
-            new Date(Date.now() - (this.container.client.uptime ?? 0)),
+            new Date(Date.now() - (interaction.client.uptime ?? 0)),
             TimestampStyles.RelativeTime,
           ),
           inline: true,

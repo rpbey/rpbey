@@ -1,23 +1,13 @@
-import { ApplyOptions } from '@sapphire/decorators';
-import { Command } from '@sapphire/framework';
+import type { CommandInteraction } from 'discord.js';
 import { useQueue } from 'discord-player';
+import { Discord, Slash } from 'discordx';
 
-@ApplyOptions<Command.Options>({
-  description: 'Passe à la musique suivante',
-  preconditions: ['GuildOnly'],
-})
-export class SkipCommand extends Command {
-  public override registerApplicationCommands(registry: Command.Registry) {
-    registry.registerChatInputCommand((builder) =>
-      builder.setName('passer').setDescription(this.description),
-    );
-  }
-
-  public override async chatInputRun(
-    interaction: Command.ChatInputCommandInteraction,
-  ) {
-    // biome-ignore lint/style/noNonNullAssertion: Guarded by GuildOnly
-    const queue = useQueue(interaction.guildId!);
+@Discord()
+export class SkipCommand {
+  @Slash({ name: 'passer', description: 'Passe à la musique suivante' })
+  async skip(interaction: CommandInteraction) {
+    if (!interaction.guildId) return;
+    const queue = useQueue(interaction.guildId);
 
     if (!queue || !queue.isPlaying()) {
       return interaction.reply({

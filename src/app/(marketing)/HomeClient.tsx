@@ -11,7 +11,7 @@ import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { type MotionStyle, LazyMotion, domAnimation, m } from 'framer-motion';
+import { domAnimation, LazyMotion, type MotionStyle, m } from 'framer-motion';
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import Link from 'next/link';

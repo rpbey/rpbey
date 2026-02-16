@@ -120,7 +120,9 @@ export default function TournamentDetail({
   initialLiveData,
 }: TournamentDetailProps) {
   const theme = useTheme();
-  const [liveData, setLiveData] = useState<LiveData>(initialLiveData as LiveData);
+  const [liveData, setLiveData] = useState<LiveData>(
+    initialLiveData as LiveData,
+  );
   const [activeTab, setActiveTab] = useState(0);
 
   const isLive =
@@ -978,11 +980,7 @@ function StandingsPanel({ standings }: { standings: Standing[] }) {
 
 // ─── Stadiums Panel ─────────────────────────────────────────────────────────
 
-function StadiumsPanel({
-  stations,
-}: {
-  stations: Station[];
-}) {
+function StadiumsPanel({ stations }: { stations: Station[] }) {
   const theme = useTheme();
 
   return (
@@ -1194,7 +1192,7 @@ function ActivityLogPanel({ log }: { log: LogEntry[] }) {
 function formatLogTimestamp(ts: string): string {
   try {
     const date = new Date(ts);
-    if (isNaN(date.getTime())) return ts;
+    if (Number.isNaN(date.getTime())) return ts;
     return date.toLocaleTimeString('fr-FR', {
       hour: '2-digit',
       minute: '2-digit',

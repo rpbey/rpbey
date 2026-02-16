@@ -63,7 +63,7 @@ export async function updateRankingConfig(data: {
 }) {
   const result = RankingConfigSchema.safeParse(data);
   if (!result.success) {
-    throw new Error('Invalid config: ' + result.error.message);
+    throw new Error(`Invalid config: ${result.error.message}`);
   }
 
   const config = await getRankingConfig();
@@ -91,7 +91,7 @@ export async function recalculateRankings() {
 
   // 1. Fetch data
   console.log(`🔍 Season: ${currentSeason?.name}, Start: ${startDate}`);
-  
+
   const tournaments = await prisma.tournament.findMany({
     where: {
       status: { in: ['COMPLETE', 'ARCHIVED', 'UNDERWAY'] },
@@ -121,7 +121,9 @@ export async function recalculateRankings() {
 
   // 2. Calculate points
   for (const tournament of tournaments) {
-    console.log(`  > Processing "${tournament.name}" (${tournament.participants.length} participants)`);
+    console.log(
+      `  > Processing "${tournament.name}" (${tournament.participants.length} participants)`,
+    );
     const multiplier =
       tournament.category?.multiplier ?? tournament.weight ?? 1.0;
 
@@ -171,7 +173,7 @@ export async function recalculateRankings() {
       const weightedPoints = Math.round(points * multiplier);
       const currentPoints = playerPoints.get(userId) || 0;
       playerPoints.set(userId, currentPoints + weightedPoints);
-      
+
       console.log(`    -> ${participant.user.username}: ${weightedPoints} pts`);
     }
   }

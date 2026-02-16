@@ -1,6 +1,6 @@
 import InitColorSchemeScript from '@mui/material/InitColorSchemeScript';
-import Script from 'next/script';
 import type { Metadata, Viewport } from 'next';
+import Script from 'next/script';
 import { JsonLd } from '@/components/seo/JsonLd';
 import ThemeRegistry from '@/components/theme/ThemeRegistry';
 import { Toaster } from '@/components/ui/Toaster';

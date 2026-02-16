@@ -438,8 +438,8 @@ export class ChallongeScraper {
       // Tentative 4 : _initialStoreState (fallback classique)
       const store = await this.extractStore(page);
       if (store) {
-        const ts = store['TournamentStore'];
-        const ps = store['ParticipantsStore'];
+        const ts = store.TournamentStore;
+        const ps = store.ParticipantsStore;
         const candidates =
           ts?.participants ||
           ts?.tournament?.participants ||
@@ -477,8 +477,8 @@ export class ChallongeScraper {
       // Tentative 1 : Store JS (peut contenir des standings structurés)
       const store = await this.extractStore(page);
       if (store) {
-        const ts = store['TournamentStore'];
-        const ss = store['StandingsStore'] || store['RankingStore'];
+        const ts = store.TournamentStore;
+        const ss = store.StandingsStore || store.RankingStore;
         const storeStandings = ss?.standings || ts?.standings || ss?.rankings;
         if (storeStandings?.length > 0) {
           console.log('📦 Standings extraits depuis le Store JS');
@@ -581,8 +581,8 @@ export class ChallongeScraper {
       // Tentative 1 : Store JS
       const store = await this.extractStore(page);
       if (store) {
-        const ts = store['TournamentStore'];
-        const ss = store['StationsStore'] || store['StationStore'];
+        const ts = store.TournamentStore;
+        const ss = store.StationsStore || store.StationStore;
         const storeStations = ss?.stations || ts?.stations;
         if (storeStations?.length > 0) {
           console.log('📦 Stations extraites depuis le Store JS');
@@ -704,11 +704,9 @@ export class ChallongeScraper {
       // Tentative 1 : Store JS
       const store = await this.extractStore(page);
       if (store) {
-        const ts = store['TournamentStore'];
+        const ts = store.TournamentStore;
         const ls =
-          store['LogStore'] ||
-          store['ActivityStore'] ||
-          store['LogEntryListStore'];
+          store.LogStore || store.ActivityStore || store.LogEntryListStore;
 
         // LogEntryListStore est souvent une liste directe (Array)
         const storeLog = Array.isArray(ls)

@@ -2,19 +2,14 @@
 
 import {
   Article,
-  BarChart,
-  Cloud,
-  Code,
   Dashboard,
   Launch,
   Leaderboard,
-  LiveTv,
   Logout,
   Menu as MenuIcon,
   People,
-  Settings,
   SmartToy,
-  Terminal,
+  WorkspacePremium,
 } from '@mui/icons-material';
 import {
   AppBar,
@@ -48,18 +43,13 @@ const RAIL_WIDTH = 280;
 
 const ADMIN_NAV_ITEMS = [
   { label: "Vue d'ensemble", path: '/admin', icon: Dashboard },
-  { label: 'Bot Discord', path: '/admin/discord', icon: SmartToy },
-  { label: 'Statut du bot', path: '/admin/bot', icon: Code },
-  { label: 'Logs du bot', path: '/admin/bot/logs', icon: Terminal },
+  { label: 'Bot Discord', path: '/admin/bot', icon: SmartToy },
   { label: 'Contenu', path: '/admin/content', icon: Article },
-  { label: 'Drive', path: '/admin/drive', icon: Cloud },
-  { label: 'Twitch', path: '/admin/twitch', icon: LiveTv },
+  { label: 'Gestion SATR', path: '/admin/satr', icon: WorkspacePremium },
   { label: 'Tournois', path: '/admin/tournaments', icon: TrophyIcon },
   { label: 'Classements', path: '/admin/rankings', icon: Leaderboard },
   { label: 'Équipe', path: '/admin/staff', icon: People },
   { label: 'Utilisateurs', path: '/admin/users', icon: People },
-  { label: 'Statistiques', path: '/admin/stats', icon: BarChart },
-  { label: 'Config Site', path: '/admin/settings', icon: Settings },
 ];
 
 export function AdminShell({ children }: { children: React.ReactNode }) {

@@ -32,18 +32,12 @@ export function BotMessenger() {
   useEffect(() => {
     const fetchChannels = async () => {
       try {
-        const response = await fetch('/api/bot/config');
+        const response = await fetch('/api/bot/channels');
         if (response.ok) {
           const data = await response.json();
-          const channelList = Object.entries(data.constants.Channels).map(
-            ([name, id]) => ({
-              id: id as string,
-              name: name,
-            }),
-          );
-          setChannels(channelList);
-          if (channelList.length > 0) {
-            setChannelId(channelList[0]?.id || '');
+          setChannels(data.channels || []);
+          if (data.channels?.length > 0) {
+            setChannelId(data.channels[0].id);
           }
         }
       } catch (err) {

@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
-import TournamentDetail from './_components/TournamentDetail';
 import type { TournamentData } from './_components/TournamentDetail';
+import TournamentDetail from './_components/TournamentDetail';
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -25,16 +25,20 @@ const tournamentSelect = {
   updatedAt: true,
 } as const;
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
   const { id } = await params;
 
-  const tournament = await prisma.tournament.findUnique({
-    where: { id },
-    select: { name: true, description: true },
-  }) ?? await prisma.tournament.findFirst({
-    where: { OR: [{ challongeId: id }, { challongeUrl: { contains: id } }] },
-    select: { name: true, description: true },
-  });
+  const tournament =
+    (await prisma.tournament.findUnique({
+      where: { id },
+      select: { name: true, description: true },
+    })) ??
+    (await prisma.tournament.findFirst({
+      where: { OR: [{ challongeId: id }, { challongeUrl: { contains: id } }] },
+      select: { name: true, description: true },
+    }));
 
   if (!tournament) return { title: 'Tournoi non trouvé' };
 
@@ -47,15 +51,17 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function TournamentDetailPage({ params }: PageProps) {
   const { id } = await params;
 
-  const tournament = await prisma.tournament.findUnique({
-    where: { id },
-    select: tournamentSelect,
-  }) ?? await prisma.tournament.findFirst({
-    where: {
-      OR: [{ challongeId: id }, { challongeUrl: { contains: id } }],
-    },
-    select: tournamentSelect,
-  });
+  const tournament =
+    (await prisma.tournament.findUnique({
+      where: { id },
+      select: tournamentSelect,
+    })) ??
+    (await prisma.tournament.findFirst({
+      where: {
+        OR: [{ challongeId: id }, { challongeUrl: { contains: id } }],
+      },
+      select: tournamentSelect,
+    }));
 
   if (!tournament) notFound();
 

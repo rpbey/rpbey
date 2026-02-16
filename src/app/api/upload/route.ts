@@ -1,8 +1,8 @@
-import { existsSync, mkdirSync } from 'fs';
-import { writeFile } from 'fs/promises';
+import { existsSync, mkdirSync } from 'node:fs';
+import { writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
 import { headers } from 'next/headers';
 import { NextResponse } from 'next/server';
-import { join } from 'path';
 import { auth } from '@/lib/auth';
 
 export async function POST(request: Request) {

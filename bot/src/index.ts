@@ -1,158 +1,156 @@
-import {
-  ApplicationCommandRegistries,
-  container,
-  RegisterBehavior,
-  SapphireClient,
-} from '@sapphire/framework';
-import '@sapphire/plugin-logger/register';
-import '@sapphire/plugin-scheduled-tasks/register';
-import '@sapphire/plugin-subcommands/register';
-import { GatewayIntentBits, Partials } from 'discord.js';
+import 'reflect-metadata';
 import 'dotenv/config';
-import { dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { DefaultExtractors } from '@discord-player/extractor';
+import { tsyringeDependencyRegistryEngine } from '@discordx/di';
+import { dirname, importx } from '@discordx/importer';
+import logs from 'discord-logs';
 import { Player } from 'discord-player';
+import { DIService } from 'discordx';
+import { container } from 'tsyringe';
+
+import { setupCronJobs } from './cron/index.js';
 import { startApiServer } from './lib/api-server.js';
+import { bot } from './lib/bot.js';
 import { generateCustomCommands } from './lib/command-generator.js';
 import { setupLogCapture } from './lib/log-capture.js';
+import { logger } from './lib/logger.js';
+import prisma from './lib/prisma.js'; // Added
 import { twitchBot } from './lib/twitch-bot.js';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
+// Initialize DI
+DIService.engine = tsyringeDependencyRegistryEngine.setInjector(container);
 
-// Set default behavior for application commands
-// We use Overwrite instead of BulkOverwrite to avoid "DiscordAPIError[50240]: You cannot remove this app's Entry Point command"
-// which happens if an Activity Entry Point exists and we try to bulk overwrite without including it.
-ApplicationCommandRegistries.setDefaultBehaviorWhenNotIdentical(
-  RegisterBehavior.Overwrite,
-);
-
-// If GUILD_ID is provided in .env, set it as default for faster command registration
-// We do this even in production for this specific community bot to ensure instant updates
-if (process.env.GUILD_ID) {
-  ApplicationCommandRegistries.setDefaultGuildIds([process.env.GUILD_ID]);
-}
-
-try {
-  // Generate custom commands from DB before starting
-  await generateCustomCommands();
-
-  // Initialize Twitch Bot
-  await twitchBot.init();
-
-  const client = new SapphireClient({
-    baseUserDirectory: __dirname,
-    intents: [
-      GatewayIntentBits.Guilds,
-      GatewayIntentBits.GuildMembers,
-      GatewayIntentBits.GuildMessages,
-      GatewayIntentBits.MessageContent,
-      GatewayIntentBits.GuildModeration,
-      GatewayIntentBits.GuildPresences, // Required for tracking online status
-      GatewayIntentBits.GuildVoiceStates, // Required for voice
-    ],
-    partials: [Partials.Message, Partials.Channel, Partials.GuildMember],
-    loadMessageCommandListeners: true,
-    logger: {
-      level: process.env.NODE_ENV === 'development' ? 20 : 30, // Debug in dev, Info in prod
-    },
-    tasks: {
-      bull: {
-        connection: {
-          host: process.env.REDIS_HOST ?? 'localhost',
-          port: parseInt(process.env.REDIS_PORT ?? '6379', 10),
-          password: process.env.REDIS_PASSWORD,
-        },
-      },
-    },
-  });
-
-  // Initialize Discord Player
-  // biome-ignore lint/suspicious/noExplicitAny: Discord Player type compatibility
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const player = new Player(client as any);
-
-  // Load extractors
-  await player.extractors.loadMulti(DefaultExtractors);
-
-  container.logger.info('[Music] Discord Player extractors loaded.');
-
-  // Verify FFmpeg
-  try {
-    const { spawnSync } = await import('node:child_process');
-    const ffmpeg = spawnSync('ffmpeg', ['-version']);
-    if (ffmpeg.status === 0) {
-      container.logger.info('[Music] FFmpeg verified successfully.');
-    } else {
-      container.logger.warn(
-        '[Music] FFmpeg not found in PATH, relying on ffmpeg-static.',
-      );
-    }
-  } catch {
-    container.logger.warn('[Music] Failed to verify FFmpeg.');
-  }
-
-  // Debugging Player Events
-  player.events.on('error', (_queue, error) => {
-    container.logger.error(
-      `[Music] Error emitted from the queue: ${error.message}`,
-    );
-  });
-  player.events.on('playerError', (_queue, error) => {
-    container.logger.error(
-      `[Music] Error emitted from the player: ${error.message}`,
-    );
-    console.error(error);
-  });
-  player.events.on('playerStart', (queue, track) => {
-    container.logger.info(`[Music] Started playing: **${track.title}**`);
-    // biome-ignore lint/suspicious/noExplicitAny: Metadata is untyped
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const interaction = queue.metadata as any;
-    if (interaction?.channel) {
-      interaction.channel.send(`▶️ **Lecture en cours :** ${track.title}`);
-    }
-  });
-  player.events.on('audioTrackAdd', (_queue, track) => {
-    container.logger.info(`[Music] Track added to queue: **${track.title}**`);
-  });
-  player.events.on('connection', (queue) => {
-    container.logger.info(
-      `[Music] Connected to voice channel in ${queue.guild.name}`,
-    );
-  });
-  player.events.on('emptyQueue', (_queue) => {
-    container.logger.info('[Music] Queue is empty.');
-  });
-  player.events.on('emptyChannel', (_queue) => {
-    container.logger.info('[Music] Voice channel is empty, leaving...');
-  });
-  player.events.on('debug', (_queue, message) => {
-    container.logger.info(`[Music Debug] ${message}`);
-  });
-
-  // Setup log capture for API/Dashboard
+async function run() {
   setupLogCapture();
 
-  await client.login(process.env.DISCORD_TOKEN);
+  // Initialize discord-logs
+  logs(bot as any);
 
-  client.on('ready', () => {
-    const commands = client.stores.get('commands');
-    container.logger.info(`[Bot] Loaded ${commands.size} commands.`);
-    // List first 5 commands to verify
-    const cmdNames = Array.from(commands.keys()).slice(0, 10).join(', ');
-    container.logger.info(`[Bot] Sample commands: ${cmdNames}`);
+  // Parallelize independent initializations
+  logger.info('[Bot] Starting initializations...');
+  await importx(
+    `${dirname(import.meta.url)}/{events,commands,components}/**/*.{ts,js}`,
+  );
+  logger.info('[Bot] Files imported.');
+
+  await Promise.all([
+    generateCustomCommands().catch((e) =>
+      logger.error('[Init] Custom Commands failed:', e),
+    ),
+    twitchBot.init().catch((e) => logger.error('[Init] Twitch Bot failed:', e)),
+  ]);
+
+  // Setup Cron
+  setupCronJobs();
+
+  // Initialize Discord Player
+  const player = new Player(bot as any);
+  await player.extractors.loadMulti(DefaultExtractors);
+  logger.info('[Music] Discord Player extractors loaded.');
+
+  // Verify FFmpeg async
+  void import('node:child_process').then(({ spawnSync }) => {
+    try {
+      const ffmpeg = spawnSync('ffmpeg', ['-version']);
+      if (ffmpeg.status === 0)
+        logger.info('[Music] FFmpeg verified successfully.');
+      else logger.warn('[Music] FFmpeg not found in PATH.');
+    } catch {
+      logger.warn('[Music] Failed to verify FFmpeg.');
+    }
   });
 
-  // Start API server for dashboard integration after login
+  // Player Events
+  player.events.on('error', (_queue, error) =>
+    logger.error(`[Music] Queue error: ${error.message}`),
+  );
+  player.events.on('playerError', (_queue, error) =>
+    logger.error(`[Music] Player error: ${error.message}`),
+  );
+  player.events.on('playerStart', (queue, track) => {
+    logger.info(`[Music] Started playing: ${track.title}`);
+    const interaction = queue.metadata as any;
+    if (interaction?.channel) {
+      void (interaction.channel as any)
+        .send(`▶️ **Lecture en cours :** ${track.title}`)
+        .catch(() => null);
+    }
+  });
+
+  // Login
+  if (!process.env.DISCORD_TOKEN)
+    throw Error('Could not find DISCORD_TOKEN in environment');
+
+  await bot.login(process.env.DISCORD_TOKEN);
+
+  bot.once('ready', async () => {
+    try {
+      await bot.initApplicationCommands();
+      logger.info(`[Bot] Logged in as ${bot.user?.tag}`);
+    } catch (e) {
+      logger.error('[Bot] Failed to init application commands:', e);
+    }
+  });
+
+  bot.on('interactionCreate', async (interaction) => {
+    try {
+      // Global Disabled Commands Check
+      if (interaction.isCommand()) {
+        const settingsBlock = await prisma.contentBlock.findUnique({
+          where: { slug: 'bot-settings' },
+        });
+        if (settingsBlock?.content) {
+          const { disabledCommands = [] } = JSON.parse(settingsBlock.content);
+          if (disabledCommands.includes(interaction.commandName)) {
+            return (interaction as any).reply({
+              content:
+                '⚠️ Cette commande est temporairement désactivée par un administrateur.',
+              ephemeral: true,
+            });
+          }
+        }
+      }
+      void bot.executeInteraction(interaction);
+    } catch (e) {
+      logger.error('[Bot] Interaction error:', e);
+    }
+  });
+
+  bot.on('messageCreate', async (message) => {
+    try {
+      // Global Disabled Commands Check
+      const prefix = '!'; // Default prefix for simple commands
+      if (message.content.startsWith(prefix)) {
+        const cmdName = message.content.slice(prefix.length).split(' ')[0];
+        const settingsBlock = await prisma.contentBlock.findUnique({
+          where: { slug: 'bot-settings' },
+        });
+        if (settingsBlock?.content) {
+          const { disabledCommands = [] } = JSON.parse(settingsBlock.content);
+          if (disabledCommands.includes(cmdName)) {
+            return message.reply(
+              '⚠️ Cette commande est temporairement désactivée.',
+            );
+          }
+        }
+      }
+      void bot.executeCommand(message);
+    } catch (e) {
+      logger.error('[Bot] Message command error:', e);
+    }
+  });
+
+  // Start API
   const apiPort = parseInt(process.env.BOT_API_PORT ?? '3001', 10);
   startApiServer(apiPort);
-} catch (err) {
-  // Use console.error if logger isn't ready
-  if (container.logger) {
-    container.logger.error('Failed to start bot:', err);
-  } else {
-    console.error('Failed to start bot:', err);
-  }
-  process.exitCode = 1;
 }
+
+// Global Rejection Handler
+process.on('unhandledRejection', (reason) => {
+  logger.error('Unhandled Rejection:', reason);
+});
+
+void run().catch((err) => {
+  logger.error('Fatal Startup Error:', err);
+  process.exit(1);
+});

@@ -1,29 +1,33 @@
 import {
+  BarChart as BarChartIcon,
   CheckCircle,
   Dns,
   Error as ErrorIcon,
-  Event,
   History,
   People,
   SmartToy,
   Visibility,
 } from '@mui/icons-material';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
+import CardHeader from '@mui/material/CardHeader';
 import Chip from '@mui/material/Chip';
-import Divider from '@mui/material/Divider';
 import Grid from '@mui/material/Grid';
+import List from '@mui/material/List'; // Added
+import ListItem from '@mui/material/ListItem'; // Added
+import ListItemText from '@mui/material/ListItemText'; // Added
+import Stack from '@mui/material/Stack'; // Added
 import Typography from '@mui/material/Typography';
 import { headers } from 'next/headers';
-import Link from 'next/link';
 import { QuickActions } from '@/components/admin/QuickActions';
-import { FadeIn, FadeInStagger, ScaleOnHover } from '@/components/ui/FadeIn';
+import { StatsCharts } from '@/components/admin/StatsCharts';
+import { FadeIn } from '@/components/ui/FadeIn';
 import { TrophyIcon } from '@/components/ui/Icons';
 import { getBotStatus } from '@/lib/bot';
 import { prisma } from '@/lib/prisma';
 import { formatDateTime } from '@/lib/utils';
+import AdminOverviewIntegrations from './_components/AdminOverviewIntegrations';
 
 export default async function AdminDashboardPage() {
   await headers();
@@ -31,7 +35,12 @@ export default async function AdminDashboardPage() {
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-  // Current Counts & Next Tournament
+  // Stats for charts (Last 6 months)
+  const sixMonthsAgo = new Date();
+  sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 5);
+  sixMonthsAgo.setDate(1);
+
+  // Fetch all necessary data in parallel
   const [
     userCount,
     activeTournamentCount,
@@ -39,15 +48,18 @@ export default async function AdminDashboardPage() {
     botStatus,
     usersLastMonth,
     profilesLastMonth,
-    nextTournament,
+    _nextTournament,
+    recentUsers,
+    recentTournaments,
+    chartUsers,
+    chartTournaments,
+    chartMatches,
+    tournamentTotalCount,
+    _matchCompleteCount,
   ] = await Promise.all([
     prisma.user.count(),
     prisma.tournament.count({
-      where: {
-        status: {
-          in: ['REGISTRATION_OPEN', 'UNDERWAY', 'CHECKIN'],
-        },
-      },
+      where: { status: { in: ['REGISTRATION_OPEN', 'UNDERWAY', 'CHECKIN'] } },
     }),
     prisma.profile.count(),
     getBotStatus(),
@@ -58,35 +70,89 @@ export default async function AdminDashboardPage() {
       orderBy: { date: 'asc' },
       include: { _count: { select: { participants: true } } },
     }),
+    prisma.user.findMany({
+      take: 5,
+      orderBy: { createdAt: 'desc' },
+      select: { name: true, createdAt: true },
+    }),
+    prisma.tournament.findMany({
+      take: 5,
+      orderBy: { createdAt: 'desc' },
+      select: { name: true, createdAt: true },
+    }),
+    prisma.user.findMany({
+      where: { createdAt: { gte: sixMonthsAgo } },
+      select: { createdAt: true },
+    }),
+    prisma.tournament.findMany({
+      where: { createdAt: { gte: sixMonthsAgo } },
+      select: { createdAt: true },
+    }),
+    prisma.tournamentMatch.findMany({
+      select: { state: true },
+    }),
+    prisma.tournament.count(),
+    prisma.tournamentMatch.count({ where: { state: 'complete' } }),
   ]);
 
-  // Calculate Trends
+  // Helper to group by month
+  const groupByMonth = (dates: { createdAt: Date }[]) => {
+    const counts: Record<string, number> = {};
+    for (let i = 0; i < 6; i++) {
+      const d = new Date();
+      d.setMonth(d.getMonth() - i);
+      const key = d.toLocaleString('fr-FR', { month: 'short' });
+      counts[key] = 0;
+    }
+    dates.forEach((item) => {
+      const key = item.createdAt.toLocaleString('fr-FR', { month: 'short' });
+      if (counts[key] !== undefined) counts[key]++;
+    });
+    return Object.entries(counts)
+      .map(([month, count]) => ({ month, count }))
+      .reverse();
+  };
+
+  const registrationsData = groupByMonth(chartUsers);
+  const tournamentsData = groupByMonth(chartTournaments);
+  const matchStatusCounts = chartMatches.reduce(
+    (acc, m) => {
+      const s =
+        m.state === 'complete'
+          ? 'Terminé'
+          : m.state === 'pending'
+            ? 'En attente'
+            : 'En cours';
+      acc[s] = (acc[s] || 0) + 1;
+      return acc;
+    },
+    {} as Record<string, number>,
+  );
+  const matchesStatusData = Object.entries(matchStatusCounts).map(
+    ([status, count]) => ({ status, count }),
+  );
+
+  // Trends
   const calculateTrend = (current: number, previous: number) => {
     if (previous === 0) return current > 0 ? '+100%' : '0%';
     const diff = current - previous;
-    const percent = ((diff / previous) * 100).toFixed(1);
-    return `${diff >= 0 ? '+' : ''}${percent}%`;
+    return `${diff >= 0 ? '+' : ''}${((diff / previous) * 100).toFixed(1)}%`;
   };
-
-  const userTrend = calculateTrend(userCount, usersLastMonth);
-  const profileTrend = calculateTrend(profileCount, profilesLastMonth);
 
   const stats = [
     {
       label: 'Utilisateurs',
       value: userCount.toLocaleString(),
-      change: `${userTrend} (30j)`,
+      change: `${calculateTrend(userCount, usersLastMonth)} (30j)`,
       icon: People,
       color: '#3b82f6',
-      trendColor: userCount >= usersLastMonth ? 'success.main' : 'error.main',
     },
     {
-      label: 'Tournois actifs',
-      value: activeTournamentCount.toString(),
-      change: 'En cours',
+      label: 'Tournois organisés',
+      value: tournamentTotalCount.toString(),
+      change: `${activeTournamentCount} actifs`,
       icon: TrophyIcon,
       color: '#fbbf24',
-      trendColor: 'text.secondary',
     },
     {
       label: 'Membres Discord',
@@ -96,48 +162,31 @@ export default async function AdminDashboardPage() {
         : 'Hors ligne',
       icon: SmartToy,
       color: '#5865F2',
-      trendColor: botStatus ? 'success.main' : 'error.main',
     },
     {
       label: 'Profils Bladers',
       value: profileCount.toLocaleString(),
-      change: `${profileTrend} (30j)`,
+      change: `${calculateTrend(profileCount, profilesLastMonth)} (30j)`,
       icon: Visibility,
       color: '#dc2626',
-      trendColor:
-        profileCount >= profilesLastMonth ? 'success.main' : 'error.main',
     },
   ];
 
-  const recentUsers = await prisma.user.findMany({
-    take: 5,
-    orderBy: { createdAt: 'desc' },
-    select: { name: true, createdAt: true },
-  });
-
-  const recentTournaments = await prisma.tournament.findMany({
-    take: 5,
-    orderBy: { createdAt: 'desc' },
-    select: { name: true, createdAt: true },
-  });
-
   const recentActivity = [
     ...recentUsers.map((u) => ({
-      type: 'user',
-      message: `Nouvel utilisateur inscrit: ${u.name || 'Anonyme'}`,
+      message: `Nouveau blader: ${u.name || 'Anonyme'}`,
       date: u.createdAt,
     })),
     ...recentTournaments.map((t) => ({
-      type: 'tournament',
       message: `Tournoi "${t.name}" créé`,
       date: t.createdAt,
     })),
   ]
     .sort((a, b) => b.date.getTime() - a.date.getTime())
-    .slice(0, 8);
+    .slice(0, 6);
 
   return (
-    <Box component="main" sx={{ py: 4 }}>
+    <Box sx={{ py: 4 }}>
       <FadeIn>
         <Box
           sx={{
@@ -148,12 +197,7 @@ export default async function AdminDashboardPage() {
           }}
         >
           <Box>
-            <Typography
-              variant="h4"
-              component="h1"
-              fontWeight="bold"
-              gutterBottom
-            >
+            <Typography variant="h4" fontWeight="bold" gutterBottom>
               Vue d'ensemble
             </Typography>
             <Typography variant="body1" color="text.secondary">
@@ -165,285 +209,122 @@ export default async function AdminDashboardPage() {
             label={botStatus ? 'Systèmes Opérationnels' : 'Bot Hors Ligne'}
             color={botStatus ? 'success' : 'error'}
             variant="outlined"
-            sx={{ borderRadius: 2, fontWeight: 'bold' }}
           />
         </Box>
       </FadeIn>
 
-      {/* Stats Grid */}
-      <FadeInStagger>
-        <Grid
-          container
-          spacing={3}
-          sx={{ mb: 4 }}
-          role="list"
-          aria-label="Statistiques clés"
-        >
-          {stats.map((stat) => {
-            const Icon = stat.icon;
-            return (
-              <Grid
-                key={stat.label}
-                size={{ xs: 12, sm: 6, lg: 3 }}
-                role="listitem"
-              >
-                <FadeIn>
-                  <ScaleOnHover>
-                    <Card
-                      variant="outlined"
-                      sx={{
-                        transition: 'all 0.2s',
-                        '&:hover': {
-                          transform: 'translateY(-4px)',
-                          boxShadow: 4,
-                        },
-                        borderLeft: `4px solid ${stat.color}`,
-                        height: '100%',
-                      }}
-                      role="article"
-                      aria-label={`Statistique: ${stat.label}`}
-                    >
-                      <CardContent sx={{ p: 3 }}>
-                        <Box
-                          sx={{
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'flex-start',
-                          }}
-                        >
-                          <Box>
-                            <Typography
-                              variant="body2"
-                              color="text.secondary"
-                              gutterBottom
-                              fontWeight="bold"
-                            >
-                              {stat.label}
-                            </Typography>
-                            <Typography variant="h4" fontWeight="bold">
-                              {stat.value}
-                            </Typography>
-                            <Box
-                              sx={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: 0.5,
-                                mt: 1,
-                              }}
-                            >
-                              <Typography
-                                variant="caption"
-                                color={stat.trendColor}
-                                fontWeight="bold"
-                              >
-                                {stat.change}
-                              </Typography>
-                            </Box>
-                          </Box>
-                          <Box
-                            sx={{
-                              p: 1.5,
-                              borderRadius: 2,
-                              bgcolor: `${stat.color}20`,
-                            }}
-                            aria-hidden="true"
-                          >
-                            <Icon sx={{ color: stat.color }} />
-                          </Box>
-                        </Box>
-                      </CardContent>
-                    </Card>
-                  </ScaleOnHover>
-                </FadeIn>
-              </Grid>
-            );
-          })}
-        </Grid>
-      </FadeInStagger>
+      <Grid container spacing={3} sx={{ mb: 4 }}>
+        {stats.map((stat) => (
+          <Grid key={stat.label} size={{ xs: 12, sm: 6, lg: 3 }}>
+            <Card
+              variant="outlined"
+              sx={{ borderLeft: `4px solid ${stat.color}` }}
+            >
+              <CardContent sx={{ p: 3 }}>
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  fontWeight="bold"
+                >
+                  {stat.label}
+                </Typography>
+                <Typography variant="h4" fontWeight="bold">
+                  {stat.value}
+                </Typography>
+                <Typography
+                  variant="caption"
+                  color="text.secondary"
+                  fontWeight="bold"
+                >
+                  {stat.change}
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
 
       <Grid container spacing={3}>
-        {/* Recent Activity */}
         <Grid size={{ xs: 12, lg: 8 }}>
-          <FadeIn delay={0.2} duration={0.6} direction="up" fullWidth>
-            <Card
-              variant="elevated"
-              sx={{ height: '100%' }}
-              role="region"
-              aria-labelledby="recent-activity-title"
-            >
-              <CardContent sx={{ p: 4 }}>
+          <Stack spacing={3}>
+            {/* Analytics Section */}
+            <Card variant="outlined">
+              <CardHeader
+                title={
+                  <Stack direction="row" spacing={1}>
+                    <BarChartIcon />{' '}
+                    <Typography variant="h6">Analytiques</Typography>
+                  </Stack>
+                }
+              />
+              <CardContent>
+                <StatsCharts
+                  registrations={registrationsData}
+                  tournaments={tournamentsData}
+                  matchesStatus={matchesStatusData}
+                />
+              </CardContent>
+            </Card>
+
+            {/* Integrations Section */}
+            <AdminOverviewIntegrations
+              env={botStatus ? { TWITCH_CLIENT_ID: 'set' } : {}}
+            />
+          </Stack>
+        </Grid>
+
+        <Grid size={{ xs: 12, lg: 4 }}>
+          <Stack spacing={3}>
+            <Card variant="elevated">
+              <CardContent>
                 <Typography
                   variant="h6"
                   fontWeight="bold"
                   gutterBottom
-                  sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}
-                  id="recent-activity-title"
-                  component="h2"
+                  sx={{ mb: 2 }}
                 >
-                  <History aria-hidden="true" /> Activité récente
+                  <History /> Activité
                 </Typography>
-                <Box
-                  component="ul"
-                  sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: 2,
-                    p: 0,
-                    m: 0,
-                    listStyle: 'none',
-                  }}
-                >
-                  {recentActivity.length > 0 ? (
-                    recentActivity.map((activity, index) => (
-                      <Box
-                        component="li"
-                        key={`${activity.type}-${index}`}
-                        sx={{
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          alignItems: 'center',
-                          p: 2,
-                          borderRadius: 2,
-                          bgcolor: 'background.default',
-                        }}
-                      >
-                        <Typography variant="body2">
-                          {activity.message}
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary">
-                          {formatDateTime(activity.date)}
-                        </Typography>
-                      </Box>
-                    ))
-                  ) : (
-                    <Box component="li">
-                      <Typography
-                        variant="body2"
-                        color="text.secondary"
-                        sx={{ p: 2, textAlign: 'center' }}
-                      >
-                        Aucune activité récente
-                      </Typography>
-                    </Box>
-                  )}
-                </Box>
+                <List dense>
+                  {recentActivity.map((a, i) => (
+                    <ListItem key={i} divider={i !== recentActivity.length - 1}>
+                      <ListItemText
+                        primary={a.message}
+                        secondary={formatDateTime(a.date)}
+                      />
+                    </ListItem>
+                  ))}
+                </List>
               </CardContent>
             </Card>
-          </FadeIn>
-        </Grid>
 
-        {/* Right Column: Next Tournament & Quick Actions */}
-        <Grid size={{ xs: 12, lg: 4 }}>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-            {/* Next Tournament Card */}
-            {nextTournament && (
-              <FadeIn delay={0.3} direction="left">
-                <Card
-                  variant="outlined"
-                  sx={{ borderColor: 'primary.main', borderWidth: 2 }}
+            <Card variant="elevated">
+              <CardContent>
+                <Typography variant="h6" fontWeight="bold" gutterBottom>
+                  Actions rapides
+                </Typography>
+                <QuickActions />
+              </CardContent>
+            </Card>
+
+            <Card variant="outlined">
+              <CardContent>
+                <Typography
+                  variant="subtitle2"
+                  color="text.secondary"
+                  gutterBottom
                 >
-                  <CardContent sx={{ p: 3 }}>
-                    <Typography
-                      variant="h6"
-                      fontWeight="bold"
-                      gutterBottom
-                      sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
-                    >
-                      <Event color="primary" /> Prochain Tournoi
-                    </Typography>
-                    <Typography
-                      variant="subtitle1"
-                      fontWeight="bold"
-                      noWrap
-                      title={nextTournament.name}
-                    >
-                      {nextTournament.name}
-                    </Typography>
-                    <Box sx={{ display: 'flex', gap: 2, mt: 2, mb: 2 }}>
-                      <Chip
-                        label={nextTournament.status}
-                        size="small"
-                        color={
-                          nextTournament.status === 'REGISTRATION_OPEN'
-                            ? 'success'
-                            : 'default'
-                        }
-                      />
-                      <Typography variant="body2" color="text.secondary">
-                        {formatDateTime(nextTournament.date)}
-                      </Typography>
-                    </Box>
-                    <Box
-                      sx={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                      }}
-                    >
-                      <Typography variant="body2">
-                        <strong>{nextTournament._count.participants}</strong>{' '}
-                        participants
-                      </Typography>
-                      <Link
-                        href={`/admin/tournaments/${nextTournament.id}`}
-                        style={{ textDecoration: 'none' }}
-                      >
-                        <Button size="small" variant="contained">
-                          Gérer
-                        </Button>
-                      </Link>
-                    </Box>
-                  </CardContent>
-                </Card>
-              </FadeIn>
-            )}
-
-            <FadeIn delay={0.4} direction="left">
-              <Card
-                variant="elevated"
-                role="region"
-                aria-labelledby="quick-actions-title"
-              >
-                <CardContent sx={{ p: 4 }}>
-                  <Typography
-                    variant="h6"
-                    fontWeight="bold"
-                    gutterBottom
-                    sx={{ mb: 3 }}
-                    id="quick-actions-title"
-                    component="h2"
-                  >
-                    Actions rapides
-                  </Typography>
-                  <QuickActions />
-                </CardContent>
-              </Card>
-            </FadeIn>
-
-            <FadeIn delay={0.5} direction="left">
-              <Card variant="outlined">
-                <CardContent sx={{ p: 3 }}>
-                  <Typography
-                    variant="subtitle2"
-                    color="text.secondary"
-                    gutterBottom
-                    sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
-                  >
-                    <Dns fontSize="small" /> État des Services
-                  </Typography>
+                  <Dns fontSize="small" /> État des Services
+                </Typography>
+                <Stack spacing={1}>
                   <Box
-                    sx={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      mt: 1,
-                    }}
+                    sx={{ display: 'flex', justifyContent: 'space-between' }}
                   >
                     <Typography variant="caption">Database</Typography>
                     <Typography variant="caption" color="success.main">
                       Connecté
                     </Typography>
                   </Box>
-                  <Divider sx={{ my: 1 }} />
                   <Box
                     sx={{ display: 'flex', justifyContent: 'space-between' }}
                   >
@@ -455,19 +336,10 @@ export default async function AdminDashboardPage() {
                       {botStatus ? `${botStatus.ping}ms` : 'Offline'}
                     </Typography>
                   </Box>
-                  <Divider sx={{ my: 1 }} />
-                  <Box
-                    sx={{ display: 'flex', justifyContent: 'space-between' }}
-                  >
-                    <Typography variant="caption">Gemini Agent</Typography>
-                    <Typography variant="caption" color="success.main">
-                      Actif
-                    </Typography>
-                  </Box>
-                </CardContent>
-              </Card>
-            </FadeIn>
-          </Box>
+                </Stack>
+              </CardContent>
+            </Card>
+          </Stack>
         </Grid>
       </Grid>
     </Box>
