@@ -93,19 +93,18 @@ export default async function SatrPage({ searchParams }: SatrPageProps) {
                 const whereCondition = searchQuery ? {
                     name: { contains: searchQuery, mode: 'insensitive' as const }
                 } : {};
-                const [bladers, count] = await Promise.all([
-                    prisma.satrBlader.findMany({
-                        where: whereCondition,
-                        orderBy: [
-                            { tournamentWins: 'desc' },
-                            { totalWins: 'desc' }
-                        ],
-                        take: pageSize,
-                        skip: (page - 1) * pageSize,
-                    }),
-                    prisma.satrBlader.count({ where: whereCondition })
-                ]);
-                return { items: bladers, total: count };
+                            const [bladers, count] = await Promise.all([
+                                prisma.satrBlader.findMany({
+                                    where: whereCondition,
+                                    orderBy: [
+                                        { tournamentWins: 'desc' },
+                                        { totalWins: 'desc' }
+                                    ],
+                                    take: pageSize,
+                                    skip: (page - 1) * pageSize,
+                                }),
+                                prisma.satrBlader.count({ where: whereCondition })
+                            ]);                return { items: bladers, total: count };
               }
           } catch (e) {
               console.error('Data fetch error:', e);
@@ -155,19 +154,24 @@ export default async function SatrPage({ searchParams }: SatrPageProps) {
         pt: { xs: 2, md: 4 },
         pb: 8
     }}>
-        <Container maxWidth="lg">
+        <Container maxWidth="lg" sx={{ px: { xs: 1, sm: 2, md: 3 } }}>
             <Box sx={{ 
-                mb: 6, 
+                mb: { xs: 4, md: 6 }, 
                 display: 'flex', 
                 flexDirection: { xs: 'column', md: 'row' }, 
                 alignItems: 'center', 
                 justifyContent: 'space-between',
-                gap: 3,
-                px: 1
+                gap: { xs: 2, md: 3 },
+                px: { xs: 1, md: 0 }
             }}>
                     {/* Left: Logo */}
-                    <Box sx={{ flex: 1, display: 'flex', justifyContent: 'flex-start' }}>
-                        <Box sx={{ position: 'relative', width: { xs: 140, md: 180 }, height: 80 }}>
+                    <Box sx={{ 
+                        flex: 1, 
+                        display: 'flex', 
+                        justifyContent: { xs: 'center', md: 'flex-start' },
+                        width: '100%'
+                    }}>
+                        <Box sx={{ position: 'relative', width: { xs: 120, md: 180 }, height: { xs: 60, md: 80 } }}>
                             <Image 
                                 src="/satr-logo.webp" 
                                 alt="SATR 2 Logo" 
@@ -179,14 +183,20 @@ export default async function SatrPage({ searchParams }: SatrPageProps) {
                     </Box>
 
                     {/* Center: Search */}
-                    <Box sx={{ flex: 2, width: '100%', maxWidth: 600 }}>
+                    <Box sx={{ flex: 2, width: '100%', maxWidth: { xs: '100%', md: 600 }, order: { xs: 3, md: 2 } }}>
                         <Suspense fallback={<Paper sx={{ height: 44, width: '100%', bgcolor: 'rgba(255,255,255,0.05)', borderRadius: 3 }} />}>
                             <RankingSearch defaultValue={searchQuery} />
                         </Suspense>
                     </Box>
 
                     {/* Right: Socials */}
-                    <Box sx={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
+                    <Box sx={{ 
+                        flex: 1, 
+                        display: 'flex', 
+                        justifyContent: { xs: 'center', md: 'flex-end' },
+                        width: '100%',
+                        order: { xs: 2, md: 3 }
+                    }}>
                         <Stack direction="row" spacing={1}>
                             {socials.map((s) => (
                                 <Tooltip key={s.name} title={s.name}>
@@ -194,6 +204,7 @@ export default async function SatrPage({ searchParams }: SatrPageProps) {
                                         component="a" 
                                         href={s.url} 
                                         target="_blank" 
+                                        size="small"
                                         sx={{ 
                                             color: 'rgba(255,255,255,0.4)', 
                                             bgcolor: 'rgba(255,255,255,0.03)',
@@ -207,7 +218,7 @@ export default async function SatrPage({ searchParams }: SatrPageProps) {
                                             transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)'
                                         }}
                                     >
-                                        <s.icon sx={{ fontSize: 20 }} />
+                                        <s.icon sx={{ fontSize: { xs: 18, md: 20 } }} />
                                     </IconButton>
                                 </Tooltip>
                             ))}
@@ -226,12 +237,12 @@ export default async function SatrPage({ searchParams }: SatrPageProps) {
                         variant="caption" 
                         sx={{ 
                             position: 'absolute',
-                            top: -20,
+                            top: { xs: -15, md: -20 },
                             right: 8,
                             color: 'rgba(255,255,255,0.3)', 
                             fontStyle: 'italic',
                             fontWeight: 600,
-                            fontSize: '0.65rem',
+                            fontSize: { xs: '0.55rem', md: '0.65rem' },
                             letterSpacing: 0.5,
                             textTransform: 'uppercase'
                         }}
@@ -240,7 +251,7 @@ export default async function SatrPage({ searchParams }: SatrPageProps) {
                     </Typography>
                 )}
 
-                <Box sx={{ mt: 2 }}>
+                <Box sx={{ mt: { xs: 1, md: 2 } }}>
                     {mode === 'career' && <SatrCharts bladers={rankingData.items as any[]} />}
                     
                     {mode === 'ranking' ? (
@@ -251,7 +262,7 @@ export default async function SatrPage({ searchParams }: SatrPageProps) {
                 </Box>
             </Box>
             
-            <Typography variant="caption" color="text.secondary" sx={{ display: 'block', textAlign: 'center', mt: 6, opacity: 0.3, letterSpacing: 2, fontWeight: 900 }}>
+            <Typography variant="caption" color="text.secondary" sx={{ display: 'block', textAlign: 'center', mt: 6, opacity: 0.2, letterSpacing: 2, fontWeight: 900, fontSize: { xs: '0.6rem', md: '0.75rem' } }}>
                 SUN AFTER THE REIGN • BEYBLADE BATTLE TOURNAMENT
             </Typography>
         </Container>

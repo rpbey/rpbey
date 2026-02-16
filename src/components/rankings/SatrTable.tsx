@@ -2,6 +2,7 @@
 
 import { useTheme, alpha } from '@mui/material';
 import Box from '@mui/material/Box';
+import Pagination from '@mui/material/Pagination';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -10,7 +11,6 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
-import Pagination from '@mui/material/Pagination';
 import type { SatrRanking, SatrBlader } from '@prisma/client';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
@@ -69,8 +69,8 @@ export function SatrTable({ rankings, totalPages, currentPage }: SatrTableProps)
       return (
         <Box
           sx={{
-            width: 28,
-            height: 28,
+            width: { xs: 24, md: 28 },
+            height: { xs: 24, md: 28 },
             borderRadius: '50%',
             bgcolor: color,
             color: rank === 1 ? '#000' : '#fff',
@@ -78,7 +78,7 @@ export function SatrTable({ rankings, totalPages, currentPage }: SatrTableProps)
             alignItems: 'center',
             justifyContent: 'center',
             fontWeight: 900,
-            fontSize: '0.8rem',
+            fontSize: { xs: '0.7rem', md: '0.8rem' },
             mx: 'auto',
             boxShadow: `0 0 15px ${alpha(color, 0.4)}`,
             border: '2px solid rgba(255,255,255,0.2)'
@@ -90,7 +90,7 @@ export function SatrTable({ rankings, totalPages, currentPage }: SatrTableProps)
     }
 
     return (
-      <Typography fontWeight="900" color="text.secondary" sx={{ fontSize: '0.85rem', opacity: 0.6 }}>
+      <Typography fontWeight="900" color="text.secondary" sx={{ fontSize: { xs: '0.75rem', md: '0.85rem' }, opacity: 0.6 }}>
         #{rank}
       </Typography>
     );
@@ -108,18 +108,20 @@ export function SatrTable({ rankings, totalPages, currentPage }: SatrTableProps)
             borderRadius: 4,
             overflowX: 'auto',
             mb: 3,
+            '&::-webkit-scrollbar': { height: '4px' },
+            '&::-webkit-scrollbar-thumb': { bgcolor: 'rgba(255,255,255,0.1)', borderRadius: '4px' }
         }}
         >
-        <Table size="small">
+        <Table size="small" sx={{ minWidth: { xs: 450, md: '100%' } }}>
             <TableHead>
             <TableRow sx={{ bgcolor: 'rgba(255,255,255,0.03)' }}>
-                <TableCell width={70} align="center" sx={{ py: 2, fontWeight: 900, textTransform: 'uppercase', fontSize: '0.7rem', letterSpacing: 1 }}>Rang</TableCell>
-                <TableCell sx={{ py: 2, fontWeight: 900, textTransform: 'uppercase', fontSize: '0.7rem', letterSpacing: 1 }}>Blader</TableCell>
-                <TableCell align="center" sx={{ py: 2, fontWeight: 900, textTransform: 'uppercase', fontSize: '0.7rem', letterSpacing: 1 }}>Score</TableCell>
-                <TableCell align="center" sx={{ py: 2, fontWeight: 900, textTransform: 'uppercase', fontSize: '0.7rem', letterSpacing: 1 }}>Wins</TableCell>
-                <TableCell align="center" sx={{ py: 2, display: { xs: 'none', sm: 'table-cell' }, fontWeight: 900, textTransform: 'uppercase', fontSize: '0.7rem', letterSpacing: 1 }}>Part.</TableCell>
-                <TableCell align="center" sx={{ py: 2, fontWeight: 900, textTransform: 'uppercase', fontSize: '0.7rem', letterSpacing: 1 }}>Winrate</TableCell>
-                <TableCell align="center" sx={{ py: 2, display: { xs: 'none', md: 'table-cell' }, fontWeight: 900, textTransform: 'uppercase', fontSize: '0.7rem', letterSpacing: 1 }}>Moyenne</TableCell>
+                <TableCell width={60} align="center" sx={{ py: 2, fontWeight: 900, textTransform: 'uppercase', fontSize: '0.65rem', letterSpacing: 1 }}>Rang</TableCell>
+                <TableCell sx={{ py: 2, fontWeight: 900, textTransform: 'uppercase', fontSize: '0.65rem', letterSpacing: 1 }}>Blader</TableCell>
+                <TableCell align="center" sx={{ py: 2, fontWeight: 900, textTransform: 'uppercase', fontSize: '0.65rem', letterSpacing: 1 }}>Score</TableCell>
+                <TableCell align="center" sx={{ py: 2, fontWeight: 900, textTransform: 'uppercase', fontSize: '0.65rem', letterSpacing: 1 }}>Wins</TableCell>
+                <TableCell align="center" sx={{ py: 2, display: { xs: 'none', sm: 'table-cell' }, fontWeight: 900, textTransform: 'uppercase', fontSize: '0.65rem', letterSpacing: 1 }}>Part.</TableCell>
+                <TableCell align="center" sx={{ py: 2, fontWeight: 900, textTransform: 'uppercase', fontSize: '0.65rem', letterSpacing: 1 }}>Winrate</TableCell>
+                <TableCell align="center" sx={{ py: 2, display: { xs: 'none', md: 'table-cell' }, fontWeight: 900, textTransform: 'uppercase', fontSize: '0.65rem', letterSpacing: 1 }}>Moyenne</TableCell>
             </TableRow>
             </TableHead>
             <TableBody>
@@ -140,13 +142,13 @@ export function SatrTable({ rankings, totalPages, currentPage }: SatrTableProps)
                     >
                     <TableCell align="center">{getRankBadge(row.rank)}</TableCell>
                     <TableCell>
-                        <Typography fontWeight="800" sx={{ fontSize: '0.95rem', color: '#fff' }}>{row.playerName}</Typography>
+                        <Typography fontWeight="800" sx={{ fontSize: { xs: '0.85rem', md: '0.95rem' }, color: '#fff', whiteSpace: 'nowrap' }}>{row.playerName}</Typography>
                     </TableCell>
                     <TableCell align="center">
-                        <Typography fontWeight="900" sx={{ fontSize: '1rem', color: '#fbbf24' }}>{row.score.toLocaleString()}</Typography>
+                        <Typography fontWeight="900" sx={{ fontSize: { xs: '0.85rem', md: '1rem' }, color: '#fbbf24' }}>{row.score.toLocaleString()}</Typography>
                     </TableCell>
                     <TableCell align="center">
-                        <Typography fontWeight="700" color="success.main" sx={{ fontSize: '0.9rem' }}>{row.wins}</Typography>
+                        <Typography fontWeight="700" color="success.main" sx={{ fontSize: '0.85rem' }}>{row.wins}</Typography>
                     </TableCell>
                     <TableCell align="center" sx={{ display: { xs: 'none', sm: 'table-cell' } }}>
                         <Typography sx={{ fontSize: '0.85rem', opacity: 0.8 }}>{row.participation}</Typography>
@@ -160,7 +162,7 @@ export function SatrTable({ rankings, totalPages, currentPage }: SatrTableProps)
                             bgcolor: 'rgba(255,255,255,0.05)',
                             border: '1px solid rgba(255,255,255,0.1)'
                         }}>
-                            <Typography fontWeight="800" sx={{ fontSize: '0.85rem' }}>{row.winRate}</Typography>
+                            <Typography fontWeight="800" sx={{ fontSize: '0.8rem' }}>{row.winRate}</Typography>
                         </Box>
                     </TableCell>
                     <TableCell align="center" sx={{ display: { xs: 'none', md: 'table-cell' } }}>
@@ -171,7 +173,7 @@ export function SatrTable({ rankings, totalPages, currentPage }: SatrTableProps)
             ) : (
                 <TableRow>
                     <TableCell colSpan={7} align="center" sx={{ py: 10 }}>
-                        <Typography variant="body1" color="text.secondary">Aucun blader trouvé</Typography>
+                        <Typography variant="body2" color="text.secondary">Aucun blader trouvé</Typography>
                     </TableCell>
                 </TableRow>
             )}
@@ -186,7 +188,7 @@ export function SatrTable({ rankings, totalPages, currentPage }: SatrTableProps)
                 page={currentPage}
                 onChange={handlePageChange}
                 color="primary"
-                size="large"
+                size={isMobile ? "small" : "large"}
                 showFirstButton
                 showLastButton
                 sx={{
