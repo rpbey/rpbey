@@ -48,7 +48,9 @@ export function SatrHallOfFame({ champions }: SatrHallOfFameProps) {
   return (
     <Box sx={{ mb: 6 }}>
       <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 2, px: 1 }}>
-          <TrophyIcon fontSize="small" sx={{ color: '#fbbf24' }} />
+          <Box sx={{ display: 'flex', color: '#fbbf24' }}>
+              <TrophyIcon size={20} />
+          </Box>
           <Typography variant="overline" sx={{ fontWeight: 900, letterSpacing: 2, color: '#fbbf24' }}>
             Hall of Fame
           </Typography>
@@ -99,9 +101,10 @@ export function SatrHallOfFame({ champions }: SatrHallOfFameProps) {
                 top: -20, 
                 right: -20, 
                 opacity: 0.05,
-                transform: 'rotate(15deg)'
+                transform: 'rotate(15deg)',
+                color: '#fbbf24'
             }}>
-                <TrophyIcon fontSize="large" sx={{ fontSize: 100, color: '#fbbf24' }} />
+                <TrophyIcon size={100} />
             </Box>
 
             <Typography variant="caption" sx={{ display: 'block', color: 'rgba(251, 191, 36, 0.7)', fontWeight: 800, mb: 0.5, fontSize: '0.7rem', textTransform: 'uppercase' }}>
@@ -156,7 +159,7 @@ export function SatrHallOfFame({ champions }: SatrHallOfFameProps) {
                       {top10Data.map((p, i) => (
                           <Box key={i} sx={{ display: 'flex', justifyContent: 'space-between', p: 1, borderRadius: 2, bgcolor: p.rank === 1 ? 'rgba(251, 191, 36, 0.1)' : 'transparent' }}>
                               <Typography variant="body2" sx={{ fontWeight: p.rank === 1 ? 900 : 500 }}>{p.rank}. {p.name}</Typography>
-                              {p.rank === 1 && <TrophyIcon fontSize="small" sx={{ color: '#fbbf24' }} />}
+                              {p.rank === 1 && <TrophyIcon size={16} color="#fbbf24" />}
                           </Box>
                       ))}
                   </Stack>

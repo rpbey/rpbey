@@ -119,7 +119,7 @@ export function SatrBladersTable({
                         {!tournamentWins && hasPodium && (
                           <Tooltip title="Podium SATR">
                             <Box sx={{ display: 'flex', color: '#C0C0C0', opacity: 0.8 }}>
-                                <TrophyIcon fontSize="small" />
+                                <TrophyIcon size={16} />
                             </Box>
                           </Tooltip>
                         )}
@@ -127,8 +127,8 @@ export function SatrBladersTable({
                     </TableCell>
                     <TableCell align="center">
                         {tournamentWins > 0 && (
-                            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 0.5 }}>
-                                <TrophyIcon fontSize="small" sx={{ color: '#FFD700', filter: 'drop-shadow(0 0 5px rgba(255,215,0,0.5))' }} />
+                            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 0.5, color: '#FFD700', filter: 'drop-shadow(0 0 5px rgba(255,215,0,0.5))' }}>
+                                <TrophyIcon size={16} />
                                 {tournamentWins > 1 && (
                                     <Typography variant="caption" sx={{ fontWeight: 900, color: '#FFD700' }}>x{tournamentWins}</Typography>
                                 )}

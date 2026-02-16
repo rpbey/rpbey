@@ -1,4 +1,4 @@
-import { Container, Box, Stack, IconButton, Tooltip, Paper, Typography } from '@mui/material';
+import { Container, Box, Stack, IconButton, Tooltip, Paper, Typography, alpha } from '@mui/material';
 import YouTubeIcon from '@mui/icons-material/YouTube';
 import InstagramIcon from '@mui/icons-material/Instagram';
 import { SatrTable } from '@/components/rankings/SatrTable';

@@ -11,7 +11,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 import Pagination from '@mui/material/Pagination';
-import { SatrRanking } from '@prisma/client';
+import type { SatrRanking } from '@prisma/client';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 
