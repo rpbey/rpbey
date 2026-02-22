@@ -2,6 +2,7 @@
 
 import {
   ArrowBack,
+  Build,
   Launch,
   Leaderboard,
   Logout,
@@ -54,6 +55,11 @@ const NAV_ITEMS: NavItem[] = [
     label: 'Profil',
     icon: Person,
     path: '/dashboard/profile',
+  },
+  {
+    label: 'Mes Decks',
+    icon: Build,
+    path: '/builder',
   },
   {
     label: 'Paramètres',

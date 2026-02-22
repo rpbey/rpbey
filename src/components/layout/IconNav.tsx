@@ -4,6 +4,7 @@ import {
   AccountCircle,
   AdminPanelSettings,
   BarChart,
+  Build,
   Home,
   LiveTv,
   Login,
@@ -43,6 +44,7 @@ const navItems = [
   { icon: TrophyIcon, label: 'Tournois', href: '/tournaments' },
   { icon: BarChart, label: 'Classements', href: '/rankings' },
   { icon: LiveTv, label: 'TV', href: '/tv' },
+  { icon: Build, label: 'Builder', href: '/builder' },
   { icon: People, label: "L'équipe", href: '/notre-equipe' },
 ];
 

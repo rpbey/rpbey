@@ -10,9 +10,10 @@ export async function getPublicParts(params: {
   spin?: string;
   beyTypes?: string[];
   page?: number;
+  pageSize?: number;
 }) {
-  const { search, type, systems, spin, beyTypes, page = 1 } = params;
-  const take = 24;
+  const { search, type, systems, spin, beyTypes, page = 1, pageSize = 24 } = params;
+  const take = pageSize;
   const skip = (page - 1) * take;
 
   // biome-ignore lint/suspicious/noExplicitAny: Dynamic Prisma query
