@@ -16,6 +16,7 @@ import {
   Box,
   Button,
   Chip,
+  Divider,
   Grid,
   Paper,
   Skeleton,
@@ -176,7 +177,7 @@ export default function TournamentDetail({
 
   return (
     <Box sx={{ width: '100%', py: { xs: 2, md: 4 }, px: { xs: 2, md: 4, lg: 6 } }}>
-      {/* --- HERO SECTION (Title & Status Only) --- */}
+      {/* --- HEADER --- */}
       <Box sx={{ mb: 4 }}>
         <Stack direction="row" spacing={1.5} alignItems="center" sx={{ mb: 1 }}>
           <TournamentStatusChip status={(tournament.status || '').toLowerCase() as TournamentStatus} />
@@ -220,7 +221,7 @@ export default function TournamentDetail({
 
       <Grid container spacing={{ xs: 3, md: 5 }}>
         {/* SIDEBAR (Top on Mobile, Right on Desktop) */}
-        <Grid item xs={12} lg={4} xl={3} sx={{ order: { xs: 1, lg: 2 } }}>
+        <Grid size={{ xs: 12, lg: 4, xl: 3 }} sx={{ order: { xs: 1, lg: 2 } }}>
           <Stack spacing={3} sx={{ position: { lg: 'sticky' }, top: { lg: 100 } }}>
             {/* Main Poster */}
             <Box
@@ -301,14 +302,14 @@ export default function TournamentDetail({
         </Grid>
 
         {/* MAIN CONTENT AREA */}
-        <Grid item xs={12} lg={8} xl={9} sx={{ order: { xs: 2, lg: 1 } }}>
+        <Grid size={{ xs: 12, lg: 8, xl: 9 }} sx={{ order: { xs: 2, lg: 1 } }}>
           {/* Live Stadiums */}
           {isLive && stations.length > 0 && (
             <Paper elevation={0} sx={{ p: 4, mb: 4, borderRadius: 6, border: '1px solid', borderColor: 'divider', bgcolor: alpha(theme.palette.background.paper, 0.6), backdropFilter: 'blur(10px)' }}>
               <Typography variant="h5" fontWeight="900" sx={{ mb: 4, letterSpacing: 1 }}>STADIUMS EN DIRECT</Typography>
               <Grid container spacing={3}>
                 {stations.filter(s => s.status === 'active').map(station => (
-                  <Grid item key={station.stationId} xs={12} sm={6} xl={4}>
+                  <Grid key={station.stationId} size={{ xs: 12, sm: 6, xl: 4 }}>
                     <Paper elevation={0} sx={{ p: 3, borderRadius: 4, border: '1px solid', borderColor: 'divider', bgcolor: 'background.paper' }}>
                       <Typography variant="caption" fontWeight="900" color="primary" sx={{ display: 'block', mb: 2, textTransform: 'uppercase' }}>{station.name}</Typography>
                       {station.currentMatch ? (
@@ -400,6 +401,23 @@ function StandingsPanel({ standings }: { standings: Standing[] }) {
         );
       })}
     </Stack>
+  );
+}
+
+function StadiumsPanel({ stations }: { stations: Station[] }) {
+  return (
+    <Grid container spacing={3}>
+      {stations.map((station) => (
+        <Grid item key={station.stationId} size={{ xs: 12, sm: 6, xl: 4 }}>
+          <Paper elevation={0} sx={{ p: 3, borderRadius: 4, border: '1px solid', borderColor: station.status === 'active' ? 'error.main' : 'divider' }}>
+            <Typography variant="subtitle1" fontWeight={900}>{station.name}</Typography>
+            {station.currentMatch ? (
+              <Typography variant="body2" sx={{ mt: 1 }}>{station.currentMatch.player1} vs {station.currentMatch.player2}</Typography>
+            ) : <Typography variant="body2" color="text.disabled">Disponible pour combat</Typography>}
+          </Paper>
+        </Grid>
+      ))}
+    </Grid>
   );
 }
 
