@@ -265,6 +265,7 @@ model Part {
   beyRatchets      Beyblade[] @relation("BeyRatchetRelation")
   deckBits         DeckItem[] @relation("BitRelation")
   deckBlades       DeckItem[] @relation("BladeRelation")
+  deckOverBlades   DeckItem[] @relation("OverBladeRelation")
   deckRatchets     DeckItem[] @relation("RatchetRelation")
   deckLockChips    DeckItem[] @relation("LockChipRelation")
   deckAssistBlades DeckItem[] @relation("AssistBladeRelation")
@@ -325,6 +326,7 @@ model DeckItem {
   deckId        String
   beyId         String?
   bladeId       String?
+  overBladeId   String?
   ratchetId     String?
   bitId         String?
   lockChipId    String?
@@ -332,6 +334,7 @@ model DeckItem {
   bey           Beyblade? @relation(fields: [beyId], references: [id])
   bit           Part?     @relation("BitRelation", fields: [bitId], references: [id])
   blade         Part?     @relation("BladeRelation", fields: [bladeId], references: [id])
+  overBlade     Part?     @relation("OverBladeRelation", fields: [overBladeId], references: [id])
   deck          Deck      @relation(fields: [deckId], references: [id], onDelete: Cascade)
   ratchet       Part?     @relation("RatchetRelation", fields: [ratchetId], references: [id])
   lockChip      Part?     @relation("LockChipRelation", fields: [lockChipId], references: [id])
