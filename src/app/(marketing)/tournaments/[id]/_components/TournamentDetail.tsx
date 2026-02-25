@@ -28,10 +28,17 @@ import {
 } from '@mui/material';
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import useSWR from 'swr';
 import { ChallongeBracket } from '@/components/tournaments';
 import { DownloadBracketButton } from '@/components/tournaments/DownloadBracketButton';
 import { type TournamentStatus, TournamentStatusChip } from '@/components/ui';
+import { useSession } from '@/lib/auth-client';
+
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 const TournamentMap = dynamic<{
   position: [number, number];
@@ -120,6 +127,9 @@ export default function TournamentDetail({
   initialLiveData,
 }: TournamentDetailProps) {
   const theme = useTheme();
+  const { data: session } = useSession();
+  const { data: profileData } = useSWR(session ? '/api/profile' : null, fetcher);
+  
   const [liveData, setLiveData] = useState<LiveData>(
     initialLiveData as LiveData,
   );
@@ -329,9 +339,121 @@ export default function TournamentDetail({
         </Stack>
       </Paper>
 
-      <Grid container spacing={4}>
+      <Grid container spacing={{ xs: 2, md: 4 }}>
+        {/* Sidebar - Visible at top on Mobile, right on Desktop */}
+        <Grid size={{ xs: 12, lg: 3 }} sx={{ order: { xs: 1, lg: 2 } }}>
+          <Stack spacing={{ xs: 2, md: 4 }} sx={{ position: { lg: 'sticky' }, top: { lg: 100 } }}>
+            {/* Visual Poster */}
+            <Box
+              sx={{
+                width: '100%',
+                borderRadius: { xs: 4, md: 6 },
+                overflow: 'hidden',
+                border: '1px solid',
+                borderColor: isBTS ? 'rgba(255,255,255,0.1)' : 'divider',
+                aspectRatio: '1040/1467',
+                bgcolor: '#000',
+                boxShadow: isBTS ? '0 25px 50px rgba(0,0,0,0.5)' : '0 15px 35px rgba(0,0,0,0.1)',
+                position: 'relative',
+              }}
+            >
+              <Image
+                src={posterUrl}
+                alt={tournament.name}
+                fill
+                unoptimized={isBTS3}
+                sizes="(max-width: 900px) 100vw, 25vw"
+                style={{
+                  objectFit: 'cover',
+                  padding: 0,
+                }}
+                priority={true}
+              />
+              <Box sx={{ 
+                position: 'absolute', 
+                bottom: 0, 
+                left: 0, 
+                right: 0, 
+                p: { xs: 2, md: 3 }, 
+                background: 'linear-gradient(to top, rgba(0,0,0,0.9), transparent)',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: 0.5
+              }}>
+                <Typography variant="caption" sx={{ color: '#fbbf24', fontWeight: 900, letterSpacing: 2, textTransform: 'uppercase', fontSize: { xs: '0.6rem', md: '0.75rem' } }}>
+                  ÉVÉNEMENT OFFICIEL
+                </Typography>
+                <Typography variant="body2" sx={{ color: 'white', fontWeight: 800, opacity: 0.8, fontSize: { xs: '0.75rem', md: '0.875rem' } }}>
+                  RÉPUBLIQUE POPULAIRE DU BEYBLADE
+                </Typography>
+              </Box>
+            </Box>
+
+            {/* Inscription Card */}
+            <Paper
+              elevation={0}
+              sx={{
+                p: { xs: 2.5, md: 4 },
+                borderRadius: { xs: 4, md: 6 },
+                border: '1px solid',
+                borderColor: isBTS ? alpha('#dc2626', 0.4) : 'divider',
+                background: isBTS ? 'linear-gradient(135deg, #1a0a0a 0%, #0a0a0a 100%)' : alpha(theme.palette.background.paper, 0.8),
+                backdropFilter: 'blur(12px)',
+                boxShadow: isBTS ? '0 15px 35px rgba(220, 38, 38, 0.15)' : 'none'
+              }}
+            >
+              <Typography
+                variant="h6"
+                fontWeight="900"
+                gutterBottom
+                sx={{ textTransform: 'uppercase', letterSpacing: 2, color: isBTS ? 'white' : 'text.primary', mb: 3, display: { xs: 'none', md: 'block' } }}
+              >
+                PARTICIPATION
+              </Typography>
+              <Stack spacing={2}>
+                {tournament.challongeUrl && (
+                  <Button
+                    variant="contained"
+                    fullWidth
+                    href={tournament.challongeUrl}
+                    target="_blank"
+                    rel="noopener"
+                    sx={{
+                      borderRadius: 3,
+                      py: { xs: 1.5, md: 2 },
+                      background: 'linear-gradient(135deg, #dc2626 0%, #991b1b 100%)',
+                      color: '#fff',
+                      fontWeight: 900,
+                      fontSize: { xs: '1rem', md: '1.1rem' },
+                      boxShadow: '0 8px 20px rgba(220, 38, 38, 0.4)',
+                    }}
+                  >
+                    S&apos;INSCRIRE
+                  </Button>
+                )}
+                <Button
+                  variant="outlined"
+                  fullWidth
+                  href="https://discord.gg/rpb"
+                  target="_blank"
+                  sx={{
+                    borderRadius: 3,
+                    py: 1.5,
+                    fontWeight: 800,
+                    borderColor: isBTS ? alpha('#fff', 0.2) : 'divider',
+                    color: isBTS ? 'white' : 'text.primary',
+                  }}
+                >
+                  DISCORD
+                </Button>
+              </Stack>
+            </Paper>
+          </Stack>
+        </Grid>
+
         {/* Main Content Area */}
-        <Grid size={{ xs: 12, lg: 9 }}>
+        <Grid size={{ xs: 12, lg: 9 }} sx={{ order: { xs: 2, lg: 1 } }}>
           {/* Live Stadiums Section */}
           {isLive && stations.length > 0 && (
             <Paper
@@ -511,62 +633,75 @@ export default function TournamentDetail({
                 </Typography>
                 
                 <Box sx={{ position: 'relative' }}>
-                  <Typography
-                    variant="body1"
-                    sx={{ 
-                      whiteSpace: 'pre-wrap', 
-                      lineHeight: 2,
-                      fontSize: '1.1rem',
-                      fontWeight: 500,
-                      color: isBTS ? 'grey.300' : 'text.primary',
-                      '& strong': {
-                        color: isBTS ? '#fff' : 'text.primary',
-                        fontWeight: 900
+                  <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
+                    components={{
+                      p: ({ children }) => {
+                        const content = String(children);
+                        if (content.includes('🥇') || content.includes('🥈') || content.includes('🥉')) {
+                          return (
+                            <Box sx={{ 
+                              my: 2, 
+                              p: 2, 
+                              bgcolor: 'rgba(251, 191, 36, 0.08)', 
+                              borderRadius: 3,
+                              borderLeft: '6px solid #fbbf24',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: 2.5,
+                              transition: 'transform 0.2s',
+                              '&:hover': { transform: 'scale(1.01)', bgcolor: 'rgba(251, 191, 36, 0.12)' }
+                            }}>
+                              <Typography variant="h6" fontWeight="900" sx={{ color: '#fff', m: 0 }}>{children}</Typography>
+                            </Box>
+                          );
+                        }
+                        if (content.includes('⚠️')) {
+                          return (
+                            <Box sx={{ 
+                              my: 3, 
+                              p: 3, 
+                              bgcolor: 'rgba(239, 68, 68, 0.15)', 
+                              borderRadius: 4,
+                              border: '2px solid rgba(239, 68, 68, 0.3)',
+                              boxShadow: '0 10px 30px rgba(239, 68, 68, 0.1)'
+                            }}>
+                              <Typography variant="body1" fontWeight="800" sx={{ color: '#ef4444', lineHeight: 1.6, m: 0 }}>{children}</Typography>
+                            </Box>
+                          );
+                        }
+                        return (
+                          <Typography variant="body1" sx={{ 
+                            mb: 2, 
+                            lineHeight: 2, 
+                            fontSize: '1.1rem',
+                            fontWeight: 500,
+                            color: isBTS ? 'grey.300' : 'text.primary'
+                          }}>
+                            {children}
+                          </Typography>
+                        );
                       },
-                      '& a': {
-                        color: 'error.main',
-                        textDecoration: 'none',
-                        fontWeight: 700,
-                        '&:hover': { textDecoration: 'underline' }
-                      }
+                      strong: ({ children }) => (
+                        <Box component="span" sx={{ fontWeight: 900, color: isBTS ? '#fff' : 'text.primary' }}>{children}</Box>
+                      ),
+                      em: ({ children }) => (
+                        <Box component="span" sx={{ fontStyle: 'italic', opacity: 0.9 }}>{children}</Box>
+                      ),
+                      a: ({ href, children }) => (
+                        <Box component="a" href={href} target="_blank" rel="noopener" sx={{ 
+                          color: 'error.main', 
+                          textDecoration: 'none', 
+                          fontWeight: 700,
+                          '&:hover': { textDecoration: 'underline' }
+                        }}>
+                          {children}
+                        </Box>
+                      )
                     }}
                   >
-                    {tournament.description?.split('\n').map((line, i) => {
-                      if (line.includes('🥇') || line.includes('🥈') || line.includes('🥉')) {
-                        return (
-                          <Box key={i} sx={{ 
-                            my: 1.5, 
-                            p: 2, 
-                            bgcolor: 'rgba(251, 191, 36, 0.08)', 
-                            borderRadius: 3,
-                            borderLeft: '6px solid #fbbf24',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 2.5,
-                            transition: 'transform 0.2s',
-                            '&:hover': { transform: 'scale(1.01)', bgcolor: 'rgba(251, 191, 36, 0.12)' }
-                          }}>
-                            <Typography variant="h6" fontWeight="900" sx={{ color: '#fff' }}>{line}</Typography>
-                          </Box>
-                        );
-                      }
-                      if (line.includes('⚠️')) {
-                        return (
-                          <Box key={i} sx={{ 
-                            my: 3, 
-                            p: 3, 
-                            bgcolor: 'rgba(239, 68, 68, 0.15)', 
-                            borderRadius: 4,
-                            border: '2px solid rgba(239, 68, 68, 0.3)',
-                            boxShadow: '0 10px 30px rgba(239, 68, 68, 0.1)'
-                          }}>
-                            <Typography variant="body1" fontWeight="800" sx={{ color: '#ef4444', lineHeight: 1.6 }}>{line}</Typography>
-                          </Box>
-                        );
-                      }
-                      return <span key={i}>{line}{'\n'}</span>;
-                    }) || 'Aucune description fournie.'}
-                  </Typography>
+                    {tournament.description || 'Aucune description fournie.'}
+                  </ReactMarkdown>
                 </Box>
               </Paper>
             </Grid>
