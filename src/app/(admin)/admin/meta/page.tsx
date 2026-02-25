@@ -1,15 +1,40 @@
 'use client';
 
 import {
+  Avatar,
   Box,
   Card,
   CardContent,
+  CircularProgress,
   Grid,
+  List,
+  ListItem,
   Typography,
+  alpha,
 } from '@mui/material';
-import { Hub } from '@mui/icons-material';
+import { Hub, BarChart, TrendingUp, Shield } from '@mui/icons-material';
+import { useEffect, useState } from 'react';
+import { getMetaStats } from '@/server/actions/admin-meta';
 
 export default function AdminMetaPage() {
+  const [stats, setStats] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getMetaStats().then(data => {
+      setStats(data);
+      setLoading(false);
+    });
+  }, []);
+
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', py: 10 }}>
+        <CircularProgress color="error" />
+      </Box>
+    );
+  }
+
   return (
     <Box sx={{ px: { xs: 1, sm: 0 } }}>
       <Box 
@@ -32,71 +57,81 @@ export default function AdminMetaPage() {
           <Hub sx={{ fontSize: { xs: 32, md: 40 }, color: 'error.main' }} />
         </Box>
         <Box>
-          <Typography variant="h4" fontWeight="900" sx={{ fontSize: { xs: '1.5rem', sm: '2rem', md: '2.125rem' } }}>
+          <Typography variant="h4" fontWeight="900">
             GESTION META
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Configuration des pièces, équilibrage et tendances du jeu.
+            Analyse de l'utilisation des pièces basée sur les decks de la communauté.
           </Typography>
         </Box>
       </Box>
 
-      <Grid container spacing={{ xs: 2, md: 3 }}>
-        <Grid size={{ xs: 12, md: 6, lg: 4 }}>
-          <Card sx={{ borderRadius: 4, border: '1px solid', borderColor: 'divider', height: '100%' }}>
-            <CardContent sx={{ p: { xs: 2, md: 3 } }}>
-              <Typography variant="h6" fontWeight="bold" gutterBottom>
-                Statistiques Globales
-              </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                Analyse de l'utilisation des pièces dans les decks de la communauté.
-              </Typography>
-              <Box sx={{ p: 2, bgcolor: 'action.hover', borderRadius: 2, textAlign: 'center' }}>
-                <Typography variant="caption" color="text.disabled" fontWeight="bold">
-                  DONNÉES EN ATTENTE DE SYNCHRONISATION
-                </Typography>
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-        
-        <Grid size={{ xs: 12, md: 6, lg: 4 }}>
-          <Card sx={{ borderRadius: 4, border: '1px solid', borderColor: 'divider', height: '100%' }}>
-            <CardContent sx={{ p: { xs: 2, md: 3 } }}>
-              <Typography variant="h6" fontWeight="bold" gutterBottom>
-                Tier List Officielle
-              </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                Gérez le classement de puissance des pièces Beyblade X.
-              </Typography>
-              <Box sx={{ p: 2, bgcolor: 'action.hover', borderRadius: 2, textAlign: 'center' }}>
-                <Typography variant="caption" color="text.disabled" fontWeight="bold">
-                  MODULE TIER LIST NON ACTIVÉ
-                </Typography>
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-
-        <Grid size={{ xs: 12, lg: 4 }}>
-          <Card sx={{ borderRadius: 4, border: '1px solid', borderColor: 'divider', height: '100%' }}>
-            <CardContent sx={{ p: { xs: 2, md: 3 } }}>
-              <Typography variant="h6" fontWeight="bold" gutterBottom>
-                Alertes Équilibrage
-              </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                Suivi des pièces dominantes ou problématiques (Power Creep).
-              </Typography>
-              <Box sx={{ p: 2, bgcolor: 'action.hover', borderRadius: 2, textAlign: 'center' }}>
-                <Typography variant="caption" color="text.disabled" fontWeight="bold">
-                  AUCUNE ALERTE DÉTECTÉE
-                </Typography>
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
+      <Grid container spacing={3}>
+        <StatSection title="Top Blades" data={stats.blades} icon={<BarChart />} color="#ef4444" />
+        <StatSection title="Top Ratchets" data={stats.ratchets} icon={<TrendingUp />} color="#fbbf24" />
+        <StatSection title="Top Bits" data={stats.bits} icon={<TrendingUp />} color="#3b82f6" />
+        <StatSection title="Top Assists (CX)" data={stats.assists} icon={<Shield />} color="#8b5cf6" />
       </Grid>
     </Box>
   );
 }
 
+function StatSection({ title, data, icon, color }: { title: string, data: any[], icon: any, color: string }) {
+  const maxUsage = data.length > 0 ? Math.max(...data.map(d => d.count)) : 1;
+
+  return (
+    <Grid item xs={12} md={6} lg={3}>
+      <Card sx={{ borderRadius: 4, border: '1px solid', borderColor: 'divider', height: '100%', bgcolor: 'background.paper' }}>
+        <CardContent sx={{ p: 3 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 3 }}>
+            <Box sx={{ color: color, display: 'flex' }}>{icon}</Box>
+            <Typography variant="h6" fontWeight="900" sx={{ fontSize: '1rem', letterSpacing: 0.5 }}>
+              {title.toUpperCase()}
+            </Typography>
+          </Box>
+
+          {data.length === 0 ? (
+            <Typography variant="body2" color="text.disabled" textAlign="center" sx={{ py: 4 }}>
+              Aucune donnée
+            </Typography>
+          ) : (
+            <List disablePadding>
+              {data.map((item) => (
+                <ListItem key={item.id} disablePadding sx={{ mb: 2, flexDirection: 'column', alignItems: 'stretch' }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 0.5 }}>
+                    <Avatar 
+                      src={item.imageUrl} 
+                      variant="rounded" 
+                      sx={{ width: 32, height: 32, bgcolor: alpha(color, 0.1), border: '1px solid', borderColor: alpha(color, 0.2) }}
+                    >
+                      {item.name?.[0]}
+                    </Avatar>
+                    <Box sx={{ flex: 1, minWidth: 0 }}>
+                      <Typography variant="body2" fontWeight="bold" noWrap>
+                        {item.name}
+                      </Typography>
+                    </Box>
+                    <Typography variant="caption" fontWeight="900" color="text.secondary">
+                      {item.count}
+                    </Typography>
+                  </Box>
+                  <Box sx={{ height: 4, width: '100%', bgcolor: 'action.hover', borderRadius: 2, overflow: 'hidden' }}>
+                    <Box 
+                      sx={{ 
+                        height: '100%', 
+                        width: `${(item.count / maxUsage) * 100}%`, 
+                        bgcolor: color,
+                        borderRadius: 2,
+                        opacity: 0.8
+                      }} 
+                    />
+                  </Box>
+                </ListItem>
+              ))}
+            </List>
+          )}
+        </CardContent>
+      </Card>
+    </Grid>
+  );
+}

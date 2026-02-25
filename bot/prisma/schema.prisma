@@ -269,7 +269,6 @@ model Part {
   deckLockChips    DeckItem[] @relation("LockChipRelation")
   deckAssistBlades DeckItem[] @relation("AssistBladeRelation")
 
-  @@unique([name, type])
   @@index([type])
   @@index([beyType])
   @@map("parts")
