@@ -1104,7 +1104,7 @@ export default function TournamentDetail({
           </Stack>
         </Grid>
       </Grid>
-    </Container>
+    </Box>
   );
 }
 
