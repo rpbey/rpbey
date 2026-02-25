@@ -149,7 +149,7 @@ export default function TournamentDetail({
 
   const isBTS = tournament.name.toLowerCase().includes('bey-tamashii');
   const isBTS2 = tournament.name.includes('#2');
-  const isBTS3 = tournament.name.includes('#3');
+  const isBTS3 = tournament.name.includes('#3') || tournament.id === 'cm-bts3-auto-imported';
   const isBTS1 = tournament.name.includes('#1');
 
   const mapPosition: [number, number] = [48.85785, 2.34623];
@@ -158,8 +158,16 @@ export default function TournamentDetail({
   const stations = (liveData?.stations || []) as Station[];
   const activityLog = (liveData?.activityLog || []) as LogEntry[];
 
+  const posterUrl = isBTS3 
+    ? "https://media.discordapp.net/attachments/1448476446724063252/1474480761846628382/IMG_2626.gif?ex=699fef78&is=699e9df8&hm=4375b7173367198be08ca1e798a3a5d2ac3a5462dfdc8c4881670ff40bf3e1ab&=&width=1040&height=1467"
+    : isBTS2
+      ? '/tournaments/BTS2_optimized.webp'
+      : isBTS1
+        ? '/tournaments/B_TS1.svg'
+        : '/logo.png';
+
   return (
-    <Container maxWidth="lg" sx={{ py: { xs: 2, md: 4 } }}>
+    <Box sx={{ width: '100%', py: { xs: 2, md: 4 }, px: { xs: 2, md: 4, lg: 6 } }}>
       {/* --- HERO SECTION --- */}
       <Paper
         elevation={0}
@@ -262,7 +270,7 @@ export default function TournamentDetail({
               fontWeight="900"
               sx={{
                 letterSpacing: '-0.05em',
-                fontSize: { xs: '2.2rem', sm: '3rem', md: '4rem' },
+                fontSize: { xs: '2.2rem', sm: '3rem', md: '4rem', lg: '5rem' },
                 color: isBTS ? '#fff' : 'text.primary',
                 textShadow: isBTS ? '0 4px 20px rgba(0,0,0,0.6)' : 'none',
                 lineHeight: 1,
@@ -277,21 +285,21 @@ export default function TournamentDetail({
               sx={{ color: isBTS ? 'grey.400' : 'text.secondary' }}
             >
               <Stack direction="row" spacing={1} alignItems="center">
-                <CalendarMonth sx={{ fontSize: 20, color: 'error.main' }} />
-                <Typography variant="subtitle1" fontWeight={700}>
+                <CalendarMonth sx={{ fontSize: 24, color: 'error.main' }} />
+                <Typography variant="h6" fontWeight={700}>
                   {formattedDate}
                 </Typography>
               </Stack>
               <Stack direction="row" spacing={1} alignItems="center">
-                <LocationOn sx={{ fontSize: 20, color: 'error.main' }} />
-                <Typography variant="subtitle1" fontWeight={700}>
+                <LocationOn sx={{ fontSize: 24, color: 'error.main' }} />
+                <Typography variant="h6" fontWeight={700}>
                   {tournament.location}
                 </Typography>
               </Stack>
             </Stack>
           </Box>
 
-          <Box sx={{ minWidth: { md: 240 } }}>
+          <Box sx={{ minWidth: { md: 300 } }}>
             <Button
               variant="contained"
               fullWidth
@@ -300,38 +308,38 @@ export default function TournamentDetail({
               size="large"
               startIcon={<OpenInNew />}
               sx={{
-                py: 2,
-                px: 4,
+                py: 2.5,
+                px: 6,
                 borderRadius: 4,
                 fontWeight: 900,
-                fontSize: '1.1rem',
+                fontSize: '1.25rem',
                 bgcolor: '#dc2626',
                 '&:hover': { 
                   bgcolor: '#b91c1c',
-                  transform: 'translateY(-2px)',
-                  boxShadow: '0 12px 25px rgba(220, 38, 38, 0.5)',
+                  transform: 'translateY(-4px)',
+                  boxShadow: '0 15px 35px rgba(220, 38, 38, 0.6)',
                 },
-                transition: 'all 0.2s',
-                boxShadow: '0 8px 20px rgba(220, 38, 38, 0.3)',
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                boxShadow: '0 8px 25px rgba(220, 38, 38, 0.4)',
               }}
             >
-              S&apos;INSCRIRE
+              S&apos;INSCRIRE MAINTENANT
             </Button>
           </Box>
         </Stack>
       </Paper>
 
-      <Grid container spacing={3}>
+      <Grid container spacing={4}>
         {/* Main Content Area */}
-        <Grid size={{ xs: 12, md: 8 }}>
+        <Grid size={{ xs: 12, lg: 9 }}>
           {/* Live Stadiums Section */}
           {isLive && stations.length > 0 && (
             <Paper
               elevation={0}
               sx={{
-                p: 3,
+                p: 4,
                 mb: 4,
-                borderRadius: 5,
+                borderRadius: 6,
                 border: '1px solid',
                 borderColor: 'divider',
                 bgcolor: alpha(theme.palette.background.paper, 0.6),
@@ -342,12 +350,12 @@ export default function TournamentDetail({
                 direction="row"
                 justifyContent="space-between"
                 alignItems="center"
-                sx={{ mb: 3 }}
+                sx={{ mb: 4 }}
               >
-                <Stack direction="row" spacing={1.5} alignItems="center">
+                <Stack direction="row" spacing={2} alignItems="center">
                   <Box
                     sx={{
-                      width: 10,
+                      width: 12,
                       height: 10,
                       bgcolor: 'error.main',
                       borderRadius: '50%',
@@ -355,39 +363,39 @@ export default function TournamentDetail({
                     }}
                   />
                   <Typography
-                    variant="h6"
+                    variant="h5"
                     fontWeight="900"
                     sx={{ letterSpacing: '0.05em' }}
                   >
-                    STADIUMS ACTIFS
+                    STADIUMS EN DIRECT
                   </Typography>
                 </Stack>
-                <Typography
-                  variant="caption"
-                  fontWeight={700}
-                  color="text.secondary"
-                >
-                  {stations.filter((s) => s.status === 'active').length} Matchs
-                  en cours
-                </Typography>
+                <Chip 
+                  label={`${stations.filter((s) => s.status === 'active').length} Matchs actifs`}
+                  variant="outlined"
+                  sx={{ fontWeight: 800 }}
+                />
               </Stack>
 
-              <Grid container spacing={2}>
+              <Grid container spacing={3}>
                 {stations
                   .filter((s) => s.status === 'active')
-                  .slice(0, 4)
                   .map((station) => (
-                    <Grid key={station.stationId} size={{ xs: 12, sm: 6 }}>
+                    <Grid key={station.stationId} size={{ xs: 12, sm: 6, xl: 3 }}>
                       <Paper
                         elevation={0}
                         sx={{
-                          p: 2,
+                          p: 3,
                           borderRadius: 4,
                           border: '1px solid',
                           borderColor: 'divider',
                           bgcolor: 'background.paper',
-                          transition: 'transform 0.2s',
-                          '&:hover': { transform: 'translateY(-2px)' },
+                          transition: 'all 0.2s ease',
+                          '&:hover': { 
+                            transform: 'translateY(-4px)',
+                            boxShadow: '0 10px 20px rgba(0,0,0,0.1)',
+                            borderColor: 'error.main'
+                          },
                         }}
                       >
                         <Typography
@@ -395,15 +403,16 @@ export default function TournamentDetail({
                           fontWeight={900}
                           color="primary"
                           sx={{
-                            mb: 1,
+                            mb: 2,
                             display: 'block',
                             textTransform: 'uppercase',
+                            letterSpacing: 1
                           }}
                         >
                           {station.name}
                         </Typography>
                         {station.currentMatch ? (
-                          <Stack spacing={1.5}>
+                          <Stack spacing={2}>
                             <Stack
                               direction="row"
                               justifyContent="space-between"
@@ -411,29 +420,30 @@ export default function TournamentDetail({
                             >
                               <Typography
                                 variant="body1"
-                                fontWeight={800}
-                                sx={{ maxWidth: '40%' }}
+                                fontWeight={900}
+                                sx={{ maxWidth: '42%' }}
                                 noWrap
                               >
                                 {station.currentMatch.player1 ?? '???'}
                               </Typography>
                               <Box
                                 sx={{
-                                  px: 1.5,
-                                  py: 0.5,
+                                  px: 2,
+                                  py: 0.75,
                                   borderRadius: 2,
-                                  bgcolor: 'action.selected',
+                                  bgcolor: 'error.main',
                                   fontWeight: 900,
-                                  color: 'primary.main',
-                                  fontSize: '0.9rem',
+                                  color: 'white',
+                                  fontSize: '0.85rem',
+                                  boxShadow: '0 4px 10px rgba(220, 38, 38, 0.3)'
                                 }}
                               >
                                 {station.currentMatch.scores || 'VS'}
                               </Box>
                               <Typography
                                 variant="body1"
-                                fontWeight={800}
-                                sx={{ maxWidth: '40%' }}
+                                fontWeight={900}
+                                sx={{ maxWidth: '42%' }}
                                 noWrap
                                 textAlign="right"
                               >
@@ -444,7 +454,7 @@ export default function TournamentDetail({
                               variant="caption"
                               color="text.secondary"
                               textAlign="center"
-                              fontWeight={600}
+                              fontWeight={700}
                             >
                               Match {station.currentMatch.identifier} • Round{' '}
                               {station.currentMatch.round}
@@ -457,67 +467,47 @@ export default function TournamentDetail({
                             textAlign="center"
                             sx={{ py: 1 }}
                           >
-                            Prêt pour le prochain combat...
+                            Prêt pour le combat...
                           </Typography>
                         )}
                       </Paper>
                     </Grid>
                   ))}
-                {stations.filter((s) => s.status === 'active').length === 0 && (
-                  <Grid size={12}>
-                    <Box
-                      sx={{
-                        py: 4,
-                        textAlign: 'center',
-                        bgcolor: 'action.hover',
-                        borderRadius: 4,
-                      }}
-                    >
-                      <Typography
-                        variant="body2"
-                        color="text.secondary"
-                        fontWeight={600}
-                      >
-                        Les bladers se préparent pour les prochains rounds...
-                      </Typography>
-                    </Box>
-                  </Grid>
-                )}
               </Grid>
             </Paper>
           )}
 
           {/* Info Cards */}
-          <Grid container spacing={3} sx={{ mb: 4 }}>
-            <Grid size={{ xs: 12, lg: 8 }}>
+          <Grid container spacing={4} sx={{ mb: 4 }}>
+            <Grid size={{ xs: 12, xl: 8 }}>
               <Paper
                 elevation={0}
                 sx={{
-                  p: { xs: 3, md: 4 },
+                  p: { xs: 3, md: 5 },
                   height: '100%',
                   borderRadius: 6,
                   border: '1px solid',
-                  borderColor: isBTS2 ? alpha('#fbbf24', 0.3) : 'divider',
-                  background: isBTS2 
+                  borderColor: isBTS ? alpha('#fbbf24', 0.3) : 'divider',
+                  background: isBTS 
                     ? 'linear-gradient(180deg, rgba(255,255,255,0.02) 0%, transparent 100%)' 
                     : 'background.paper',
                   position: 'relative'
                 }}
               >
                 <Typography
-                  variant="h6"
+                  variant="h5"
                   fontWeight="900"
                   gutterBottom
                   sx={{ 
                     display: 'flex', 
                     alignItems: 'center', 
-                    gap: 1.5,
-                    color: isBTS2 ? '#fbbf24' : 'primary.main',
-                    mb: 3,
-                    letterSpacing: 1
+                    gap: 2,
+                    color: isBTS ? '#fbbf24' : 'primary.main',
+                    mb: 4,
+                    letterSpacing: 1.5
                   }}
                 >
-                  <Info fontSize="small" /> À PROPOS DU TOURNOI
+                  <Info fontSize="large" /> À PROPOS DU TOURNOI
                 </Typography>
                 
                 <Box sx={{ position: 'relative' }}>
@@ -525,14 +515,14 @@ export default function TournamentDetail({
                     variant="body1"
                     sx={{ 
                       whiteSpace: 'pre-wrap', 
-                      lineHeight: 1.8,
+                      lineHeight: 2,
+                      fontSize: '1.1rem',
                       fontWeight: 500,
-                      color: isBTS2 ? 'grey.300' : 'text.primary',
+                      color: isBTS ? 'grey.300' : 'text.primary',
                       '& strong': {
-                        color: isBTS2 ? '#fff' : 'text.primary',
+                        color: isBTS ? '#fff' : 'text.primary',
                         fontWeight: 900
                       },
-                      // Custom styling for common patterns in descriptions
                       '& a': {
                         color: 'error.main',
                         textDecoration: 'none',
@@ -545,29 +535,32 @@ export default function TournamentDetail({
                       if (line.includes('🥇') || line.includes('🥈') || line.includes('🥉')) {
                         return (
                           <Box key={i} sx={{ 
-                            my: 1, 
-                            p: 1.5, 
-                            bgcolor: 'rgba(251, 191, 36, 0.05)', 
-                            borderRadius: 2,
-                            borderLeft: '4px solid #fbbf24',
+                            my: 1.5, 
+                            p: 2, 
+                            bgcolor: 'rgba(251, 191, 36, 0.08)', 
+                            borderRadius: 3,
+                            borderLeft: '6px solid #fbbf24',
                             display: 'flex',
                             alignItems: 'center',
-                            gap: 2
+                            gap: 2.5,
+                            transition: 'transform 0.2s',
+                            '&:hover': { transform: 'scale(1.01)', bgcolor: 'rgba(251, 191, 36, 0.12)' }
                           }}>
-                            <Typography variant="body2" fontWeight="800" sx={{ color: '#fff' }}>{line}</Typography>
+                            <Typography variant="h6" fontWeight="900" sx={{ color: '#fff' }}>{line}</Typography>
                           </Box>
                         );
                       }
                       if (line.includes('⚠️')) {
                         return (
                           <Box key={i} sx={{ 
-                            my: 2, 
-                            p: 2, 
-                            bgcolor: 'rgba(239, 68, 68, 0.1)', 
-                            borderRadius: 3,
-                            border: '1px solid rgba(239, 68, 68, 0.2)',
+                            my: 3, 
+                            p: 3, 
+                            bgcolor: 'rgba(239, 68, 68, 0.15)', 
+                            borderRadius: 4,
+                            border: '2px solid rgba(239, 68, 68, 0.3)',
+                            boxShadow: '0 10px 30px rgba(239, 68, 68, 0.1)'
                           }}>
-                            <Typography variant="body2" fontWeight="800" sx={{ color: '#ef4444' }}>{line}</Typography>
+                            <Typography variant="body1" fontWeight="800" sx={{ color: '#ef4444', lineHeight: 1.6 }}>{line}</Typography>
                           </Box>
                         );
                       }
@@ -577,53 +570,55 @@ export default function TournamentDetail({
                 </Box>
               </Paper>
             </Grid>
-            <Grid size={{ xs: 12, lg: 4 }}>
-              <Stack spacing={3}>
+            <Grid size={{ xs: 12, xl: 4 }}>
+              <Stack spacing={4}>
                 <Paper
                   elevation={0}
                   sx={{
-                    p: 3,
+                    p: 4,
                     borderRadius: 6,
                     border: '1px solid',
                     borderColor: 'divider',
-                    bgcolor: isBTS2 ? 'rgba(255,255,255,0.03)' : 'background.paper',
+                    bgcolor: isBTS ? 'rgba(255,255,255,0.03)' : 'background.paper',
                   }}
                 >
                   <Typography
                     variant="h6"
                     fontWeight="900"
                     gutterBottom
-                    sx={{ display: 'flex', alignItems: 'center', gap: 1, color: isBTS2 ? '#fbbf24' : 'primary.main' }}
+                    sx={{ display: 'flex', alignItems: 'center', gap: 1.5, color: isBTS ? '#fbbf24' : 'primary.main', mb: 3 }}
                   >
-                    <CalendarMonth fontSize="small" /> INFOS CLÉS
+                    <CalendarMonth /> INFOS CLÉS
                   </Typography>
-                  <Stack spacing={2.5}>
+                  <Stack spacing={4}>
                     <Box>
                       <Typography
                         variant="caption"
                         color="text.secondary"
                         fontWeight={900}
-                        sx={{ letterSpacing: 1 }}
+                        sx={{ letterSpacing: 2, display: 'block', mb: 1 }}
                       >
                         DATE & HEURE
                       </Typography>
-                      <Typography variant="h6" fontWeight={800} color={isBTS2 ? '#fff' : 'text.primary'}>
+                      <Typography variant="h5" fontWeight={900} color={isBTS ? '#fff' : 'text.primary'}>
                         {formattedDate}
                       </Typography>
-                      <Typography variant="body2" fontWeight={700} color="error.main">
-                        Check-in : {isBTS2 ? '13h00' : '14h00'}
-                      </Typography>
+                      <Box sx={{ mt: 1, p: 1, bgcolor: 'rgba(239, 68, 68, 0.1)', borderRadius: 1.5, display: 'inline-block' }}>
+                        <Typography variant="subtitle2" fontWeight={900} color="error.main">
+                          Check-in : {isBTS3 || isBTS2 ? '13h00' : '14h00'}
+                        </Typography>
+                      </Box>
                     </Box>
                     <Box>
                       <Typography
                         variant="caption"
                         color="text.secondary"
                         fontWeight={900}
-                        sx={{ letterSpacing: 1 }}
+                        sx={{ letterSpacing: 2, display: 'block', mb: 1 }}
                       >
-                        LIEU
+                        LIEU DU COMBAT
                       </Typography>
-                      <Typography variant="body2" fontWeight={700} color={isBTS2 ? '#fff' : 'text.primary'}>
+                      <Typography variant="h6" fontWeight={800} color={isBTS ? '#fff' : 'text.primary'} sx={{ lineHeight: 1.4 }}>
                         {tournament.location}
                       </Typography>
                     </Box>
@@ -632,39 +627,38 @@ export default function TournamentDetail({
                         variant="caption"
                         color="text.secondary"
                         fontWeight={900}
-                        sx={{ letterSpacing: 1 }}
+                        sx={{ letterSpacing: 2, display: 'block', mb: 1 }}
                       >
-                        STRUCTURE
+                        FORMAT & CAPACITÉ
                       </Typography>
-                      <Typography variant="body2" fontWeight={700} color={isBTS2 ? '#fff' : 'text.primary'}>
+                      <Typography variant="h6" fontWeight={800} color={isBTS ? '#fff' : 'text.primary'}>
                         {tournament.format}
                       </Typography>
-                      <Typography variant="caption" fontWeight={800} sx={{ color: 'text.disabled' }}>
-                        Capacité : {tournament.maxPlayers} joueurs
-                      </Typography>
+                      <Chip 
+                        label={`Max ${tournament.maxPlayers} bladers`} 
+                        size="small" 
+                        sx={{ mt: 1, fontWeight: 900, bgcolor: 'action.selected' }} 
+                      />
                     </Box>
                   </Stack>
                 </Paper>
 
-                {/* Quick Action Button for Mobile */}
-                <Box sx={{ display: { xs: 'block', md: 'none' } }}>
-                  <Button
-                    variant="contained"
-                    fullWidth
-                    href={tournament.challongeUrl || '#'}
-                    target="_blank"
-                    sx={{
-                      py: 2,
-                      borderRadius: 4,
-                      fontWeight: 900,
-                      fontSize: '1.1rem',
-                      bgcolor: '#dc2626',
-                      boxShadow: '0 8px 20px rgba(220, 38, 38, 0.4)',
-                    }}
-                  >
-                    S&apos;INSCRIRE MAINTENANT
-                  </Button>
-                </Box>
+                <Paper
+                  elevation={0}
+                  sx={{
+                    height: 300,
+                    borderRadius: 6,
+                    border: '1px solid',
+                    borderColor: 'divider',
+                    overflow: 'hidden',
+                    boxShadow: '0 10px 30px rgba(0,0,0,0.1)'
+                  }}
+                >
+                  <TournamentMap
+                    position={mapPosition}
+                    popupText={tournament.location || 'Lieu du tournoi'}
+                  />
+                </Paper>
               </Stack>
             </Grid>
           </Grid>
@@ -674,61 +668,62 @@ export default function TournamentDetail({
             id="tournament-view"
             elevation={0}
             sx={{
-              borderRadius: 6,
+              borderRadius: 8,
               border: '1px solid',
               borderColor: 'divider',
               overflow: 'hidden',
               bgcolor: 'background.paper',
+              boxShadow: '0 20px 50px rgba(0,0,0,0.15)'
             }}
           >
             <Tabs
               value={activeTab}
               onChange={(_, v) => setActiveTab(v)}
-              variant="scrollable"
-              scrollButtons="auto"
+              variant="fullWidth"
               sx={{
-                px: 2,
-                pt: 1,
+                bgcolor: 'rgba(0,0,0,0.02)',
                 borderBottom: '1px solid',
                 borderColor: 'divider',
                 '& .MuiTab-root': {
                   fontWeight: 900,
-                  fontSize: '0.9rem',
-                  minHeight: 60,
+                  fontSize: '1rem',
+                  minHeight: 70,
                   color: 'text.secondary',
+                  letterSpacing: 1
                 },
-                '& .Mui-selected': { color: 'primary.main' },
+                '& .Mui-selected': { color: 'error.main', bgcolor: 'rgba(220, 38, 38, 0.02)' },
                 '& .MuiTabs-indicator': {
                   height: 4,
+                  bgcolor: 'error.main',
                   borderRadius: '4px 4px 0 0',
                 },
               }}
             >
               <Tab
-                icon={<Trophy sx={{ fontSize: 20 }} />}
+                icon={<Trophy sx={{ fontSize: 22 }} />}
                 iconPosition="start"
                 label="TABLEAU"
               />
               <Tab
-                icon={<Leaderboard sx={{ fontSize: 20 }} />}
+                icon={<Leaderboard sx={{ fontSize: 22 }} />}
                 iconPosition="start"
                 label="CLASSEMENT"
               />
               {stations.length > 0 && (
                 <Tab
-                  icon={<Sensors sx={{ fontSize: 20 }} />}
+                  icon={<Sensors sx={{ fontSize: 22 }} />}
                   iconPosition="start"
                   label="STADIUMS"
                 />
               )}
               <Tab
-                icon={<History sx={{ fontSize: 20 }} />}
+                icon={<History sx={{ fontSize: 22 }} />}
                 iconPosition="start"
                 label="JOURNAL"
               />
             </Tabs>
 
-            <Box sx={{ p: { xs: 2, md: 4 } }}>
+            <Box sx={{ p: { xs: 2, md: 6 } }}>
               {activeTab === 0 && tournament.challongeUrl && (
                 <ChallongeBracket
                   challongeUrl={tournament.challongeUrl}
@@ -781,8 +776,8 @@ export default function TournamentDetail({
         </Grid>
 
         {/* Sidebar */}
-        <Grid size={{ xs: 12, md: 4 }}>
-          <Stack spacing={3} sx={{ position: 'sticky', top: 80 }}>
+        <Grid size={{ xs: 12, lg: 3 }}>
+          <Stack spacing={4} sx={{ position: 'sticky', top: 100 }}>
             {/* Visual Poster */}
             <Box
               sx={{
@@ -791,48 +786,43 @@ export default function TournamentDetail({
                 overflow: 'hidden',
                 border: '1px solid',
                 borderColor: isBTS ? 'rgba(255,255,255,0.1)' : 'divider',
-                aspectRatio: '1/1',
+                aspectRatio: '1040/1467',
                 bgcolor: '#000',
-                boxShadow: isBTS ? '0 15px 35px rgba(0,0,0,0.3)' : '0 10px 30px rgba(0,0,0,0.05)',
+                boxShadow: isBTS ? '0 25px 50px rgba(0,0,0,0.5)' : '0 15px 35px rgba(0,0,0,0.1)',
                 position: 'relative',
               }}
             >
               <Image
-                src={
-                  isBTS2
-                    ? '/tournaments/BTS2_optimized.webp'
-                    : isBTS1
-                      ? '/tournaments/B_TS1.svg'
-                      : isBTS3
-                        ? '/tournaments/BTS2_optimized.webp' // Fallback to same style for series
-                        : '/logo.png'
-                }
+                src={posterUrl}
                 alt={tournament.name}
                 fill
-                sizes="(max-width: 900px) 100vw, 33vw"
+                unoptimized={isBTS3}
+                sizes="(max-width: 900px) 100vw, 25vw"
                 style={{
-                  objectFit: (isBTS2 || isBTS3) ? 'cover' : 'contain',
-                  padding: (isBTS2 || isBTS3) ? 0 : 24,
-                  filter: isBTS1 ? 'invert(1) brightness(0.9)' : 'none',
+                  objectFit: 'cover',
+                  padding: 0,
                 }}
-                priority={false}
+                priority={true}
               />
-              {(isBTS2 || isBTS3) && (
-                <Box sx={{ 
-                  position: 'absolute', 
-                  bottom: 0, 
-                  left: 0, 
-                  right: 0, 
-                  p: 2, 
-                  background: 'linear-gradient(to top, rgba(0,0,0,0.8), transparent)',
-                  display: 'flex',
-                  justifyContent: 'center'
-                }}>
-                  <Typography variant="caption" sx={{ color: '#fff', fontWeight: 900, letterSpacing: 2, textTransform: 'uppercase' }}>
-                    OFFICIEL RPB
-                  </Typography>
-                </Box>
-              )}
+              <Box sx={{ 
+                position: 'absolute', 
+                bottom: 0, 
+                left: 0, 
+                right: 0, 
+                p: 3, 
+                background: 'linear-gradient(to top, rgba(0,0,0,0.9), transparent)',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: 1
+              }}>
+                <Typography variant="caption" sx={{ color: '#fbbf24', fontWeight: 900, letterSpacing: 3, textTransform: 'uppercase' }}>
+                  ÉVÉNEMENT OFFICIEL
+                </Typography>
+                <Typography variant="body2" sx={{ color: 'white', fontWeight: 800, opacity: 0.8 }}>
+                  RÉPUBLIQUE POPULAIRE DU BEYBLADE
+                </Typography>
+              </Box>
             </Box>
 
             {/* Inscription Card */}
