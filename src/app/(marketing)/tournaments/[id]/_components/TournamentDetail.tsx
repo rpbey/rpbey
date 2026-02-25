@@ -441,23 +441,6 @@ function StandingsPanel({ standings }: { standings: Standing[] }) {
   );
 }
 
-// ─── Sub-Components ────────────────────────────────────────────────────────
-
-function StandingsPanel({ standings }: { standings: Standing[] }) {
-  return (
-    <Stack spacing={1}>
-      {standings.map((s) => (
-        <Box key={s.rank} sx={{ display: 'flex', alignItems: 'center', gap: 3, p: 2, borderRadius: 4, border: '1px solid', borderColor: 'divider' }}>
-          <Box sx={{ width: 32, height: 32, borderRadius: 1, bgcolor: s.rank <= 3 ? '#fbbf24' : 'action.selected', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900 }}>{s.rank}</Box>
-          <Typography variant="body1" fontWeight={800} sx={{ flex: 1 }}>{s.name}</Typography>
-          <Typography variant="body2" fontWeight={900}>{s.stats?.wins ?? s.wins}W - {s.stats?.losses ?? s.losses}L</Typography>
-          {s.challongeProfileUrl && <Button size="small" variant="outlined" href={s.challongeProfileUrl} target="_blank">Profil</Button>}
-        </Box>
-      ))}
-    </Stack>
-  );
-}
-
 function StadiumsPanel({ stations }: { stations: Station[] }) {
   return (
     <Grid container spacing={3}>
