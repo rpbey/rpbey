@@ -260,13 +260,16 @@ model Part {
   textureUrl    String?
   spinDirection String?
   system        String?
-  beyBits       Beyblade[] @relation("BeyBitRelation")
-  beyBlades     Beyblade[] @relation("BeyBladeRelation")
-  beyRatchets   Beyblade[] @relation("BeyRatchetRelation")
-  deckBits      DeckItem[] @relation("BitRelation")
-  deckBlades    DeckItem[] @relation("BladeRelation")
-  deckRatchets  DeckItem[] @relation("RatchetRelation")
+  beyBits          Beyblade[] @relation("BeyBitRelation")
+  beyBlades        Beyblade[] @relation("BeyBladeRelation")
+  beyRatchets      Beyblade[] @relation("BeyRatchetRelation")
+  deckBits         DeckItem[] @relation("BitRelation")
+  deckBlades       DeckItem[] @relation("BladeRelation")
+  deckRatchets     DeckItem[] @relation("RatchetRelation")
+  deckLockChips    DeckItem[] @relation("LockChipRelation")
+  deckAssistBlades DeckItem[] @relation("AssistBladeRelation")
 
+  @@unique([name, type])
   @@index([type])
   @@index([beyType])
   @@map("parts")
@@ -318,18 +321,22 @@ model Deck {
 }
 
 model DeckItem {
-  id        String    @id @default(cuid())
-  position  Int
-  deckId    String
-  beyId     String?
-  bladeId   String?
-  ratchetId String?
-  bitId     String?
-  bey       Beyblade? @relation(fields: [beyId], references: [id])
-  bit       Part?     @relation("BitRelation", fields: [bitId], references: [id])
-  blade     Part?     @relation("BladeRelation", fields: [bladeId], references: [id])
-  deck      Deck      @relation(fields: [deckId], references: [id], onDelete: Cascade)
-  ratchet   Part?     @relation("RatchetRelation", fields: [ratchetId], references: [id])
+  id            String    @id @default(cuid())
+  position      Int
+  deckId        String
+  beyId         String?
+  bladeId       String?
+  ratchetId     String?
+  bitId         String?
+  lockChipId    String?
+  assistBladeId String?
+  bey           Beyblade? @relation(fields: [beyId], references: [id])
+  bit           Part?     @relation("BitRelation", fields: [bitId], references: [id])
+  blade         Part?     @relation("BladeRelation", fields: [bladeId], references: [id])
+  deck          Deck      @relation(fields: [deckId], references: [id], onDelete: Cascade)
+  ratchet       Part?     @relation("RatchetRelation", fields: [ratchetId], references: [id])
+  lockChip      Part?     @relation("LockChipRelation", fields: [lockChipId], references: [id])
+  assistBlade   Part?     @relation("AssistBladeRelation", fields: [assistBladeId], references: [id])
 
   @@unique([deckId, position])
   @@index([deckId])
@@ -564,8 +571,9 @@ model SatrBlader {
   name             String   @unique
   totalWins        Int      @default(0)
   totalLosses      Int      @default(0)
+  tournamentWins   Int      @default(0)
   tournamentsCount Int      @default(0)
-  history          Json // Liste des tournois avec rang et win/loss
+  history          Json
   linkedUserId     String?
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
@@ -585,6 +593,8 @@ enum PartType {
   BLADE
   RATCHET
   BIT
+  LOCK_CHIP
+  ASSIST_BLADE
 }
 
 enum ExperienceLevel {
