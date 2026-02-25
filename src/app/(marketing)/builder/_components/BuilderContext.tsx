@@ -18,11 +18,12 @@ export interface BeySlot {
   blade: Part | null;
   ratchet: Part | null;
   bit: Part | null;
+  lockChip: Part | null;
   assistBlade: Part | null;
   nickname: string;
 }
 
-export type BuilderStep = 'BLADE' | 'RATCHET' | 'BIT' | 'ASSIST_BLADE';
+export type BuilderStep = 'BLADE' | 'RATCHET' | 'BIT' | 'LOCK_CHIP' | 'ASSIST_BLADE';
 
 export interface DeckSummary {
   id: string;
@@ -69,6 +70,7 @@ export interface LoadDeckPayload {
     blade: Part | null;
     ratchet: Part | null;
     bit: Part | null;
+    lockChip?: Part | null;
     assistBlade?: Part | null;
     nickname?: string;
   }>;
@@ -76,7 +78,7 @@ export interface LoadDeckPayload {
 
 // --- Helpers ---
 
-const emptySlot: BeySlot = { blade: null, ratchet: null, bit: null, assistBlade: null, nickname: '' };
+const emptySlot: BeySlot = { blade: null, ratchet: null, bit: null, lockChip: null, assistBlade: null, nickname: '' };
 
 function createEmptyBeys(): [BeySlot, BeySlot, BeySlot] {
   return [{ ...emptySlot }, { ...emptySlot }, { ...emptySlot }];
@@ -90,6 +92,7 @@ export function isCXBlade(slot: BeySlot): boolean {
 function getNextStep(slot: BeySlot): BuilderStep {
   if (!slot.blade) return 'BLADE';
   if (isCXBlade(slot)) {
+    if (!slot.lockChip) return 'LOCK_CHIP';
     if (!slot.assistBlade) return 'ASSIST_BLADE';
   }
   if (!slot.ratchet) return 'RATCHET';
@@ -101,7 +104,7 @@ function isSlotComplete(slot: BeySlot): boolean {
   const baseComplete = !!slot.blade && !!slot.ratchet && !!slot.bit;
   if (!baseComplete) return false;
   if (isCXBlade(slot)) {
-    return !!slot.assistBlade;
+    return !!slot.lockChip && !!slot.assistBlade;
   }
   return true;
 }
@@ -111,6 +114,7 @@ function stepKey(step: BuilderStep): keyof BeySlot {
     case 'BLADE': return 'blade';
     case 'RATCHET': return 'ratchet';
     case 'BIT': return 'bit';
+    case 'LOCK_CHIP': return 'lockChip';
     case 'ASSIST_BLADE': return 'assistBlade';
   }
 }
@@ -154,6 +158,7 @@ export function builderReducer(state: BuilderState, action: BuilderAction): Buil
       if (state.activeStep === 'BLADE' && !isCXBlade(newBeys[idx])) {
         newBeys[idx] = {
           ...newBeys[idx],
+          lockChip: null,
           assistBlade: null,
         };
       }
@@ -204,6 +209,7 @@ export function builderReducer(state: BuilderState, action: BuilderAction): Buil
       if (action.partType === 'BLADE') {
         newBeys[rmIdx] = {
           ...newBeys[rmIdx],
+          lockChip: null,
           assistBlade: null,
         };
       }
@@ -252,6 +258,7 @@ export function builderReducer(state: BuilderState, action: BuilderAction): Buil
             blade: bey.blade ?? null,
             ratchet: bey.ratchet ?? null,
             bit: bey.bit ?? null,
+            lockChip: bey.lockChip ?? null,
             assistBlade: bey.assistBlade ?? null,
             nickname: bey.nickname || '',
           };
@@ -337,10 +344,11 @@ function loadDraft(): Partial<BuilderState> | null {
     const draft: LocalDraft = JSON.parse(raw);
     // Validate structure
     if (!Array.isArray(draft.beys) || draft.beys.length !== 3) return null;
-    const hasParts = draft.beys.some((b) => b.blade || b.ratchet || b.bit || b.assistBlade);
+    const hasParts = draft.beys.some((b) => b.blade || b.ratchet || b.bit || b.lockChip || b.assistBlade);
     if (!hasParts && !draft.deckName) return null;
     // Ensure CX fields exist (migration from old drafts)
     for (const bey of draft.beys) {
+      if (!('lockChip' in bey)) (bey as BeySlot).lockChip = null;
       if (!('assistBlade' in bey)) (bey as BeySlot).assistBlade = null;
     }
     // Find first incomplete slot
@@ -405,6 +413,7 @@ export function BuilderProvider({ children }: { children: ReactNode }) {
       if (bey.blade) ids.add(bey.blade.id);
       if (bey.ratchet) ids.add(bey.ratchet.id);
       if (bey.bit) ids.add(bey.bit.id);
+      if (bey.lockChip) ids.add(bey.lockChip.id);
       if (bey.assistBlade) ids.add(bey.assistBlade.id);
     }
     return ids;
@@ -417,6 +426,7 @@ export function BuilderProvider({ children }: { children: ReactNode }) {
       if (bey.blade) names.add(bey.blade.name);
       if (bey.ratchet) names.add(bey.ratchet.name);
       if (bey.bit) names.add(bey.bit.name);
+      if (bey.lockChip) names.add(bey.lockChip.name);
       if (bey.assistBlade) names.add(bey.assistBlade.name);
     }
     return names;

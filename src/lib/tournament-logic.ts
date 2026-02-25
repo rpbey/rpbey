@@ -123,8 +123,10 @@ export function calculateMatchScore(
 
 /**
  * Validates a deck according to uniqueness rules.
- * Supports Blade, Ratchet, Bit, and Assist Blade.
+ * Supports Blade, Ratchet, Bit, Lock Chip, and Assist Blade.
  * - Standard parts (Blade/Ratchet/Bit/Assist Blade) must be unique per deck
+ * - Plastic Lock Chips can be reused across beys
+ * - Metal Lock Chips are limited to 1 per deck
  */
 export function validateDeck(deck: {
   beys: Array<{
@@ -132,6 +134,8 @@ export function validateDeck(deck: {
     ratchetId: string;
     bitId: string;
     bladeName?: string;
+    lockChipId?: string;
+    lockChipName?: string;
     assistBladeId?: string;
     assistBladeName?: string;
   }>;
@@ -146,6 +150,7 @@ export function validateDeck(deck: {
   }
 
   const usedParts = new Set<string>();
+  let metalLockChipCount = 0;
 
   deck.beys.forEach((bey, index) => {
     const pos = index + 1;
@@ -173,6 +178,16 @@ export function validateDeck(deck: {
       usedParts.add(bey.assistBladeId);
     }
 
+    // Lock Chip validation
+    if (bey.lockChipId && bey.lockChipName) {
+      const isMetal = bey.lockChipName.toLowerCase().includes('metal');
+      if (isMetal) {
+        metalLockChipCount++;
+      }
+      // Plastic lock chips can be reused, no uniqueness check needed
+      // Metal lock chips: we count them below
+    }
+
     // Check banned parts
     for (const banned of rules.equipment_regulations.banned_parts) {
       if (bey.bladeName?.includes(banned.part)) {
@@ -182,6 +197,11 @@ export function validateDeck(deck: {
       }
     }
   });
+
+  // Metal lock chip limit: max 1 per deck
+  if (metalLockChipCount > 1) {
+    errors.push('Un deck ne peut contenir qu\'un seul Metal Lock Chip.');
+  }
 
   return {
     isValid: errors.length === 0,
