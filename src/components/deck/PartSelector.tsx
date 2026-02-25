@@ -49,6 +49,10 @@ function getPartTypeLabel(type: PartType): string {
       return 'Ratchet';
     case 'BIT':
       return 'Bit';
+    case 'LOCK_CHIP':
+      return 'Lock Chip';
+    case 'ASSIST_BLADE':
+      return 'Assist Blade';
     default:
       return 'Part';
   }

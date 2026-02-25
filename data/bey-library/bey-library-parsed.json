@@ -1,0 +1,5592 @@
+[
+  {
+    "id": "Blade-AP-001",
+    "category": "blade",
+    "name": "Aero Pegasus",
+    "code": "UX-Rare Bey Battle",
+    "specs": {
+      "Type": "Attack",
+      "Spin": "Right",
+      "Weight": "~38 g",
+      "Stock Combo": "3-70 Accel",
+      "Product Line": "UX"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00Zodiac&#32;-&#32;Fox/AP&#32;1&#32;U00.webp",
+    "variants": [
+      {
+        "name": "UX-00",
+        "imageUrl": "../../Blade/00Zodiac&#32;-&#32;Fox/AP&#32;2&#32;U00.webp"
+      }
+    ]
+  },
+  {
+    "id": "Blade-BSc-001",
+    "category": "blade",
+    "name": "Bear Scratch",
+    "code": "BX-37",
+    "specs": {
+      "Type": "Attack",
+      "Spin": "Right",
+      "Weight": "~29 g",
+      "Stock Combo": "5-60 Flat",
+      "Product Line": "BX"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00SubCharacter/BSc&#32;1&#32;B37.webp",
+    "variants": []
+  },
+  {
+    "id": "Blade-BSl-001",
+    "category": "blade",
+    "name": "Black Shell",
+    "code": "BX-35",
+    "specs": {
+      "Type": "Defense",
+      "Spin": "Right",
+      "Weight": "~33 g",
+      "Stock Combo": "4-60 Dot",
+      "Product Line": "BX"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00Pendragon-Goldius/BSl&#32;1&#32;B35.webp",
+    "variants": [
+      {
+        "name": "BX-35 (02)",
+        "imageUrl": "../../Blade/00Pendragon-Goldius/BSl&#32;2&#32;B35.webp"
+      },
+      {
+        "name": "CX-08 (05)",
+        "imageUrl": "../../Blade/00Pendragon-Goldius/BSl&#32;3&#32;C08.webp"
+      }
+    ]
+  },
+  {
+    "id": "Blade-CC-001",
+    "category": "blade",
+    "name": "Croc Crunch",
+    "code": "BX-CoroCoro Comic",
+    "specs": {
+      "Type": "Attack",
+      "Spin": "Right",
+      "Weight": "~33 g",
+      "Stock Combo": "2-60 Quake",
+      "Product Line": "BX"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00SubCharacter/CC&#32;1&#32;B00.webp",
+    "variants": []
+  },
+  {
+    "id": "Blade-CDg-001",
+    "category": "blade",
+    "name": "Cobalt Dragoon",
+    "code": "BX-34",
+    "specs": {
+      "Type": "Attack",
+      "Spin": "Left",
+      "Weight": "~38 g",
+      "Stock Combo": "2-60 Cyclone",
+      "Product Line": "BX"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00Pendragon-Goldius/CDg&#32;1&#32;B34.webp",
+    "variants": [
+      {
+        "name": "BX-00",
+        "imageUrl": "../../Blade/00Pendragon-Goldius/CDg&#32;2&#32;B00.webp"
+      },
+      {
+        "name": "CX-08 (06)",
+        "imageUrl": "../../Blade/00Pendragon-Goldius/CDg&#32;3&#32;C08.webp"
+      },
+      {
+        "name": "Limited",
+        "imageUrl": "../../Blade/00Pendragon-Goldius/CDg&#32;4&#32;LD.webp"
+      },
+      {
+        "name": "BX-48 (01)",
+        "imageUrl": "../../Blade/00Pendragon-Goldius/CDg&#32;5&#32;B48.webp"
+      }
+    ]
+  },
+  {
+    "id": "Blade-CDk-001",
+    "category": "blade",
+    "name": "Cobalt Drake",
+    "code": "BX-Rare Bey Battle",
+    "specs": {
+      "Type": "Attack",
+      "Spin": "Right",
+      "Weight": "~38 g",
+      "Stock Combo": "4-60 Flat",
+      "Product Line": "BX"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00Pendragon-Goldius/CDk&#32;1&#32;B00.webp",
+    "variants": [
+      {
+        "name": "Rare Bey Battle",
+        "imageUrl": "../../Blade/00Pendragon-Goldius/CDk&#32;2&#32;B00.webp"
+      },
+      {
+        "name": "BX-46 (Regular Sale)",
+        "imageUrl": "../../Blade/00Pendragon-Goldius/CDk&#32;3&#32;B46.webp"
+      }
+    ]
+  },
+  {
+    "id": "Blade-CFW-001",
+    "category": "blade",
+    "name": "Cerberus Flame",
+    "code": "CX-08",
+    "specs": {
+      "Type": "Stamina",
+      "Spin": "Right",
+      "Weight": "~37 g (Stock Combo Blade)",
+      "Stock Combo": "Wheel 5-80 Wall Ball",
+      "Lock Chip Type": "Plastic (~1.7 g)",
+      "Product Line": "W (Wheel)"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00Zodiac&#32;-&#32;Fox/CFW&#32;1&#32;C08.webp",
+    "variants": [
+      {
+        "name": "CX",
+        "imageUrl": "../../Blade/00Zodiac&#32;-&#32;Fox/CFW&#32;2&#32;C08.webp"
+      },
+      {
+        "name": "CX-08 (Dark W)(03)",
+        "imageUrl": "../../Blade/00Zodiac&#32;-&#32;Fox/CFW&#32;3F&#32;C08.webp"
+      }
+    ]
+  },
+  {
+    "id": "Blade-CG-001",
+    "category": "blade",
+    "name": "Crimson Garuda",
+    "code": "BX-38",
+    "specs": {
+      "Type": "Stamina",
+      "Spin": "Right",
+      "Weight": "~35 g",
+      "Stock Combo": "4-70 Trans Point",
+      "Product Line": "BX"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00Pendragon-Goldius/CG&#32;1&#32;B38.webp",
+    "variants": []
+  },
+  {
+    "id": "Blade-CMr-001",
+    "category": "blade",
+    "name": "Clock Mirage",
+    "code": "UX-16",
+    "specs": {
+      "Type": "Stamina",
+      "Spin": "Right",
+      "Weight": "~37 g",
+      "Stock Combo": "9-65 Ball",
+      "Product Line": "UX",
+      "Gimmick": "Only use simple lock ratchet"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00Kurosu/CMr&#32;1&#32;U16.webp",
+    "variants": [
+      {
+        "name": "UX-16 (02)",
+        "imageUrl": "../../Blade/00Kurosu/CMr&#32;2&#32;U16.webp"
+      },
+      {
+        "name": "UX-16 (03)",
+        "imageUrl": "../../Blade/00Kurosu/CMr&#32;3&#32;U16.webp"
+      }
+    ]
+  },
+  {
+    "id": "Blade-CX2-001",
+    "category": "blade",
+    "name": "Bahamut Blitz",
+    "code": "CX-13",
+    "specs": {
+      "Type": "Attack",
+      "Spin": "Right",
+      "Weight": "~ g (Stock Combo Blade)",
+      "Stock Combo": "Break Knuckle 1-50 Ignition",
+      "Lock Chip Type": "Plastic (~1.7 g)",
+      "Product Line": "B (Break)"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00Kurosu/BBBK&#32;1&#32;C13.webp",
+    "variants": [
+      {
+        "name": "K (Knuckle)",
+        "imageUrl": "../../Blade/00Kurosu/BBBK&#32;2&#32;C16.webp"
+      }
+    ]
+  },
+  {
+    "id": "Blade-DB-001",
+    "category": "blade",
+    "name": "Dran Buster",
+    "code": "UX-01",
+    "specs": {
+      "Type": "Attack",
+      "Spin": "Right",
+      "Weight": "~37 g",
+      "Stock Combo": "1-60 Accel",
+      "Product Line": "UX"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00Persona/DB&#32;1&#32;U01.webp",
+    "variants": [
+      {
+        "name": "UX-04",
+        "imageUrl": "../../Blade/00Persona/DB&#32;2&#32;U04.webp"
+      },
+      {
+        "name": "UX-00",
+        "imageUrl": "../../Blade/00Persona/DB&#32;3&#32;U00.webp"
+      },
+      {
+        "name": "UX-00",
+        "imageUrl": "../../Blade/00Persona/DB&#32;4&#32;LTD1.webp"
+      },
+      {
+        "name": "UX-00",
+        "imageUrl": "../../Blade/00Persona/DB&#32;5&#32;LTD2.webp"
+      },
+      {
+        "name": "UX-00",
+        "imageUrl": "../../Blade/00Persona/DB&#32;6&#32;LTD3.webp"
+      },
+      {
+        "name": "UX-00",
+        "imageUrl": "../../Blade/00Persona/DB&#32;7&#32;U00.webp"
+      },
+      {
+        "name": "UX-00",
+        "imageUrl": "../../Blade/00Persona/DB&#32;8&#32;U00.webp"
+      },
+      {
+        "name": "CX-08 (04)",
+        "imageUrl": "../../Blade/00Persona/DB&#32;9&#32;C08.webp"
+      },
+      {
+        "name": "BX-48 (05)",
+        "imageUrl": "../../Blade/00Persona/DB&#32;10&#32;B48.webp"
+      }
+    ]
+  },
+  {
+    "id": "Blade-DBS-001",
+    "category": "blade",
+    "name": "Dran Brave",
+    "code": "CX-01",
+    "specs": {
+      "Type": "Attack",
+      "Spin": "Right",
+      "Weight": "~37 g (Stock Combo Blade)",
+      "Stock Combo": "Slash 6-60 Vortex",
+      "Lock Chip Type": "Plastic (~1.7 g)",
+      "Product Line": "S (Slash)"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00Persona/DBS&#32;1&#32;C01.webp",
+    "variants": [
+      {
+        "name": "CX",
+        "imageUrl": "../../Blade/00Persona/DBS&#32;2&#32;C04.webp"
+      },
+      {
+        "name": "CX-04",
+        "imageUrl": "../../Blade/00Persona/DBs&#32;3&#32;G1P.webp"
+      },
+      {
+        "name": "G1 Prize",
+        "imageUrl": "../../Blade/00Persona/DBs&#32;4&#32;G1P.webp"
+      },
+      {
+        "name": "G1 Prize",
+        "imageUrl": "../../Blade/00Persona/DBs&#32;5&#32;G1P.webp"
+      },
+      {
+        "name": "G1 Prize",
+        "imageUrl": "../../Blade/00Persona/DBS&#32;6&#32;SP1.webp"
+      },
+      {
+        "name": "CoroCoro Special",
+        "imageUrl": "../../Blade/00Persona/Dran&#32;Lock&#32;R1.webp"
+      },
+      {
+        "name": "Rare Bey Battle",
+        "imageUrl": "../../Blade/00Persona/Persona&#32;CX.webp"
+      },
+      {
+        "name": "CoroCoro Comic",
+        "imageUrl": "../../Blade/00Persona/DBS&#32;7&#32;GPL.webp"
+      }
+    ]
+  },
+  {
+    "id": "Blade-DD-001",
+    "category": "blade",
+    "name": "Dran Dagger",
+    "code": "BX-20",
+    "specs": {
+      "Type": "Attack",
+      "Spin": "Right",
+      "Weight": "~35 g",
+      "Stock Combo": "4-60 Rush",
+      "Product Line": "BX"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00Persona/DD&#32;1&#32;B20.webp",
+    "variants": [
+      {
+        "name": "BX-31 (04)",
+        "imageUrl": "../../Blade/00Persona/DD&#32;2&#32;B31.webp"
+      },
+      {
+        "name": "BX-00",
+        "imageUrl": "../../Blade/00Persona/DD&#32;3&#32;B00.webp"
+      },
+      {
+        "name": "UX-00",
+        "imageUrl": "../../Blade/00Persona/DD&#32;4&#32;U00.webp"
+      },
+      {
+        "name": "UX-18 (05)",
+        "imageUrl": "../../Blade/00Persona/DD&#32;5&#32;U18.webp"
+      }
+    ]
+  },
+  {
+    "id": "Blade-DS-001",
+    "category": "blade",
+    "name": "Dran Sword",
+    "code": "BX-01",
+    "specs": {
+      "Type": "Attack",
+      "Spin": "Right",
+      "Weight": "~35 g",
+      "Stock Combo": "3-60 Flat",
+      "Product Line": "BX"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00Persona/DS&#32;1&#32;B01.webp",
+    "variants": [
+      {
+        "name": "BX-07",
+        "imageUrl": "../../Blade/00Persona/DS&#32;2&#32;B07.webp"
+      },
+      {
+        "name": "BX-14 (03)",
+        "imageUrl": "../../Blade/00Persona/DS&#32;3&#32;B14.webp"
+      },
+      {
+        "name": "BX-17",
+        "imageUrl": "../../Blade/00Persona/DS&#32;4&#32;B17.webp"
+      },
+      {
+        "name": "BX-00",
+        "imageUrl": "../../Blade/00Persona/DS&#32;5&#32;B00.webp"
+      },
+      {
+        "name": "25th Anniversary",
+        "imageUrl": "../../Blade/00Persona/DS&#32;6&#32;25th.webp"
+      },
+      {
+        "name": "BX-00",
+        "imageUrl": "../../Blade/00Persona/DS&#32;7&#32;UX00.webp"
+      },
+      {
+        "name": "Suhiro Ver.",
+        "imageUrl": "../../Blade/00Persona/DS&#32;8&#32;Sushi.webp"
+      },
+      {
+        "name": "G1 Prize",
+        "imageUrl": "../../Blade/00Persona/DS&#32;9&#32;G1P.webp"
+      },
+      {
+        "name": "G1 Prize",
+        "imageUrl": "../../Blade/00Persona/DS&#32;10&#32;G1P.webp"
+      },
+      {
+        "name": "G1 Prize",
+        "imageUrl": "../../Blade/00Persona/DS&#32;11&#32;G1P.webp"
+      },
+      {
+        "name": "Limnited",
+        "imageUrl": "../../Blade/00Persona/DS&#32;12&#32;LD.webp"
+      },
+      {
+        "name": "Limnited?",
+        "imageUrl": "../../Blade/00Persona/DS&#32;13&#32;LD.webp"
+      }
+    ]
+  },
+  {
+    "id": "Blade-EMH-001",
+    "category": "blade",
+    "name": "Emperor Might",
+    "code": "CX-11",
+    "specs": {
+      "Type": "Balance",
+      "Spin": "Right",
+      "Weight": "~45 g (Stock Combo Blade)",
+      "Stock Combo": "Heavy Operate",
+      "Lock Chip Type": "Light Metal (~4.7 g)",
+      "Product Line": "H (Heavy)"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00Persona/EMH&#32;1&#32;C11.webp",
+    "variants": []
+  },
+  {
+    "id": "Blade-FBJ-001",
+    "category": "blade",
+    "name": "Fox Brush",
+    "code": "CX-06",
+    "specs": {
+      "Type": "Attack",
+      "Spin": "Right",
+      "Weight": "~36 g (Stock Combo Blade)",
+      "Stock Combo": "Jaggy 9-70 Gear Rush",
+      "Lock Chip Type": "Plastic (~1.7 g)",
+      "Product Line": "J (Jaggy)"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00Zodiac&#32;-&#32;Fox/FBJ&#32;1&#32;C06.webp",
+    "variants": [
+      {
+        "name": "CX",
+        "imageUrl": "../../Blade/00Zodiac&#32;-&#32;Fox/FBJ&#32;2&#32;C06.webp"
+      },
+      {
+        "name": "CX-06 (02)",
+        "imageUrl": "../../Blade/00Zodiac&#32;-&#32;Fox/FBJ&#32;3&#32;C06.webp"
+      }
+    ]
+  },
+  {
+    "id": "Blade-GC-001",
+    "category": "blade",
+    "name": "Ghost Circle",
+    "code": "UX-12",
+    "specs": {
+      "Type": "Stamina",
+      "Spin": "Right",
+      "Weight": "~26 g",
+      "Stock Combo": "0-80 Gear Ball",
+      "Product Line": "UX"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00Pendragon-Goldius/GC&#32;1&#32;U12.webp",
+    "variants": [
+      {
+        "name": "UX-12 (02)",
+        "imageUrl": "../../Blade/00Pendragon-Goldius/GC&#32;2&#32;U12.webp"
+      }
+    ]
+  },
+  {
+    "id": "Blade-GR-001",
+    "category": "blade",
+    "name": "Golem Rock",
+    "code": "UX-13",
+    "specs": {
+      "Type": "Defense",
+      "Spin": "Right",
+      "Weight": "~34 g",
+      "Stock Combo": "1-60 Under Neddle",
+      "Product Line": "UX"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00Pendragon-Goldius/GR&#32;1&#32;U13.webp",
+    "variants": [
+      {
+        "name": "CX-11",
+        "imageUrl": "../../Blade/00Pendragon-Goldius/GR&#32;2&#32;C11.webp"
+      }
+    ]
+  },
+  {
+    "id": "Blade-GTk-001",
+    "category": "blade",
+    "name": "Goat Tackle",
+    "code": "BX-46",
+    "specs": {
+      "Type": "Balance",
+      "Spin": "Right",
+      "Weight": "~31 g",
+      "Stock Combo": "7-70 Taper",
+      "Product Line": "BX"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00SubCharacter/GTk&#32;1&#32;B46.webp",
+    "variants": []
+  },
+  {
+    "id": "Blade-HC-001",
+    "category": "blade",
+    "name": "Hells Chain",
+    "code": "BX-21",
+    "specs": {
+      "Type": "Balance",
+      "Spin": "Right",
+      "Weight": "~33 g",
+      "Stock Combo": "5-60 High Taper",
+      "Product Line": "BX"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00Persona/HC&#32;1&#32;B21.webp",
+    "variants": [
+      {
+        "name": "BX-31 (03)",
+        "imageUrl": "../../Blade/00Persona/HC&#32;2&#32;B31.webp"
+      },
+      {
+        "name": "Rare Bey Battle",
+        "imageUrl": "../../Blade/00Persona/HC&#32;3&#32;B00.webp"
+      }
+    ]
+  },
+  {
+    "id": "Blade-HH-001",
+    "category": "blade",
+    "name": "Hells Hammer",
+    "code": "UX-02",
+    "specs": {
+      "Type": "Balance",
+      "Spin": "Right",
+      "Weight": "~33 g",
+      "Stock Combo": "3-70 Hexa",
+      "Product Line": "UX"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00Persona/HH&#32;1&#32;U02.webp",
+    "variants": [
+      {
+        "name": "UX-10",
+        "imageUrl": "../../Blade/00Persona/HH&#32;2&#32;U10.webp"
+      },
+      {
+        "name": "UX-00",
+        "imageUrl": "../../Blade/00Persona/HH&#32;3&#32;U00.webp"
+      }
+    ]
+  },
+  {
+    "id": "Blade-HRT-001",
+    "category": "blade",
+    "name": "Hells Reaper",
+    "code": "CX-05",
+    "specs": {
+      "Type": "Balance",
+      "Spin": "Right",
+      "Weight": "~36 g (Stock Combo Blade)",
+      "Stock Combo": "Turn 4-70 Kick",
+      "Lock Chip Type": "Plastic (~1.7 g)",
+      "Product Line": "T (Turn)"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00Persona/HRT&#32;1&#32;C05.webp",
+    "variants": [
+      {
+        "name": "CX",
+        "imageUrl": "../../Blade/00Persona/HRT&#32;2&#32;C05.webp"
+      },
+      {
+        "name": "CX-05 (Arc T)(03)",
+        "imageUrl": "../../Blade/00Persona/HRT&#32;3F&#32;C05.webp"
+      },
+      {
+        "name": "CX-05 (Full Set)",
+        "imageUrl": "../../Blade/00Persona/HRT&#32;4&#32;U15.webp"
+      }
+    ]
+  },
+  {
+    "id": "Blade-HS-001",
+    "category": "blade",
+    "name": "Hells Scythe",
+    "code": "BX-02",
+    "specs": {
+      "Type": "Balance",
+      "Spin": "Right",
+      "Weight": "~32 g",
+      "Stock Combo": "4-60 Taper",
+      "Product Line": "BX"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00Persona/HS&#32;1&#32;B02.webp",
+    "variants": [
+      {
+        "name": "BX-00",
+        "imageUrl": "../../Blade/00Persona/HS&#32;2&#32;B00.webp"
+      },
+      {
+        "name": "BX-08",
+        "imageUrl": "../../Blade/00Persona/HS&#32;3&#32;B08.webp"
+      },
+      {
+        "name": "BX-14 (04)",
+        "imageUrl": "../../Blade/00Persona/HS&#32;4&#32;B14.webp"
+      },
+      {
+        "name": "CoroCoro Comic",
+        "imageUrl": "../../Blade/00Persona/HS&#32;5&#32;B00.webp"
+      },
+      {
+        "name": "BX-48 (04)",
+        "imageUrl": "../../Blade/00Persona/HS&#32;6&#32;B48.webp"
+      }
+    ]
+  },
+  {
+    "id": "Blade-ID-001",
+    "category": "blade",
+    "name": "Impact Drake",
+    "code": "UX-11",
+    "specs": {
+      "Type": "Attack",
+      "Spin": "Right",
+      "Weight": "~39 g",
+      "Stock Combo": "9-60 Low Rush",
+      "Product Line": "UX"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00Pendragon-Goldius/ID&#32;1&#32;U11.webp",
+    "variants": []
+  },
+  {
+    "id": "Blade-KFGV-001",
+    "category": "blade",
+    "name": "Knight Fortress",
+    "code": "CX-14",
+    "specs": {
+      "Type": "Defense",
+      "Spin": "Right",
+      "Weight": "~ g (Stock Combo Blade)",
+      "Stock Combo": "Guard Vertical 8-70 Under Needle",
+      "Lock Chip Type": "Plastic (~1.7 g)",
+      "Product Line": "G (Guard)"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00Persona/KFGV&#32;1&#32;C14.webp",
+    "variants": []
+  },
+  {
+    "id": "Blade-KL-001",
+    "category": "blade",
+    "name": "Knight Lance",
+    "code": "BX-13",
+    "specs": {
+      "Type": "Defense",
+      "Spin": "Right",
+      "Weight": "~32 g",
+      "Stock Combo": "4-80 High Needle",
+      "Product Line": "BX"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00Persona/KL&#32;1&#32;B13.webp",
+    "variants": [
+      {
+        "name": "BX-21",
+        "imageUrl": "../../Blade/00Persona/KL&#32;2&#32;B21.webp"
+      },
+      {
+        "name": "BX-24 (02)",
+        "imageUrl": "../../Blade/00Persona/KL&#32;3&#32;B24.webp"
+      }
+    ]
+  },
+  {
+    "id": "Blade-KM-001",
+    "category": "blade",
+    "name": "Knight Mail",
+    "code": "UX-10",
+    "specs": {
+      "Type": "Defense",
+      "Spin": "Right",
+      "Weight": "~36 g",
+      "Stock Combo": "3-85 Bound Spike",
+      "Product Line": "UX"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00Persona/KM&#32;1&#32;U10.webp",
+    "variants": [
+      {
+        "name": "Rare Bey Battle",
+        "imageUrl": "../../Blade/00Persona/KM&#32;2&#32;U00.webp"
+      }
+    ]
+  },
+  {
+    "id": "Blade-KS-001",
+    "category": "blade",
+    "name": "Knight Shield",
+    "code": "BX-04",
+    "specs": {
+      "Type": "Defense",
+      "Spin": "Right",
+      "Weight": "~32 g",
+      "Stock Combo": "3-80 Needle",
+      "Product Line": "BX"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00Persona/KS&#32;1&#32;B04.webp",
+    "variants": [
+      {
+        "name": "BX-06",
+        "imageUrl": "../../Blade/00Persona/KS&#32;2&#32;B06.webp"
+      },
+      {
+        "name": "BX-08",
+        "imageUrl": "../../Blade/00Persona/KS&#32;3&#32;B08.webp"
+      },
+      {
+        "name": "BX-14 (05)",
+        "imageUrl": "../../Blade/00Persona/KS&#32;4&#32;B14.webp"
+      },
+      {
+        "name": "BX-20",
+        "imageUrl": "../../Blade/00Persona/KS&#32;5&#32;B20.webp"
+      },
+      {
+        "name": "G3 Prize",
+        "imageUrl": "../../Blade/00Persona/KS&#32;6&#32;G3P.webp"
+      }
+    ]
+  },
+  {
+    "id": "Blade-KWS-001",
+    "category": "blade",
+    "name": "Kraken Wriggle",
+    "code": "CX-???",
+    "specs": {
+      "Type": "Stamina",
+      "Spin": "Right",
+      "Weight": "~ g (Stock Combo Blade)",
+      "Stock Combo": "Slash 3-85 Orb",
+      "Lock Chip Type": "Plastic (~1.7 g)",
+      "Product Line": "S (Slash)"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00SubCharacter/KWS&#32;1&#32;C12.webp",
+    "variants": []
+  },
+  {
+    "id": "Blade-LC-001",
+    "category": "blade",
+    "name": "Leon Claw",
+    "code": "BX-15",
+    "specs": {
+      "Type": "Balance",
+      "Spin": "Right",
+      "Weight": "~31 g",
+      "Stock Combo": "5-60 Point",
+      "Product Line": "BX"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00Zooganic/LC&#32;1&#32;B15.webp",
+    "variants": [
+      {
+        "name": "BX-00",
+        "imageUrl": "../../Blade/00Zooganic/LC&#32;4&#32;B00.webp"
+      },
+      {
+        "name": "BX-24 (05)",
+        "imageUrl": "../../Blade/00Zooganic/LC&#32;2&#32;B24.webp"
+      },
+      {
+        "name": "UX-12 (04)",
+        "imageUrl": "../../Blade/00Zooganic/LC&#32;3&#32;U12.webp"
+      }
+    ]
+  },
+  {
+    "id": "Blade-LCT-001",
+    "category": "blade",
+    "name": "Leon Crest",
+    "code": "UX-06",
+    "specs": {
+      "Type": "Defense",
+      "Spin": "Right",
+      "Weight": "~35 g",
+      "Stock Combo": "7-60 Gear Needle",
+      "Product Line": "UX"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00Zooganic/LCT&#32;1&#32;U06.webp",
+    "variants": [
+      {
+        "name": "CX-05 (04)",
+        "imageUrl": "../../Blade/00Zooganic/LCT&#32;2&#32;C05.webp"
+      }
+    ]
+  },
+  {
+    "id": "Blade-LFT-001",
+    "category": "blade",
+    "name": "Leon Fang (Red Ver.)",
+    "code": "CX-Game Package",
+    "specs": {
+      "Type": "Attack",
+      "Spin": "Right",
+      "Weight": "~37 g",
+      "Stock Combo": "4-60 Accel",
+      "Lock Chip Type": "Plastic (~1.7 g)",
+      "Product Line": "Turn"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00Zooganic/LFT&#32;1&#32;RED.webp",
+    "variants": []
+  },
+  {
+    "id": "Blade-MCs-001",
+    "category": "blade",
+    "name": "Mummy Curse",
+    "code": "UX-18",
+    "specs": {
+      "Type": "Defense",
+      "Spin": "Right",
+      "Weight": "~37 g",
+      "Stock Combo": "7-55 Wedge",
+      "Product Line": "UX"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00SubCharacter/MCs&#32;1&#32;U18.webp",
+    "variants": [
+      {
+        "name": "UX-18 (02)",
+        "imageUrl": "../../Blade/00SubCharacter/MCs&#32;2&#32;U18.webp"
+      }
+    ]
+  },
+  {
+    "id": "Blade-MDg-001",
+    "category": "blade",
+    "name": "Meteor Dragoon",
+    "code": "UX-17",
+    "specs": {
+      "Type": "Attack",
+      "Spin": "Left",
+      "Weight": "~39 g",
+      "Stock Combo": "3-70 Jolt",
+      "Product Line": "UX"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00Pendragon-Goldius/MDg&#32;1&#32;U17.webp",
+    "variants": []
+  },
+  {
+    "id": "Blade-MT-001",
+    "category": "blade",
+    "name": "Mammoth Tusk",
+    "code": "BX-Rare Bey Battle",
+    "specs": {
+      "Type": "Balacne",
+      "Spin": "Right",
+      "Weight": "~30 g",
+      "Stock Combo": "2-80 Elevate",
+      "Product Line": "BX"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00SubCharacter/MT&#32;1&#32;B00.webp",
+    "variants": [
+      {
+        "name": "BX-48 (03)",
+        "imageUrl": "../../Blade/00SubCharacter/MT&#32;2&#32;B48.webp"
+      }
+    ]
+  },
+  {
+    "id": "Blade-OCt-001",
+    "category": "blade",
+    "name": "Orochi Cluster",
+    "code": "UX-CoroCoro Comic",
+    "specs": {
+      "Type": "Attack",
+      "Spin": "Right",
+      "Weight": "~ g",
+      "Stock Combo": "6-60 Low Flat",
+      "Product Line": "UX"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00Persona/OCt&#32;1&#32;U00.webp",
+    "variants": []
+  },
+  {
+    "id": "Blade-PBA-001",
+    "category": "blade",
+    "name": "Pegasus Blast",
+    "code": "CX-07",
+    "specs": {
+      "Type": "Attack",
+      "Spin": "Right",
+      "Weight": "~39 g (Stock Combo Blade)",
+      "Stock Combo": "Assault Turbo",
+      "Lock Chip Type": "Plastic (~1.7 g)",
+      "Product Line": "A (Assault)"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00Zodiac&#32;-&#32;Fox/PBA&#32;1&#32;C07.webp",
+    "variants": [
+      {
+        "name": "CX",
+        "imageUrl": "../../Blade/00Zodiac&#32;-&#32;Fox/PBA&#32;2&#32;C00.webp"
+      },
+      {
+        "name": "CoroCoro Event",
+        "imageUrl": "../../Blade/00Zodiac&#32;-&#32;Fox/PBA&#32;3&#32;U18.webp"
+      }
+    ]
+  },
+  {
+    "id": "Blade-PDB-001",
+    "category": "blade",
+    "name": "Perseus Dark",
+    "code": "CX-03",
+    "specs": {
+      "Type": "Defense",
+      "Spin": "Right",
+      "Weight": "~37 g (Stock Combo Blade)",
+      "Stock Combo": "Bumper 6-80 Wedge",
+      "Lock Chip Type": "Plastic (~1.7 g)",
+      "Product Line": "B (Bumper)"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00Zodiac&#32;-&#32;Fox/PDB&#32;1&#32;C03.webp",
+    "variants": [
+      {
+        "name": "CX",
+        "imageUrl": "../../Blade/00Zodiac&#32;-&#32;Fox/PDB&#32;2&#32;C04.webp"
+      },
+      {
+        "name": "CX-04",
+        "imageUrl": "../../Blade/00Zodiac&#32;-&#32;Fox/PDB&#32;3&#32;G3P.webp"
+      }
+    ]
+  },
+  {
+    "id": "Blade-PF-001",
+    "category": "blade",
+    "name": "Phoenix Feather",
+    "code": "BX-CoroCoro Comic",
+    "specs": {
+      "Type": "Attack",
+      "Spin": "Right",
+      "Weight": "~33 g",
+      "Stock Combo": "3-60 Flat",
+      "Product Line": "BX"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00Yggdrasil/PF&#32;1&#32;B00.webp",
+    "variants": [
+      {
+        "name": "UX-12 (05)",
+        "imageUrl": "../../Blade/00Yggdrasil/PF&#32;2&#32;U12.webp"
+      },
+      {
+        "name": "CoroCoro Comic",
+        "imageUrl": "../../Blade/00Yggdrasil/PF&#32;3&#32;B00.webp"
+      }
+    ]
+  },
+  {
+    "id": "Blade-PFZ-001",
+    "category": "blade",
+    "name": "Phoenix Flare",
+    "code": "CX-12",
+    "specs": {
+      "Type": "Defense",
+      "Spin": "Right",
+      "Weight": "~ g (Stock Combo Blade)",
+      "Stock Combo": "Zillion 9-80 Wall Wedge",
+      "Lock Chip Type": "Plastic (~1.7 g)",
+      "Product Line": "Z (Zillion)"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00Yggdrasil/PFZ&#32;1&#32;C12.webp",
+    "variants": []
+  },
+  {
+    "id": "Blade-PR-001",
+    "category": "blade",
+    "name": "Phoenix Rudder",
+    "code": "UX-07",
+    "specs": {
+      "Type": "Stamina",
+      "Spin": "Right",
+      "Weight": "~34 g",
+      "Stock Combo": "9-70 Glide",
+      "Product Line": "UX"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00Yggdrasil/PR&#32;1&#32;U07.webp",
+    "variants": [
+      {
+        "name": "CX-05 (05)",
+        "imageUrl": "../../Blade/00Yggdrasil/PR&#32;2&#32;C05.webp"
+      }
+    ]
+  },
+  {
+    "id": "Blade-PS-001",
+    "category": "blade",
+    "name": "Ptera Swing",
+    "code": "UX-10",
+    "specs": {
+      "Type": "Stamina",
+      "Spin": "Right",
+      "Weight": "~34 g",
+      "Stock Combo": "7-70 Ball",
+      "Product Line": "BX"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00SubCharacter/PS&#32;1&#32;U10.webp",
+    "variants": []
+  },
+  {
+    "id": "Blade-PW-001",
+    "category": "blade",
+    "name": "Phoenix Wing",
+    "code": "BX-23",
+    "specs": {
+      "Type": "Attack",
+      "Spin": "Right",
+      "Weight": "~39 g",
+      "Stock Combo": "9-60 Gear Flat",
+      "Product Line": "BX"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00Yggdrasil/PW&#32;1&#32;B23.webp",
+    "variants": [
+      {
+        "name": "BX-35 (05)",
+        "imageUrl": "../../Blade/00Yggdrasil/PW&#32;2&#32;B35.webp"
+      },
+      {
+        "name": "BX-00",
+        "imageUrl": "../../Blade/00Yggdrasil/PW&#32;3&#32;B00.webp"
+      },
+      {
+        "name": "CoroCoro Comic",
+        "imageUrl": "../../Blade/00Yggdrasil/PW&#32;4&#32;B00.webp"
+      }
+    ]
+  },
+  {
+    "id": "Blade-RH-001",
+    "category": "blade",
+    "name": "Rhino Horn",
+    "code": "BX-19",
+    "specs": {
+      "Type": "Defense",
+      "Spin": "Right",
+      "Weight": "~33 g",
+      "Stock Combo": "3-80 Spike",
+      "Product Line": "BX"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00Zooganic/RH&#32;1&#32;B19.webp",
+    "variants": [
+      {
+        "name": "BX-31 (06)",
+        "imageUrl": "../../Blade/00Zooganic/RH&#32;2&#32;B31.webp"
+      }
+    ]
+  },
+  {
+    "id": "Blade-RRC-001",
+    "category": "blade",
+    "name": "Rhino Reaper",
+    "code": "CX-05",
+    "specs": {
+      "Type": "Defense",
+      "Spin": "Right",
+      "Weight": "~35 g (Stock Combo Blade)",
+      "Stock Combo": "Charge 4-55 Dot",
+      "Lock Chip Type": "Plastic (~1.7 g)",
+      "Product Line": "C (Charge)"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00Zooganic/RRC&#32;1&#32;C05.webp",
+    "variants": []
+  },
+  {
+    "id": "Blade-RRFE-001",
+    "category": "blade",
+    "name": "Ragna Rage",
+    "code": "CX-15",
+    "specs": {
+      "Type": "Stamina",
+      "Spin": "Right",
+      "Weight": "~ g (Stock Combo Blade)",
+      "Stock Combo": "Flow Erase 4-55 Yielding",
+      "Lock Chip Type": "Plastic (~1.7 g)",
+      "Product Line": "F (Flow)"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00Persona/RRFE&#32;1&#32;C15.webp",
+    "variants": []
+  },
+  {
+    "id": "Blade-SC-001",
+    "category": "blade",
+    "name": "Sphinx Cowl",
+    "code": "BX-27",
+    "specs": {
+      "Type": "Defense",
+      "Spin": "Right",
+      "Weight": "~33 g",
+      "Stock Combo": "9-80 Gear Needle",
+      "Product Line": "BX"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00Yggdrasil/SC&#32;1&#32;B27.webp",
+    "variants": [
+      {
+        "name": "BX-27 (02)",
+        "imageUrl": "../../Blade/00Yggdrasil/SC&#32;2&#32;B27.webp"
+      },
+      {
+        "name": "BX-27 (03)",
+        "imageUrl": "../../Blade/00Yggdrasil/SC&#32;3&#32;B27.webp"
+      },
+      {
+        "name": "UX-07",
+        "imageUrl": "../../Blade/00Yggdrasil/SC&#32;4&#32;U07.webp"
+      }
+    ]
+  },
+  {
+    "id": "Blade-SCa-001",
+    "category": "blade",
+    "name": "Samurai Calibur",
+    "code": "BX-45",
+    "specs": {
+      "Type": "Balance",
+      "Spin": "Right",
+      "Weight": "~36 g",
+      "Stock Combo": "6-70 Merge",
+      "Product Line": "BX"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00Persona/SCa&#32;1&#32;B45.webp",
+    "variants": []
+  },
+  {
+    "id": "Blade-SDk-001",
+    "category": "blade",
+    "name": "Shelter Drake",
+    "code": "BX-39",
+    "specs": {
+      "Type": "Balance",
+      "Spin": "Right",
+      "Weight": "~32 g",
+      "Stock Combo": "7-80 Gear Point",
+      "Product Line": "BX"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00Pendragon-Goldius/SDk&#32;1&#32;B39.webp",
+    "variants": [
+      {
+        "name": "BX-39 (02)",
+        "imageUrl": "../../Blade/00Pendragon-Goldius/SDk&#32;2&#32;B39.webp"
+      },
+      {
+        "name": "BX-39 (03)",
+        "imageUrl": "../../Blade/00Pendragon-Goldius/SDk&#32;3&#32;B39.webp"
+      }
+    ]
+  },
+  {
+    "id": "Blade-SE-001",
+    "category": "blade",
+    "name": "Shark Edge",
+    "code": "BX-14",
+    "specs": {
+      "Type": "Attack",
+      "Spin": "Right",
+      "Weight": "~35 g",
+      "Stock Combo": "3-60 Low Flat",
+      "Product Line": "BX"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00Persona/SE&#32;1&#32;B14.webp",
+    "variants": [
+      {
+        "name": "BX-14 (02)",
+        "imageUrl": "../../Blade/00Persona/SE&#32;2&#32;B14.webp"
+      },
+      {
+        "name": "BX-20",
+        "imageUrl": "../../Blade/00Persona/SE&#32;3&#32;B20.webp"
+      },
+      {
+        "name": "BX-31 (05)",
+        "imageUrl": "../../Blade/00Persona/SE&#32;4&#32;B31.webp"
+      },
+      {
+        "name": "BX-00",
+        "imageUrl": "../../Blade/00Persona/SE&#32;5&#32;B00.webp"
+      },
+      {
+        "name": "BX-00",
+        "imageUrl": "../../Blade/00Persona/SE&#32;6&#32;B00.webp"
+      },
+      {
+        "name": "BX-48 (02)",
+        "imageUrl": "../../Blade/00Persona/SE&#32;7&#32;B48.webp"
+      }
+    ]
+  },
+  {
+    "id": "Blade-SED-001",
+    "category": "blade",
+    "name": "Sol Eclipse",
+    "code": "CX-09",
+    "specs": {
+      "Type": "Balance",
+      "Spin": "Right",
+      "Weight": "~39 g (Stock Combo Blade)",
+      "Stock Combo": "Dual 5-70 Trans Kick",
+      "Lock Chip Type": "Plastic (~1.7 g)",
+      "Product Line": "D (Dual)",
+      "Gimmick": "CX"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00Kurosu/SED&#32;Upper&#32;1&#32;C09.webp",
+    "variants": [
+      {
+        "name": "Mode Change (8 Modes custom)",
+        "imageUrl": "../../Blade/00Kurosu/SED&#32;2&#32;U18.webp"
+      }
+    ]
+  },
+  {
+    "id": "Blade-SGl-001",
+    "category": "blade",
+    "name": "Shark Gill",
+    "code": "CX-11",
+    "specs": {
+      "Type": "Stamina",
+      "Spin": "Right",
+      "Weight": "~35 g",
+      "Stock Combo": "5-60 Free Ball",
+      "Product Line": "BX"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00Persona/SGl&#32;1&#32;C11.webp",
+    "variants": []
+  },
+  {
+    "id": "Blade-SK-001",
+    "category": "blade",
+    "name": "Shinobi Knife (XONE)",
+    "code": "BX-Game Package",
+    "specs": {
+      "Type": "Attack",
+      "Spin": "Right",
+      "Weight": "~30 g",
+      "Stock Combo": "4-60 Low Flat",
+      "Product Line": "BX"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00SubCharacter/SK&#32;1&#32;XONE.webp",
+    "variants": []
+  },
+  {
+    "id": "Blade-SSl-001",
+    "category": "blade",
+    "name": "Shark Scale",
+    "code": "UX-15",
+    "specs": {
+      "Type": "Attack",
+      "Spin": "Right",
+      "Weight": "~37 g",
+      "Stock Combo": "4-50 Under Flat",
+      "Product Line": "UX"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00Persona/SSl&#32;1&#32;U15.webp",
+    "variants": []
+  },
+  {
+    "id": "Blade-SSp-001",
+    "category": "blade",
+    "name": "Scorpio Spear",
+    "code": "UX-14",
+    "specs": {
+      "Type": "Balance",
+      "Spin": "Right",
+      "Weight": "~39 g",
+      "Stock Combo": "0-70 Zap",
+      "Product Line": "UX",
+      "Gimmick": "Mode Change (Defense/Attack)"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00Zodiac&#32;-&#32;Fox/SSp&#32;1&#32;U14.webp",
+    "variants": []
+  },
+  {
+    "id": "Blade-SSr-001",
+    "category": "blade",
+    "name": "Samurai Saber",
+    "code": "UX-09",
+    "specs": {
+      "Type": "Attack",
+      "Spin": "Right",
+      "Weight": "~36 g",
+      "Stock Combo": "2-70 Level",
+      "Product Line": "UX"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00Persona/SSr&#32;1&#32;U09.webp",
+    "variants": [
+      {
+        "name": "UX-00",
+        "imageUrl": "../../Blade/00Persona/SSr&#32;2&#32;U00.webp"
+      }
+    ]
+  },
+  {
+    "id": "Blade-SSt-001",
+    "category": "blade",
+    "name": "Samurai Steel",
+    "code": "BX-CoroCoro Comic",
+    "specs": {
+      "Type": "Attack",
+      "Spin": "Right",
+      "Weight": "~30 g",
+      "Stock Combo": "5-70 Gear Flat",
+      "Product Line": "BX"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00Persona/SSt&#32;1&#32;B00.webp",
+    "variants": []
+  },
+  {
+    "id": "Blade-SSw-001",
+    "category": "blade",
+    "name": "Shinobi Shadow",
+    "code": "UX-05",
+    "specs": {
+      "Type": "Defense",
+      "Spin": "Right",
+      "Weight": "~28 g",
+      "Stock Combo": "1-80 Metal Needle",
+      "Product Line": "UX"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00SubCharacter/SSw&#32;1&#32;U05.webp",
+    "variants": [
+      {
+        "name": "UX-05 (02)",
+        "imageUrl": "../../Blade/00SubCharacter/SSw&#32;2&#32;U005.webp"
+      },
+      {
+        "name": "UX-05 (03)",
+        "imageUrl": "../../Blade/00SubCharacter/SSw&#32;3&#32;U05.webp"
+      },
+      {
+        "name": "UX-12 (03)",
+        "imageUrl": "../../Blade/00SubCharacter/SSw&#32;4&#32;U12.webp"
+      }
+    ]
+  },
+  {
+    "id": "Blade-SW-001",
+    "category": "blade",
+    "name": "Silver Wolf",
+    "code": "UX-08",
+    "specs": {
+      "Type": "Stamina",
+      "Spin": "Right",
+      "Weight": "~36 g",
+      "Stock Combo": "3-80 Free Ball",
+      "Product Line": "UX"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00SubCharacter/SW&#32;1&#32;U08.webp",
+    "variants": []
+  },
+  {
+    "id": "Blade-TB-001",
+    "category": "blade",
+    "name": "Tyranno Beat",
+    "code": "BX-31",
+    "specs": {
+      "Type": "Attack",
+      "Spin": "Right",
+      "Weight": "~37 g",
+      "Stock Combo": "4-70 Quake",
+      "Product Line": "BX"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00SubCharacter/TB&#32;1&#32;B31.webp",
+    "variants": [
+      {
+        "name": "BX-31 (02)",
+        "imageUrl": "../../Blade/00SubCharacter/TB&#32;2&#32;B31.webp"
+      },
+      {
+        "name": "UX-10",
+        "imageUrl": "../../Blade/00SubCharacter/TB&#32;3&#32;U10.webp"
+      }
+    ]
+  },
+  {
+    "id": "Blade-TPs-001",
+    "category": "blade",
+    "name": "Tricera Press",
+    "code": "BX-44",
+    "specs": {
+      "Type": "Defense",
+      "Spin": "Right",
+      "Weight": "~36 g",
+      "Stock Combo": "M-85 Bound Spike",
+      "Product Line": "BX"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00Zodiac&#32;-&#32;Fox/TPs&#32;1&#32;B44.webp",
+    "variants": []
+  },
+  {
+    "id": "Blade-TR-001",
+    "category": "blade",
+    "name": "Tyranno Roar",
+    "code": "UX-15",
+    "specs": {
+      "Type": "Attack",
+      "Spin": "Right",
+      "Weight": "~36 g",
+      "Stock Combo": "1-70 Level",
+      "Product Line": "BX"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00SubCharacter/TR&#32;1&#32;U15.webp",
+    "variants": []
+  },
+  {
+    "id": "Blade-US-001",
+    "category": "blade",
+    "name": "Unicorn Sting",
+    "code": "BX-26",
+    "specs": {
+      "Type": "Balance",
+      "Spin": "Right",
+      "Weight": "~33 g",
+      "Stock Combo": "5-60 Gear Point",
+      "Product Line": "BX"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00Yggdrasil/US&#32;1&#32;B26.webp",
+    "variants": [
+      {
+        "name": "BX-35 (03)",
+        "imageUrl": "../../Blade/00Yggdrasil/US&#32;2&#32;B35.webp"
+      }
+    ]
+  },
+  {
+    "id": "Blade-VT-001",
+    "category": "blade",
+    "name": "Viper Tail",
+    "code": "BX-16",
+    "specs": {
+      "Type": "Stamina",
+      "Spin": "Right",
+      "Weight": "~34 g",
+      "Stock Combo": "5-80 Orb",
+      "Product Line": "BX"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00Zooganic/VT&#32;1&#32;B16.webp",
+    "variants": [
+      {
+        "name": "BX-16 (02)",
+        "imageUrl": "../../Blade/00Zooganic/VT&#32;2&#32;B16.webp"
+      },
+      {
+        "name": "BX-16 (03)",
+        "imageUrl": "../../Blade/00Zooganic/VT&#32;3&#32;B16.webp"
+      },
+      {
+        "name": "BX-24 (04)",
+        "imageUrl": "../../Blade/00Zooganic/VT&#32;4&#32;B24.webp"
+      },
+      {
+        "name": "BX-35 (06)",
+        "imageUrl": "../../Blade/00Zooganic/VT&#32;5&#32;B35.webp"
+      }
+    ]
+  },
+  {
+    "id": "Blade-VVS-001",
+    "category": "blade",
+    "name": "Valkyrie Volt",
+    "code": "CX-Rare Bey Battle",
+    "specs": {
+      "Type": "Attack",
+      "Spin": "Right",
+      "Weight": "~41 g",
+      "Stock Combo": "S 4-70 Vortex",
+      "Lock Chip Type": "Full Metal (~5.6 g)",
+      "Product Line": "Slash"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00Kurosu/VVS&#32;1&#32;C00.webp",
+    "variants": []
+  },
+  {
+    "id": "Blade-WA-001",
+    "category": "blade",
+    "name": "Wizard Arrow",
+    "code": "BX-03",
+    "specs": {
+      "Type": "Stamina",
+      "Spin": "Right",
+      "Weight": "~32 g",
+      "Stock Combo": "4-80 Ball",
+      "Product Line": "BX"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00Persona/WA&#32;1&#32;B03.webp",
+    "variants": [
+      {
+        "name": "BX-05",
+        "imageUrl": "../../Blade/00Persona/WA&#32;2&#32;B05.webp"
+      },
+      {
+        "name": "BX-08",
+        "imageUrl": "../../Blade/00Persona/WA&#32;3&#32;B08.webp"
+      },
+      {
+        "name": "BX-14 (06)",
+        "imageUrl": "../../Blade/00Persona/WA&#32;4&#32;B14.webp"
+      },
+      {
+        "name": "BX-17",
+        "imageUrl": "../../Blade/00Persona/WA&#32;5&#32;B17.webp"
+      },
+      {
+        "name": "BX-21",
+        "imageUrl": "../../Blade/00Persona/WA&#32;6&#32;B21.webp"
+      },
+      {
+        "name": "BX-24 (06)",
+        "imageUrl": "../../Blade/00Persona/WA&#32;7&#32;B24.webp"
+      }
+    ]
+  },
+  {
+    "id": "Blade-WAR-001",
+    "category": "blade",
+    "name": "Wizard Arc",
+    "code": "CX-02",
+    "specs": {
+      "Type": "Stamina",
+      "Spin": "Right",
+      "Weight": "~35 g (Stock Combo Blade)",
+      "Stock Combo": "Round 4-55 Low Orb",
+      "Lock Chip Type": "Plastic (~1.7 g)",
+      "Product Line": "R (Round)"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00Persona/WAR&#32;1&#32;C02&#32;.webp",
+    "variants": [
+      {
+        "name": "CX",
+        "imageUrl": "../../Blade/00Persona/WAR&#32;2&#32;C00.webp"
+      }
+    ]
+  },
+  {
+    "id": "Blade-WFM-001",
+    "category": "blade",
+    "name": "Whale Flame",
+    "code": "CX-08",
+    "specs": {
+      "Type": "Balance",
+      "Spin": "Right",
+      "Weight": "~37 g (Stock Combo Blade)",
+      "Stock Combo": "Massive 3-85 High Taper",
+      "Lock Chip Type": "Plastic (~1.7 g)",
+      "Product Line": "M (Massive)"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00Persona/WFM&#32;1&#32;C08.webp",
+    "variants": []
+  },
+  {
+    "id": "Blade-WG-001",
+    "category": "blade",
+    "name": "Wyvern Gale",
+    "code": "BX-24",
+    "specs": {
+      "Type": "Stamina",
+      "Spin": "Right",
+      "Weight": "~32 g",
+      "Stock Combo": "5-80 Gear Ball",
+      "Product Line": "BX"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00SubCharacter/WG&#32;1&#32;B24.webp",
+    "variants": [
+      {
+        "name": "BX-24 (02)",
+        "imageUrl": "../../Blade/00SubCharacter/WG&#32;2&#32;B24.webp"
+      },
+      {
+        "name": "UX-07",
+        "imageUrl": "../../Blade/00SubCharacter/WG&#32;3&#32;U07.webp"
+      },
+      {
+        "name": "UX-12 (05)",
+        "imageUrl": "../../Blade/00SubCharacter/WG&#32;4&#32;U12.webp"
+      }
+    ]
+  },
+  {
+    "id": "Blade-WHF-001",
+    "category": "blade",
+    "name": "Wolf Hunt",
+    "code": "CX-10",
+    "specs": {
+      "Type": "Stamina",
+      "Spin": "Right",
+      "Weight": "~39 g (Stock Combo Blade)",
+      "Stock Combo": "Free 0-60 Disc Ball",
+      "Lock Chip Type": "Plastic (~1.7 g)",
+      "Product Line": "F (Free)"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00SubCharacter/WHF&#32;1&#32;C10.webp",
+    "variants": []
+  },
+  {
+    "id": "Blade-WHv-001",
+    "category": "blade",
+    "name": "Wyvern Hover",
+    "code": "UX-DMM Lottery",
+    "specs": {
+      "Type": "Defense",
+      "Spin": "Right",
+      "Weight": "~35 g",
+      "Stock Combo": "2-80 Gear Needle",
+      "Product Line": "UX"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00SubCharacter/WHr&#32;1&#32;U00.webp",
+    "variants": [
+      {
+        "name": "DMM Lottery",
+        "imageUrl": "../../Blade/00SubCharacter/WHr&#32;2&#32;U00.webp"
+      }
+    ]
+  },
+  {
+    "id": "Blade-WR-001",
+    "category": "blade",
+    "name": "Wizard Rod",
+    "code": "UX-03",
+    "specs": {
+      "Type": "Stamina",
+      "Spin": "Right",
+      "Weight": "~35 g",
+      "Stock Combo": "5-70 Disc Ball",
+      "Product Line": "UX"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00Persona/WR&#32;1&#32;U03.webp",
+    "variants": [
+      {
+        "name": "UX-04",
+        "imageUrl": "../../Blade/00Persona/WR&#32;2&#32;U04.webp"
+      },
+      {
+        "name": "BX-35 (04)",
+        "imageUrl": "../../Blade/00Persona/WR&#32;3&#32;B35.webp"
+      },
+      {
+        "name": "G3 Prize",
+        "imageUrl": "../../Blade/00Persona/WR&#32;4&#32;G3P.webp"
+      }
+    ]
+  },
+  {
+    "id": "Blade-WT-001",
+    "category": "blade",
+    "name": "Weiss Tiger",
+    "code": "BX-33",
+    "specs": {
+      "Type": "Balance",
+      "Spin": "Right",
+      "Weight": "~34 g",
+      "Stock Combo": "3-60 Unite",
+      "Product Line": "BX"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00Pendragon-Goldius/WT&#32;1&#32;B33.webp",
+    "variants": [
+      {
+        "name": "UX-18 (06)",
+        "imageUrl": "../../Blade/00Pendragon-Goldius/WT&#32;2&#32;U18.webp"
+      }
+    ]
+  },
+  {
+    "id": "Blade-WW-001",
+    "category": "blade",
+    "name": "Whale Wave",
+    "code": "BX-36",
+    "specs": {
+      "Type": "Balance",
+      "Spin": "Right",
+      "Weight": "~38 g",
+      "Stock Combo": "5-80 Elavate",
+      "Product Line": "BX"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/00Persona/WW&#32;1&#32;B36.webp",
+    "variants": [
+      {
+        "name": "BX-36 (02)",
+        "imageUrl": "../../Blade/00Persona/WW&#32;2&#32;B36.webp"
+      },
+      {
+        "name": "BX-36 (03)",
+        "imageUrl": "../../Blade/00Persona/WW&#32;3&#32;B36.webp"
+      },
+      {
+        "name": "CX-05 (06)",
+        "imageUrl": "../../Blade/00Persona/WW&#32;4&#32;C05.webp"
+      },
+      {
+        "name": "BX-00",
+        "imageUrl": "https://bey-library.vercel.app/Blade/00Persona/WW&#32;5&#32;B00.webp"
+      }
+    ]
+  },
+  {
+    "id": "Ov-B-001",
+    "category": "over-blade",
+    "name": "B (Break)",
+    "code": "CX-13",
+    "specs": {
+      "Type": "Attack",
+      "Spin": "Right",
+      "Weight": "~ g"
+    },
+    "features": null,
+    "imageUrl": "../../Over&#32;Blade/B/B&#32;1&#32;C13.webp",
+    "variants": [
+      {
+        "name": "CX-16",
+        "imageUrl": "../../Over&#32;Blade/B/B&#32;2&#32;C16.webp"
+      }
+    ]
+  },
+  {
+    "id": "Ov-F-001",
+    "category": "over-blade",
+    "name": "F (Flow)",
+    "code": "CX-15",
+    "specs": {
+      "Type": "Stamina",
+      "Spin": "Right",
+      "Weight": "~ g"
+    },
+    "features": null,
+    "imageUrl": "../../Over&#32;Blade/F/F&#32;1&#32;C15.webp",
+    "variants": []
+  },
+  {
+    "id": "Ov-G-001",
+    "category": "over-blade",
+    "name": "G (Guard)",
+    "code": "CX-14",
+    "specs": {
+      "Type": "Defense",
+      "Spin": "Right",
+      "Weight": "~ g"
+    },
+    "features": null,
+    "imageUrl": "../../Over&#32;Blade/G/G&#32;1&#32;C14.webp",
+    "variants": []
+  },
+  {
+    "id": "As-A-001",
+    "category": "assist-blade",
+    "name": "A (Assault)",
+    "code": "CX-07",
+    "specs": {
+      "Type": "Attack",
+      "Spin": "Right",
+      "Weight": "~5 g",
+      "High Level": "~10 MM"
+    },
+    "features": null,
+    "imageUrl": "../../Assist&#32;Blade/A/A&#32;1&#32;C07.webp",
+    "variants": [
+      {
+        "name": "CoroCoro Event",
+        "imageUrl": "../../Assist&#32;Blade/A/A&#32;2&#32;C00.webp"
+      }
+    ]
+  },
+  {
+    "id": "As-B-001",
+    "category": "assist-blade",
+    "name": "B (Bumper)",
+    "code": "CX-03",
+    "specs": {
+      "Type": "Defense",
+      "Spin": "Right",
+      "Weight": "~5 g",
+      "High Level": "~10 MM"
+    },
+    "features": null,
+    "imageUrl": "../../Assist&#32;Blade/B/B&#32;1&#32;C03.webp",
+    "variants": [
+      {
+        "name": "CX-04",
+        "imageUrl": "../../Assist&#32;Blade/B/B&#32;2&#32;C04.webp"
+      }
+    ]
+  },
+  {
+    "id": "As-C-001",
+    "category": "assist-blade",
+    "name": "C (Charge)",
+    "code": "CX-05",
+    "specs": {
+      "Type": "Defense",
+      "Spin": "Right",
+      "Weight": "~5 g",
+      "High Level": "~10 MM"
+    },
+    "features": null,
+    "imageUrl": "../../Assist&#32;Blade/C/C&#32;1&#32;C05.webp",
+    "variants": [
+      {
+        "name": "UX-18",
+        "imageUrl": "../../Assist&#32;Blade/C/C&#32;2&#32;U18.webp"
+      }
+    ]
+  },
+  {
+    "id": "As-D-001",
+    "category": "assist-blade",
+    "name": "D (Dual)",
+    "code": "CX-09",
+    "specs": {
+      "Type": "Balance",
+      "Spin": "Right",
+      "Weight": "~6 g",
+      "High Level": "~10 MM",
+      "Gimmick": "Mode Change (Upper/Smash)"
+    },
+    "features": null,
+    "imageUrl": "../../Assist&#32;Blade/D/D&#32;1&#32;C09.webp",
+    "variants": []
+  },
+  {
+    "id": "As-E-001",
+    "category": "assist-blade",
+    "name": "E (Erase)",
+    "code": "CX-15",
+    "specs": {
+      "Type": "Stamina",
+      "Spin": "Right",
+      "Weight": "~ g",
+      "High Level": "~ MM"
+    },
+    "features": null,
+    "imageUrl": "../../Assist&#32;Blade/E/E&#32;1&#32;C15.webp",
+    "variants": []
+  },
+  {
+    "id": "As-F-001",
+    "category": "assist-blade",
+    "name": "F (Free)",
+    "code": "CX-10",
+    "specs": {
+      "Type": "Stamina",
+      "Spin": "Right",
+      "Weight": "~5 g",
+      "High Level": "~10 MM",
+      "Gimmick": "Free Spin ring"
+    },
+    "features": null,
+    "imageUrl": "../../Assist&#32;Blade/F/F&#32;1&#32;C10.webp",
+    "variants": []
+  },
+  {
+    "id": "As-H-001",
+    "category": "assist-blade",
+    "name": "H (Heavy)",
+    "code": "CX-11",
+    "specs": {
+      "Type": "Balance",
+      "Spin": "Right",
+      "Weight": "~7 g",
+      "High Level": "~9 MM",
+      "Gimmick": "Metal Weight"
+    },
+    "features": null,
+    "imageUrl": "../../Assist&#32;Blade/H/H&#32;1&#32;C11.webp",
+    "variants": []
+  },
+  {
+    "id": "As-J-001",
+    "category": "assist-blade",
+    "name": "J (Jaggy)",
+    "code": "CX-06",
+    "specs": {
+      "Type": "Attack",
+      "Spin": "Right",
+      "Weight": "~5 g",
+      "High Level": "~9 MM"
+    },
+    "features": null,
+    "imageUrl": "../../Assist&#32;Blade/J/J&#32;1&#32;C06.webp",
+    "variants": [
+      {
+        "name": "CX-06",
+        "imageUrl": "../../Assist&#32;Blade/J/J&#32;2&#32;C06.webp"
+      },
+      {
+        "name": "CX-06",
+        "imageUrl": "../../Assist&#32;Blade/J/J&#32;3&#32;C06.webp"
+      },
+      {
+        "name": "CoroCoro Comic",
+        "imageUrl": "../../Assist&#32;Blade/J/J&#32;4&#32;C00.webp"
+      },
+      {
+        "name": "UX-15",
+        "imageUrl": "../../Assist&#32;Blade/J/J&#32;5&#32;U15.webp"
+      }
+    ]
+  },
+  {
+    "id": "As-K-001",
+    "category": "assist-blade",
+    "name": "K (Knuckle)",
+    "code": "CX-13",
+    "specs": {
+      "Type": "Attack",
+      "Spin": "Right",
+      "Weight": "~ g",
+      "High Level": "~ MM"
+    },
+    "features": null,
+    "imageUrl": "../../Assist&#32;Blade/K/K&#32;1&#32;C13.webp",
+    "variants": [
+      {
+        "name": "CX-16",
+        "imageUrl": "https://bey-library.vercel.app/Assist&#32;Blade/K/K&#32;2&#32;C13.webp"
+      }
+    ]
+  },
+  {
+    "id": "As-M-001",
+    "category": "assist-blade",
+    "name": "M (Massive)",
+    "code": "CX-08",
+    "specs": {
+      "Type": "Balance",
+      "Spin": "Right",
+      "Weight": "~6 g",
+      "High Level": "~10 MM"
+    },
+    "features": null,
+    "imageUrl": "../../Assist&#32;Blade/M/M&#32;1&#32;C08.webp",
+    "variants": [
+      {
+        "name": "UX-18",
+        "imageUrl": "../../Assist&#32;Blade/M/M&#32;2&#32;U18.webp"
+      }
+    ]
+  },
+  {
+    "id": "As-R-001",
+    "category": "assist-blade",
+    "name": "R (Round)",
+    "code": "CX-02",
+    "specs": {
+      "Type": "Stamina",
+      "Spin": "Right",
+      "Weight": "~4 g",
+      "High Level": "~10 MM"
+    },
+    "features": null,
+    "imageUrl": "../../Assist&#32;Blade/R/R&#32;1&#32;C02.webp",
+    "variants": [
+      {
+        "name": "CX-00",
+        "imageUrl": "../../Assist&#32;Blade/R/R&#32;2&#32;C00.webp"
+      }
+    ]
+  },
+  {
+    "id": "As-S-001",
+    "category": "assist-blade",
+    "name": "S (Slash)",
+    "code": "CX-01",
+    "specs": {
+      "Type": "Attack",
+      "Spin": "Right",
+      "Weight": "~4 g",
+      "High Level": "~9 MM"
+    },
+    "features": null,
+    "imageUrl": "../../Assist&#32;Blade/S/S&#32;1&#32;C01.webp",
+    "variants": [
+      {
+        "name": "CX-04",
+        "imageUrl": "../../Assist&#32;Blade/S/S&#32;2&#32;C04.webp"
+      },
+      {
+        "name": "CoroCoro Comic",
+        "imageUrl": "../../Assist&#32;Blade/S/S&#32;3&#32;C00.webp"
+      },
+      {
+        "name": "Rare Bey Battle",
+        "imageUrl": "../../Assist&#32;Blade/S/S&#32;4&#32;C00.webp"
+      },
+      {
+        "name": "CX-12",
+        "imageUrl": "https://bey-library.vercel.app/Assist&#32;Blade/S/S&#32;5&#32;C12.webp"
+      }
+    ]
+  },
+  {
+    "id": "As-T-001",
+    "category": "assist-blade",
+    "name": "T (Turn)",
+    "code": "CX-05",
+    "specs": {
+      "Type": "Balance",
+      "Spin": "Right",
+      "Weight": "~6 g",
+      "High Level": "~10 MM",
+      "Gimmick": "Mode Change (Barrage/Parry)"
+    },
+    "features": null,
+    "imageUrl": "../../Assist&#32;Blade/T/T&#32;1&#32;C05.webp",
+    "variants": [
+      {
+        "name": "CX-05",
+        "imageUrl": "../../Assist&#32;Blade/T/T&#32;2&#32;C05.webp"
+      },
+      {
+        "name": "CX-00",
+        "imageUrl": "../../Assist&#32;Blade/T/T&#32;3&#32;C00.webp"
+      }
+    ]
+  },
+  {
+    "id": "As-V-001",
+    "category": "assist-blade",
+    "name": "V (Vertical)",
+    "code": "CX-14",
+    "specs": {
+      "Type": "Defense",
+      "Spin": "Right",
+      "Weight": "~ g",
+      "High Level": "~ MM"
+    },
+    "features": null,
+    "imageUrl": "../../Assist&#32;Blade/V/V&#32;1&#32;C14.webp",
+    "variants": []
+  },
+  {
+    "id": "As-W-001",
+    "category": "assist-blade",
+    "name": "W (Wheel)",
+    "code": "CX-08",
+    "specs": {
+      "Type": "Stamina",
+      "Spin": "Right",
+      "Weight": "~7 g",
+      "High Level": "~10 MM"
+    },
+    "features": null,
+    "imageUrl": "../../Assist&#32;Blade/W/W&#32;1&#32;C08.webp",
+    "variants": [
+      {
+        "name": "CX-08",
+        "imageUrl": "../../Assist&#32;Blade/W/W&#32;2&#32;C08.webp"
+      }
+    ]
+  },
+  {
+    "id": "As-Z-001",
+    "category": "assist-blade",
+    "name": "Z (Zillion)",
+    "code": "CX-12",
+    "specs": {
+      "Type": "Defense",
+      "Spin": "Right",
+      "Weight": "~6 g",
+      "High Level": "~9 MM"
+    },
+    "features": null,
+    "imageUrl": "../../Assist&#32;Blade/Z/Z&#32;1&#32;C12.webp",
+    "variants": []
+  },
+  {
+    "id": "Hybrid-Rat-Op-001",
+    "category": "ratchet",
+    "name": "Op (Operate)",
+    "code": "CX-11",
+    "specs": {},
+    "features": null,
+    "imageUrl": "../../Hybird&#32;Part/Op&#32;1&#32;C11.webp",
+    "variants": []
+  },
+  {
+    "id": "Hybrid-Rat-Tr-001",
+    "category": "ratchet",
+    "name": "Tr (Turbo)",
+    "code": "CX-07",
+    "specs": {},
+    "features": null,
+    "imageUrl": "../../Hybird&#32;Part/Tr&#32;1&#32;C07.webp",
+    "variants": [
+      {
+        "name": "Variant 1",
+        "imageUrl": "../../Hybird&#32;Part/Tr&#32;2&#32;C00.webp"
+      }
+    ]
+  },
+  {
+    "id": "Rat-060-001",
+    "category": "ratchet",
+    "name": "0-60",
+    "code": "CX-10",
+    "specs": {},
+    "features": null,
+    "imageUrl": "../../Ratchet/0/0&#32;60&#32;1&#32;C10.webp",
+    "variants": []
+  },
+  {
+    "id": "Rat-070-001",
+    "category": "ratchet",
+    "name": "0-70",
+    "code": "UX-14",
+    "specs": {},
+    "features": null,
+    "imageUrl": "../../Ratchet/0/0&#32;70&#32;1&#32;U14.webp",
+    "variants": []
+  },
+  {
+    "id": "Rat-080-001",
+    "category": "ratchet",
+    "name": "0-80",
+    "code": "UX-12",
+    "specs": {},
+    "features": null,
+    "imageUrl": "../../Ratchet/0/0&#32;80&#32;1&#32;U12.webp",
+    "variants": [
+      {
+        "name": "Variant 1",
+        "imageUrl": "../../Ratchet/0/0&#32;80&#32;2&#32;U12.webp"
+      },
+      {
+        "name": "Variant 2",
+        "imageUrl": "../../Ratchet/0/0&#32;80&#32;3&#32;U12.webp"
+      },
+      {
+        "name": "Variant 3",
+        "imageUrl": "../../Ratchet/0/0&#32;80&#32;4&#32;C06.webp"
+      }
+    ]
+  },
+  {
+    "id": "Rat-150-001",
+    "category": "ratchet",
+    "name": "1-50",
+    "code": "CX-13",
+    "specs": {},
+    "features": null,
+    "imageUrl": "../../Ratchet/1/1&#32;50&#32;1&#32;C13.webp",
+    "variants": [
+      {
+        "name": "Variant 1",
+        "imageUrl": "../../Ratchet/1/1&#32;50&#32;2&#32;C16.webp"
+      }
+    ]
+  },
+  {
+    "id": "Rat-160-001",
+    "category": "ratchet",
+    "name": "1-60",
+    "code": "UX-01",
+    "specs": {},
+    "features": null,
+    "imageUrl": "../../Ratchet/1/1&#32;60&#32;1&#32;U01.webp",
+    "variants": [
+      {
+        "name": "Variant 1",
+        "imageUrl": "../../Ratchet/1/1&#32;60&#32;2&#32;U04.webp"
+      },
+      {
+        "name": "Variant 2",
+        "imageUrl": "../../Ratchet/1/1&#32;60&#32;0&#32;U00.webp"
+      },
+      {
+        "name": "Variant 3",
+        "imageUrl": "../../Ratchet/1/1&#32;60&#32;3&#32;B31.webp"
+      },
+      {
+        "name": "Variant 4",
+        "imageUrl": "../../Ratchet/1/1&#32;60&#32;4&#32;B35.webp"
+      },
+      {
+        "name": "Variant 5",
+        "imageUrl": "../../Ratchet/1/1&#32;60&#32;5&#32;B00.webp"
+      },
+      {
+        "name": "Variant 6",
+        "imageUrl": "../../Ratchet/1/1&#32;60&#32;6&#32;U10.webp"
+      },
+      {
+        "name": "Variant 7",
+        "imageUrl": "../../Ratchet/1/1&#32;60&#32;7&#32;U00.webp"
+      },
+      {
+        "name": "Variant 8",
+        "imageUrl": "../../Ratchet/1/1&#32;60&#32;8&#32;LTD.webp"
+      },
+      {
+        "name": "Variant 9",
+        "imageUrl": "../../Ratchet/1/1&#32;60&#32;9&#32;LTD.webp"
+      },
+      {
+        "name": "Variant 10",
+        "imageUrl": "../../Ratchet/1/1&#32;60&#32;10&#32;LTD.webp"
+      },
+      {
+        "name": "Variant 11",
+        "imageUrl": "../../Ratchet/1/1&#32;60&#32;11&#32;LTD.webp"
+      },
+      {
+        "name": "Variant 12",
+        "imageUrl": "../../Ratchet/1/1&#32;60&#32;12&#32;LTD.webp"
+      },
+      {
+        "name": "Variant 13",
+        "imageUrl": "../../Ratchet/1/1&#32;60&#32;13&#32;LTD.webp"
+      },
+      {
+        "name": "Variant 14",
+        "imageUrl": "../../Ratchet/1/1&#32;60&#32;14&#32;U13.webp"
+      },
+      {
+        "name": "Variant 15",
+        "imageUrl": "../../Ratchet/1/1&#32;60&#32;15&#32;C08.webp"
+      },
+      {
+        "name": "Variant 16",
+        "imageUrl": "../../Ratchet/1/1&#32;60&#32;16&#32;LD.webp"
+      }
+    ]
+  },
+  {
+    "id": "Rat-170-001",
+    "category": "ratchet",
+    "name": "1-70",
+    "code": "UX-15",
+    "specs": {},
+    "features": null,
+    "imageUrl": "../../Ratchet/1/1&#32;70&#32;1&#32;U15.webp",
+    "variants": []
+  },
+  {
+    "id": "Rat-180-001",
+    "category": "ratchet",
+    "name": "1-80",
+    "code": "UX-05",
+    "specs": {},
+    "features": null,
+    "imageUrl": "../../Ratchet/1/1&#32;80&#32;1&#32;U05.webp",
+    "variants": [
+      {
+        "name": "Variant 1",
+        "imageUrl": "../../Ratchet/1/1&#32;80&#32;2&#32;U07.webp"
+      },
+      {
+        "name": "Variant 2",
+        "imageUrl": "../../Ratchet/1/1&#32;80&#32;3&#32;Col.webp"
+      },
+      {
+        "name": "Variant 3",
+        "imageUrl": "https://bey-library.vercel.app/Ratchet/1/1&#32;80&#32;4&#32;B00.webp"
+      }
+    ]
+  },
+  {
+    "id": "Rat-260-001",
+    "category": "ratchet",
+    "name": "2-60",
+    "code": "BX-34",
+    "specs": {},
+    "features": null,
+    "imageUrl": "../../Ratchet/2/2&#32;60&#32;1&#32;B34.webp",
+    "variants": [
+      {
+        "name": "Variant 1",
+        "imageUrl": "../../Ratchet/2/2&#32;60&#32;2&#32;B00.webp"
+      },
+      {
+        "name": "Variant 2",
+        "imageUrl": "../../Ratchet/2/2&#32;60&#32;3&#32;U07.webp"
+      },
+      {
+        "name": "Variant 3",
+        "imageUrl": "../../Ratchet/2/2&#32;60&#32;4&#32;25th.webp"
+      },
+      {
+        "name": "Variant 4",
+        "imageUrl": "../../Ratchet/2/2&#32;60&#32;5&#32;U12.webp"
+      },
+      {
+        "name": "Variant 5",
+        "imageUrl": "../../Ratchet/2/2&#32;60&#32;6&#32;B00.webp"
+      },
+      {
+        "name": "Variant 6",
+        "imageUrl": "../../Ratchet/2/2&#32;60&#32;7&#32;C06.webp"
+      },
+      {
+        "name": "Variant 7",
+        "imageUrl": "https://bey-library.vercel.app/Ratchet/3/2&#32;60&#32;8&#32;B00.webp"
+      }
+    ]
+  },
+  {
+    "id": "Rat-270-001",
+    "category": "ratchet",
+    "name": "2-70",
+    "code": "UX-09",
+    "specs": {},
+    "features": null,
+    "imageUrl": "../../Ratchet/2/2&#32;70&#32;1&#32;U09.webp",
+    "variants": [
+      {
+        "name": "Variant 1",
+        "imageUrl": "../../Ratchet/2/2&#32;70&#32;3&#32;C00.webp"
+      }
+    ]
+  },
+  {
+    "id": "Rat-280-001",
+    "category": "ratchet",
+    "name": "2-80",
+    "code": "BX-00",
+    "specs": {},
+    "features": null,
+    "imageUrl": "../../Ratchet/2/2&#32;80&#32;1&#32;B00.webp",
+    "variants": [
+      {
+        "name": "Variant 1",
+        "imageUrl": "../../Ratchet/2/2&#32;80&#32;2&#32;B00.webp"
+      },
+      {
+        "name": "Variant 2",
+        "imageUrl": "../../Ratchet/2/2&#32;80&#32;3&#32;B00.webp"
+      },
+      {
+        "name": "Variant 3",
+        "imageUrl": "../../Ratchet/2/2&#32;80&#32;4&#32;B00.webp"
+      },
+      {
+        "name": "Variant 4",
+        "imageUrl": "../../Ratchet/2/2&#32;80&#32;5&#32;B48.webp"
+      }
+    ]
+  },
+  {
+    "id": "Rat-360-001",
+    "category": "ratchet",
+    "name": "3-60",
+    "code": "BX-01",
+    "specs": {},
+    "features": null,
+    "imageUrl": "../../Ratchet/3/3&#32;60&#32;1&#32;B01.webp",
+    "variants": [
+      {
+        "name": "Variant 1",
+        "imageUrl": "../../Ratchet/3/3&#32;60&#32;2&#32;B07.webp"
+      },
+      {
+        "name": "Variant 2",
+        "imageUrl": "../../Ratchet/3/3&#32;60&#32;3&#32;B14.webp"
+      },
+      {
+        "name": "Variant 3",
+        "imageUrl": "../../Ratchet/3/3&#32;60&#32;4&#32;B14.webp"
+      },
+      {
+        "name": "Variant 4",
+        "imageUrl": "../../Ratchet/3/3&#32;60&#32;5&#32;B17.webp"
+      },
+      {
+        "name": "Variant 5",
+        "imageUrl": "../../Ratchet/3/3&#32;60&#32;6&#32;B21.webp"
+      },
+      {
+        "name": "Variant 6",
+        "imageUrl": "../../Ratchet/3/3&#32;60&#32;7&#32;B24.webp"
+      },
+      {
+        "name": "Variant 7",
+        "imageUrl": "../../Ratchet/3/3&#32;60&#32;8&#32;B31.webp"
+      },
+      {
+        "name": "Variant 8",
+        "imageUrl": "../../Ratchet/3/3&#32;60&#32;9&#32;B33.webp"
+      },
+      {
+        "name": "Variant 9",
+        "imageUrl": "../../Ratchet/3/3&#32;60&#32;10&#32;B39.webp"
+      },
+      {
+        "name": "Variant 10",
+        "imageUrl": "../../Ratchet/3/3&#32;60&#32;11&#32;Col.webp"
+      },
+      {
+        "name": "Variant 11",
+        "imageUrl": "../../Ratchet/3/3&#32;60&#32;12&#32;Col.webp"
+      },
+      {
+        "name": "Variant 12",
+        "imageUrl": "../../Ratchet/3/3&#32;60&#32;13&#32;Col.webp"
+      },
+      {
+        "name": "Variant 13",
+        "imageUrl": "../../Ratchet/3/3&#32;60&#32;14&#32;B00.webp"
+      },
+      {
+        "name": "Variant 14",
+        "imageUrl": "../../Ratchet/3/3&#32;60&#32;15&#32;Sushi.webp"
+      },
+      {
+        "name": "Variant 15",
+        "imageUrl": "../../Ratchet/3/3&#32;60&#32;16&#32;U15.webp"
+      }
+    ]
+  },
+  {
+    "id": "Rat-370-001",
+    "category": "ratchet",
+    "name": "3-70",
+    "code": "UX-02",
+    "specs": {},
+    "features": null,
+    "imageUrl": "../../Ratchet/3/3&#32;70&#32;1&#32;U02.webp",
+    "variants": [
+      {
+        "name": "Variant 1",
+        "imageUrl": "../../Ratchet/3/3&#32;70&#32;2&#32;U05.webp"
+      },
+      {
+        "name": "Variant 2",
+        "imageUrl": "../../Ratchet/3/3&#32;70&#32;3&#32;B35.webp"
+      },
+      {
+        "name": "Variant 3",
+        "imageUrl": "../../Ratchet/3/3&#32;70&#32;4&#32;U00.webp"
+      },
+      {
+        "name": "Variant 4",
+        "imageUrl": "../../Ratchet/3/3&#32;70&#32;5&#32;25th.webp"
+      },
+      {
+        "name": "Variant 5",
+        "imageUrl": "../../Ratchet/3/3&#32;70&#32;6&#32;U00.webp"
+      },
+      {
+        "name": "Variant 6",
+        "imageUrl": "../../Ratchet/3/3&#32;70&#32;7&#32;U00.webp"
+      },
+      {
+        "name": "Variant 7",
+        "imageUrl": "../../Ratchet/3/3&#32;70&#32;8&#32;U17.webp"
+      },
+      {
+        "name": "Variant 8",
+        "imageUrl": "../../Ratchet/3/3&#32;70&#32;9&#32;U00.webp"
+      }
+    ]
+  },
+  {
+    "id": "Rat-380-001",
+    "category": "ratchet",
+    "name": "3-80",
+    "code": "BX-04",
+    "specs": {},
+    "features": null,
+    "imageUrl": "../../Ratchet/3/3&#32;80&#32;1&#32;B04.webp",
+    "variants": [
+      {
+        "name": "Variant 1",
+        "imageUrl": "../../Ratchet/3/3&#32;80&#32;2&#32;B06.webp"
+      },
+      {
+        "name": "Variant 2",
+        "imageUrl": "../../Ratchet/3/3&#32;80&#32;3&#32;B08.webp"
+      },
+      {
+        "name": "Variant 3",
+        "imageUrl": "../../Ratchet/3/3&#32;80&#32;4&#32;B14.webp"
+      },
+      {
+        "name": "Variant 4",
+        "imageUrl": "../../Ratchet/3/3&#32;80&#32;5&#32;B16.webp"
+      },
+      {
+        "name": "Variant 5",
+        "imageUrl": "../../Ratchet/3/3&#32;80&#32;6&#32;B19.webp"
+      },
+      {
+        "name": "Variant 6",
+        "imageUrl": "../../Ratchet/3/3&#32;80&#32;7&#32;B20.webp"
+      },
+      {
+        "name": "Variant 7",
+        "imageUrl": "../../Ratchet/3/3&#32;80&#32;8&#32;B24.webp"
+      },
+      {
+        "name": "Variant 8",
+        "imageUrl": "../../Ratchet/3/3&#32;80&#32;9&#32;B00.webp"
+      },
+      {
+        "name": "Variant 9",
+        "imageUrl": "../../Ratchet/3/3&#32;80&#32;10&#32;B00.webp"
+      },
+      {
+        "name": "Variant 10",
+        "imageUrl": "../../Ratchet/3/3&#32;80&#32;11&#32;B36.webp"
+      },
+      {
+        "name": "Variant 11",
+        "imageUrl": "../../Ratchet/3/3&#32;80&#32;12&#32;U08.webp"
+      },
+      {
+        "name": "Variant 12",
+        "imageUrl": "../../Ratchet/3/3&#32;80&#32;13&#32;U12.webp"
+      },
+      {
+        "name": "Variant 13",
+        "imageUrl": "../../Ratchet/3/3&#32;80&#32;14&#32;Col.webp"
+      },
+      {
+        "name": "Variant 14",
+        "imageUrl": "../../Ratchet/3/3&#32;80&#32;15&#32;Col.webp"
+      },
+      {
+        "name": "Variant 15",
+        "imageUrl": "../../Ratchet/3/3&#32;80&#32;16&#32;Col.webp"
+      },
+      {
+        "name": "Variant 16",
+        "imageUrl": "../../Ratchet/3/3&#32;80&#32;17&#32;G3P.webp"
+      }
+    ]
+  },
+  {
+    "id": "Rat-385-001",
+    "category": "ratchet",
+    "name": "3-85",
+    "code": "UX-10",
+    "specs": {},
+    "features": null,
+    "imageUrl": "../../Ratchet/3/3&#32;85&#32;1&#32;U10.webp",
+    "variants": [
+      {
+        "name": "Variant 1",
+        "imageUrl": "../../Ratchet/3/3&#32;85&#32;2&#32;C05.webp"
+      },
+      {
+        "name": "Variant 2",
+        "imageUrl": "../../Ratchet/3/3&#32;85&#32;3&#32;Col.webp"
+      },
+      {
+        "name": "Variant 3",
+        "imageUrl": "../../Ratchet/3/3&#32;85&#32;4&#32;C08.webp"
+      },
+      {
+        "name": "Variant 4",
+        "imageUrl": "../../Ratchet/3/3&#32;85&#32;5&#32;U00.webp"
+      },
+      {
+        "name": "Variant 5",
+        "imageUrl": "../../Ratchet/3/3&#32;85&#32;6&#32;U18.webp"
+      },
+      {
+        "name": "Variant 6",
+        "imageUrl": "../../Ratchet/3/3&#32;85&#32;7&#32;B48.webp"
+      }
+    ]
+  },
+  {
+    "id": "Rat-450-001",
+    "category": "ratchet",
+    "name": "4-50",
+    "code": "UX-15",
+    "specs": {},
+    "features": null,
+    "imageUrl": "../../Ratchet/4/4&#32;50&#32;1&#32;U15.webp",
+    "variants": []
+  },
+  {
+    "id": "Rat-455-001",
+    "category": "ratchet",
+    "name": "4-55",
+    "code": "CX-02",
+    "specs": {},
+    "features": null,
+    "imageUrl": "../../Ratchet/4/4&#32;55&#32;1&#32;C02.webp",
+    "variants": [
+      {
+        "name": "Variant 1",
+        "imageUrl": "../../Ratchet/4/4&#32;55&#32;2&#32;C05.webp"
+      },
+      {
+        "name": "Variant 2",
+        "imageUrl": "../../Ratchet/4/4&#32;55&#32;6&#32;C08.webp"
+      },
+      {
+        "name": "Variant 3",
+        "imageUrl": "../../Ratchet/4/4&#32;55&#32;4&#32;Col.webp"
+      },
+      {
+        "name": "Variant 4",
+        "imageUrl": "../../Ratchet/4/4&#32;55&#32;5&#32;C00.webp"
+      },
+      {
+        "name": "Variant 5",
+        "imageUrl": "../../Ratchet/4/4&#32;55&#32;7&#32;C15.webp"
+      }
+    ]
+  },
+  {
+    "id": "Rat-460-001",
+    "category": "ratchet",
+    "name": "4-60",
+    "code": "BX-02",
+    "specs": {},
+    "features": null,
+    "imageUrl": "../../Ratchet/4/4&#32;60&#32;1&#32;B02.webp",
+    "variants": [
+      {
+        "name": "Variant 1",
+        "imageUrl": "../../Ratchet/4/4&#32;60&#32;2&#32;B00.webp"
+      },
+      {
+        "name": "Variant 2",
+        "imageUrl": "../../Ratchet/4/4&#32;60&#32;3&#32;B00.webp"
+      },
+      {
+        "name": "Variant 3",
+        "imageUrl": "../../Ratchet/4/4&#32;60&#32;4&#32;B08.webp"
+      },
+      {
+        "name": "Variant 4",
+        "imageUrl": "../../Ratchet/4/4&#32;60&#32;5&#32;B14.webp"
+      },
+      {
+        "name": "Variant 5",
+        "imageUrl": "../../Ratchet/4/4&#32;60&#32;6&#32;B16.webp"
+      },
+      {
+        "name": "Variant 6",
+        "imageUrl": "../../Ratchet/4/4&#32;60&#32;7&#32;B20.webp"
+      },
+      {
+        "name": "Variant 7",
+        "imageUrl": "../../Ratchet/4/4&#32;60&#32;8&#32;B24.webp"
+      },
+      {
+        "name": "Variant 8",
+        "imageUrl": "../../Ratchet/4/4&#32;60&#32;9&#32;B35.webp"
+      },
+      {
+        "name": "Variant 9",
+        "imageUrl": "../../Ratchet/4/4&#32;60&#32;10&#32;25th.webp"
+      },
+      {
+        "name": "Variant 10",
+        "imageUrl": "../../Ratchet/4/4&#32;60&#32;11&#32;B00.webp"
+      },
+      {
+        "name": "Variant 11",
+        "imageUrl": "../../Ratchet/4/4&#32;60&#32;12&#32;B00.webp"
+      },
+      {
+        "name": "Variant 12",
+        "imageUrl": "../../Ratchet/4/4&#32;60&#32;13&#32;U12.webp"
+      },
+      {
+        "name": "Variant 13",
+        "imageUrl": "../../Ratchet/4/4&#32;60&#32;14&#32;Col.webp"
+      },
+      {
+        "name": "Variant 14",
+        "imageUrl": "../../Ratchet/4/4&#32;60&#32;15&#32;Col.webp"
+      },
+      {
+        "name": "Variant 15",
+        "imageUrl": "../../Ratchet/4/4&#32;60&#32;16&#32;Col.webp"
+      },
+      {
+        "name": "Variant 16",
+        "imageUrl": "../../Ratchet/4/4&#32;60&#32;17&#32;C00.webp"
+      },
+      {
+        "name": "Variant 17",
+        "imageUrl": "../../Ratchet/4/4&#32;60&#32;10&#32;25th.webp"
+      },
+      {
+        "name": "Variant 18",
+        "imageUrl": "../../Ratchet/4/4&#32;60&#32;18&#32;U18.webp"
+      }
+    ]
+  },
+  {
+    "id": "Rat-470-001",
+    "category": "ratchet",
+    "name": "4-70",
+    "code": "BX-31",
+    "specs": {},
+    "features": null,
+    "imageUrl": "../../Ratchet/4/4&#32;70&#32;1&#32;B31.webp",
+    "variants": [
+      {
+        "name": "Variant 1",
+        "imageUrl": "../../Ratchet/4/4&#32;70&#32;2&#32;B31.webp"
+      },
+      {
+        "name": "Variant 2",
+        "imageUrl": "../../Ratchet/4/4&#32;70&#32;3&#32;B36.webp"
+      },
+      {
+        "name": "Variant 3",
+        "imageUrl": "../../Ratchet/4/4&#32;70&#32;4&#32;B38.webp"
+      },
+      {
+        "name": "Variant 4",
+        "imageUrl": "../../Ratchet/4/4&#32;70&#32;5&#32;C05.webp"
+      },
+      {
+        "name": "Variant 5",
+        "imageUrl": "../../Ratchet/4/4&#32;70&#32;6&#32;C05.webp"
+      },
+      {
+        "name": "Variant 6",
+        "imageUrl": "../../Ratchet/4/4&#32;70&#32;7&#32;C00.webp"
+      },
+      {
+        "name": "Variant 7",
+        "imageUrl": "../../Ratchet/4/4&#32;70&#32;8&#32;B48.webp"
+      }
+    ]
+  },
+  {
+    "id": "Rat-480-001",
+    "category": "ratchet",
+    "name": "4-80",
+    "code": "BX-03",
+    "specs": {},
+    "features": null,
+    "imageUrl": "../../Ratchet/4/4&#32;80&#32;1&#32;B03.webp",
+    "variants": [
+      {
+        "name": "Variant 1",
+        "imageUrl": "../../Ratchet/4/4&#32;80&#32;2&#32;B05.webp"
+      },
+      {
+        "name": "Variant 2",
+        "imageUrl": "../../Ratchet/4/4&#32;80&#32;3&#32;B08.webp"
+      },
+      {
+        "name": "Variant 3",
+        "imageUrl": "../../Ratchet/4/4&#32;80&#32;4&#32;B13.webp"
+      },
+      {
+        "name": "Variant 4",
+        "imageUrl": "../../Ratchet/4/4&#32;80&#32;5&#32;B14.webp"
+      },
+      {
+        "name": "Variant 5",
+        "imageUrl": "../../Ratchet/4/4&#32;80&#32;6&#32;B14.webp"
+      },
+      {
+        "name": "Variant 6",
+        "imageUrl": "../../Ratchet/4/4&#32;80&#32;7&#32;B17.webp"
+      },
+      {
+        "name": "Variant 7",
+        "imageUrl": "../../Ratchet/4/4&#32;80&#32;8&#32;B21.webp"
+      },
+      {
+        "name": "Variant 8",
+        "imageUrl": "../../Ratchet/4/4&#32;80&#32;9&#32;B24.webp"
+      },
+      {
+        "name": "Variant 9",
+        "imageUrl": "../../Ratchet/4/4&#32;80&#32;10&#32;B27.webp"
+      },
+      {
+        "name": "Variant 10",
+        "imageUrl": "../../Ratchet/4/4&#32;80&#32;11&#32;B00.webp"
+      },
+      {
+        "name": "Variant 11",
+        "imageUrl": "../../Ratchet/4/4&#32;80&#32;12&#32;Col.webp"
+      },
+      {
+        "name": "Variant 12",
+        "imageUrl": "../../Ratchet/4/4&#32;80&#32;13&#32;Col.webp"
+      },
+      {
+        "name": "Variant 13",
+        "imageUrl": "../../Ratchet/4/4&#32;80&#32;14&#32;Col.webp"
+      },
+      {
+        "name": "Variant 14",
+        "imageUrl": "../../Ratchet/4/4&#32;80&#32;15&#32;U00.webp"
+      },
+      {
+        "name": "Variant 15",
+        "imageUrl": "../../Ratchet/4/4&#32;80&#32;16&#32;U18.webp"
+      }
+    ]
+  },
+  {
+    "id": "Rat-560-001",
+    "category": "ratchet",
+    "name": "5-60",
+    "code": "BX-15",
+    "specs": {},
+    "features": null,
+    "imageUrl": "../../Ratchet/5/5&#32;60&#32;1&#32;B15.webp",
+    "variants": [
+      {
+        "name": "Variant 1",
+        "imageUrl": "../../Ratchet/5/5&#32;60&#32;2&#32;B21.webp"
+      },
+      {
+        "name": "Variant 2",
+        "imageUrl": "../../Ratchet/5/5&#32;60&#32;3&#32;B24.webp"
+      },
+      {
+        "name": "Variant 3",
+        "imageUrl": "../../Ratchet/5/5&#32;60&#32;4&#32;B00.webp"
+      },
+      {
+        "name": "Variant 4",
+        "imageUrl": "../../Ratchet/5/5&#32;60&#32;5&#32;B26.webp"
+      },
+      {
+        "name": "Variant 5",
+        "imageUrl": "../../Ratchet/5/5&#32;60&#32;6&#32;B00.webp"
+      },
+      {
+        "name": "Variant 6",
+        "imageUrl": "../../Ratchet/5/5&#32;60&#32;7&#32;B27.webp"
+      },
+      {
+        "name": "Variant 7",
+        "imageUrl": "../../Ratchet/5/5&#32;60&#32;8&#32;B00.webp"
+      },
+      {
+        "name": "Variant 8",
+        "imageUrl": "../../Ratchet/5/5&#32;60&#32;9&#32;B37.webp"
+      },
+      {
+        "name": "Variant 9",
+        "imageUrl": "../../Ratchet/5/5&#32;60&#32;10&#32;C11.webp"
+      }
+    ]
+  },
+  {
+    "id": "Rat-570-001",
+    "category": "ratchet",
+    "name": "5-70",
+    "code": "UX-03",
+    "specs": {},
+    "features": null,
+    "imageUrl": "../../Ratchet/5/5&#32;70&#32;1&#32;U03.webp",
+    "variants": [
+      {
+        "name": "Variant 1",
+        "imageUrl": "../../Ratchet/5/5&#32;70&#32;2&#32;U04.webp"
+      },
+      {
+        "name": "Variant 2",
+        "imageUrl": "../../Ratchet/5/5&#32;70&#32;3&#32;B35.webp"
+      },
+      {
+        "name": "Variant 3",
+        "imageUrl": "../../Ratchet/5/5&#32;70&#32;4&#32;B39.webp"
+      },
+      {
+        "name": "Variant 4",
+        "imageUrl": "../../Ratchet/5/5&#32;70&#32;5&#32;G3P.webp"
+      },
+      {
+        "name": "Variant 5",
+        "imageUrl": "../../Ratchet/5/5&#32;70&#32;6&#32;B00.webp"
+      },
+      {
+        "name": "Variant 6",
+        "imageUrl": "../../Ratchet/5/5&#32;70&#32;7&#32;C09.webp"
+      }
+    ]
+  },
+  {
+    "id": "Rat-580-001",
+    "category": "ratchet",
+    "name": "5-80",
+    "code": "BX-16",
+    "specs": {},
+    "features": null,
+    "imageUrl": "../../Ratchet/5/5&#32;80&#32;1&#32;B16.webp",
+    "variants": [
+      {
+        "name": "Variant 1",
+        "imageUrl": "../../Ratchet/5/5&#32;80&#32;2&#32;B20.webp"
+      },
+      {
+        "name": "Variant 2",
+        "imageUrl": "../../Ratchet/5/5&#32;80&#32;3&#32;B24.webp"
+      },
+      {
+        "name": "Variant 3",
+        "imageUrl": "../../Ratchet/5/5&#32;80&#32;4&#32;B31.webp"
+      },
+      {
+        "name": "Variant 4",
+        "imageUrl": "../../Ratchet/5/5&#32;80&#32;5&#32;B35.webp"
+      },
+      {
+        "name": "Variant 5",
+        "imageUrl": "../../Ratchet/5/5&#32;80&#32;6&#32;B36.webp"
+      },
+      {
+        "name": "Variant 6",
+        "imageUrl": "../../Ratchet/5/5&#32;80&#32;7&#32;C08.webp"
+      },
+      {
+        "name": "Variant 7",
+        "imageUrl": "../../Ratchet/5/5&#32;80&#32;8&#32;C08.webp"
+      }
+    ]
+  },
+  {
+    "id": "Rat-660-001",
+    "category": "ratchet",
+    "name": "6-60",
+    "code": "CX-01",
+    "specs": {},
+    "features": null,
+    "imageUrl": "../../Ratchet/6/6&#32;60&#32;1&#32;C01.webp",
+    "variants": [
+      {
+        "name": "Variant 1",
+        "imageUrl": "../../Ratchet/6/6&#32;60&#32;2&#32;C04.webp"
+      },
+      {
+        "name": "Variant 2",
+        "imageUrl": "../../Ratchet/6/6&#32;60&#32;3&#32;G1P.webp"
+      },
+      {
+        "name": "Variant 3",
+        "imageUrl": "../../Ratchet/6/6&#32;60&#32;4&#32;G1P.webp"
+      },
+      {
+        "name": "Variant 4",
+        "imageUrl": "../../Ratchet/6/6&#32;60&#32;5&#32;G1P.webp"
+      }
+    ]
+  },
+  {
+    "id": "Rat-670-001",
+    "category": "ratchet",
+    "name": "6-70",
+    "code": "BX-45",
+    "specs": {},
+    "features": null,
+    "imageUrl": "../../Ratchet/6/6&#32;70&#32;1&#32;B45.webp",
+    "variants": []
+  },
+  {
+    "id": "Rat-680-001",
+    "category": "ratchet",
+    "name": "6-80",
+    "code": "CX-03",
+    "specs": {},
+    "features": null,
+    "imageUrl": "../../Ratchet/6/6&#32;80&#32;1&#32;C03.webp",
+    "variants": [
+      {
+        "name": "Variant 1",
+        "imageUrl": "../../Ratchet/6/6&#32;80&#32;2&#32;C04.webp"
+      },
+      {
+        "name": "Variant 2",
+        "imageUrl": "../../Ratchet/6/6&#32;80&#32;3&#32;G3P.webp"
+      },
+      {
+        "name": "Variant 3",
+        "imageUrl": "../../Ratchet/6/6&#32;80&#32;4&#32;B00.webp"
+      }
+    ]
+  },
+  {
+    "id": "Rat-755-001",
+    "category": "ratchet",
+    "name": "7-55",
+    "code": "UX-18",
+    "specs": {},
+    "features": null,
+    "imageUrl": "../../Ratchet/7/7&#32;55&#32;1&#32;U18.webp",
+    "variants": [
+      {
+        "name": "Variant 1",
+        "imageUrl": "../../Ratchet/7/7&#32;55&#32;2&#32;U18.webp"
+      }
+    ]
+  },
+  {
+    "id": "Rat-760-001",
+    "category": "ratchet",
+    "name": "7-60",
+    "code": "UX-06",
+    "specs": {},
+    "features": null,
+    "imageUrl": "../../Ratchet/7/7&#32;60&#32;1&#32;U06.webp",
+    "variants": [
+      {
+        "name": "Variant 1",
+        "imageUrl": "../../Ratchet/7/7&#32;60&#32;2&#32;B00.webp"
+      },
+      {
+        "name": "Variant 2",
+        "imageUrl": "../../Ratchet/7/7&#32;60&#32;3&#32;C05.webp"
+      },
+      {
+        "name": "Variant 3",
+        "imageUrl": "../../Ratchet/7/7&#32;60&#32;4&#32;B48.webp"
+      }
+    ]
+  },
+  {
+    "id": "Rat-770-001",
+    "category": "ratchet",
+    "name": "7-70",
+    "code": "UX-10",
+    "specs": {},
+    "features": null,
+    "imageUrl": "../../Ratchet/7/7&#32;70&#32;1&#32;U10.webp",
+    "variants": [
+      {
+        "name": "Variant 1",
+        "imageUrl": "../../Ratchet/7/7&#32;70&#32;2&#32;C08.webp"
+      },
+      {
+        "name": "Variant 2",
+        "imageUrl": "../../Ratchet/7/7&#32;70&#32;3&#32;B46.webp"
+      }
+    ]
+  },
+  {
+    "id": "Rat-780-001",
+    "category": "ratchet",
+    "name": "7-80",
+    "code": "CX-39",
+    "specs": {},
+    "features": null,
+    "imageUrl": "../../Ratchet/7/7&#32;80&#32;1&#32;B39.webp",
+    "variants": []
+  },
+  {
+    "id": "Rat-870-001",
+    "category": "ratchet",
+    "name": "8-70",
+    "code": "CX-14",
+    "specs": {},
+    "features": null,
+    "imageUrl": "../../Ratchet/8/8&#32;70&#32;1&#32;C14.webp",
+    "variants": []
+  },
+  {
+    "id": "Rat-960-001",
+    "category": "ratchet",
+    "name": "9-60",
+    "code": "BX-23",
+    "specs": {},
+    "features": null,
+    "imageUrl": "../../Ratchet/9/9&#32;60&#32;1&#32;B23.webp",
+    "variants": [
+      {
+        "name": "Variant 1",
+        "imageUrl": "../../Ratchet/9/9&#32;60&#32;2&#32;U05.webp"
+      },
+      {
+        "name": "Variant 2",
+        "imageUrl": "../../Ratchet/9/9&#32;60&#32;3&#32;U11.webp"
+      },
+      {
+        "name": "Variant 3",
+        "imageUrl": "../../Ratchet/9/9&#32;60&#32;4&#32;B00.webp"
+      },
+      {
+        "name": "Variant 4",
+        "imageUrl": "../../Ratchet/9/9&#32;60&#32;5&#32;Col.webp"
+      },
+      {
+        "name": "Variant 5",
+        "imageUrl": "../../Ratchet/9/9&#32;60&#32;6&#32;U00.webp"
+      },
+      {
+        "name": "Variant 6",
+        "imageUrl": "../../Ratchet/9/9&#32;60&#32;7&#32;B46.webp"
+      },
+      {
+        "name": "Variant 7",
+        "imageUrl": "../../Ratchet/9/9&#32;60&#32;8&#32;LD.webp"
+      }
+    ]
+  },
+  {
+    "id": "Rat-965-001",
+    "category": "ratchet",
+    "name": "9-65",
+    "code": "UX-16",
+    "specs": {},
+    "features": null,
+    "imageUrl": "../../Ratchet/9/9&#32;65&#32;1&#32;U16.webp",
+    "variants": [
+      {
+        "name": "Variant 1",
+        "imageUrl": "../../Ratchet/9/9&#32;65&#32;2&#32;U16.webp"
+      },
+      {
+        "name": "Variant 2",
+        "imageUrl": "../../Ratchet/9/9&#32;65&#32;3&#32;U16.webp"
+      }
+    ]
+  },
+  {
+    "id": "Rat-970-001",
+    "category": "ratchet",
+    "name": "9-70",
+    "code": "UX-07",
+    "specs": {},
+    "features": null,
+    "imageUrl": "../../Ratchet/9/9&#32;70&#32;1&#32;U07.webp",
+    "variants": [
+      {
+        "name": "Variant 1",
+        "imageUrl": "../../Ratchet/9/9&#32;70&#32;2&#32;C06.webp"
+      },
+      {
+        "name": "Variant 2",
+        "imageUrl": "../../Ratchet/9/9&#32;70&#32;3&#32;U18.webp"
+      }
+    ]
+  },
+  {
+    "id": "Rat-980-001",
+    "category": "ratchet",
+    "name": "9-80",
+    "code": "BX-27",
+    "specs": {},
+    "features": null,
+    "imageUrl": "../../Ratchet/9/9&#32;80&#32;1&#32;B27.webp",
+    "variants": [
+      {
+        "name": "Variant 1",
+        "imageUrl": "../../Ratchet/9/9&#32;80&#32;2&#32;B31.webp"
+      },
+      {
+        "name": "Variant 2",
+        "imageUrl": "../../Ratchet/9/9&#32;80&#32;3&#32;B35.webp"
+      },
+      {
+        "name": "Variant 3",
+        "imageUrl": "../../Ratchet/9/9&#32;80&#32;4&#32;B00.webp"
+      },
+      {
+        "name": "Variant 4",
+        "imageUrl": "../../Ratchet/9/9&#32;80&#32;5&#32;C05.webp"
+      },
+      {
+        "name": "Variant 5",
+        "imageUrl": "../../Ratchet/9/9&#32;80&#32;6&#32;C12.webp"
+      },
+      {
+        "name": "Variant 6",
+        "imageUrl": "../../Ratchet/9/9&#32;80&#32;7&#32;B48.webp"
+      }
+    ]
+  },
+  {
+    "id": "Rat-M85-001",
+    "category": "ratchet",
+    "name": "M-85",
+    "code": "BX-44",
+    "specs": {},
+    "features": null,
+    "imageUrl": "../../Ratchet/M/M&#32;85&#32;1&#32;B44.webp",
+    "variants": [
+      {
+        "name": "Variant 1",
+        "imageUrl": "../../Ratchet/M/M&#32;85&#32;2&#32;C11.webp"
+      }
+    ]
+  },
+  {
+    "id": "Bit-A-001",
+    "category": "bit",
+    "name": "A (Accel)",
+    "code": "UX-01",
+    "specs": {
+      "Type": "Attack",
+      "Weight": "~3 g",
+      "Gears": "16",
+      "Burst Resistance": "High"
+    },
+    "features": null,
+    "imageUrl": "../../Bit/A/A&#32;1&#32;U01.webp",
+    "variants": [
+      {
+        "name": "UX-04",
+        "imageUrl": "../../Bit/A/A&#32;2&#32;U04.webp"
+      },
+      {
+        "name": "UX-00",
+        "imageUrl": "../../Bit/A/A&#32;0&#32;U00.webp"
+      },
+      {
+        "name": "Rare Bey Battle",
+        "imageUrl": "../../Bit/A/A&#32;3&#32;U00.webp"
+      },
+      {
+        "name": "UX-00",
+        "imageUrl": "../../Bit/A/A&#32;4&#32;U00.webp"
+      },
+      {
+        "name": "Park Limited",
+        "imageUrl": "../../Bit/A/A&#32;5&#32;LTD.webp"
+      },
+      {
+        "name": "Park Limited",
+        "imageUrl": "../../Bit/A/A&#32;6&#32;LTD.webp"
+      },
+      {
+        "name": "Park Limited",
+        "imageUrl": "../../Bit/A/A&#32;7&#32;LTD.webp"
+      },
+      {
+        "name": "Park Limited",
+        "imageUrl": "../../Bit/A/A&#32;8&#32;LTD.webp"
+      },
+      {
+        "name": "Park Limited",
+        "imageUrl": "../../Bit/A/A&#32;9&#32;LTD.webp"
+      },
+      {
+        "name": "Park Limited",
+        "imageUrl": "../../Bit/A/A&#32;10&#32;LTD.webp"
+      },
+      {
+        "name": "Game Package",
+        "imageUrl": "../../Bit/A/A&#32;11&#32;C00.webp"
+      },
+      {
+        "name": "Collab",
+        "imageUrl": "../../Bit/A/A&#32;12&#32;Col.webp"
+      },
+      {
+        "name": "UX-00",
+        "imageUrl": "../../Bit/A/A&#32;13&#32;U00.webp"
+      }
+    ]
+  },
+  {
+    "id": "Bit-B-001",
+    "category": "bit",
+    "name": "B (Ball)",
+    "code": "BX-03",
+    "specs": {
+      "Type": "Stamina",
+      "Weight": "~2 g",
+      "Gears": "12",
+      "Burst Resistance": "Low"
+    },
+    "features": null,
+    "imageUrl": "../../Bit/B/B&#32;1&#32;B03.webp",
+    "variants": [
+      {
+        "name": "BX-05",
+        "imageUrl": "../../Bit/B/B&#32;2&#32;B05.webp"
+      },
+      {
+        "name": "BX-08",
+        "imageUrl": "../../Bit/B/B&#32;3&#32;B08.webp"
+      },
+      {
+        "name": "BX-14",
+        "imageUrl": "../../Bit/B/B&#32;4&#32;B14.webp"
+      },
+      {
+        "name": "BX-17",
+        "imageUrl": "../../Bit/B/B&#32;5&#32;B17.webp"
+      },
+      {
+        "name": "BX-35",
+        "imageUrl": "../../Bit/B/B&#32;6&#32;B35.webp"
+      },
+      {
+        "name": "UX-10",
+        "imageUrl": "../../Bit/B/B&#32;7&#32;U10.webp"
+      },
+      {
+        "name": "Collab",
+        "imageUrl": "../../Bit/B/B&#32;8&#32;Col.webp"
+      },
+      {
+        "name": "Collab",
+        "imageUrl": "../../Bit/B/B&#32;9&#32;Col.webp"
+      },
+      {
+        "name": "Collab",
+        "imageUrl": "../../Bit/B/B&#32;10&#32;Col.webp"
+      },
+      {
+        "name": "UX-16",
+        "imageUrl": "../../Bit/B/B&#32;11&#32;U16.webp"
+      },
+      {
+        "name": "UX-16",
+        "imageUrl": "../../Bit/B/B&#32;12&#32;U16.webp"
+      },
+      {
+        "name": "UX-16",
+        "imageUrl": "../../Bit/B/B&#32;13&#32;U16.webp"
+      }
+    ]
+  },
+  {
+    "id": "Bit-BS-001",
+    "category": "bit",
+    "name": "BS (Bound Spike)",
+    "code": "UX-10",
+    "specs": {
+      "Type": "Defense",
+      "Weight": "~2 g",
+      "Gears": "12",
+      "Burst Resistance": "Low"
+    },
+    "features": null,
+    "imageUrl": "../../Bit/BS/BS&#32;1&#32;U10.webp",
+    "variants": [
+      {
+        "name": "BX-44",
+        "imageUrl": "../../Bit/BS/BS&#32;2&#32;B44.webp"
+      },
+      {
+        "name": "Rare Bey Battle",
+        "imageUrl": "../../Bit/BS/BS&#32;3&#32;U00.webp"
+      }
+    ]
+  },
+  {
+    "id": "Bit-C-001",
+    "category": "bit",
+    "name": "C (Cyclone)",
+    "code": "BX-34",
+    "specs": {
+      "Type": "Attack",
+      "Weight": "~2 g",
+      "Gears": "12",
+      "Burst Resistance": "High"
+    },
+    "features": null,
+    "imageUrl": "../../Bit/C/C&#32;1&#32;B34.webp",
+    "variants": [
+      {
+        "name": "BX-00",
+        "imageUrl": "../../Bit/C/C&#32;2&#32;B00.webp"
+      },
+      {
+        "name": "UX-12",
+        "imageUrl": "../../Bit/C/C&#32;3&#32;U12.webp"
+      },
+      {
+        "name": "UX-18",
+        "imageUrl": "../../Bit/C/C&#32;4&#32;U18.webp"
+      }
+    ]
+  },
+  {
+    "id": "Bit-D-001",
+    "category": "bit",
+    "name": "D (Dot)",
+    "code": "BX-35",
+    "specs": {
+      "Type": "Defense",
+      "Weight": "~2 g",
+      "Gears": "12",
+      "Burst Resistance": "Low"
+    },
+    "features": null,
+    "imageUrl": "../../Bit/D/D&#32;1&#32;B35.webp",
+    "variants": [
+      {
+        "name": "BX-35",
+        "imageUrl": "../../Bit/D/D&#32;2&#32;B35.webp"
+      },
+      {
+        "name": "BX-35",
+        "imageUrl": "../../Bit/D/D&#32;3&#32;B35.webp"
+      },
+      {
+        "name": "BX-00",
+        "imageUrl": "../../Bit/D/D&#32;4&#32;B00.webp"
+      },
+      {
+        "name": "BX-39",
+        "imageUrl": "../../Bit/D/D&#32;5&#32;B39.webp"
+      },
+      {
+        "name": "CX-05",
+        "imageUrl": "../../Bit/D/D&#32;6&#32;C05.webp"
+      },
+      {
+        "name": "CX-05",
+        "imageUrl": "../../Bit/D/D&#32;7&#32;B00.webp"
+      },
+      {
+        "name": "Campaign",
+        "imageUrl": "../../Bit/D/D&#32;8&#32;CP.webp"
+      },
+      {
+        "name": "Campaign",
+        "imageUrl": "../../Bit/D/D&#32;8&#32;CP.webp"
+      }
+    ]
+  },
+  {
+    "id": "Bit-DB-001",
+    "category": "bit",
+    "name": "DB (Disc Ball)",
+    "code": "UX-03",
+    "specs": {
+      "Type": "Stamina",
+      "Weight": "~3 g",
+      "Gears": "12",
+      "Burst Resistance": "Low"
+    },
+    "features": null,
+    "imageUrl": "../../Bit/DB/DB&#32;1&#32;U03.webp",
+    "variants": [
+      {
+        "name": "UX-04",
+        "imageUrl": "../../Bit/DB/DB&#32;2&#32;U04.webp"
+      },
+      {
+        "name": "G3 Prize",
+        "imageUrl": "../../Bit/DB/DB&#32;3&#32;G3P.webp"
+      },
+      {
+        "name": "BX-00",
+        "imageUrl": "../../Bit/DB/DB&#32;4&#32;B00.webp"
+      },
+      {
+        "name": "CX-06",
+        "imageUrl": "../../Bit/DB/DB&#32;5&#32;C06.webp"
+      },
+      {
+        "name": "UX-00",
+        "imageUrl": "../../Bit/DB/DB&#32;6&#32;U00.webp"
+      },
+      {
+        "name": "CX-10",
+        "imageUrl": "https://bey-library.vercel.app/Bit/DB/DB&#32;7&#32;C10.webp"
+      }
+    ]
+  },
+  {
+    "id": "Bit-E-001",
+    "category": "bit",
+    "name": "E (Elevate)",
+    "code": "BX-36",
+    "specs": {
+      "Type": "Balance",
+      "Weight": "~3 g",
+      "Gears": "12",
+      "Burst Resistance": "Low"
+    },
+    "features": null,
+    "imageUrl": "../../Bit/E/E&#32;1&#32;B36.webp",
+    "variants": [
+      {
+        "name": "Rare Bey Battle",
+        "imageUrl": "../../Bit/E/E&#32;2&#32;B00.webp"
+      },
+      {
+        "name": "UX-12",
+        "imageUrl": "../../Bit/E/E&#32;3&#32;U12.webp"
+      },
+      {
+        "name": "BX-48",
+        "imageUrl": "../../Bit/E/E&#32;4&#32;B48.webp"
+      }
+    ]
+  },
+  {
+    "id": "Bit-F-001",
+    "category": "bit",
+    "name": "F (Flat)",
+    "code": "BX-01",
+    "specs": {
+      "Type": "Attack",
+      "Weight": "~2 g",
+      "Gears": "12",
+      "Burst Resistance": "High"
+    },
+    "features": null,
+    "imageUrl": "../../Bit/F/F&#32;1&#32;B01.webp",
+    "variants": [
+      {
+        "name": "Rare Bey Battle",
+        "imageUrl": "../../Bit/F/F&#32;2&#32;B00.webp"
+      },
+      {
+        "name": "BX-07",
+        "imageUrl": "../../Bit/F/F&#32;3&#32;B07.webp"
+      },
+      {
+        "name": "BX-16",
+        "imageUrl": "../../Bit/F/F&#32;4&#32;B16.webp"
+      },
+      {
+        "name": "BX-17",
+        "imageUrl": "../../Bit/F/F&#32;5&#32;B17.webp"
+      },
+      {
+        "name": "BX-20",
+        "imageUrl": "../../Bit/F/F&#32;6&#32;B20.webp"
+      },
+      {
+        "name": "BX-24",
+        "imageUrl": "../../Bit/F/F&#32;7&#32;B24.webp"
+      },
+      {
+        "name": "BX-00",
+        "imageUrl": "../../Bit/F/F&#32;8&#32;B00.webp"
+      },
+      {
+        "name": "CoroCoro Comic",
+        "imageUrl": "../../Bit/F/F&#32;9&#32;B00.webp"
+      },
+      {
+        "name": "BX-37",
+        "imageUrl": "../../Bit/F/F&#32;10&#32;B37.webp"
+      },
+      {
+        "name": "Rare Bey Battle",
+        "imageUrl": "../../Bit/F/F&#32;11&#32;B00.webp"
+      },
+      {
+        "name": "UX-12",
+        "imageUrl": "../../Bit/F/F&#32;12&#32;U12.webp"
+      },
+      {
+        "name": "Collab",
+        "imageUrl": "../../Bit/F/F&#32;13&#32;Col.webp"
+      },
+      {
+        "name": "Collab",
+        "imageUrl": "../../Bit/F/F&#32;14&#32;Col.webp"
+      },
+      {
+        "name": "Collab",
+        "imageUrl": "../../Bit/F/F&#32;15&#32;Col.webp"
+      },
+      {
+        "name": "Sushiro Ver.",
+        "imageUrl": "../../Bit/F/F&#32;16&#32;Sushi.webp"
+      },
+      {
+        "name": "CX-08",
+        "imageUrl": "../../Bit/F/F&#32;17&#32;C08.webp"
+      },
+      {
+        "name": "Limited",
+        "imageUrl": "../../Bit/F/F&#32;18&#32;LD.webp"
+      },
+      {
+        "name": "BX-48",
+        "imageUrl": "../../Bit/F/F&#32;19&#32;B48.webp"
+      }
+    ]
+  },
+  {
+    "id": "Bit-FB-001",
+    "category": "bit",
+    "name": "FB (Free Ball)",
+    "code": "UX-08",
+    "specs": {
+      "Type": "Stamina",
+      "Weight": "~2 g",
+      "Gears": "12",
+      "Burst Resistance": "Low"
+    },
+    "features": null,
+    "imageUrl": "../../Bit/FB/FB&#32;1&#32;U08.webp",
+    "variants": [
+      {
+        "name": "CX-11",
+        "imageUrl": "https://bey-library.vercel.app/Bit/FB/FB&#32;2&#32;C11.webp"
+      }
+    ]
+  },
+  {
+    "id": "Bit-G-001",
+    "category": "bit",
+    "name": "G (Glide)",
+    "code": "UX-07",
+    "specs": {
+      "Type": "Stamina",
+      "Weight": "~2 g",
+      "Gears": "16",
+      "Burst Resistance": "Low"
+    },
+    "features": null,
+    "imageUrl": "../../Bit/G/G&#32;1&#32;U07.webp",
+    "variants": [
+      {
+        "name": "UX-18",
+        "imageUrl": "../../Bit/G/G&#32;2&#32;U18.webp"
+      }
+    ]
+  },
+  {
+    "id": "Bit-GB-001",
+    "category": "bit",
+    "name": "GB (Gear Ball)",
+    "code": "BX-24",
+    "specs": {
+      "Type": "Stamina",
+      "Weight": "~2 g",
+      "Gears": "12",
+      "Burst Resistance": "Low"
+    },
+    "features": null,
+    "imageUrl": "../../Bit/GB/GB&#32;1&#32;B24.webp",
+    "variants": [
+      {
+        "name": "BX-24",
+        "imageUrl": "../../Bit/GB/GB&#32;2&#32;B24.webp"
+      },
+      {
+        "name": "BX-24",
+        "imageUrl": "../../Bit/GB/GB&#32;3&#32;B24.webp"
+      },
+      {
+        "name": "BX-36",
+        "imageUrl": "../../Bit/GB/GB&#32;4&#32;B36.webp"
+      },
+      {
+        "name": "UX-12",
+        "imageUrl": "../../Bit/GB/GB&#32;5&#32;U12.webp"
+      },
+      {
+        "name": "BX-48",
+        "imageUrl": "https://bey-library.vercel.app/Bit/GB/GB&#32;6&#32;B48.webp"
+      }
+    ]
+  },
+  {
+    "id": "Bit-GF-001",
+    "category": "bit",
+    "name": "GF (Gear Flat)",
+    "code": "BX-23",
+    "specs": {
+      "Type": "Attack",
+      "Weight": "~2 g",
+      "Gears": "12",
+      "Burst Resistance": "High"
+    },
+    "features": null,
+    "imageUrl": "../../Bit/GF/GF&#32;1&#32;B23.webp",
+    "variants": [
+      {
+        "name": "UX-07",
+        "imageUrl": "../../Bit/GF/GF&#32;2&#32;U07.webp"
+      },
+      {
+        "name": "BX-00",
+        "imageUrl": "../../Bit/GF/GF&#32;3&#32;B00.webp"
+      },
+      {
+        "name": "BX-00",
+        "imageUrl": "../../Bit/GF/GF&#32;4&#32;B00.webp"
+      },
+      {
+        "name": "CoroCoro Comic",
+        "imageUrl": "../../Bit/GF/GF&#32;5&#32;B00.webp"
+      },
+      {
+        "name": "UX-15",
+        "imageUrl": "../../Bit/GF/GF&#32;6&#32;U15.webp"
+      },
+      {
+        "name": "BX-00",
+        "imageUrl": "https://bey-library.vercel.app/Bit/GF/GF&#32;7&#32;B00.webp"
+      }
+    ]
+  },
+  {
+    "id": "Bit-GN-001",
+    "category": "bit",
+    "name": "GN (Gear Needle)",
+    "code": "BX-27",
+    "specs": {
+      "Type": "Defense",
+      "Weight": "~2 g",
+      "Gears": "12",
+      "Burst Resistance": "Low"
+    },
+    "features": null,
+    "imageUrl": "../../Bit/GN/GN&#32;1&#32;B27.webp",
+    "variants": [
+      {
+        "name": "UX-06",
+        "imageUrl": "../../Bit/GN/GN&#32;2&#32;U06.webp"
+      },
+      {
+        "name": "BX-00",
+        "imageUrl": "../../Bit/GN/GN&#32;3&#32;B00.webp"
+      },
+      {
+        "name": "DMM Lottery",
+        "imageUrl": "../../Bit/GN/GN&#32;4&#32;B00.webp"
+      },
+      {
+        "name": "DMM Lottery",
+        "imageUrl": "../../Bit/GN/GN&#32;5&#32;B00.webp"
+      }
+    ]
+  },
+  {
+    "id": "Bit-GP-001",
+    "category": "bit",
+    "name": "GP (Gear Point)",
+    "code": "BX-26",
+    "specs": {
+      "Type": "Balance",
+      "Weight": "~2 g",
+      "Gears": "12",
+      "Burst Resistance": "High"
+    },
+    "features": null,
+    "imageUrl": "../../Bit/GP/GP&#32;1&#32;B26.webp",
+    "variants": [
+      {
+        "name": "UX-05",
+        "imageUrl": "../../Bit/GP/GP&#32;2&#32;U05.webp"
+      },
+      {
+        "name": "BX-00",
+        "imageUrl": "../../Bit/GP/GP&#32;3&#32;B00.webp"
+      },
+      {
+        "name": "BX-39",
+        "imageUrl": "../../Bit/GP/GP&#32;4&#32;B39.webp"
+      },
+      {
+        "name": "BX-00",
+        "imageUrl": "https://bey-library.vercel.app/Bit/GF/GP&#32;5&#32;B00.webp"
+      }
+    ]
+  },
+  {
+    "id": "Bit-GR-001",
+    "category": "bit",
+    "name": "GR (Gear Rush)",
+    "code": "CX-06",
+    "specs": {
+      "Type": "Attack",
+      "Weight": "~2 g",
+      "Gears": "10",
+      "Burst Resistance": "High"
+    },
+    "features": null,
+    "imageUrl": "../../Bit/GR/GR&#32;1&#32;C06.webp",
+    "variants": []
+  },
+  {
+    "id": "Bit-H-001",
+    "category": "bit",
+    "name": "H (Hexa)",
+    "code": "UX-02",
+    "specs": {
+      "Type": "Balance",
+      "Weight": "~3 g",
+      "Gears": "16",
+      "Burst Resistance": "High"
+    },
+    "features": null,
+    "imageUrl": "../../Bit/H/H&#32;1&#32;U02.webp",
+    "variants": [
+      {
+        "name": "BX-35",
+        "imageUrl": "../../Bit/H/H&#32;2&#32;B35.webp"
+      },
+      {
+        "name": "UX-00",
+        "imageUrl": "../../Bit/H/H&#32;3&#32;U00.webp"
+      },
+      {
+        "name": "UX-12",
+        "imageUrl": "../../Bit/H/H&#32;4&#32;U12.webp"
+      }
+    ]
+  },
+  {
+    "id": "Bit-HN-001",
+    "category": "bit",
+    "name": "HN (High Needle)",
+    "code": "BX-13",
+    "specs": {
+      "Type": "Defense",
+      "Weight": "~2 g",
+      "Gears": "12",
+      "Burst Resistance": "Low"
+    },
+    "features": null,
+    "imageUrl": "../../Bit/HN/HN&#32;1&#32;B13.webp",
+    "variants": [
+      {
+        "name": "BX-16",
+        "imageUrl": "../../Bit/HN/HN&#32;2&#32;B16.webp"
+      },
+      {
+        "name": "BX-24",
+        "imageUrl": "../../Bit/HN/HN&#32;3&#32;B24.webp"
+      },
+      {
+        "name": "BX-36",
+        "imageUrl": "../../Bit/HN/HN&#32;4&#32;B36.webp"
+      },
+      {
+        "name": "CX-11",
+        "imageUrl": "https://bey-library.vercel.app/Bit/HN/HN&#32;5&#32;C11.webp"
+      }
+    ]
+  },
+  {
+    "id": "Bit-HT-001",
+    "category": "bit",
+    "name": "HT (High Taper)",
+    "code": "BX-21",
+    "specs": {
+      "Type": "Balance",
+      "Weight": "~2 g",
+      "Gears": "12",
+      "Burst Resistance": "High"
+    },
+    "features": null,
+    "imageUrl": "../../Bit/HT/HT&#32;1&#32;B21.webp",
+    "variants": [
+      {
+        "name": "BX-27",
+        "imageUrl": "../../Bit/HT/HT&#32;2&#32;B27.webp"
+      },
+      {
+        "name": "BX-27",
+        "imageUrl": "../../Bit/HT/HT&#32;3&#32;B00.webp"
+      },
+      {
+        "name": "CX-08",
+        "imageUrl": "../../Bit/HT/HT&#32;4&#32;C08.webp"
+      }
+    ]
+  },
+  {
+    "id": "Bit-I-001",
+    "category": "bit",
+    "name": "I (Ignition)",
+    "code": "CX-13",
+    "specs": {
+      "Type": "Attack",
+      "Weight": "~4 g",
+      "Gears": "16",
+      "Burst Resistance": "High"
+    },
+    "features": null,
+    "imageUrl": "../../Bit/I/I&#32;1&#32;C13.webp",
+    "variants": [
+      {
+        "name": "CX-16",
+        "imageUrl": "../../Bit/I/I&#32;2&#32;C16.webp"
+      }
+    ]
+  },
+  {
+    "id": "Bit-J-001",
+    "category": "bit",
+    "name": "J (Jolt)",
+    "code": "UX-18",
+    "specs": {
+      "Type": "Attack",
+      "Weight": "~2 g",
+      "Gears": "16",
+      "Burst Resistance": "High"
+    },
+    "features": null,
+    "imageUrl": "../../Bit/J/J&#32;1&#32;U17.webp",
+    "variants": []
+  },
+  {
+    "id": "Bit-K-001",
+    "category": "bit",
+    "name": "K (Kick)",
+    "code": "CX-05",
+    "specs": {
+      "Type": "Balance",
+      "Weight": "~2 g",
+      "Gears": "12",
+      "Burst Resistance": "High"
+    },
+    "features": null,
+    "imageUrl": "../../Bit/K/K&#32;1&#32;C05.webp",
+    "variants": [
+      {
+        "name": "CX-05",
+        "imageUrl": "../../Bit/K/K&#32;2&#32;C05.webp"
+      },
+      {
+        "name": "CX-05",
+        "imageUrl": "../../Bit/K/K&#32;3&#32;C05.webp"
+      },
+      {
+        "name": "CoroCoro Comic",
+        "imageUrl": "../../Bit/K/K&#32;4&#32;C00.webp"
+      }
+    ]
+  },
+  {
+    "id": "Bit-L-001",
+    "category": "bit",
+    "name": "L (Level)",
+    "code": "UX-09",
+    "specs": {
+      "Type": "Attack",
+      "Weight": "~2 g",
+      "Gears": "16",
+      "Burst Resistance": "High"
+    },
+    "features": null,
+    "imageUrl": "../../Bit/L/L&#32;1&#32;U09.webp",
+    "variants": [
+      {
+        "name": "CoroCoro Comic",
+        "imageUrl": "../../Bit/L/L&#32;3&#32;U15.webp"
+      }
+    ]
+  },
+  {
+    "id": "Bit-LF-001",
+    "category": "bit",
+    "name": "LF (Low Flat)",
+    "code": "BX-14",
+    "specs": {
+      "Type": "Attack",
+      "Weight": "~2 g",
+      "Gears": "12",
+      "Burst Resistance": "High"
+    },
+    "features": null,
+    "imageUrl": "../../Bit/LF/LF&#32;1&#32;B14.webp",
+    "variants": [
+      {
+        "name": "BX-14",
+        "imageUrl": "../../Bit/LF/LF&#32;2&#32;BX14.webp"
+      },
+      {
+        "name": "BX-14",
+        "imageUrl": "../../Bit/LF/LF&#32;3&#32;B14.webp"
+      },
+      {
+        "name": "BX-21",
+        "imageUrl": "../../Bit/LF/LF&#32;4&#32;B21.webp"
+      },
+      {
+        "name": "UX-05",
+        "imageUrl": "../../Bit/LF/LF&#32;5&#32;U05.webp"
+      },
+      {
+        "name": "Game Package",
+        "imageUrl": "../../Bit/LF/LF&#32;6&#32;U00.webp"
+      },
+      {
+        "name": "CX-05",
+        "imageUrl": "../../Bit/LF/LF&#32;7&#32;C05.webp"
+      },
+      {
+        "name": "UX-00",
+        "imageUrl": "../../Bit/LF/LF&#32;8&#32;U00.webp"
+      },
+      {
+        "name": "CoroCoro Comic",
+        "imageUrl": "https://bey-library.vercel.app/Bit/LF/LF&#32;9&#32;U00.webp"
+      }
+    ]
+  },
+  {
+    "id": "Bit-LO-001",
+    "category": "bit",
+    "name": "LO (Low Orb)",
+    "code": "CX-02",
+    "specs": {
+      "Type": "Stamina",
+      "Weight": "~2 g",
+      "Gears": "12",
+      "Burst Resistance": "Low"
+    },
+    "features": null,
+    "imageUrl": "../../Bit/LO/LO&#32;1&#32;C02.webp",
+    "variants": [
+      {
+        "name": "CX-00",
+        "imageUrl": "../../Bit/LO/LO&#32;2&#32;C00.webp"
+      }
+    ]
+  },
+  {
+    "id": "Bit-LR-001",
+    "category": "bit",
+    "name": "LR (Low Rush)",
+    "code": "UX-11",
+    "specs": {
+      "Type": "Attack",
+      "Weight": "~2 g",
+      "Gears": "10",
+      "Burst Resistance": "High"
+    },
+    "features": null,
+    "imageUrl": "../../Bit/LR/LR&#32;1&#32;U11.webp",
+    "variants": [
+      {
+        "name": "UX-18",
+        "imageUrl": "../../Bit/LR/LR&#32;2&#32;U18.webp"
+      }
+    ]
+  },
+  {
+    "id": "Bit-M-001",
+    "category": "bit",
+    "name": "M (Merge)",
+    "code": "BX-45",
+    "specs": {
+      "Type": "Balance",
+      "Weight": "~3 g",
+      "Gears": "18",
+      "Burst Resistance": "High"
+    },
+    "features": null,
+    "imageUrl": "../../Bit/M/M&#32;1&#32;B45.webp",
+    "variants": []
+  },
+  {
+    "id": "Bit-MN-001",
+    "category": "bit",
+    "name": "MN (Metal Needle)",
+    "code": "UX-05",
+    "specs": {
+      "Type": "Defense",
+      "Weight": "~3 g",
+      "Gears": "12",
+      "Burst Resistance": "Low"
+    },
+    "features": null,
+    "imageUrl": "../../Bit/MN/MN&#32;1&#32;U05.webp",
+    "variants": [
+      {
+        "name": "UX-10",
+        "imageUrl": "../../Bit/MN/MN&#32;2&#32;U10.webp"
+      },
+      {
+        "name": "CX-08",
+        "imageUrl": "../../Bit/MN/MN&#32;3&#32;C08.webp"
+      }
+    ]
+  },
+  {
+    "id": "Bit-N-001",
+    "category": "bit",
+    "name": "N (Needle)",
+    "code": "BX-04",
+    "specs": {
+      "Type": "Defense",
+      "Weight": "~2 g",
+      "Gears": "12",
+      "Burst Resistance": "Low"
+    },
+    "features": null,
+    "imageUrl": "../../Bit/N/N&#32;1&#32;B04.webp",
+    "variants": [
+      {
+        "name": "BX-06",
+        "imageUrl": "../../Bit/N/N&#32;2&#32;B06.webp"
+      },
+      {
+        "name": "BX-08",
+        "imageUrl": "../../Bit/N/N&#32;3&#32;B08.webp"
+      },
+      {
+        "name": "BX-14",
+        "imageUrl": "../../Bit/N/N&#32;4&#32;B14.webp"
+      },
+      {
+        "name": "BX-21",
+        "imageUrl": "../../Bit/N/N&#32;5&#32;B21.webp"
+      },
+      {
+        "name": "UX-12",
+        "imageUrl": "../../Bit/N/N&#32;6&#32;U12.webp"
+      },
+      {
+        "name": "Collab",
+        "imageUrl": "../../Bit/N/N&#32;7&#32;Col.webp"
+      },
+      {
+        "name": "Collab",
+        "imageUrl": "../../Bit/N/N&#32;8&#32;Col.webp"
+      },
+      {
+        "name": "Collab",
+        "imageUrl": "../../Bit/N/N&#32;9&#32;Col.webp"
+      },
+      {
+        "name": "G3P",
+        "imageUrl": "../../Bit/N/N&#32;10&#32;G3P.webp"
+      },
+      {
+        "name": "UX-00",
+        "imageUrl": "../../Bit/N/N&#32;11&#32;U00.webp"
+      }
+    ]
+  },
+  {
+    "id": "Bit-O-001",
+    "category": "bit",
+    "name": "O (Orb)",
+    "code": "BX-16",
+    "specs": {
+      "Type": "Stamina",
+      "Weight": "~2 g",
+      "Gears": "12",
+      "Burst Resistance": "Low"
+    },
+    "features": null,
+    "imageUrl": "../../Bit/O/O&#32;1&#32;B16.webp",
+    "variants": [
+      {
+        "name": "BX-27",
+        "imageUrl": "../../Bit/O/O&#32;2&#32;B27.webp"
+      },
+      {
+        "name": "BX-31",
+        "imageUrl": "../../Bit/O/O&#32;3&#32;B31.webp"
+      },
+      {
+        "name": "BX-39",
+        "imageUrl": "../../Bit/O/O&#32;4&#32;B39.webp"
+      },
+      {
+        "name": "CX-05",
+        "imageUrl": "../../Bit/O/O&#32;5&#32;C05.webp"
+      },
+      {
+        "name": "Campaign",
+        "imageUrl": "../../Bit/O/O&#32;6&#32;CP.webp"
+      }
+    ]
+  },
+  {
+    "id": "Bit-P-001",
+    "category": "bit",
+    "name": "P (Point)",
+    "code": "BX-15",
+    "specs": {
+      "Type": "Balance",
+      "Weight": "~2 g",
+      "Gears": "12",
+      "Burst Resistance": "High"
+    },
+    "features": null,
+    "imageUrl": "../../Bit/P/P&#32;1&#32;B15.webp",
+    "variants": [
+      {
+        "name": "BX-00",
+        "imageUrl": "../../Bit/P/P&#32;2&#32;B00.webp"
+      },
+      {
+        "name": "BX-00",
+        "imageUrl": "../../Bit/P/P&#32;3&#32;B00.webp"
+      },
+      {
+        "name": "BX-31",
+        "imageUrl": "../../Bit/P/P&#32;4&#32;B31.webp"
+      },
+      {
+        "name": "UX-10",
+        "imageUrl": "../../Bit/P/P&#32;5&#32;U10.webp"
+      },
+      {
+        "name": "Collab",
+        "imageUrl": "../../Bit/P/P&#32;6&#32;Col.webp"
+      },
+      {
+        "name": "Collab",
+        "imageUrl": "../../Bit/P/P&#32;7&#32;Col.webp"
+      },
+      {
+        "name": "Collab",
+        "imageUrl": "../../Bit/P/P&#32;8&#32;Col.webp"
+      },
+      {
+        "name": "Campaign",
+        "imageUrl": "../../Bit/P/P&#32;9&#32;CP.webp"
+      }
+    ]
+  },
+  {
+    "id": "Bit-Q-001",
+    "category": "bit",
+    "name": "Q (Quake)",
+    "code": "BX-31",
+    "specs": {
+      "Type": "Attack",
+      "Weight": "~2 g",
+      "Gears": "12",
+      "Burst Resistance": "High"
+    },
+    "features": null,
+    "imageUrl": "../../Bit/Q/Q&#32;1&#32;B31.webp",
+    "variants": [
+      {
+        "name": "BX-31",
+        "imageUrl": "../../Bit/Q/Q&#32;2&#32;B31.webp"
+      },
+      {
+        "name": "BX-31",
+        "imageUrl": "../../Bit/Q/Q&#32;3&#32;B31.webp"
+      },
+      {
+        "name": "CoroCoro Comic",
+        "imageUrl": "../../Bit/Q/Q&#32;4&#32;B00.webp"
+      },
+      {
+        "name": "BX-48",
+        "imageUrl": "../../Bit/Q/Q&#32;5&#32;B48.webp"
+      }
+    ]
+  },
+  {
+    "id": "Bit-R-001",
+    "category": "bit",
+    "name": "R (Rush)",
+    "code": "BX-20",
+    "specs": {
+      "Type": "Attack",
+      "Weight": "~2 g",
+      "Gears": "10",
+      "Burst Resistance": "High"
+    },
+    "features": null,
+    "imageUrl": "../../Bit/R/R&#32;1&#32;B20.webp",
+    "variants": [
+      {
+        "name": "BX-35",
+        "imageUrl": "../../Bit/R/R&#32;2&#32;B35.webp"
+      },
+      {
+        "name": "UX-10",
+        "imageUrl": "../../Bit/R/R&#32;3&#32;U10.webp"
+      },
+      {
+        "name": "BX-46",
+        "imageUrl": "../../Bit/R/R&#32;4&#32;B46.webp"
+      }
+    ]
+  },
+  {
+    "id": "Bit-RA-001",
+    "category": "bit",
+    "name": "RA (Rubber Accel)",
+    "code": "UX-10",
+    "specs": {
+      "Type": "Attack",
+      "Weight": "~3 g",
+      "Gears": "16",
+      "Burst Resistance": "High"
+    },
+    "features": null,
+    "imageUrl": "../../Bit/RA/RA&#32;1&#32;U10.webp",
+    "variants": [
+      {
+        "name": "25th Anniversary",
+        "imageUrl": "../../Bit/RA/RA&#32;2&#32;25th.webp"
+      },
+      {
+        "name": "25th Anniversary",
+        "imageUrl": "../../Bit/RA/RA&#32;3&#32;25th.webp"
+      },
+      {
+        "name": "25th Anniversary",
+        "imageUrl": "../../Bit/RA/RA&#32;4&#32;25th.webp"
+      },
+      {
+        "name": "BX-00",
+        "imageUrl": "../../Bit/RA/RA&#32;2&#32;25th.webp"
+      }
+    ]
+  },
+  {
+    "id": "Bit-S-001",
+    "category": "bit",
+    "name": "S (Spike)",
+    "code": "BX-19",
+    "specs": {
+      "Type": "Defense",
+      "Weight": "~2 g",
+      "Gears": "12",
+      "Burst Resistance": "Low"
+    },
+    "features": null,
+    "imageUrl": "../../Bit/S/S&#32;1&#32;B19.webp",
+    "variants": [
+      {
+        "name": "BX-31",
+        "imageUrl": "../../Bit/S/S&#32;2&#32;B31.webp"
+      },
+      {
+        "name": "UX-07",
+        "imageUrl": "../../Bit/S/S&#32;3&#32;U07.webp"
+      },
+      {
+        "name": "BX-48",
+        "imageUrl": "../../Bit/S/S&#32;4&#32;B48.webp"
+      }
+    ]
+  },
+  {
+    "id": "Bit-T-001",
+    "category": "bit",
+    "name": "T (Taper)",
+    "code": "BX-02",
+    "specs": {
+      "Type": "Balance",
+      "Weight": "~2 g",
+      "Gears": "12",
+      "Burst Resistance": "High"
+    },
+    "features": null,
+    "imageUrl": "../../Bit/T/T&#32;1&#32;B02.webp",
+    "variants": [
+      {
+        "name": "BX-00",
+        "imageUrl": "../../Bit/T/T&#32;2&#32;B00.webp"
+      },
+      {
+        "name": "BX-07",
+        "imageUrl": "../../Bit/T/T&#32;3&#32;B07.webp"
+      },
+      {
+        "name": "BX-14",
+        "imageUrl": "../../Bit/T/T&#32;4&#32;B14.webp"
+      },
+      {
+        "name": "BX-20",
+        "imageUrl": "../../Bit/T/T&#32;5&#32;B20.webp"
+      },
+      {
+        "name": "BX-24",
+        "imageUrl": "../../Bit/T/T&#32;6&#32;B24.webp"
+      },
+      {
+        "name": "BX-00",
+        "imageUrl": "../../Bit/T/T&#32;7&#32;B00.webp"
+      },
+      {
+        "name": "BX-46",
+        "imageUrl": "../../Bit/T/T&#32;8&#32;B46.webp"
+      }
+    ]
+  },
+  {
+    "id": "Bit-TK-001",
+    "category": "bit",
+    "name": "TK (Trans Kick)",
+    "code": "CX-09",
+    "specs": {
+      "Type": "Balance",
+      "Weight": "~2 g",
+      "Gears": "12",
+      "Burst Resistance": "High",
+      "Gimmick": "Height Change"
+    },
+    "features": null,
+    "imageUrl": "../../Bit/TK/TK&#32;1&#32;C09.webp",
+    "variants": []
+  },
+  {
+    "id": "Bit-TP-001",
+    "category": "bit",
+    "name": "TP (Trans Point)",
+    "code": "BX-38",
+    "specs": {
+      "Type": "Balance",
+      "Weight": "~2 g",
+      "Gears": "12",
+      "Burst Resistance": "High",
+      "Gimmick": "Height Change"
+    },
+    "features": null,
+    "imageUrl": "../../Bit/TP/TP&#32;1&#32;B38.webp",
+    "variants": [
+      {
+        "name": "UX-18",
+        "imageUrl": "../../Bit/TP/TP&#32;2&#32;U18.webp"
+      }
+    ]
+  },
+  {
+    "id": "Bit-U-001",
+    "category": "bit",
+    "name": "U (Unite)",
+    "code": "BX-33",
+    "specs": {
+      "Type": "Balacne",
+      "Weight": "~2 g",
+      "Gears": "12",
+      "Burst Resistance": "High"
+    },
+    "features": null,
+    "imageUrl": "../../Bit/U/U&#32;1&#32;B33.webp",
+    "variants": [
+      {
+        "name": "CX-06",
+        "imageUrl": "../../Bit/U/U&#32;2&#32;C06.webp"
+      },
+      {
+        "name": "Collab",
+        "imageUrl": "../../Bit/U/U&#32;3&#32;Col.webp"
+      }
+    ]
+  },
+  {
+    "id": "Bit-UF-001",
+    "category": "bit",
+    "name": "UF (Under Flat)",
+    "code": "UX-15",
+    "specs": {
+      "Type": "Attack",
+      "Weight": "~2 g",
+      "Gears": "12",
+      "Burst Resistance": "High"
+    },
+    "features": null,
+    "imageUrl": "../../Bit/UF/UF&#32;1&#32;U15.webp",
+    "variants": []
+  },
+  {
+    "id": "Bit-UN-001",
+    "category": "bit",
+    "name": "UN (Under Needle)",
+    "code": "UX-13",
+    "specs": {
+      "Type": "Defense",
+      "Weight": "~2 g",
+      "Gears": "12",
+      "Burst Resistance": "Low"
+    },
+    "features": null,
+    "imageUrl": "../../Bit/UN/UN&#32;1&#32;U13.webp",
+    "variants": [
+      {
+        "name": "Variant 1",
+        "imageUrl": "../../Bit/UN/UN&#32;2&#32;C14.webp"
+      }
+    ]
+  },
+  {
+    "id": "Bit-V-001",
+    "category": "bit",
+    "name": "V (Vortex)",
+    "code": "CX-01",
+    "specs": {
+      "Type": "Attack",
+      "Weight": "~2 g",
+      "Gears": "12",
+      "Burst Resistance": "High"
+    },
+    "features": null,
+    "imageUrl": "../../Bit/V/V&#32;1&#32;C01.webp",
+    "variants": [
+      {
+        "name": "CX-04",
+        "imageUrl": "../../Bit/V/V&#32;2&#32;C04.webp"
+      },
+      {
+        "name": "G1 Prize",
+        "imageUrl": "../../Bit/V/V&#32;3&#32;G1P.webp"
+      },
+      {
+        "name": "G1 Prize",
+        "imageUrl": "../../Bit/V/V&#32;4&#32;G1P.webp"
+      },
+      {
+        "name": "G1 Prize",
+        "imageUrl": "../../Bit/V/V&#32;5&#32;G1P.webp"
+      },
+      {
+        "name": "Rare Bey Battle",
+        "imageUrl": "../../Bit/V/V&#32;6&#32;C00.webp"
+      },
+      {
+        "name": "Campaign",
+        "imageUrl": "https://bey-library.vercel.app/Bit/V/V&#32;8&#32;CP.webp"
+      },
+      {
+        "name": "Limited",
+        "imageUrl": "https://bey-library.vercel.app/Bit/V/V&#32;9&#32;LD.webp"
+      }
+    ]
+  },
+  {
+    "id": "Bit-W-001",
+    "category": "bit",
+    "name": "W (Wedge)",
+    "code": "CX-03",
+    "specs": {
+      "Type": "Defense",
+      "Weight": "~2 g",
+      "Gears": "10",
+      "Burst Resistance": "Low"
+    },
+    "features": null,
+    "imageUrl": "../../Bit/W/W&#32;1&#32;C03.webp",
+    "variants": [
+      {
+        "name": "CX-04",
+        "imageUrl": "../../Bit/W/W&#32;2&#32;C04.webp"
+      },
+      {
+        "name": "G3 Prize",
+        "imageUrl": "../../Bit/W/W&#32;3&#32;G3P.webp"
+      },
+      {
+        "name": "UX-18",
+        "imageUrl": "../../Bit/W/W&#32;4&#32;U18.webp"
+      },
+      {
+        "name": "UX-18",
+        "imageUrl": "../../Bit/W/W&#32;5&#32;U18.webp"
+      }
+    ]
+  },
+  {
+    "id": "Bit-WB-001",
+    "category": "bit",
+    "name": "WB (Wall Ball)",
+    "code": "CX-08",
+    "specs": {
+      "Type": "Stamina",
+      "Weight": "~3 g",
+      "Gears": "16",
+      "Burst Resistance": "Low"
+    },
+    "features": null,
+    "imageUrl": "../../Bit/WB/WB&#32;1&#32;C08.webp",
+    "variants": [
+      {
+        "name": "CX-08",
+        "imageUrl": "../../Bit/WB/WB&#32;2&#32;C08.webp"
+      },
+      {
+        "name": "CX-08",
+        "imageUrl": "../../Bit/WB/WB&#32;3&#32;C08.webp"
+      }
+    ]
+  },
+  {
+    "id": "Bit-WW-001",
+    "category": "bit",
+    "name": "WW (Wall Wedge)",
+    "code": "CX-12",
+    "specs": {
+      "Type": "Defense",
+      "Weight": "~4 g",
+      "Gears": "16",
+      "Burst Resistance": "Low"
+    },
+    "features": null,
+    "imageUrl": "../../Bit/WW/WW&#32;1&#32;C12.webp",
+    "variants": []
+  },
+  {
+    "id": "Bit-Y-001",
+    "category": "bit",
+    "name": "Yielding",
+    "code": "CX-15",
+    "specs": {
+      "Type": "Stamina",
+      "Weight": "~4 g",
+      "Gears": "32?",
+      "Burst Resistance": "Low"
+    },
+    "features": null,
+    "imageUrl": "../../Bit/Y/Y&#32;1&#32;C15.webp",
+    "variants": []
+  },
+  {
+    "id": "Bit-Z-001",
+    "category": "bit",
+    "name": "Z (Zap)",
+    "code": "UX-14",
+    "specs": {
+      "Type": "Balance",
+      "Weight": "~2 g",
+      "Gears": "16",
+      "Burst Resistance": "High"
+    },
+    "features": null,
+    "imageUrl": "../../Bit/Z/Z&#32;1&#32;U14.webp",
+    "variants": []
+  },
+  {
+    "id": "Hybrid-Bit-Op-001",
+    "category": "bit",
+    "name": "Op (Operate)",
+    "code": "CX-11",
+    "specs": {
+      "Type": "Balance, Hybrid Part",
+      "Weight": "~14 g",
+      "Gears": "14",
+      "Burst Resistance": "Simple",
+      "Gimmick": "Change mode between attack and defense"
+    },
+    "features": null,
+    "imageUrl": "../../Hybird&#32;Part/Op&#32;1&#32;C11.webp",
+    "variants": []
+  },
+  {
+    "id": "Hybrid-Bit-Tr-001",
+    "category": "bit",
+    "name": "Tr (Turbo)",
+    "code": "CX-07",
+    "specs": {
+      "Type": "Attack, Hybrid Part",
+      "Weight": "~12 g",
+      "Gears": "16",
+      "Burst Resistance": "Simple",
+      "Gimmick": "Boost up speed in mid-battle"
+    },
+    "features": null,
+    "imageUrl": "../../Hybird&#32;Part/Tr&#32;1&#32;C07.webp",
+    "variants": [
+      {
+        "name": "CoroCoro Event",
+        "imageUrl": "../../Hybird&#32;Part/Tr&#32;2&#32;C00.webp"
+      }
+    ]
+  },
+  {
+    "id": "Rare-Bit-001",
+    "category": "bit",
+    "name": "F/T/B/N (Bit Set)",
+    "code": "BX-Rare Bey Battle",
+    "specs": {
+      "Type": "Attack/Balance/Stamina/Defense",
+      "Gears": "12"
+    },
+    "features": null,
+    "imageUrl": "../../Bit/Rare&#32;Bit&#32;1&#32;B00.webp",
+    "variants": [
+      {
+        "name": "BX-00",
+        "imageUrl": "../../Bit/Rare&#32;Bit&#32;2&#32;B00.webp"
+      }
+    ]
+  },
+  {
+    "id": "other-001",
+    "category": "other",
+    "name": "Start Dash Set",
+    "code": "BX-07",
+    "specs": {},
+    "features": null,
+    "imageUrl": "../../Other/BX07/Start-Dash-Set-Box.webp",
+    "variants": [
+      {
+        "name": "Variant 1",
+        "imageUrl": "../../Blade/00Persona/DS&#32;2&#32;B07.webp"
+      },
+      {
+        "name": "Variant 2",
+        "imageUrl": "../../Other/BX07/Beyblade-X-String-Launcher-Blue-Ver.webp"
+      },
+      {
+        "name": "Variant 3",
+        "imageUrl": "../../Other/BX07/Beyblade-X-Launcher-Grip-Blue-Ver.webp"
+      },
+      {
+        "name": "Variant 4",
+        "imageUrl": "../../Other/BX07/Xtreme-Stadium-BX-07.webp"
+      }
+    ]
+  },
+  {
+    "id": "other-002",
+    "category": "other",
+    "name": "3on3 Deck Set",
+    "code": "BX-08",
+    "specs": {},
+    "features": null,
+    "imageUrl": "../../Other/BX08/B08.webp",
+    "variants": [
+      {
+        "name": "Variant 1",
+        "imageUrl": "../../Blade/00Persona/HS&#32;3&#32;B08.webp"
+      },
+      {
+        "name": "Variant 2",
+        "imageUrl": "../../Blade/00Persona/WA&#32;3&#32;B08.webp"
+      },
+      {
+        "name": "Variant 3",
+        "imageUrl": "../../Blade/00Persona/KS&#32;3&#32;B08.webp"
+      }
+    ]
+  },
+  {
+    "id": "other-003",
+    "category": "other",
+    "name": "Beybattle Pass",
+    "code": "BX-09",
+    "specs": {},
+    "features": null,
+    "imageUrl": "../../Other/BX09/B09.webp",
+    "variants": []
+  },
+  {
+    "id": "other-004",
+    "category": "other",
+    "name": "Xtreme Stadium",
+    "code": "BX-10",
+    "specs": {},
+    "features": null,
+    "imageUrl": "../../Other/BX10/B10.webp",
+    "variants": []
+  },
+  {
+    "id": "other-005",
+    "category": "other",
+    "name": "Launcher Grip",
+    "code": "BX-11",
+    "specs": {},
+    "features": null,
+    "imageUrl": "../../Other/BX11/Grip&#32;Black.webp",
+    "variants": []
+  },
+  {
+    "id": "other-006",
+    "category": "other",
+    "name": "3on3 Deck Case",
+    "code": "BX-12",
+    "specs": {},
+    "features": null,
+    "imageUrl": "../../Other/BX12/3o3.webp",
+    "variants": []
+  },
+  {
+    "id": "other-007",
+    "category": "other",
+    "name": "Battle Entry Set",
+    "code": "BX-17",
+    "specs": {},
+    "features": null,
+    "imageUrl": "../../Other/BX17/B17.webp",
+    "variants": [
+      {
+        "name": "Variant 1",
+        "imageUrl": "../../Blade/00Persona/DS&#32;4&#32;B17.webp"
+      },
+      {
+        "name": "Variant 2",
+        "imageUrl": "../../Blade/00Persona/WA&#32;5&#32;B17.webp"
+      },
+      {
+        "name": "Variant 3",
+        "imageUrl": "../../Other/BX17/Luncher&#32;Red-Black.webp"
+      },
+      {
+        "name": "Variant 4",
+        "imageUrl": "../../Other/BX17/Luncher&#32;Blue-Black.webp"
+      },
+      {
+        "name": "Variant 5",
+        "imageUrl": "../../Other/BX17/Stadium&#32;Black&#32;Green.webp"
+      }
+    ]
+  },
+  {
+    "id": "other-008",
+    "category": "other",
+    "name": "String Launcher",
+    "code": "BX-18",
+    "specs": {},
+    "features": null,
+    "imageUrl": "../../Other/BX18/String&#32;Black.webp",
+    "variants": []
+  },
+  {
+    "id": "other-009",
+    "category": "other",
+    "name": "Gear Case",
+    "code": "BX-25",
+    "specs": {},
+    "features": null,
+    "imageUrl": "../../Other/BX25/Case&#32;Black.webp",
+    "variants": []
+  },
+  {
+    "id": "other-010",
+    "category": "other",
+    "name": "String Launcher (White Ver.)",
+    "code": "BX-28",
+    "specs": {},
+    "features": null,
+    "imageUrl": "../../Other/BX28/String&#32;White.webp",
+    "variants": []
+  },
+  {
+    "id": "other-011",
+    "category": "other",
+    "name": "Custom Grip (White Ver.)",
+    "code": "BX-29",
+    "specs": {},
+    "features": null,
+    "imageUrl": "../../Other/BX29/Grip&#32;White.webp",
+    "variants": []
+  },
+  {
+    "id": "other-012",
+    "category": "other",
+    "name": "Custom Grip (Red Ver.)",
+    "code": "BX-30",
+    "specs": {},
+    "features": null,
+    "imageUrl": "../../Other/BX30/Grip&#32;Red.webp",
+    "variants": []
+  },
+  {
+    "id": "other-013",
+    "category": "other",
+    "name": "Wide Xtreme Stadium",
+    "code": "BX-32",
+    "specs": {},
+    "features": null,
+    "imageUrl": "../../Other/BX32/Wide-Xtreme-Stadium.webp",
+    "variants": []
+  },
+  {
+    "id": "other-014",
+    "category": "other",
+    "name": "Battle Entry Set U",
+    "code": "UX-04",
+    "specs": {},
+    "features": null,
+    "imageUrl": "../../Other/UX04/U04.webp",
+    "variants": [
+      {
+        "name": "Variant 1",
+        "imageUrl": "../../Blade/00Persona/DB&#32;2&#32;U04.webp"
+      },
+      {
+        "name": "Variant 2",
+        "imageUrl": "../../Blade/00Persona/WR&#32;2&#32;U04.webp"
+      },
+      {
+        "name": "Variant 3",
+        "imageUrl": "../../Other/UX04/Luncher&#32;White-Black.webp"
+      },
+      {
+        "name": "Variant 4",
+        "imageUrl": "../../Other/UX04/Luncher&#32;Black-Yellow.webp"
+      },
+      {
+        "name": "Variant 5",
+        "imageUrl": "../../Other/UX04/Stadium&#32;White&#32;Yellow.webp"
+      }
+    ]
+  },
+  {
+    "id": "other-015",
+    "category": "other",
+    "name": "Double Xtreme Stadium Set",
+    "code": "BX-37",
+    "specs": {},
+    "features": null,
+    "imageUrl": "../../Other/BX37/B37.webp",
+    "variants": [
+      {
+        "name": "Variant 1",
+        "imageUrl": "../../Blade/00SubCharacter/BSc&#32;1&#32;B37.webp"
+      },
+      {
+        "name": "Variant 2",
+        "imageUrl": "../../Other/BX37/DX&#32;Stadium.webp"
+      },
+      {
+        "name": "Variant 3",
+        "imageUrl": "../../Other/BX37/Luncher&#32;Black-Gold.webp"
+      }
+    ]
+  },
+  {
+    "id": "other-016",
+    "category": "other",
+    "name": "Custom Grip (Black &amp; Green Clear Ver.)",
+    "code": "BX-00",
+    "specs": {},
+    "features": null,
+    "imageUrl": "../../Other/BX00/Grip&#32;Black&#32;Green.webp",
+    "variants": []
+  },
+  {
+    "id": "other-017",
+    "category": "other",
+    "name": "Battle Entry Set C",
+    "code": "CX-04",
+    "specs": {},
+    "features": null,
+    "imageUrl": "../../Other/CX04/C04.webp",
+    "variants": [
+      {
+        "name": "Variant 1",
+        "imageUrl": "../../Blade/00Persona/DBS&#32;2&#32;C04.webp"
+      },
+      {
+        "name": "Variant 2",
+        "imageUrl": "../../Blade/00Zodiac&#32;-&#32;Fox/PDB&#32;2&#32;C04.webp"
+      },
+      {
+        "name": "Variant 3",
+        "imageUrl": "../../Other/CX04/Luncher&#32;Black-Pink.webp"
+      },
+      {
+        "name": "Variant 4",
+        "imageUrl": "../../Other/CX04/Luncher&#32;White-Blue.webp"
+      },
+      {
+        "name": "Variant 5",
+        "imageUrl": "../../Other/CX04/Stadium&#32;Clear&#32;Pink.webp"
+      }
+    ]
+  },
+  {
+    "id": "other-018",
+    "category": "other",
+    "name": "Winder Launcher L",
+    "code": "BX-40",
+    "specs": {},
+    "features": null,
+    "imageUrl": "../../Other/BX40/L&#32;Winder.webp",
+    "variants": []
+  },
+  {
+    "id": "other-019",
+    "category": "other",
+    "name": "Rubber Custom Grip (Gunmetal Ver.)",
+    "code": "BX-41",
+    "specs": {},
+    "features": null,
+    "imageUrl": "../../Other/BX41/Grip&#32;Gunmetal.webp",
+    "variants": []
+  },
+  {
+    "id": "other-020",
+    "category": "other",
+    "name": "Rubber Custom Grip (Blue Ver.)",
+    "code": "BX-42",
+    "specs": {},
+    "features": null,
+    "imageUrl": "../../Other/BX42/Grip&#32;Blue.webp",
+    "variants": []
+  },
+  {
+    "id": "other-021",
+    "category": "other",
+    "name": "Gear Case (White Ver.)",
+    "code": "BX-43",
+    "specs": {},
+    "features": null,
+    "imageUrl": "../../Other/BX43/Case&#32;White.webp",
+    "variants": []
+  },
+  {
+    "id": "other-022",
+    "category": "other",
+    "name": "Battle Entry Set ∞",
+    "code": "BX-46",
+    "specs": {},
+    "features": null,
+    "imageUrl": "../../Blade/00Pendragon-Goldius/CDk&#32;3&#32;B46.webp",
+    "variants": [
+      {
+        "name": "Variant 1",
+        "imageUrl": "../../Blade/00SubCharacter/GTk&#32;1&#32;B46.webp"
+      },
+      {
+        "name": "Variant 2",
+        "imageUrl": "../../Other/BX46/Luancher-Red-White-Ver.webp"
+      },
+      {
+        "name": "Variant 3",
+        "imageUrl": "../../Other/BX46/Luancher-Black-Green-Ver.webp"
+      },
+      {
+        "name": "Variant 4",
+        "imageUrl": "../../Other/BX46/Infinity&#32;Stadium.webp"
+      }
+    ]
+  },
+  {
+    "id": "other-023",
+    "category": "other",
+    "name": "String Luncher L (Red Ver.)",
+    "code": "BX-47",
+    "specs": {},
+    "features": null,
+    "imageUrl": "../../Other/BX47/String&#32;L&#32;Red.webp",
+    "variants": []
+  },
+  {
+    "id": "other-024",
+    "category": "other",
+    "name": "String Luncher (Violet Ver.)",
+    "code": "BX-00 (DMM Lottey)",
+    "specs": {},
+    "features": null,
+    "imageUrl": "../../Other/BX00/String&#32;Purple.webp",
+    "variants": []
+  },
+  {
+    "id": "other-025",
+    "category": "other",
+    "name": "Start Dash Set C",
+    "code": "CX-16",
+    "specs": {},
+    "features": null,
+    "imageUrl": "https://bey-library.vercel.app/Other/BX07/Start-Dash-Set-C16.webp",
+    "variants": [
+      {
+        "name": "Variant 1",
+        "imageUrl": "https://bey-library.vercel.app/Blade/00Kurosu/BBBK&#32;2&#32;C13.webp"
+      },
+      {
+        "name": "Variant 2",
+        "imageUrl": "https://bey-library.vercel.app/Other/BX07/Beyblade-X-Winder-Launcher-Blue-Extra-Ver.webp"
+      },
+      {
+        "name": "Variant 3",
+        "imageUrl": "https://bey-library.vercel.app/Other/BX07/Beyblade-X-Launcher-Grip-Blue-Extra-Ver.webp"
+      },
+      {
+        "name": "Variant 4",
+        "imageUrl": "https://bey-library.vercel.app/Other/BX07/Xtreme-Stadium-CX-16.webp"
+      }
+    ]
+  },
+  {
+    "id": "other-026",
+    "category": "other",
+    "name": "String Luncher (Special Color)",
+    "code": "BX-00 (B4 Limited)",
+    "specs": {},
+    "features": null,
+    "imageUrl": "../../Other/BX00/String&#32;B4&#32;LTD&#32;B00.webp",
+    "variants": [
+      {
+        "name": "Variant 1",
+        "imageUrl": "../../Other/BX00/String&#32;B4&#32;LTD&#32;Pink.webp"
+      },
+      {
+        "name": "Variant 2",
+        "imageUrl": "../../Other/BX00/String&#32;B4&#32;LTD&#32;Green.webp"
+      },
+      {
+        "name": "Variant 3",
+        "imageUrl": "../../Other/BX00/String&#32;B4&#32;LTD&#32;Orange.webp"
+      }
+    ]
+  },
+  {
+    "id": "Blade-X-CLB-001",
+    "category": "x-over",
+    "name": "Luke Skywalker",
+    "code": "",
+    "specs": {
+      "Type": "Stamina",
+      "Spin": "Right",
+      "Weight": "~30 g",
+      "Stock Combo": "4-80 Ball",
+      "Product Line": "BX",
+      "Collab": "Star Wars"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/X-Collab/Star1.webp",
+    "variants": []
+  },
+  {
+    "id": "Blade-X-CLB-002",
+    "category": "x-over",
+    "name": "Darth Vader",
+    "code": "",
+    "specs": {
+      "Type": "Balance",
+      "Spin": "Right",
+      "Weight": "~30 g",
+      "Stock Combo": "4-60 Point",
+      "Product Line": "BX",
+      "Collab": "Star Wars"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/X-Collab/Star2.webp",
+    "variants": []
+  },
+  {
+    "id": "Blade-X-CLB-003",
+    "category": "x-over",
+    "name": "The Mandalorian",
+    "code": "",
+    "specs": {
+      "Type": "Attack",
+      "Spin": "Right",
+      "Weight": "~30 g",
+      "Stock Combo": "3-60 Flat",
+      "Product Line": "BX",
+      "Collab": "Star Wars"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/X-Collab/Star3.webp",
+    "variants": []
+  },
+  {
+    "id": "Blade-X-CLB-004",
+    "category": "x-over",
+    "name": "Moff Gideon",
+    "code": "",
+    "specs": {
+      "Type": "Defense",
+      "Spin": "Right",
+      "Weight": "~30 g",
+      "Stock Combo": "3-80 Needle",
+      "Product Line": "BX",
+      "Collab": "Star Wars"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/X-Collab/Star4.webp",
+    "variants": []
+  },
+  {
+    "id": "Blade-X-CLB-005",
+    "category": "x-over",
+    "name": "Optimus Prime",
+    "code": "",
+    "specs": {
+      "Type": "Balance",
+      "Spin": "Right",
+      "Weight": "~31 g",
+      "Stock Combo": "4-60 Point",
+      "Product Line": "BX",
+      "Collab": "Transformers"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/X-Collab/Trans1.webp",
+    "variants": []
+  },
+  {
+    "id": "Blade-X-CLB-006",
+    "category": "x-over",
+    "name": "Megatron",
+    "code": "",
+    "specs": {
+      "Type": "Stamina",
+      "Spin": "Right",
+      "Weight": "~31 g",
+      "Stock Combo": "4-80 Ball",
+      "Product Line": "BX",
+      "Collab": "Transformers"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/X-Collab/Trans2.webp",
+    "variants": []
+  },
+  {
+    "id": "Blade-X-CLB-007",
+    "category": "x-over",
+    "name": "Optimus Primal",
+    "code": "",
+    "specs": {
+      "Type": "Attack",
+      "Spin": "Right",
+      "Weight": "~35 g",
+      "Stock Combo": "3-60 Flat",
+      "Product Line": "BX",
+      "Collab": "Transformers"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/X-Collab/Trans3.webp",
+    "variants": []
+  },
+  {
+    "id": "Blade-X-CLB-008",
+    "category": "x-over",
+    "name": "Star Scream",
+    "code": "",
+    "specs": {
+      "Type": "Defense",
+      "Spin": "Right",
+      "Weight": "~29 g",
+      "Stock Combo": "3-80 Needle",
+      "Product Line": "BX",
+      "Collab": "Transformers"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/X-Collab/Trans4.webp",
+    "variants": []
+  },
+  {
+    "id": "Blade-X-CLB-009",
+    "category": "x-over",
+    "name": "Iron Man",
+    "code": "",
+    "specs": {
+      "Type": "Stamina",
+      "Spin": "Right",
+      "Weight": "~32 g",
+      "Stock Combo": "4-80 Ball",
+      "Product Line": "BX",
+      "Collab": "Marvel"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/X-Collab/Marvel1.webp",
+    "variants": []
+  },
+  {
+    "id": "Blade-X-CLB-010",
+    "category": "x-over",
+    "name": "Thanos",
+    "code": "",
+    "specs": {
+      "Type": "Balance",
+      "Spin": "Right",
+      "Weight": "~29 g",
+      "Stock Combo": "4-60 Point",
+      "Product Line": "BX",
+      "Collab": "Marvel"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/X-Collab/Marvel2.webp",
+    "variants": []
+  },
+  {
+    "id": "Blade-X-CLB-011",
+    "category": "x-over",
+    "name": "Spider Man",
+    "code": "",
+    "specs": {
+      "Type": "Attack",
+      "Spin": "Right",
+      "Weight": "~32 g",
+      "Stock Combo": "3-60 Flat",
+      "Product Line": "BX",
+      "Collab": "Marvel"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/X-Collab/Marvel3.webp",
+    "variants": []
+  },
+  {
+    "id": "Blade-X-CLB-012",
+    "category": "x-over",
+    "name": "Venom",
+    "code": "",
+    "specs": {
+      "Type": "Defense",
+      "Spin": "Right",
+      "Weight": "~34 g",
+      "Stock Combo": "3-80 Needle",
+      "Product Line": "BX",
+      "Collab": "Marvel"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/X-Collab/Marvel4.webp",
+    "variants": []
+  },
+  {
+    "id": "Blade-X-CLB-013",
+    "category": "x-over",
+    "name": "T.Rex",
+    "code": "",
+    "specs": {
+      "Type": "Stamina",
+      "Spin": "Right",
+      "Weight": "~ g",
+      "Stock Combo": "1-80 Gear Ball",
+      "Product Line": "BX",
+      "Collab": "Jurassic World",
+      "Description": "This Blade is also count as Tyranno Beat."
+    },
+    "features": null,
+    "imageUrl": "../../Blade/X-Collab/Jura-1.webp",
+    "variants": []
+  },
+  {
+    "id": "Blade-X-CLB-014",
+    "category": "x-over",
+    "name": "Mosasaurus",
+    "code": "",
+    "specs": {
+      "Type": "Balance",
+      "Spin": "Right",
+      "Weight": "~ g",
+      "Stock Combo": "9-60 Unite",
+      "Product Line": "BX",
+      "Collab": "Jurassic World"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/X-Collab/Jura-2.webp",
+    "variants": []
+  },
+  {
+    "id": "Blade-X-CLB-015",
+    "category": "x-over",
+    "name": "Spinosaurus",
+    "code": "",
+    "specs": {
+      "Type": "Attack",
+      "Spin": "Right",
+      "Weight": "~ g",
+      "Stock Combo": "3-85 Accel",
+      "Product Line": "BX",
+      "Collab": "Jurassic World",
+      "Description": "This Blade is also count as Tyranno Roar."
+    },
+    "features": null,
+    "imageUrl": "../../Blade/X-Collab/Jura-3.webp",
+    "variants": []
+  },
+  {
+    "id": "Blade-X-CLB-016",
+    "category": "x-over",
+    "name": "Quetzalcoatlus",
+    "code": "",
+    "specs": {
+      "Type": "Defense",
+      "Spin": "Right",
+      "Weight": "~ g",
+      "Stock Combo": "4-55 Dot",
+      "Product Line": "BX",
+      "Collab": "Jurassic World",
+      "Description": "This Blade is also count as Ptera Swing."
+    },
+    "features": null,
+    "imageUrl": "../../Blade/X-Collab/Jura-4.webp",
+    "variants": []
+  },
+  {
+    "id": "Blade-X-OBB-001",
+    "category": "x-over",
+    "name": "Victory Valkyrie",
+    "code": "",
+    "specs": {
+      "Type": "Attack",
+      "Spin": "Right",
+      "Weight": "~33 g",
+      "Stock Combo": "2-60 Rubber Accel",
+      "Product Line": "BX",
+      "Original Generation": "Beyblade Burst"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/X-Collab/VVV-1.webp",
+    "variants": []
+  },
+  {
+    "id": "Blade-X-OBB-002",
+    "category": "x-over",
+    "name": "Xeno Xcalibur",
+    "code": "BX-00",
+    "specs": {
+      "Type": "Attack",
+      "Spin": "Right",
+      "Weight": "~30 g",
+      "Stock Combo": "3-60 Gear Flat",
+      "Product Line": "BX",
+      "Original Generation": "Beyblade Burst"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/X-Collab/XXX-1.webp",
+    "variants": []
+  },
+  {
+    "id": "Blade-X-OBS-001",
+    "category": "x-over",
+    "name": "Dranzer Spiral",
+    "code": "BX-00",
+    "specs": {
+      "Type": "Balacne",
+      "Spin": "Right",
+      "Weight": "~27 g",
+      "Stock Combo": "3-80 Taper",
+      "Product Line": "BX",
+      "Original Generation": "Bakuten Shoot Beyblade"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/X-Collab/DSL-1.webp",
+    "variants": [
+      {
+        "name": "BX-00",
+        "imageUrl": "../../Blade/X-Collab/DSL-2.webp"
+      }
+    ]
+  },
+  {
+    "id": "Blade-X-OBS-002",
+    "category": "x-over",
+    "name": "Driger Slash",
+    "code": "BX-00",
+    "specs": {
+      "Type": "Balacne",
+      "Spin": "Right",
+      "Weight": "~28 g",
+      "Stock Combo": "4-80 Point",
+      "Product Line": "BX",
+      "Original Generation": "Bakuten Shoot Beyblade"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/X-Collab/DSH-1.webp",
+    "variants": []
+  },
+  {
+    "id": "Blade-X-OBS-003",
+    "category": "x-over",
+    "name": "Draciel Shield",
+    "code": "BX-00",
+    "specs": {
+      "Type": "Defense",
+      "Spin": "Right",
+      "Weight": "~28 g",
+      "Stock Combo": "7-60 Dot",
+      "Product Line": "BX",
+      "Original Generation": "Bakuten Shoot Beyblade"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/X-Collab/DSD-1.webp",
+    "variants": []
+  },
+  {
+    "id": "Blade-X-OBS-004",
+    "category": "x-over",
+    "name": "Dragoon Storm",
+    "code": "BX-00",
+    "specs": {
+      "Type": "Attack",
+      "Spin": "Left",
+      "Weight": "~25 g",
+      "Stock Combo": "4-60 Rubber Accel",
+      "Product Line": "BX",
+      "Original Generation": "Bakuten Shoot Beyblade"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/X-Collab/DST-1.webp",
+    "variants": [
+      {
+        "name": "BX-00",
+        "imageUrl": "../../Blade/X-Collab/DST-1.webp"
+      }
+    ]
+  },
+  {
+    "id": "Blade-X-OMF-001",
+    "category": "x-over",
+    "name": "Lightning L-Drago",
+    "code": "BX-00",
+    "specs": {
+      "Type": "Attack",
+      "Spin": "Left",
+      "Weight": "~34 g",
+      "Stock Combo": "1-60 Flat",
+      "Product Line": "BX",
+      "Original Generation": "Metal Fight Beyblade",
+      "Gimmick": "Same name difference mode (Upper/Rapid)"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/X-Collab/LLD-1&#32;Upper.webp",
+    "variants": []
+  },
+  {
+    "id": "Blade-X-OMF-003",
+    "category": "x-over",
+    "name": "Storm Pegasis",
+    "code": "",
+    "specs": {
+      "Type": "Attack",
+      "Spin": "Right",
+      "Weight": "~30 g",
+      "Stock Combo": "3-70 Rubber Accel",
+      "Product Line": "BX",
+      "Original Generation": "Metal Fight Beyblade"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/X-Collab/SPS-1.webp",
+    "variants": []
+  },
+  {
+    "id": "Blade-X-OMF-004",
+    "category": "x-over",
+    "name": "Rock Leone",
+    "code": "BX-00",
+    "specs": {
+      "Type": "Defense",
+      "Spin": "Right",
+      "Weight": "~29 g",
+      "Stock Combo": "6-80 Gear Needle",
+      "Product Line": "BX",
+      "Original Generation": "Metal Fight Beyblade"
+    },
+    "features": null,
+    "imageUrl": "../../Blade/X-Collab/RLN-1.webp",
+    "variants": []
+  }
+]

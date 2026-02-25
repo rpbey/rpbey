@@ -114,7 +114,7 @@ async function getCategoryLinks(category: string): Promise<string[]> {
   const links = new Set<string>();
   $('a[href^="/product/"]').each((_, el) => {
     const href = $(el).attr('href');
-    if (href && href.includes(`/${category}/`)) {
+    if (href) {
       links.add(`${BASE_URL}${href}`);
     }
   });
@@ -123,7 +123,7 @@ async function getCategoryLinks(category: string): Promise<string[]> {
 }
 
 async function main() {
-  const categories = ['blade', 'ratchet', 'bit'];
+  const categories = ['blade', 'ratchet', 'bit', 'assist-blade', 'over-blade', 'x-over', 'other', 'credits', 'custom', 'combo'];
   const allParts: PartData[] = [];
 
   for (const cat of categories) {

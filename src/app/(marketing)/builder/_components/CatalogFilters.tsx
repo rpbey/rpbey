@@ -1,6 +1,7 @@
 'use client';
 
 import { Box, Chip } from '@mui/material';
+import { alpha } from '@mui/material/styles';
 
 const SYSTEMS = ['BX', 'UX', 'CX'];
 const BEY_TYPES = [
@@ -47,11 +48,15 @@ export function CatalogFilters({
           sx={{
             fontWeight: 'bold',
             fontSize: '0.7rem',
-            height: 26,
+            height: 28,
+            borderRadius: 1.5,
             ...(systems.includes(s) && { bgcolor: '#333', color: '#fff' }),
           }}
         />
       ))}
+
+      <Box sx={{ width: 1, height: 28, borderRight: '1px solid', borderColor: 'divider', mx: 0.25 }} />
+
       {BEY_TYPES.map((bt) => (
         <Chip
           key={bt.value}
@@ -62,11 +67,24 @@ export function CatalogFilters({
           sx={{
             fontWeight: 'bold',
             fontSize: '0.7rem',
-            height: 26,
-            ...(beyTypes.includes(bt.value) && { bgcolor: bt.color, color: '#fff' }),
+            height: 28,
+            borderRadius: 1.5,
+            ...(beyTypes.includes(bt.value) && {
+              bgcolor: bt.color,
+              color: '#fff',
+              borderColor: bt.color,
+            }),
+            ...(!beyTypes.includes(bt.value) && {
+              borderColor: alpha(bt.color, 0.3),
+              color: bt.color,
+              '&:hover': { bgcolor: alpha(bt.color, 0.08) },
+            }),
           }}
         />
       ))}
+
+      <Box sx={{ width: 1, height: 28, borderRight: '1px solid', borderColor: 'divider', mx: 0.25 }} />
+
       {SPINS.map((sp) => (
         <Chip
           key={sp.value}
@@ -77,8 +95,9 @@ export function CatalogFilters({
           sx={{
             fontWeight: 'bold',
             fontSize: '0.7rem',
-            height: 26,
-            ...(spin === sp.value && { bgcolor: '#666', color: '#fff' }),
+            height: 28,
+            borderRadius: 1.5,
+            ...(spin === sp.value && { bgcolor: '#555', color: '#fff' }),
           }}
         />
       ))}

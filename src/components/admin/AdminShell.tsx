@@ -3,6 +3,7 @@
 import {
   Article,
   Dashboard,
+  Hub,
   Launch,
   Leaderboard,
   Logout,
@@ -44,6 +45,7 @@ const RAIL_WIDTH = 280;
 const ADMIN_NAV_ITEMS = [
   { label: "Vue d'ensemble", path: '/admin', icon: Dashboard },
   { label: 'Bot Discord', path: '/admin/bot', icon: SmartToy },
+  { label: 'Meta', path: '/admin/meta', icon: Hub },
   { label: 'Contenu', path: '/admin/content', icon: Article },
   { label: 'Gestion SATR', path: '/admin/satr', icon: WorkspacePremium },
   { label: 'Tournois', path: '/admin/tournaments', icon: TrophyIcon },

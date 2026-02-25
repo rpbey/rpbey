@@ -1,6 +1,6 @@
 'use client';
 
-import { Add, Close } from '@mui/icons-material';
+import { Add, Close, Construction } from '@mui/icons-material';
 import {
   Box,
   Chip,
@@ -38,7 +38,7 @@ export function BuilderHeader() {
           });
         }
       })
-      .catch(() => {})
+      .catch(() => toast.error('Impossible de charger vos decks'))
       .finally(() => dispatch({ type: 'SET_LOADING_DECKS', loading: false }));
   }, [session?.user, dispatch]);
 
@@ -54,15 +54,16 @@ export function BuilderHeader() {
             id: data.id,
             name: data.name,
             isActive: data.isActive,
-            beys: (data.items || []).map((item: { blade: unknown; ratchet: unknown; bit: unknown; nickname?: string }) => ({
+            beys: (data.items || []).map((item: { blade: unknown; ratchet: unknown; bit: unknown; assistBlade?: unknown; nickname?: string }) => ({
               blade: item.blade,
               ratchet: item.ratchet,
               bit: item.bit,
+              assistBlade: item.assistBlade ?? null,
               nickname: item.nickname || '',
             })),
           },
         });
-        toast.success(`Deck "${data.name}" chargé`);
+        toast.success(`Deck "${data.name}" charge`);
       } catch {
         toast.error('Impossible de charger ce deck');
       }
@@ -71,13 +72,13 @@ export function BuilderHeader() {
   );
 
   const handleDeleteDeck = useCallback(
-    async (deckId: string, e: React.MouseEvent) => {
+    async (deckId: string, e: React.SyntheticEvent) => {
       e.stopPropagation();
       try {
         const res = await fetch(`/api/decks/${deckId}`, { method: 'DELETE' });
         if (!res.ok) throw new Error();
         dispatch({ type: 'DELETE_DECK', deckId });
-        toast.success('Deck supprimé');
+        toast.success('Deck supprime');
       } catch {
         toast.error('Impossible de supprimer ce deck');
       }
@@ -92,11 +93,20 @@ export function BuilderHeader() {
         alignItems: 'center',
         gap: 2,
         flexWrap: 'wrap',
+        mb: 1,
       }}
     >
-      <Typography variant="h5" fontWeight="900" sx={{ mr: 'auto' }}>
-        DECK BUILDER
-      </Typography>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mr: 'auto' }}>
+        <Construction sx={{ fontSize: 28, color: 'error.main' }} />
+        <Box>
+          <Typography variant="h5" fontWeight="900" lineHeight={1.2}>
+            DECK BUILDER
+          </Typography>
+          <Typography variant="caption" color="text.secondary">
+            Construis ton deck 3on3
+          </Typography>
+        </Box>
+      </Box>
 
       <Box
         sx={{
@@ -106,6 +116,8 @@ export function BuilderHeader() {
           overflow: 'auto',
           maxWidth: { xs: '100%', md: '60%' },
           pb: 0.5,
+          '&::-webkit-scrollbar': { height: 3 },
+          '&::-webkit-scrollbar-thumb': { bgcolor: 'divider', borderRadius: 2 },
         }}
       >
         {state.loadingDecks && (
@@ -121,17 +133,19 @@ export function BuilderHeader() {
             label={deck.name}
             variant={state.deckId === deck.id ? 'filled' : 'outlined'}
             onClick={() => handleLoadDeck(deck.id)}
-            onDelete={(e) => handleDeleteDeck(deck.id, e as unknown as React.MouseEvent)}
+            onDelete={(e) => handleDeleteDeck(deck.id, e)}
             deleteIcon={<Close sx={{ fontSize: '14px !important' }} />}
             size="small"
             sx={{
               fontWeight: 'bold',
               fontSize: '0.75rem',
+              borderRadius: 2,
               ...(state.deckId === deck.id && {
-                bgcolor: (theme) => alpha(theme.palette.primary.main, 0.2),
-                color: 'primary.main',
+                bgcolor: (theme) => alpha(theme.palette.error.main, 0.15),
+                color: 'error.main',
+                borderColor: 'error.main',
               }),
-              ...(deck.isActive && {
+              ...(deck.isActive && state.deckId !== deck.id && {
                 border: '1px solid',
                 borderColor: 'success.main',
               }),
@@ -147,6 +161,7 @@ export function BuilderHeader() {
             height: 28,
             border: '1px dashed',
             borderColor: 'divider',
+            '&:hover': { borderColor: 'error.main', color: 'error.main' },
           }}
         >
           <Add sx={{ fontSize: 16 }} />

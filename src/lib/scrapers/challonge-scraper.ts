@@ -205,7 +205,11 @@ export class ChallongeScraper {
     console.log(`🔍 Scraping du tournoi : ${slug}`);
 
     // 1. Store principal (matchs + metadata) — /module
-    const storeData = await this.fetchStoreData(`${baseUrl}/module`);
+    const { data: storeData, title: pageTitle } = await this.fetchStoreData(`${baseUrl}/module`);
+    
+    // Nettoyage du titre pour avoir le nom du tournoi
+    // Challonge titles are usually "Tournament Name - Challonge"
+    const tournamentName = pageTitle.split(' - ')[0].trim();
 
     // 2. Participants — /participants
     let participantsPageData: any[] = [];
@@ -248,7 +252,7 @@ export class ChallongeScraper {
     }
 
     // 6. Fusion
-    return this.processData(
+    const result = this.processData(
       storeData,
       participantsPageData,
       standings,
@@ -256,22 +260,28 @@ export class ChallongeScraper {
       log,
       baseUrl,
     );
+    
+    // Enrich metadata with name from title
+    result.metadata.name = tournamentName || result.metadata.name;
+    
+    return result;
   }
 
   // ── Page Fetchers ────────────────────────────────────────────────────────
 
   /** /module — Store principal (matchs, metadata, bracket) */
-  private async fetchStoreData(url: string): Promise<any> {
+  private async fetchStoreData(url: string): Promise<{ data: any; title: string }> {
     const page = await this.openPage(url);
     try {
       await new Promise((r) => setTimeout(r, 5000));
 
       const data = await this.extractStore(page, 'TournamentStore');
+      const title = await page.title();
       if (!data)
         throw new Error(
           'Store Challonge non trouvé. Possible blocage Cloudflare.',
         );
-      return data;
+      return { data, title };
     } finally {
       await page.close();
     }
@@ -833,14 +843,20 @@ export class ChallongeScraper {
       Object.values(storeData.matches_by_round).forEach((round: any) => {
         round.forEach((m: any) => {
           matches.push(m);
-          if (m.player1 && !participantsMap.has(m.player1.id)) {
+          if (m.player1 && m.player1.id && !participantsMap.has(m.player1.id)) {
             participantsMap.set(m.player1.id, m.player1);
           }
-          if (m.player2 && !participantsMap.has(m.player2.id)) {
+          if (m.player2 && m.player2.id && !participantsMap.has(m.player2.id)) {
             participantsMap.set(m.player2.id, m.player2);
           }
         });
       });
+      console.log(`🏟️ ${participantsMap.size} participants après ajout depuis les matchs`);
+      if (participantsMap.has(286388493)) {
+        console.log('✅ ID 286388493 trouvé dans participantsMap');
+      } else {
+        console.log('❌ ID 286388493 ABSENT de participantsMap');
+      }
     }
 
     // Source 3 : /participants HTML fallback (entrées sans id)

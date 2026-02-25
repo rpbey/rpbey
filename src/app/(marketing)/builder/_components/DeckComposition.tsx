@@ -15,22 +15,31 @@ import { toast } from 'sonner';
 import { useSession } from '@/lib/auth-client';
 import { validateDeck } from '@/lib/tournament-logic';
 import { BeySlotCard } from './BeySlotCard';
-import { useBuilder, clearDraft } from './BuilderContext';
+import { useBuilder, clearDraft, isCXBlade } from './BuilderContext';
 
 export function DeckComposition() {
   const { state, dispatch } = useBuilder();
   const { data: session } = useSession();
 
-  const allComplete = state.beys.every((b) => b.blade && b.ratchet && b.bit);
+  const allComplete = state.beys.every((b) => {
+    const baseComplete = !!b.blade && !!b.ratchet && !!b.bit;
+    if (!baseComplete) return false;
+    if (isCXBlade(b)) {
+      return !!b.assistBlade;
+    }
+    return true;
+  });
 
   const validation = useMemo(() => {
     if (!allComplete) return null;
     return validateDeck({
       beys: state.beys.map((b) => ({
-        bladeId: b.blade!.id,
-        ratchetId: b.ratchet!.id,
-        bitId: b.bit!.id,
-        bladeName: b.blade!.name,
+        bladeId: b.blade?.id ?? '',
+        ratchetId: b.ratchet?.id ?? '',
+        bitId: b.bit?.id ?? '',
+        bladeName: b.blade?.name ?? '',
+        assistBladeId: b.assistBlade?.id,
+        assistBladeName: b.assistBlade?.name,
       })),
     });
   }, [state.beys, allComplete]);
@@ -42,12 +51,12 @@ export function DeckComposition() {
     }
 
     if (!state.deckName.trim()) {
-      toast.error('Donnez un nom à votre deck');
+      toast.error('Donnez un nom a votre deck');
       return;
     }
 
     if (!allComplete) {
-      toast.error('Complétez les 3 Beys avant de sauvegarder');
+      toast.error('Completez les 3 Beys avant de sauvegarder');
       return;
     }
 
@@ -62,9 +71,10 @@ export function DeckComposition() {
       beys: state.beys.map((b, i) => ({
         position: i + 1,
         nickname: b.nickname,
-        bladeId: b.blade!.id,
-        ratchetId: b.ratchet!.id,
-        bitId: b.bit!.id,
+        bladeId: b.blade?.id ?? '',
+        ratchetId: b.ratchet?.id ?? '',
+        bitId: b.bit?.id ?? '',
+        assistBladeId: b.assistBlade?.id || undefined,
       })),
     };
 
@@ -83,7 +93,7 @@ export function DeckComposition() {
         throw new Error(err.error || 'Erreur serveur');
       }
 
-      toast.success(state.deckId ? 'Deck mis à jour !' : 'Deck créé !');
+      toast.success(state.deckId ? 'Deck mis a jour !' : 'Deck cree !');
       clearDraft();
 
       // Refresh saved decks
@@ -113,7 +123,10 @@ export function DeckComposition() {
           size="small"
           value={state.deckName}
           onChange={(e) => dispatch({ type: 'SET_DECK_NAME', name: e.target.value })}
-          sx={{ flex: 1 }}
+          sx={{
+            flex: 1,
+            '& .MuiOutlinedInput-root': { borderRadius: 2.5, fontWeight: 'bold' },
+          }}
         />
         <FormControlLabel
           control={
@@ -121,6 +134,7 @@ export function DeckComposition() {
               checked={state.isActive}
               onChange={(e) => dispatch({ type: 'SET_IS_ACTIVE', isActive: e.target.checked })}
               size="small"
+              color="success"
             />
           }
           label={<Typography variant="caption" fontWeight="bold">Actif</Typography>}
@@ -133,7 +147,7 @@ export function DeckComposition() {
       ))}
 
       {validation && !validation.isValid && (
-        <Alert severity="error" sx={{ borderRadius: 2 }}>
+        <Alert severity="error" sx={{ borderRadius: 2.5 }}>
           {validation.errors.map((err, i) => (
             <Typography key={i} variant="caption" display="block">
               {err}
@@ -143,9 +157,9 @@ export function DeckComposition() {
       )}
 
       {allComplete && validation?.isValid && (
-        <Alert severity="success" sx={{ borderRadius: 2 }}>
+        <Alert severity="success" sx={{ borderRadius: 2.5 }}>
           <Typography variant="caption" fontWeight="bold">
-            Deck valide et prêt pour le tournoi !
+            Deck valide et pret pour le tournoi !
           </Typography>
         </Alert>
       )}
@@ -156,9 +170,16 @@ export function DeckComposition() {
         onClick={handleSave}
         disabled={!allComplete || !state.deckName.trim()}
         fullWidth
-        sx={{ borderRadius: 2, fontWeight: 'bold' }}
+        color="error"
+        sx={{
+          borderRadius: 2.5,
+          fontWeight: 'bold',
+          py: 1.25,
+          textTransform: 'none',
+          fontSize: '0.95rem',
+        }}
       >
-        {state.deckId ? 'Mettre à jour' : 'Sauvegarder'}
+        {state.deckId ? 'Mettre a jour' : 'Sauvegarder le deck'}
       </Button>
 
       {!session?.user && (

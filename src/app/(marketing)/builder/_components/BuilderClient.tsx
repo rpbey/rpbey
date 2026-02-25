@@ -1,6 +1,6 @@
 'use client';
 
-import { Box, Container } from '@mui/material';
+import { Box, Container, Paper } from '@mui/material';
 import { BuilderProvider, useBuilder } from './BuilderContext';
 import { BuilderHeader } from './BuilderHeader';
 import { DeckComposition } from './DeckComposition';
@@ -11,7 +11,7 @@ function BuilderLayout() {
   const { state } = useBuilder();
 
   return (
-    <Container maxWidth="xl" sx={{ py: 3 }}>
+    <Container maxWidth="xl" sx={{ py: { xs: 1.5, md: 3 } }}>
       <BuilderHeader />
 
       <MobileTabSwitcher />
@@ -26,24 +26,41 @@ function BuilderLayout() {
         }}
       >
         {/* Left: Catalog */}
-        <Box sx={{ flex: 3, minWidth: 0 }}>
+        <Paper
+          elevation={0}
+          sx={{
+            flex: 3,
+            minWidth: 0,
+            p: 2.5,
+            borderRadius: 3,
+            border: '1px solid',
+            borderColor: 'divider',
+            bgcolor: 'background.paper',
+          }}
+        >
           <PartCatalog />
-        </Box>
+        </Paper>
 
         {/* Right: Deck composition (sticky) */}
-        <Box
+        <Paper
+          elevation={0}
           sx={{
             flex: 2,
             position: 'sticky',
             top: 16,
             maxHeight: 'calc(100vh - 32px)',
             overflowY: 'auto',
+            p: 2.5,
+            borderRadius: 3,
+            border: '1px solid',
+            borderColor: 'divider',
+            bgcolor: 'background.paper',
             '&::-webkit-scrollbar': { width: 4 },
             '&::-webkit-scrollbar-thumb': { bgcolor: 'divider', borderRadius: 2 },
           }}
         >
           <DeckComposition />
-        </Box>
+        </Paper>
       </Box>
 
       {/* Mobile: tabbed layout */}

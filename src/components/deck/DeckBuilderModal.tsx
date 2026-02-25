@@ -34,6 +34,7 @@ const emptyBey: BeyData = {
   blade: null,
   ratchet: null,
   bit: null,
+  assistBlade: null,
   nickname: '',
 };
 
@@ -71,18 +72,21 @@ export function DeckBuilderModal({
             blade: sortedBeys[0]?.blade ?? null,
             ratchet: sortedBeys[0]?.ratchet ?? null,
             bit: sortedBeys[0]?.bit ?? null,
+            assistBlade: (sortedBeys[0] as { assistBlade?: BeyData['assistBlade'] })?.assistBlade ?? null,
             nickname: sortedBeys[0]?.nickname ?? '',
           },
           {
             blade: sortedBeys[1]?.blade ?? null,
             ratchet: sortedBeys[1]?.ratchet ?? null,
             bit: sortedBeys[1]?.bit ?? null,
+            assistBlade: (sortedBeys[1] as { assistBlade?: BeyData['assistBlade'] })?.assistBlade ?? null,
             nickname: sortedBeys[1]?.nickname ?? '',
           },
           {
             blade: sortedBeys[2]?.blade ?? null,
             ratchet: sortedBeys[2]?.ratchet ?? null,
             bit: sortedBeys[2]?.bit ?? null,
+            assistBlade: (sortedBeys[2] as { assistBlade?: BeyData['assistBlade'] })?.assistBlade ?? null,
             nickname: sortedBeys[2]?.nickname ?? '',
           },
         ]);
@@ -99,45 +103,30 @@ export function DeckBuilderModal({
 
   // Real-time validation
   useEffect(() => {
-    // Only validate if we have at least some parts to avoid noise on empty deck
     const hasParts = beys.some((b) => b.blade || b.ratchet || b.bit);
     if (!hasParts) {
       setValidationErrors([]);
       return;
     }
 
-    const deckToValidate = {
-      beys: beys.map((b) => ({
-        bladeId: b.blade?.id || '',
-        ratchetId: b.ratchet?.id || '',
-        bitId: b.bit?.id || '',
-        bladeName: b.blade?.name,
-      })),
-    };
-
-    // Only run full validation if all slots are filled, otherwise just check duplicates so far?
-    // actually validateDeck checks full deck size too.
-    // Let's filter out completely empty beys for partial validation if needed,
-    // but the rules require 3 beys.
-    // For the UI, we might want to show errors only when the user thinks they are done
-    // OR we can show them as warnings.
-    // For now, let's just validate what we have.
-
-    // We pass empty strings for missing parts, which validateDeck will flag as duplicates if multiple missing
-    // We should probably only validate fully defined beys or adjust the validator?
-    // The validator checks for duplicates. '' == '' is a duplicate.
-    // Let's only validate if all 3 beys have at least one part?
-    // Or better: Let's run validation but ignore "missing part" errors from the logic
-    // and rely on the UI "isValid" check for completeness.
-    // Our validateDeck primarily checks UNIQUNESS and BANNED parts.
-
-    // BUT: validateDeck treats "" as a ID. If multiple beys have missing parts, it will say "Blade is duplicated".
-    // We should map missing parts to unique temporary IDs to avoid false duplicate errors on empty slots?
-    // No, easier to just check if isComplete before validating full rules.
-
-    const isFullDeck = beys.every((b) => b.blade && b.ratchet && b.bit);
+    const isFullDeck = beys.every((b) => {
+      const baseComplete = b.blade && b.ratchet && b.bit;
+      if (!baseComplete) return false;
+      if (b.blade?.system === 'CX') return !!b.assistBlade;
+      return true;
+    });
 
     if (isFullDeck) {
+      const deckToValidate = {
+        beys: beys.map((b) => ({
+          bladeId: b.blade?.id || '',
+          ratchetId: b.ratchet?.id || '',
+          bitId: b.bit?.id || '',
+          bladeName: b.blade?.name,
+          assistBladeId: b.assistBlade?.id,
+          assistBladeName: b.assistBlade?.name,
+        })),
+      };
       const result = validateDeck(deckToValidate);
       setValidationErrors(result.isValid ? [] : result.errors);
     } else {
@@ -153,10 +142,15 @@ export function DeckBuilderModal({
 
   // Get all used part IDs across all beys
   const usedPartIds = beys.flatMap((bey) =>
-    [bey.blade?.id, bey.ratchet?.id, bey.bit?.id].filter(Boolean),
+    [bey.blade?.id, bey.ratchet?.id, bey.bit?.id, bey.assistBlade?.id].filter(Boolean),
   ) as string[];
 
-  const isComplete = beys.every((bey) => bey.blade && bey.ratchet && bey.bit);
+  const isComplete = beys.every((bey) => {
+    const baseComplete = bey.blade && bey.ratchet && bey.bit;
+    if (!baseComplete) return false;
+    if (bey.blade?.system === 'CX') return !!bey.assistBlade;
+    return true;
+  });
   const isValid = name.trim() && isComplete && validationErrors.length === 0;
 
   const handleSave = async () => {
@@ -175,6 +169,7 @@ export function DeckBuilderModal({
           bladeId: bey.blade?.id,
           ratchetId: bey.ratchet?.id,
           bitId: bey.bit?.id,
+          assistBladeId: bey.assistBlade?.id || undefined,
         })),
       };
 

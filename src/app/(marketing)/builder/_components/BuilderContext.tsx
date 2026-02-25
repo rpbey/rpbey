@@ -18,10 +18,11 @@ export interface BeySlot {
   blade: Part | null;
   ratchet: Part | null;
   bit: Part | null;
+  assistBlade: Part | null;
   nickname: string;
 }
 
-export type BuilderStep = 'BLADE' | 'RATCHET' | 'BIT';
+export type BuilderStep = 'BLADE' | 'RATCHET' | 'BIT' | 'ASSIST_BLADE';
 
 export interface DeckSummary {
   id: string;
@@ -57,7 +58,8 @@ export type BuilderAction =
   | { type: 'SET_SAVED_DECKS'; decks: DeckSummary[] }
   | { type: 'SET_LOADING_DECKS'; loading: boolean }
   | { type: 'DELETE_DECK'; deckId: string }
-  | { type: 'SET_MOBILE_TAB'; tab: 'catalog' | 'deck' };
+  | { type: 'SET_MOBILE_TAB'; tab: 'catalog' | 'deck' }
+  | { type: 'RESTORE_DRAFT'; draft: Partial<BuilderState> };
 
 export interface LoadDeckPayload {
   id: string;
@@ -67,31 +69,54 @@ export interface LoadDeckPayload {
     blade: Part | null;
     ratchet: Part | null;
     bit: Part | null;
+    assistBlade?: Part | null;
     nickname?: string;
   }>;
 }
 
 // --- Helpers ---
 
-const emptySlot: BeySlot = { blade: null, ratchet: null, bit: null, nickname: '' };
+const emptySlot: BeySlot = { blade: null, ratchet: null, bit: null, assistBlade: null, nickname: '' };
 
 function createEmptyBeys(): [BeySlot, BeySlot, BeySlot] {
   return [{ ...emptySlot }, { ...emptySlot }, { ...emptySlot }];
 }
 
+/** Check if the blade in this slot is a CX blade */
+export function isCXBlade(slot: BeySlot): boolean {
+  return slot.blade?.system === 'CX';
+}
+
 function getNextStep(slot: BeySlot): BuilderStep {
   if (!slot.blade) return 'BLADE';
+  if (isCXBlade(slot)) {
+    if (!slot.assistBlade) return 'ASSIST_BLADE';
+  }
   if (!slot.ratchet) return 'RATCHET';
   if (!slot.bit) return 'BIT';
   return 'BLADE';
 }
 
 function isSlotComplete(slot: BeySlot): boolean {
-  return !!slot.blade && !!slot.ratchet && !!slot.bit;
+  const baseComplete = !!slot.blade && !!slot.ratchet && !!slot.bit;
+  if (!baseComplete) return false;
+  if (isCXBlade(slot)) {
+    return !!slot.assistBlade;
+  }
+  return true;
 }
 
-function stepKey(step: BuilderStep): 'blade' | 'ratchet' | 'bit' {
-  return step.toLowerCase() as 'blade' | 'ratchet' | 'bit';
+function stepKey(step: BuilderStep): keyof BeySlot {
+  switch (step) {
+    case 'BLADE': return 'blade';
+    case 'RATCHET': return 'ratchet';
+    case 'BIT': return 'bit';
+    case 'ASSIST_BLADE': return 'assistBlade';
+  }
+}
+
+function stepToPartType(step: BuilderStep): string {
+  return step; // Part.type matches the step name
 }
 
 // --- Initial State ---
@@ -118,12 +143,20 @@ export function builderReducer(state: BuilderState, action: BuilderAction): Buil
       const idx = state.activeSlotIndex as 0 | 1 | 2;
 
       // Validate part type matches the step
-      if (action.part.type !== state.activeStep) return state;
+      if (action.part.type !== stepToPartType(state.activeStep)) return state;
 
       newBeys[idx] = {
         ...newBeys[idx],
         [key]: action.part,
       };
+
+      // If switching away from a CX blade, clear CX-specific parts
+      if (state.activeStep === 'BLADE' && !isCXBlade(newBeys[idx])) {
+        newBeys[idx] = {
+          ...newBeys[idx],
+          assistBlade: null,
+        };
+      }
 
       // Auto-advance logic
       const updatedSlot = newBeys[idx];
@@ -167,6 +200,13 @@ export function builderReducer(state: BuilderState, action: BuilderAction): Buil
         ...newBeys[rmIdx],
         [rmKey]: null,
       };
+      // If removing the blade, also clear CX parts
+      if (action.partType === 'BLADE') {
+        newBeys[rmIdx] = {
+          ...newBeys[rmIdx],
+          assistBlade: null,
+        };
+      }
       return {
         ...state,
         beys: newBeys,
@@ -212,6 +252,7 @@ export function builderReducer(state: BuilderState, action: BuilderAction): Buil
             blade: bey.blade ?? null,
             ratchet: bey.ratchet ?? null,
             bit: bey.bit ?? null,
+            assistBlade: bey.assistBlade ?? null,
             nickname: bey.nickname || '',
           };
         }
@@ -258,6 +299,9 @@ export function builderReducer(state: BuilderState, action: BuilderAction): Buil
     case 'SET_MOBILE_TAB':
       return { ...state, mobileTab: action.tab };
 
+    case 'RESTORE_DRAFT':
+      return { ...state, ...action.draft };
+
     default:
       return state;
   }
@@ -293,10 +337,14 @@ function loadDraft(): Partial<BuilderState> | null {
     const draft: LocalDraft = JSON.parse(raw);
     // Validate structure
     if (!Array.isArray(draft.beys) || draft.beys.length !== 3) return null;
-    const hasParts = draft.beys.some((b) => b.blade || b.ratchet || b.bit);
+    const hasParts = draft.beys.some((b) => b.blade || b.ratchet || b.bit || b.assistBlade);
     if (!hasParts && !draft.deckName) return null;
+    // Ensure CX fields exist (migration from old drafts)
+    for (const bey of draft.beys) {
+      if (!('assistBlade' in bey)) (bey as BeySlot).assistBlade = null;
+    }
     // Find first incomplete slot
-    const firstIncomplete = draft.beys.findIndex((s) => !s.blade || !s.ratchet || !s.bit);
+    const firstIncomplete = draft.beys.findIndex((s) => !isSlotComplete(s));
     const idx = (firstIncomplete !== -1 ? firstIncomplete : 0) as 0 | 1 | 2;
     const slot = draft.beys[idx];
     return {
@@ -322,26 +370,30 @@ interface BuilderContextValue {
   state: BuilderState;
   dispatch: Dispatch<BuilderAction>;
   usedPartIds: Set<string>;
+  usedPartNames: Set<string>;
 }
 
 const BuilderContext = createContext<BuilderContextValue | null>(null);
 
-function initState(): BuilderState {
-  if (typeof window === 'undefined') return initialState;
-  const draft = loadDraft();
-  if (draft) return { ...initialState, ...draft };
-  return initialState;
-}
-
 export function BuilderProvider({ children }: { children: ReactNode }) {
-  const [state, dispatch] = useReducer(builderReducer, undefined, initState);
-  const isFirstRender = useRef(true);
+  const [state, dispatch] = useReducer(builderReducer, initialState);
+  const hasRestoredDraft = useRef(false);
 
-  // Persist to localStorage on every relevant change
+  // Restore draft from localStorage on client mount (avoids SSR mismatch)
   useEffect(() => {
-    // Skip the first render (initial load from localStorage)
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
+    if (hasRestoredDraft.current) return;
+    hasRestoredDraft.current = true;
+    const draft = loadDraft();
+    if (draft) {
+      dispatch({ type: 'RESTORE_DRAFT', draft });
+    }
+  }, []);
+
+  // Persist to localStorage on every relevant change (skip first render)
+  const isFirstPersist = useRef(true);
+  useEffect(() => {
+    if (isFirstPersist.current) {
+      isFirstPersist.current = false;
       return;
     }
     saveDraft(state);
@@ -353,11 +405,24 @@ export function BuilderProvider({ children }: { children: ReactNode }) {
       if (bey.blade) ids.add(bey.blade.id);
       if (bey.ratchet) ids.add(bey.ratchet.id);
       if (bey.bit) ids.add(bey.bit.id);
+      if (bey.assistBlade) ids.add(bey.assistBlade.id);
     }
     return ids;
   }, [state.beys]);
 
-  const value = useMemo(() => ({ state, dispatch, usedPartIds }), [state, dispatch, usedPartIds]);
+  // Also track by name to prevent duplicates with different IDs
+  const usedPartNames = useMemo(() => {
+    const names = new Set<string>();
+    for (const bey of state.beys) {
+      if (bey.blade) names.add(bey.blade.name);
+      if (bey.ratchet) names.add(bey.ratchet.name);
+      if (bey.bit) names.add(bey.bit.name);
+      if (bey.assistBlade) names.add(bey.assistBlade.name);
+    }
+    return names;
+  }, [state.beys]);
+
+  const value = useMemo(() => ({ state, dispatch, usedPartIds, usedPartNames }), [state, dispatch, usedPartIds, usedPartNames]);
 
   return (
     <BuilderContext.Provider value={value}>

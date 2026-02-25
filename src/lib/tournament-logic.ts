@@ -123,8 +123,8 @@ export function calculateMatchScore(
 
 /**
  * Validates a deck according to uniqueness rules.
- * Currently supports Blade, Ratchet, and Bit uniqueness.
- * TODO: Implement CX lock chip exception once part sub-components are modeled.
+ * Supports Blade, Ratchet, Bit, and Assist Blade.
+ * - Standard parts (Blade/Ratchet/Bit/Assist Blade) must be unique per deck
  */
 export function validateDeck(deck: {
   beys: Array<{
@@ -132,6 +132,8 @@ export function validateDeck(deck: {
     ratchetId: string;
     bitId: string;
     bladeName?: string;
+    assistBladeId?: string;
+    assistBladeName?: string;
   }>;
 }): { isValid: boolean; errors: string[] } {
   const errors: string[] = [];
@@ -163,9 +165,16 @@ export function validateDeck(deck: {
     usedParts.add(bey.ratchetId);
     usedParts.add(bey.bitId);
 
+    // Assist Blade uniqueness
+    if (bey.assistBladeId) {
+      if (usedParts.has(bey.assistBladeId)) {
+        errors.push(`L'Assist Blade du Bey #${pos} est déjà utilisé dans le deck.`);
+      }
+      usedParts.add(bey.assistBladeId);
+    }
+
     // Check banned parts
     for (const banned of rules.equipment_regulations.banned_parts) {
-      // Simple check based on name if available, or ID if we had a mapping
       if (bey.bladeName?.includes(banned.part)) {
         errors.push(
           `Le Bey #${pos} contient une pièce bannie : ${banned.part} (${banned.reason})`,

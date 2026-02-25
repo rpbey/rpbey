@@ -963,7 +963,7 @@
       "Type": "Defense",
       "Spin": "Right",
       "Weight": "~ g (Stock Combo Blade)",
-      "Stock Combo": "z 9-80 Wall Wedge",
+      "Stock Combo": "Zillion 9-80 Wall Wedge",
       "Lock Chip Type": "Plastic (~1.7 g)",
       "Assist Blade": "Z (Zillion)",
       "Product Line": "CX"
@@ -971,6 +971,63 @@
     "imageUrl": "/Blade/00Yggdrasil/PFZ 1 C12.webp",
     "localImagePath": "images/blade_cx_12_phoenix_flare.webp",
     "sourceUrl": "https://bey-library.vercel.app/product/blade/Blade-PFZ-001"
+  },
+  {
+    "id": "Blade-CX2-001",
+    "category": "blade",
+    "name": "Bahamut Blitz",
+    "code": "CX-13",
+    "specs": {
+      "Type": "Attack",
+      "Spin": "Right",
+      "Weight": "~ g (Stock Combo Blade)",
+      "Stock Combo": "Break Knuckle 1-50 Ignition",
+      "Lock Chip Type": "Plastic (~1.7 g)",
+      "Over Blade": "B (Break)",
+      "Assist Blade": "K (Knuckle)",
+      "Product Line": "CX Xpansion"
+    },
+    "imageUrl": "/Blade/00Kurosu/BBBK 1 C13.webp",
+    "localImagePath": "images/blade_cx_13_bahamut_blitz.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/blade/Blade-CX2-001"
+  },
+  {
+    "id": "Blade-KFGV-001",
+    "category": "blade",
+    "name": "Knight Fortress",
+    "code": "CX-14",
+    "specs": {
+      "Type": "Defense",
+      "Spin": "Right",
+      "Weight": "~ g (Stock Combo Blade)",
+      "Stock Combo": "Guard Vertical 8-70 Under Needle",
+      "Lock Chip Type": "Plastic (~1.7 g)",
+      "Over Blade": "G (Guard)",
+      "Assist Blade": "V (Vertical)",
+      "Product Line": "CX Xpansion"
+    },
+    "imageUrl": "/Blade/00Persona/KFGV 1 C14.webp",
+    "localImagePath": "images/blade_cx_14_knight_fortress.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/blade/Blade-KFGV-001"
+  },
+  {
+    "id": "Blade-RRFE-001",
+    "category": "blade",
+    "name": "Ragna Rage",
+    "code": "CX-15",
+    "specs": {
+      "Type": "Stamina",
+      "Spin": "Right",
+      "Weight": "~ g (Stock Combo Blade)",
+      "Stock Combo": "Flow Erase 4-55 Yielding",
+      "Lock Chip Type": "Plastic (~1.7 g)",
+      "Over Blade": "F (Flow)",
+      "Assist Blade": "E (Erase)",
+      "Product Line": "CX Xpansion"
+    },
+    "imageUrl": "/Blade/00Persona/RRFE 1 C15.webp",
+    "localImagePath": "images/blade_cx_15_ragna_rage.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/blade/Blade-RRFE-001"
   },
   {
     "id": "Blade-KWS-001",
@@ -1199,6 +1256,16 @@
     "imageUrl": "/Ratchet/0/0 80 1 U12.webp",
     "localImagePath": "images/ratchet_ux_12_0_80.webp",
     "sourceUrl": "https://bey-library.vercel.app/product/ratchet/Rat-080-001"
+  },
+  {
+    "id": "Rat-150-001",
+    "category": "ratchet",
+    "name": "1-50",
+    "code": "CX-13",
+    "specs": {},
+    "imageUrl": "/Ratchet/1/1 50 1 C13.webp",
+    "localImagePath": "images/ratchet_cx_13_1_50.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/ratchet/Rat-150-001"
   },
   {
     "id": "Rat-160-001",
@@ -1449,6 +1516,16 @@
     "imageUrl": "/Ratchet/7/7 80 1 B39.webp",
     "localImagePath": "images/ratchet_cx_39_7_80.webp",
     "sourceUrl": "https://bey-library.vercel.app/product/ratchet/Rat-780-001"
+  },
+  {
+    "id": "Rat-870-001",
+    "category": "ratchet",
+    "name": "8-70",
+    "code": "CX-14",
+    "specs": {},
+    "imageUrl": "/Ratchet/8/8 70 1 C14.webp",
+    "localImagePath": "images/ratchet_cx_14_8_70.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/ratchet/Rat-870-001"
   },
   {
     "id": "Rat-960-001",
@@ -2215,6 +2292,36 @@
     "sourceUrl": "https://bey-library.vercel.app/product/bit/Bit-WW-001"
   },
   {
+    "id": "Bit-I-001",
+    "category": "bit",
+    "name": "I (Ignition)",
+    "code": "CX-13",
+    "specs": {
+      "Type": "Attack",
+      "Weight": "~4 g",
+      "Gears": "16",
+      "Burst Resistance": "High"
+    },
+    "imageUrl": "/Bit/I/I 1 C13.webp",
+    "localImagePath": "images/bit_cx_13_i__ignition_.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/bit/Bit-I-001"
+  },
+  {
+    "id": "Bit-Y-001",
+    "category": "bit",
+    "name": "Yielding",
+    "code": "CX-15",
+    "specs": {
+      "Type": "Stamina",
+      "Weight": "~4 g",
+      "Gears": "32?",
+      "Burst Resistance": "Low"
+    },
+    "imageUrl": "/Bit/Y/Y 1 C15.webp",
+    "localImagePath": "images/bit_cx_15_yielding.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/bit/Bit-Y-001"
+  },
+  {
     "id": "Rare-Bit-001",
     "category": "bit",
     "name": "F/T/B/N (Bit Set)",
@@ -2226,5 +2333,996 @@
     "imageUrl": "/Bit/Rare Bit 1 B00.webp",
     "localImagePath": "images/bit_bx_rare_bey_battle_f_t_b_n__bit_set_.webp",
     "sourceUrl": "https://bey-library.vercel.app/product/bit/Rare-Bit-001"
+  },
+  {
+    "id": "As-S-001",
+    "category": "assist-blade",
+    "name": "S (Slash)",
+    "code": "CX-01",
+    "specs": {
+      "Type": "Attack",
+      "Spin": "Right",
+      "Weight": "~4 g",
+      "High Level": "~9 MM"
+    },
+    "imageUrl": "/Assist Blade/S/S 1 C01.webp",
+    "localImagePath": "images/assist_blade_cx_01_s__slash_.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/assist-blade/As-S-001"
+  },
+  {
+    "id": "As-R-001",
+    "category": "assist-blade",
+    "name": "R (Round)",
+    "code": "CX-02",
+    "specs": {
+      "Type": "Stamina",
+      "Spin": "Right",
+      "Weight": "~4 g",
+      "High Level": "~10 MM"
+    },
+    "imageUrl": "/Assist Blade/R/R 1 C02.webp",
+    "localImagePath": "images/assist_blade_cx_02_r__round_.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/assist-blade/As-R-001"
+  },
+  {
+    "id": "As-B-001",
+    "category": "assist-blade",
+    "name": "B (Bumper)",
+    "code": "CX-03",
+    "specs": {
+      "Type": "Defense",
+      "Spin": "Right",
+      "Weight": "~5 g",
+      "High Level": "~10 MM"
+    },
+    "imageUrl": "/Assist Blade/B/B 1 C03.webp",
+    "localImagePath": "images/assist_blade_cx_03_b__bumper_.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/assist-blade/As-B-001"
+  },
+  {
+    "id": "As-T-001",
+    "category": "assist-blade",
+    "name": "T (Turn)",
+    "code": "CX-05",
+    "specs": {
+      "Type": "Balance",
+      "Spin": "Right",
+      "Weight": "~6 g",
+      "High Level": "~10 MM",
+      "Gimmick": "Mode Change (Barrage/Parry)"
+    },
+    "imageUrl": "/Assist Blade/T/T 1 C05.webp",
+    "localImagePath": "images/assist_blade_cx_05_t__turn_.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/assist-blade/As-T-001"
+  },
+  {
+    "id": "As-C-001",
+    "category": "assist-blade",
+    "name": "C (Charge)",
+    "code": "CX-05",
+    "specs": {
+      "Type": "Defense",
+      "Spin": "Right",
+      "Weight": "~5 g",
+      "High Level": "~10 MM"
+    },
+    "imageUrl": "/Assist Blade/C/C 1 C05.webp",
+    "localImagePath": "images/assist_blade_cx_05_c__charge_.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/assist-blade/As-C-001"
+  },
+  {
+    "id": "As-J-001",
+    "category": "assist-blade",
+    "name": "J (Jaggy)",
+    "code": "CX-06",
+    "specs": {
+      "Type": "Attack",
+      "Spin": "Right",
+      "Weight": "~5 g",
+      "High Level": "~9 MM"
+    },
+    "imageUrl": "/Assist Blade/J/J 1 C06.webp",
+    "localImagePath": "images/assist_blade_cx_06_j__jaggy_.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/assist-blade/As-J-001"
+  },
+  {
+    "id": "As-A-001",
+    "category": "assist-blade",
+    "name": "A (Assault)",
+    "code": "CX-07",
+    "specs": {
+      "Type": "Attack",
+      "Spin": "Right",
+      "Weight": "~5 g",
+      "High Level": "~10 MM"
+    },
+    "imageUrl": "/Assist Blade/A/A 1 C07.webp",
+    "localImagePath": "images/assist_blade_cx_07_a__assault_.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/assist-blade/As-A-001"
+  },
+  {
+    "id": "As-W-001",
+    "category": "assist-blade",
+    "name": "W (Wheel)",
+    "code": "CX-08",
+    "specs": {
+      "Type": "Stamina",
+      "Spin": "Right",
+      "Weight": "~7 g",
+      "High Level": "~10 MM"
+    },
+    "imageUrl": "/Assist Blade/W/W 1 C08.webp",
+    "localImagePath": "images/assist_blade_cx_08_w__wheel_.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/assist-blade/As-W-001"
+  },
+  {
+    "id": "As-M-001",
+    "category": "assist-blade",
+    "name": "M (Massive)",
+    "code": "CX-08",
+    "specs": {
+      "Type": "Balance",
+      "Spin": "Right",
+      "Weight": "~6 g",
+      "High Level": "~10 MM"
+    },
+    "imageUrl": "/Assist Blade/M/M 1 C08.webp",
+    "localImagePath": "images/assist_blade_cx_08_m__massive_.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/assist-blade/As-M-001"
+  },
+  {
+    "id": "As-D-001",
+    "category": "assist-blade",
+    "name": "D (Dual)",
+    "code": "CX-09",
+    "specs": {
+      "Type": "Balance",
+      "Spin": "Right",
+      "Weight": "~6 g",
+      "High Level": "~10 MM",
+      "Gimmick": "Mode Change (Upper/Smash)"
+    },
+    "imageUrl": "/Assist Blade/D/D 1 C09.webp",
+    "localImagePath": "images/assist_blade_cx_09_d__dual_.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/assist-blade/As-D-001"
+  },
+  {
+    "id": "As-F-001",
+    "category": "assist-blade",
+    "name": "F (Free)",
+    "code": "CX-10",
+    "specs": {
+      "Type": "Stamina",
+      "Spin": "Right",
+      "Weight": "~5 g",
+      "High Level": "~10 MM",
+      "Gimmick": "Free Spin ring"
+    },
+    "imageUrl": "/Assist Blade/F/F 1 C10.webp",
+    "localImagePath": "images/assist_blade_cx_10_f__free_.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/assist-blade/As-F-001"
+  },
+  {
+    "id": "As-H-001",
+    "category": "assist-blade",
+    "name": "H (Heavy)",
+    "code": "CX-11",
+    "specs": {
+      "Type": "Balance",
+      "Spin": "Right",
+      "Weight": "~7 g",
+      "High Level": "~9 MM",
+      "Gimmick": "Metal Weight"
+    },
+    "imageUrl": "/Assist Blade/H/H 1 C11.webp",
+    "localImagePath": "images/assist_blade_cx_11_h__heavy_.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/assist-blade/As-H-001"
+  },
+  {
+    "id": "As-Z-001",
+    "category": "assist-blade",
+    "name": "Z (Zillion)",
+    "code": "CX-12",
+    "specs": {
+      "Type": "Defense",
+      "Spin": "Right",
+      "Weight": "~6 g",
+      "High Level": "~9 MM"
+    },
+    "imageUrl": "/Assist Blade/Z/Z 1 C12.webp",
+    "localImagePath": "images/assist_blade_cx_12_z__zillion_.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/assist-blade/As-Z-001"
+  },
+  {
+    "id": "As-K-001",
+    "category": "assist-blade",
+    "name": "K (Knuckle)",
+    "code": "CX-13",
+    "specs": {
+      "Type": "Attack",
+      "Spin": "Right",
+      "Weight": "~ g",
+      "High Level": "~ MM"
+    },
+    "imageUrl": "/Assist Blade/K/K 1 C13.webp",
+    "localImagePath": "images/assist_blade_cx_13_k__knuckle_.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/assist-blade/As-K-001"
+  },
+  {
+    "id": "As-V-001",
+    "category": "assist-blade",
+    "name": "V (Vertical)",
+    "code": "CX-14",
+    "specs": {
+      "Type": "Defense",
+      "Spin": "Right",
+      "Weight": "~ g",
+      "High Level": "~ MM"
+    },
+    "imageUrl": "/Assist Blade/V/V 1 C14.webp",
+    "localImagePath": "images/assist_blade_cx_14_v__vertical_.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/assist-blade/As-V-001"
+  },
+  {
+    "id": "As-E-001",
+    "category": "assist-blade",
+    "name": "E (Erase)",
+    "code": "CX-15",
+    "specs": {
+      "Type": "Stamina",
+      "Spin": "Right",
+      "Weight": "~ g",
+      "High Level": "~ MM"
+    },
+    "imageUrl": "/Assist Blade/E/E 1 C15.webp",
+    "localImagePath": "images/assist_blade_cx_15_e__erase_.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/assist-blade/As-E-001"
+  },
+  {
+    "id": "Ov-B-001",
+    "category": "over-blade",
+    "name": "B (Break)",
+    "code": "CX-13",
+    "specs": {
+      "Type": "Attack",
+      "Spin": "Right",
+      "Weight": "~ g"
+    },
+    "imageUrl": "/Over Blade/B/B 1 C13.webp",
+    "localImagePath": "images/over_blade_cx_13_b__break_.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/over-blade/Ov-B-001"
+  },
+  {
+    "id": "Ov-G-001",
+    "category": "over-blade",
+    "name": "G (Guard)",
+    "code": "CX-14",
+    "specs": {
+      "Type": "Defense",
+      "Spin": "Right",
+      "Weight": "~ g"
+    },
+    "imageUrl": "/Over Blade/G/G 1 C14.webp",
+    "localImagePath": "images/over_blade_cx_14_g__guard_.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/over-blade/Ov-G-001"
+  },
+  {
+    "id": "Ov-F-001",
+    "category": "over-blade",
+    "name": "F (Flow)",
+    "code": "CX-15",
+    "specs": {
+      "Type": "Stamina",
+      "Spin": "Right",
+      "Weight": "~ g"
+    },
+    "imageUrl": "/Over Blade/F/F 1 C15.webp",
+    "localImagePath": "images/over_blade_cx_15_f__flow_.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/over-blade/Ov-F-001"
+  },
+  {
+    "id": "Blade-X-OBS-001",
+    "category": "x-over",
+    "name": "Dranzer Spiral",
+    "code": "BX-00",
+    "specs": {
+      "Type": "Balacne",
+      "Spin": "Right",
+      "Weight": "~27 g",
+      "Stock Combo": "3-80 Taper",
+      "Product Line": "BX",
+      "Original Generation": "Bakuten Shoot Beyblade"
+    },
+    "imageUrl": "/Blade/X-Collab/DSL-1.webp",
+    "localImagePath": "images/x_over_bx_00_dranzer_spiral.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/x-over/Blade-X-OBS-001"
+  },
+  {
+    "id": "Blade-X-OBS-002",
+    "category": "x-over",
+    "name": "Driger Slash",
+    "code": "BX-00",
+    "specs": {
+      "Type": "Balacne",
+      "Spin": "Right",
+      "Weight": "~28 g",
+      "Stock Combo": "4-80 Point",
+      "Product Line": "BX",
+      "Original Generation": "Bakuten Shoot Beyblade"
+    },
+    "imageUrl": "/Blade/X-Collab/DSH-1.webp",
+    "localImagePath": "images/x_over_bx_00_driger_slash.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/x-over/Blade-X-OBS-002"
+  },
+  {
+    "id": "Blade-X-OBS-003",
+    "category": "x-over",
+    "name": "Draciel Shield",
+    "code": "BX-00",
+    "specs": {
+      "Type": "Defense",
+      "Spin": "Right",
+      "Weight": "~28 g",
+      "Stock Combo": "7-60 Dot",
+      "Product Line": "BX",
+      "Original Generation": "Bakuten Shoot Beyblade"
+    },
+    "imageUrl": "/Blade/X-Collab/DSD-1.webp",
+    "localImagePath": "images/x_over_bx_00_draciel_shield.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/x-over/Blade-X-OBS-003"
+  },
+  {
+    "id": "Blade-X-OBS-004",
+    "category": "x-over",
+    "name": "Dragoon Storm",
+    "code": "25th Anniversary",
+    "specs": {
+      "Type": "Attack",
+      "Spin": "Left",
+      "Weight": "~25 g",
+      "Stock Combo": "4-60 Rubber Accel",
+      "Product Line": "BX",
+      "Original Generation": "Bakuten Shoot Beyblade"
+    },
+    "imageUrl": "/Blade/X-Collab/DST-1.webp",
+    "localImagePath": "images/x_over_25th_anniversary_dragoon_storm.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/x-over/Blade-X-OBS-004"
+  },
+  {
+    "id": "Blade-X-OMF-001",
+    "category": "x-over",
+    "name": "Lightning L-Drago",
+    "code": "BX-00",
+    "specs": {
+      "Type": "Attack",
+      "Spin": "Left",
+      "Weight": "~34 g",
+      "Stock Combo": "1-60 Flat",
+      "Product Line": "BX",
+      "Original Generation": "Metal Fight Beyblade",
+      "Gimmick": "Same name difference mode (Upper/Rapid)"
+    },
+    "imageUrl": "/Blade/X-Collab/LLD-1 Upper.webp",
+    "localImagePath": "images/x_over_bx_00_lightning_l_drago.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/x-over/Blade-X-OMF-001"
+  },
+  {
+    "id": "Blade-X-OMF-003",
+    "category": "x-over",
+    "name": "Storm Pegasis",
+    "code": "25th Anniversary",
+    "specs": {
+      "Type": "Attack",
+      "Spin": "Right",
+      "Weight": "~30 g",
+      "Stock Combo": "3-70 Rubber Accel",
+      "Product Line": "BX",
+      "Original Generation": "Metal Fight Beyblade"
+    },
+    "imageUrl": "/Blade/X-Collab/SPS-1.webp",
+    "localImagePath": "images/x_over_25th_anniversary_storm_pegasis.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/x-over/Blade-X-OMF-003"
+  },
+  {
+    "id": "Blade-X-OMF-004",
+    "category": "x-over",
+    "name": "Rock Leone",
+    "code": "BX-00",
+    "specs": {
+      "Type": "Defense",
+      "Spin": "Right",
+      "Weight": "~29 g",
+      "Stock Combo": "6-80 Gear Needle",
+      "Product Line": "BX",
+      "Original Generation": "Metal Fight Beyblade"
+    },
+    "imageUrl": "/Blade/X-Collab/RLN-1.webp",
+    "localImagePath": "images/x_over_bx_00_rock_leone.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/x-over/Blade-X-OMF-004"
+  },
+  {
+    "id": "Blade-X-OBB-001",
+    "category": "x-over",
+    "name": "Victory Valkyrie",
+    "code": "25th Anniversary",
+    "specs": {
+      "Type": "Attack",
+      "Spin": "Right",
+      "Weight": "~33 g",
+      "Stock Combo": "2-60 Rubber Accel",
+      "Product Line": "BX",
+      "Original Generation": "Beyblade Burst"
+    },
+    "imageUrl": "/Blade/X-Collab/VVV-1.webp",
+    "localImagePath": "images/x_over_25th_anniversary_victory_valkyrie.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/x-over/Blade-X-OBB-001"
+  },
+  {
+    "id": "Blade-X-OBB-002",
+    "category": "x-over",
+    "name": "Xeno Xcalibur",
+    "code": "BX-00",
+    "specs": {
+      "Type": "Attack",
+      "Spin": "Right",
+      "Weight": "~30 g",
+      "Stock Combo": "3-60 Gear Flat",
+      "Product Line": "BX",
+      "Original Generation": "Beyblade Burst"
+    },
+    "imageUrl": "/Blade/X-Collab/XXX-1.webp",
+    "localImagePath": "images/x_over_bx_00_xeno_xcalibur.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/x-over/Blade-X-OBB-002"
+  },
+  {
+    "id": "Blade-X-CLB-001",
+    "category": "x-over",
+    "name": "Luke Skywalker",
+    "code": "Collab Star Wars",
+    "specs": {
+      "Type": "Stamina",
+      "Spin": "Right",
+      "Weight": "~30 g",
+      "Stock Combo": "4-80 Ball",
+      "Product Line": "BX",
+      "Collab": "Star Wars"
+    },
+    "imageUrl": "/Blade/X-Collab/Star1.webp",
+    "localImagePath": "images/x_over_collab_star_wars_luke_skywalker.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/x-over/Blade-X-CLB-001"
+  },
+  {
+    "id": "Blade-X-CLB-002",
+    "category": "x-over",
+    "name": "Darth Vader",
+    "code": "Collab Star Wars",
+    "specs": {
+      "Type": "Balance",
+      "Spin": "Right",
+      "Weight": "~30 g",
+      "Stock Combo": "4-60 Point",
+      "Product Line": "BX",
+      "Collab": "Star Wars"
+    },
+    "imageUrl": "/Blade/X-Collab/Star2.webp",
+    "localImagePath": "images/x_over_collab_star_wars_darth_vader.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/x-over/Blade-X-CLB-002"
+  },
+  {
+    "id": "Blade-X-CLB-003",
+    "category": "x-over",
+    "name": "The Mandalorian",
+    "code": "Collab Star Wars",
+    "specs": {
+      "Type": "Attack",
+      "Spin": "Right",
+      "Weight": "~30 g",
+      "Stock Combo": "3-60 Flat",
+      "Product Line": "BX",
+      "Collab": "Star Wars"
+    },
+    "imageUrl": "/Blade/X-Collab/Star3.webp",
+    "localImagePath": "images/x_over_collab_star_wars_the_mandalorian.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/x-over/Blade-X-CLB-003"
+  },
+  {
+    "id": "Blade-X-CLB-004",
+    "category": "x-over",
+    "name": "Moff Gideon",
+    "code": "Collab Star Wars",
+    "specs": {
+      "Type": "Defense",
+      "Spin": "Right",
+      "Weight": "~30 g",
+      "Stock Combo": "3-80 Needle",
+      "Product Line": "BX",
+      "Collab": "Star Wars"
+    },
+    "imageUrl": "/Blade/X-Collab/Star4.webp",
+    "localImagePath": "images/x_over_collab_star_wars_moff_gideon.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/x-over/Blade-X-CLB-004"
+  },
+  {
+    "id": "Blade-X-CLB-005",
+    "category": "x-over",
+    "name": "Optimus Prime",
+    "code": "Collab Transformers",
+    "specs": {
+      "Type": "Balance",
+      "Spin": "Right",
+      "Weight": "~31 g",
+      "Stock Combo": "4-60 Point",
+      "Product Line": "BX",
+      "Collab": "Transformers"
+    },
+    "imageUrl": "/Blade/X-Collab/Trans1.webp",
+    "localImagePath": "images/x_over_collab_transformers_optimus_prime.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/x-over/Blade-X-CLB-005"
+  },
+  {
+    "id": "Blade-X-CLB-006",
+    "category": "x-over",
+    "name": "Megatron",
+    "code": "Collab Transformers",
+    "specs": {
+      "Type": "Stamina",
+      "Spin": "Right",
+      "Weight": "~31 g",
+      "Stock Combo": "4-80 Ball",
+      "Product Line": "BX",
+      "Collab": "Transformers"
+    },
+    "imageUrl": "/Blade/X-Collab/Trans2.webp",
+    "localImagePath": "images/x_over_collab_transformers_megatron.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/x-over/Blade-X-CLB-006"
+  },
+  {
+    "id": "Blade-X-CLB-007",
+    "category": "x-over",
+    "name": "Optimus Primal",
+    "code": "Collab Transformers",
+    "specs": {
+      "Type": "Attack",
+      "Spin": "Right",
+      "Weight": "~35 g",
+      "Stock Combo": "3-60 Flat",
+      "Product Line": "BX",
+      "Collab": "Transformers"
+    },
+    "imageUrl": "/Blade/X-Collab/Trans3.webp",
+    "localImagePath": "images/x_over_collab_transformers_optimus_primal.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/x-over/Blade-X-CLB-007"
+  },
+  {
+    "id": "Blade-X-CLB-008",
+    "category": "x-over",
+    "name": "Star Scream",
+    "code": "Collab Transformers",
+    "specs": {
+      "Type": "Defense",
+      "Spin": "Right",
+      "Weight": "~29 g",
+      "Stock Combo": "3-80 Needle",
+      "Product Line": "BX",
+      "Collab": "Transformers"
+    },
+    "imageUrl": "/Blade/X-Collab/Trans4.webp",
+    "localImagePath": "images/x_over_collab_transformers_star_scream.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/x-over/Blade-X-CLB-008"
+  },
+  {
+    "id": "Blade-X-CLB-009",
+    "category": "x-over",
+    "name": "Iron Man",
+    "code": "Collab Marvel",
+    "specs": {
+      "Type": "Stamina",
+      "Spin": "Right",
+      "Weight": "~32 g",
+      "Stock Combo": "4-80 Ball",
+      "Product Line": "BX",
+      "Collab": "Marvel"
+    },
+    "imageUrl": "/Blade/X-Collab/Marvel1.webp",
+    "localImagePath": "images/x_over_collab_marvel_iron_man.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/x-over/Blade-X-CLB-009"
+  },
+  {
+    "id": "Blade-X-CLB-010",
+    "category": "x-over",
+    "name": "Thanos",
+    "code": "Collab Marvel",
+    "specs": {
+      "Type": "Balance",
+      "Spin": "Right",
+      "Weight": "~29 g",
+      "Stock Combo": "4-60 Point",
+      "Product Line": "BX",
+      "Collab": "Marvel"
+    },
+    "imageUrl": "/Blade/X-Collab/Marvel2.webp",
+    "localImagePath": "images/x_over_collab_marvel_thanos.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/x-over/Blade-X-CLB-010"
+  },
+  {
+    "id": "Blade-X-CLB-011",
+    "category": "x-over",
+    "name": "Spider Man",
+    "code": "Collab Marvel",
+    "specs": {
+      "Type": "Attack",
+      "Spin": "Right",
+      "Weight": "~32 g",
+      "Stock Combo": "3-60 Flat",
+      "Product Line": "BX",
+      "Collab": "Marvel"
+    },
+    "imageUrl": "/Blade/X-Collab/Marvel3.webp",
+    "localImagePath": "images/x_over_collab_marvel_spider_man.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/x-over/Blade-X-CLB-011"
+  },
+  {
+    "id": "Blade-X-CLB-012",
+    "category": "x-over",
+    "name": "Venom",
+    "code": "Collab Marvel",
+    "specs": {
+      "Type": "Defense",
+      "Spin": "Right",
+      "Weight": "~34 g",
+      "Stock Combo": "3-80 Needle",
+      "Product Line": "BX",
+      "Collab": "Marvel"
+    },
+    "imageUrl": "/Blade/X-Collab/Marvel4.webp",
+    "localImagePath": "images/x_over_collab_marvel_venom.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/x-over/Blade-X-CLB-012"
+  },
+  {
+    "id": "Blade-X-CLB-013",
+    "category": "x-over",
+    "name": "T.Rex",
+    "code": "Collab Jurassic World",
+    "specs": {
+      "Type": "Stamina",
+      "Spin": "Right",
+      "Weight": "~ g",
+      "Stock Combo": "1-80 Gear Ball",
+      "Product Line": "BX",
+      "Collab": "Jurassic World",
+      "Description": "This Blade is also count as Tyranno Beat."
+    },
+    "imageUrl": "/Blade/X-Collab/Jura-1.webp",
+    "localImagePath": "images/x_over_collab_jurassic_world_t_rex.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/x-over/Blade-X-CLB-013"
+  },
+  {
+    "id": "Blade-X-CLB-014",
+    "category": "x-over",
+    "name": "Mosasaurus",
+    "code": "Collab Jurassic World",
+    "specs": {
+      "Type": "Balance",
+      "Spin": "Right",
+      "Weight": "~ g",
+      "Stock Combo": "9-60 Unite",
+      "Product Line": "BX",
+      "Collab": "Jurassic World"
+    },
+    "imageUrl": "/Blade/X-Collab/Jura-2.webp",
+    "localImagePath": "images/x_over_collab_jurassic_world_mosasaurus.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/x-over/Blade-X-CLB-014"
+  },
+  {
+    "id": "Blade-X-CLB-015",
+    "category": "x-over",
+    "name": "Spinosaurus",
+    "code": "Collab Jurassic World",
+    "specs": {
+      "Type": "Attack",
+      "Spin": "Right",
+      "Weight": "~ g",
+      "Stock Combo": "3-85 Accel",
+      "Product Line": "BX",
+      "Collab": "Jurassic World",
+      "Description": "This Blade is also count as Tyranno Roar."
+    },
+    "imageUrl": "/Blade/X-Collab/Jura-3.webp",
+    "localImagePath": "images/x_over_collab_jurassic_world_spinosaurus.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/x-over/Blade-X-CLB-015"
+  },
+  {
+    "id": "Blade-X-CLB-016",
+    "category": "x-over",
+    "name": "Quetzalcoatlus",
+    "code": "Collab Jurassic World",
+    "specs": {
+      "Type": "Defense",
+      "Spin": "Right",
+      "Weight": "~ g",
+      "Stock Combo": "4-55 Dot",
+      "Product Line": "BX",
+      "Collab": "Jurassic World",
+      "Description": "This Blade is also count as Ptera Swing."
+    },
+    "imageUrl": "/Blade/X-Collab/Jura-4.webp",
+    "localImagePath": "images/x_over_collab_jurassic_world_quetzalcoatlus.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/x-over/Blade-X-CLB-016"
+  },
+  {
+    "id": "other-001",
+    "category": "other",
+    "name": "Start Dash Set",
+    "code": "BX-07",
+    "specs": {},
+    "imageUrl": "/Other/BX07/Start-Dash-Set-Box.webp",
+    "localImagePath": "images/other_bx_07_start_dash_set.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/other/other-001"
+  },
+  {
+    "id": "other-002",
+    "category": "other",
+    "name": "3on3 Deck Set",
+    "code": "BX-08",
+    "specs": {},
+    "imageUrl": "/Other/BX08/B08.webp",
+    "localImagePath": "images/other_bx_08_3on3_deck_set.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/other/other-002"
+  },
+  {
+    "id": "other-003",
+    "category": "other",
+    "name": "Beybattle Pass",
+    "code": "BX-09",
+    "specs": {},
+    "imageUrl": "/Other/BX09/B09.webp",
+    "localImagePath": "images/other_bx_09_beybattle_pass.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/other/other-003"
+  },
+  {
+    "id": "other-004",
+    "category": "other",
+    "name": "Xtreme Stadium",
+    "code": "BX-10",
+    "specs": {},
+    "imageUrl": "/Other/BX10/B10.webp",
+    "localImagePath": "images/other_bx_10_xtreme_stadium.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/other/other-004"
+  },
+  {
+    "id": "other-005",
+    "category": "other",
+    "name": "Launcher Grip",
+    "code": "BX-11",
+    "specs": {},
+    "imageUrl": "/Other/BX11/Grip Black.webp",
+    "localImagePath": "images/other_bx_11_launcher_grip.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/other/other-005"
+  },
+  {
+    "id": "other-006",
+    "category": "other",
+    "name": "3on3 Deck Case",
+    "code": "BX-12",
+    "specs": {},
+    "imageUrl": "/Other/BX12/3o3.webp",
+    "localImagePath": "images/other_bx_12_3on3_deck_case.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/other/other-006"
+  },
+  {
+    "id": "other-007",
+    "category": "other",
+    "name": "Battle Entry Set",
+    "code": "BX-17",
+    "specs": {},
+    "imageUrl": "/Other/BX17/B17.webp",
+    "localImagePath": "images/other_bx_17_battle_entry_set.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/other/other-007"
+  },
+  {
+    "id": "other-008",
+    "category": "other",
+    "name": "String Launcher",
+    "code": "BX-18",
+    "specs": {},
+    "imageUrl": "/Other/BX18/String Black.webp",
+    "localImagePath": "images/other_bx_18_string_launcher.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/other/other-008"
+  },
+  {
+    "id": "other-009",
+    "category": "other",
+    "name": "Gear Case",
+    "code": "BX-25",
+    "specs": {},
+    "imageUrl": "/Other/BX25/Case Black.webp",
+    "localImagePath": "images/other_bx_25_gear_case.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/other/other-009"
+  },
+  {
+    "id": "other-010",
+    "category": "other",
+    "name": "String Launcher (White Ver.)",
+    "code": "BX-28",
+    "specs": {},
+    "imageUrl": "/Other/BX28/String White.webp",
+    "localImagePath": "images/other_bx_28_string_launcher__white_ver__.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/other/other-010"
+  },
+  {
+    "id": "other-011",
+    "category": "other",
+    "name": "Custom Grip (White Ver.)",
+    "code": "BX-29",
+    "specs": {},
+    "imageUrl": "/Other/BX29/Grip White.webp",
+    "localImagePath": "images/other_bx_29_custom_grip__white_ver__.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/other/other-011"
+  },
+  {
+    "id": "other-012",
+    "category": "other",
+    "name": "Custom Grip (Red Ver.)",
+    "code": "BX-30",
+    "specs": {},
+    "imageUrl": "/Other/BX30/Grip Red.webp",
+    "localImagePath": "images/other_bx_30_custom_grip__red_ver__.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/other/other-012"
+  },
+  {
+    "id": "other-013",
+    "category": "other",
+    "name": "Wide Xtreme Stadium",
+    "code": "BX-32",
+    "specs": {},
+    "imageUrl": "/Other/BX32/Wide-Xtreme-Stadium.webp",
+    "localImagePath": "images/other_bx_32_wide_xtreme_stadium.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/other/other-013"
+  },
+  {
+    "id": "other-014",
+    "category": "other",
+    "name": "Battle Entry Set U",
+    "code": "UX-04",
+    "specs": {},
+    "imageUrl": "/Other/UX04/U04.webp",
+    "localImagePath": "images/other_ux_04_battle_entry_set_u.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/other/other-014"
+  },
+  {
+    "id": "other-015",
+    "category": "other",
+    "name": "Double Xtreme Stadium Set",
+    "code": "BX-37",
+    "specs": {},
+    "imageUrl": "/Other/BX37/B37.webp",
+    "localImagePath": "images/other_bx_37_double_xtreme_stadium_set.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/other/other-015"
+  },
+  {
+    "id": "other-016",
+    "category": "other",
+    "name": "Custom Grip (Black & Green Clear Ver.)",
+    "code": "BX-00",
+    "specs": {},
+    "imageUrl": "/Other/BX00/Grip Black Green.webp",
+    "localImagePath": "images/other_bx_00_custom_grip__black___green_clear_ver__.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/other/other-016"
+  },
+  {
+    "id": "other-017",
+    "category": "other",
+    "name": "Battle Entry Set C",
+    "code": "CX-04",
+    "specs": {},
+    "imageUrl": "/Other/CX04/C04.webp",
+    "localImagePath": "images/other_cx_04_battle_entry_set_c.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/other/other-017"
+  },
+  {
+    "id": "other-018",
+    "category": "other",
+    "name": "Winder Launcher L",
+    "code": "BX-40",
+    "specs": {},
+    "imageUrl": "/Other/BX40/L Winder.webp",
+    "localImagePath": "images/other_bx_40_winder_launcher_l.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/other/other-018"
+  },
+  {
+    "id": "other-019",
+    "category": "other",
+    "name": "Rubber Custom Grip (Gunmetal Ver.)",
+    "code": "BX-41",
+    "specs": {},
+    "imageUrl": "/Other/BX41/Grip Gunmetal.webp",
+    "localImagePath": "images/other_bx_41_rubber_custom_grip__gunmetal_ver__.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/other/other-019"
+  },
+  {
+    "id": "other-020",
+    "category": "other",
+    "name": "Rubber Custom Grip (Blue Ver.)",
+    "code": "BX-42",
+    "specs": {},
+    "imageUrl": "/Other/BX42/Grip Blue.webp",
+    "localImagePath": "images/other_bx_42_rubber_custom_grip__blue_ver__.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/other/other-020"
+  },
+  {
+    "id": "other-021",
+    "category": "other",
+    "name": "Gear Case (White Ver.)",
+    "code": "BX-43",
+    "specs": {},
+    "imageUrl": "/Other/BX43/Case White.webp",
+    "localImagePath": "images/other_bx_43_gear_case__white_ver__.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/other/other-021"
+  },
+  {
+    "id": "other-022",
+    "category": "other",
+    "name": "Battle Entry Set ∞",
+    "code": "BX-46",
+    "specs": {},
+    "imageUrl": "/Other/BX46/BX46 IXS.jpg",
+    "localImagePath": "images/other_bx_46_battle_entry_set__.jpg",
+    "sourceUrl": "https://bey-library.vercel.app/product/other/other-022"
+  },
+  {
+    "id": "other-023",
+    "category": "other",
+    "name": "String Luncher L (Red Ver.)",
+    "code": "BX-47",
+    "specs": {},
+    "imageUrl": "/Other/BX47/String L Red.webp",
+    "localImagePath": "images/other_bx_47_string_luncher_l__red_ver__.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/other/other-023"
+  },
+  {
+    "id": "other-024",
+    "category": "other",
+    "name": "String Luncher (Violet Ver.)",
+    "code": "BX-00 (DMM Lottey)",
+    "specs": {},
+    "imageUrl": "/Other/BX00/String Purple.webp",
+    "localImagePath": "images/other_bx_00__dmm_lottey__string_luncher__violet_ver__.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/other/other-024"
+  },
+  {
+    "id": "other-025",
+    "category": "other",
+    "name": "Start Dash Set C",
+    "code": "CX-16",
+    "specs": {},
+    "imageUrl": "/Other/BX07/Start-Dash-Set-C16.webp",
+    "localImagePath": "images/other_cx_16_start_dash_set_c.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/other/other-025"
+  },
+  {
+    "id": "other-026",
+    "category": "other",
+    "name": "String Luncher (Special Color)",
+    "code": "BX-00 (B4 Limited)",
+    "specs": {},
+    "imageUrl": "/Other/BX00/String B4 LTD B00.webp",
+    "localImagePath": "images/other_bx_00__b4_limited__string_luncher__special_color_.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/other/other-026"
+  },
+  {
+    "id": "CD001",
+    "category": "credits",
+    "name": "Credits? Why you want to know that???",
+    "code": "This website don't want anything from you.",
+    "specs": {
+      "Creator Name": "Why you want to know that?",
+      "Donation": "Go to Philanthropy funds.",
+      "Ownership": "I'm not Takara Tomy. Beyblade is not my product, This web for community free use.",
+      "Objective": "To make it easier for the community to find Beyblade X parts data, Not find me.",
+      "Special Thanks": "Thanks to Takara Tomy for making Beyblade."
+    },
+    "imageUrl": "https://i.ibb.co/0pcrGh1N/Credit.webp",
+    "localImagePath": "images/credits_this_website_don_t_want_anything_from_you__credits__why_you_want_to_know_that___.webp",
+    "sourceUrl": "https://bey-library.vercel.app/product/credits/CD001"
   }
 ]
