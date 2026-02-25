@@ -441,26 +441,6 @@ function StandingsPanel({ standings }: { standings: Standing[] }) {
   );
 }
 
-function StadiumsPanel({ stations }: { stations: Station[] }) {
-  return (
-    <Grid container spacing={3}>
-      {stations.map((station) => (
-        <Grid key={station.stationId} size={{ xs: 12, sm: 6 }}>
-          <Paper sx={{ p: 3, borderRadius: 4, border: '1px solid', borderColor: station.status === 'active' ? 'error.main' : 'divider' }}>
-            <Typography variant="subtitle1" fontWeight={900}>{station.name}</Typography>
-            {station.currentMatch ? (
-              <Typography variant="body2" sx={{ mt: 1 }}>{station.currentMatch.player1} vs {station.currentMatch.player2}</Typography>
-            ) : <Typography variant="body2" color="text.disabled">Libre</Typography>}
-          </Paper>
-        </Grid>
-      ))}
-    </Grid>
-  );
-}
-    </Box>
-  );
-}
-
 // ─── Sub-Components ────────────────────────────────────────────────────────
 
 function StandingsPanel({ standings }: { standings: Standing[] }) {
