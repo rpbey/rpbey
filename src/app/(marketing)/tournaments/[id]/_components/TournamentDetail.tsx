@@ -408,7 +408,7 @@ function StadiumsPanel({ stations }: { stations: Station[] }) {
   return (
     <Grid container spacing={3}>
       {stations.map((station) => (
-        <Grid item key={station.stationId} size={{ xs: 12, sm: 6, xl: 4 }}>
+        <Grid key={station.stationId} size={{ xs: 12, sm: 6, xl: 4 }}>
           <Paper elevation={0} sx={{ p: 3, borderRadius: 4, border: '1px solid', borderColor: station.status === 'active' ? 'error.main' : 'divider' }}>
             <Typography variant="subtitle1" fontWeight={900}>{station.name}</Typography>
             {station.currentMatch ? (
