@@ -4,9 +4,9 @@ import {
   Box,
   Card,
   CardContent,
+  Grid,
   Typography,
 } from '@mui/material';
-import Grid from '@mui/material/Grid2';
 import { Hub } from '@mui/icons-material';
 
 export default function AdminMetaPage() {
