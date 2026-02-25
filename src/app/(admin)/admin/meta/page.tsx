@@ -80,7 +80,7 @@ function StatSection({ title, data, icon, color }: { title: string, data: any[],
   const maxUsage = data.length > 0 ? Math.max(...data.map(d => d.count)) : 1;
 
   return (
-    <Grid item xs={12} md={6} lg={3}>
+    <Grid size={{ xs: 12, md: 6, lg: 3 }}>
       <Card sx={{ borderRadius: 4, border: '1px solid', borderColor: 'divider', height: '100%', bgcolor: 'background.paper' }}>
         <CardContent sx={{ p: 3 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 3 }}>
