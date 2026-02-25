@@ -241,7 +241,7 @@ export async function PUT(
       },
     });
 
-    return NextResponse.json({ data: deck });
+    return NextResponse.json({ data: updatedDeck });
   } catch (error) {
     console.error('Error updating deck:', error);
     return NextResponse.json(
