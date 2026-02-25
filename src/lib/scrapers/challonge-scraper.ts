@@ -206,12 +206,12 @@ export class ChallongeScraper {
 
     // 1. Store principal (matchs + metadata) — /module
     const storeResponse = await this.fetchStoreData(`${baseUrl}/module`);
-    const storeData = storeResponse.data;
-    const pageTitle = storeResponse.title;
+    const storeData = (storeResponse as any).data;
+    const pageTitle = (storeResponse as any).title;
     
     // Nettoyage du titre pour avoir le nom du tournoi
     // Challonge titles are usually "Tournament Name - Challonge"
-    const tournamentName = (pageTitle as string).split(' - ')[0].trim();
+    const tournamentName = pageTitle ? pageTitle.split(' - ')[0].trim() : '';
 
     // 2. Participants — /participants
     let participantsPageData: any[] = [];
