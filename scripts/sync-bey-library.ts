@@ -26,7 +26,7 @@ const CATEGORY_MAP: Record<string, PartType> = {
   'bit': 'BIT',
   'assist-blade': 'ASSIST_BLADE',
   'lock-chip': 'LOCK_CHIP',
-  'over-blade': 'BLADE',
+  'over-blade': 'OVER_BLADE',
   'x-over': 'BLADE'
 };
 

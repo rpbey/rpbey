@@ -1,5 +1,5 @@
 services:
-  # Database (Migrated from Coolify)
+  # Database
   db:
     image: postgres:17-alpine
     container_name: rpb-db
@@ -11,9 +11,7 @@ services:
     volumes:
       - rpb-db:/var/lib/postgresql/data
     networks:
-      rpb-network:
-        aliases:
-          - b0o4000oo8g80cws8gsoogk4
+      - rpb-network
     ports:
       - "5432:5432"
     healthcheck:

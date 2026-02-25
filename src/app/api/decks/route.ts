@@ -10,6 +10,18 @@ import { NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
+const DECK_ITEMS_INCLUDE = {
+  include: {
+    bey: true,
+    blade: true,
+    ratchet: true,
+    bit: true,
+    lockChip: true,
+    assistBlade: true,
+  },
+  orderBy: { position: 'asc' as const },
+};
+
 // GET - List user's decks
 export async function GET() {
   try {
@@ -24,15 +36,7 @@ export async function GET() {
     const decks = await prisma.deck.findMany({
       where: { userId: session.user.id },
       include: {
-        items: {
-          include: {
-            bey: true,
-            blade: true,
-            ratchet: true,
-            bit: true,
-          },
-          orderBy: { position: 'asc' },
-        },
+        items: DECK_ITEMS_INCLUDE,
       },
       orderBy: [{ isActive: 'desc' }, { updatedAt: 'desc' }],
     });
@@ -73,6 +77,8 @@ export async function POST(request: NextRequest) {
         bladeId: string;
         ratchetId: string;
         bitId: string;
+        lockChipId?: string;
+        assistBladeId?: string;
       }>;
     };
 
@@ -84,12 +90,29 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate uniqueness of parts within deck
-    const allPartIds = beys.flatMap((b) => [b.bladeId, b.ratchetId, b.bitId]);
-    const uniquePartIds = new Set(allPartIds);
-    if (uniquePartIds.size !== allPartIds.length) {
+    // Validate uniqueness of standard parts within deck
+    const standardPartIds = beys.flatMap((b) => [b.bladeId, b.ratchetId, b.bitId]);
+    const uniqueStandardIds = new Set(standardPartIds);
+    if (uniqueStandardIds.size !== standardPartIds.length) {
       return NextResponse.json(
         { error: 'Invalid deck: each part can only be used once' },
+        { status: 400 },
+      );
+    }
+
+    // Collect all part IDs for validation
+    const allPartIds = [...standardPartIds];
+    for (const bey of beys) {
+      if (bey.lockChipId) allPartIds.push(bey.lockChipId);
+      if (bey.assistBladeId) allPartIds.push(bey.assistBladeId);
+    }
+
+    // Validate assist blade uniqueness
+    const assistBladeIds = beys.map((b) => b.assistBladeId).filter(Boolean) as string[];
+    const uniqueAssistIds = new Set(assistBladeIds);
+    if (uniqueAssistIds.size !== assistBladeIds.length) {
+      return NextResponse.json(
+        { error: 'Invalid deck: each Assist Blade can only be used once' },
         { status: 400 },
       );
     }
@@ -124,6 +147,26 @@ export async function POST(request: NextRequest) {
           { status: 400 },
         );
       }
+
+      if (bey.lockChipId) {
+        const lockChip = partMap.get(bey.lockChipId);
+        if (!lockChip || lockChip.type !== 'LOCK_CHIP') {
+          return NextResponse.json(
+            { error: `Invalid lock chip ID: ${bey.lockChipId}` },
+            { status: 400 },
+          );
+        }
+      }
+
+      if (bey.assistBladeId) {
+        const assistBlade = partMap.get(bey.assistBladeId);
+        if (!assistBlade || assistBlade.type !== 'ASSIST_BLADE') {
+          return NextResponse.json(
+            { error: `Invalid assist blade ID: ${bey.assistBladeId}` },
+            { status: 400 },
+          );
+        }
+      }
     }
 
     // If setting as active, deactivate other decks
@@ -143,23 +186,16 @@ export async function POST(request: NextRequest) {
         items: {
           create: beys.map((bey) => ({
             position: bey.position,
-            // nickname: bey.nickname,
             bladeId: bey.bladeId,
             ratchetId: bey.ratchetId,
             bitId: bey.bitId,
+            lockChipId: bey.lockChipId || null,
+            assistBladeId: bey.assistBladeId || null,
           })),
         },
       },
       include: {
-        items: {
-          include: {
-            bey: true,
-            blade: true,
-            ratchet: true,
-            bit: true,
-          },
-          orderBy: { position: 'asc' },
-        },
+        items: DECK_ITEMS_INCLUDE,
       },
     });
 

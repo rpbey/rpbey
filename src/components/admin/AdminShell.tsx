@@ -6,6 +6,7 @@ import {
   Hub,
   Launch,
   Leaderboard,
+  Link as LinkIcon,
   Logout,
   Menu as MenuIcon,
   People,
@@ -45,6 +46,7 @@ const RAIL_WIDTH = 280;
 const ADMIN_NAV_ITEMS = [
   { label: "Vue d'ensemble", path: '/admin', icon: Dashboard },
   { label: 'Bot Discord', path: '/admin/bot', icon: SmartToy },
+  { label: 'Liaison Comptes', path: '/admin/link', icon: LinkIcon },
   { label: 'Meta', path: '/admin/meta', icon: Hub },
   { label: 'Contenu', path: '/admin/content', icon: Article },
   { label: 'Gestion SATR', path: '/admin/satr', icon: WorkspacePremium },

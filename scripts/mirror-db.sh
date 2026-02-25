@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Configuration
-CONTAINER_PROD="coolify-db"
+CONTAINER_PROD="rpb-db"
 CONTAINER_LOCAL="rpb-db-local"
 DB_NAME="rpb_dashboard"
 USER="postgres"

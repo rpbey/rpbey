@@ -2245,5 +2245,208 @@
     "sources": [
       "planner"
     ]
+  },
+  {
+    "id": "lock-chip-plastic",
+    "name": "Plastic Lock Chip",
+    "type": "LOCK_CHIP",
+    "weight": 1.7,
+    "system": "CX",
+    "image": "/images/parts/lock-chip-plastic.webp",
+    "sources": ["manual"]
+  },
+  {
+    "id": "lock-chip-metal-valkyrie",
+    "name": "Metal Lock Chip - Valkyrie",
+    "type": "LOCK_CHIP",
+    "weight": 5.0,
+    "system": "CX",
+    "image": "/images/parts/lock-chip-metal-valkyrie.webp",
+    "sources": ["manual"]
+  },
+  {
+    "id": "lock-chip-metal-emperor",
+    "name": "Metal Lock Chip - Emperor",
+    "type": "LOCK_CHIP",
+    "weight": 5.0,
+    "system": "CX",
+    "image": "/images/parts/lock-chip-metal-emperor.webp",
+    "sources": ["manual"]
+  },
+  {
+    "id": "assist-blade-s-slash",
+    "name": "S (Slash)",
+    "type": "ASSIST_BLADE",
+    "weight": 4,
+    "system": "CX",
+    "spin": "Right",
+    "beyType": "ATTACK",
+    "image": "/images/parts/assist-blade_as-s-001.webp",
+    "sources": ["bey-library"]
+  },
+  {
+    "id": "assist-blade-r-round",
+    "name": "R (Round)",
+    "type": "ASSIST_BLADE",
+    "weight": 4,
+    "system": "CX",
+    "spin": "Right",
+    "beyType": "STAMINA",
+    "image": "/images/parts/assist-blade_as-r-001.webp",
+    "sources": ["bey-library"]
+  },
+  {
+    "id": "assist-blade-b-bumper",
+    "name": "B (Bumper)",
+    "type": "ASSIST_BLADE",
+    "weight": 5,
+    "system": "CX",
+    "spin": "Right",
+    "beyType": "DEFENSE",
+    "image": "/images/parts/assist-blade_as-b-001.webp",
+    "sources": ["bey-library"]
+  },
+  {
+    "id": "assist-blade-t-turn",
+    "name": "T (Turn)",
+    "type": "ASSIST_BLADE",
+    "weight": 6,
+    "system": "CX",
+    "spin": "Right",
+    "beyType": "BALANCE",
+    "image": "/images/parts/assist-blade_as-t-001.webp",
+    "sources": ["bey-library"]
+  },
+  {
+    "id": "assist-blade-c-charge",
+    "name": "C (Charge)",
+    "type": "ASSIST_BLADE",
+    "weight": 5,
+    "system": "CX",
+    "spin": "Right",
+    "beyType": "DEFENSE",
+    "image": "/images/parts/assist-blade_as-c-001.webp",
+    "sources": ["bey-library"]
+  },
+  {
+    "id": "assist-blade-j-jaggy",
+    "name": "J (Jaggy)",
+    "type": "ASSIST_BLADE",
+    "weight": 5,
+    "system": "CX",
+    "spin": "Right",
+    "beyType": "ATTACK",
+    "image": "/images/parts/assist-blade_as-j-001.webp",
+    "sources": ["bey-library"]
+  },
+  {
+    "id": "assist-blade-a-assault",
+    "name": "A (Assault)",
+    "type": "ASSIST_BLADE",
+    "weight": 5,
+    "system": "CX",
+    "spin": "Right",
+    "beyType": "ATTACK",
+    "image": "/images/parts/assist-blade_as-a-001.webp",
+    "sources": ["bey-library"]
+  },
+  {
+    "id": "assist-blade-w-wheel",
+    "name": "W (Wheel)",
+    "type": "ASSIST_BLADE",
+    "weight": 7,
+    "system": "CX",
+    "spin": "Right",
+    "beyType": "STAMINA",
+    "image": "/images/parts/assist-blade_as-w-001.webp",
+    "sources": ["bey-library"]
+  },
+  {
+    "id": "assist-blade-m-massive",
+    "name": "M (Massive)",
+    "type": "ASSIST_BLADE",
+    "weight": 6,
+    "system": "CX",
+    "spin": "Right",
+    "beyType": "BALANCE",
+    "image": "/images/parts/assist-blade_as-m-001.webp",
+    "sources": ["bey-library"]
+  },
+  {
+    "id": "assist-blade-d-dual",
+    "name": "D (Dual)",
+    "type": "ASSIST_BLADE",
+    "weight": 6,
+    "system": "CX",
+    "spin": "Right",
+    "beyType": "BALANCE",
+    "image": "/images/parts/assist-blade_as-d-001.webp",
+    "sources": ["bey-library"]
+  },
+  {
+    "id": "assist-blade-f-free",
+    "name": "F (Free)",
+    "type": "ASSIST_BLADE",
+    "weight": 5,
+    "system": "CX",
+    "spin": "Right",
+    "beyType": "STAMINA",
+    "image": "/images/parts/assist-blade_as-f-001.webp",
+    "sources": ["bey-library"]
+  },
+  {
+    "id": "assist-blade-h-heavy",
+    "name": "H (Heavy)",
+    "type": "ASSIST_BLADE",
+    "weight": 7,
+    "system": "CX",
+    "spin": "Right",
+    "beyType": "BALANCE",
+    "image": "/images/parts/assist-blade_as-h-001.webp",
+    "sources": ["bey-library"]
+  },
+  {
+    "id": "assist-blade-z-zillion",
+    "name": "Z (Zillion)",
+    "type": "ASSIST_BLADE",
+    "weight": 6,
+    "system": "CX",
+    "spin": "Right",
+    "beyType": "DEFENSE",
+    "image": "/images/parts/assist-blade_as-z-001.webp",
+    "sources": ["bey-library"]
+  },
+  {
+    "id": "assist-blade-k-knuckle",
+    "name": "K (Knuckle)",
+    "type": "ASSIST_BLADE",
+    "weight": 5,
+    "system": "CX",
+    "spin": "Right",
+    "beyType": "ATTACK",
+    "image": "/images/parts/assist-blade_as-k-001.webp",
+    "sources": ["bey-library"]
+  },
+  {
+    "id": "assist-blade-v-vertical",
+    "name": "V (Vertical)",
+    "type": "ASSIST_BLADE",
+    "weight": 5,
+    "system": "CX",
+    "spin": "Right",
+    "beyType": "DEFENSE",
+    "image": "/images/parts/assist-blade_as-v-001.webp",
+    "sources": ["bey-library"]
+  },
+  {
+    "id": "assist-blade-e-erase",
+    "name": "E (Erase)",
+    "type": "ASSIST_BLADE",
+    "weight": 5,
+    "system": "CX",
+    "spin": "Right",
+    "beyType": "STAMINA",
+    "image": "/images/parts/assist-blade_as-e-001.webp",
+    "sources": ["bey-library"]
   }
 ]

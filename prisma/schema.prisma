@@ -594,6 +594,7 @@ enum PartType {
   BIT
   LOCK_CHIP
   ASSIST_BLADE
+  OVER_BLADE
 }
 
 enum ExperienceLevel {

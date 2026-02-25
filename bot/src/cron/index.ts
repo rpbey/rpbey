@@ -9,6 +9,7 @@ import { satrSyncTask } from './tasks/SatrSync.js';
 import { sessionCleanupTask } from './tasks/SessionCleanup.js';
 import { syncRankingRolesTask } from './tasks/SyncRankingRoles.js';
 import { syncSatrRolesTask } from './tasks/SyncSatrRoles.js';
+import { bbxWeeklySyncTask } from './tasks/BbxWeeklySync.js';
 import { tournamentReminderTask } from './tasks/TournamentReminder.js';
 
 export function setupCronJobs() {
@@ -85,6 +86,17 @@ export function setupCronJobs() {
   cron.schedule('0 * * * *', () => {
     tournamentReminderTask();
   }); // System time (usually UTC), matches old behavior if no timezone specified
+
+  // BBX Weekly Meta Sync: Every Friday at 18:00 Paris
+  cron.schedule(
+    '0 18 * * 5',
+    () => {
+      bbxWeeklySyncTask();
+    },
+    {
+      timezone: 'Europe/Paris',
+    },
+  );
 
   logger.info('[Cron] Tasks scheduled.');
 }

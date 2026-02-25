@@ -30,11 +30,12 @@ RPB est la plus grande communauté française de Beyblade X sur Discord. Ce dép
 ## Infrastructure (Hetzner)
 - **IP** : `46.224.145.55` (Ubuntu 24.04 LTS)
 - **Déploiement** : 
-  - **Dashboard** : Coolify (http://46.224.145.55:8000)
+  - **Dashboard** : Docker Compose (Production)
   - **Bot** : Service Systemd (`rpb-bot.service`)
-- **Commandes Coolify** :
-  - Déployer : `coolify deploy uuid <uuid>`
-  - Statut : `coolify deploy list`
+- **Commandes Déploiement** :
+  - Build : `docker compose -f docker-compose.prod.yml build`
+  - Up : `docker compose -f docker-compose.prod.yml up -d`
+  - Logs : `docker compose -f docker-compose.prod.yml logs -f`
 
 ## Directives de Développement
 - **Langue du Code** : Anglais (noms de variables, commentaires techniques).

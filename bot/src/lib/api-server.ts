@@ -242,6 +242,32 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse) {
           .sort((a: any, b: any) => a.position - b.position);
         return sendJSON(res, { channels });
       }
+      case '/api/members-by-role': {
+        const roleId = url.searchParams.get('roleId');
+        const guild = bot.guilds.cache.get(process.env.GUILD_ID ?? '');
+        if (!guild) return sendJSON(res, { error: 'Guild not found' }, 404);
+
+        await _ensureMembers(guild);
+
+        let members = guild.members.cache;
+        if (roleId) {
+          members = members.filter((m) => m.roles.cache.has(roleId));
+        }
+
+        return sendJSON(res, {
+          members: members.map((m) => ({
+            id: m.id,
+            username: m.user.username,
+            displayName: m.displayName,
+            nickname: m.nickname,
+            avatar: m.user.displayAvatarURL(),
+            roles: m.roles.cache.map((r) => r.id),
+            joinedAt: m.joinedTimestamp,
+            globalName: m.user.globalName,
+            serverAvatar: m.avatarURL(),
+          })),
+        });
+      }
       case '/api/webhook/twitch': {
         if (req.method !== 'POST')
           return sendJSON(res, { error: 'Method not allowed' }, 405);

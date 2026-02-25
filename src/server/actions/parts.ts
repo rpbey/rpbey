@@ -21,7 +21,11 @@ export async function getPublicParts(params: {
   const where: any = {};
 
   if (type && type !== 'ALL') {
-    where.type = type;
+    if (type === 'BLADE') {
+      where.type = { in: ['BLADE', 'OVER_BLADE'] };
+    } else {
+      where.type = type;
+    }
   }
 
   if (systems && systems.length > 0) {

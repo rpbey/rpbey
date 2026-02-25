@@ -28,6 +28,8 @@ export type DeckWithItems = Prisma.DeckGetPayload<{
         blade: true;
         ratchet: true;
         bit: true;
+        lockChip: true;
+        assistBlade: true;
       };
       orderBy: { position: 'asc' };
     };
@@ -41,6 +43,8 @@ export type DeckItemWithParts = Prisma.DeckItemGetPayload<{
     blade: true;
     ratchet: true;
     bit: true;
+    lockChip: true;
+    assistBlade: true;
   };
 }>;
 
@@ -60,6 +64,8 @@ export type TournamentFull = Prisma.TournamentGetPayload<{
                 blade: true;
                 ratchet: true;
                 bit: true;
+                lockChip: true;
+                assistBlade: true;
               };
               orderBy: { position: 'asc' };
             };

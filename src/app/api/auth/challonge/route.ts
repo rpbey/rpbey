@@ -28,7 +28,7 @@ export async function GET(request: Request) {
     }
 
     const { searchParams } = new URL(request.url);
-    const returnTo = searchParams.get('returnTo') || '/admin/settings';
+    const returnTo = searchParams.get('returnTo') || '/dashboard/profile/edit';
 
     const challonge = getChallongeService();
 

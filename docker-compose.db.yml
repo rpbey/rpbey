@@ -8,19 +8,15 @@ services:
       POSTGRES_PASSWORD: rpb_password
       POSTGRES_DB: rpb_dashboard
     networks:
-      coolify:
-        ipv4_address: 10.0.1.8
-        aliases:
-          - b0o4000oo8g80cws8gsoogk4
+      - rpb-network
     volumes:
-      # On réutilise le volume existant correct pour ne pas perdre les données
       - rpb-db:/var/lib/postgresql/data
     ports:
       - "5432:5432"
 
 networks:
-  coolify:
-    external: true
+  rpb-network:
+    driver: bridge
 
 volumes:
   rpb-db:

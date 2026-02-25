@@ -137,6 +137,6 @@ Required:
 - `bot/data/knowledge_base.txt` - Bot's local knowledge copy
 
 ## Deployment
-- **Dashboard**: Coolify (Hetzner server)
+- **Dashboard**: Docker Compose (Production)
 - **Bot**: Systemd service (`rpb-bot.service`)
 - Production URL: `https://rpbey.fr`

@@ -18,6 +18,7 @@ import {
   Typography,
   useTheme,
 } from '@mui/material';
+import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -438,6 +439,7 @@ export default function EditProfilePage() {
                   variant="outlined"
                   size="small"
                   fullWidth
+                  component={Link}
                   href="/api/auth/challonge"
                   sx={{ mt: 1, borderRadius: 2 }}
                 >
