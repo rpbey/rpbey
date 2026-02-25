@@ -19,23 +19,30 @@ interface StatRadarProps {
 export function StatRadar({ stats, size = 200, color = '#dc2626' }: StatRadarProps) {
   const theme = useTheme();
   
-  // Normalize stats to 0-100 scale for the chart
-  // Assuming raw stats are already somewhat normalized or we cap them
-  const normalize = (val: number) => Math.min(Math.max(val, 5), 100);
+  /**
+   * Normalization Strategy:
+   * Beyblade X stats usually range from 0 to 100 (heuristic) or 0-10 (official).
+   * Our system uses 0-100 range.
+   * Weight: UX/CX beys range from 30g to 50g+. We'll set 60g as the 100% mark.
+   */
+  const normalizeStat = (val: number) => Math.min(Math.max(val, 0), 100);
+  const normalizeWeight = (w: number) => Math.min(Math.max((w / 60) * 100, 0), 100);
 
   const data = [
-    { label: 'ATK', value: normalize(stats.attack) },
-    { label: 'DEF', value: normalize(stats.defense) },
-    { label: 'STA', value: normalize(stats.stamina) },
-    { label: 'DSH', value: normalize(stats.dash) },
-    { label: 'BST', value: normalize(stats.burst) },
-    { label: 'WGT', value: normalize((stats.weight / 50) * 100) }, // Approx normalization for weight
+    { label: 'ATK', value: normalizeStat(stats.attack) },
+    { label: 'DEF', value: normalizeStat(stats.defense) },
+    { label: 'STA', value: normalizeStat(stats.stamina) },
+    { label: 'DSH', value: normalizeStat(stats.dash) },
+    { label: 'BST', value: normalizeStat(stats.burst) },
+    { label: 'WGT', value: normalizeWeight(stats.weight) },
   ];
 
   const numStats = data.length;
   const angleStep = (Math.PI * 2) / numStats;
-  const radius = size / 2 - 20;
-  const center = size / 2;
+  
+  // Internal coordinate system is 0-200
+  const center = 100;
+  const radius = 70; // Leave 30px for labels
 
   // Generate background polygons (the grid)
   const levels = [0.2, 0.4, 0.6, 0.8, 1];
@@ -48,7 +55,7 @@ export function StatRadar({ stats, size = 200, color = '#dc2626' }: StatRadarPro
     return points.join(' ');
   });
 
-  // Generate the data polygon
+  // Generate the data polygon path
   const dataPoints = data.map((d, i) => {
     const r = (d.value / 100) * radius;
     const x = center + r * Math.cos(i * angleStep - Math.PI / 2);
@@ -57,20 +64,34 @@ export function StatRadar({ stats, size = 200, color = '#dc2626' }: StatRadarPro
   }).join(' ');
 
   return (
-    <Box sx={{ width: size, height: size, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
-        {/* Grid lines */}
+    <Box sx={{ 
+      width: '100%', 
+      maxWidth: size,
+      aspectRatio: '1/1',
+      display: 'flex', 
+      justifyContent: 'center', 
+      alignItems: 'center',
+    }}>
+      <svg width="100%" height="100%" viewBox="0 0 200 200" style={{ overflow: 'visible' }}>
+        <defs>
+          <radialGradient id="statGradient" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+            <stop offset="0%" stopColor={color} stopOpacity="0.1" />
+            <stop offset="100%" stopColor={color} stopOpacity="0.4" />
+          </radialGradient>
+        </defs>
+
+        {/* Grid lines (Hexagons) */}
         {gridPolygons.map((points, i) => (
           <polygon
             key={i}
             points={points}
             fill="none"
-            stroke={alpha(theme.palette.divider, 0.1 + i * 0.05)}
-            strokeWidth="1"
+            stroke={alpha(theme.palette.divider, 0.05 + (i * 0.05))}
+            strokeWidth="0.5"
           />
         ))}
         
-        {/* Axis lines */}
+        {/* Axis lines (Spokes) */}
         {data.map((_, i) => {
           const x = center + radius * Math.cos(i * angleStep - Math.PI / 2);
           const y = center + radius * Math.sin(i * angleStep - Math.PI / 2);
@@ -82,26 +103,28 @@ export function StatRadar({ stats, size = 200, color = '#dc2626' }: StatRadarPro
               x2={x}
               y2={y}
               stroke={alpha(theme.palette.divider, 0.1)}
-              strokeWidth="1"
+              strokeWidth="0.5"
+              strokeDasharray="1,1"
             />
           );
         })}
 
         {/* Labels */}
         {data.map((d, i) => {
-          const x = center + (radius + 12) * Math.cos(i * angleStep - Math.PI / 2);
-          const y = center + (radius + 12) * Math.sin(i * angleStep - Math.PI / 2);
+          const labelDist = radius + 18;
+          const x = center + labelDist * Math.cos(i * angleStep - Math.PI / 2);
+          const y = center + labelDist * Math.sin(i * angleStep - Math.PI / 2);
           return (
             <text
               key={i}
               x={x}
               y={y}
-              fill={theme.palette.text.secondary}
-              fontSize="10"
+              fill={theme.palette.text.primary}
+              fontSize="8"
               fontWeight="900"
               textAnchor="middle"
               alignmentBaseline="middle"
-              style={{ letterSpacing: 0.5 }}
+              style={{ letterSpacing: 0.5, opacity: 0.8 }}
             >
               {d.label}
             </text>
@@ -111,29 +134,25 @@ export function StatRadar({ stats, size = 200, color = '#dc2626' }: StatRadarPro
         {/* Data polygon */}
         <polygon
           points={dataPoints}
-          fill={alpha(color, 0.3)}
+          fill="url(#statGradient)"
           stroke={color}
           strokeWidth="2"
           strokeLinejoin="round"
-          style={{ transition: 'all 0.5s ease-out' }}
+          style={{ transition: 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)' }}
         />
 
-        {/* Data dots */}
-        {data.map((d, i) => {
-          const r = (d.value / 100) * radius;
-          const x = center + r * Math.cos(i * angleStep - Math.PI / 2);
-          const y = center + r * Math.sin(i * angleStep - Math.PI / 2);
-          return (
-            <circle
-              key={i}
-              cx={x}
-              cy={y}
-              r="3"
-              fill={color}
-              style={{ transition: 'all 0.5s ease-out' }}
-            />
-          );
-        })}
+        {/* Outer Circle Rim for polish */}
+        <circle 
+          cx={center} 
+          cy={center} 
+          r={radius} 
+          fill="none" 
+          stroke={alpha(color, 0.15)} 
+          strokeWidth="0.5" 
+        />
+
+        {/* Center Point */}
+        <circle cx={center} cy={center} r="1.5" fill={theme.palette.divider} />
       </svg>
     </Box>
   );
