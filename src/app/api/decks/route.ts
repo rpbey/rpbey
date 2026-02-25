@@ -14,6 +14,7 @@ const DECK_ITEMS_INCLUDE = {
   include: {
     bey: true,
     blade: true,
+    overBlade: true,
     ratchet: true,
     bit: true,
     lockChip: true,
@@ -75,6 +76,7 @@ export async function POST(request: NextRequest) {
         position: number;
         nickname?: string;
         bladeId: string;
+        overBladeId?: string;
         ratchetId: string;
         bitId: string;
         lockChipId?: string;
@@ -91,11 +93,15 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate uniqueness of standard parts within deck
-    const standardPartIds = beys.flatMap((b) => [b.bladeId, b.ratchetId, b.bitId]);
+    const standardPartIds = beys.flatMap((b) => [
+      b.bladeId, 
+      b.ratchetId, 
+      b.bitId
+    ]);
     const uniqueStandardIds = new Set(standardPartIds);
     if (uniqueStandardIds.size !== standardPartIds.length) {
       return NextResponse.json(
-        { error: 'Invalid deck: each part can only be used once' },
+        { error: 'Invalid deck: each standard part can only be used once' },
         { status: 400 },
       );
     }
@@ -103,8 +109,15 @@ export async function POST(request: NextRequest) {
     // Collect all part IDs for validation
     const allPartIds = [...standardPartIds];
     for (const bey of beys) {
+      if (bey.overBladeId) allPartIds.push(bey.overBladeId);
       if (bey.lockChipId) allPartIds.push(bey.lockChipId);
       if (bey.assistBladeId) allPartIds.push(bey.assistBladeId);
+    }
+
+    // Validate over blade uniqueness
+    const overBladeIds = beys.map((b) => b.overBladeId).filter(Boolean) as string[];
+    if (new Set(overBladeIds).size !== overBladeIds.length) {
+      return NextResponse.json({ error: 'Duplicate Over Blades in deck' }, { status: 400 });
     }
 
     // Validate assist blade uniqueness
@@ -129,12 +142,23 @@ export async function POST(request: NextRequest) {
       const ratchet = partMap.get(bey.ratchetId);
       const bit = partMap.get(bey.bitId);
 
-      if (!blade || blade.type !== 'BLADE') {
+      if (!blade || (blade.type !== 'BLADE' && blade.type !== 'OVER_BLADE')) {
         return NextResponse.json(
           { error: `Invalid blade ID: ${bey.bladeId}` },
           { status: 400 },
         );
       }
+
+      if (bey.overBladeId) {
+        const overBlade = partMap.get(bey.overBladeId);
+        if (!overBlade || overBlade.type !== 'OVER_BLADE') {
+          return NextResponse.json(
+            { error: `Invalid over blade ID: ${bey.overBladeId}` },
+            { status: 400 },
+          );
+        }
+      }
+
       if (!ratchet || ratchet.type !== 'RATCHET') {
         return NextResponse.json(
           { error: `Invalid ratchet ID: ${bey.ratchetId}` },
@@ -186,7 +210,9 @@ export async function POST(request: NextRequest) {
         items: {
           create: beys.map((bey) => ({
             position: bey.position,
+            nickname: bey.nickname,
             bladeId: bey.bladeId,
+            overBladeId: bey.overBladeId || null,
             ratchetId: bey.ratchetId,
             bitId: bey.bitId,
             lockChipId: bey.lockChipId || null,

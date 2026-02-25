@@ -20,6 +20,7 @@ import { useBuilder, isCXBlade, type BuilderStep } from './BuilderContext';
 
 const STEP_TO_TYPE: Record<BuilderStep, string> = {
   BLADE: 'BLADE',
+  OVER_BLADE: 'OVER_BLADE',
   RATCHET: 'RATCHET',
   BIT: 'BIT',
   LOCK_CHIP: 'LOCK_CHIP',
@@ -39,6 +40,7 @@ const BASE_TABS: TabDef[] = [
 
 const CX_TABS: TabDef[] = [
   { label: 'Lames', value: 'BLADE' },
+  { label: 'Over Blade', value: 'OVER_BLADE' },
   { label: 'Lock Chip', value: 'LOCK_CHIP' },
   { label: 'Assist', value: 'ASSIST_BLADE' },
   { label: 'Ratchets', value: 'RATCHET' },
@@ -66,7 +68,7 @@ export function PartCatalog() {
     (p: number) => {
       startTransition(async () => {
         const result = await getPublicParts({
-          type: STEP_TO_TYPE[state.activeStep] as 'BLADE' | 'RATCHET' | 'BIT' | 'LOCK_CHIP' | 'ASSIST_BLADE',
+          type: STEP_TO_TYPE[state.activeStep] as 'BLADE' | 'RATCHET' | 'BIT' | 'LOCK_CHIP' | 'ASSIST_BLADE' | 'OVER_BLADE',
           search: search || undefined,
           systems: systems.length > 0 ? systems : undefined,
           beyTypes: beyTypes.length > 0 ? beyTypes : undefined,

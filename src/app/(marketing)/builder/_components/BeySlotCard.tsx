@@ -23,12 +23,13 @@ function parseStat(stat: string | number | null | undefined): number {
 
 function calculateStats(
   blade: Part | null,
+  overBlade: Part | null,
   ratchet: Part | null,
   bit: Part | null,
   lockChip: Part | null,
   assistBlade: Part | null,
 ) {
-  const parts = [blade, ratchet, bit, lockChip, assistBlade].filter(Boolean) as Part[];
+  const parts = [blade, overBlade, ratchet, bit, lockChip, assistBlade].filter(Boolean) as Part[];
   return parts.reduce(
     (acc, part) => ({
       attack: acc.attack + parseStat(part.attack),
@@ -47,7 +48,7 @@ interface BeySlotCardProps {
 }
 
 interface PartRow {
-  key: 'blade' | 'ratchet' | 'bit' | 'lockChip' | 'assistBlade';
+  key: 'blade' | 'overBlade' | 'ratchet' | 'bit' | 'lockChip' | 'assistBlade';
   label: string;
   step: BuilderStep;
   color: string;
@@ -60,7 +61,8 @@ const BASE_ROWS: PartRow[] = [
 ];
 
 const CX_ROWS: PartRow[] = [
-  { key: 'blade', label: 'Blade', step: 'BLADE', color: '#ef4444' },
+  { key: 'blade', label: 'Lame (Core)', step: 'BLADE', color: '#ef4444' },
+  { key: 'overBlade', label: 'Over Blade', step: 'OVER_BLADE', color: '#ec4899' },
   { key: 'lockChip', label: 'Lock Chip', step: 'LOCK_CHIP', color: '#f97316' },
   { key: 'assistBlade', label: 'Assist', step: 'ASSIST_BLADE', color: '#8b5cf6' },
   { key: 'ratchet', label: 'Ratchet', step: 'RATCHET', color: '#fbbf24' },
@@ -75,10 +77,10 @@ export function BeySlotCard({ slotIndex }: BeySlotCardProps) {
   const rows = isCX ? CX_ROWS : BASE_ROWS;
 
   const isComplete = isCX
-    ? !!bey.blade && !!bey.lockChip && !!bey.assistBlade && !!bey.ratchet && !!bey.bit
+    ? !!bey.blade && !!bey.overBlade && !!bey.lockChip && !!bey.assistBlade && !!bey.ratchet && !!bey.bit
     : !!bey.blade && !!bey.ratchet && !!bey.bit;
 
-  const stats = calculateStats(bey.blade, bey.ratchet, bey.bit, bey.lockChip, bey.assistBlade);
+  const stats = calculateStats(bey.blade, bey.overBlade, bey.ratchet, bey.bit, bey.lockChip, bey.assistBlade);
 
   const handleSlotClick = () => {
     dispatch({ type: 'SET_ACTIVE_SLOT', slotIndex });

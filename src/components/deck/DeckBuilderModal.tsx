@@ -32,6 +32,7 @@ interface DeckBuilderModalProps {
 
 const emptyBey: BeyData = {
   blade: null,
+  overBlade: null,
   ratchet: null,
   bit: null,
   lockChip: null,
@@ -71,6 +72,7 @@ export function DeckBuilderModal({
         setBeys([
           {
             blade: sortedBeys[0]?.blade ?? null,
+            overBlade: (sortedBeys[0] as { overBlade?: BeyData['overBlade'] })?.overBlade ?? null,
             ratchet: sortedBeys[0]?.ratchet ?? null,
             bit: sortedBeys[0]?.bit ?? null,
             lockChip: (sortedBeys[0] as { lockChip?: BeyData['lockChip'] })?.lockChip ?? null,
@@ -79,6 +81,7 @@ export function DeckBuilderModal({
           },
           {
             blade: sortedBeys[1]?.blade ?? null,
+            overBlade: (sortedBeys[1] as { overBlade?: BeyData['overBlade'] })?.overBlade ?? null,
             ratchet: sortedBeys[1]?.ratchet ?? null,
             bit: sortedBeys[1]?.bit ?? null,
             lockChip: (sortedBeys[1] as { lockChip?: BeyData['lockChip'] })?.lockChip ?? null,
@@ -87,6 +90,7 @@ export function DeckBuilderModal({
           },
           {
             blade: sortedBeys[2]?.blade ?? null,
+            overBlade: (sortedBeys[2] as { overBlade?: BeyData['overBlade'] })?.overBlade ?? null,
             ratchet: sortedBeys[2]?.ratchet ?? null,
             bit: sortedBeys[2]?.bit ?? null,
             lockChip: (sortedBeys[2] as { lockChip?: BeyData['lockChip'] })?.lockChip ?? null,
@@ -116,7 +120,7 @@ export function DeckBuilderModal({
     const isFullDeck = beys.every((b) => {
       const baseComplete = b.blade && b.ratchet && b.bit;
       if (!baseComplete) return false;
-      if (b.blade?.system === 'CX') return !!b.lockChip && !!b.assistBlade;
+      if (b.blade?.system === 'CX') return !!b.overBlade && !!b.lockChip && !!b.assistBlade;
       return true;
     });
 
@@ -125,8 +129,10 @@ export function DeckBuilderModal({
         beys: beys.map((b) => ({
           bladeId: b.blade?.id || '',
           ratchetId: b.ratchet?.id || '',
-          bitId: b.bit || '',
+          bitId: b.bit?.id || '',
           bladeName: b.blade?.name,
+          overBladeId: b.overBlade?.id,
+          overBladeName: b.overBlade?.name,
           lockChipId: b.lockChip?.id,
           lockChipName: b.lockChip?.name,
           assistBladeId: b.assistBlade?.id,
@@ -148,13 +154,13 @@ export function DeckBuilderModal({
 
   // Get all used part IDs across all beys
   const usedPartIds = beys.flatMap((bey) =>
-    [bey.blade?.id, bey.ratchet?.id, bey.bit?.id, bey.lockChip?.id, bey.assistBlade?.id].filter(Boolean),
+    [bey.blade?.id, bey.overBlade?.id, bey.ratchet?.id, bey.bit?.id, bey.lockChip?.id, bey.assistBlade?.id].filter(Boolean),
   ) as string[];
 
   const isComplete = beys.every((bey) => {
     const baseComplete = bey.blade && bey.ratchet && bey.bit;
     if (!baseComplete) return false;
-    if (bey.blade?.system === 'CX') return !!bey.lockChip && !!bey.assistBlade;
+    if (bey.blade?.system === 'CX') return !!bey.overBlade && !!bey.lockChip && !!bey.assistBlade;
     return true;
   });
   const isValid = name.trim() && isComplete && validationErrors.length === 0;
@@ -173,6 +179,7 @@ export function DeckBuilderModal({
           position: index + 1,
           nickname: bey.nickname || null,
           bladeId: bey.blade?.id,
+          overBladeId: bey.overBlade?.id || undefined,
           ratchetId: bey.ratchet?.id,
           bitId: bey.bit?.id,
           lockChipId: bey.lockChip?.id || undefined,

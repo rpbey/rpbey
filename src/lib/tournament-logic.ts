@@ -134,6 +134,8 @@ export function validateDeck(deck: {
     ratchetId: string;
     bitId: string;
     bladeName?: string;
+    overBladeId?: string;
+    overBladeName?: string;
     lockChipId?: string;
     lockChipName?: string;
     assistBladeId?: string;
@@ -169,6 +171,14 @@ export function validateDeck(deck: {
     usedParts.add(bey.bladeId);
     usedParts.add(bey.ratchetId);
     usedParts.add(bey.bitId);
+
+    // Over Blade uniqueness
+    if (bey.overBladeId) {
+      if (usedParts.has(bey.overBladeId)) {
+        errors.push(`L'Over Blade du Bey #${pos} est déjà utilisé dans le deck.`);
+      }
+      usedParts.add(bey.overBladeId);
+    }
 
     // Assist Blade uniqueness
     if (bey.assistBladeId) {

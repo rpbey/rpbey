@@ -16,6 +16,7 @@ import {
 
 export interface BeySlot {
   blade: Part | null;
+  overBlade: Part | null;
   ratchet: Part | null;
   bit: Part | null;
   lockChip: Part | null;
@@ -23,7 +24,7 @@ export interface BeySlot {
   nickname: string;
 }
 
-export type BuilderStep = 'BLADE' | 'RATCHET' | 'BIT' | 'LOCK_CHIP' | 'ASSIST_BLADE';
+export type BuilderStep = 'BLADE' | 'OVER_BLADE' | 'RATCHET' | 'BIT' | 'LOCK_CHIP' | 'ASSIST_BLADE';
 
 export interface DeckSummary {
   id: string;
@@ -68,6 +69,7 @@ export interface LoadDeckPayload {
   isActive: boolean;
   beys: Array<{
     blade: Part | null;
+    overBlade?: Part | null;
     ratchet: Part | null;
     bit: Part | null;
     lockChip?: Part | null;
@@ -78,7 +80,7 @@ export interface LoadDeckPayload {
 
 // --- Helpers ---
 
-const emptySlot: BeySlot = { blade: null, ratchet: null, bit: null, lockChip: null, assistBlade: null, nickname: '' };
+const emptySlot: BeySlot = { blade: null, overBlade: null, ratchet: null, bit: null, lockChip: null, assistBlade: null, nickname: '' };
 
 function createEmptyBeys(): [BeySlot, BeySlot, BeySlot] {
   return [{ ...emptySlot }, { ...emptySlot }, { ...emptySlot }];
@@ -92,6 +94,7 @@ export function isCXBlade(slot: BeySlot): boolean {
 function getNextStep(slot: BeySlot): BuilderStep {
   if (!slot.blade) return 'BLADE';
   if (isCXBlade(slot)) {
+    if (!slot.overBlade) return 'OVER_BLADE';
     if (!slot.lockChip) return 'LOCK_CHIP';
     if (!slot.assistBlade) return 'ASSIST_BLADE';
   }
@@ -104,7 +107,7 @@ function isSlotComplete(slot: BeySlot): boolean {
   const baseComplete = !!slot.blade && !!slot.ratchet && !!slot.bit;
   if (!baseComplete) return false;
   if (isCXBlade(slot)) {
-    return !!slot.lockChip && !!slot.assistBlade;
+    return !!slot.overBlade && !!slot.lockChip && !!slot.assistBlade;
   }
   return true;
 }
@@ -112,6 +115,7 @@ function isSlotComplete(slot: BeySlot): boolean {
 function stepKey(step: BuilderStep): keyof BeySlot {
   switch (step) {
     case 'BLADE': return 'blade';
+    case 'OVER_BLADE': return 'overBlade';
     case 'RATCHET': return 'ratchet';
     case 'BIT': return 'bit';
     case 'LOCK_CHIP': return 'lockChip';
@@ -158,6 +162,7 @@ export function builderReducer(state: BuilderState, action: BuilderAction): Buil
       if (state.activeStep === 'BLADE' && !isCXBlade(newBeys[idx])) {
         newBeys[idx] = {
           ...newBeys[idx],
+          overBlade: null,
           lockChip: null,
           assistBlade: null,
         };
@@ -209,6 +214,7 @@ export function builderReducer(state: BuilderState, action: BuilderAction): Buil
       if (action.partType === 'BLADE') {
         newBeys[rmIdx] = {
           ...newBeys[rmIdx],
+          overBlade: null,
           lockChip: null,
           assistBlade: null,
         };
@@ -256,6 +262,7 @@ export function builderReducer(state: BuilderState, action: BuilderAction): Buil
         if (i < 3) {
           newBeys[i as 0 | 1 | 2] = {
             blade: bey.blade ?? null,
+            overBlade: bey.overBlade ?? null,
             ratchet: bey.ratchet ?? null,
             bit: bey.bit ?? null,
             lockChip: bey.lockChip ?? null,
@@ -348,6 +355,7 @@ function loadDraft(): Partial<BuilderState> | null {
     if (!hasParts && !draft.deckName) return null;
     // Ensure CX fields exist (migration from old drafts)
     for (const bey of draft.beys) {
+      if (!('overBlade' in bey)) (bey as BeySlot).overBlade = null;
       if (!('lockChip' in bey)) (bey as BeySlot).lockChip = null;
       if (!('assistBlade' in bey)) (bey as BeySlot).assistBlade = null;
     }
@@ -411,6 +419,7 @@ export function BuilderProvider({ children }: { children: ReactNode }) {
     const ids = new Set<string>();
     for (const bey of state.beys) {
       if (bey.blade) ids.add(bey.blade.id);
+      if (bey.overBlade) ids.add(bey.overBlade.id);
       if (bey.ratchet) ids.add(bey.ratchet.id);
       if (bey.bit) ids.add(bey.bit.id);
       if (bey.lockChip) ids.add(bey.lockChip.id);
@@ -424,6 +433,7 @@ export function BuilderProvider({ children }: { children: ReactNode }) {
     const names = new Set<string>();
     for (const bey of state.beys) {
       if (bey.blade) names.add(bey.blade.name);
+      if (bey.overBlade) names.add(bey.overBlade.name);
       if (bey.ratchet) names.add(bey.ratchet.name);
       if (bey.bit) names.add(bey.bit.name);
       if (bey.lockChip) names.add(bey.lockChip.name);

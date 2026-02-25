@@ -15,6 +15,7 @@ import { PartSelector } from './PartSelector';
 
 export interface BeyData {
   blade: Part | null;
+  overBlade: Part | null;
   ratchet: Part | null;
   bit: Part | null;
   lockChip: Part | null;
@@ -39,6 +40,7 @@ function parseStat(stat: string | number | null | undefined): number {
 
 function calculateStats(
   blade: Part | null,
+  overBlade: Part | null,
   ratchet: Part | null,
   bit: Part | null,
   lockChip: Part | null,
@@ -51,7 +53,7 @@ function calculateStats(
   burst: number;
   weight: number;
 } {
-  const parts = [blade, ratchet, bit, lockChip, assistBlade].filter(Boolean) as Part[];
+  const parts = [blade, overBlade, ratchet, bit, lockChip, assistBlade].filter(Boolean) as Part[];
 
   return parts.reduce(
     (acc, part) => ({
@@ -76,13 +78,14 @@ export function BeyBuilder({
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-  const stats = calculateStats(data.blade, data.ratchet, data.bit, data.lockChip, data.assistBlade);
+  const stats = calculateStats(data.blade, data.overBlade, data.ratchet, data.bit, data.lockChip, data.assistBlade);
   const isCX = data.blade?.system === 'CX';
-  const isComplete = data.blade && data.ratchet && data.bit && (!isCX || (data.lockChip && data.assistBlade));
+  const isComplete = data.blade && data.ratchet && data.bit && (!isCX || (data.overBlade && data.lockChip && data.assistBlade));
 
   // Filter out current bey's parts from usedPartIds
   const currentPartIds = [
     data.blade?.id,
+    data.overBlade?.id,
     data.ratchet?.id,
     data.bit?.id,
     data.lockChip?.id,
@@ -134,18 +137,19 @@ export function BeyBuilder({
       <Box
         sx={{
           display: 'grid',
-          gridTemplateColumns: isMobile ? '1fr' : isCX ? '1fr 1fr 1fr 1fr 1fr' : '1fr 1fr 1fr',
+          gridTemplateColumns: isMobile ? '1fr' : isCX ? 'repeat(6, 1fr)' : '1fr 1fr 1fr',
           gap: 2,
         }}
       >
         <PartSelector
           type="BLADE"
-          label="LAME (BLADE)"
+          label="LAME (CORE)"
           value={data.blade}
           onChange={(blade) => {
             const newData = { ...data, blade };
             // Clear CX parts if switching away from CX
             if (!blade || blade.system !== 'CX') {
+              newData.overBlade = null;
               newData.lockChip = null;
               newData.assistBlade = null;
             }
@@ -158,6 +162,16 @@ export function BeyBuilder({
 
         {isCX && (
           <>
+            <PartSelector
+              type="OVER_BLADE"
+              label="OVER BLADE"
+              value={data.overBlade}
+              onChange={(overBlade) => onChange({ ...data, overBlade })}
+              disabled={disabled}
+              disabledPartIds={otherUsedPartIds}
+              dark={true}
+            />
+
             <PartSelector
               type="LOCK_CHIP"
               label="LOCK CHIP"

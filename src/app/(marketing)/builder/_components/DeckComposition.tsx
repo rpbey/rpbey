@@ -25,7 +25,7 @@ export function DeckComposition() {
     const baseComplete = !!b.blade && !!b.ratchet && !!b.bit;
     if (!baseComplete) return false;
     if (isCXBlade(b)) {
-      return !!b.lockChip && !!b.assistBlade;
+      return !!b.overBlade && !!b.lockChip && !!b.assistBlade;
     }
     return true;
   });
@@ -38,6 +38,8 @@ export function DeckComposition() {
         ratchetId: b.ratchet?.id ?? '',
         bitId: b.bit?.id ?? '',
         bladeName: b.blade?.name ?? '',
+        overBladeId: b.overBlade?.id,
+        overBladeName: b.overBlade?.name,
         lockChipId: b.lockChip?.id,
         lockChipName: b.lockChip?.name,
         assistBladeId: b.assistBlade?.id,
@@ -76,6 +78,7 @@ export function DeckComposition() {
         bladeId: b.blade?.id ?? '',
         ratchetId: b.ratchet?.id ?? '',
         bitId: b.bit?.id ?? '',
+        overBladeId: b.overBlade?.id || undefined,
         lockChipId: b.lockChip?.id || undefined,
         assistBladeId: b.assistBlade?.id || undefined,
       })),
