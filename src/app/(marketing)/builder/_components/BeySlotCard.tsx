@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import { alpha } from '@mui/material/styles';
 import type { Part } from '@prisma/client';
-import { DynamicRadarChart as RadarChart } from '@/components/ui/DynamicCharts';
+import { StatRadar } from '@/components/ui/StatRadar';
 import { useBuilder, isCXBlade, type BuilderStep } from './BuilderContext';
 
 function parseStat(stat: string | number | null | undefined): number {
@@ -205,19 +205,8 @@ export function BeySlotCard({ slotIndex }: BeySlotCardProps) {
       {isComplete && (
         <Box sx={{ mt: 2, p: 2, bgcolor: (theme) => alpha(theme.palette.divider, 0.04), borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
           <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, alignItems: 'center', gap: 2 }}>
-            <Box sx={{ width: 140, height: 120, flexShrink: 0, display: 'flex', justifyContent: 'center' }}>
-              <RadarChart
-                series={[{ data: [stats.attack, stats.defense, stats.stamina, stats.dash, stats.burst], color: '#dc2626' }]}
-                radar={{ metrics: ['ATK', 'DEF', 'END', 'DSH', 'BST'], max: 100 }}
-                width={140}
-                height={120}
-                margin={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                hideLegend
-                sx={{
-                  '& .MuiChartsAxis-tickLabel': { fill: '#888', fontSize: 9, fontWeight: '800' },
-                  '& .MuiChartsAxis-line': { stroke: 'rgba(255,255,255,0.1)' },
-                }}
-              />
+            <Box sx={{ width: 140, height: 140, flexShrink: 0, display: 'flex', justifyContent: 'center' }}>
+              <StatRadar stats={stats} size={140} />
             </Box>
             
             <Box sx={{ flex: 1, width: '100%', display: 'flex', flexDirection: 'column', gap: 1 }}>

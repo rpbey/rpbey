@@ -20,7 +20,7 @@ import Stack from '@mui/material/Stack';
 import { alpha, useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import type { Part } from '@prisma/client';
-import { DynamicRadarChart as RadarChart } from '@/components/ui/DynamicCharts';
+import { StatRadar } from '@/components/ui/StatRadar';
 
 export interface DeckBey {
   id: string;
@@ -107,18 +107,8 @@ function BeyLine({ bey }: { bey: DeckBey }) {
 
       {partsAvailable && (
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, bgcolor: (theme) => alpha(theme.palette.divider, 0.03), p: 1.5, borderRadius: 2 }}>
-          <Box sx={{ width: 80, height: 70, flexShrink: 0 }}>
-            <RadarChart
-              series={[{ data: [stats.attack, stats.defense, stats.stamina, stats.dash, stats.burst], color: '#dc2626' }]}
-              radar={{ metrics: ['A', 'D', 'E', 'Ds', 'B'], max: 100 }}
-              width={80}
-              height={70}
-              margin={{ top: 5, bottom: 5, left: 5, right: 5 }}
-              hideLegend
-              sx={{
-                '& .MuiChartsAxis-tickLabel': { fill: '#888', fontSize: 7, fontWeight: '900' },
-              }}
-            />
+          <Box sx={{ width: 80, height: 80, flexShrink: 0, display: 'flex', justifyContent: 'center' }}>
+            <StatRadar stats={stats} size={80} />
           </Box>
           <Box sx={{ flex: 1, display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 0.5 }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>

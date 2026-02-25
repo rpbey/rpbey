@@ -10,7 +10,7 @@ import Chip from '@mui/material/Chip';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import type { Part } from '@prisma/client';
-import { DynamicRadarChart as RadarChart } from '@/components/ui/DynamicCharts';
+import { StatRadar } from '@/components/ui/StatRadar';
 import { PartSelector } from './PartSelector';
 
 export interface BeyData {
@@ -214,44 +214,7 @@ export function BeyBuilder({
               filter: 'drop-shadow(0 0 15px rgba(220, 38, 38, 0.2))',
             }}
           >
-            <RadarChart
-              {...({
-                series: [
-                  {
-                    type: 'radar',
-                    data: [
-                      stats.attack,
-                      stats.defense,
-                      stats.stamina,
-                      stats.dash,
-                      stats.burst,
-                    ],
-                    color: '#dc2626',
-                  },
-                ],
-                xAxis: [
-                  {
-                    scaleType: 'band',
-                    data: ['ATK', 'DEF', 'END', 'DSH', 'BST'],
-                  },
-                ],
-                width: 250,
-                height: 200,
-                margin: { top: 20, bottom: 20, left: 20, right: 20 },
-                slotProps: {
-                  legend: { hidden: true },
-                },
-                sx: {
-                  '& .MuiChartsAxis-line': { stroke: '#333' },
-                  '& .MuiChartsAxis-tick': { stroke: '#333' },
-                  '& .MuiChartsAxis-tickLabel': {
-                    fill: '#888',
-                    fontWeight: '900',
-                    fontSize: 10,
-                  },
-                },
-              } as any)}
-            />
+            <StatRadar stats={stats} size={200} />
           </Box>
 
           <Box
