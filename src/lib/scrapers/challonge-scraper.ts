@@ -209,7 +209,7 @@ export class ChallongeScraper {
     
     // Nettoyage du titre pour avoir le nom du tournoi
     // Challonge titles are usually "Tournament Name - Challonge"
-    const tournamentName = pageTitle.split(' - ')[0].trim();
+    const tournamentName = pageTitle ? pageTitle.split(' - ')[0].trim() : '';
 
     // 2. Participants — /participants
     let participantsPageData: any[] = [];
