@@ -205,7 +205,9 @@ export class ChallongeScraper {
     console.log(`🔍 Scraping du tournoi : ${slug}`);
 
     // 1. Store principal (matchs + metadata) — /module
-    const { data: storeData, title: pageTitle } = await this.fetchStoreData(`${baseUrl}/module`);
+    const storeResponse = await this.fetchStoreData(`${baseUrl}/module`);
+    const storeData = storeResponse.data;
+    const pageTitle = storeResponse.title;
     
     // Nettoyage du titre pour avoir le nom du tournoi
     // Challonge titles are usually "Tournament Name - Challonge"
