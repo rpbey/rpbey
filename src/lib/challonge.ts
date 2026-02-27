@@ -446,20 +446,29 @@ class ChallongeService {
       name?: string;
       description?: string;
       startAt?: string;
+      signupCap?: number;
       userToken?: string;
     },
   ): Promise<ChallongeTournament> {
+    const attributes: Record<string, any> = {
+      name: data.name,
+      description: data.description,
+      starts_at: data.startAt,
+    };
+
+    if (data.signupCap !== undefined) {
+      attributes.registration_options = {
+        signup_cap: data.signupCap,
+      };
+    }
+
     const response = await this.request<ApiResponse<ChallongeTournament>>(
       'PUT',
       `/tournaments/${tournamentId}`,
       {
         data: {
           type: 'Tournaments',
-          attributes: {
-            name: data.name,
-            description: data.description,
-            starts_at: data.startAt,
-          },
+          attributes,
         },
       },
       data.userToken,
