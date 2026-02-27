@@ -95,7 +95,7 @@ export function TournamentLiveCarousel({
       setIndex((prev) => (prev + 1) % slides.length);
     }, 8000); // 8 seconds per slide
     return () => clearInterval(timer);
-  }, []);
+  }, [slides.length]);
 
   if (slides.length === 0) return null;
 

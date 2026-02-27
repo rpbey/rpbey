@@ -7,15 +7,15 @@ export async function POST(req: Request) {
     headers: await headers(),
   });
 
-  if (!session || session.user.role !== 'admin') {
+  if (!session || (session.user.role !== 'admin' && session.user.role !== 'superadmin')) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const { channelId, content } = await req.json();
+  const { channelId, userId, content } = await req.json();
 
-  if (!channelId || !content) {
+  if ((!channelId && !userId) || !content) {
     return NextResponse.json(
-      { error: 'Missing channelId or content' },
+      { error: 'Missing destination (channelId or userId) or content' },
       { status: 400 },
     );
   }
@@ -24,6 +24,9 @@ export async function POST(req: Request) {
   const botUrl = getBotApiUrl();
 
   try {
+    const action = userId ? 'send_dm' : 'send_message';
+    const params = userId ? { userId, content } : { channelId, content };
+
     const response = await fetch(`${botUrl}/api/agent/dispatch`, {
       method: 'POST',
       headers: {
@@ -31,8 +34,8 @@ export async function POST(req: Request) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        action: 'send_message',
-        params: { channelId, content },
+        action,
+        params,
       }),
     });
 

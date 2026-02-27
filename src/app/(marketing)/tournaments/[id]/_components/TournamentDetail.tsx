@@ -168,7 +168,7 @@ export default function TournamentDetail({
   const activityLog = (liveData?.activityLog || []) as LogEntry[];
 
   const posterUrl = isBTS3 
-    ? "https://media.discordapp.net/attachments/1448476446724063252/1474480761846628382/IMG_2626.gif?ex=699fef78&is=699e9df8&hm=4375b7173367198be08ca1e798a3a5d2ac3a5462dfdc8c4881670ff40bf3e1ab&=&width=1040&height=1467"
+    ? '/tournaments/BTS3_poster.webp'
     : isBTS2
       ? '/tournaments/BTS2_optimized.webp'
       : isBTS1
@@ -237,7 +237,7 @@ export default function TournamentDetail({
                 boxShadow: isBTS ? '0 25px 50px rgba(0,0,0,0.5)' : 'none'
               }}
             >
-              <Image src={posterUrl} alt={tournament.name} fill unoptimized={isBTS3} style={{ objectFit: 'cover' }} priority />
+              <Image src={posterUrl} alt={tournament.name} fill style={{ objectFit: 'cover' }} priority />
             </Box>
 
             {/* Practical Info Card & Registration */}

@@ -99,9 +99,16 @@ export default function AdminPartsPage() {
     {
       field: 'type',
       headerName: 'Type',
-      width: 100,
+      width: 140,
       type: 'singleSelect',
-      valueOptions: ['BLADE', 'RATCHET', 'BIT'],
+      valueOptions: [
+        'BLADE',
+        'RATCHET',
+        'BIT',
+        'OVER_BLADE',
+        'LOCK_CHIP',
+        'ASSIST_BLADE',
+      ],
       editable: true,
     },
     { field: 'system', headerName: 'Système', width: 80, editable: true },

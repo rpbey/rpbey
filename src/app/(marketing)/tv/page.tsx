@@ -30,25 +30,27 @@ export default async function TVPage() {
     }
   };
 
-  // Fetch all media in parallel with individual safety and logging
-  const [clips, rpbVideos, beyTubeVideos, rpbTikTok, skarnTikTok, sunTikTok] =
-    await Promise.all([
-      safeFetch(getRPBClips(20), []),
-      safeFetch(getRecentYouTubeVideos(undefined, 20), []),
-      safeFetch(getBeyTubeFeatured(), []),
+  // Start all media fetches in parallel (don't await them yet)
+  const clipsPromise = safeFetch(getRPBClips(20), []);
+  const rpbVideosPromise = safeFetch(getRecentYouTubeVideos(undefined, 20), []);
+  const beyTubeVideosPromise = safeFetch(getBeyTubeFeatured(), []);
+  
+  // TikTok needs merging so we create a combined promise
+  const tikTokVideosPromise = (async () => {
+    const [rpbTikTok, skarnTikTok, sunTikTok] = await Promise.all([
       safeFetch(getTikTokVideos('rpbeyblade1'), []),
       safeFetch(getTikTokVideos('skarngamemaster'), []),
       safeFetch(getTikTokVideos('sunafterthereign'), []),
     ]);
 
-  // Merge and sort TikTok videos by date (newest first)
-  const tikTokVideos: TikTokVideo[] = [
-    ...rpbTikTok,
-    ...skarnTikTok,
-    ...sunTikTok,
-  ]
-    .sort((a, b) => b.createTime - a.createTime)
-    .slice(0, 20); // Limit to 20
+    return [
+      ...rpbTikTok,
+      ...skarnTikTok,
+      ...sunTikTok,
+    ]
+      .sort((a, b) => b.createTime - a.createTime)
+      .slice(0, 20);
+  })();
 
   return (
     <Container maxWidth="lg" sx={{ py: 4, px: { xs: 0, sm: 3 } }}>
@@ -73,10 +75,10 @@ export default async function TVPage() {
       </Box>
 
       <TvFeed
-        clips={clips}
-        rpbVideos={rpbVideos}
-        beyTubeVideos={beyTubeVideos}
-        tikTokVideos={tikTokVideos}
+        clipsPromise={clipsPromise}
+        rpbVideosPromise={rpbVideosPromise}
+        beyTubeVideosPromise={beyTubeVideosPromise}
+        tikTokVideosPromise={tikTokVideosPromise}
         domain={domain}
       />
     </Container>

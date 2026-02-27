@@ -64,8 +64,11 @@ export function PartDialog({
                 }
               >
                 <MenuItem value="BLADE">Blade</MenuItem>
+                <MenuItem value="OVER_BLADE">Over Blade</MenuItem>
                 <MenuItem value="RATCHET">Ratchet</MenuItem>
                 <MenuItem value="BIT">Bit</MenuItem>
+                <MenuItem value="LOCK_CHIP">Lock Chip</MenuItem>
+                <MenuItem value="ASSIST_BLADE">Assist Blade</MenuItem>
               </TextField>
             </MuiGrid>
             <MuiGrid size={{ xs: 6 }}>

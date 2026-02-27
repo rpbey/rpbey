@@ -1,6 +1,7 @@
 export interface SynergyItem {
   name: string;
   score: number;
+  imageUrl?: string;
 }
 
 export interface PartStats {
@@ -17,6 +18,7 @@ export interface ComponentData {
   position_change: number | 'NEW';
   synergy: SynergyItem[];
   stats?: PartStats;
+  imageUrl?: string;
 }
 
 export interface CategoryData {

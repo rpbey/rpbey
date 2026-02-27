@@ -1,5 +1,6 @@
 import { ApiClient } from '@twurple/api';
 import { AppTokenAuthProvider } from '@twurple/auth';
+import { unstable_cache } from 'next/cache';
 
 const clientId = process.env.TWITCH_CLIENT_ID || '';
 const clientSecret = process.env.TWITCH_CLIENT_SECRET || '';
@@ -114,59 +115,71 @@ export async function getLatestRPBVideo(): Promise<VideoInfo | null> {
 }
 
 export async function getRPBClips(limit = 6): Promise<VideoInfo[]> {
-  if (!clientId || !clientSecret) return [];
+  return unstable_cache(
+    async () => {
+      if (!clientId || !clientSecret) return [];
 
-  try {
-    const user = await twitchClient.users.getUserByName(channelName);
-    if (!user) return [];
+      try {
+        const user = await twitchClient.users.getUserByName(channelName);
+        if (!user) return [];
 
-    const clips = await twitchClient.clips.getClipsForBroadcaster(user.id, {
-      limit,
-    });
+        const clips = await twitchClient.clips.getClipsForBroadcaster(user.id, {
+          limit,
+        });
 
-    return clips.data.map((clip) => ({
-      id: clip.id,
-      title: clip.title,
-      url: clip.url,
-      thumbnailUrl: clip.thumbnailUrl
-        .replace('{width}', '640')
-        .replace('{height}', '360'),
-      duration: `${Math.round(clip.duration).toString()}s`,
-      publishedAt: clip.creationDate,
-      viewCount: clip.views,
-      channelLogo: user.profilePictureUrl,
-    }));
-  } catch (error) {
-    console.error('Error fetching Twitch clips:', error);
-    return [];
-  }
+        return clips.data.map((clip) => ({
+          id: clip.id,
+          title: clip.title,
+          url: clip.url,
+          thumbnailUrl: clip.thumbnailUrl
+            .replace('{width}', '640')
+            .replace('{height}', '360'),
+          duration: `${Math.round(clip.duration).toString()}s`,
+          publishedAt: clip.creationDate,
+          viewCount: clip.views,
+          channelLogo: user.profilePictureUrl,
+        }));
+      } catch (error) {
+        console.error('Error fetching Twitch clips:', error);
+        return [];
+      }
+    },
+    [`twitch-clips-${limit}`],
+    { revalidate: 3600, tags: ['twitch'] }
+  )();
 }
 
 export async function getRPBVideos(limit = 6): Promise<VideoInfo[]> {
-  if (!clientId || !clientSecret) return [];
+  return unstable_cache(
+    async () => {
+      if (!clientId || !clientSecret) return [];
 
-  try {
-    const user = await twitchClient.users.getUserByName(channelName);
-    if (!user) return [];
+      try {
+        const user = await twitchClient.users.getUserByName(channelName);
+        if (!user) return [];
 
-    const videos = await twitchClient.videos.getVideosByUser(user.id, {
-      limit,
-      type: 'archive',
-    });
+        const videos = await twitchClient.videos.getVideosByUser(user.id, {
+          limit,
+          type: 'archive',
+        });
 
-    return videos.data.map((video) => ({
-      id: video.id,
-      title: video.title,
-      url: video.url,
-      thumbnailUrl: video.thumbnailUrl
-        .replace('%{width}', '640')
-        .replace('%{height}', '360'),
-      duration: video.duration,
-      publishedAt: video.publishDate,
-      viewCount: video.views,
-    }));
-  } catch (error) {
-    console.error('Error fetching Twitch videos:', error);
-    return [];
-  }
+        return videos.data.map((video) => ({
+          id: video.id,
+          title: video.title,
+          url: video.url,
+          thumbnailUrl: video.thumbnailUrl
+            .replace('%{width}', '640')
+            .replace('%{height}', '360'),
+          duration: video.duration,
+          publishedAt: video.publishDate,
+          viewCount: video.views,
+        }));
+      } catch (error) {
+        console.error('Error fetching Twitch videos:', error);
+        return [];
+      }
+    },
+    [`twitch-videos-${limit}`],
+    { revalidate: 3600, tags: ['twitch'] }
+  )();
 }

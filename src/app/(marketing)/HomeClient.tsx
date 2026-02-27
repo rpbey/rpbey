@@ -296,24 +296,29 @@ export default function HomeClient({
                       overflow: 'hidden',
                       boxShadow: '0 40px 100px rgba(0,0,0,0.6)',
                       border: '1px solid rgba(255,255,255,0.1)',
+                      aspectRatio: '1040/1467',
+                      bgcolor: 'black'
                     }}
                   >
-                    {activeTournament ? (
-                      <TournamentLiveCarousel tournament={activeTournament} />
-                    ) : (
-                      <Image
-                        src="/canvas.webp"
-                        alt="RPB Tournament"
-                        width={600}
-                        height={800}
-                        sizes="(max-width: 768px) 100vw, 40vw"
-                        style={{
-                          objectFit: 'cover',
-                          width: '100%',
-                          height: 'auto',
-                        }}
-                        priority
-                      />
+                    <Image
+                      src={
+                        activeTournament?.id === 'cm-bts3-auto-imported' || 
+                        activeTournament?.name.toLowerCase().includes('bey-tamashii series #3')
+                          ? '/tournaments/BTS3_poster.webp'
+                          : '/canvas.webp'
+                      }
+                      alt="RPB Tournament"
+                      fill
+                      sizes="(max-width: 768px) 100vw, 40vw"
+                      style={{
+                        objectFit: 'cover',
+                      }}
+                      priority
+                    />
+                    {activeTournament && (
+                      <Box sx={{ position: 'absolute', inset: 0, zIndex: 2 }}>
+                        <TournamentLiveCarousel tournament={activeTournament} />
+                      </Box>
                     )}
                   </Box>
                 </FadeIn>

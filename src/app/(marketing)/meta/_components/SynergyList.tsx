@@ -1,6 +1,6 @@
 'use client';
 
-import { Box, LinearProgress, Typography } from '@mui/material';
+import { Avatar, Box, LinearProgress, Typography } from '@mui/material';
 
 import type { SynergyItem } from './types';
 
@@ -27,6 +27,18 @@ export function SynergyList({
           key={s.name}
           sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0.75, md: 1 } }}
         >
+          {s.imageUrl && (
+            <Avatar
+              src={s.imageUrl}
+              variant="rounded"
+              sx={{
+                width: 16,
+                height: 16,
+                bgcolor: 'transparent',
+                '& img': { objectFit: 'contain' }
+              }}
+            />
+          )}
           <Typography
             variant="caption"
             sx={{
@@ -34,7 +46,7 @@ export function SynergyList({
               minWidth: { xs: 70, md: 100 },
               fontSize: { xs: '0.6rem', md: '0.65rem' },
               color: 'text.secondary',
-              textAlign: 'right',
+              textAlign: s.imageUrl ? 'left' : 'right',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
               whiteSpace: 'nowrap',

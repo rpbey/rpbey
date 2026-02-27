@@ -1,38 +1,53 @@
 'use client';
 
-import { Box, Grid, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
+import Grid from '@mui/material/Grid';
+import { useTheme, alpha } from '@mui/material/styles';
 
 import type { PeriodMetadata } from './types';
 
 function StatCard({ label, value }: { label: string; value: string }) {
+  const theme = useTheme();
   return (
     <Box
       sx={{
-        bgcolor: 'rgba(255,255,255,0.03)',
-        border: '1px solid rgba(255,255,255,0.05)',
-        borderRadius: 2,
+        bgcolor: 'surface.main',
+        border: '1px solid',
+        borderColor: 'divider',
+        borderRadius: 3,
         px: { xs: 1.5, md: 2 },
         py: { xs: 1, md: 1.5 },
         textAlign: 'center',
         minWidth: 0,
+        transition: 'all 0.2s ease-in-out',
+        '&:hover': {
+          borderColor: alpha(theme.palette.primary.main, 0.3),
+          bgcolor: 'surface.high',
+          transform: 'translateY(-2px)',
+        }
       }}
     >
       <Typography
         variant="caption"
-        color="text.secondary"
         sx={{
-          fontWeight: 800,
-          letterSpacing: 0.5,
+          fontWeight: 900,
+          letterSpacing: 1,
           fontSize: { xs: '0.55rem', md: '0.65rem' },
+          color: 'primary.main',
+          textTransform: 'uppercase',
         }}
       >
         {label}
       </Typography>
       <Typography
         variant="body2"
-        fontWeight={700}
+        fontWeight={900}
         noWrap
-        sx={{ mt: 0.25, fontSize: { xs: '0.75rem', md: '0.875rem' } }}
+        sx={{ 
+          mt: 0.25, 
+          fontSize: { xs: '0.75rem', md: '0.875rem' },
+          color: 'text.primary',
+        }}
       >
         {value}
       </Typography>
@@ -69,16 +84,16 @@ export function MetaStatsBar({
     <Grid container spacing={{ xs: 1, md: 1.5 }} sx={{ mt: { xs: 1, md: 2 } }}>
       {metadata.weekId && (
         <Grid size={{ xs: 4, sm: 4, md: 2.4 }}>
-          <StatCard label="SEMAINE" value={metadata.weekId} />
+          <StatCard label="Semaine" value={metadata.weekId} />
         </Grid>
       )}
       <Grid size={{ xs: 8, sm: 4, md: 2.4 }}>
-        <StatCard label="PERIODE" value={period} />
+        <StatCard label="Période" value={period} />
       </Grid>
       {metadata.eventsScanned > 0 && (
         <Grid size={{ xs: 4, sm: 4, md: 2.4 }}>
           <StatCard
-            label="TOURNOIS"
+            label="Tournois"
             value={metadata.eventsScanned.toString()}
           />
         </Grid>
@@ -86,13 +101,13 @@ export function MetaStatsBar({
       {metadata.partsAnalyzed > 0 && (
         <Grid size={{ xs: 4, sm: 4, md: 2.4 }}>
           <StatCard
-            label="COMBOS"
+            label="Combos"
             value={metadata.partsAnalyzed.toLocaleString('fr-FR')}
           />
         </Grid>
       )}
       <Grid size={{ xs: 4, sm: 4, md: 2.4 }}>
-        <StatCard label="MAJ" value={formatDate(scrapedAt, true)} />
+        <StatCard label="Mis à jour" value={formatDate(scrapedAt, true)} />
       </Grid>
     </Grid>
   );

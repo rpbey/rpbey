@@ -9,30 +9,130 @@ import {
   Typography,
   useMediaQuery,
   useTheme,
+  Skeleton,
 } from '@mui/material';
-import { useState } from 'react';
+import { use, useState, Suspense } from 'react';
 import type { BeyTubeVideo } from '@/lib/beytube';
 import type { TikTokVideo } from '@/lib/tiktok';
 import type { VideoInfo } from '@/lib/twitch';
 import { MediaCard } from './MediaCard';
 import { TikTokVideoCard } from './TikTokVideoCard';
-// import { TikTokCard } from './TikTokCard'; // Deprecated
 import { VideoPlayerModal } from './VideoPlayerModal';
 import { YouTubeMobileCard } from './YouTubeMobileCard';
 
 interface TvFeedProps {
-  clips: VideoInfo[];
-  rpbVideos: VideoInfo[];
-  beyTubeVideos: BeyTubeVideo[];
-  tikTokVideos: TikTokVideo[];
+  clipsPromise: Promise<VideoInfo[]>;
+  rpbVideosPromise: Promise<VideoInfo[]>;
+  beyTubeVideosPromise: Promise<BeyTubeVideo[]>;
+  tikTokVideosPromise: Promise<TikTokVideo[]>;
   domain: string;
 }
 
+function SectionSkeleton() {
+  return (
+    <Stack spacing={2}>
+      {[1, 2, 3].map((i) => (
+        <Skeleton key={i} variant="rectangular" height={160} sx={{ borderRadius: 2 }} />
+      ))}
+    </Stack>
+  );
+}
+
+function ClipsContent({ promise, onVideoClick }: { promise: Promise<VideoInfo[]>, onVideoClick: (v: VideoInfo) => void }) {
+  const clips = use(promise);
+  return (
+    <Stack spacing={3}>
+      {clips.length > 0 ? (
+        clips.map((clip) => (
+          <MediaCard
+            key={clip.id}
+            video={clip}
+            type="twitch"
+            onClick={() => onVideoClick(clip)}
+          />
+        ))
+      ) : (
+        <Typography textAlign="center" color="text.secondary" py={4}>
+          Aucun clip disponible.
+        </Typography>
+      )}
+    </Stack>
+  );
+}
+
+function VideosContent({ promise, onVideoClick }: { promise: Promise<VideoInfo[]>, onVideoClick: (v: VideoInfo) => void }) {
+  const videos = use(promise);
+  return (
+    <Stack spacing={3}>
+      {videos.length > 0 ? (
+        videos.map((video) => (
+          <MediaCard
+            key={video.id}
+            video={video}
+            type="youtube"
+            onClick={() => onVideoClick(video)}
+          />
+        ))
+      ) : (
+        <Typography textAlign="center" color="text.secondary" py={4}>
+          Aucune vidéo disponible.
+        </Typography>
+      )}
+    </Stack>
+  );
+}
+
+function BeyTubeContent({ promise }: { promise: Promise<BeyTubeVideo[]> }) {
+  const videos = use(promise);
+  return (
+    <Stack spacing={3}>
+      {videos.length > 0 ? (
+        videos.map((video) => (
+          <YouTubeMobileCard
+            key={video.id}
+            video={{
+              title: video.title,
+              thumbnail: video.thumbnail,
+              duration: video.duration || '0:00',
+              channelName: video.channelName,
+              channelAvatar: video.channelAvatar,
+              views: video.views,
+              ago: video.ago || 'Récemment',
+              url: video.url,
+            }}
+          />
+        ))
+      ) : (
+        <Typography textAlign="center" color="text.secondary" py={4}>
+          Aucune vidéo communautaire disponible.
+        </Typography>
+      )}
+    </Stack>
+  );
+}
+
+function TikTokContent({ promise }: { promise: Promise<TikTokVideo[]> }) {
+  const videos = use(promise);
+  return (
+    <Stack spacing={3}>
+      {videos.length > 0 ? (
+        videos.map((video) => (
+          <TikTokVideoCard key={video.id} video={video} />
+        ))
+      ) : (
+        <Typography textAlign="center" color="text.secondary" py={4}>
+          Aucune vidéo TikTok disponible.
+        </Typography>
+      )}
+    </Stack>
+  );
+}
+
 export function TvFeed({
-  clips,
-  rpbVideos,
-  beyTubeVideos,
-  tikTokVideos,
+  clipsPromise,
+  rpbVideosPromise,
+  beyTubeVideosPromise,
+  tikTokVideosPromise,
   domain,
 }: TvFeedProps) {
   const theme = useTheme();
@@ -50,90 +150,37 @@ export function TvFeed({
     {
       label: 'Clips Twitch',
       content: (
-        <Stack spacing={3}>
-          {clips.length > 0 ? (
-            clips.map((clip) => (
-              <MediaCard
-                key={clip.id}
-                video={clip}
-                type="twitch"
-                onClick={() => handleVideoClick(clip, 'twitch')}
-              />
-            ))
-          ) : (
-            <Typography textAlign="center" color="text.secondary" py={4}>
-              Aucun clip disponible.
-            </Typography>
-          )}
-        </Stack>
+        <Suspense fallback={<SectionSkeleton />}>
+          <ClipsContent promise={clipsPromise} onVideoClick={(v) => handleVideoClick(v, 'twitch')} />
+        </Suspense>
       ),
     },
     {
       label: 'Rediffusions',
       content: (
-        <Stack spacing={3}>
-          {rpbVideos.length > 0 ? (
-            rpbVideos.map((video) => (
-              <MediaCard
-                key={video.id}
-                video={video}
-                type="youtube"
-                onClick={() => handleVideoClick(video, 'youtube')}
-              />
-            ))
-          ) : (
-            <Typography textAlign="center" color="text.secondary" py={4}>
-              Aucune vidéo disponible.
-            </Typography>
-          )}
-        </Stack>
+        <Suspense fallback={<SectionSkeleton />}>
+          <VideosContent promise={rpbVideosPromise} onVideoClick={(v) => handleVideoClick(v, 'youtube')} />
+        </Suspense>
       ),
     },
     {
       label: 'BeyTube FR',
       content: (
-        <Stack spacing={3}>
-          {beyTubeVideos.length > 0 ? (
-            beyTubeVideos.map((video) => (
-              <YouTubeMobileCard
-                key={video.id}
-                video={{
-                  title: video.title,
-                  thumbnail: video.thumbnail,
-                  duration: video.duration || '0:00',
-                  channelName: video.channelName,
-                  channelAvatar: video.channelAvatar,
-                  views: video.views,
-                  ago: video.ago || 'Récemment',
-                  url: video.url,
-                }}
-              />
-            ))
-          ) : (
-            <Typography textAlign="center" color="text.secondary" py={4}>
-              Aucune vidéo communautaire disponible.
-            </Typography>
-          )}
-        </Stack>
+        <Suspense fallback={<SectionSkeleton />}>
+          <BeyTubeContent promise={beyTubeVideosPromise} />
+        </Suspense>
       ),
     },
     {
       label: 'TikTok RPB',
       content: (
-        <Stack spacing={3}>
-          {tikTokVideos.length > 0 ? (
-            tikTokVideos.map((video) => (
-              <TikTokVideoCard key={video.id} video={video} />
-            ))
-          ) : (
-            <Typography textAlign="center" color="text.secondary" py={4}>
-              Aucune vidéo TikTok disponible.
-            </Typography>
-          )}
-        </Stack>
+        <Suspense fallback={<SectionSkeleton />}>
+          <TikTokContent promise={tikTokVideosPromise} />
+        </Suspense>
       ),
     },
   ];
+
 
   if (isDesktop) {
     return (

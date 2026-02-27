@@ -2,6 +2,7 @@
 
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {
+  Avatar,
   Box,
   Card,
   CardContent,
@@ -134,6 +135,24 @@ export function PartRankCard({
             {rank}
           </Typography>
 
+          {/* Part Image */}
+          {component.imageUrl && (
+            <Avatar
+              src={component.imageUrl}
+              variant="rounded"
+              sx={{
+                width: { xs: 32, md: 40 },
+                height: { xs: 32, md: 40 },
+                bgcolor: 'transparent',
+                '& img': {
+                  objectFit: 'contain',
+                },
+              }}
+            >
+              {component.name.charAt(0)}
+            </Avatar>
+          )}
+
           {/* Name */}
           <Typography
             variant="body2"
@@ -244,14 +263,17 @@ export function PartRankCard({
                           component.stats!.burst,
                         ],
                         color,
+                        fillArea: true,
                       },
                     ],
-                    xAxis: [
-                      {
-                        scaleType: 'band',
-                        data: ['ATK', 'DEF', 'END', 'DSH', 'BST'],
-                      },
-                    ],
+                    radar: {
+                      metrics: ['ATK', 'DEF', 'END', 'DSH', 'BST'],
+                      max: 10,
+                    },
+                    shape: 'circular',
+                    divisions: 5,
+                    stripeColor: (index: number) =>
+                      index % 2 === 0 ? alpha(color, 0.15) : 'transparent',
                     width: 200,
                     height: 170,
                     margin: { top: 10, bottom: 10, left: 10, right: 10 },
@@ -259,11 +281,12 @@ export function PartRankCard({
                       legend: { hidden: true },
                     },
                     sx: {
-                      '& .MuiChartsAxis-line': { stroke: '#444' },
-                      '& .MuiChartsAxis-tick': { stroke: '#444' },
+                      '& .MuiChartsAxis-line': { stroke: 'rgba(255,255,255,0.1)' },
+                      '& .MuiChartsAxis-tick': { stroke: 'rgba(255,255,255,0.1)' },
                       '& .MuiChartsAxis-tickLabel': {
-                        fill: '#aaa',
-                        fontWeight: 'bold',
+                        fill: 'text.secondary',
+                        fontWeight: '900',
+                        fontSize: '0.65rem',
                       },
                       width: { xs: 160, md: 200 },
                       height: { xs: 140, md: 170 },

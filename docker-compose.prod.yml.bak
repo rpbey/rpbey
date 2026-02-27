@@ -31,7 +31,7 @@ services:
     environment:
       DATABASE_URL: postgresql://postgres:rpb_password@db:5432/rpb_dashboard
       NEXT_PUBLIC_APP_URL: https://rpbey.fr
-      BOT_API_URL: http://46.224.145.55:3001
+      BOT_API_URL: http://bot:3001
       NODE_ENV: production
     volumes:
       # Persist user uploads and data
@@ -40,8 +40,43 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      bot:
+        condition: service_started
     networks:
       - rpb-network
+
+  # Discord Bot
+  bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        RUN_BOT: "true"
+    container_name: rpb-bot
+    restart: always
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://postgres:rpb_password@db:5432/rpb_dashboard
+      NODE_ENV: production
+      RUN_BOT: "true"
+    volumes:
+      # Bot might need access to uploads? Or its own data
+      - ./bot/data:/app/bot/data
+      - ./data:/app/data
+      - ./public/uploads:/app/public/uploads
+    networks:
+      - rpb-network
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"fetch('http://localhost:3001/api/status', { headers: { 'x-api-key': 'rpb-bot-api-secret-key-2026' } }).then(r => {if(!r.ok) throw new Error()})\""]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    # Expose port for Nginx upstream
+    expose:
+      - "3001"
 
   # Nginx Reverse Proxy
   nginx:
@@ -59,6 +94,7 @@ services:
       - ./public/uploads:/app/public/uploads:ro # Nginx serves uploads directly (read-only)
     depends_on:
       - dashboard
+      - bot
     networks:
       - rpb-network
 

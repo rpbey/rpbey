@@ -31,6 +31,10 @@ const DispatchSchema = z.discriminatedUnion('action', [
     params: z.object({ channelId: z.string(), content: z.string() }),
   }),
   z.object({
+    action: z.literal('send_dm'),
+    params: z.object({ userId: z.string(), content: z.string() }),
+  }),
+  z.object({
     action: z.literal('add_role'),
     params: z.object({ userId: z.string(), roleId: z.string() }),
   }),
@@ -355,6 +359,14 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse) {
                     return sendJSON(res, { success: true, id: msg.id });
                   }
                   return sendJSON(res, { error: 'Invalid channel' }, 400);
+                }
+                case 'send_dm': {
+                  const user = await bot.users.fetch(params.userId);
+                  if (user) {
+                    const msg = await user.send(params.content);
+                    return sendJSON(res, { success: true, id: msg.id });
+                  }
+                  return sendJSON(res, { error: 'User not found' }, 404);
                 }
                 case 'add_role': {
                   const member = await guild.members.fetch(params.userId);

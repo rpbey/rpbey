@@ -1,6 +1,6 @@
 'use client';
 
-import { Edit, Search, Visibility } from '@mui/icons-material';
+import { Edit, Search, Visibility, Send as SendIcon } from '@mui/icons-material';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -116,8 +116,21 @@ export default function AdminUsersPage() {
       field: 'actions',
       type: 'actions',
       headerName: 'Actions',
-      width: 100,
+      width: 120,
       getActions: (params) => [
+        <GridActionsCellItem
+          key="dm"
+          icon={<SendIcon />}
+          label="Envoyer un DM"
+          onClick={() => {
+            const discordId = (params.row as User).discordId;
+            if (discordId) {
+              router.push(`/admin/bot?userId=${discordId}&mode=dm`);
+            } else {
+              alert("Cet utilisateur n'a pas de compte Discord lié.");
+            }
+          }}
+        />,
         <GridActionsCellItem
           key="view"
           icon={<Visibility />}

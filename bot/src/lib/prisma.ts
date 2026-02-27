@@ -14,18 +14,7 @@ export class PrismaService extends PrismaClient {
       throw new Error('DATABASE_URL environment variable is not set');
     }
 
-    // Auto-fallback for production internal networking
-    if (
-      process.env.NODE_ENV === 'production' &&
-      (connectionString.includes('localhost') ||
-        connectionString.includes('127.0.0.1'))
-    ) {
-      connectionString = connectionString.replace(
-        /localhost|127\.0\.0\.1/,
-        'rb-db',
-      );
-      console.log('[Prisma] Production fallback: using rb-db host');
-    }
+    // Removed auto-fallback for production internal networking since bot is on host.
 
     const pool = new Pool({ connectionString });
     const adapter = new PrismaPg(pool);
@@ -42,17 +31,7 @@ function createPrismaClient() {
     return new PrismaClient();
   }
 
-  // Auto-fallback for production internal networking
-  if (
-    process.env.NODE_ENV === 'production' &&
-    (connectionString.includes('localhost') ||
-      connectionString.includes('127.0.0.1'))
-  ) {
-    connectionString = connectionString.replace(
-      /localhost|127\.0\.0\.1/,
-      'rb-db',
-    );
-  }
+  // Removed auto-fallback for production internal networking since bot is on host.
 
   const pool = new Pool({ connectionString });
   const adapter = new PrismaPg(pool);

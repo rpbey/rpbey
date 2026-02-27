@@ -1,6 +1,4 @@
-'use client';
-
-import { Send as SendIcon } from '@mui/icons-material';
+import { Send as SendIcon, Person as PersonIcon, Forum as ChannelIcon } from '@mui/icons-material';
 import {
   Alert,
   Button,
@@ -13,17 +11,24 @@ import {
   Stack,
   TextField,
   Typography,
+  ToggleButtonGroup,
+  ToggleButton,
+  Box,
 } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { useEffect, useState, Suspense } from 'react';
 
 interface Channel {
   id: string;
   name: string;
 }
 
-export function BotMessenger() {
+function BotMessengerContent() {
+  const searchParams = useSearchParams();
   const [channels, setChannels] = useState<Channel[]>([]);
+  const [mode, setMode] = useState<'channel' | 'dm'>((searchParams.get('mode') as 'channel' | 'dm') || 'channel');
   const [channelId, setChannelId] = useState('');
+  const [userId, setUserId] = useState(searchParams.get('userId') || '');
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -49,6 +54,8 @@ export function BotMessenger() {
 
   const handleSendMessage = async () => {
     if (!content.trim()) return;
+    if (mode === 'channel' && !channelId) return;
+    if (mode === 'dm' && !userId) return;
 
     setLoading(true);
     setError(null);
@@ -58,12 +65,17 @@ export function BotMessenger() {
       const response = await fetch('/api/admin/bot/message', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ channelId, content }),
+        body: JSON.stringify({ 
+          channelId: mode === 'channel' ? channelId : undefined,
+          userId: mode === 'dm' ? userId : undefined,
+          content 
+        }),
       });
 
       if (response.ok) {
         setSuccess(true);
         setContent('');
+        if (mode === 'dm' && !searchParams.get('userId')) setUserId('');
       } else {
         const data = await response.json();
         setError(data.error || "Erreur lors de l'envoi");
@@ -79,36 +91,64 @@ export function BotMessenger() {
     <Card variant="outlined" sx={{ height: '100%' }}>
       <CardContent>
         <Typography variant="h6" fontWeight="bold" gutterBottom>
-          Envoyer un message Discord
+          Messagerie Bot
         </Typography>
         <Typography variant="body2" color="text.secondary" mb={3}>
-          Envoyez un message instantané via le bot RPB.
+          Envoyez un message via le bot RPB vers un salon ou un utilisateur.
         </Typography>
 
         <Stack spacing={3}>
-          <FormControl fullWidth size="small">
-            <InputLabel id="channel-select-label">Canal</InputLabel>
-            <Select
-              labelId="channel-select-label"
-              value={channelId}
-              label="Canal"
-              onChange={(e) => setChannelId(e.target.value)}
-              disabled={channels.length === 0}
+          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+            <ToggleButtonGroup
+              value={mode}
+              exclusive
+              onChange={(_, next) => next && setMode(next)}
+              size="small"
+              color="primary"
             >
-              {channels.map((ch) => (
-                <MenuItem key={ch.id} value={ch.id}>
-                  {ch.name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+              <ToggleButton value="channel" sx={{ px: 3 }}>
+                <ChannelIcon sx={{ mr: 1, fontSize: 18 }} /> Salon
+              </ToggleButton>
+              <ToggleButton value="dm" sx={{ px: 3 }}>
+                <PersonIcon sx={{ mr: 1, fontSize: 18 }} /> DM (Privé)
+              </ToggleButton>
+            </ToggleButtonGroup>
+          </Box>
+
+          {mode === 'channel' ? (
+            <FormControl fullWidth size="small">
+              <InputLabel id="channel-select-label">Canal</InputLabel>
+              <Select
+                labelId="channel-select-label"
+                value={channelId}
+                label="Canal"
+                onChange={(e) => setChannelId(e.target.value)}
+                disabled={channels.length === 0}
+              >
+                {channels.map((ch) => (
+                  <MenuItem key={ch.id} value={ch.id}>
+                    {ch.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          ) : (
+            <TextField
+              fullWidth
+              size="small"
+              label="Discord ID de l'utilisateur"
+              placeholder="Ex: 790281823212273734"
+              value={userId}
+              onChange={(e) => setUserId(e.target.value)}
+            />
+          )}
 
           <TextField
             fullWidth
             multiline
             rows={4}
             label="Message"
-            placeholder="Écrivez votre message ici..."
+            placeholder={mode === 'dm' ? "Message privé..." : "Message public..."}
             value={content}
             onChange={(e) => setContent(e.target.value)}
           />
@@ -122,12 +162,20 @@ export function BotMessenger() {
             variant="contained"
             startIcon={<SendIcon />}
             onClick={handleSendMessage}
-            disabled={loading || !content.trim() || !channelId}
+            disabled={loading || !content.trim() || (mode === 'channel' ? !channelId : !userId)}
           >
-            {loading ? 'Envoi...' : 'Envoyer le message'}
+            {loading ? 'Envoi...' : mode === 'dm' ? 'Envoyer le DM' : 'Envoyer dans le salon'}
           </Button>
         </Stack>
       </CardContent>
     </Card>
+  );
+}
+
+export function BotMessenger() {
+  return (
+    <Suspense fallback={<div>Chargement...</div>}>
+      <BotMessengerContent />
+    </Suspense>
   );
 }

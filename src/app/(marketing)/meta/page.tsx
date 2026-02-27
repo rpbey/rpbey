@@ -31,12 +31,17 @@ async function getData(): Promise<BbxWeeklyData | null> {
   }
 }
 
-async function getPartStatsMap(): Promise<Map<string, PartStats>> {
+interface PartMetadata {
+  stats: PartStats;
+  imageUrl?: string | null;
+}
+
+async function getPartMetadataMap(): Promise<Map<string, PartMetadata>> {
   try {
     const parts = await prisma.part.findMany({
-      select: { name: true, attack: true, defense: true, stamina: true, burst: true, dash: true },
+      select: { name: true, attack: true, defense: true, stamina: true, burst: true, dash: true, imageUrl: true },
     });
-    const map = new Map<string, PartStats>();
+    const map = new Map<string, PartMetadata>();
     for (const p of parts) {
       const stats: PartStats = {
         attack: Number(p.attack) || 0,
@@ -45,9 +50,11 @@ async function getPartStatsMap(): Promise<Map<string, PartStats>> {
         dash: Number(p.dash) || 0,
         burst: Number(p.burst) || 0,
       };
-      if (stats.attack + stats.defense + stats.stamina + stats.dash + stats.burst > 0) {
-        map.set(p.name.toLowerCase(), stats);
-      }
+      
+      map.set(p.name.toLowerCase(), {
+        stats,
+        imageUrl: p.imageUrl
+      });
     }
     return map;
   } catch {
@@ -55,22 +62,161 @@ async function getPartStatsMap(): Promise<Map<string, PartStats>> {
   }
 }
 
-function enrichWithStats(data: BbxWeeklyData, statsMap: Map<string, PartStats>): BbxWeeklyData {
+const MANUAL_MAPPINGS: Record<string, string> = {
+  // Blades
+  'blast': 'pegasusblast',
+  'shark': 'sharkedge',
+  'dransword': 'dransword',
+  'hellsscythe': 'hellsscythe',
+  'knightshield': 'knightshield',
+  'wizardarrow': 'wizardarrow',
+  'knightlance': 'knightlance',
+  'leonclaw': 'leonclaw',
+  'vipertail': 'vipertail',
+  'rhinohorn': 'rhinohorn',
+  'drandagger': 'drandagger',
+  'hellschain': 'hellschain',
+  'phoenixwing': 'phoenixwing',
+  'wyverngale': 'wyverngale',
+  'unicornsting': 'unicornsting',
+  'sphinxcowl': 'sphinxcowl',
+  'dranbuster': 'dranbuster',
+  'hellshammer': 'hellshammer',
+  'wizardrod': 'wizardrod',
+  'tyrannobeat': 'tyrannobeat',
+  'shinobishadow': 'shinobishadow',
+  'weisstiger': 'weisstiger',
+  'cobaltdragoon': 'cobaltdragoon',
+  'blackshell': 'blackshell',
+  'leoncrest': 'leoncrest',
+  'phoenixrudder': 'phoenixrudder',
+  'whalewave': 'whalewave',
+  'bearscratch': 'bearscratch',
+  'silverwolf': 'silverwolf',
+  'samuraisaber': 'samuraisaber',
+  'knightmail': 'knightmail',
+  'pteraswing': 'pteraswing',
+  'leonfang': 'leonfangredver',
+  'valkyrievolt': 'valkyrievolt',
+  'cerberusflame': 'cerberusflame',
+  'dranbrave': 'dranbrave',
+  'wizardarc': 'wizardarc',
+  'hellsreaper': 'hellsreaper',
+  'phoenixflare': 'phoenixflare',
+  // Lock Chips
+  'plasticchip': 'plasticlockchip',
+  'metalchip': 'metallockchipemperor',
+  'leon': 'lockchipleon',
+  'valkyrie': 'metallockchipvalkyrie',
+  'cerberus': 'lockchipcerberus',
+  'dran': 'lockchipdran',
+  'sol': 'lockchipsol',
+  'wolf': 'lockchipwolf',
+  'phoenix': 'lockchipphoenix',
+  'shark': 'lockchipshark',
+  'whale': 'lockchipwhale',
+  'hells': 'lockchiphells',
+  'fox': 'lockchipfox',
+  'perseus': 'lockchipperseus',
+  'wizard': 'lockchipwizard',
+  'knight': 'lockchipknight',
+  'bahamut': 'lockchipbahamut',
+  'ragna': 'lockchipragna',
+  'rhino': 'lockchiprhino',
+  // Assist Blades
+  'heavy': 'hheavy',
+  'wheel': 'wwheel',
+  'bumper': 'bbumper',
+  'charge': 'ccharge',
+  'assault': 'aassault',
+  'dual': 'ddual',
+  'erase': 'eerase',
+  'slash': 'sslash',
+  'round': 'rround',
+  'turn': 'tturn',
+  'jaggy': 'jjaggy',
+  'zillion': 'zzillion',
+  'free': 'ffree',
+  // Bits
+  'level': 'l',
+  'ball': 'b',
+  'taper': 't',
+  'needle': 'n',
+  'flat': 'f',
+  'rush': 'r',
+  'point': 'p',
+  'orb': 'o',
+  'spike': 's',
+  'jolt': 'j',
+  'kick': 'k',
+  'quattro': 'q',
+};
+
+function normalizeName(name: string): string {
+  const norm = name.toLowerCase().replace(/[^a-z0-9]/g, '');
+  return MANUAL_MAPPINGS[norm] || norm;
+}
+
+function enrichWithStats(data: BbxWeeklyData, metadataMap: Map<string, PartMetadata>): BbxWeeklyData {
+  if (!data?.periods) return data;
+  
+  let totalComps = 0;
+  let matchedComps = 0;
+
+  // Create a normalized map for better matching
+  const normalizedMap = new Map<string, PartMetadata>();
+  for (const [name, meta] of metadataMap.entries()) {
+    normalizedMap.set(normalizeName(name), meta);
+  }
+  
+  const unmatched = new Set<string>();
+  
   for (const periodKey of ['2weeks', '4weeks'] as const) {
-    for (const category of data.periods[periodKey].categories) {
+    const period = data.periods[periodKey];
+    if (!period?.categories) continue;
+    
+    for (const category of period.categories) {
+      if (!category?.components) continue;
+      
       for (const comp of category.components) {
-        const stats = statsMap.get(comp.name.toLowerCase());
-        if (stats) {
-          comp.stats = stats;
+        totalComps++;
+        const normName = normalizeName(comp.name);
+        
+        // Try direct match first, then normalized match
+        const metadata = metadataMap.get(comp.name.toLowerCase()) || normalizedMap.get(normName);
+        
+        if (metadata) {
+          matchedComps++;
+          if (metadata.stats.attack + metadata.stats.defense + metadata.stats.stamina + metadata.stats.dash + metadata.stats.burst > 0) {
+            comp.stats = metadata.stats;
+          }
+          if (metadata.imageUrl) {
+            comp.imageUrl = metadata.imageUrl;
+          }
+        } else {
+          unmatched.add(`${category.category}: ${comp.name}`);
+        }
+
+        // Enrich synergies
+        for (const synergy of comp.synergy) {
+          const synergyNormName = normalizeName(synergy.name);
+          const synergyMeta = metadataMap.get(synergy.name.toLowerCase()) || normalizedMap.get(synergyNormName);
+          if (synergyMeta?.imageUrl) {
+            synergy.imageUrl = synergyMeta.imageUrl;
+          }
         }
       }
     }
+  }
+  console.log(`[Meta] Enriched ${matchedComps}/${totalComps} components.`);
+  if (unmatched.size > 0) {
+    console.log(`[Meta] Unmatched: ${Array.from(unmatched).join(', ')}`);
   }
   return data;
 }
 
 export default async function MetaPage() {
-  const [data, statsMap] = await Promise.all([getData(), getPartStatsMap()]);
+  const [data, metadataMap] = await Promise.all([getData(), getPartMetadataMap()]);
 
   return (
     <Box
@@ -94,7 +240,7 @@ export default async function MetaPage() {
             </Alert>
           </Box>
         ) : (
-          <MetaClient data={enrichWithStats(data, statsMap)} />
+          <MetaClient data={enrichWithStats(data, metadataMap)} />
         )}
       </Container>
     </Box>

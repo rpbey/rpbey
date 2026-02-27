@@ -83,7 +83,7 @@ async function run() {
 
   await bot.login(process.env.DISCORD_TOKEN);
 
-  bot.once('ready', async () => {
+  bot.once('clientReady', async () => {
     try {
       await bot.initApplicationCommands();
       logger.info(`[Bot] Logged in as ${bot.user?.tag}`);

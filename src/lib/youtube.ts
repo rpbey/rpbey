@@ -2,7 +2,7 @@ import { parseStringPromise } from 'xml2js';
 import type { VideoInfo } from './twitch';
 
 const YOUTUBE_RSS_URL = 'https://www.youtube.com/feeds/videos.xml?channel_id=';
-const DEFAULT_CHANNEL_ID = 'UCHiDwWI-2uQrsUiJhXt6rng';
+const DEFAULT_CHANNEL_ID = 'UCaGPpRP8MJzc5s8WGOD4jLw';
 
 export async function getRecentYouTubeVideos(
   channelId: string = DEFAULT_CHANNEL_ID,

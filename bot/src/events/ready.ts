@@ -10,8 +10,8 @@ import type { PrismaService } from '../lib/prisma.js';
 export class ReadyListener {
   constructor(private prisma: PrismaService) {}
 
-  @On({ event: 'ready' })
-  async onReady([client]: ArgsOf<'ready'>) {
+  @On({ event: 'clientReady' })
+  async onReady([client]: ArgsOf<'clientReady'>) {
     logger.info('Connecté en tant que :', client.user.tag);
 
     await this.syncAdminRoles(client as any);

@@ -3,6 +3,7 @@
 import {
   AccountCircle,
   AdminPanelSettings,
+  AutoGraph,
   BarChart,
   Build,
   Home,
@@ -43,9 +44,9 @@ const navItems = [
   { icon: Home, label: 'Accueil', href: '/' },
   { icon: TrophyIcon, label: 'Tournois', href: '/tournaments' },
   { icon: BarChart, label: 'Classements', href: '/rankings' },
+  { icon: AutoGraph, label: 'Meta', href: '/meta' },
   { icon: LiveTv, label: 'TV', href: '/tv' },
   { icon: Build, label: 'Builder', href: '/builder' },
-  { icon: People, label: "L'équipe", href: '/notre-equipe' },
 ];
 
 export function IconNav() {
@@ -332,6 +333,7 @@ export function MobileNav() {
     if (pathname.startsWith('/tournaments')) return '/tournaments';
     if (pathname.startsWith('/tv')) return '/tv';
     if (pathname.startsWith('/rankings')) return '/rankings';
+    if (pathname.startsWith('/meta')) return '/meta';
     if (pathname.startsWith('/admin')) return '/admin';
     if (
       pathname.startsWith('/dashboard') ||
@@ -422,6 +424,7 @@ export function MobileNav() {
             value="/tournaments"
             icon={<TrophyIcon />}
           />
+          <BottomNavigationAction label="Meta" value="/meta" icon={<AutoGraph />} />
           <BottomNavigationAction label="TV" value="/tv" icon={<LiveTv />} />
           <BottomNavigationAction
             label="Classements"
