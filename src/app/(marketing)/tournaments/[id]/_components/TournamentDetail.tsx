@@ -168,7 +168,7 @@ export default function TournamentDetail({
   const activityLog = (liveData?.activityLog || []) as LogEntry[];
 
   const posterUrl = isBTS3 
-    ? '/tournaments/BTS3_poster.webp'
+    ? '/tournaments/BTS3_poster.gif'
     : isBTS2
       ? '/tournaments/BTS2_optimized.webp'
       : isBTS1
@@ -237,7 +237,14 @@ export default function TournamentDetail({
                 boxShadow: isBTS ? '0 25px 50px rgba(0,0,0,0.5)' : 'none'
               }}
             >
-              <Image src={posterUrl} alt={tournament.name} fill style={{ objectFit: 'cover' }} priority />
+              <Image 
+                src={posterUrl} 
+                alt={tournament.name} 
+                fill 
+                style={{ objectFit: 'cover' }} 
+                unoptimized={isBTS3}
+                priority 
+              />
             </Box>
 
             {/* Practical Info Card & Registration */}

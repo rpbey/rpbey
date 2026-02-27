@@ -160,64 +160,6 @@ export default function TournamentsPage() {
                     VOIR LE CLASSEMENT
                 </Button>
             </Card>
-
-            {/* FeedMy Card */}
-            <Card 
-                elevation={0}
-                sx={{ 
-                    p: { xs: 2, md: 3 },
-                    borderRadius: 4, 
-                    border: '1px solid',
-                    borderColor: 'divider',
-                    display: 'flex',
-                    flexDirection: { xs: 'column', sm: 'row' },
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    gap: 3
-                }}
-            >
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 3, width: '100%' }}>
-                    <Box sx={{ 
-                        position: 'relative', 
-                        width: { xs: 100, md: 140 }, 
-                        height: { xs: 50, md: 70 },
-                        flexShrink: 0,
-                        bgcolor: '#fff',
-                        borderRadius: 2,
-                        p: 1
-                    }}>
-                        <Image 
-                            src="/partners/feedmy-announcement.png" 
-                            alt="FeedMy Logo" 
-                            fill 
-                            style={{ objectFit: 'contain', padding: '4px' }} 
-                        />
-                    </Box>
-                    <Box>
-                        <Typography variant="h6" fontWeight="bold">FeedMy</Typography>
-                        <Typography variant="body2" color="text.secondary">Sponsor officiel de la RPB. Des lots et concours exclusifs pour nos bladers.</Typography>
-                    </Box>
-                </Box>
-
-                <Button 
-                    variant="outlined" 
-                    color="inherit" 
-                    component="a"
-                    href="https://www.tiktok.com/@feedmy.fr"
-                    target="_blank"
-                    sx={{ 
-                        borderRadius: 2, 
-                        fontWeight: 900, 
-                        px: 4, 
-                        py: 1.2,
-                        whiteSpace: 'nowrap',
-                        borderColor: 'rgba(255,255,255,0.2)',
-                        '&:hover': { borderColor: '#fff', bgcolor: 'rgba(255,255,255,0.05)' }
-                    }}
-                >
-                    VOIR LE PARTENAIRE
-                </Button>
-            </Card>
         </Stack>
       </Box>
     </Container>

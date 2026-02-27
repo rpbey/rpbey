@@ -304,7 +304,7 @@ export default function HomeClient({
                       src={
                         activeTournament?.id === 'cm-bts3-auto-imported' || 
                         activeTournament?.name.toLowerCase().includes('bey-tamashii series #3')
-                          ? '/tournaments/BTS3_poster.webp'
+                          ? '/tournaments/BTS3_poster.gif'
                           : '/canvas.webp'
                       }
                       alt="RPB Tournament"
@@ -313,6 +313,10 @@ export default function HomeClient({
                       style={{
                         objectFit: 'cover',
                       }}
+                      unoptimized={
+                        activeTournament?.id === 'cm-bts3-auto-imported' || 
+                        activeTournament?.name.toLowerCase().includes('bey-tamashii series #3')
+                      }
                       priority
                     />
                     {activeTournament && (
