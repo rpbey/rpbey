@@ -303,40 +303,13 @@ export default async function RankingsPage({
             px: { xs: 1, md: 0 },
           }}
         >
-          {/* Left: Logo & Title */}
+          {/* Left: Empty Space for Layout Balance */}
           <Box
             sx={{
               flex: 1,
-              display: 'flex',
-              alignItems: 'center',
-              gap: 2,
-              justifyContent: { xs: 'center', md: 'flex-start' },
-              width: '100%',
+              display: { xs: 'none', md: 'block' },
             }}
-          >
-            <Box
-              sx={{
-                position: 'relative',
-                width: { xs: 45, md: 60 },
-                height: { xs: 45, md: 60 },
-              }}
-            >
-              <Image
-                src="/logo.png"
-                alt="RPB Logo"
-                fill
-                style={{ objectFit: 'contain' }}
-                priority
-              />
-            </Box>
-            <Typography
-              variant="h5"
-              fontWeight="900"
-              sx={{ display: { xs: 'none', sm: 'block' } }}
-            >
-              RPB RANKINGS
-            </Typography>
-          </Box>
+          />
 
           {/* Center: Search */}
           <Box

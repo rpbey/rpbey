@@ -29,22 +29,17 @@ export default async function HomePage() {
         },
       }),
       getContent('home-hero-text'),
-      prisma.profile.findMany({
+      prisma.globalRanking.findMany({
         where: {
-          rankingPoints: { gt: 0 },
-          userId: {
-            notIn: [
-              'Y5gdJ6ZpfAHfsNcJQc0PMbAqyVeQAiHE', // Yoyo
-              'O3Q8olZegE8dfLZTbrQtuD5T3ZqVUkxJ', // Loteux
-            ],
-          },
+          points: { gt: 0 },
+          playerName: { notIn: ['Yoyo', 'Loteux', '𝓡𝓟𝓑 | LOTTEUX!'] },
         },
         take: 5,
         orderBy: [
-          { rankingPoints: 'desc' },
+          { points: 'desc' },
           { tournamentWins: 'desc' },
           { wins: 'desc' },
-          { bladerName: 'asc' },
+          { playerName: 'asc' },
         ],
         include: {
           user: {

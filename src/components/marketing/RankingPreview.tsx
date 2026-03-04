@@ -48,8 +48,8 @@ export function RankingPreview({ rankings }: RankingPreviewProps) {
               transition={{ delay: index * 0.1 }}
             >
               <Box
-                component={Link}
-                href={`/profile/${profile.userId}`}
+                component={profile.userId ? Link : 'div'}
+                href={profile.userId ? `/profile/${profile.userId}` : undefined}
                 sx={{
                   display: 'flex',
                   alignItems: 'center',
@@ -62,11 +62,13 @@ export function RankingPreview({ rankings }: RankingPreviewProps) {
                   textDecoration: 'none',
                   color: 'inherit',
                   transition: 'all 0.2s ease',
-                  '&:hover': {
-                    bgcolor: alpha(theme.palette.primary.main, 0.05),
-                    borderColor: theme.palette.primary.main,
-                    transform: 'translateX(8px)',
-                  },
+                  ...(profile.userId && {
+                    '&:hover': {
+                      bgcolor: alpha(theme.palette.primary.main, 0.05),
+                      borderColor: theme.palette.primary.main,
+                      transform: 'translateX(8px)',
+                    },
+                  })
                 }}
               >
                 {/* Rank Badge */}
@@ -92,21 +94,19 @@ export function RankingPreview({ rankings }: RankingPreviewProps) {
                 </Box>
 
                 <Avatar
-                  src={profile.user.image || undefined}
-                  alt={profile.bladerName || profile.user.name || 'Joueur'}
+                  src={profile.avatarUrl || profile.user?.image || undefined}
+                  alt={profile.playerName || profile.user?.name || 'Joueur'}
                   sx={{ width: 40, height: 40, border: '2px solid white' }}
                 >
-                  {getInitials(profile.bladerName || profile.user.name)}
+                  {getInitials(profile.playerName || profile.user?.name)}
                 </Avatar>
 
                 <Box sx={{ flex: 1, minWidth: 0 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                     <Typography variant="body2" fontWeight={800} noWrap>
-                      {profile.bladerName ||
-                        profile.user.name ||
-                        profile.challongeUsername}
+                      {profile.playerName || profile.user?.name || 'Anonyme'}
                     </Typography>
-                    {profile.challongeUsername && (
+                    {profile.user?.profile?.challongeUsername && (
                       <VerifiedIcon
                         sx={{
                           fontSize: '0.8rem',
@@ -130,7 +130,7 @@ export function RankingPreview({ rankings }: RankingPreviewProps) {
                     color="text.secondary"
                     sx={{ display: 'block' }}
                   >
-                    {profile.favoriteType || 'Standard'}
+                    {profile.user?.profile?.favoriteType || 'Standard'}
                   </Typography>
                 </Box>
 
@@ -140,7 +140,7 @@ export function RankingPreview({ rankings }: RankingPreviewProps) {
                     fontWeight={900}
                     color="primary.main"
                   >
-                    {profile.rankingPoints}
+                    {profile.points}
                   </Typography>
                   <Typography
                     variant="caption"

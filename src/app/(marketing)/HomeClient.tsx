@@ -376,7 +376,7 @@ export default function HomeClient({
                           color="text.secondary"
                           fontWeight={600}
                         >
-                          TOP 5 BLADERS - SAISON 2
+                          TOP 5 BLADERS - RPB
                         </Typography>
                       </Box>
                       <Box
@@ -392,6 +392,19 @@ export default function HomeClient({
                     </Stack>
 
                     <RankingPreview rankings={topRankings} />
+                    
+                    <Box sx={{ mt: 3, display: 'flex', gap: 2 }}>
+                      <Link href="/rankings" passHref style={{ flex: 1, textDecoration: 'none' }}>
+                        <Button variant="outlined" fullWidth sx={{ borderRadius: 2 }}>
+                          Voir tout
+                        </Button>
+                      </Link>
+                      <Link href="/tournaments/satr" passHref style={{ flex: 1, textDecoration: 'none' }}>
+                        <Button variant="contained" color="warning" fullWidth sx={{ borderRadius: 2, bgcolor: '#fbbf24', color: 'black', '&:hover': { bgcolor: '#f59e0b' } }}>
+                          SATR
+                        </Button>
+                      </Link>
+                    </Box>
                   </CardContent>
                 </Card>
               </ScaleOnHover>

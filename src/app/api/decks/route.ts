@@ -217,7 +217,6 @@ export async function POST(request: NextRequest) {
         items: {
           create: beys.map((bey) => ({
             position: bey.position,
-            nickname: bey.nickname,
             bladeId: bey.bladeId,
             overBladeId: bey.overBladeId || null,
             ratchetId: bey.ratchetId,

@@ -11,16 +11,18 @@
       "challongeUrl": "https://challonge.com/fr/users/new",
       "exactWins": 0,
       "exactLosses": 2,
-      "matchHistory": []
+      "matchHistory": [],
+      "avatarUrl": null
     },
     {
       "name": "Kaiouss",
       "rank": 0,
       "challongeUsername": "kaiouss",
       "challongeUrl": "https://challonge.com/fr/users/kaiouss",
-      "exactWins": 0,
-      "exactLosses": 0,
-      "matchHistory": []
+      "exactWins": 1,
+      "exactLosses": 2,
+      "matchHistory": [],
+      "avatarUrl": null
     },
     {
       "name": "Chad_Light",
@@ -29,7 +31,8 @@
       "challongeUrl": "https://challonge.com/fr/users/chad_light",
       "exactWins": 7,
       "exactLosses": 0,
-      "matchHistory": []
+      "matchHistory": [],
+      "avatarUrl": null
     },
     {
       "name": "SkarnGameMaster",
@@ -37,26 +40,29 @@
       "challongeUsername": "skarngamemaster",
       "challongeUrl": "https://challonge.com/fr/users/skarngamemaster",
       "exactWins": 6,
-      "exactLosses": 1,
-      "matchHistory": []
+      "exactLosses": 2,
+      "matchHistory": [],
+      "avatarUrl": null
     },
     {
       "name": "Inazo13",
       "rank": 3,
       "challongeUsername": "inazo13",
       "challongeUrl": "https://challonge.com/fr/users/inazo13",
-      "exactWins": 2,
-      "exactLosses": 0,
-      "matchHistory": []
+      "exactWins": 7,
+      "exactLosses": 2,
+      "matchHistory": [],
+      "avatarUrl": null
     },
     {
       "name": "Berserk91",
       "rank": 4,
       "challongeUsername": "berserk91",
       "challongeUrl": "https://challonge.com/fr/users/berserk91",
-      "exactWins": 6,
-      "exactLosses": 0,
-      "matchHistory": []
+      "exactWins": 8,
+      "exactLosses": 2,
+      "matchHistory": [],
+      "avatarUrl": null
     },
     {
       "name": "Hyakutakee",
@@ -65,7 +71,8 @@
       "challongeUrl": "https://challonge.com/fr/users/hyakutakee",
       "exactWins": 3,
       "exactLosses": 2,
-      "matchHistory": []
+      "matchHistory": [],
+      "avatarUrl": null
     },
     {
       "name": "Meiden_Meiko",
@@ -74,25 +81,28 @@
       "challongeUrl": "https://challonge.com/fr/users/meiden_meiko",
       "exactWins": 4,
       "exactLosses": 2,
-      "matchHistory": []
+      "matchHistory": [],
+      "avatarUrl": null
     },
     {
       "name": "azurekun",
       "rank": 7,
       "challongeUsername": "azurekun",
       "challongeUrl": "https://challonge.com/fr/users/azurekun",
-      "exactWins": 0,
-      "exactLosses": 0,
-      "matchHistory": []
+      "exactWins": 5,
+      "exactLosses": 2,
+      "matchHistory": [],
+      "avatarUrl": null
     },
     {
       "name": "Shishi4272",
       "rank": 7,
       "challongeUsername": "shishi4272",
       "challongeUrl": "https://challonge.com/fr/users/shishi4272",
-      "exactWins": 1,
+      "exactWins": 4,
       "exactLosses": 2,
-      "matchHistory": []
+      "matchHistory": [],
+      "avatarUrl": null
     },
     {
       "name": "LightYamani",
@@ -101,25 +111,28 @@
       "challongeUrl": "https://challonge.com/fr/users/lightyamani",
       "exactWins": 3,
       "exactLosses": 2,
-      "matchHistory": []
+      "matchHistory": [],
+      "avatarUrl": null
     },
     {
       "name": "Twii_",
       "rank": 9,
       "challongeUsername": "twii_",
       "challongeUrl": "https://challonge.com/fr/users/twii_",
-      "exactWins": 3,
-      "exactLosses": 0,
-      "matchHistory": []
+      "exactWins": 5,
+      "exactLosses": 2,
+      "matchHistory": [],
+      "avatarUrl": null
     },
     {
       "name": "Vincent___",
       "rank": 9,
       "challongeUsername": "vincent___",
       "challongeUrl": "https://challonge.com/fr/users/vincent___",
-      "exactWins": 0,
-      "exactLosses": 0,
-      "matchHistory": []
+      "exactWins": 4,
+      "exactLosses": 2,
+      "matchHistory": [],
+      "avatarUrl": null
     },
     {
       "name": "SAtR_Younsi",
@@ -127,8 +140,9 @@
       "challongeUsername": "satr_younsi",
       "challongeUrl": "https://challonge.com/fr/users/satr_younsi",
       "exactWins": 0,
-      "exactLosses": 0,
-      "matchHistory": []
+      "exactLosses": 2,
+      "matchHistory": [],
+      "avatarUrl": null
     },
     {
       "name": "IlouDP",
@@ -137,7 +151,8 @@
       "challongeUrl": "https://challonge.com/fr/users/iloudp",
       "exactWins": 0,
       "exactLosses": 2,
-      "matchHistory": []
+      "matchHistory": [],
+      "avatarUrl": null
     },
     {
       "name": "JojoKirino",
@@ -146,34 +161,38 @@
       "challongeUrl": "https://challonge.com/fr/users/jojokirino",
       "exactWins": 3,
       "exactLosses": 2,
-      "matchHistory": []
+      "matchHistory": [],
+      "avatarUrl": null
     },
     {
       "name": "Lady_Barbatrucc",
       "rank": 13,
       "challongeUsername": "lady_barbatrucc",
       "challongeUrl": "https://challonge.com/fr/users/lady_barbatrucc",
-      "exactWins": 3,
-      "exactLosses": 0,
-      "matchHistory": []
+      "exactWins": 4,
+      "exactLosses": 2,
+      "matchHistory": [],
+      "avatarUrl": null
     },
     {
       "name": "09Illu",
       "rank": 17,
       "challongeUsername": "09illu",
       "challongeUrl": "https://challonge.com/fr/users/09illu",
-      "exactWins": 0,
-      "exactLosses": 0,
-      "matchHistory": []
+      "exactWins": 2,
+      "exactLosses": 2,
+      "matchHistory": [],
+      "avatarUrl": null
     },
     {
       "name": "Gelofy",
       "rank": 17,
       "challongeUsername": "gelofy",
       "challongeUrl": "https://challonge.com/fr/users/gelofy",
-      "exactWins": 0,
-      "exactLosses": 0,
-      "matchHistory": []
+      "exactWins": 2,
+      "exactLosses": 2,
+      "matchHistory": [],
+      "avatarUrl": null
     },
     {
       "name": "Hisunublbl",
@@ -182,34 +201,38 @@
       "challongeUrl": "https://challonge.com/fr/users/hisunublbl",
       "exactWins": 0,
       "exactLosses": 2,
-      "matchHistory": []
+      "matchHistory": [],
+      "avatarUrl": null
     },
     {
       "name": "Masamune_Kadoya",
       "rank": 17,
       "challongeUsername": "masamune_kadoya",
       "challongeUrl": "https://challonge.com/fr/users/masamune_kadoya",
-      "exactWins": 0,
-      "exactLosses": 0,
-      "matchHistory": []
+      "exactWins": 2,
+      "exactLosses": 3,
+      "matchHistory": [],
+      "avatarUrl": null
     },
     {
       "name": "Qyub",
       "rank": 17,
       "challongeUsername": "qyub",
       "challongeUrl": "https://challonge.com/fr/users/qyub",
-      "exactWins": 0,
-      "exactLosses": 2,
-      "matchHistory": []
+      "exactWins": 2,
+      "exactLosses": 3,
+      "matchHistory": [],
+      "avatarUrl": null
     },
     {
       "name": "Sabo0451",
       "rank": 17,
       "challongeUsername": "sabo0451",
       "challongeUrl": "https://challonge.com/fr/users/sabo0451",
-      "exactWins": 3,
+      "exactWins": 0,
       "exactLosses": 2,
-      "matchHistory": []
+      "matchHistory": [],
+      "avatarUrl": null
     },
     {
       "name": "SAtRMewxy",
@@ -218,7 +241,8 @@
       "challongeUrl": "https://challonge.com/fr/users/satrmewxy",
       "exactWins": 3,
       "exactLosses": 2,
-      "matchHistory": []
+      "matchHistory": [],
+      "avatarUrl": null
     },
     {
       "name": "Vilaine_Thob",
@@ -227,7 +251,8 @@
       "challongeUrl": "https://challonge.com/fr/users/vilaine_thob",
       "exactWins": 3,
       "exactLosses": 2,
-      "matchHistory": []
+      "matchHistory": [],
+      "avatarUrl": null
     },
     {
       "name": "Baldm4n",
@@ -236,7 +261,8 @@
       "challongeUrl": "https://challonge.com/fr/users/baldm4n",
       "exactWins": 0,
       "exactLosses": 2,
-      "matchHistory": []
+      "matchHistory": [],
+      "avatarUrl": null
     },
     {
       "name": "CharlieFlanders",
@@ -245,16 +271,18 @@
       "challongeUrl": "https://challonge.com/fr/users/charlieflanders",
       "exactWins": 2,
       "exactLosses": 2,
-      "matchHistory": []
+      "matchHistory": [],
+      "avatarUrl": null
     },
     {
       "name": "LeKingJoker",
       "rank": 25,
       "challongeUsername": "lekingjoker",
       "challongeUrl": "https://challonge.com/fr/users/lekingjoker",
-      "exactWins": 1,
-      "exactLosses": 0,
-      "matchHistory": []
+      "exactWins": 2,
+      "exactLosses": 2,
+      "matchHistory": [],
+      "avatarUrl": null
     },
     {
       "name": "Lewis973",
@@ -263,7 +291,8 @@
       "challongeUrl": "https://challonge.com/fr/users/lewis973",
       "exactWins": 2,
       "exactLosses": 2,
-      "matchHistory": []
+      "matchHistory": [],
+      "avatarUrl": null
     },
     {
       "name": "Moly_",
@@ -272,7 +301,8 @@
       "challongeUrl": "https://challonge.com/fr/users/moly_",
       "exactWins": 0,
       "exactLosses": 2,
-      "matchHistory": []
+      "matchHistory": [],
+      "avatarUrl": null
     },
     {
       "name": "MtS_95",
@@ -281,7 +311,8 @@
       "challongeUrl": "https://challonge.com/fr/users/mts_95",
       "exactWins": 2,
       "exactLosses": 2,
-      "matchHistory": []
+      "matchHistory": [],
+      "avatarUrl": null
     },
     {
       "name": "Shio3",
@@ -290,16 +321,18 @@
       "challongeUrl": "https://challonge.com/fr/users/shio3",
       "exactWins": 0,
       "exactLosses": 2,
-      "matchHistory": []
+      "matchHistory": [],
+      "avatarUrl": null
     },
     {
       "name": "Kreepy95",
       "rank": 25,
       "challongeUsername": "kreepy95",
       "challongeUrl": "https://challonge.com/fr/users/kreepy95",
-      "exactWins": 0,
+      "exactWins": 2,
       "exactLosses": 2,
-      "matchHistory": []
+      "matchHistory": [],
+      "avatarUrl": null
     },
     {
       "name": "_Equalizer_",
@@ -308,7 +341,8 @@
       "challongeUrl": "https://challonge.com/fr/users/_equalizer_",
       "exactWins": 1,
       "exactLosses": 2,
-      "matchHistory": []
+      "matchHistory": [],
+      "avatarUrl": null
     },
     {
       "name": "Blaze__",
@@ -317,7 +351,8 @@
       "challongeUrl": "https://challonge.com/fr/users/blaze__",
       "exactWins": 1,
       "exactLosses": 2,
-      "matchHistory": []
+      "matchHistory": [],
+      "avatarUrl": null
     },
     {
       "name": "Flopopfish",
@@ -326,7 +361,8 @@
       "challongeUrl": "https://challonge.com/fr/users/flopopfish",
       "exactWins": 0,
       "exactLosses": 2,
-      "matchHistory": []
+      "matchHistory": [],
+      "avatarUrl": null
     },
     {
       "name": "Frednivrae",
@@ -334,8 +370,9 @@
       "challongeUsername": "frednivrae",
       "challongeUrl": "https://challonge.com/fr/users/frednivrae",
       "exactWins": 1,
-      "exactLosses": 0,
-      "matchHistory": []
+      "exactLosses": 2,
+      "matchHistory": [],
+      "avatarUrl": null
     },
     {
       "name": "Levroi",
@@ -344,7 +381,8 @@
       "challongeUrl": "https://challonge.com/fr/users/levroi",
       "exactWins": 0,
       "exactLosses": 2,
-      "matchHistory": []
+      "matchHistory": [],
+      "avatarUrl": null
     },
     {
       "name": "Loup_",
@@ -352,8 +390,9 @@
       "challongeUsername": "loup_",
       "challongeUrl": "https://challonge.com/fr/users/loup_",
       "exactWins": 0,
-      "exactLosses": 0,
-      "matchHistory": []
+      "exactLosses": 2,
+      "matchHistory": [],
+      "avatarUrl": null
     },
     {
       "name": "nthanb_",
@@ -362,7 +401,8 @@
       "challongeUrl": "https://challonge.com/fr/users/nthanb_",
       "exactWins": 1,
       "exactLosses": 2,
-      "matchHistory": []
+      "matchHistory": [],
+      "avatarUrl": null
     },
     {
       "name": "Orotchi",
@@ -371,7 +411,8 @@
       "challongeUrl": "https://challonge.com/fr/users/orotchi",
       "exactWins": 0,
       "exactLosses": 2,
-      "matchHistory": []
+      "matchHistory": [],
+      "avatarUrl": null
     },
     {
       "name": "Paimy",
@@ -380,25 +421,28 @@
       "challongeUrl": "https://challonge.com/fr/users/paimy",
       "exactWins": 0,
       "exactLosses": 2,
-      "matchHistory": []
+      "matchHistory": [],
+      "avatarUrl": null
     },
     {
       "name": "Zeikuo",
       "rank": 33,
       "challongeUsername": "zeikuo",
       "challongeUrl": "https://challonge.com/fr/users/zeikuo",
-      "exactWins": 2,
+      "exactWins": 1,
       "exactLosses": 2,
-      "matchHistory": []
+      "matchHistory": [],
+      "avatarUrl": null
     },
     {
       "name": "sewpoo_0192",
       "rank": 33,
       "challongeUsername": "sewpoo_0192",
       "challongeUrl": "https://challonge.com/fr/users/sewpoo_0192",
-      "exactWins": 0,
-      "exactLosses": 0,
-      "matchHistory": []
+      "exactWins": 1,
+      "exactLosses": 2,
+      "matchHistory": [],
+      "avatarUrl": null
     },
     {
       "name": "SnowPye",
@@ -407,7 +451,8 @@
       "challongeUrl": "https://challonge.com/fr/users/snowpye",
       "exactWins": 0,
       "exactLosses": 2,
-      "matchHistory": []
+      "matchHistory": [],
+      "avatarUrl": null
     },
     {
       "name": "spinach_lépinard",
@@ -416,7 +461,8 @@
       "challongeUrl": "https://challonge.com/fr/users/spinach_l%C3%A9pinard",
       "exactWins": 1,
       "exactLosses": 2,
-      "matchHistory": []
+      "matchHistory": [],
+      "avatarUrl": null
     },
     {
       "name": "Stella5555",
@@ -425,7 +471,8 @@
       "challongeUrl": "https://challonge.com/fr/users/stella5555",
       "exactWins": 1,
       "exactLosses": 2,
-      "matchHistory": []
+      "matchHistory": [],
+      "avatarUrl": null
     },
     {
       "name": "A2ns",
@@ -434,7 +481,8 @@
       "challongeUrl": "https://challonge.com/fr/users/a2ns",
       "exactWins": 0,
       "exactLosses": 2,
-      "matchHistory": []
+      "matchHistory": [],
+      "avatarUrl": null
     },
     {
       "name": "DarkSpirit4",
@@ -443,7 +491,8 @@
       "challongeUrl": "https://challonge.com/fr/users/darkspirit4",
       "exactWins": 0,
       "exactLosses": 2,
-      "matchHistory": []
+      "matchHistory": [],
+      "avatarUrl": null
     },
     {
       "name": "ichigydo",
@@ -452,7 +501,8 @@
       "challongeUrl": "https://challonge.com/fr/users/ichigydo",
       "exactWins": 0,
       "exactLosses": 2,
-      "matchHistory": []
+      "matchHistory": [],
+      "avatarUrl": null
     },
     {
       "name": "KamenZ",
@@ -461,7 +511,8 @@
       "challongeUrl": "https://challonge.com/fr/users/kamenz",
       "exactWins": 0,
       "exactLosses": 2,
-      "matchHistory": []
+      "matchHistory": [],
+      "avatarUrl": null
     },
     {
       "name": "Kiiroh",
@@ -470,7 +521,8 @@
       "challongeUrl": "https://challonge.com/fr/users/kiiroh",
       "exactWins": 0,
       "exactLosses": 2,
-      "matchHistory": []
+      "matchHistory": [],
+      "avatarUrl": null
     },
     {
       "name": "KineriaChan",
@@ -478,8 +530,9 @@
       "challongeUsername": "kineriachan",
       "challongeUrl": "https://challonge.com/fr/users/kineriachan",
       "exactWins": 0,
-      "exactLosses": 4,
-      "matchHistory": []
+      "exactLosses": 2,
+      "matchHistory": [],
+      "avatarUrl": null
     },
     {
       "name": "Nahil12",
@@ -487,8 +540,9 @@
       "challongeUsername": "nahil12",
       "challongeUrl": "https://challonge.com/fr/users/nahil12",
       "exactWins": 0,
-      "exactLosses": 0,
-      "matchHistory": []
+      "exactLosses": 2,
+      "matchHistory": [],
+      "avatarUrl": null
     },
     {
       "name": "Rorodela",
@@ -497,7 +551,8 @@
       "challongeUrl": "https://challonge.com/fr/users/rorodela",
       "exactWins": 0,
       "exactLosses": 2,
-      "matchHistory": []
+      "matchHistory": [],
+      "avatarUrl": null
     },
     {
       "name": "Tategamii",
@@ -505,8 +560,9 @@
       "challongeUsername": "tategamii",
       "challongeUrl": "https://challonge.com/fr/users/tategamii",
       "exactWins": 0,
-      "exactLosses": 0,
-      "matchHistory": []
+      "exactLosses": 2,
+      "matchHistory": [],
+      "avatarUrl": null
     },
     {
       "name": "Darkhoumous",
@@ -515,7 +571,8 @@
       "challongeUrl": "https://challonge.com/fr/users/darkhoumous",
       "exactWins": 0,
       "exactLosses": 2,
-      "matchHistory": []
+      "matchHistory": [],
+      "avatarUrl": null
     },
     {
       "name": "RNSX_Yumetoo",
@@ -523,8 +580,9 @@
       "challongeUsername": "rnsx_yumetoo",
       "challongeUrl": "https://challonge.com/fr/users/rnsx_yumetoo",
       "exactWins": 0,
-      "exactLosses": 0,
-      "matchHistory": []
+      "exactLosses": 2,
+      "matchHistory": [],
+      "avatarUrl": null
     }
   ],
   "matches": [

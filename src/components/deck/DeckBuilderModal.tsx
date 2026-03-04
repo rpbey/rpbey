@@ -139,7 +139,7 @@ export function DeckBuilderModal({
       const baseComplete = b.blade && b.ratchet && b.bit;
       if (!baseComplete) return false;
       if (b.blade?.system === 'CX')
-        return !!b.overBlade && !!b.lockChip && !!b.assistBlade;
+        return !!b.lockChip && !!b.assistBlade;
       return true;
     });
 

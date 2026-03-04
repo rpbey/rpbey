@@ -5,6 +5,7 @@
  */
 
 import DeleteIcon from '@mui/icons-material/Delete';
+import DownloadIcon from '@mui/icons-material/Download';
 import EditIcon from '@mui/icons-material/Edit';
 import StarIcon from '@mui/icons-material/Star';
 import StarOutlineIcon from '@mui/icons-material/StarOutline';
@@ -20,6 +21,7 @@ import Stack from '@mui/material/Stack';
 import { alpha, useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import type { Part } from '@prisma/client';
+import html2canvas from 'html2canvas';
 import { StatRadar } from '@/components/ui/StatRadar';
 
 export interface DeckBey {
@@ -239,10 +241,26 @@ export function DeckCard({
   onActivate,
 }: DeckCardProps) {
   const theme = useTheme();
+
+  const handleExport = async () => {
+    const el = document.getElementById(`deck-card-${deck.id}`);
+    if (!el) return;
+    try {
+      const canvas = await html2canvas(el, { backgroundColor: '#111' });
+      const link = document.createElement('a');
+      link.download = `deck-${deck.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    } catch (err) {
+      console.error('Export failed', err);
+    }
+  };
+
   const sortedBeys = [...deck.beys].sort((a, b) => a.position - b.position);
 
   return (
     <Card
+      id={`deck-card-${deck.id}`}
       elevation={0}
       sx={{
         height: '100%',
@@ -305,6 +323,17 @@ export function DeckCard({
             </Box>
           </Box>
           <Stack direction="row" spacing={0.5}>
+            <IconButton
+              size="small"
+              onClick={handleExport}
+              sx={{
+                bgcolor: alpha(theme.palette.info.main, 0.05),
+                color: 'info.main',
+                borderRadius: 1.5,
+              }}
+            >
+              <DownloadIcon sx={{ fontSize: 18 }} />
+            </IconButton>
             {onEdit && (
               <IconButton
                 size="small"

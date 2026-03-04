@@ -93,7 +93,7 @@ export function BeyBuilder({
     data.blade &&
     data.ratchet &&
     data.bit &&
-    (!isCX || (data.overBlade && data.lockChip && data.assistBlade));
+    (!isCX || (data.lockChip && data.assistBlade));
 
   // Filter out current bey's parts from usedPartIds
   const currentPartIds = [

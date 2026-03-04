@@ -1,8 +1,9 @@
 {
-  "kaiouss": {
-    "key": "kaiouss",
-    "primaryName": "Kaiouss",
+  "kaious": {
+    "key": "kaious",
+    "primaryName": "Kaious",
     "challongeUsername": "kaiouss",
+    "avatarUrl": "none",
     "aliases": [
       "Kaiouss",
       "Kaiouss✅"
@@ -14,8 +15,9 @@
   },
   "chadlight": {
     "key": "chadlight",
-    "primaryName": "Chad_Light",
+    "primaryName": "ChadLight",
     "challongeUsername": "chad_light",
+    "avatarUrl": "none",
     "aliases": [
       "Chad_Light"
     ],
@@ -23,10 +25,11 @@
       "bts2"
     ]
   },
-  "skarngamemaster": {
-    "key": "skarngamemaster",
-    "primaryName": "SkarnGameMaster",
+  "skarn": {
+    "key": "skarn",
+    "primaryName": "Skarn",
     "challongeUsername": "skarngamemaster",
+    "avatarUrl": "none",
     "aliases": [
       "SkarnGameMaster",
       "SkarnGameMaster✅"
@@ -36,10 +39,11 @@
       "bts3"
     ]
   },
-  "inazo13": {
-    "key": "inazo13",
-    "primaryName": "Inazo13",
+  "inazo": {
+    "key": "inazo",
+    "primaryName": "Inazo",
     "challongeUsername": "inazo13",
+    "avatarUrl": "none",
     "aliases": [
       "Inazo13",
       "Inazo13✅"
@@ -49,10 +53,11 @@
       "bts3"
     ]
   },
-  "berserk91": {
-    "key": "berserk91",
-    "primaryName": "Berserk91",
+  "berserk": {
+    "key": "berserk",
+    "primaryName": "Berserk",
     "challongeUsername": "berserk91",
+    "avatarUrl": "none",
     "aliases": [
       "Berserk91",
       "Berserk91✅"
@@ -62,10 +67,11 @@
       "bts3"
     ]
   },
-  "hyakutakee": {
-    "key": "hyakutakee",
-    "primaryName": "Hyakutakee",
+  "hyakutake": {
+    "key": "hyakutake",
+    "primaryName": "Hyakutake",
     "challongeUsername": "hyakutakee",
+    "avatarUrl": "none",
     "aliases": [
       "Hyakutakee"
     ],
@@ -73,10 +79,11 @@
       "bts2"
     ]
   },
-  "meidenmeiko": {
-    "key": "meidenmeiko",
-    "primaryName": "Meiden_Meiko",
+  "meiden": {
+    "key": "meiden",
+    "primaryName": "Meiden",
     "challongeUsername": "meiden_meiko",
+    "avatarUrl": "none",
     "aliases": [
       "Meiden_Meiko",
       "Meiden_Meiko✅"
@@ -86,10 +93,11 @@
       "bts3"
     ]
   },
-  "azurekun": {
-    "key": "azurekun",
-    "primaryName": "azurekun",
+  "azure": {
+    "key": "azure",
+    "primaryName": "Azure",
     "challongeUsername": "azurekun",
+    "avatarUrl": "none",
     "aliases": [
       "azurekun",
       "azurekun✅"
@@ -99,21 +107,11 @@
       "bts3"
     ]
   },
-  "shishi4272": {
-    "key": "shishi4272",
-    "primaryName": "Shishi4272",
-    "challongeUsername": "shishi4272",
-    "aliases": [
-      "Shishi4272"
-    ],
-    "tournaments": [
-      "bts2"
-    ]
-  },
   "lightyamani": {
     "key": "lightyamani",
     "primaryName": "LightYamani",
     "challongeUsername": "lightyamani",
+    "avatarUrl": "none",
     "aliases": [
       "LightYamani",
       "LightYamani✅"
@@ -125,8 +123,9 @@
   },
   "twii": {
     "key": "twii",
-    "primaryName": "Twii_",
+    "primaryName": "Twii",
     "challongeUsername": "twii_",
+    "avatarUrl": "none",
     "aliases": [
       "Twii_",
       "Twii_✅"
@@ -138,8 +137,9 @@
   },
   "vincent": {
     "key": "vincent",
-    "primaryName": "Vincent___",
+    "primaryName": "Vincent",
     "challongeUsername": "vincent___",
+    "avatarUrl": "none",
     "aliases": [
       "Vincent___",
       "Vincent___✅"
@@ -149,10 +149,11 @@
       "bts3"
     ]
   },
-  "satryounsi": {
-    "key": "satryounsi",
-    "primaryName": "SAtR_Younsi",
+  "younsi": {
+    "key": "younsi",
+    "primaryName": "Younsi",
     "challongeUsername": "satr_younsi",
+    "avatarUrl": "none",
     "aliases": [
       "SAtR_Younsi",
       "SAtR_Younsi✅"
@@ -162,21 +163,25 @@
       "bts3"
     ]
   },
-  "iloudp": {
-    "key": "iloudp",
-    "primaryName": "IlouDP",
+  "ilou": {
+    "key": "ilou",
+    "primaryName": "Ilou",
     "challongeUsername": "iloudp",
+    "avatarUrl": "none",
     "aliases": [
-      "IlouDP"
+      "IlouDP",
+      "Ilou✅"
     ],
     "tournaments": [
-      "bts2"
+      "bts2",
+      "bts3"
     ]
   },
   "jojokirino": {
     "key": "jojokirino",
     "primaryName": "JojoKirino",
     "challongeUsername": "jojokirino",
+    "avatarUrl": "none",
     "aliases": [
       "JojoKirino",
       "JojoKirino✅"
@@ -186,10 +191,11 @@
       "bts3"
     ]
   },
-  "ladybarbatrucc": {
-    "key": "ladybarbatrucc",
-    "primaryName": "Lady_Barbatrucc",
+  "ladybarbatruc": {
+    "key": "ladybarbatruc",
+    "primaryName": "Lady_Barbatruc",
     "challongeUsername": "lady_barbatrucc",
+    "avatarUrl": "none",
     "aliases": [
       "Lady_Barbatrucc",
       "Lady_Barbatrucc✅"
@@ -199,10 +205,11 @@
       "bts3"
     ]
   },
-  "09illu": {
-    "key": "09illu",
-    "primaryName": "09Illu",
+  "illu": {
+    "key": "illu",
+    "primaryName": "Illu",
     "challongeUsername": "09illu",
+    "avatarUrl": "none",
     "aliases": [
       "09Illu",
       "09Illu✅"
@@ -216,6 +223,7 @@
     "key": "gelofy",
     "primaryName": "Gelofy",
     "challongeUsername": "gelofy",
+    "avatarUrl": "none",
     "aliases": [
       "Gelofy",
       "Gelofy✅"
@@ -225,21 +233,25 @@
       "bts3"
     ]
   },
-  "hisunublbl": {
-    "key": "hisunublbl",
-    "primaryName": "Hisunublbl",
+  "hisunu": {
+    "key": "hisunu",
+    "primaryName": "Hisunu",
     "challongeUsername": "hisunublbl",
+    "avatarUrl": "none",
     "aliases": [
-      "Hisunublbl"
+      "Hisunublbl",
+      "RNSX_Hisunu✅"
     ],
     "tournaments": [
-      "bts2"
+      "bts2",
+      "bts3"
     ]
   },
-  "masamunekadoya": {
-    "key": "masamunekadoya",
-    "primaryName": "Masamune_Kadoya",
+  "masamune": {
+    "key": "masamune",
+    "primaryName": "Masamune",
     "challongeUsername": "masamune_kadoya",
+    "avatarUrl": "none",
     "aliases": [
       "Masamune_Kadoya",
       "Masamune_Kadoya✅"
@@ -253,6 +265,7 @@
     "key": "qyub",
     "primaryName": "Qyub",
     "challongeUsername": "qyub",
+    "avatarUrl": "none",
     "aliases": [
       "Qyub"
     ],
@@ -260,10 +273,11 @@
       "bts2"
     ]
   },
-  "sabo0451": {
-    "key": "sabo0451",
-    "primaryName": "Sabo0451",
+  "sabo": {
+    "key": "sabo",
+    "primaryName": "Sabo",
     "challongeUsername": "sabo0451",
+    "avatarUrl": "none",
     "aliases": [
       "Sabo0451"
     ],
@@ -271,10 +285,11 @@
       "bts2"
     ]
   },
-  "satrmewxy": {
-    "key": "satrmewxy",
-    "primaryName": "SAtRMewxy",
+  "mewxy": {
+    "key": "mewxy",
+    "primaryName": "Mewxy",
     "challongeUsername": "satrmewxy",
+    "avatarUrl": "none",
     "aliases": [
       "SAtRMewxy"
     ],
@@ -286,6 +301,7 @@
     "key": "vilainethob",
     "primaryName": "Vilaine_Thob",
     "challongeUsername": "vilaine_thob",
+    "avatarUrl": "none",
     "aliases": [
       "Vilaine_Thob"
     ],
@@ -302,12 +318,14 @@
     ],
     "tournaments": [
       "bts2"
-    ]
+    ],
+    "avatarUrl": "none"
   },
-  "charlieflanders": {
-    "key": "charlieflanders",
-    "primaryName": "CharlieFlanders",
+  "flanders": {
+    "key": "flanders",
+    "primaryName": "Flanders",
     "challongeUsername": "charlieflanders",
+    "avatarUrl": "none",
     "aliases": [
       "CharlieFlanders",
       "CharlieFlanders✅"
@@ -317,10 +335,11 @@
       "bts3"
     ]
   },
-  "lekingjoker": {
-    "key": "lekingjoker",
-    "primaryName": "LeKingJoker",
+  "kingjoker": {
+    "key": "kingjoker",
+    "primaryName": "KingJoker",
     "challongeUsername": "lekingjoker",
+    "avatarUrl": "none",
     "aliases": [
       "LeKingJoker",
       "LeKingJoker✅"
@@ -330,10 +349,11 @@
       "bts3"
     ]
   },
-  "lewis973": {
-    "key": "lewis973",
-    "primaryName": "Lewis973",
+  "lewis": {
+    "key": "lewis",
+    "primaryName": "Lewis",
     "challongeUsername": "lewis973",
+    "avatarUrl": "none",
     "aliases": [
       "Lewis973",
       "Lewis973✅"
@@ -352,12 +372,14 @@
     ],
     "tournaments": [
       "bts2"
-    ]
+    ],
+    "avatarUrl": "none"
   },
   "mts95": {
     "key": "mts95",
-    "primaryName": "MtS_95",
+    "primaryName": "MTS_95",
     "challongeUsername": "mts_95",
+    "avatarUrl": "none",
     "aliases": [
       "MtS_95",
       "MtS_95✅"
@@ -367,10 +389,11 @@
       "bts3"
     ]
   },
-  "shio3": {
-    "key": "shio3",
-    "primaryName": "Shio3",
+  "shio": {
+    "key": "shio",
+    "primaryName": "Shio",
     "challongeUsername": "shio3",
+    "avatarUrl": "none",
     "aliases": [
       "Shio3"
     ],
@@ -378,21 +401,11 @@
       "bts2"
     ]
   },
-  "kreepy95": {
-    "key": "kreepy95",
-    "primaryName": "Kreepy95",
-    "challongeUsername": "kreepy95",
-    "aliases": [
-      "Kreepy95"
-    ],
-    "tournaments": [
-      "bts2"
-    ]
-  },
   "equalizer": {
     "key": "equalizer",
-    "primaryName": "_Equalizer_",
+    "primaryName": "Equalizer",
     "challongeUsername": "_equalizer_",
+    "avatarUrl": "none",
     "aliases": [
       "_Equalizer_",
       "_Equalizer_✅"
@@ -404,8 +417,9 @@
   },
   "blaze": {
     "key": "blaze",
-    "primaryName": "Blaze__",
+    "primaryName": "Blaze",
     "challongeUsername": "blaze__",
+    "avatarUrl": "none",
     "aliases": [
       "Blaze__"
     ],
@@ -422,12 +436,14 @@
     ],
     "tournaments": [
       "bts2"
-    ]
+    ],
+    "avatarUrl": "none"
   },
-  "frednivrae": {
-    "key": "frednivrae",
-    "primaryName": "Frednivrae",
+  "fred": {
+    "key": "fred",
+    "primaryName": "Fred",
     "challongeUsername": "frednivrae",
+    "avatarUrl": "none",
     "aliases": [
       "Frednivrae",
       "Frednivrae✅"
@@ -441,6 +457,7 @@
     "key": "levroi",
     "primaryName": "Levroi",
     "challongeUsername": "levroi",
+    "avatarUrl": "none",
     "aliases": [
       "Levroi"
     ],
@@ -450,8 +467,9 @@
   },
   "loup": {
     "key": "loup",
-    "primaryName": "Loup_",
+    "primaryName": "Loup",
     "challongeUsername": "loup_",
+    "avatarUrl": "none",
     "aliases": [
       "Loup_",
       "Loup_✅"
@@ -461,10 +479,11 @@
       "bts3"
     ]
   },
-  "nthanb": {
-    "key": "nthanb",
-    "primaryName": "nthanb_",
+  "nathanb": {
+    "key": "nathanb",
+    "primaryName": "NathanB",
     "challongeUsername": "nthanb_",
+    "avatarUrl": "none",
     "aliases": [
       "nthanb_",
       "nthanb_✅"
@@ -474,10 +493,11 @@
       "bts3"
     ]
   },
-  "orotchi": {
-    "key": "orotchi",
-    "primaryName": "Orotchi",
+  "oro": {
+    "key": "oro",
+    "primaryName": "Oro",
     "challongeUsername": "orotchi",
+    "avatarUrl": "none",
     "aliases": [
       "Orotchi"
     ],
@@ -489,6 +509,7 @@
     "key": "paimy",
     "primaryName": "Paimy",
     "challongeUsername": "paimy",
+    "avatarUrl": "none",
     "aliases": [
       "Paimy"
     ],
@@ -500,17 +521,23 @@
     "key": "zeikuo",
     "primaryName": "Zeikuo",
     "challongeUsername": "zeikuo",
+    "avatarUrl": "none",
     "aliases": [
-      "Zeikuo"
+      "Zeikuo",
+      "SAtR | Zeikuo✅",
+      "SAtR | Zeikuo",
+      "zeikuo"
     ],
     "tournaments": [
-      "bts2"
+      "bts2",
+      "bts3"
     ]
   },
-  "sewpoo0192": {
-    "key": "sewpoo0192",
-    "primaryName": "sewpoo_0192",
+  "sewpoo": {
+    "key": "sewpoo",
+    "primaryName": "Sewpoo",
     "challongeUsername": "sewpoo_0192",
+    "avatarUrl": "none",
     "aliases": [
       "sewpoo_0192",
       "sewpoo_0192✅"
@@ -524,6 +551,7 @@
     "key": "snowpye",
     "primaryName": "SnowPye",
     "challongeUsername": "snowpye",
+    "avatarUrl": "none",
     "aliases": [
       "SnowPye"
     ],
@@ -540,12 +568,14 @@
     ],
     "tournaments": [
       "bts2"
-    ]
+    ],
+    "avatarUrl": "none"
   },
-  "stella5555": {
-    "key": "stella5555",
-    "primaryName": "Stella5555",
+  "stella": {
+    "key": "stella",
+    "primaryName": "Stella",
     "challongeUsername": "stella5555",
+    "avatarUrl": "none",
     "aliases": [
       "Stella5555"
     ],
@@ -557,6 +587,7 @@
     "key": "a2ns",
     "primaryName": "A2ns",
     "challongeUsername": "a2ns",
+    "avatarUrl": "none",
     "aliases": [
       "A2ns",
       "A2ns✅"
@@ -566,10 +597,11 @@
       "bts3"
     ]
   },
-  "darkspirit4": {
-    "key": "darkspirit4",
-    "primaryName": "DarkSpirit4",
+  "darkspirit": {
+    "key": "darkspirit",
+    "primaryName": "DarkSpirit",
     "challongeUsername": "darkspirit4",
+    "avatarUrl": "none",
     "aliases": [
       "DarkSpirit4",
       "DarkSpirit4✅"
@@ -581,8 +613,9 @@
   },
   "ichigydo": {
     "key": "ichigydo",
-    "primaryName": "ichigydo",
+    "primaryName": "Ichigydo",
     "challongeUsername": "ichigydo",
+    "avatarUrl": "none",
     "aliases": [
       "ichigydo"
     ],
@@ -594,6 +627,7 @@
     "key": "kamenz",
     "primaryName": "KamenZ",
     "challongeUsername": "kamenz",
+    "avatarUrl": "none",
     "aliases": [
       "KamenZ",
       "KamenZ✅"
@@ -603,32 +637,26 @@
       "bts3"
     ]
   },
-  "kiiroh": {
-    "key": "kiiroh",
-    "primaryName": "Kiiroh",
+  "kiiro": {
+    "key": "kiiro",
+    "primaryName": "Kiiro",
     "challongeUsername": "kiiroh",
+    "avatarUrl": "none",
     "aliases": [
-      "Kiiroh"
+      "Kiiroh",
+      "RNSX_Kiiro✅",
+      "Şêro✅"
     ],
     "tournaments": [
-      "bts2"
-    ]
-  },
-  "kineriachan": {
-    "key": "kineriachan",
-    "primaryName": "KineriaChan",
-    "challongeUsername": "kineriachan",
-    "aliases": [
-      "KineriaChan"
-    ],
-    "tournaments": [
-      "bts2"
+      "bts2",
+      "bts3"
     ]
   },
   "nahil12": {
     "key": "nahil12",
     "primaryName": "Nahil12",
     "challongeUsername": "nahil12",
+    "avatarUrl": "none",
     "aliases": [
       "Nahil12",
       "Nahil12✅"
@@ -642,6 +670,7 @@
     "key": "rorodela",
     "primaryName": "Rorodela",
     "challongeUsername": "rorodela",
+    "avatarUrl": "none",
     "aliases": [
       "Rorodela"
     ],
@@ -649,10 +678,11 @@
       "bts2"
     ]
   },
-  "tategamii": {
-    "key": "tategamii",
-    "primaryName": "Tategamii",
+  "tategami": {
+    "key": "tategami",
+    "primaryName": "Tategami",
     "challongeUsername": "tategamii",
+    "avatarUrl": "none",
     "aliases": [
       "Tategamii",
       "Tategamii✅"
@@ -671,12 +701,14 @@
     ],
     "tournaments": [
       "bts2"
-    ]
+    ],
+    "avatarUrl": "none"
   },
-  "rnsxyumetoo": {
-    "key": "rnsxyumetoo",
-    "primaryName": "RNSX_Yumetoo",
+  "yumetoo": {
+    "key": "yumetoo",
+    "primaryName": "Yumetoo",
     "challongeUsername": "rnsx_yumetoo",
+    "avatarUrl": "none",
     "aliases": [
       "RNSX_Yumetoo",
       "RNSX_Yumetoo✅"
@@ -689,12 +721,17 @@
   "kreepy": {
     "key": "kreepy",
     "primaryName": "Kreepy",
-    "challongeUsername": null,
+    "challongeUsername": "kreepy95",
     "aliases": [
-      "Team Arc | Kreepy✅"
+      "Team Arc | Kreepy✅",
+      "Kreepy95",
+      "Kreepy✅",
+      "Kreepy",
+      "kreepy95"
     ],
     "tournaments": [
-      "bts3"
+      "bts3",
+      "bts2"
     ]
   },
   "emp97": {
@@ -776,7 +813,7 @@
   },
   "kameny": {
     "key": "kameny",
-    "primaryName": "Kameny",
+    "primaryName": "KamenY",
     "challongeUsername": null,
     "aliases": [
       "Kameny✅"
@@ -807,20 +844,9 @@
       "bts3"
     ]
   },
-  "satrzeikuo": {
-    "key": "satrzeikuo",
-    "primaryName": "SAtR | Zeikuo",
-    "challongeUsername": null,
-    "aliases": [
-      "SAtR | Zeikuo✅"
-    ],
-    "tournaments": [
-      "bts3"
-    ]
-  },
   "sh1ro1": {
     "key": "sh1ro1",
-    "primaryName": "sh1ro1",
+    "primaryName": "Sh1ro1",
     "challongeUsername": null,
     "aliases": [
       "sh1ro1✅"
@@ -840,17 +866,6 @@
       "bts3"
     ]
   },
-  "ilou": {
-    "key": "ilou",
-    "primaryName": "Ilou",
-    "challongeUsername": null,
-    "aliases": [
-      "Ilou✅"
-    ],
-    "tournaments": [
-      "bts3"
-    ]
-  },
   "iloveatingsushi": {
     "key": "iloveatingsushi",
     "primaryName": "Iloveatingsushi",
@@ -864,7 +879,7 @@
   },
   "minigelofy": {
     "key": "minigelofy",
-    "primaryName": "MiNiGeLoFy",
+    "primaryName": "MiniGelofy",
     "challongeUsername": null,
     "aliases": [
       "MiNiGeLoFy✅"
@@ -875,32 +890,10 @@
   },
   "omniyaya": {
     "key": "omniyaya",
-    "primaryName": "OMNIYAYA",
+    "primaryName": "OmniYaya",
     "challongeUsername": null,
     "aliases": [
       "OMNIYAYA✅"
-    ],
-    "tournaments": [
-      "bts3"
-    ]
-  },
-  "rnsxhisunu": {
-    "key": "rnsxhisunu",
-    "primaryName": "RNSX_Hisunu",
-    "challongeUsername": null,
-    "aliases": [
-      "RNSX_Hisunu✅"
-    ],
-    "tournaments": [
-      "bts3"
-    ]
-  },
-  "rnsxkiiro": {
-    "key": "rnsxkiiro",
-    "primaryName": "RNSX_Kiiro",
-    "challongeUsername": null,
-    "aliases": [
-      "RNSX_Kiiro✅"
     ],
     "tournaments": [
       "bts3"
@@ -920,12 +913,16 @@
   "shishi": {
     "key": "shishi",
     "primaryName": "Shishi",
-    "challongeUsername": null,
+    "challongeUsername": "shishi4272",
     "aliases": [
-      "Shishi✅"
+      "Shishi✅",
+      "Shishi4272",
+      "Shishi",
+      "shishi4272"
     ],
     "tournaments": [
-      "bts3"
+      "bts3",
+      "bts2"
     ]
   },
   "sufhhc": {
@@ -939,9 +936,9 @@
       "bts3"
     ]
   },
-  "upolemmo": {
-    "key": "upolemmo",
-    "primaryName": "Upolemmo",
+  "upolemno": {
+    "key": "upolemno",
+    "primaryName": "Upolemno",
     "challongeUsername": null,
     "aliases": [
       "Upolemmo✅"
@@ -952,7 +949,7 @@
   },
   "a2m1desfables": {
     "key": "a2m1desfables",
-    "primaryName": "a2m1desfables",
+    "primaryName": "A2m1desfables",
     "challongeUsername": null,
     "aliases": [
       "a2m1desfables✅"
@@ -986,12 +983,16 @@
   "kineria": {
     "key": "kineria",
     "primaryName": "Kineria",
-    "challongeUsername": null,
+    "challongeUsername": "kineriachan",
     "aliases": [
-      "Kineria✅"
+      "Kineria✅",
+      "KineriaChan",
+      "Kineria",
+      "kineriachan"
     ],
     "tournaments": [
-      "bts3"
+      "bts3",
+      "bts2"
     ]
   },
   "lezkoko": {
@@ -1040,7 +1041,7 @@
   },
   "ramens": {
     "key": "ramens",
-    "primaryName": "Ramen S",
+    "primaryName": "RamenS",
     "challongeUsername": null,
     "aliases": [
       "Ramen S✅"
@@ -1060,23 +1061,12 @@
       "bts3"
     ]
   },
-  "zeln3090": {
-    "key": "zeln3090",
-    "primaryName": "Zeln3090",
+  "zeln": {
+    "key": "zeln",
+    "primaryName": "Zeln",
     "challongeUsername": null,
     "aliases": [
       "Zeln3090✅"
-    ],
-    "tournaments": [
-      "bts3"
-    ]
-  },
-  "ro": {
-    "key": "ro",
-    "primaryName": "Şêro",
-    "challongeUsername": null,
-    "aliases": [
-      "Şêro✅"
     ],
     "tournaments": [
       "bts3"
@@ -1106,7 +1096,7 @@
   },
   "igris": {
     "key": "igris",
-    "primaryName": "Igris𖣠",
+    "primaryName": "Igris",
     "challongeUsername": null,
     "aliases": [
       "Igris𖣠"

@@ -121,7 +121,7 @@ function isSlotComplete(slot: BeySlot): boolean {
   const baseComplete = !!slot.blade && !!slot.ratchet && !!slot.bit;
   if (!baseComplete) return false;
   if (isCXBlade(slot)) {
-    return !!slot.overBlade && !!slot.lockChip && !!slot.assistBlade;
+    return !!slot.lockChip && !!slot.assistBlade;
   }
   return true;
 }

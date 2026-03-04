@@ -25,7 +25,7 @@ export function DeckComposition() {
     const baseComplete = !!b.blade && !!b.ratchet && !!b.bit;
     if (!baseComplete) return false;
     if (isCXBlade(b)) {
-      return !!b.overBlade && !!b.lockChip && !!b.assistBlade;
+      return !!b.lockChip && !!b.assistBlade;
     }
     return true;
   });

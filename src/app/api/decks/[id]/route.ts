@@ -236,7 +236,6 @@ export async function PUT(
             deleteMany: {},
             create: beys.map((bey) => ({
               position: bey.position,
-              nickname: bey.nickname || null,
               bladeId: bey.bladeId,
               overBladeId: bey.overBladeId || null,
               ratchetId: bey.ratchetId,

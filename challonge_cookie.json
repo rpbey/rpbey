@@ -1,299 +1,56 @@
 [
   {
     "name": "__cf_bm",
-    "value": "KUtfSL3TSx0_lPQbSjoZT0F7hX6irb_Z5c1eKRszK7Y-1770385991-1.0.1.1-6n9SLZrJRUZrDX6.ywFIWFQCXLu.axuM5QnrpNsNE1.XBOYfxBKqtco1wZrpjeWQN4h5ecYSeuRf.CgelnaTbAjUD54xPOPcVZkDoNYdm.I",
+    "value": "FygNoGtyP2BLtncAVpyRepUJCgP2AjwWv0V6c1AsdmY-1772634113-1.0.1.1-x75FxdWSRMxJRsUhU44TkvESnBojglJxM4R9f4Af7ycsWL6_f44Bvpb.wilUTkKEjOx2UgyahED3Cr4P5zyAeDWpj0vA8u_IDtNJv4u5ZUk",
     "domain": ".nitropay.com",
-    "path": "/",
-    "expires": "2026-02-06T14:23:09.888Z",
-    "httpOnly": true,
-    "secure": true,
-    "sameSite": "None",
-    "priority": "Medium"
+    "path": "/"
   },
   {
     "name": "__eoi",
-    "value": "ID=a6a29fd8a3e42af3:T=1770343478:RT=1770386002:S=AA-Afjb2SUjv3h2flapsfpgWZyH-",
+    "value": "ID=a6a29fd8a3e42af3:T=1770343478:RT=1770392873:S=AA-Afjb2SUjv3h2flapsfpgWZyH-",
     "domain": ".challonge.com",
-    "path": "/",
-    "expires": "2026-08-05T02:04:38.000Z",
-    "httpOnly": false,
-    "secure": true,
-    "sameSite": "None",
-    "priority": "Medium"
+    "path": "/"
   },
   {
     "name": "__gads",
-    "value": "ID=a06973ef408793c2:T=1770343478:RT=1770386002:S=ALNI_MZ4Q7pqsyp0Dlekbe57E8pFanXZGA",
+    "value": "ID=a06973ef408793c2:T=1770343478:RT=1770392873:S=ALNI_MZ4Q7pqsyp0Dlekbe57E8pFanXZGA",
     "domain": ".challonge.com",
-    "path": "/",
-    "expires": "2027-03-03T02:04:38.000Z",
-    "httpOnly": false,
-    "secure": true,
-    "sameSite": "None",
-    "priority": "Medium"
+    "path": "/"
   },
   {
-    "name": "__Secure-1PAPISID",
-    "value": "X1TlCNxD_WTo9vZ0/ATJwR0AkD4qpfzjj2",
-    "domain": ".google.fr",
-    "path": "/",
-    "expires": "2027-03-12T18:52:23.817Z",
-    "httpOnly": false,
-    "secure": true,
-    "sameSite": "None",
-    "priority": "High"
-  },
-  {
-    "name": "__Secure-1PSID",
-    "value": "g.a0006QjXcJ5JG9CyFuDPnTxOQoMrnxkTdZpvraAeCtgnZeUqVES34o3mJawcpAfbV7fEkEXePgACgYKAZESARQSFQHGX2Midl7ZVvzMpUfnUSvPLaCpsRoVAUF8yKoFEFZ7JlaJz6pj-ZYfnvD60076",
-    "domain": ".google.fr",
-    "path": "/",
-    "expires": "2027-03-12T18:52:23.816Z",
-    "httpOnly": true,
-    "secure": true,
-    "sameSite": "None",
-    "priority": "High"
-  },
-  {
-    "name": "__Secure-3PAPISID",
-    "value": "X1TlCNxD_WTo9vZ0/ATJwR0AkD4qpfzjj2",
-    "domain": ".google.fr",
-    "path": "/",
-    "expires": "2027-03-12T18:52:23.817Z",
-    "httpOnly": false,
-    "secure": true,
-    "sameSite": "None",
-    "priority": "High"
-  },
-  {
-    "name": "__Secure-3PSID",
-    "value": "g.a0006QjXcJ5JG9CyFuDPnTxOQoMrnxkTdZpvraAeCtgnZeUqVES3JQQgoBaeF-I6REPDAw7uHAACgYKAZUSARQSFQHGX2MieVQwFYJjt0JwQeeIiwZ7CBoVAUF8yKrg7RvOvBJ5nz6NGaIWczRv0076",
-    "domain": ".google.fr",
-    "path": "/",
-    "expires": "2027-03-12T18:52:23.816Z",
-    "httpOnly": true,
-    "secure": true,
-    "sameSite": "None",
-    "priority": "High"
+    "name": "__mggpc__",
+    "value": "0",
+    "domain": ".doubleclick.net",
+    "path": "/"
   },
   {
     "name": "__stripe_mid",
     "value": "614611dd-ea9d-4a48-af91-1ef39bcabec9a57f42",
     "domain": ".challonge.com",
-    "path": "/",
-    "expires": "2027-02-06T13:53:21.000Z",
-    "httpOnly": false,
-    "secure": true,
-    "sameSite": "Strict",
-    "priority": "Medium"
+    "path": "/"
   },
   {
     "name": "__stripe_sid",
-    "value": "0ee57bde-6caf-475c-8126-be955420c8885e2156",
+    "value": "48a54fc3-4005-4c37-ade2-c0d3a020c1d4df89b6",
     "domain": ".challonge.com",
-    "path": "/",
-    "expires": "2026-02-06T14:23:21.000Z",
-    "httpOnly": false,
-    "secure": true,
-    "sameSite": "Strict",
-    "priority": "Medium"
+    "path": "/"
   },
   {
     "name": "_au_1d",
     "value": "AU1D-0100-001770343476-PF2ZI7IU-SRNU",
     "domain": ".challonge.com",
-    "path": "/",
-    "expires": "2027-02-06T13:53:20.250Z",
-    "httpOnly": false,
-    "secure": true,
-    "sameSite": "None",
-    "priority": "Medium"
-  },
-  {
-    "name": "_cc_aud",
-    "value": "\"ABR4nGNgYGDIbF3exwAHABp%2FAiQ%3D\"",
-    "domain": ".crwdcntrl.net",
-    "path": "/",
-    "expires": "2026-11-03T08:34:21.302Z",
-    "httpOnly": false,
-    "secure": true,
-    "sameSite": "None",
-    "priority": "Medium"
-  },
-  {
-    "name": "_cc_cc",
-    "value": "\"ACZ4nGNQSE5LNbU0TbUwt7BINUxJMU5LMUoxNk5JSTO1SEsysLRgAILM1uV9DAgAAHR2C7Q%3D\"",
-    "domain": ".crwdcntrl.net",
-    "path": "/",
-    "expires": "2026-11-03T08:34:21.302Z",
-    "httpOnly": false,
-    "secure": true,
-    "sameSite": "None",
-    "priority": "Medium"
-  },
-  {
-    "name": "_cc_dc",
-    "value": "1",
-    "domain": ".crwdcntrl.net",
-    "path": "/",
-    "expires": "2026-11-02T15:10:59.840Z",
-    "httpOnly": false,
-    "secure": true,
-    "sameSite": "None",
-    "priority": "Medium"
+    "path": "/"
   },
   {
     "name": "_cc_id",
     "value": "cfe595e8788e1dd3fd2d33ddf58fb098",
     "domain": ".challonge.com",
-    "path": "/",
-    "expires": "2026-11-03T02:04:36.000Z",
-    "httpOnly": false,
-    "secure": false,
-    "sameSite": "Lax",
-    "priority": "Medium"
-  },
-  {
-    "name": "_cc_id",
-    "value": "cfe595e8788e1dd3fd2d33ddf58fb098",
-    "domain": ".crwdcntrl.net",
-    "path": "/",
-    "expires": "2026-11-03T08:10:59.710Z",
-    "httpOnly": false,
-    "secure": true,
-    "sameSite": "None",
-    "priority": "Medium"
+    "path": "/"
   },
   {
     "name": "_challonge_session_production",
-    "value": "cTN4Wi9hcTdSL29sSWYxUTJRbkY3emJENnduQmN0cUNkRGYzL2VKSnVsMklhTUZBYTN5a1R3S1Q3Z0E4dDVJYm5BNmdCQXI1RGNpSlo3WGJ3NTBFNElrMmRXVEMyZXFzUFpQbCtocFdsbmVGbitkWmZaR2JyMWhmckxqSE9ZQmxIQmExQ3YyVStwOUFpUzk2V1FiZjlqalRVaTloVVZ6YTZqUXpXWkFhS2xhRm1mYXJHQVJhQmhYdmhyZW45MnhybmREQkRYNGxVdjBFME83WjNyMzRGNXg4RjN0dHV2Y3FQTzZSbHNPNEZkRDlaa3lIL3FHRmZZRGRVRW5zUzQrZ2RsRmhFbUxDNm1VakYxUENUaHBYUkRiRmxZVC9KVlVOeEE2ek1lL3dhWWJUVTk3N0d5ZnFGTWJNdk5GcktoaE9GS1IrVnJ4ZGF4ZEdWMWszK1ltUVFJaDlhcGF3Vlp6UXlSSW4ya2poMiswU01JcjNDSWhUcTQ3cXdaSTdhdy9NVlZMVnBQTDZIVHAvcVdrdVVrNUFrZldxa0NrQXdKeHd3WE9kUGpSUGlkc3lXbWFVRmpBREtPaURuSUk4TzNzMi0tbHF2d0tZaEdZRjgrVFphMFFiMkNJdz09--9bbfab79881318924e4591fbcb8dbf2a28dbeab3",
+    "value": "VkovMjg5NEttZ3pWaTI3dXhyUGEwZWhRWlExRGJlSnRLa2ptWGZudFN2aS9lN1h4UU50ZGNHbzBmeTMvOG5GSlJLMUwrTVZXRkNsVVZqT1N4WGVTWkN0NXozQkNZeTErR0JaY01iSHdmekZBNjNpRTlrVnpmUkRNZDRrRHExQ2M4OGlLa1FIbVNmbjgwWGFPeGVWTXNyUDNKTVRVcVJpNHI2RS9aSGoyRFpnZkxUSVZaRDJMbDJtVVBubWpTdllJUW1NUUhCTGhOQVZpMVYxaG9JUFBZVU8rZDBOUnJBRVBZNlhzdFQzZWlRTHBMWFRWUTNoVVhEK2preDdRTkcyUE9rb3BQeVd5VFprOVhkY2xBZ1RQZkg5ZWd3S0lqZzl6Mk5EVEdINzU3R2hoMUhqRFFDMUdmSXVGK09kaUF1VnZxWXo2dURRaTJKKzFiTWFtemJuS0IvVEtBbXVIa1hmaWU4NkpxMWxGV1YwVktLZFZ6dmFucDFiakhOdUxNQXBkZnhmZ3NyQ2FFeWRBOHdlTEZxcWFUMFNyUHVFM2ZzZFJiRkZkZGY5ZkViTEFRTVgyU2xEbXNOcmticlFYTkZwLy0tU3ZhZWsrUE5HRmpXTUQvOWtabUJ3QT09--67a74d3547495c34ad1e7b7a88274d36bb82c423",
     "domain": ".challonge.com",
-    "path": "/",
-    "expires": "Session",
-    "httpOnly": true,
-    "secure": true,
-    "sameSite": "None",
-    "priority": "Medium"
-  },
-  {
-    "name": "_ck",
-    "value": "true",
-    "domain": ".challonge.com",
-    "path": "/",
-    "expires": "2026-03-06T13:53:20.086Z",
-    "httpOnly": false,
-    "secure": false,
-    "sameSite": "None",
-    "priority": "Medium"
-  },
-  {
-    "name": "_cuid",
-    "value": "7959309",
-    "domain": ".challonge.com",
-    "path": "/",
-    "expires": "2026-03-06T13:53:20.086Z",
-    "httpOnly": false,
-    "secure": false,
-    "sameSite": "None",
-    "priority": "Medium"
-  },
-  {
-    "name": "_ga",
-    "value": "GA1.2.1632172704.1768148853",
-    "domain": ".challonge.com",
-    "path": "/",
-    "expires": "2027-03-13T13:53:20.176Z",
-    "httpOnly": false,
-    "secure": false,
-    "sameSite": "None",
-    "priority": "Medium"
-  },
-  {
-    "name": "_ga_1EEPZLM6JC",
-    "value": "GS2.1.s1770385990$o52$g1$t1770386001$j60$l0$h0",
-    "domain": ".challonge.com",
-    "path": "/",
-    "expires": "2027-03-13T13:53:21.212Z",
-    "httpOnly": false,
-    "secure": false,
-    "sameSite": "None",
-    "priority": "Medium"
-  },
-  {
-    "name": "_ga_FVWZ0RM4DH",
-    "value": "GS2.1.s1770385999$o2$g0$t1770385999$j60$l0$h0",
-    "domain": ".challonge.com",
-    "path": "/",
-    "expires": "2027-03-13T13:53:19.298Z",
-    "httpOnly": false,
-    "secure": false,
-    "sameSite": "None",
-    "priority": "Medium"
-  },
-  {
-    "name": "_gat",
-    "value": "1",
-    "domain": ".challonge.com",
-    "path": "/",
-    "expires": "2026-02-06T13:54:10.000Z",
-    "httpOnly": false,
-    "secure": false,
-    "sameSite": "None",
-    "priority": "Medium"
-  },
-  {
-    "name": "_gid",
-    "value": "GA1.2.1114964240.1770324104",
-    "domain": ".challonge.com",
-    "path": "/",
-    "expires": "2026-02-07T13:53:20.000Z",
-    "httpOnly": false,
-    "secure": false,
-    "sameSite": "None",
-    "priority": "Medium"
-  },
-  {
-    "name": "_lr_env_src_ats",
-    "value": "false",
-    "domain": "challonge.com",
-    "path": "/",
-    "expires": "2026-03-08T13:53:11.000Z",
-    "httpOnly": false,
-    "secure": false,
-    "sameSite": "None",
-    "priority": "Medium"
-  },
-  {
-    "name": "_lr_retry_request",
-    "value": "true",
-    "domain": "challonge.com",
-    "path": "/",
-    "expires": "2026-02-06T14:53:11.000Z",
-    "httpOnly": false,
-    "secure": false,
-    "sameSite": "None",
-    "priority": "Medium"
-  },
-  {
-    "name": "_lr_sampling_rate",
-    "value": "100",
-    "domain": "challonge.com",
-    "path": "/",
-    "expires": "2026-02-13T13:53:22.000Z",
-    "httpOnly": false,
-    "secure": false,
-    "sameSite": "None",
-    "priority": "Medium"
-  },
-  {
-    "name": "_nitroID",
-    "value": "766a3febd3c43203bbda23488123537e",
-    "domain": ".challonge.com",
-    "path": "/",
-    "expires": "2027-02-06T13:53:19.000Z",
-    "httpOnly": false,
-    "secure": false,
-    "sameSite": "Lax",
-    "priority": "Medium"
+    "path": "/"
   }
 ]
