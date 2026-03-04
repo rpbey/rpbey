@@ -180,14 +180,14 @@ export function BladerProfileHeader({
                 {stats.bladerName}
               </Typography>
               {isOwnProfile && (
-                <IconButton
-                  component={Link}
-                  href="/dashboard/profile/edit"
-                  size="small"
-                  sx={{ bgcolor: 'action.hover' }}
-                >
-                  <EditIcon fontSize="small" />
-                </IconButton>
+                <Link href="/dashboard/profile/edit" passHref style={{ textDecoration: 'none' }}>
+                  <IconButton
+                    size="small"
+                    sx={{ bgcolor: 'action.hover' }}
+                  >
+                    <EditIcon fontSize="small" />
+                  </IconButton>
+                </Link>
               )}
             </Stack>
 

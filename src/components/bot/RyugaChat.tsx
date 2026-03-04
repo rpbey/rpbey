@@ -63,15 +63,11 @@ export function RyugaChat({ user }: RyugaChatProps) {
       .catch(console.error);
   }, [user.name]);
 
-  const scrollToBottom = () => {
+  useLayoutEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  };
-
-  useLayoutEffect(() => {
-    scrollToBottom();
-  }, [scrollToBottom]);
+  }, [messages]);
 
   const sendMessage = async () => {
     if (!input.trim() || isLoading) return;

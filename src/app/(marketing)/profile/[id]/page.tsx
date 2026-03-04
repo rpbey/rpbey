@@ -16,6 +16,7 @@ import {
   BladerProfileHeader,
   FavoritePartsCard,
   MatchHistory,
+  ProfileDecksSection,
   RivalriesCard,
   UserProfileStatsCard,
 } from '@/components/profile';
@@ -114,6 +115,7 @@ export default function PublicProfilePage({ params }: ProfilePageProps) {
         <Grid size={{ xs: 12, md: 8 }}>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
             <UserProfileStatsCard stats={stats} />
+            <ProfileDecksSection userId={id} isOwnProfile={false} />
             <MatchHistory userId={id} />
           </Box>
         </Grid>

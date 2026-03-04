@@ -90,7 +90,6 @@ export function BeySlotCard({ slotIndex }: BeySlotCardProps) {
 
   const isComplete = isCX
     ? !!bey.blade &&
-      !!bey.overBlade &&
       !!bey.lockChip &&
       !!bey.assistBlade &&
       !!bey.ratchet &&

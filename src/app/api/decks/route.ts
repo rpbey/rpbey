@@ -24,18 +24,29 @@ const DECK_ITEMS_INCLUDE = {
 };
 
 // GET - List user's decks
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    const { searchParams } = new URL(request.url);
+    const userIdParam = searchParams.get('userId');
+
     const session = await auth.api.getSession({
       headers: await headers(),
     });
 
-    if (!session?.user) {
+    const targetUserId = userIdParam || session?.user?.id;
+
+    if (!targetUserId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    // If viewing someone else's decks, only show the active one
+    const where: any = { userId: targetUserId };
+    if (userIdParam && userIdParam !== session?.user?.id) {
+      where.isActive = true;
+    }
+
     const decks = await prisma.deck.findMany({
-      where: { userId: session.user.id },
+      where,
       include: {
         items: DECK_ITEMS_INCLUDE,
       },

@@ -106,7 +106,6 @@ export function CatalogPartCard({
     // External URLs (beybladeplanner.com etc) - use native img
     if (isExternalUrl(part.imageUrl)) {
       return (
-        // eslint-disable-next-line @next/next/no-img-element
         <img
           src={part.imageUrl}
           alt={part.name}

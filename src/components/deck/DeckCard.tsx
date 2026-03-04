@@ -21,7 +21,6 @@ import Stack from '@mui/material/Stack';
 import { alpha, useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import type { Part } from '@prisma/client';
-import html2canvas from 'html2canvas';
 import { StatRadar } from '@/components/ui/StatRadar';
 
 export interface DeckBey {
@@ -246,7 +245,13 @@ export function DeckCard({
     const el = document.getElementById(`deck-card-${deck.id}`);
     if (!el) return;
     try {
-      const canvas = await html2canvas(el, { backgroundColor: '#111' });
+      const html2canvas = (await import('html2canvas')).default;
+      const canvas = await html2canvas(el, { 
+        backgroundColor: '#111',
+        useCORS: true,
+        allowTaint: true,
+        scale: 2 // Higher quality
+      });
       const link = document.createElement('a');
       link.download = `deck-${deck.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.png`;
       link.href = canvas.toDataURL('image/png');
@@ -256,7 +261,7 @@ export function DeckCard({
     }
   };
 
-  const sortedBeys = [...deck.beys].sort((a, b) => a.position - b.position);
+  const sortedBeys = deck?.beys ? [...deck.beys].sort((a, b) => a.position - b.position) : [];
 
   return (
     <Card

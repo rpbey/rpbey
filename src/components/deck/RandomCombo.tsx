@@ -11,7 +11,7 @@ import Stack from '@mui/material/Stack';
 import { alpha, useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import type { Part } from '@prisma/client';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 interface RandomComboData {
   blade: Part;
@@ -24,7 +24,7 @@ export function RandomCombo() {
   const [loading, setLoading] = useState(false);
   const theme = useTheme();
 
-  const generateCombo = async () => {
+  const generateCombo = useCallback(async () => {
     setLoading(true);
     try {
       const res = await fetch('/api/parts/random');
@@ -38,7 +38,7 @@ export function RandomCombo() {
       // Small artificial delay for the "roulette" effect
       setTimeout(() => setLoading(false), 500);
     }
-  };
+  }, []);
 
   // Initial load
   useEffect(() => {

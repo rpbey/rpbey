@@ -141,40 +141,40 @@ export default function HomeClient({
               >
                 {activeTournament && (
                   <FadeIn delay={0.2}>
-                    <Chip
-                      icon={
-                        <FiberManualRecord
-                          sx={{
-                            fontSize: 12,
-                            animation: 'pulse 1.5s infinite',
-                          }}
-                        />
-                      }
-                      label={`EN DIRECT : ${activeTournament.name}`}
-                      component={Link}
-                      href={`/tournaments/${activeTournament.id}`}
-                      sx={{
-                        mb: 3,
-                        px: 1,
-                        py: 2.5,
-                        borderRadius: '24px',
-                        bgcolor: 'rgba(220, 38, 38, 0.1)',
-                        color: '#ef4444',
-                        fontWeight: 800,
-                        border: '1px solid rgba(220, 38, 38, 0.3)',
-                        backdropFilter: 'blur(8px)',
-                        cursor: 'pointer',
-                        '&:hover': {
-                          bgcolor: 'rgba(220, 38, 38, 0.2)',
-                          borderColor: '#ef4444',
-                        },
-                        '@keyframes pulse': {
-                          '0%': { opacity: 1 },
-                          '50%': { opacity: 0.5 },
-                          '100%': { opacity: 1 },
-                        },
-                      }}
-                    />
+                    <Link href={`/tournaments/${activeTournament.id}`} passHref style={{ textDecoration: 'none', display: 'inline-block' }}>
+                      <Chip
+                        icon={
+                          <FiberManualRecord
+                            sx={{
+                              fontSize: 12,
+                              animation: 'pulse 1.5s infinite',
+                            }}
+                          />
+                        }
+                        label={`EN DIRECT : ${activeTournament.name}`}
+                        sx={{
+                          mb: 3,
+                          px: 1,
+                          py: 2.5,
+                          borderRadius: '24px',
+                          bgcolor: 'rgba(220, 38, 38, 0.1)',
+                          color: '#ef4444',
+                          fontWeight: 800,
+                          border: '1px solid rgba(220, 38, 38, 0.3)',
+                          backdropFilter: 'blur(8px)',
+                          cursor: 'pointer',
+                          '&:hover': {
+                            bgcolor: 'rgba(220, 38, 38, 0.2)',
+                            borderColor: '#ef4444',
+                          },
+                          '@keyframes pulse': {
+                            '0%': { opacity: 1 },
+                            '50%': { opacity: 0.5 },
+                            '100%': { opacity: 1 },
+                          },
+                        }}
+                      />
+                    </Link>
                   </FadeIn>
                 )}
 
@@ -235,30 +235,30 @@ export default function HomeClient({
                   spacing={2}
                   alignItems={{ xs: 'center', md: 'flex-start' }}
                 >
-                  <Button
-                    component={Link}
-                    href="/tournaments"
-                    variant="contained"
-                    size="large"
-                    sx={{
-                      width: { xs: '100%', sm: 'auto' },
-                      height: 64,
-                      px: 6,
-                      borderRadius: '32px', // MD3 Full Round
-                      fontSize: '1.1rem',
-                      fontWeight: 800,
-                      background: '#dc2626',
-                      color: 'white',
-                      boxShadow: '0 15px 30px rgba(220,38,38,0.4)',
-                      '&:hover': {
-                        background: '#b91c1c',
-                        transform: 'scale(1.05)',
-                      },
-                      transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
-                    }}
-                  >
-                    Rejoindre l'Arène
-                  </Button>
+                  <Link href="/tournaments" passHref style={{ textDecoration: 'none', width: '100%', display: 'inline-block' }}>
+                    <Button
+                      variant="contained"
+                      size="large"
+                      sx={{
+                        width: { xs: '100%', sm: 'auto' },
+                        height: 64,
+                        px: 6,
+                        borderRadius: '32px', // MD3 Full Round
+                        fontSize: '1.1rem',
+                        fontWeight: 800,
+                        background: '#dc2626',
+                        color: 'white',
+                        boxShadow: '0 15px 30px rgba(220,38,38,0.4)',
+                        '&:hover': {
+                          background: '#b91c1c',
+                          transform: 'scale(1.05)',
+                        },
+                        transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                      }}
+                    >
+                      Rejoindre l'Arène
+                    </Button>
+                  </Link>
                   <Button
                     component="a"
                     href="https://discord.gg/rpb"

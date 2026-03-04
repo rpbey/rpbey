@@ -1,4 +1,3 @@
-import InfoIcon from '@mui/icons-material/Info';
 import InstagramIcon from '@mui/icons-material/Instagram';
 import YouTubeIcon from '@mui/icons-material/YouTube';
 import Alert from '@mui/material/Alert';
@@ -11,7 +10,6 @@ import type { SvgIconProps } from '@mui/material/SvgIcon';
 import { alpha } from '@mui/material/styles';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
-import Image from 'next/image';
 import { Suspense } from 'react';
 import RankingSearch from '@/components/rankings/RankingSearch';
 import { RankingsTable } from '@/components/rankings/RankingsTable';
@@ -99,7 +97,6 @@ export default async function RankingsPage({
   let seasons: any[] = [];
   let profiles: any[] = [];
   let totalCount = 0;
-  let title = 'Classements Officiels';
 
   try {
     // Fetch available seasons
@@ -109,8 +106,6 @@ export default async function RankingsPage({
       // Historical Season
       const seasonData = await getSeasonStandings(seasonSlug);
       if (seasonData) {
-        title = `Classement - ${seasonData.name}`;
-
         let entries = seasonData.entries;
 
         // Filter by search locally for historical data (since it's a fixed array in the action)

@@ -41,14 +41,14 @@ export default function NotFound() {
           >
             Page introuvable
           </Typography>
-          <Button
-            component={Link}
-            href="/"
-            variant="contained"
-            sx={{ mt: 2, bgcolor: '#fbbf24', color: 'black' }}
-          >
-            Retour à l&apos;accueil
-          </Button>
+          <Link href="/" passHref style={{ textDecoration: 'none' }}>
+            <Button
+              variant="contained"
+              sx={{ mt: 2, bgcolor: '#fbbf24', color: 'black' }}
+            >
+              Retour à l&apos;accueil
+            </Button>
+          </Link>
         </Box>
       </Container>
     </Box>

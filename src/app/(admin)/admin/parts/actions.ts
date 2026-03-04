@@ -16,7 +16,7 @@ async function checkAdmin() {
 
 export async function getParts(search?: string, page = 1) {
   await checkAdmin();
-  const take = 50;
+  const take = 1000;
   const skip = (page - 1) * take;
 
   const where = search
@@ -54,18 +54,27 @@ export async function upsertPart(data: Partial<Part>) {
       where: { id: data.id },
       data: {
         name: data.name,
+        nameJp: data.nameJp,
         type: data.type,
         externalId: data.externalId, // Allow manual override or keep existing
         weight: data.weight,
         system: data.system,
         spinDirection: data.spinDirection,
         imageUrl: data.imageUrl,
+        modelUrl: data.modelUrl,
+        textureUrl: data.textureUrl,
         beyType: data.beyType,
         attack: data.attack,
         defense: data.defense,
         stamina: data.stamina,
         dash: data.dash,
         burst: data.burst,
+        height: data.height,
+        protrusions: data.protrusions,
+        gearRatio: data.gearRatio,
+        shaftWidth: data.shaftWidth,
+        tipType: data.tipType,
+        rarity: data.rarity,
       },
     });
   } else {
@@ -74,17 +83,26 @@ export async function upsertPart(data: Partial<Part>) {
       data: {
         externalId, // Use generated or provided
         name: data.name,
+        nameJp: data.nameJp,
         type: data.type,
         weight: data.weight,
         system: data.system || 'BX',
         spinDirection: data.spinDirection,
         imageUrl: data.imageUrl,
+        modelUrl: data.modelUrl,
+        textureUrl: data.textureUrl,
         beyType: data.beyType,
         attack: data.attack,
         defense: data.defense,
         stamina: data.stamina,
         dash: data.dash,
         burst: data.burst,
+        height: data.height,
+        protrusions: data.protrusions,
+        gearRatio: data.gearRatio,
+        shaftWidth: data.shaftWidth,
+        tipType: data.tipType,
+        rarity: data.rarity,
       },
     });
   }

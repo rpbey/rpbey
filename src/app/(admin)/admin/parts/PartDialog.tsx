@@ -80,12 +80,39 @@ export function PartDialog({
                 placeholder="BX, UX..."
               />
             </MuiGrid>
-            <MuiGrid size={{ xs: 12 }}>
+            <MuiGrid size={{ xs: 6 }}>
+              <TextField
+                label="ID Externe"
+                fullWidth
+                value={form.externalId || ''}
+                onChange={(e) => setForm({ ...form, externalId: e.target.value })}
+                placeholder="ex: bx-01-blade"
+                helperText="Identifiant unique pour le builder"
+              />
+            </MuiGrid>
+            <MuiGrid size={{ xs: 6 }}>
+              <TextField
+                label="Nom Japonais"
+                fullWidth
+                value={form.nameJp || ''}
+                onChange={(e) => setForm({ ...form, nameJp: e.target.value })}
+              />
+            </MuiGrid>
+            <MuiGrid size={{ xs: 8 }}>
               <TextField
                 label="Nom"
                 fullWidth
                 value={form.name || ''}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
+              />
+            </MuiGrid>
+            <MuiGrid size={{ xs: 4 }}>
+              <TextField
+                label="Rareté"
+                fullWidth
+                value={form.rarity || ''}
+                onChange={(e) => setForm({ ...form, rarity: e.target.value })}
+                placeholder="Common, Rare, etc."
               />
             </MuiGrid>
             <MuiGrid size={{ xs: 12 }}>
@@ -96,20 +123,58 @@ export function PartDialog({
                 onChange={(e) => setForm({ ...form, imageUrl: e.target.value })}
               />
             </MuiGrid>
+            <MuiGrid size={{ xs: 6 }}>
+              <TextField
+                label="URL Modèle (OBJ)"
+                fullWidth
+                value={form.modelUrl || ''}
+                onChange={(e) => setForm({ ...form, modelUrl: e.target.value })}
+              />
+            </MuiGrid>
+            <MuiGrid size={{ xs: 6 }}>
+              <TextField
+                label="URL Texture"
+                fullWidth
+                value={form.textureUrl || ''}
+                onChange={(e) => setForm({ ...form, textureUrl: e.target.value })}
+              />
+            </MuiGrid>
 
             {/* Specs */}
-            <MuiGrid size={{ xs: 4 }}>
+            <MuiGrid size={{ xs: 3 }}>
               <TextField
                 label="Poids (g)"
                 type="number"
                 fullWidth
-                value={form.weight || ''}
+                value={form.weight ?? ''}
                 onChange={(e) =>
-                  setForm({ ...form, weight: parseFloat(e.target.value) })
+                  setForm({ ...form, weight: e.target.value ? parseFloat(e.target.value) : undefined })
                 }
               />
             </MuiGrid>
-            <MuiGrid size={{ xs: 4 }}>
+            <MuiGrid size={{ xs: 3 }}>
+              <TextField
+                label="Hauteur (mm)"
+                type="number"
+                fullWidth
+                value={form.height ?? ''}
+                onChange={(e) =>
+                  setForm({ ...form, height: e.target.value ? parseInt(e.target.value, 10) : undefined })
+                }
+              />
+            </MuiGrid>
+            <MuiGrid size={{ xs: 3 }}>
+              <TextField
+                label="Protrusions"
+                type="number"
+                fullWidth
+                value={form.protrusions ?? ''}
+                onChange={(e) =>
+                  setForm({ ...form, protrusions: e.target.value ? parseInt(e.target.value, 10) : undefined })
+                }
+              />
+            </MuiGrid>
+            <MuiGrid size={{ xs: 3 }}>
               <TextField
                 select
                 label="Type Bey"
@@ -126,7 +191,8 @@ export function PartDialog({
                 <MenuItem value="BALANCE">Balance</MenuItem>
               </TextField>
             </MuiGrid>
-            <MuiGrid size={{ xs: 4 }}>
+
+            <MuiGrid size={{ xs: 3 }}>
               <TextField
                 label="Rotation"
                 fullWidth
@@ -135,6 +201,30 @@ export function PartDialog({
                   setForm({ ...form, spinDirection: e.target.value })
                 }
                 placeholder="Right/Left"
+              />
+            </MuiGrid>
+            <MuiGrid size={{ xs: 3 }}>
+              <TextField
+                label="Gear Ratio"
+                fullWidth
+                value={form.gearRatio || ''}
+                onChange={(e) => setForm({ ...form, gearRatio: e.target.value })}
+              />
+            </MuiGrid>
+            <MuiGrid size={{ xs: 3 }}>
+              <TextField
+                label="Shaft Width"
+                fullWidth
+                value={form.shaftWidth || ''}
+                onChange={(e) => setForm({ ...form, shaftWidth: e.target.value })}
+              />
+            </MuiGrid>
+            <MuiGrid size={{ xs: 3 }}>
+              <TextField
+                label="Tip Type"
+                fullWidth
+                value={form.tipType || ''}
+                onChange={(e) => setForm({ ...form, tipType: e.target.value })}
               />
             </MuiGrid>
 

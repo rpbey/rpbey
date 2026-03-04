@@ -158,7 +158,7 @@ export function DeckBuilderModal({
           assistBladeName: b.assistBlade?.name,
         })),
       };
-      const result = validateDeck(deckToValidate as any);
+      const result = validateDeck(deckToValidate);
       setValidationErrors(result.isValid ? [] : result.errors);
     } else {
       setValidationErrors([]);
@@ -178,7 +178,7 @@ export function DeckBuilderModal({
       bey.overBlade?.id,
       bey.ratchet?.id,
       bey.bit?.id,
-      bey.lockChip?.id,
+      bey.lockChip?.name.toLowerCase().includes('metal') ? bey.lockChip.id : undefined,
       bey.assistBlade?.id,
     ].filter(Boolean),
   ) as string[];

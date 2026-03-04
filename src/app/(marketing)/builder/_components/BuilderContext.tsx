@@ -108,7 +108,6 @@ export function isCXBlade(slot: BeySlot): boolean {
 function getNextStep(slot: BeySlot): BuilderStep {
   if (!slot.blade) return 'BLADE';
   if (isCXBlade(slot)) {
-    if (!slot.overBlade) return 'OVER_BLADE';
     if (!slot.lockChip) return 'LOCK_CHIP';
     if (!slot.assistBlade) return 'ASSIST_BLADE';
   }
@@ -482,7 +481,7 @@ export function BuilderProvider({ children }: { children: ReactNode }) {
       if (bey.overBlade) ids.add(bey.overBlade.id);
       if (bey.ratchet) ids.add(bey.ratchet.id);
       if (bey.bit) ids.add(bey.bit.id);
-      if (bey.lockChip) ids.add(bey.lockChip.id);
+      if (bey.lockChip && bey.lockChip.name.toLowerCase().includes('metal')) ids.add(bey.lockChip.id);
       if (bey.assistBlade) ids.add(bey.assistBlade.id);
     }
     return ids;
@@ -496,7 +495,7 @@ export function BuilderProvider({ children }: { children: ReactNode }) {
       if (bey.overBlade) names.add(bey.overBlade.name);
       if (bey.ratchet) names.add(bey.ratchet.name);
       if (bey.bit) names.add(bey.bit.name);
-      if (bey.lockChip) names.add(bey.lockChip.name);
+      if (bey.lockChip && bey.lockChip.name.toLowerCase().includes('metal')) names.add(bey.lockChip.name);
       if (bey.assistBlade) names.add(bey.assistBlade.name);
     }
     return names;

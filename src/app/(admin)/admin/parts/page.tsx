@@ -96,6 +96,7 @@ export default function AdminPartsPage() {
       ),
     },
     { field: 'name', headerName: 'Nom', flex: 1, editable: true },
+    { field: 'externalId', headerName: 'ID Externe', width: 150, editable: true },
     {
       field: 'type',
       headerName: 'Type',

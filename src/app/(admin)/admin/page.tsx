@@ -48,14 +48,12 @@ export default async function AdminDashboardPage() {
     botStatus,
     usersLastMonth,
     profilesLastMonth,
-    _nextTournament,
     recentUsers,
     recentTournaments,
     chartUsers,
     chartTournaments,
     chartMatches,
     tournamentTotalCount,
-    _matchCompleteCount,
   ] = await Promise.all([
     prisma.user.count(),
     prisma.tournament.count({
@@ -65,11 +63,6 @@ export default async function AdminDashboardPage() {
     getBotStatus(),
     prisma.user.count({ where: { createdAt: { lte: thirtyDaysAgo } } }),
     prisma.profile.count({ where: { createdAt: { lte: thirtyDaysAgo } } }),
-    prisma.tournament.findFirst({
-      where: { status: { in: ['UPCOMING', 'REGISTRATION_OPEN'] } },
-      orderBy: { date: 'asc' },
-      include: { _count: { select: { participants: true } } },
-    }),
     prisma.user.findMany({
       take: 5,
       orderBy: { createdAt: 'desc' },
@@ -92,7 +85,6 @@ export default async function AdminDashboardPage() {
       select: { state: true },
     }),
     prisma.tournament.count(),
-    prisma.tournamentMatch.count({ where: { state: 'complete' } }),
   ]);
 
   // Helper to group by month

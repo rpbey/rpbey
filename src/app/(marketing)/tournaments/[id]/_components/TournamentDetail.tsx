@@ -361,21 +361,21 @@ export default function TournamentDetail({
                           </Typography>
                         </Stack>
                       ) : (
-                        <Button
-                          fullWidth
-                          size="small"
-                          variant="outlined"
-                          component={Link}
-                          href={`/api/auth/challonge?returnTo=/tournaments/${tournament.id}`}
-                          sx={{
-                            color: '#fbbf24',
-                            borderColor: '#fbbf24',
-                            fontWeight: 900,
-                            fontSize: '0.7rem',
-                          }}
-                        >
-                          LIER MON COMPTE CHALLONGE
-                        </Button>
+                        <Link href={`/api/auth/challonge?returnTo=/tournaments/${tournament.id}`} passHref style={{ textDecoration: 'none', width: '100%' }}>
+                          <Button
+                            fullWidth
+                            size="small"
+                            variant="outlined"
+                            sx={{
+                              color: '#fbbf24',
+                              borderColor: '#fbbf24',
+                              fontWeight: 900,
+                              fontSize: '0.7rem',
+                            }}
+                          >
+                            LIER MON COMPTE CHALLONGE
+                          </Button>
+                        </Link>
                       )}
                     </Box>
                   )}
@@ -725,7 +725,6 @@ export default function TournamentDetail({
 // ─── Sub-Components ────────────────────────────────────────────────────────
 
 function StandingsPanel({ standings }: { standings: Standing[] }) {
-  const _theme = useTheme();
   return (
     <Stack spacing={1.5}>
       {standings.length === 0 && (
@@ -809,40 +808,6 @@ function StandingsPanel({ standings }: { standings: Standing[] }) {
         );
       })}
     </Stack>
-  );
-}
-
-function _StadiumsPanel({ stations }: { stations: Station[] }) {
-  return (
-    <Grid container spacing={3}>
-      {stations.map((station) => (
-        <Grid key={station.stationId} size={{ xs: 12, sm: 6, xl: 4 }}>
-          <Paper
-            elevation={0}
-            sx={{
-              p: 3,
-              borderRadius: 4,
-              border: '1px solid',
-              borderColor:
-                station.status === 'active' ? 'error.main' : 'divider',
-            }}
-          >
-            <Typography variant="subtitle1" fontWeight={900}>
-              {station.name}
-            </Typography>
-            {station.currentMatch ? (
-              <Typography variant="body2" sx={{ mt: 1 }}>
-                {station.currentMatch.player1} vs {station.currentMatch.player2}
-              </Typography>
-            ) : (
-              <Typography variant="body2" color="text.disabled">
-                Disponible pour combat
-              </Typography>
-            )}
-          </Paper>
-        </Grid>
-      ))}
-    </Grid>
   );
 }
 

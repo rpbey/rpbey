@@ -435,16 +435,16 @@ export default function EditProfilePage() {
                   </Button>
                 </Stack>
               ) : (
-                <Button
-                  variant="outlined"
-                  size="small"
-                  fullWidth
-                  component={Link}
-                  href="/api/auth/challonge"
-                  sx={{ mt: 1, borderRadius: 2 }}
-                >
-                  Lier mon compte
-                </Button>
+                <Link href="/api/auth/challonge" passHref style={{ textDecoration: 'none' }}>
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    fullWidth
+                    sx={{ mt: 1, borderRadius: 2 }}
+                  >
+                    Lier mon compte
+                  </Button>
+                </Link>
               )}
             </Box>
 
