@@ -7,7 +7,10 @@ export async function POST(req: Request) {
     headers: await headers(),
   });
 
-  if (!session || (session.user.role !== 'admin' && session.user.role !== 'superadmin')) {
+  if (
+    !session ||
+    (session.user.role !== 'admin' && session.user.role !== 'superadmin')
+  ) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 

@@ -1,5 +1,6 @@
 import {
   ApplicationCommandOptionType,
+  type AutocompleteInteraction,
   type CommandInteraction,
   EmbedBuilder,
 } from 'discord.js';
@@ -14,6 +15,30 @@ import prisma from '../../lib/prisma.js';
 })
 @SlashGroup('piece')
 export class PartCommand {
+  static async autocomplete(interaction: AutocompleteInteraction) {
+    const focusedOption = interaction.options.getFocused(true);
+    const query = focusedOption.value.toLowerCase();
+
+    // Déduire le type de pièce selon le nom de la sous-commande
+    let type: 'BLADE' | 'RATCHET' | 'BIT' = 'BLADE';
+    const subcommand = interaction.options.getSubcommand();
+    if (subcommand === 'ratchet') type = 'RATCHET';
+    if (subcommand === 'bit') type = 'BIT';
+
+    const parts = await prisma.part.findMany({
+      where: {
+        type: type,
+        name: { contains: query, mode: 'insensitive' },
+      },
+      take: 25,
+      orderBy: { name: 'asc' },
+    });
+
+    return interaction.respond(
+      parts.map((p) => ({ name: p.name, value: p.name })),
+    );
+  }
+
   @Slash({ name: 'blade', description: "Statistiques d'une Blade" })
   async blade(
     @SlashOption({
@@ -21,6 +46,7 @@ export class PartCommand {
       description: 'Nom de la Blade (ex: Dran Sword)',
       required: true,
       type: ApplicationCommandOptionType.String,
+      autocomplete: PartCommand.autocomplete,
     })
     query: string,
     interaction: CommandInteraction,
@@ -39,7 +65,6 @@ export class PartCommand {
     }
 
     const embed = new EmbedBuilder()
-      // @ts-ignore
       .setTitle(`${part.system || 'BX'} | ${part.name}`)
       .setColor(0xdc2626)
       .addFields(
@@ -47,7 +72,6 @@ export class PartCommand {
         { name: 'Poids', value: `${part.weight || '?'}g`, inline: true },
         {
           name: 'Rotation',
-          // @ts-ignore
           value: part.spinDirection || 'Right',
           inline: true,
         },
@@ -71,6 +95,7 @@ export class PartCommand {
       description: 'Nom du Ratchet (ex: 3-60)',
       required: true,
       type: ApplicationCommandOptionType.String,
+      autocomplete: PartCommand.autocomplete,
     })
     query: string,
     interaction: CommandInteraction,
@@ -89,7 +114,6 @@ export class PartCommand {
     }
 
     const embed = new EmbedBuilder()
-      // @ts-ignore
       .setTitle(`${part.system || 'BX'} | ${part.name}`)
       .setColor(0x3b82f6)
       .addFields(
@@ -120,6 +144,7 @@ export class PartCommand {
       description: 'Nom du Bit (ex: Flat)',
       required: true,
       type: ApplicationCommandOptionType.String,
+      autocomplete: PartCommand.autocomplete,
     })
     query: string,
     interaction: CommandInteraction,
@@ -138,7 +163,6 @@ export class PartCommand {
     }
 
     const embed = new EmbedBuilder()
-      // @ts-ignore
       .setTitle(`${part.system || 'BX'} | ${part.name}`)
       .setColor(0x22c55e)
       .addFields(

@@ -1,6 +1,11 @@
-import { Send as SendIcon, Person as PersonIcon, Forum as ChannelIcon } from '@mui/icons-material';
+import {
+  Forum as ChannelIcon,
+  Person as PersonIcon,
+  Send as SendIcon,
+} from '@mui/icons-material';
 import {
   Alert,
+  Box,
   Button,
   Card,
   CardContent,
@@ -10,13 +15,12 @@ import {
   Select,
   Stack,
   TextField,
-  Typography,
-  ToggleButtonGroup,
   ToggleButton,
-  Box,
+  ToggleButtonGroup,
+  Typography,
 } from '@mui/material';
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useState, Suspense } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 
 interface Channel {
   id: string;
@@ -26,7 +30,9 @@ interface Channel {
 function BotMessengerContent() {
   const searchParams = useSearchParams();
   const [channels, setChannels] = useState<Channel[]>([]);
-  const [mode, setMode] = useState<'channel' | 'dm'>((searchParams.get('mode') as 'channel' | 'dm') || 'channel');
+  const [mode, setMode] = useState<'channel' | 'dm'>(
+    (searchParams.get('mode') as 'channel' | 'dm') || 'channel',
+  );
   const [channelId, setChannelId] = useState('');
   const [userId, setUserId] = useState(searchParams.get('userId') || '');
   const [content, setContent] = useState('');
@@ -65,10 +71,10 @@ function BotMessengerContent() {
       const response = await fetch('/api/admin/bot/message', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           channelId: mode === 'channel' ? channelId : undefined,
           userId: mode === 'dm' ? userId : undefined,
-          content 
+          content,
         }),
       });
 
@@ -148,7 +154,9 @@ function BotMessengerContent() {
             multiline
             rows={4}
             label="Message"
-            placeholder={mode === 'dm' ? "Message privé..." : "Message public..."}
+            placeholder={
+              mode === 'dm' ? 'Message privé...' : 'Message public...'
+            }
             value={content}
             onChange={(e) => setContent(e.target.value)}
           />
@@ -162,9 +170,17 @@ function BotMessengerContent() {
             variant="contained"
             startIcon={<SendIcon />}
             onClick={handleSendMessage}
-            disabled={loading || !content.trim() || (mode === 'channel' ? !channelId : !userId)}
+            disabled={
+              loading ||
+              !content.trim() ||
+              (mode === 'channel' ? !channelId : !userId)
+            }
           >
-            {loading ? 'Envoi...' : mode === 'dm' ? 'Envoyer le DM' : 'Envoyer dans le salon'}
+            {loading
+              ? 'Envoi...'
+              : mode === 'dm'
+                ? 'Envoyer le DM'
+                : 'Envoyer dans le salon'}
           </Button>
         </Stack>
       </CardContent>

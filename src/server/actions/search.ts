@@ -9,18 +9,23 @@ export async function searchBladers(query: string) {
   const profiles = await prisma.profile.findMany({
     where: {
       OR: [
+        { challongeUsername: { contains: query, mode: 'insensitive' } },
         { bladerName: { contains: query, mode: 'insensitive' } },
         { user: { name: { contains: query, mode: 'insensitive' } } },
         { user: { username: { contains: query, mode: 'insensitive' } } },
-        { user: { discordTag: { contains: query, mode: 'insensitive' } } },
       ],
+      user: {
+        tournaments: { some: {} }, // Uniquement les profils Challonge réels
+      },
     },
     take: 5,
     select: {
       bladerName: true,
+      challongeUsername: true,
       user: {
         select: {
           name: true,
+          username: true,
           image: true,
         },
       },
@@ -39,7 +44,9 @@ export async function searchBladers(query: string) {
   });
 
   const results = profiles.map((p) => ({
-    name: p.bladerName || p.user.name || 'Inconnu',
+    name: p.challongeUsername
+      ? `@${p.challongeUsername}`
+      : `@${p.user.username?.replace(/^bts[1-3]_/, '') || p.bladerName || 'blader'}`,
     image: p.user.image,
   }));
 

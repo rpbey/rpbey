@@ -41,7 +41,12 @@ export function MetaClient({ data }: { data: BbxWeeklyData }) {
         <Typography
           variant="body2"
           color="text.secondary"
-          sx={{ mt: 0.5, maxWidth: 600, mx: 'auto', fontSize: { xs: '0.8rem', md: '0.875rem' } }}
+          sx={{
+            mt: 0.5,
+            maxWidth: 600,
+            mx: 'auto',
+            fontSize: { xs: '0.8rem', md: '0.875rem' },
+          }}
         >
           Rankings basés sur les podiums des tournois{' '}
           <Link

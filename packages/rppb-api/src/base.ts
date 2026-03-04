@@ -90,7 +90,7 @@ export class BaseClient {
       ...(revalidate !== undefined ? { next: { revalidate } } : {}),
     } as any;
 
-    let finalUrl = url.toString();
+    const finalUrl = url.toString();
 
     // Request Interceptors
     for (const interceptor of this.interceptors) {

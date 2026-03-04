@@ -1,12 +1,6 @@
 'use client';
 
-import {
-  EmojiEvents,
-  Home,
-  Leaderboard,
-  Person,
-  WorkspacePremium,
-} from '@mui/icons-material';
+import { EmojiEvents, Home, Leaderboard, Person } from '@mui/icons-material';
 import {
   BottomNavigation,
   BottomNavigationAction,

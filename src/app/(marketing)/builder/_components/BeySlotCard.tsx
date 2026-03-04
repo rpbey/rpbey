@@ -12,7 +12,7 @@ import {
 import { alpha } from '@mui/material/styles';
 import type { Part } from '@prisma/client';
 import { StatRadar } from '@/components/ui/StatRadar';
-import { useBuilder, isCXBlade, type BuilderStep } from './BuilderContext';
+import { type BuilderStep, isCXBlade, useBuilder } from './BuilderContext';
 
 function parseStat(stat: string | number | null | undefined): number {
   if (typeof stat === 'number') return stat;
@@ -29,7 +29,9 @@ function calculateStats(
   lockChip: Part | null,
   assistBlade: Part | null,
 ) {
-  const parts = [blade, overBlade, ratchet, bit, lockChip, assistBlade].filter(Boolean) as Part[];
+  const parts = [blade, overBlade, ratchet, bit, lockChip, assistBlade].filter(
+    Boolean,
+  ) as Part[];
   return parts.reduce(
     (acc, part) => ({
       attack: acc.attack + parseStat(part.attack),
@@ -62,9 +64,19 @@ const BASE_ROWS: PartRow[] = [
 
 const CX_ROWS: PartRow[] = [
   { key: 'blade', label: 'Lame (Core)', step: 'BLADE', color: '#ef4444' },
-  { key: 'overBlade', label: 'Over Blade', step: 'OVER_BLADE', color: '#ec4899' },
+  {
+    key: 'overBlade',
+    label: 'Over Blade',
+    step: 'OVER_BLADE',
+    color: '#ec4899',
+  },
   { key: 'lockChip', label: 'Lock Chip', step: 'LOCK_CHIP', color: '#f97316' },
-  { key: 'assistBlade', label: 'Assist', step: 'ASSIST_BLADE', color: '#8b5cf6' },
+  {
+    key: 'assistBlade',
+    label: 'Assist',
+    step: 'ASSIST_BLADE',
+    color: '#8b5cf6',
+  },
   { key: 'ratchet', label: 'Ratchet', step: 'RATCHET', color: '#fbbf24' },
   { key: 'bit', label: 'Bit', step: 'BIT', color: '#3b82f6' },
 ];
@@ -77,10 +89,22 @@ export function BeySlotCard({ slotIndex }: BeySlotCardProps) {
   const rows = isCX ? CX_ROWS : BASE_ROWS;
 
   const isComplete = isCX
-    ? !!bey.blade && !!bey.overBlade && !!bey.lockChip && !!bey.assistBlade && !!bey.ratchet && !!bey.bit
+    ? !!bey.blade &&
+      !!bey.overBlade &&
+      !!bey.lockChip &&
+      !!bey.assistBlade &&
+      !!bey.ratchet &&
+      !!bey.bit
     : !!bey.blade && !!bey.ratchet && !!bey.bit;
 
-  const stats = calculateStats(bey.blade, bey.overBlade, bey.ratchet, bey.bit, bey.lockChip, bey.assistBlade);
+  const stats = calculateStats(
+    bey.blade,
+    bey.overBlade,
+    bey.ratchet,
+    bey.bit,
+    bey.lockChip,
+    bey.assistBlade,
+  );
 
   const handleSlotClick = () => {
     dispatch({ type: 'SET_ACTIVE_SLOT', slotIndex });
@@ -106,17 +130,28 @@ export function BeySlotCard({ slotIndex }: BeySlotCardProps) {
         borderRadius: 3,
         border: '2px solid',
         borderColor: isActive ? 'error.main' : 'divider',
-        bgcolor: isActive ? (theme) => alpha(theme.palette.error.main, 0.03) : 'transparent',
+        bgcolor: isActive
+          ? (theme) => alpha(theme.palette.error.main, 0.03)
+          : 'transparent',
         boxShadow: isActive ? '0 0 16px rgba(220,38,38,0.12)' : 'none',
         cursor: 'pointer',
         transition: 'all 0.25s ease-out',
         '&:hover': {
           borderColor: isActive ? 'error.main' : 'text.disabled',
-          bgcolor: isActive ? (theme) => alpha(theme.palette.error.main, 0.03) : (theme) => alpha(theme.palette.action.hover, 0.04),
+          bgcolor: isActive
+            ? (theme) => alpha(theme.palette.error.main, 0.03)
+            : (theme) => alpha(theme.palette.action.hover, 0.04),
         },
       }}
     >
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          mb: 1.5,
+        }}
+      >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <Typography variant="subtitle2" fontWeight="900" letterSpacing={0.5}>
             BEY #{slotIndex + 1}
@@ -125,7 +160,14 @@ export function BeySlotCard({ slotIndex }: BeySlotCardProps) {
             <Chip
               label="CX"
               size="small"
-              sx={{ fontWeight: 'bold', fontSize: '0.6rem', height: 20, borderRadius: 1, bgcolor: 'rgba(139,92,246,0.15)', color: '#8b5cf6' }}
+              sx={{
+                fontWeight: 'bold',
+                fontSize: '0.6rem',
+                height: 20,
+                borderRadius: 1,
+                bgcolor: 'rgba(139,92,246,0.15)',
+                color: '#8b5cf6',
+              }}
             />
           )}
         </Box>
@@ -134,7 +176,12 @@ export function BeySlotCard({ slotIndex }: BeySlotCardProps) {
           size="small"
           color={isComplete ? 'success' : 'default'}
           variant={isComplete ? 'filled' : 'outlined'}
-          sx={{ fontWeight: 'bold', fontSize: '0.65rem', height: 22, borderRadius: 1.5 }}
+          sx={{
+            fontWeight: 'bold',
+            fontSize: '0.65rem',
+            height: 22,
+            borderRadius: 1.5,
+          }}
         />
       </Box>
 
@@ -157,11 +204,17 @@ export function BeySlotCard({ slotIndex }: BeySlotCardProps) {
                 px: 1.5,
                 borderRadius: 2,
                 cursor: 'pointer',
-                bgcolor: isActiveRow ? (theme) => alpha(theme.palette.error.main, 0.08) : 'transparent',
+                bgcolor: isActiveRow
+                  ? (theme) => alpha(theme.palette.error.main, 0.08)
+                  : 'transparent',
                 border: '1px solid',
                 borderColor: isActiveRow ? 'error.main' : 'transparent',
                 transition: 'all 0.15s',
-                '&:hover': { bgcolor: isActiveRow ? (theme) => alpha(theme.palette.error.main, 0.08) : 'action.hover' },
+                '&:hover': {
+                  bgcolor: isActiveRow
+                    ? (theme) => alpha(theme.palette.error.main, 0.08)
+                    : 'action.hover',
+                },
               }}
             >
               <Avatar
@@ -180,11 +233,24 @@ export function BeySlotCard({ slotIndex }: BeySlotCardProps) {
                 {label[0]}
               </Avatar>
               <Box sx={{ flex: 1, minWidth: 0 }}>
-                <Typography variant="caption" color="text.secondary" fontSize="0.6rem" fontWeight="bold" textTransform="uppercase" letterSpacing={0.5}>
+                <Typography
+                  variant="caption"
+                  color="text.secondary"
+                  fontSize="0.6rem"
+                  fontWeight="bold"
+                  textTransform="uppercase"
+                  letterSpacing={0.5}
+                >
                   {label}
                 </Typography>
                 <Typography variant="body2" fontWeight="bold" noWrap>
-                  {part ? part.name : <Box component="span" sx={{ color: 'text.disabled' }}>Selectionner...</Box>}
+                  {part ? (
+                    part.name
+                  ) : (
+                    <Box component="span" sx={{ color: 'text.disabled' }}>
+                      Selectionner...
+                    </Box>
+                  )}
                 </Typography>
               </Box>
               {part && (
@@ -194,7 +260,11 @@ export function BeySlotCard({ slotIndex }: BeySlotCardProps) {
                     onClick={(e) => handleRemove(step, e)}
                     sx={{
                       p: 0.5,
-                      '&:hover': { color: 'error.main', bgcolor: (theme) => alpha(theme.palette.error.main, 0.1) },
+                      '&:hover': {
+                        color: 'error.main',
+                        bgcolor: (theme) =>
+                          alpha(theme.palette.error.main, 0.1),
+                      },
                     }}
                   >
                     <Close sx={{ fontSize: 16 }} />
@@ -207,21 +277,72 @@ export function BeySlotCard({ slotIndex }: BeySlotCardProps) {
       </Box>
 
       {isComplete && (
-        <Box sx={{ mt: 2, p: 2, bgcolor: (theme) => alpha(theme.palette.divider, 0.04), borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
-          <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, alignItems: 'center', gap: 2 }}>
-            <Box sx={{ width: 140, height: 140, flexShrink: 0, display: 'flex', justifyContent: 'center' }}>
+        <Box
+          sx={{
+            mt: 2,
+            p: 2,
+            bgcolor: (theme) => alpha(theme.palette.divider, 0.04),
+            borderRadius: 3,
+            border: '1px solid',
+            borderColor: 'divider',
+          }}
+        >
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: { xs: 'column', sm: 'row' },
+              alignItems: 'center',
+              gap: 2,
+            }}
+          >
+            <Box
+              sx={{
+                width: 140,
+                height: 140,
+                flexShrink: 0,
+                display: 'flex',
+                justifyContent: 'center',
+              }}
+            >
               <StatRadar stats={stats} size={140} />
             </Box>
-            
-            <Box sx={{ flex: 1, width: '100%', display: 'flex', flexDirection: 'column', gap: 1 }}>
+
+            <Box
+              sx={{
+                flex: 1,
+                width: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 1,
+              }}
+            >
               <StatBar label="ATK" value={stats.attack} color="#ef4444" />
               <StatBar label="DEF" value={stats.defense} color="#3b82f6" />
               <StatBar label="END" value={stats.stamina} color="#22c55e" />
               <StatBar label="DSH" value={stats.dash} color="#fbbf24" />
-              
-              <Box sx={{ mt: 0.5, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Typography variant="caption" fontWeight="900" color="text.secondary">POIDS TOTAL</Typography>
-                <Typography variant="subtitle2" fontWeight="900" color="error.main">{stats.weight.toFixed(1)}g</Typography>
+
+              <Box
+                sx={{
+                  mt: 0.5,
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                }}
+              >
+                <Typography
+                  variant="caption"
+                  fontWeight="900"
+                  color="text.secondary"
+                >
+                  POIDS TOTAL
+                </Typography>
+                <Typography
+                  variant="subtitle2"
+                  fontWeight="900"
+                  color="error.main"
+                >
+                  {stats.weight.toFixed(1)}g
+                </Typography>
               </Box>
             </Box>
           </Box>
@@ -231,22 +352,50 @@ export function BeySlotCard({ slotIndex }: BeySlotCardProps) {
   );
 }
 
-function StatBar({ label, value, color }: { label: string, value: number, color: string }) {
+function StatBar({
+  label,
+  value,
+  color,
+}: {
+  label: string;
+  value: number;
+  color: string;
+}) {
   return (
     <Box sx={{ width: '100%' }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.25 }}>
-        <Typography sx={{ fontSize: '0.65rem', fontWeight: '900', color: 'text.secondary' }}>{label}</Typography>
-        <Typography sx={{ fontSize: '0.65rem', fontWeight: '900', color: color }}>{value}</Typography>
+        <Typography
+          sx={{
+            fontSize: '0.65rem',
+            fontWeight: '900',
+            color: 'text.secondary',
+          }}
+        >
+          {label}
+        </Typography>
+        <Typography
+          sx={{ fontSize: '0.65rem', fontWeight: '900', color: color }}
+        >
+          {value}
+        </Typography>
       </Box>
-      <Box sx={{ height: 4, width: '100%', bgcolor: 'rgba(0,0,0,0.1)', borderRadius: 2, overflow: 'hidden' }}>
-        <Box 
-          sx={{ 
-            height: '100%', 
-            width: `${Math.min(value, 100)}%`, 
+      <Box
+        sx={{
+          height: 4,
+          width: '100%',
+          bgcolor: 'rgba(0,0,0,0.1)',
+          borderRadius: 2,
+          overflow: 'hidden',
+        }}
+      >
+        <Box
+          sx={{
+            height: '100%',
+            width: `${Math.min(value, 100)}%`,
             bgcolor: color,
             boxShadow: `0 0 8px ${alpha(color, 0.5)}`,
-            transition: 'width 1s ease-out'
-          }} 
+            transition: 'width 1s ease-out',
+          }}
         />
       </Box>
     </Box>

@@ -153,7 +153,7 @@ async function main() {
 
     console.log(`✅ Importation de B_TS3 terminée avec succès.`);
   } catch (err: any) {
-    console.error('❌ Erreur lors de l'importation:', err);
+    console.error("❌ Erreur lors de l'importation:", err);
   } finally {
     await scraper.close();
     await prisma.$disconnect();

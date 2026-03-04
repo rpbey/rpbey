@@ -177,7 +177,7 @@ export async function exportTournamentToSheets(tournamentId: string) {
       'Bey 3',
     ];
     const participantRows = tournament.participants.map((p) => {
-      const deck = p.user.decks?.[0];
+      const deck = p.user?.decks?.[0];
       const items = deck?.items || [];
 
       const beyStrings = [0, 1, 2].map((i) => {
@@ -199,8 +199,8 @@ export async function exportTournamentToSheets(tournamentId: string) {
 
       return [
         p.seed || '-',
-        p.user.name || p.user.email,
-        p.user.discordTag || '-',
+        p.playerName || p.user?.name || p.user?.email || 'Unknown',
+        p.user?.discordTag || '-',
         deck?.name || 'Aucun deck',
         ...beyStrings,
       ];

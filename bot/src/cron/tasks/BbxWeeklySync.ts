@@ -13,7 +13,9 @@ export async function bbxWeeklySyncTask() {
       stdio: ['pipe', 'pipe', 'pipe'],
     });
 
-    logger.info(`[Cron] BBX Weekly sync terminée: ${output.trim().split('\n').pop()}`);
+    logger.info(
+      `[Cron] BBX Weekly sync terminée: ${output.trim().split('\n').pop()}`,
+    );
   } catch (error) {
     logger.error('[Cron] Erreur synchronisation BBX Weekly:', error);
   }

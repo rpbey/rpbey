@@ -53,7 +53,9 @@ function calculateStats(
   burst: number;
   weight: number;
 } {
-  const parts = [blade, overBlade, ratchet, bit, lockChip, assistBlade].filter(Boolean) as Part[];
+  const parts = [blade, overBlade, ratchet, bit, lockChip, assistBlade].filter(
+    Boolean,
+  ) as Part[];
 
   return parts.reduce(
     (acc, part) => ({
@@ -78,9 +80,20 @@ export function BeyBuilder({
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-  const stats = calculateStats(data.blade, data.overBlade, data.ratchet, data.bit, data.lockChip, data.assistBlade);
+  const stats = calculateStats(
+    data.blade,
+    data.overBlade,
+    data.ratchet,
+    data.bit,
+    data.lockChip,
+    data.assistBlade,
+  );
   const isCX = data.blade?.system === 'CX';
-  const isComplete = data.blade && data.ratchet && data.bit && (!isCX || (data.overBlade && data.lockChip && data.assistBlade));
+  const isComplete =
+    data.blade &&
+    data.ratchet &&
+    data.bit &&
+    (!isCX || (data.overBlade && data.lockChip && data.assistBlade));
 
   // Filter out current bey's parts from usedPartIds
   const currentPartIds = [
@@ -137,7 +150,11 @@ export function BeyBuilder({
       <Box
         sx={{
           display: 'grid',
-          gridTemplateColumns: isMobile ? '1fr' : isCX ? 'repeat(6, 1fr)' : '1fr 1fr 1fr',
+          gridTemplateColumns: isMobile
+            ? '1fr'
+            : isCX
+              ? 'repeat(6, 1fr)'
+              : '1fr 1fr 1fr',
           gap: 2,
         }}
       >
@@ -256,27 +273,53 @@ export function BeyBuilder({
               gap: 2,
             }}
           >
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', mb: 1 }}>
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'flex-end',
+                mb: 1,
+              }}
+            >
               <Box>
-                <Typography variant="caption" sx={{ color: '#666', fontWeight: '900', letterSpacing: 2 }}>
+                <Typography
+                  variant="caption"
+                  sx={{ color: '#666', fontWeight: '900', letterSpacing: 2 }}
+                >
                   POIDS TOTAL
                 </Typography>
-                <Typography variant="h3" sx={{ color: 'white', fontWeight: '900', lineHeight: 1 }}>
-                  {stats.weight.toFixed(1)}<span style={{ fontSize: '1rem', color: '#444', marginLeft: 4 }}>g</span>
+                <Typography
+                  variant="h3"
+                  sx={{ color: 'white', fontWeight: '900', lineHeight: 1 }}
+                >
+                  {stats.weight.toFixed(1)}
+                  <span
+                    style={{ fontSize: '1rem', color: '#444', marginLeft: 4 }}
+                  >
+                    g
+                  </span>
                 </Typography>
               </Box>
-              <Chip 
-                label={isComplete ? 'CONFIG VALIDÉE' : 'CONFIG INCOMPLÈTE'} 
+              <Chip
+                label={isComplete ? 'CONFIG VALIDÉE' : 'CONFIG INCOMPLÈTE'}
                 color={isComplete ? 'success' : 'default'}
                 size="small"
-                sx={{ fontWeight: '900', borderRadius: 1.5, fontSize: '0.65rem' }}
+                sx={{
+                  fontWeight: '900',
+                  borderRadius: 1.5,
+                  fontSize: '0.65rem',
+                }}
               />
             </Box>
 
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
               <StatBar label="ATTAQUE" value={stats.attack} color="#ef4444" />
               <StatBar label="DÉFENSE" value={stats.defense} color="#3b82f6" />
-              <StatBar label="ENDURANCE" value={stats.stamina} color="#22c55e" />
+              <StatBar
+                label="ENDURANCE"
+                value={stats.stamina}
+                color="#22c55e"
+              />
               <StatBar label="DASH" value={stats.dash} color="#fbbf24" />
             </Box>
           </Box>
@@ -286,22 +329,51 @@ export function BeyBuilder({
   );
 }
 
-function StatBar({ label, value, color }: { label: string, value: number, color: string }) {
+function StatBar({
+  label,
+  value,
+  color,
+}: {
+  label: string;
+  value: number;
+  color: string;
+}) {
   return (
     <Box sx={{ width: '100%' }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
-        <Typography sx={{ fontSize: '0.7rem', fontWeight: '900', color: '#666', letterSpacing: 0.5 }}>{label}</Typography>
-        <Typography sx={{ fontSize: '0.7rem', fontWeight: '900', color: color }}>{value}</Typography>
+        <Typography
+          sx={{
+            fontSize: '0.7rem',
+            fontWeight: '900',
+            color: '#666',
+            letterSpacing: 0.5,
+          }}
+        >
+          {label}
+        </Typography>
+        <Typography
+          sx={{ fontSize: '0.7rem', fontWeight: '900', color: color }}
+        >
+          {value}
+        </Typography>
       </Box>
-      <Box sx={{ height: 6, width: '100%', bgcolor: '#222', borderRadius: 3, overflow: 'hidden' }}>
-        <Box 
-          sx={{ 
-            height: '100%', 
-            width: `${Math.min(value, 100)}%`, 
+      <Box
+        sx={{
+          height: 6,
+          width: '100%',
+          bgcolor: '#222',
+          borderRadius: 3,
+          overflow: 'hidden',
+        }}
+      >
+        <Box
+          sx={{
+            height: '100%',
+            width: `${Math.min(value, 100)}%`,
             bgcolor: color,
             boxShadow: `0 0 12px ${color}66`,
-            transition: 'width 1s cubic-bezier(0.4, 0, 0.2, 1)'
-          }} 
+            transition: 'width 1s cubic-bezier(0.4, 0, 0.2, 1)',
+          }}
         />
       </Box>
     </Box>

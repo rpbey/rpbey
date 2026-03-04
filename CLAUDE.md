@@ -137,6 +137,55 @@ Required:
 - `bot/data/knowledge_base.txt` - Bot's local knowledge copy
 
 ## Deployment
-- **Dashboard**: Docker Compose (Production)
-- **Bot**: Systemd service (`rpb-bot.service`)
+- **Dashboard**: Docker Compose (Production) via `docker-compose.prod.yml`
+- **Bot**: Runs in Docker (same compose file)
 - Production URL: `https://rpbey.fr`
+- Hosted on Hetzner dedicated server (root access)
+
+### Deploy Commands
+```bash
+# Build
+docker compose -f docker-compose.prod.yml build dashboard bot --no-cache
+# Deploy
+docker compose -f docker-compose.prod.yml up -d dashboard bot
+# Logs
+docker compose -f docker-compose.prod.yml logs -f dashboard
+docker compose -f docker-compose.prod.yml logs -f bot
+```
+
+## Autonomous Mode Instructions
+
+Claude Code operates in FULL AUTONOMOUS mode on this project. Follow these rules:
+
+### Decision Making
+- **DO NOT ask for confirmation** before editing files, running builds, or making git commits
+- **DO NOT ask which approach to use** — pick the best one based on existing patterns
+- **Auto-fix lint/type errors** after any code change — run `pnpm build` or `npx tsc --noEmit` to verify
+- **Auto-format** with `pnpm check` after edits
+- **Auto-commit** when a task is fully complete and builds pass
+- **Run `pnpm db:generate`** automatically after any Prisma schema change
+
+### Workflow
+1. Read relevant files first to understand context
+2. Make changes
+3. Verify with build/typecheck
+4. Fix any errors
+5. Format code
+6. Commit with descriptive message if task is complete
+
+### Code Patterns to Follow
+- Use `prisma` client from `src/lib/prisma.ts` (dashboard) or `bot/src/lib/prisma.ts` (bot)
+- Server Actions go in `src/server/actions/`
+- API routes follow REST conventions in `src/app/api/`
+- Use shadcn/ui components from `src/components/ui/`
+- Tailwind CSS for styling, no CSS modules
+- French for all user-facing text, English for code
+- Always use `import type` for type-only imports
+- Prefer `const` over `let`, arrow functions for callbacks
+- Use Zod for validation at API boundaries
+
+### Git Conventions
+- Commit format: `type(scope): description` (e.g., `feat(rankings): add season filter`)
+- Types: feat, fix, refactor, chore, docs, style, perf, test
+- Branch from `main`, push directly to `main` for small changes
+- Co-author line: `Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>`

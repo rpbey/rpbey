@@ -2,13 +2,15 @@
 
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import CloseIcon from '@mui/icons-material/Close';
-import OpenInNewIcon from '@mui/icons-material/OpenInNew';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import {
   Box,
   Button,
   Chip,
+  CircularProgress,
+  Collapse,
   Dialog,
   DialogContent,
   DialogTitle,
@@ -19,9 +21,6 @@ import {
   ListItemText,
   Stack,
   Typography,
-  Collapse,
-  CircularProgress,
-  alpha
 } from '@mui/material';
 import type { SatrBlader } from '@prisma/client';
 import Link from 'next/link';
@@ -39,7 +38,9 @@ export function SatrBladerDialog({
   open,
   onClose,
 }: SatrBladerDialogProps) {
-  const [expandedTournament, setExpandedTournament] = useState<string | null>(null);
+  const [expandedTournament, setExpandedTournament] = useState<string | null>(
+    null,
+  );
   const [top10Data, setTop10Data] = useState<any[]>([]);
   const [loadingTop10, setLoadingTop10] = useState(false);
 
@@ -58,20 +59,20 @@ export function SatrBladerDialog({
   };
 
   const handleToggleExpand = async (slug: string) => {
-      if (expandedTournament === slug) {
-          setExpandedTournament(null);
-          return;
-      }
+    if (expandedTournament === slug) {
+      setExpandedTournament(null);
+      return;
+    }
 
-      setExpandedTournament(slug);
-      setLoadingTop10(true);
-      setTop10Data([]);
-      
-      const res = await getTournamentTop10(slug);
-      if (res.success && res.data) {
-          setTop10Data(res.data);
-      }
-      setLoadingTop10(false);
+    setExpandedTournament(slug);
+    setLoadingTop10(true);
+    setTop10Data([]);
+
+    const res = await getTournamentTop10(slug);
+    if (res.success && res.data) {
+      setTop10Data(res.data);
+    }
+    setLoadingTop10(false);
   };
 
   return (
@@ -149,76 +150,129 @@ export function SatrBladerDialog({
             .map((h, index) => (
               <Box key={index}>
                 <ListItem
-                    divider={!expandedTournament || expandedTournament !== h.tournament}
-                    sx={{ cursor: 'pointer' }}
-                    onClick={() => handleToggleExpand(h.tournament)}
-                    secondaryAction={
-                        <Stack direction="row" spacing={1} alignItems="center">
-                            <IconButton
-                                size="small"
-                                component="a"
-                                href={getChallongeUrl(h.tournament)}
-                                target="_blank"
-                                onClick={(e) => e.stopPropagation()}
-                            >
-                                <OpenInNewIcon sx={{ fontSize: 18, opacity: 0.5 }} />
-                            </IconButton>
-                            {expandedTournament === h.tournament ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                        </Stack>
-                    }
+                  divider={
+                    !expandedTournament || expandedTournament !== h.tournament
+                  }
+                  sx={{ cursor: 'pointer' }}
+                  onClick={() => handleToggleExpand(h.tournament)}
+                  secondaryAction={
+                    <Stack direction="row" spacing={1} alignItems="center">
+                      <IconButton
+                        size="small"
+                        component="a"
+                        href={getChallongeUrl(h.tournament)}
+                        target="_blank"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <OpenInNewIcon sx={{ fontSize: 18, opacity: 0.5 }} />
+                      </IconButton>
+                      {expandedTournament === h.tournament ? (
+                        <ExpandLessIcon />
+                      ) : (
+                        <ExpandMoreIcon />
+                      )}
+                    </Stack>
+                  }
                 >
-                    <ListItemText
+                  <ListItemText
                     primary={h.tournament.toUpperCase().replace('_', ' ')}
                     secondary={`${h.wins}W - ${h.losses}L`}
                     primaryTypographyProps={{
-                        fontWeight: 'bold',
-                        fontSize: '0.9rem',
+                      fontWeight: 'bold',
+                      fontSize: '0.9rem',
                     }}
-                    />
-                    <Chip
+                  />
+                  <Chip
                     label={`#${h.rank || '?'}`}
                     size="small"
                     color={h.rank && h.rank <= 3 ? 'warning' : 'default'}
                     sx={{
-                        fontWeight: 'bold',
-                        mr: 2,
-                        minWidth: 45,
-                        bgcolor:
+                      fontWeight: 'bold',
+                      mr: 2,
+                      minWidth: 45,
+                      bgcolor:
                         h.rank === 1
-                            ? '#FFD700'
-                            : h.rank === 2
+                          ? '#FFD700'
+                          : h.rank === 2
                             ? '#C0C0C0'
                             : h.rank === 3
-                                ? '#CD7F32'
-                                : undefined,
-                        color: h.rank && h.rank <= 3 ? 'black' : 'inherit',
+                              ? '#CD7F32'
+                              : undefined,
+                      color: h.rank && h.rank <= 3 ? 'black' : 'inherit',
                     }}
-                    />
+                  />
                 </ListItem>
-                
-                <Collapse in={expandedTournament === h.tournament} timeout="auto" unmountOnExit>
-                    <Box sx={{ bgcolor: 'action.hover', px: 2, py: 1.5, borderBottom: '1px solid', borderColor: 'divider' }}>
-                        <Typography variant="overline" sx={{ fontWeight: 900, color: 'primary.main', mb: 1, display: 'block' }}>
-                            Top 10 du tournoi
-                        </Typography>
-                        
-                        {loadingTop10 ? (
-                            <Box sx={{ display: 'flex', justifyContent: 'center', py: 2 }}>
-                                <CircularProgress size={20} />
-                            </Box>
-                        ) : (
-                            <Stack spacing={0.5}>
-                                {top10Data.map((top, i) => (
-                                    <Box key={i} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                        <Typography variant="body2" sx={{ fontWeight: top.name === blader.name ? 900 : 500, color: top.name === blader.name ? 'primary.main' : 'inherit' }}>
-                                            {top.rank}. {top.name}
-                                        </Typography>
-                                        {top.rank === 1 && <Typography sx={{ fontSize: '0.8rem' }}>🏆</Typography>}
-                                    </Box>
-                                ))}
-                            </Stack>
-                        )}
-                    </Box>
+
+                <Collapse
+                  in={expandedTournament === h.tournament}
+                  timeout="auto"
+                  unmountOnExit
+                >
+                  <Box
+                    sx={{
+                      bgcolor: 'action.hover',
+                      px: 2,
+                      py: 1.5,
+                      borderBottom: '1px solid',
+                      borderColor: 'divider',
+                    }}
+                  >
+                    <Typography
+                      variant="overline"
+                      sx={{
+                        fontWeight: 900,
+                        color: 'primary.main',
+                        mb: 1,
+                        display: 'block',
+                      }}
+                    >
+                      Top 10 du tournoi
+                    </Typography>
+
+                    {loadingTop10 ? (
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          justifyContent: 'center',
+                          py: 2,
+                        }}
+                      >
+                        <CircularProgress size={20} />
+                      </Box>
+                    ) : (
+                      <Stack spacing={0.5}>
+                        {top10Data.map((top, i) => (
+                          <Box
+                            key={i}
+                            sx={{
+                              display: 'flex',
+                              justifyContent: 'space-between',
+                              alignItems: 'center',
+                            }}
+                          >
+                            <Typography
+                              variant="body2"
+                              sx={{
+                                fontWeight:
+                                  top.name === blader.name ? 900 : 500,
+                                color:
+                                  top.name === blader.name
+                                    ? 'primary.main'
+                                    : 'inherit',
+                              }}
+                            >
+                              {top.rank}. {top.name}
+                            </Typography>
+                            {top.rank === 1 && (
+                              <Typography sx={{ fontSize: '0.8rem' }}>
+                                🏆
+                              </Typography>
+                            )}
+                          </Box>
+                        ))}
+                      </Stack>
+                    )}
+                  </Box>
                 </Collapse>
               </Box>
             ))}

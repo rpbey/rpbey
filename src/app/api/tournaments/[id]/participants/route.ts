@@ -108,12 +108,10 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     }
 
     // Check if already registered
-    const existing = await prisma.tournamentParticipant.findUnique({
+    const existing = await prisma.tournamentParticipant.findFirst({
       where: {
-        tournamentId_userId: {
-          tournamentId: id,
-          userId: targetUserId,
-        },
+        tournamentId: id,
+        userId: targetUserId,
       },
     });
 
@@ -199,12 +197,10 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    const participant = await prisma.tournamentParticipant.findUnique({
+    const participant = await prisma.tournamentParticipant.findFirst({
       where: {
-        tournamentId_userId: {
-          tournamentId: id,
-          userId: targetUserId,
-        },
+        tournamentId: id,
+        userId: targetUserId,
       },
       include: { tournament: true },
     });
@@ -239,12 +235,10 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
       }
     }
 
-    await prisma.tournamentParticipant.delete({
+    await prisma.tournamentParticipant.deleteMany({
       where: {
-        tournamentId_userId: {
-          tournamentId: id,
-          userId: targetUserId,
-        },
+        tournamentId: id,
+        userId: targetUserId,
       },
     });
 

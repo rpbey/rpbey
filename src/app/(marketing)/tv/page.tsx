@@ -1,6 +1,6 @@
 import { Box, Container, Typography } from '@mui/material';
 import { getBeyTubeFeatured } from '@/lib/beytube';
-import { getTikTokVideos, type TikTokVideo } from '@/lib/tiktok';
+import { getTikTokVideos } from '@/lib/tiktok';
 import { getRPBClips } from '@/lib/twitch';
 import { getRecentYouTubeVideos } from '@/lib/youtube';
 import { TvFeed } from './_components/TvFeed';
@@ -34,7 +34,7 @@ export default async function TVPage() {
   const clipsPromise = safeFetch(getRPBClips(20), []);
   const rpbVideosPromise = safeFetch(getRecentYouTubeVideos(undefined, 20), []);
   const beyTubeVideosPromise = safeFetch(getBeyTubeFeatured(), []);
-  
+
   // TikTok needs merging so we create a combined promise
   const tikTokVideosPromise = (async () => {
     const [rpbTikTok, skarnTikTok, sunTikTok] = await Promise.all([
@@ -43,11 +43,7 @@ export default async function TVPage() {
       safeFetch(getTikTokVideos('sunafterthereign'), []),
     ]);
 
-    return [
-      ...rpbTikTok,
-      ...skarnTikTok,
-      ...sunTikTok,
-    ]
+    return [...rpbTikTok, ...skarnTikTok, ...sunTikTok]
       .sort((a, b) => b.createTime - a.createTime)
       .slice(0, 20);
   })();

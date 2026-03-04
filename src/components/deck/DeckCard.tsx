@@ -56,7 +56,9 @@ function parseStat(stat: string | number | null | undefined): number {
 }
 
 function calculateStats(bey: DeckBey) {
-  const parts = [bey.blade, bey.ratchet, bey.bit, bey.assistBlade].filter(Boolean) as Part[];
+  const parts = [bey.blade, bey.ratchet, bey.bit, bey.assistBlade].filter(
+    Boolean,
+  ) as Part[];
   return parts.reduce(
     (acc, part) => ({
       attack: acc.attack + parseStat(part.attack),
@@ -76,7 +78,14 @@ function BeyLine({ bey }: { bey: DeckBey }) {
   const isCX = bey.blade?.system === 'CX';
 
   return (
-    <Box sx={{ py: 2, borderBottom: '1px solid', borderColor: 'divider', '&:last-child': { borderBottom: 'none' } }}>
+    <Box
+      sx={{
+        py: 2,
+        borderBottom: '1px solid',
+        borderColor: 'divider',
+        '&:last-child': { borderBottom: 'none' },
+      }}
+    >
       <Box sx={{ display: 'flex', gap: 2, alignItems: 'flex-start', mb: 1.5 }}>
         <Avatar
           src={bey.blade?.imageUrl || undefined}
@@ -87,7 +96,7 @@ function BeyLine({ bey }: { bey: DeckBey }) {
             bgcolor: 'background.paper',
             border: '2px solid',
             borderColor: isCX ? '#8b5cf6' : 'divider',
-            boxShadow: isCX ? '0 0 10px rgba(139,92,246,0.2)' : 'none'
+            boxShadow: isCX ? '0 0 10px rgba(139,92,246,0.2)' : 'none',
           }}
         >
           {bey.position}
@@ -95,37 +104,126 @@ function BeyLine({ bey }: { bey: DeckBey }) {
         <Box sx={{ flex: 1, minWidth: 0 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <Typography variant="subtitle2" fontWeight="900" noWrap>
-              {bey.nickname || (partsAvailable ? bey.blade?.name : 'Bey incomplet')}
+              {bey.nickname ||
+                (partsAvailable ? bey.blade?.name : 'Bey incomplet')}
             </Typography>
-            {isCX && <Chip label="CX" size="small" sx={{ height: 16, fontSize: '0.6rem', fontWeight: '900', bgcolor: 'rgba(139,92,246,0.1)', color: '#8b5cf6' }} />}
+            {isCX && (
+              <Chip
+                label="CX"
+                size="small"
+                sx={{
+                  height: 16,
+                  fontSize: '0.6rem',
+                  fontWeight: '900',
+                  bgcolor: 'rgba(139,92,246,0.1)',
+                  color: '#8b5cf6',
+                }}
+              />
+            )}
           </Box>
-          <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.25 }}>
-            {partsAvailable ? `${bey.ratchet?.name} • ${bey.bit?.name}` : 'Pièces manquantes'}
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            sx={{ display: 'block', mt: 0.25 }}
+          >
+            {partsAvailable
+              ? `${bey.ratchet?.name} • ${bey.bit?.name}`
+              : 'Pièces manquantes'}
           </Typography>
         </Box>
       </Box>
 
       {partsAvailable && (
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, bgcolor: (theme) => alpha(theme.palette.divider, 0.03), p: 1.5, borderRadius: 2 }}>
-          <Box sx={{ width: 80, height: 80, flexShrink: 0, display: 'flex', justifyContent: 'center' }}>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 2,
+            bgcolor: (theme) => alpha(theme.palette.divider, 0.03),
+            p: 1.5,
+            borderRadius: 2,
+          }}
+        >
+          <Box
+            sx={{
+              width: 80,
+              height: 80,
+              flexShrink: 0,
+              display: 'flex',
+              justifyContent: 'center',
+            }}
+          >
             <StatRadar stats={stats} size={80} />
           </Box>
-          <Box sx={{ flex: 1, display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 0.5 }}>
+          <Box
+            sx={{
+              flex: 1,
+              display: 'grid',
+              gridTemplateColumns: 'repeat(2, 1fr)',
+              gap: 0.5,
+            }}
+          >
             <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-              <Typography sx={{ fontSize: '0.6rem', fontWeight: '900', color: 'text.disabled' }}>ATK</Typography>
-              <Typography sx={{ fontSize: '0.6rem', fontWeight: '900', color: '#ef4444' }}>{stats.attack}</Typography>
+              <Typography
+                sx={{
+                  fontSize: '0.6rem',
+                  fontWeight: '900',
+                  color: 'text.disabled',
+                }}
+              >
+                ATK
+              </Typography>
+              <Typography
+                sx={{ fontSize: '0.6rem', fontWeight: '900', color: '#ef4444' }}
+              >
+                {stats.attack}
+              </Typography>
             </Box>
             <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-              <Typography sx={{ fontSize: '0.6rem', fontWeight: '900', color: 'text.disabled' }}>DEF</Typography>
-              <Typography sx={{ fontSize: '0.6rem', fontWeight: '900', color: '#3b82f6' }}>{stats.defense}</Typography>
+              <Typography
+                sx={{
+                  fontSize: '0.6rem',
+                  fontWeight: '900',
+                  color: 'text.disabled',
+                }}
+              >
+                DEF
+              </Typography>
+              <Typography
+                sx={{ fontSize: '0.6rem', fontWeight: '900', color: '#3b82f6' }}
+              >
+                {stats.defense}
+              </Typography>
             </Box>
             <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-              <Typography sx={{ fontSize: '0.6rem', fontWeight: '900', color: 'text.disabled' }}>END</Typography>
-              <Typography sx={{ fontSize: '0.6rem', fontWeight: '900', color: '#22c55e' }}>{stats.stamina}</Typography>
+              <Typography
+                sx={{
+                  fontSize: '0.6rem',
+                  fontWeight: '900',
+                  color: 'text.disabled',
+                }}
+              >
+                END
+              </Typography>
+              <Typography
+                sx={{ fontSize: '0.6rem', fontWeight: '900', color: '#22c55e' }}
+              >
+                {stats.stamina}
+              </Typography>
             </Box>
             <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-              <Typography sx={{ fontSize: '0.6rem', fontWeight: '900', color: 'text.disabled' }}>POIDS</Typography>
-              <Typography sx={{ fontSize: '0.6rem', fontWeight: '900' }}>{stats.weight.toFixed(1)}g</Typography>
+              <Typography
+                sx={{
+                  fontSize: '0.6rem',
+                  fontWeight: '900',
+                  color: 'text.disabled',
+                }}
+              >
+                POIDS
+              </Typography>
+              <Typography sx={{ fontSize: '0.6rem', fontWeight: '900' }}>
+                {stats.weight.toFixed(1)}g
+              </Typography>
             </Box>
           </Box>
         </Box>
@@ -177,10 +275,17 @@ export function DeckCard({
           }}
         >
           <Box sx={{ minWidth: 0 }}>
-            <Typography variant="h6" fontWeight="900" noWrap letterSpacing="-0.01em">
+            <Typography
+              variant="h6"
+              fontWeight="900"
+              noWrap
+              letterSpacing="-0.01em"
+            >
               {deck.name}
             </Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5 }}>
+            <Box
+              sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5 }}
+            >
               {deck.isActive ? (
                 <Chip
                   size="small"
@@ -190,7 +295,10 @@ export function DeckCard({
                   sx={{ height: 20, fontWeight: '900', fontSize: '0.65rem' }}
                 />
               ) : (
-                <Typography variant="caption" sx={{ color: 'text.disabled', fontWeight: 'bold' }}>
+                <Typography
+                  variant="caption"
+                  sx={{ color: 'text.disabled', fontWeight: 'bold' }}
+                >
                   MAJ {new Date(deck.updatedAt).toLocaleDateString()}
                 </Typography>
               )}
@@ -201,7 +309,10 @@ export function DeckCard({
               <IconButton
                 size="small"
                 onClick={onEdit}
-                sx={{ bgcolor: alpha(theme.palette.text.primary, 0.05), borderRadius: 1.5 }}
+                sx={{
+                  bgcolor: alpha(theme.palette.text.primary, 0.05),
+                  borderRadius: 1.5,
+                }}
               >
                 <EditIcon sx={{ fontSize: 18 }} />
               </IconButton>
@@ -211,7 +322,10 @@ export function DeckCard({
                 size="small"
                 onClick={onDelete}
                 color="error"
-                sx={{ bgcolor: alpha(theme.palette.error.main, 0.05), borderRadius: 1.5 }}
+                sx={{
+                  bgcolor: alpha(theme.palette.error.main, 0.05),
+                  borderRadius: 1.5,
+                }}
               >
                 <DeleteIcon sx={{ fontSize: 18 }} />
               </IconButton>
@@ -242,7 +356,7 @@ export function DeckCard({
               fontWeight: '900',
               textTransform: 'none',
               fontSize: '0.8rem',
-              py: 1
+              py: 1,
             }}
           >
             Définir comme actif

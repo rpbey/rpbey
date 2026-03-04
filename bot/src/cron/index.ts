@@ -1,7 +1,7 @@
 import cron from 'node-cron';
 
 import { logger } from '../lib/logger.js';
-
+import { bbxWeeklySyncTask } from './tasks/BbxWeeklySync.js';
 import { dailyStatsTask } from './tasks/DailyStats.js';
 import { liveTournamentSyncTask } from './tasks/LiveTournamentSync.js';
 import { preTournamentSyncTask } from './tasks/PreTournamentSync.js';
@@ -9,7 +9,6 @@ import { satrSyncTask } from './tasks/SatrSync.js';
 import { sessionCleanupTask } from './tasks/SessionCleanup.js';
 import { syncRankingRolesTask } from './tasks/SyncRankingRoles.js';
 import { syncSatrRolesTask } from './tasks/SyncSatrRoles.js';
-import { bbxWeeklySyncTask } from './tasks/BbxWeeklySync.js';
 import { tournamentReminderTask } from './tasks/TournamentReminder.js';
 
 export function setupCronJobs() {

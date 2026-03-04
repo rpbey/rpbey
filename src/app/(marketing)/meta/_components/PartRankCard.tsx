@@ -18,11 +18,7 @@ import { DynamicRadarChart } from '@/components/ui/DynamicCharts';
 import { SynergyList } from './SynergyList';
 import type { ComponentData } from './types';
 
-function PositionIndicator({
-  change,
-}: {
-  change: number | 'NEW';
-}) {
+function PositionIndicator({ change }: { change: number | 'NEW' }) {
   if (change === 'NEW') {
     return (
       <Typography
@@ -90,7 +86,12 @@ export function PartRankCard({
   const hasSynergy = component.synergy.length > 0;
   const hasStats =
     component.stats != null &&
-    component.stats.attack + component.stats.defense + component.stats.stamina + component.stats.dash + component.stats.burst > 0;
+    component.stats.attack +
+      component.stats.defense +
+      component.stats.stamina +
+      component.stats.dash +
+      component.stats.burst >
+      0;
   const isExpandable = hasSynergy || hasStats;
 
   return (
@@ -110,7 +111,9 @@ export function PartRankCard({
       <CardContent
         sx={{
           p: { xs: 1.5, md: 2 },
-          '&:last-child': { pb: isExpandable ? { xs: 1, md: 1.5 } : { xs: 1.5, md: 2 } },
+          '&:last-child': {
+            pb: isExpandable ? { xs: 1, md: 1.5 } : { xs: 1.5, md: 2 },
+          },
         }}
       >
         {/* Header: Rank + Name + Change + Score */}
@@ -237,7 +240,9 @@ export function PartRankCard({
                   transform: expanded ? 'rotate(180deg)' : 'rotate(0deg)',
                 }}
               >
-                <ExpandMoreIcon sx={{ fontSize: { xs: 14, md: 16 }, color: 'text.secondary' }} />
+                <ExpandMoreIcon
+                  sx={{ fontSize: { xs: 14, md: 16 }, color: 'text.secondary' }}
+                />
               </IconButton>
             </Box>
 
@@ -256,11 +261,11 @@ export function PartRankCard({
                       {
                         type: 'radar',
                         data: [
-                          component.stats!.attack,
-                          component.stats!.defense,
-                          component.stats!.stamina,
-                          component.stats!.dash,
-                          component.stats!.burst,
+                          component.stats?.attack,
+                          component.stats?.defense,
+                          component.stats?.stamina,
+                          component.stats?.dash,
+                          component.stats?.burst,
                         ],
                         color,
                         fillArea: true,
@@ -281,8 +286,12 @@ export function PartRankCard({
                       legend: { hidden: true },
                     },
                     sx: {
-                      '& .MuiChartsAxis-line': { stroke: 'rgba(255,255,255,0.1)' },
-                      '& .MuiChartsAxis-tick': { stroke: 'rgba(255,255,255,0.1)' },
+                      '& .MuiChartsAxis-line': {
+                        stroke: 'rgba(255,255,255,0.1)',
+                      },
+                      '& .MuiChartsAxis-tick': {
+                        stroke: 'rgba(255,255,255,0.1)',
+                      },
                       '& .MuiChartsAxis-tickLabel': {
                         fill: 'text.secondary',
                         fontWeight: '900',

@@ -445,16 +445,16 @@ export default async function AboutPage() {
                 >
                   Rejoindre le Discord
                 </Button>
-                <Button
-                  component={Link}
-                  href="/tournaments"
-                  variant="outlined"
-                  size="large"
-                  startIcon={<EmojiEvents />}
-                  sx={{ px: 4, py: 1.5 }}
-                >
-                  Voir les tournois
-                </Button>
+                <Link href="/tournaments" passHref style={{ textDecoration: 'none' }}>
+                  <Button
+                    variant="outlined"
+                    size="large"
+                    startIcon={<EmojiEvents />}
+                    sx={{ px: 4, py: 1.5 }}
+                  >
+                    Voir les tournois
+                  </Button>
+                </Link>
               </Stack>
             </Grid>
             <Grid size={{ xs: 12, md: 5 }}>

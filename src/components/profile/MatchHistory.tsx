@@ -174,7 +174,11 @@ export function MatchHistory({ userId }: MatchHistoryProps) {
               const opponent = isPlayer1 ? match.player2 : match.player1;
               const isWin = match.winner?.id === userId;
               const opponentName =
-                opponent?.profile?.bladerName ?? opponent?.name ?? 'Adversaire inconnu';
+                opponent?.profile?.bladerName ??
+                opponent?.name ??
+                'Adversaire inconnu';
+
+              const isLoserBracket = match.round < 0;
 
               return (
                 <ListItem
@@ -184,6 +188,8 @@ export function MatchHistory({ userId }: MatchHistoryProps) {
                     bgcolor: alpha(theme.palette.background.paper, 0.6),
                     border: '1px solid',
                     borderColor: 'divider',
+                    px: { xs: 1.5, sm: 3 },
+                    py: 2,
                     transition: 'all 0.2s',
                     '&:hover': {
                       bgcolor: alpha(theme.palette.action.hover, 0.1),
@@ -192,10 +198,12 @@ export function MatchHistory({ userId }: MatchHistoryProps) {
                     },
                   }}
                 >
-                  <ListItemAvatar>
+                  <ListItemAvatar sx={{ minWidth: { xs: 48, sm: 56 } }}>
                     <Avatar
                       src={opponent?.profile?.avatarUrl}
                       sx={{
+                        width: { xs: 32, sm: 40 },
+                        height: { xs: 32, sm: 40 },
                         bgcolor: isWin ? 'success.main' : 'error.main',
                         border: '2px solid',
                         borderColor: 'background.paper',
@@ -210,32 +218,65 @@ export function MatchHistory({ userId }: MatchHistoryProps) {
                         sx={{
                           display: 'flex',
                           alignItems: 'center',
-                          gap: 1.5,
+                          gap: 1,
                           flexWrap: 'wrap',
                         }}
                       >
-                        <Typography variant="body1" fontWeight="bold">
+                        <Typography
+                          variant="body1"
+                          fontWeight="bold"
+                          sx={{ fontSize: { xs: '0.85rem', sm: '1rem' } }}
+                        >
                           vs {opponentName}
                         </Typography>
                         <Chip
-                          label={isWin ? 'Victoire' : 'Défaite'}
+                          label={isWin ? 'W' : 'L'}
                           size="small"
                           color={isWin ? 'success' : 'error'}
                           sx={{
-                            height: 20,
-                            fontSize: '0.7rem',
+                            height: 18,
+                            width: 18,
+                            fontSize: '0.6rem',
                             fontWeight: 'bold',
+                            '& .MuiChip-label': { px: 0 },
+                          }}
+                        />
+                        <Chip
+                          label={
+                            isLoserBracket ? 'Loser Bracket' : 'Winner Bracket'
+                          }
+                          variant="outlined"
+                          size="small"
+                          sx={{
+                            height: 18,
+                            fontSize: '0.6rem',
+                            opacity: 0.7,
+                            borderColor: isLoserBracket
+                              ? 'error.light'
+                              : 'success.light',
+                            color: isLoserBracket
+                              ? 'error.light'
+                              : 'success.light',
                           }}
                         />
                         {match.score && (
-                          <Typography
-                            variant="body2"
-                            color="text.secondary"
-                            fontWeight="medium"
-                            sx={{ ml: 'auto' }}
+                          <Box
+                            sx={{
+                              ml: 'auto',
+                              bgcolor: 'action.selected',
+                              px: 1,
+                              borderRadius: 1,
+                            }}
                           >
-                            {match.score}
-                          </Typography>
+                            <Typography
+                              variant="body2"
+                              fontWeight="900"
+                              color="primary.main"
+                              sx={{ fontSize: { xs: '0.75rem', sm: '0.9rem' } }}
+                            >
+                              {match.score}
+                            </Typography>
+                          </Box>
                         )}
                       </Box>
                     }
@@ -243,9 +284,10 @@ export function MatchHistory({ userId }: MatchHistoryProps) {
                       <Typography
                         variant="caption"
                         color="text.secondary"
-                        sx={{ display: 'block', mt: 0.5 }}
+                        sx={{ display: 'block', mt: 0.5, fontSize: '0.7rem' }}
                       >
-                        {match.tournament.name} • Round {match.round} •{' '}
+                        {match.tournament.name} • Round {Math.abs(match.round)}{' '}
+                        •{' '}
                         {new Date(match.createdAt).toLocaleDateString('fr-FR')}
                       </Typography>
                     }

@@ -54,6 +54,7 @@ model User {
   adminAdjustments PointAdjustment[]       @relation("AdminAdjustments")
   pointAdjustments PointAdjustment[]
   profile          Profile?
+  globalRanking    GlobalRanking?
   seasonEntries    SeasonEntry[]
   sessions         Session[]
   tickets          Ticket[]
@@ -107,18 +108,37 @@ model RankingSeason {
 model SeasonEntry {
   id             String        @id @default(cuid())
   seasonId       String
-  userId         String
+  userId         String?
+  playerName     String?
   points         Int
   wins           Int
   losses         Int
   tournamentWins Int
   rank           Int?
   season         RankingSeason @relation(fields: [seasonId], references: [id], onDelete: Cascade)
-  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user           User?         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([seasonId, userId])
   @@index([seasonId])
+  @@index([userId])
+  @@index([playerName])
   @@map("season_entries")
+}
+
+model GlobalRanking {
+  id               String   @id @default(cuid())
+  playerName       String   @unique
+  userId           String?  @unique
+  points           Int      @default(0)
+  wins             Int      @default(0)
+  losses           Int      @default(0)
+  tournamentWins   Int      @default(0)
+  tournamentsCount Int      @default(0)
+  avatarUrl        String?
+  updatedAt        DateTime @updatedAt
+  user             User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([points])
+  @@map("global_rankings")
 }
 
 model Session {
@@ -202,6 +222,7 @@ model Profile {
   lastDaily         DateTime?
   user              User            @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@index([rankingPoints])
   @@map("profiles")
 }
 
@@ -388,7 +409,8 @@ model TournamentCategory {
 model TournamentParticipant {
   id                     String     @id @default(cuid())
   tournamentId           String
-  userId                 String
+  userId                 String?
+  playerName             String?
   challongeParticipantId String?
   deckId                 String?
   checkedIn              Boolean    @default(false)
@@ -400,9 +422,11 @@ model TournamentParticipant {
   updatedAt              DateTime   @updatedAt
   deck                   Deck?      @relation(fields: [deckId], references: [id])
   tournament             Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
-  user                   User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user                   User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([tournamentId, userId])
+  @@index([tournamentId])
+  @@index([userId])
+  @@index([playerName])
   @@map("tournament_participants")
 }
 
@@ -414,6 +438,9 @@ model TournamentMatch {
   player1Id        String?
   player2Id        String?
   winnerId         String?
+  player1Name      String?
+  player2Name      String?
+  winnerName       String?
   score            String?
   state            String     @default("pending")
   createdAt        DateTime   @default(now())

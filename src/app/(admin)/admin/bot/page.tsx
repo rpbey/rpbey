@@ -191,7 +191,9 @@ export default function UnifiedBotPage() {
         try {
           const parsed = JSON.parse(settings.content);
           setDisabledCommands(parsed.disabledCommands || []);
-        } catch (_e) {}
+        } catch (_e) {
+          // Ignore error
+        }
       }
 
       setError(null);

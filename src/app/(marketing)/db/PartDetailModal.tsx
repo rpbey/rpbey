@@ -3,6 +3,7 @@
 import { Close } from '@mui/icons-material';
 import {
   Avatar,
+  alpha,
   Box,
   Chip,
   Dialog,
@@ -12,7 +13,6 @@ import {
   Typography,
   useMediaQuery,
   useTheme,
-  alpha,
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import type { Part } from '@prisma/client';
@@ -63,8 +63,8 @@ export function PartDetailModal({ part, onClose }: PartDetailModalProps) {
       maxWidth="md"
       fullWidth
       PaperProps={{
-        sx: { 
-          bgcolor: 'surface.main', 
+        sx: {
+          bgcolor: 'surface.main',
           borderRadius: 4,
           boxShadow: '0 24px 48px -12px rgba(0,0,0,0.5)',
           backgroundImage: 'none',
@@ -82,18 +82,26 @@ export function PartDetailModal({ part, onClose }: PartDetailModalProps) {
         }}
       >
         <Box>
-          <Typography variant="h5" fontWeight="900" sx={{ letterSpacing: -0.5 }}>
+          <Typography
+            variant="h5"
+            fontWeight="900"
+            sx={{ letterSpacing: -0.5 }}
+          >
             {part.name}
           </Typography>
-          <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600 }}>
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            sx={{ fontWeight: 600 }}
+          >
             ID EXTRÊME : {part.externalId}
           </Typography>
         </Box>
-        <IconButton 
+        <IconButton
           onClick={onClose}
-          sx={{ 
+          sx={{
             bgcolor: 'surface.highest',
-            '&:hover': { bgcolor: 'surface.high' }
+            '&:hover': { bgcolor: 'surface.high' },
           }}
         >
           <Close />
@@ -129,15 +137,15 @@ export function PartDetailModal({ part, onClose }: PartDetailModalProps) {
                   height: '100%',
                   borderRadius: '50%',
                   background: `radial-gradient(circle, ${alpha(theme.palette.primary.main, 0.1)} 0%, transparent 70%)`,
-                }
+                },
               }}
             >
               <Avatar
                 src={part.imageUrl || undefined}
                 variant="rounded"
-                sx={{ 
-                  width: 200, 
-                  height: 200, 
+                sx={{
+                  width: 200,
+                  height: 200,
                   bgcolor: 'transparent',
                   filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.3))',
                 }}
@@ -160,16 +168,16 @@ export function PartDetailModal({ part, onClose }: PartDetailModalProps) {
                 sx={{ fontWeight: 800 }}
               />
               {part.system && (
-                <Chip 
-                  label={`Système ${part.system}`} 
-                  variant="outlined" 
+                <Chip
+                  label={`Système ${part.system}`}
+                  variant="outlined"
                   sx={{ borderColor: 'divider', fontWeight: 600 }}
                 />
               )}
               {part.weight && (
-                <Chip 
-                  label={`${part.weight}g`} 
-                  variant="outlined" 
+                <Chip
+                  label={`${part.weight}g`}
+                  variant="outlined"
                   sx={{ borderColor: 'divider', fontWeight: 600 }}
                 />
               )}
@@ -185,7 +193,12 @@ export function PartDetailModal({ part, onClose }: PartDetailModalProps) {
 
           {/* Right: Radar & Details */}
           <Grid size={{ xs: 12, md: 7 }} sx={{ p: 4, bgcolor: 'surface.main' }}>
-            <Typography variant="h6" fontWeight="900" gutterBottom sx={{ letterSpacing: -0.5 }}>
+            <Typography
+              variant="h6"
+              fontWeight="900"
+              gutterBottom
+              sx={{ letterSpacing: -0.5 }}
+            >
               PROFIL TECHNIQUE
             </Typography>
 
@@ -215,7 +228,9 @@ export function PartDetailModal({ part, onClose }: PartDetailModalProps) {
                   shape: 'circular',
                   divisions: 5,
                   stripeColor: (index: number) =>
-                    index % 2 === 0 ? alpha(theme.palette.primary.main, 0.08) : 'transparent',
+                    index % 2 === 0
+                      ? alpha(theme.palette.primary.main, 0.08)
+                      : 'transparent',
                   width: isMobile ? 300 : 400,
                   height: 280,
                   margin: { top: 20, bottom: 20, left: 40, right: 40 },
@@ -233,11 +248,28 @@ export function PartDetailModal({ part, onClose }: PartDetailModalProps) {
               />
             </Box>
 
-            <Box sx={{ mt: 3, p: 2, borderRadius: 2, bgcolor: 'surface.low', border: '1px solid', borderColor: 'divider' }}>
-              <Typography variant="overline" color="primary" sx={{ fontWeight: 800 }}>
+            <Box
+              sx={{
+                mt: 3,
+                p: 2,
+                borderRadius: 2,
+                bgcolor: 'surface.low',
+                border: '1px solid',
+                borderColor: 'divider',
+              }}
+            >
+              <Typography
+                variant="overline"
+                color="primary"
+                sx={{ fontWeight: 800 }}
+              >
                 Description
               </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5, lineHeight: 1.7 }}>
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{ mt: 0.5, lineHeight: 1.7 }}
+              >
                 Cette pièce de type{' '}
                 <strong style={{ color: theme.palette.text.primary }}>
                   {BEY_TYPE_LABELS[part.beyType || '']?.toLowerCase() ||

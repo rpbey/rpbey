@@ -25,7 +25,11 @@ export function SynergyList({
       {visible.map((s) => (
         <Box
           key={s.name}
-          sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0.75, md: 1 } }}
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: { xs: 0.75, md: 1 },
+          }}
         >
           {s.imageUrl && (
             <Avatar
@@ -35,7 +39,7 @@ export function SynergyList({
                 width: 16,
                 height: 16,
                 bgcolor: 'transparent',
-                '& img': { objectFit: 'contain' }
+                '& img': { objectFit: 'contain' },
               }}
             />
           )}

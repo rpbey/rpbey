@@ -110,10 +110,8 @@ export class TournamentCommand {
         );
       }
 
-      // @ts-ignore
       const standings =
         (tournament.standings as unknown as ScrapedStanding[] | null) || [];
-      // @ts-ignore
       const stations =
         (tournament.stations as unknown as ScrapedStation[] | null) || [];
       const participantCount = await prisma.tournamentParticipant.count({

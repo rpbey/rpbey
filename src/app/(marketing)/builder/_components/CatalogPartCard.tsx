@@ -66,7 +66,11 @@ interface CatalogPartCardProps {
   onClick: () => void;
 }
 
-export function CatalogPartCard({ part, isUsed, onClick }: CatalogPartCardProps) {
+export function CatalogPartCard({
+  part,
+  isUsed,
+  onClick,
+}: CatalogPartCardProps) {
   const [statsOpen, setStatsOpen] = useState(false);
   const [imgError, setImgError] = useState(false);
   const color = (part.beyType && TYPE_COLORS[part.beyType]) || '#6b7280';
@@ -83,7 +87,12 @@ export function CatalogPartCard({ part, isUsed, onClick }: CatalogPartCardProps)
         borderRadius: '12px',
       }}
     >
-      <Typography variant="h4" color="text.disabled" fontWeight="900" sx={{ opacity: 0.5 }}>
+      <Typography
+        variant="h4"
+        color="text.disabled"
+        fontWeight="900"
+        sx={{ opacity: 0.5 }}
+      >
         {part.name.charAt(0)}
       </Typography>
     </Box>
@@ -145,7 +154,11 @@ export function CatalogPartCard({ part, isUsed, onClick }: CatalogPartCardProps)
         overflow: 'visible',
       }}
     >
-      <CardActionArea onClick={onClick} disabled={isUsed} sx={{ height: '100%' }}>
+      <CardActionArea
+        onClick={onClick}
+        disabled={isUsed}
+        sx={{ height: '100%' }}
+      >
         <CardContent
           sx={{
             display: 'flex',
@@ -198,55 +211,80 @@ export function CatalogPartCard({ part, isUsed, onClick }: CatalogPartCardProps)
           </Box>
 
           <Box sx={{ textAlign: 'center', width: '100%' }}>
-            <Typography variant="caption" fontWeight="900" noWrap sx={{ display: 'block', lineHeight: 1.3 }}>
+            <Typography
+              variant="caption"
+              fontWeight="900"
+              noWrap
+              sx={{ display: 'block', lineHeight: 1.3 }}
+            >
               {part.name}
             </Typography>
-            <Typography variant="caption" color="text.secondary" fontSize="0.6rem">
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              fontSize="0.6rem"
+            >
               {part.weight ? `${part.weight}g` : part.type}
             </Typography>
           </Box>
 
-          <Box sx={{ display: 'flex', gap: 0.5, width: '100%', alignItems: 'center' }}>
+          <Box
+            sx={{
+              display: 'flex',
+              gap: 0.5,
+              width: '100%',
+              alignItems: 'center',
+            }}
+          >
             <Box sx={{ display: 'flex', gap: 0.5, flex: 1 }}>
-              {(['attack', 'defense', 'stamina', 'dash'] as const).map((stat) => {
-                const val = part[stat as keyof Part];
-                if (!val) return null;
-                const numericVal = typeof val === 'number' ? val : parseInt(String(val), 10);
-                const statInfo = STAT_LABELS[stat] ?? { label: stat, color: '#888' };
-                return (
-                  <Tooltip
-                    key={stat}
-                    title={`${statInfo.label} ${numericVal}`}
-                    arrow
-                    placement="top"
-                  >
-                    <Box
-                      sx={{
-                        flex: 1,
-                        height: 4,
-                        bgcolor: 'action.hover',
-                        borderRadius: 2,
-                        overflow: 'hidden',
-                        cursor: 'help',
-                      }}
+              {(['attack', 'defense', 'stamina', 'dash'] as const).map(
+                (stat) => {
+                  const val = part[stat as keyof Part];
+                  if (!val) return null;
+                  const numericVal =
+                    typeof val === 'number' ? val : parseInt(String(val), 10);
+                  const statInfo = STAT_LABELS[stat] ?? {
+                    label: stat,
+                    color: '#888',
+                  };
+                  return (
+                    <Tooltip
+                      key={stat}
+                      title={`${statInfo.label} ${numericVal}`}
+                      arrow
+                      placement="top"
                     >
                       <Box
                         sx={{
-                          width: `${Math.min(numericVal, 100)}%`,
-                          height: '100%',
-                          bgcolor: statInfo.color,
+                          flex: 1,
+                          height: 4,
+                          bgcolor: 'action.hover',
                           borderRadius: 2,
+                          overflow: 'hidden',
+                          cursor: 'help',
                         }}
-                      />
-                    </Box>
-                  </Tooltip>
-                );
-              })}
+                      >
+                        <Box
+                          sx={{
+                            width: `${Math.min(numericVal, 100)}%`,
+                            height: '100%',
+                            bgcolor: statInfo.color,
+                            borderRadius: 2,
+                          }}
+                        />
+                      </Box>
+                    </Tooltip>
+                  );
+                },
+              )}
             </Box>
             <Tooltip title="Voir les stats" arrow>
               <Box
                 component="span"
-                onClick={(e) => { e.stopPropagation(); setStatsOpen(true); }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setStatsOpen(true);
+                }}
                 sx={{
                   display: 'flex',
                   alignItems: 'center',
@@ -271,7 +309,9 @@ export function CatalogPartCard({ part, isUsed, onClick }: CatalogPartCardProps)
         fullWidth
         slotProps={{ paper: { sx: { borderRadius: 3, overflow: 'hidden' } } }}
       >
-        <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1.5, pb: 1 }}>
+        <DialogTitle
+          sx={{ display: 'flex', alignItems: 'center', gap: 1.5, pb: 1 }}
+        >
           <Box sx={{ flex: 1, minWidth: 0 }}>
             <Typography variant="h6" fontWeight="900" noWrap>
               {part.name}
@@ -280,7 +320,12 @@ export function CatalogPartCard({ part, isUsed, onClick }: CatalogPartCardProps)
               <Chip
                 label={part.type}
                 size="small"
-                sx={{ fontWeight: 'bold', fontSize: '0.65rem', height: 20, borderRadius: 1.5 }}
+                sx={{
+                  fontWeight: 'bold',
+                  fontSize: '0.65rem',
+                  height: 20,
+                  borderRadius: 1.5,
+                }}
               />
               {part.beyType && (
                 <Chip
@@ -301,35 +346,108 @@ export function CatalogPartCard({ part, isUsed, onClick }: CatalogPartCardProps)
                   label={SYSTEM_LABELS[part.system] ?? part.system}
                   size="small"
                   variant="outlined"
-                  sx={{ fontWeight: 'bold', fontSize: '0.65rem', height: 20, borderRadius: 1.5 }}
+                  sx={{
+                    fontWeight: 'bold',
+                    fontSize: '0.65rem',
+                    height: 20,
+                    borderRadius: 1.5,
+                  }}
                 />
               )}
             </Box>
           </Box>
-          <IconButton size="small" onClick={() => setStatsOpen(false)} sx={{ ml: 'auto' }}>
+          <IconButton
+            size="small"
+            onClick={() => setStatsOpen(false)}
+            sx={{ ml: 'auto' }}
+          >
             <Close fontSize="small" />
           </IconButton>
         </DialogTitle>
         <DialogContent sx={{ pb: 3 }}>
           <Box sx={{ display: 'flex', gap: 2.5, mb: 2.5 }}>
-            <Box sx={{ position: 'relative', width: 100, height: 100, flexShrink: 0 }}>
+            <Box
+              sx={{
+                position: 'relative',
+                width: 100,
+                height: 100,
+                flexShrink: 0,
+              }}
+            >
               {renderImage()}
             </Box>
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, alignContent: 'center' }}>
+            <Box
+              sx={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: 1,
+                alignContent: 'center',
+              }}
+            >
               {part.weight != null && (
-                <Chip label={`${part.weight}g`} size="small" variant="outlined" sx={{ fontWeight: 'bold', fontSize: '0.7rem', height: 24, borderRadius: 1.5 }} />
+                <Chip
+                  label={`${part.weight}g`}
+                  size="small"
+                  variant="outlined"
+                  sx={{
+                    fontWeight: 'bold',
+                    fontSize: '0.7rem',
+                    height: 24,
+                    borderRadius: 1.5,
+                  }}
+                />
               )}
               {part.spinDirection && (
-                <Chip label={`Spin: ${part.spinDirection}`} size="small" variant="outlined" sx={{ fontWeight: 'bold', fontSize: '0.7rem', height: 24, borderRadius: 1.5 }} />
+                <Chip
+                  label={`Spin: ${part.spinDirection}`}
+                  size="small"
+                  variant="outlined"
+                  sx={{
+                    fontWeight: 'bold',
+                    fontSize: '0.7rem',
+                    height: 24,
+                    borderRadius: 1.5,
+                  }}
+                />
               )}
               {part.height != null && (
-                <Chip label={`Hauteur: ${part.height}`} size="small" variant="outlined" sx={{ fontWeight: 'bold', fontSize: '0.7rem', height: 24, borderRadius: 1.5 }} />
+                <Chip
+                  label={`Hauteur: ${part.height}`}
+                  size="small"
+                  variant="outlined"
+                  sx={{
+                    fontWeight: 'bold',
+                    fontSize: '0.7rem',
+                    height: 24,
+                    borderRadius: 1.5,
+                  }}
+                />
               )}
               {part.protrusions != null && (
-                <Chip label={`Contacts: ${part.protrusions}`} size="small" variant="outlined" sx={{ fontWeight: 'bold', fontSize: '0.7rem', height: 24, borderRadius: 1.5 }} />
+                <Chip
+                  label={`Contacts: ${part.protrusions}`}
+                  size="small"
+                  variant="outlined"
+                  sx={{
+                    fontWeight: 'bold',
+                    fontSize: '0.7rem',
+                    height: 24,
+                    borderRadius: 1.5,
+                  }}
+                />
               )}
               {part.tipType && (
-                <Chip label={`Tip: ${part.tipType}`} size="small" variant="outlined" sx={{ fontWeight: 'bold', fontSize: '0.7rem', height: 24, borderRadius: 1.5 }} />
+                <Chip
+                  label={`Tip: ${part.tipType}`}
+                  size="small"
+                  variant="outlined"
+                  sx={{
+                    fontWeight: 'bold',
+                    fontSize: '0.7rem',
+                    height: 24,
+                    borderRadius: 1.5,
+                  }}
+                />
               )}
             </Box>
           </Box>
@@ -340,11 +458,25 @@ export function CatalogPartCard({ part, isUsed, onClick }: CatalogPartCardProps)
               if (!val) return null;
               return (
                 <Box key={key}>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.25 }}>
-                    <Typography variant="caption" fontWeight="bold" color="text.secondary">
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      mb: 0.25,
+                    }}
+                  >
+                    <Typography
+                      variant="caption"
+                      fontWeight="bold"
+                      color="text.secondary"
+                    >
                       {label}
                     </Typography>
-                    <Typography variant="caption" fontWeight="900" sx={{ color: statColor }}>
+                    <Typography
+                      variant="caption"
+                      fontWeight="900"
+                      sx={{ color: statColor }}
+                    >
                       {val}
                     </Typography>
                   </Box>

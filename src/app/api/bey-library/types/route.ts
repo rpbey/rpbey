@@ -12,9 +12,6 @@ export async function GET() {
     return NextResponse.json({ types });
   } catch (error) {
     console.error('bey-library types error:', error);
-    return NextResponse.json(
-      { error: 'Failed to get types' },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: 'Failed to get types' }, { status: 500 });
   }
 }

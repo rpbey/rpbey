@@ -46,6 +46,7 @@ const RAIL_WIDTH = 280;
 const ADMIN_NAV_ITEMS = [
   { label: "Vue d'ensemble", path: '/admin', icon: Dashboard },
   { label: 'Bot Discord', path: '/admin/bot', icon: SmartToy },
+  { label: 'Maintenance', path: '/admin/maintenance', icon: Hub },
   { label: 'Liaison Comptes', path: '/admin/link', icon: LinkIcon },
   { label: 'Meta', path: '/admin/meta', icon: Hub },
   { label: 'Contenu', path: '/admin/content', icon: Article },

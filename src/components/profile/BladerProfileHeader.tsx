@@ -31,6 +31,7 @@ interface BladerProfileHeaderProps {
   avatarUrl?: string;
   joinDate?: string;
   bio?: string;
+  challongeUsername?: string | null;
   onDownloadCard?: () => void;
   isOwnProfile?: boolean;
   socials?: {
@@ -63,6 +64,7 @@ export function BladerProfileHeader({
   avatarUrl,
   joinDate,
   bio,
+  challongeUsername,
   onDownloadCard,
   isOwnProfile = false,
   socials,
@@ -172,7 +174,7 @@ export function BladerProfileHeader({
               spacing={2}
               alignItems="center"
               justifyContent={{ xs: 'center', md: 'flex-start' }}
-              sx={{ mb: 1 }}
+              sx={{ mb: 0.5 }}
             >
               <Typography variant="h3" fontWeight="900" letterSpacing="-0.03em">
                 {stats.bladerName}
@@ -188,6 +190,19 @@ export function BladerProfileHeader({
                 </IconButton>
               )}
             </Stack>
+
+            {/* Handle Challonge Display */}
+            <Typography
+              variant="subtitle1"
+              fontWeight="bold"
+              color="primary.main"
+              sx={{ mb: 2, display: 'block', opacity: 0.9 }}
+            >
+              @
+              {challongeUsername ||
+                stats.bladerName?.toLowerCase().replace(/\s/g, '') ||
+                'blader'}
+            </Typography>
 
             {/* Badges/Roles */}
             <Stack

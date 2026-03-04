@@ -4,8 +4,8 @@
  * with in-memory cache and search capabilities.
  */
 
-import { readFileSync } from 'fs';
-import { join } from 'path';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 
 export const CATEGORIES = [
   'blade',
@@ -40,7 +40,10 @@ export interface BeyLibraryPart {
   sourceUrl: string;
 }
 
-export type BeyLibraryPartSummary = Omit<BeyLibraryPart, 'variants' | 'features'>;
+export type BeyLibraryPartSummary = Omit<
+  BeyLibraryPart,
+  'variants' | 'features'
+>;
 
 // Singleton data store
 let _data: BeyLibraryPart[] | null = null;
@@ -48,7 +51,10 @@ let _data: BeyLibraryPart[] | null = null;
 function loadData(): BeyLibraryPart[] {
   if (_data) return _data;
 
-  const filePath = join(process.cwd(), 'data/bey-library/bey-library-complete.json');
+  const filePath = join(
+    process.cwd(),
+    'data/bey-library/bey-library-complete.json',
+  );
   const raw = readFileSync(filePath, 'utf-8');
   _data = JSON.parse(raw) as BeyLibraryPart[];
   return _data;
@@ -145,7 +151,8 @@ export function searchParts(
 
   let results = data.filter((p) => {
     if (options?.category && p.category !== options.category) return false;
-    if (options?.type && p.type?.toLowerCase() !== options.type.toLowerCase()) return false;
+    if (options?.type && p.type?.toLowerCase() !== options.type.toLowerCase())
+      return false;
     return (
       p.name.toLowerCase().includes(q) ||
       p.code.toLowerCase().includes(q) ||
@@ -187,8 +194,12 @@ export function getRandomPart(options?: {
 }): BeyLibraryPart | null {
   const data = loadData();
   let pool = data;
-  if (options?.category) pool = pool.filter((p) => p.category === options.category);
-  if (options?.type) pool = pool.filter((p) => p.type?.toLowerCase() === options.type?.toLowerCase());
+  if (options?.category)
+    pool = pool.filter((p) => p.category === options.category);
+  if (options?.type)
+    pool = pool.filter(
+      (p) => p.type?.toLowerCase() === options.type?.toLowerCase(),
+    );
   if (pool.length === 0) return null;
   const idx = Math.floor(Math.random() * pool.length);
   return pool[idx] ?? null;

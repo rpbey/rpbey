@@ -4,13 +4,10 @@ import { injectable } from 'tsyringe';
 
 import { Colors } from '../lib/constants.js';
 import { logger } from '../lib/logger.js';
-import type { PrismaService } from '../lib/prisma.js';
 
 @Discord()
 @injectable()
 export class AdvancedLogs {
-  constructor(_prisma: PrismaService) {}
-
   private getLogChannel(guild: any) {
     const logChannelId = process.env.LOG_CHANNEL_ID;
     if (!logChannelId) return null; // Ne plus utiliser Annonces par défaut

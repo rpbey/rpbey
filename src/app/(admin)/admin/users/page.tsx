@@ -1,6 +1,11 @@
 'use client';
 
-import { Edit, Search, Visibility, Send as SendIcon } from '@mui/icons-material';
+import {
+  Edit,
+  Search,
+  Send as SendIcon,
+  Visibility,
+} from '@mui/icons-material';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';

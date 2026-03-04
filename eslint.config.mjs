@@ -20,6 +20,8 @@ export default tseslint.config(
       "scripts/**",
       "temp/**",
       "downloads/**",
+      "bey-library-mirror/**",
+      "packages/**",
     ],
   },
   js.configs.recommended,

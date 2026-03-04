@@ -46,6 +46,7 @@ export class RankingService {
 
       // A. Points de Participation & Placement
       for (const p of t.participants) {
+        if (!p.userId) continue;
         let points = 0;
         const stats = userPoints.get(p.userId) || {
           points: 0,

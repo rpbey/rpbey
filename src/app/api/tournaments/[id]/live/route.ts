@@ -19,6 +19,27 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
   try {
     const { id } = await params;
 
+    if (id === 'bts2' || id === 'bts3') {
+      const fileName = id === 'bts2' ? 'B_TS2.json' : 'B_TS3.json';
+      const { readFileSync, existsSync } = await import('node:fs');
+      const { join } = await import('node:path');
+      const filePath = join(process.cwd(), 'data/exports', fileName);
+
+      if (existsSync(filePath)) {
+        const data = JSON.parse(readFileSync(filePath, 'utf-8'));
+        return NextResponse.json({
+          data: {
+            standings: data.participants
+              .filter((p: any) => p.rank > 0)
+              .sort((a: any, b: any) => a.rank - b.rank),
+            stations: [],
+            activityLog: [],
+            lastUpdated: data.scrapedAt,
+          },
+        });
+      }
+    }
+
     const tournament = await prisma.tournament.findUnique({
       where: { id },
       select: {

@@ -55,7 +55,15 @@ export function CatalogFilters({
         />
       ))}
 
-      <Box sx={{ width: 1, height: 28, borderRight: '1px solid', borderColor: 'divider', mx: 0.25 }} />
+      <Box
+        sx={{
+          width: 1,
+          height: 28,
+          borderRight: '1px solid',
+          borderColor: 'divider',
+          mx: 0.25,
+        }}
+      />
 
       {BEY_TYPES.map((bt) => (
         <Chip
@@ -83,7 +91,15 @@ export function CatalogFilters({
         />
       ))}
 
-      <Box sx={{ width: 1, height: 28, borderRight: '1px solid', borderColor: 'divider', mx: 0.25 }} />
+      <Box
+        sx={{
+          width: 1,
+          height: 28,
+          borderRight: '1px solid',
+          borderColor: 'divider',
+          mx: 0.25,
+        }}
+      />
 
       {SPINS.map((sp) => (
         <Chip

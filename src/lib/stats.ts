@@ -8,6 +8,7 @@ import { prisma } from '@/lib/prisma';
 export interface UserStats {
   userId: string;
   bladerName: string;
+  challongeUsername: string | null;
   totalMatches: number;
   wins: number;
   losses: number;
@@ -241,6 +242,7 @@ export async function getUserStats(userId: string): Promise<UserStats | null> {
   return {
     userId,
     bladerName: user.profile?.bladerName ?? user.name ?? 'Unknown',
+    challongeUsername: user.profile?.challongeUsername ?? null,
     totalMatches: wins + losses,
     wins: wins,
     losses: losses,

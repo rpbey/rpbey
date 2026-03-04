@@ -11,7 +11,11 @@
 
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
-import { type BeyLibraryCategory, CATEGORIES, searchParts } from '@/lib/bey-library';
+import {
+  type BeyLibraryCategory,
+  CATEGORIES,
+  searchParts,
+} from '@/lib/bey-library';
 
 export async function GET(request: NextRequest) {
   const sp = request.nextUrl.searchParams;
@@ -27,7 +31,9 @@ export async function GET(request: NextRequest) {
   const category = sp.get('category') as BeyLibraryCategory | null;
   if (category && !CATEGORIES.includes(category)) {
     return NextResponse.json(
-      { error: `Invalid category '${category}'. Valid: ${CATEGORIES.join(', ')}` },
+      {
+        error: `Invalid category '${category}'. Valid: ${CATEGORIES.join(', ')}`,
+      },
       { status: 400 },
     );
   }
@@ -45,9 +51,6 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.error('bey-library search error:', error);
-    return NextResponse.json(
-      { error: 'Search failed' },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: 'Search failed' }, { status: 500 });
   }
 }

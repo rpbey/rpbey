@@ -13,8 +13,8 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import {
-  CATEGORIES,
   type BeyLibraryCategory,
+  CATEGORIES,
   getCategoryParts,
 } from '@/lib/bey-library';
 

@@ -65,12 +65,23 @@ async function scrapeProductPage(url: string, category: string): Promise<PartDat
     
     // Specs
     const specs: Record<string, string> = {};
-    $('.grid.grid-cols-2 .flex.flex-col').each((_, el) => {
-      const label = $(el).find('span.text-muted-foreground').text().trim();
-      const value = $(el).find('span.font-medium').text().trim();
-      if (label && value) {
-        specs[label] = value;
-      }
+    $('.grid.grid-cols-2').each((_, el) => {
+      $(el).find('.flex.flex-col').each((_, item) => {
+        const label = $(item).find('span.text-muted-foreground').text().trim();
+        const value = $(item).find('span.font-medium').text().trim();
+        if (label && value) {
+          specs[label] = value;
+        }
+      });
+    });
+
+    // Extraction spécifique des stats si présentes dans d'autres formats
+    $('div.flex.justify-between').each((_, el) => {
+        const label = $(el).find('span').first().text().trim();
+        const value = $(el).find('span').last().text().trim();
+        if (label && value && !isNaN(parseInt(value))) {
+            specs[label] = value;
+        }
     });
 
     const id = url.split('/').pop() || name;

@@ -1,7 +1,10 @@
 'use client';
 
-import { Link as LinkIcon } from '@mui/icons-material';
-import { Button, Tooltip, useMediaQuery, useTheme } from '@mui/material';
+import {
+  EmojiEvents as TrophyIcon,
+  CheckCircle as VerifiedIcon,
+} from '@mui/icons-material';
+import { Tooltip, useTheme } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Pagination from '@mui/material/Pagination';
@@ -16,10 +19,8 @@ import Typography from '@mui/material/Typography';
 import type { Profile, User } from '@prisma/client';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { toast } from 'sonner';
 import { authClient } from '@/lib/auth-client';
 import { getInitials } from '@/lib/utils';
-import { claimProfile } from '@/server/actions/claim-profile';
 
 type ProfileWithUser = Profile & {
   user: User & {
@@ -28,6 +29,105 @@ type ProfileWithUser = Profile & {
     };
   };
 };
+
+function BladerInfo({ profile, theme }: { profile: any, theme: any }) {
+  return (
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: { xs: 0.5, sm: 2 },
+        '&:hover': {
+          '& .MuiTypography-root': {
+            color: 'primary.main',
+          },
+        },
+      }}
+    >
+      <Avatar
+        src={profile.user?.image || undefined}
+        sx={{
+          width: { xs: 24, sm: 40 },
+          height: { xs: 24, sm: 40 },
+          border: `1px solid ${theme.palette.divider}`,
+        }}
+      >
+        {getInitials(
+          profile.bladerName || profile.user?.name,
+        )}
+      </Avatar>
+      <Box sx={{ minWidth: 0 }}>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 0.5,
+          }}
+        >
+          <Typography
+            fontWeight="bold"
+            sx={{
+              transition: 'color 0.2s',
+              fontSize: { xs: '0.8rem', sm: '0.9rem' },
+              maxWidth: { xs: '150px', sm: '250px' },
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {profile.bladerName ||
+              profile.user?.name ||
+              profile.challongeUsername ||
+              profile.user?.username?.replace(
+                /^bts[1-3]_/,
+                '',
+              ) ||
+              'Anonyme'}
+          </Typography>
+          {profile.challongeUsername && (
+            <Tooltip
+              title={`Compte Challonge : ${profile.challongeUsername}`}
+            >
+              <Link
+                href={`https://challonge.com/fr/users/${profile.challongeUsername}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()} // Prevent row click
+                style={{ display: 'flex', alignItems: 'center' }}
+              >
+                <VerifiedIcon
+                  sx={{
+                    fontSize: { xs: '0.7rem', sm: '0.9rem' },
+                    color: 'info.main',
+                    opacity: 0.8,
+                    flexShrink: 0,
+                    transition: 'opacity 0.2s',
+                    '&:hover': { opacity: 1, filter: 'brightness(1.2)' },
+                  }}
+                />
+              </Link>
+            </Tooltip>
+          )}
+        </Box>
+        {profile.tournamentWins > 0 && (
+          <Tooltip
+            title={`${profile.tournamentWins} tournoi(s) remporté(s)`}
+          >
+            <TrophyIcon
+              sx={{
+                fontSize: { xs: '0.8rem', sm: '1.1rem' },
+                color: '#FFD700',
+                filter:
+                  'drop-shadow(0 0 2px rgba(255, 215, 0, 0.4))',
+                mt: 0.2,
+              }}
+            />
+          </Tooltip>
+        )}
+      </Box>
+    </Box>
+  );
+}
 
 interface RankingsTableProps {
   profiles: ProfileWithUser[];
@@ -46,7 +146,6 @@ export function RankingsTable({
   baseUrl = '/rankings',
 }: RankingsTableProps) {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const router = useRouter();
   const searchParams = useSearchParams();
   const { data: session } = authClient.useSession();
@@ -60,33 +159,9 @@ export function RankingsTable({
     router.push(`${baseUrl}?${params.toString()}`);
   };
 
-  const handleClaim = async (stubUserId: string, stubName: string) => {
-    if (!session) {
-      toast.error('Vous devez être connecté pour lier un compte.');
-      return;
-    }
-
-    const confirm = window.confirm(
-      `Voulez-vous vraiment lier le profil "${stubName}" à votre compte actuel ? Cette action est irréversible.`,
-    );
-    if (!confirm) return;
-
-    toast.promise(claimProfile(stubUserId), {
-      loading: 'Liaison en cours...',
-      success: (data) => {
-        if (data.success) {
-          router.refresh();
-          return data.message;
-        }
-        throw new Error(data.message);
-      },
-      error: (err) => err.message || 'Erreur lors de la liaison',
-    });
-  };
-
   const getRankColor = (index: number) => {
-    // Calcul du rang absolu basé sur la page
-    const absoluteRank = (currentPage - 1) * 20 + index + 1;
+    // Calcul du rang absolu basé sur la page (base 100 désormais)
+    const absoluteRank = (currentPage - 1) * 100 + index + 1;
 
     if (absoluteRank === 1) return '#FFD700'; // Or
     if (absoluteRank === 2) return '#C0C0C0'; // Argent
@@ -95,25 +170,25 @@ export function RankingsTable({
   };
 
   const getRankBadge = (index: number) => {
-    const absoluteRank = (currentPage - 1) * 20 + index + 1;
+    const absoluteRank = (currentPage - 1) * 100 + index + 1;
 
     if (absoluteRank <= 3) {
       return (
         <Box
           sx={{
-            width: 32,
-            height: 32,
+            width: { xs: 28, sm: 32 },
+            height: { xs: 28, sm: 32 },
             borderRadius: '50%',
             bgcolor: getRankColor(index),
-            color: absoluteRank === 1 ? 'black' : 'white', // Contraste pour l'Or
+            color: absoluteRank <= 3 ? 'rgba(0, 0, 0, 0.87)' : 'white',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            fontWeight: 'bold',
+            fontWeight: '900',
             mx: 'auto',
             boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
-            textShadow:
-              absoluteRank === 1 ? 'none' : '0 1px 2px rgba(0,0,0,0.3)',
+            textShadow: 'none',
+            fontSize: { xs: '0.75rem', sm: '1rem' },
           }}
         >
           {absoluteRank}
@@ -122,7 +197,11 @@ export function RankingsTable({
     }
 
     return (
-      <Typography fontWeight="bold" color="text.secondary">
+      <Typography
+        fontWeight="bold"
+        color="text.secondary"
+        sx={{ fontSize: { xs: '0.75rem', sm: '1rem' } }}
+      >
         #{absoluteRank}
       </Typography>
     );
@@ -136,42 +215,89 @@ export function RankingsTable({
         sx={{
           border: '1px solid',
           borderColor: 'divider',
-          borderRadius: 4,
+          borderRadius: { xs: 2, sm: 4 },
           overflowX: 'auto',
+          maxHeight: '80vh', // Sticky header support
           mb: 4,
-          '&::-webkit-scrollbar': { height: '4px' },
+          '&::-webkit-scrollbar': { height: '4px', width: '4px' },
           '&::-webkit-scrollbar-thumb': {
             bgcolor: 'divider',
             borderRadius: '4px',
           },
         }}
       >
-        <Table>
+        <Table size="small" stickyHeader>
           <TableHead>
-            <TableRow sx={{ bgcolor: 'action.hover' }}>
+            <TableRow>
               <TableCell
-                width={isMobile ? 50 : 80}
                 align="center"
-                sx={{ px: { xs: 0.5, sm: 2 } }}
+                sx={{
+                  width: { xs: 30, sm: 60 },
+                  px: { xs: 0.2, sm: 2 },
+                  bgcolor: 'action.hover',
+                  fontWeight: 'bold',
+                }}
               >
                 #
               </TableCell>
-              <TableCell>Blader</TableCell>
-              <TableCell align="center">Points</TableCell>
               <TableCell
-                align="center"
-                sx={{ display: { xs: 'none', sm: 'table-cell' } }}
+                sx={{
+                  px: { xs: 0.5, sm: 2 },
+                  bgcolor: 'action.hover',
+                  fontWeight: 'bold',
+                }}
               >
-                Tournois Gagnés
+                Blader
               </TableCell>
               <TableCell
                 align="center"
-                sx={{ display: { xs: 'none', lg: 'table-cell' } }}
+                sx={{
+                  px: { xs: 0.2, sm: 2 },
+                  bgcolor: 'action.hover',
+                  fontWeight: 'bold',
+                }}
               >
-                Matchs
+                Points
               </TableCell>
-              <TableCell align="center">Winrate</TableCell>
-              <TableCell align="center">Action</TableCell>
+              <TableCell
+                align="center"
+                sx={{
+                  px: { xs: 0.2, sm: 2 },
+                  bgcolor: 'action.hover',
+                  fontWeight: 'bold',
+                  display: { xs: 'none', sm: 'table-cell' },
+                }}
+              >
+                <Tooltip title="Nombre de tournois officiels disputés">
+                  <span>T.</span>
+                </Tooltip>
+              </TableCell>
+              <TableCell
+                align="center"
+                sx={{
+                  px: { xs: 0.2, sm: 2 },
+                  bgcolor: 'action.hover',
+                  fontWeight: 'bold',
+                  display: { xs: 'table-cell', md: 'table-cell' },
+                }}
+              >
+                <Tooltip title="Nombre de matchs (Victoires / Défaites)">
+                  <span>M.</span>
+                </Tooltip>
+              </TableCell>
+              <TableCell
+                align="center"
+                sx={{
+                  px: { xs: 0.2, sm: 2 },
+                  bgcolor: 'action.hover',
+                  fontWeight: 'bold',
+                  display: { xs: 'table-cell', md: 'table-cell' },
+                }}
+              >
+                <Tooltip title="Taux de victoire (Win Rate)">
+                  <span>WR</span>
+                </Tooltip>
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -180,13 +306,10 @@ export function RankingsTable({
                 const totalMatches = profile.wins + profile.losses;
                 const winRate =
                   totalMatches > 0
-                    ? ((profile.wins / totalMatches) * 100).toFixed(1)
+                    ? ((profile.wins / totalMatches) * 100).toFixed(0)
                     : '0';
 
-                const isStub =
-                  profile.user?.username?.startsWith('bts2_') ||
-                  !profile.user?.discordId;
-                const isClaimable = isStub && session?.user;
+                const isCurrentUser = session?.user?.id === profile.userId;
 
                 return (
                   <TableRow
@@ -194,165 +317,94 @@ export function RankingsTable({
                     hover
                     sx={{
                       '&:last-child td, &:last-child th': { border: 0 },
+                      bgcolor: isCurrentUser
+                        ? 'rgba(220, 38, 38, 0.08)' // RPB Red subtle highlight
+                        : index % 2 === 0
+                          ? 'transparent'
+                          : 'rgba(255, 255, 255, 0.02)',
                       transition: 'background-color 0.2s',
+                      borderLeft: isCurrentUser ? '4px solid #dc2626' : 'none',
                     }}
                   >
-                    <TableCell align="center" sx={{ px: { xs: 0.5, sm: 2 } }}>
+                    <TableCell align="center" sx={{ px: { xs: 0.2, sm: 2 } }}>
                       {getRankBadge(index)}
                     </TableCell>
-                    <TableCell>
-                      <Link
-                        href={`${profileUrlPrefix}/${profile.userId}`}
-                        style={{ textDecoration: 'none', color: 'inherit' }}
-                      >
-                        <Box
-                          sx={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 2,
-                            '&:hover': {
-                              '& .MuiTypography-root': {
-                                color: 'primary.main',
-                              },
-                            },
-                          }}
+                    <TableCell sx={{ px: { xs: 0.2, sm: 2 } }}>
+                      {profile.userId ? (
+                        <Link
+                          href={`${profileUrlPrefix}/${profile.userId}`}
+                          style={{ textDecoration: 'none', color: 'inherit' }}
                         >
-                          <Avatar
-                            src={profile.user?.image || undefined}
-                            sx={{
-                              width: 48,
-                              height: 48,
-                              border: `2px solid ${theme.palette.background.paper}`,
-                              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-                            }}
-                          >
-                            {getInitials(
-                              profile.bladerName || profile.user?.name,
-                            )}
-                          </Avatar>
-                          <Box>
-                            <Typography
-                              fontWeight="bold"
-                              sx={{
-                                transition: 'color 0.2s',
-                                fontSize: { xs: '0.85rem', md: '1rem' },
-                                maxWidth: { xs: '100px', sm: 'none' },
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis',
-                                whiteSpace: 'nowrap',
-                              }}
-                            >
-                              {profile.bladerName ||
-                                profile.user?.name ||
-                                'Anonyme'}
-                            </Typography>
-                            <Typography
-                              variant="caption"
-                              color="text.secondary"
-                              sx={{
-                                display: 'inline-block',
-                                bgcolor: 'action.selected',
-                                px: 1,
-                                py: 0.2,
-                                borderRadius: 1,
-                                mt: 0.5,
-                              }}
-                            >
-                              {profile.favoriteType || 'Type inconnu'}
-                            </Typography>
-                          </Box>
+                          <BladerInfo profile={profile} theme={theme} />
+                        </Link>
+                      ) : (
+                        <Box sx={{ color: 'inherit' }}>
+                          <BladerInfo profile={profile} theme={theme} />
                         </Box>
-                      </Link>
+                      )}
                     </TableCell>
-                    <TableCell align="center">
+                    <TableCell align="center" sx={{ px: { xs: 0.1, sm: 2 } }}>
                       <Typography
                         fontWeight="900"
                         color="primary.main"
-                        fontSize="1.2rem"
+                        sx={{ fontSize: { xs: '0.75rem', sm: '1.1rem' } }}
                       >
                         {profile.rankingPoints}
                       </Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        pts
-                      </Typography>
                     </TableCell>
                     <TableCell
                       align="center"
-                      sx={{ display: { xs: 'none', sm: 'table-cell' } }}
+                      sx={{
+                        px: { xs: 0.1, sm: 2 },
+                        display: { xs: 'none', sm: 'table-cell' },
+                      }}
                     >
-                      {profile.tournamentWins > 0 ? (
-                        <Box
-                          sx={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: 0.5,
-                          }}
-                        >
-                          <span style={{ fontSize: '1.2rem' }}>🏆</span>
-                          <Typography fontWeight="bold">
-                            {profile.tournamentWins}
-                          </Typography>
-                        </Box>
-                      ) : (
-                        <Typography color="text.disabled">-</Typography>
-                      )}
-                    </TableCell>
-                    <TableCell
-                      align="center"
-                      sx={{ display: { xs: 'none', lg: 'table-cell' } }}
-                    >
-                      <Typography variant="body2">
-                        <span style={{ color: theme.palette.success.main }}>
-                          {profile.wins}W
-                        </span>
-                        {' / '}
-                        <span style={{ color: theme.palette.error.main }}>
-                          {profile.losses}L
-                        </span>
-                      </Typography>
-                    </TableCell>
-                    <TableCell align="center">
-                      <Box
-                        sx={{ position: 'relative', display: 'inline-flex' }}
+                      <Typography
+                        sx={{ fontSize: { xs: '0.7rem', sm: '0.9rem' } }}
                       >
-                        <Typography
-                          fontWeight="bold"
-                          color={
-                            parseFloat(winRate) >= 50
-                              ? 'success.main'
-                              : 'text.secondary'
-                          }
-                        >
-                          {winRate}%
-                        </Typography>
-                      </Box>
+                        {profile.user?._count?.tournaments || 0}
+                      </Typography>
                     </TableCell>
-                    <TableCell align="center">
-                      {isClaimable && (
-                        <Tooltip title="C'est vous ? Liez ce compte au vôtre">
-                          <Button
-                            variant="outlined"
-                            size="small"
-                            color="warning"
-                            onClick={() =>
-                              handleClaim(
-                                profile.userId,
-                                profile.bladerName || 'Inconnu',
-                              )
-                            }
-                            startIcon={<LinkIcon />}
-                            sx={{
-                              borderRadius: 4,
-                              textTransform: 'none',
-                              fontSize: '0.75rem',
-                              py: 0.5,
-                            }}
-                          >
-                            Lier
-                          </Button>
-                        </Tooltip>
-                      )}
+                    <TableCell
+                      align="center"
+                      sx={{
+                        px: { xs: 0.1, sm: 2 },
+                        display: { xs: 'table-cell', md: 'table-cell' },
+                      }}
+                    >
+                      <Typography
+                        sx={{
+                          fontSize: { xs: '0.65rem', sm: '0.85rem' },
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
+                        <span style={{ color: theme.palette.success.main }}>
+                          {profile.wins}
+                        </span>
+                        <span style={{ opacity: 0.5 }}>/</span>
+                        <span style={{ color: theme.palette.error.main }}>
+                          {profile.losses}
+                        </span>
+                      </Typography>
+                    </TableCell>
+                    <TableCell
+                      align="center"
+                      sx={{
+                        px: { xs: 0.1, sm: 2 },
+                        display: { xs: 'table-cell', md: 'table-cell' },
+                      }}
+                    >
+                      <Typography
+                        fontWeight="bold"
+                        sx={{ fontSize: { xs: '0.65rem', sm: '0.9rem' } }}
+                        color={
+                          parseFloat(winRate) >= 50
+                            ? 'success.main'
+                            : 'text.secondary'
+                        }
+                      >
+                        {winRate}%
+                      </Typography>
                     </TableCell>
                   </TableRow>
                 );
@@ -380,10 +432,15 @@ export function RankingsTable({
             page={currentPage}
             onChange={handlePageChange}
             color="primary"
-            size="large"
+            size="medium"
             showFirstButton
             showLastButton
             shape="rounded"
+            sx={{
+              '& .MuiPaginationItem-firstLast': {
+                display: { xs: 'none', sm: 'inline-flex' },
+              },
+            }}
           />
         </Box>
       )}

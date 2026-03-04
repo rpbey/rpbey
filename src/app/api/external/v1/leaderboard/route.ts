@@ -132,13 +132,18 @@ export async function GET(request: Request) {
         multiplier: t.category?.multiplier || t.weight || 1.0,
         participants: t.participants.map((p) => ({
           userId: p.userId,
-          name: p.user.profile?.bladerName || p.user.name || p.user.username,
-          discordTag: p.user.discordTag,
-          image: p.user.image,
+          name:
+            p.playerName ||
+            p.user?.profile?.bladerName ||
+            p.user?.name ||
+            p.user?.username ||
+            'Unknown',
+          discordTag: p.user?.discordTag || null,
+          image: p.user?.image || null,
           placement: p.finalPlacement,
           wins: p.wins,
           losses: p.losses,
-          points: p.user.profile?.rankingPoints || 0,
+          points: p.user?.profile?.rankingPoints || 0,
         })),
         matches: t.matches.map((m) => ({
           id: m.id,

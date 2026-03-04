@@ -9,7 +9,6 @@ import {
 import { Discord, Slash, SlashChoice, SlashOption } from 'discordx';
 
 import { Colors, RPB } from '../../lib/constants.js';
-import { logger } from '../../lib/logger.js';
 
 interface SynergyItem {
   name: string;
@@ -70,9 +69,7 @@ function loadBbxData(): BbxWeeklyData | null {
     try {
       const raw = readFileSync(filePath, 'utf-8');
       return JSON.parse(raw) as BbxWeeklyData;
-    } catch {
-      continue;
-    }
+    } catch {}
   }
   return null;
 }
@@ -149,7 +146,8 @@ export class MetaCommand {
     }
 
     const { metadata } = periodData;
-    const periodLabel = selectedPeriod === '2weeks' ? '2 Semaines' : '4 Semaines';
+    const periodLabel =
+      selectedPeriod === '2weeks' ? '2 Semaines' : '4 Semaines';
     const dateRange =
       metadata.startDate && metadata.endDate
         ? `${formatDate(metadata.startDate)} — ${formatDate(metadata.endDate)}`
@@ -201,7 +199,8 @@ export class MetaCommand {
     const fields = sorted.map((cat) => {
       const emoji = CATEGORY_EMOJIS[cat.category] || '📊';
       const top3 = cat.components.slice(0, 5).map((comp, i) => {
-        const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `\`${i + 1}.\``;
+        const medal =
+          i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `\`${i + 1}.\``;
         const change = changeIndicator(comp.position_change);
         return `${medal} **${comp.name}** \`${comp.score}\` ${change}`;
       });
@@ -217,12 +216,8 @@ export class MetaCommand {
     const statsLine = [
       metadata.weekId,
       dateRange,
-      metadata.eventsScanned > 0
-        ? `${metadata.eventsScanned} tournois`
-        : null,
-      metadata.partsAnalyzed > 0
-        ? `${metadata.partsAnalyzed} combos`
-        : null,
+      metadata.eventsScanned > 0 ? `${metadata.eventsScanned} tournois` : null,
+      metadata.partsAnalyzed > 0 ? `${metadata.partsAnalyzed} combos` : null,
     ]
       .filter(Boolean)
       .join(' • ');

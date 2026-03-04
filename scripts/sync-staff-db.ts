@@ -85,7 +85,7 @@ async function syncStaff() {
             }
 
             const avatarUrl = member.user.displayAvatarURL({ extension: 'png', size: 256 });
-            const nickname = member.nickname || member.user.displayName; // Global Name or Username
+            const nickname = member.user.username; // Use username instead of displayName/nickname for consistency
 
             // Upsert into DB
             const existing = await prisma.staffMember.findFirst({

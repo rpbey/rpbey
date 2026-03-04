@@ -26,11 +26,11 @@ export type DeckWithItems = Prisma.DeckGetPayload<{
       include: {
         bey: true;
         blade: true;
-        overBlade: true,
-        ratchet: true,
-        bit: true,
-        lockChip: true,
-        assistBlade: true,
+        overBlade: true;
+        ratchet: true;
+        bit: true;
+        lockChip: true;
+        assistBlade: true;
       };
       orderBy: { position: 'asc' };
     };
@@ -42,11 +42,11 @@ export type DeckItemWithParts = Prisma.DeckItemGetPayload<{
   include: {
     bey: true;
     blade: true;
-    overBlade: true,
-    ratchet: true,
-    bit: true,
-    lockChip: true,
-    assistBlade: true,
+    overBlade: true;
+    ratchet: true;
+    bit: true;
+    lockChip: true;
+    assistBlade: true;
   };
 }>;
 
@@ -64,11 +64,11 @@ export type TournamentFull = Prisma.TournamentGetPayload<{
               include: {
                 bey: true;
                 blade: true;
-                overBlade: true,
-                ratchet: true,
-                bit: true,
-                lockChip: true,
-                assistBlade: true,
+                overBlade: true;
+                ratchet: true;
+                bit: true;
+                lockChip: true;
+                assistBlade: true;
               };
               orderBy: { position: 'asc' };
             };

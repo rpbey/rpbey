@@ -29,9 +29,9 @@ export async function GET(req: NextRequest) {
 
     data = entries.map((e, i) => ({
       Rank: i + 1,
-      Name: e.user.name || 'Unknown',
-      Username: e.user.username || '',
-      DiscordId: e.user.discordId || '',
+      Name: e.playerName || e.user?.name || 'Unknown',
+      Username: e.user?.username || '',
+      DiscordId: e.user?.discordId || '',
       Points: e.points,
       Wins: e.wins,
       Losses: e.losses,
@@ -39,22 +39,22 @@ export async function GET(req: NextRequest) {
     }));
   } else {
     // Live Data
-    const profiles = await prisma.profile.findMany({
-      where: { rankingPoints: { gt: 0 } },
+    const rankings = await prisma.globalRanking.findMany({
+      where: { points: { gt: 0 } },
       include: { user: true },
       orderBy: [
-        { rankingPoints: 'desc' },
+        { points: 'desc' },
         { tournamentWins: 'desc' },
         { wins: 'desc' },
       ],
     });
 
-    data = profiles.map((p, i) => ({
+    data = rankings.map((p, i) => ({
       Rank: i + 1,
-      Name: p.user.name || p.bladerName || 'Unknown',
-      Username: p.user.username || '',
-      DiscordId: p.user.discordId || '',
-      Points: p.rankingPoints,
+      Name: p.playerName || p.user?.name || 'Unknown',
+      Username: p.user?.username || '',
+      DiscordId: p.user?.discordId || '',
+      Points: p.points,
       Wins: p.wins,
       Losses: p.losses,
       Tournaments: p.tournamentWins,

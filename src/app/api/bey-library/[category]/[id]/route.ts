@@ -6,8 +6,8 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import {
-  CATEGORIES,
   type BeyLibraryCategory,
+  CATEGORIES,
   getPartDetail,
 } from '@/lib/bey-library';
 

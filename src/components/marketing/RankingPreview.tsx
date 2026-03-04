@@ -1,6 +1,10 @@
 'use client';
 
 import {
+  EmojiEvents as TrophyIcon,
+  CheckCircle as VerifiedIcon,
+} from '@mui/icons-material';
+import {
   Avatar,
   alpha,
   Box,
@@ -96,9 +100,31 @@ export function RankingPreview({ rankings }: RankingPreviewProps) {
                 </Avatar>
 
                 <Box sx={{ flex: 1, minWidth: 0 }}>
-                  <Typography variant="body2" fontWeight={800} noWrap>
-                    {profile.bladerName || profile.user.name}
-                  </Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    <Typography variant="body2" fontWeight={800} noWrap>
+                      {profile.bladerName ||
+                        profile.user.name ||
+                        profile.challongeUsername}
+                    </Typography>
+                    {profile.challongeUsername && (
+                      <VerifiedIcon
+                        sx={{
+                          fontSize: '0.8rem',
+                          color: 'info.main',
+                          opacity: 0.7,
+                        }}
+                      />
+                    )}
+                    {profile.tournamentWins > 0 && (
+                      <TrophyIcon
+                        sx={{
+                          fontSize: '0.9rem',
+                          color: '#FFD700',
+                          filter: 'drop-shadow(0 0 1px rgba(255, 215, 0, 0.4))',
+                        }}
+                      />
+                    )}
+                  </Box>
                   <Typography
                     variant="caption"
                     color="text.secondary"

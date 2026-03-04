@@ -10,7 +10,6 @@ import {
   LiveTv,
   Login,
   Logout,
-  People,
   PersonAdd,
   Settings,
 } from '@mui/icons-material';
@@ -424,7 +423,11 @@ export function MobileNav() {
             value="/tournaments"
             icon={<TrophyIcon />}
           />
-          <BottomNavigationAction label="Meta" value="/meta" icon={<AutoGraph />} />
+          <BottomNavigationAction
+            label="Meta"
+            value="/meta"
+            icon={<AutoGraph />}
+          />
           <BottomNavigationAction label="TV" value="/tv" icon={<LiveTv />} />
           <BottomNavigationAction
             label="Classements"

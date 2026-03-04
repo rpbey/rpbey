@@ -110,7 +110,11 @@ export async function PUT(
         );
       }
 
-      const standardPartIds = beys.flatMap((b) => [b.bladeId, b.ratchetId, b.bitId]);
+      const standardPartIds = beys.flatMap((b) => [
+        b.bladeId,
+        b.ratchetId,
+        b.bitId,
+      ]);
       const uniqueStandardIds = new Set(standardPartIds);
       if (uniqueStandardIds.size !== standardPartIds.length) {
         return NextResponse.json(
@@ -128,13 +132,20 @@ export async function PUT(
       }
 
       // Validate over blade uniqueness
-      const overBladeIds = beys.map((b) => b.overBladeId).filter(Boolean) as string[];
+      const overBladeIds = beys
+        .map((b) => b.overBladeId)
+        .filter(Boolean) as string[];
       if (new Set(overBladeIds).size !== overBladeIds.length) {
-        return NextResponse.json({ error: 'Duplicate Over Blades in deck' }, { status: 400 });
+        return NextResponse.json(
+          { error: 'Duplicate Over Blades in deck' },
+          { status: 400 },
+        );
       }
 
       // Validate assist blade uniqueness
-      const assistBladeIds = beys.map((b) => b.assistBladeId).filter(Boolean) as string[];
+      const assistBladeIds = beys
+        .map((b) => b.assistBladeId)
+        .filter(Boolean) as string[];
       const uniqueAssistIds = new Set(assistBladeIds);
       if (uniqueAssistIds.size !== assistBladeIds.length) {
         return NextResponse.json(

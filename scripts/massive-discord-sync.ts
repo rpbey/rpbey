@@ -37,7 +37,7 @@ async function massiveSync() {
         await prisma.user.update({
           where: { id: user.id },
           data: {
-            name: member.displayName || user.name,
+            name: member.username || user.name,
             discordTag: member.username,
             image: member.avatar || user.image,
             globalName: member.globalName || user.globalName,
@@ -53,7 +53,7 @@ async function massiveSync() {
         await prisma.user.create({
           data: {
             discordId: member.id,
-            name: member.displayName,
+            name: member.username,
             username: member.username,
             email: `${member.username}@discord.rpb`, // Placeholder email
             discordTag: member.username,
@@ -65,7 +65,7 @@ async function massiveSync() {
             roles: member.roles,
             profile: {
               create: {
-                bladerName: member.displayName,
+                bladerName: member.username,
                 rankingPoints: 0
               }
             }

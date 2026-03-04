@@ -56,7 +56,10 @@ function BuilderLayout() {
             borderColor: 'divider',
             bgcolor: 'background.paper',
             '&::-webkit-scrollbar': { width: 4 },
-            '&::-webkit-scrollbar-thumb': { bgcolor: 'divider', borderRadius: 2 },
+            '&::-webkit-scrollbar-thumb': {
+              bgcolor: 'divider',
+              borderRadius: 2,
+            },
           }}
         >
           <DeckComposition />
@@ -65,11 +68,7 @@ function BuilderLayout() {
 
       {/* Mobile: tabbed layout */}
       <Box sx={{ display: { xs: 'block', md: 'none' }, mt: 2, pb: 12 }}>
-        {state.mobileTab === 'catalog' ? (
-          <PartCatalog />
-        ) : (
-          <DeckComposition />
-        )}
+        {state.mobileTab === 'catalog' ? <PartCatalog /> : <DeckComposition />}
       </Box>
     </Container>
   );

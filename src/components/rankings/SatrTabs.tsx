@@ -1,9 +1,8 @@
 'use client';
 
-import { Tabs, Tab, Box, Stack, Typography, alpha } from '@mui/material';
+import { Box, Stack, Tab, Tabs, Typography } from '@mui/material';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { motion } from 'framer-motion';
 
 interface SatrTabsProps {
   mode: 'ranking' | 'career';
@@ -13,7 +12,7 @@ interface SatrTabsProps {
 
 export function SatrTabs({ mode, totalBladers, totalMatches }: SatrTabsProps) {
   const searchParams = useSearchParams();
-  
+
   const getHref = (view: string) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set('view', view);
@@ -22,28 +21,30 @@ export function SatrTabs({ mode, totalBladers, totalMatches }: SatrTabsProps) {
   };
 
   return (
-    <Box sx={{ 
-        mb: 4, 
-        display: 'flex', 
+    <Box
+      sx={{
+        mb: 4,
+        display: 'flex',
         flexDirection: { xs: 'column', md: 'row' },
-        justifyContent: 'space-between', 
+        justifyContent: 'space-between',
         alignItems: { xs: 'flex-start', md: 'center' },
         gap: 2,
         p: 1,
         borderRadius: 4,
         bgcolor: 'rgba(255,255,255,0.03)',
-        border: '1px solid rgba(255,255,255,0.05)'
-    }}>
-      <Tabs 
+        border: '1px solid rgba(255,255,255,0.05)',
+      }}
+    >
+      <Tabs
         value={mode}
         sx={{
-            minHeight: 48,
-            '& .MuiTabs-indicator': {
-                height: 3,
-                borderRadius: '3px 3px 0 0',
-                bgcolor: '#fbbf24',
-                boxShadow: '0 0 12px rgba(251, 191, 36, 0.5)'
-            }
+          minHeight: 48,
+          '& .MuiTabs-indicator': {
+            height: 3,
+            borderRadius: '3px 3px 0 0',
+            bgcolor: '#fbbf24',
+            boxShadow: '0 0 12px rgba(251, 191, 36, 0.5)',
+          },
         }}
       >
         <Tab
@@ -51,12 +52,12 @@ export function SatrTabs({ mode, totalBladers, totalMatches }: SatrTabsProps) {
           value="ranking"
           component={Link}
           href={getHref('ranking')}
-          sx={{ 
-              fontWeight: 900, 
-              textTransform: 'none', 
-              fontSize: '1rem',
-              color: 'rgba(255,255,255,0.5)',
-              '&.Mui-selected': { color: '#fff' }
+          sx={{
+            fontWeight: 900,
+            textTransform: 'none',
+            fontSize: '1rem',
+            color: 'rgba(255,255,255,0.5)',
+            '&.Mui-selected': { color: '#fff' },
           }}
         />
         <Tab
@@ -64,25 +65,49 @@ export function SatrTabs({ mode, totalBladers, totalMatches }: SatrTabsProps) {
           value="career"
           component={Link}
           href={getHref('career')}
-          sx={{ 
-              fontWeight: 900, 
-              textTransform: 'none', 
-              fontSize: '1rem',
-              color: 'rgba(255,255,255,0.5)',
-              '&.Mui-selected': { color: '#fff' }
+          sx={{
+            fontWeight: 900,
+            textTransform: 'none',
+            fontSize: '1rem',
+            color: 'rgba(255,255,255,0.5)',
+            '&.Mui-selected': { color: '#fff' },
           }}
         />
       </Tabs>
 
       <Stack direction="row" spacing={4} sx={{ px: 2 }}>
-          <Box sx={{ textAlign: 'center' }}>
-            <Typography variant="caption" color="text.secondary" sx={{ display: 'block', fontWeight: 800, letterSpacing: 1 }}>BLADERS</Typography>
-            <Typography variant="h6" fontWeight="900" sx={{ color: '#fbbf24', lineHeight: 1.2 }}>{totalBladers}</Typography>
-          </Box>
-          <Box sx={{ textAlign: 'center' }}>
-            <Typography variant="caption" color="text.secondary" sx={{ display: 'block', fontWeight: 800, letterSpacing: 1 }}>MATCHS</Typography>
-            <Typography variant="h6" fontWeight="900" sx={{ color: '#fff', lineHeight: 1.2 }}>{totalMatches.toLocaleString()}</Typography>
-          </Box>
+        <Box sx={{ textAlign: 'center' }}>
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            sx={{ display: 'block', fontWeight: 800, letterSpacing: 1 }}
+          >
+            BLADERS
+          </Typography>
+          <Typography
+            variant="h6"
+            fontWeight="900"
+            sx={{ color: '#fbbf24', lineHeight: 1.2 }}
+          >
+            {totalBladers}
+          </Typography>
+        </Box>
+        <Box sx={{ textAlign: 'center' }}>
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            sx={{ display: 'block', fontWeight: 800, letterSpacing: 1 }}
+          >
+            MATCHS
+          </Typography>
+          <Typography
+            variant="h6"
+            fontWeight="900"
+            sx={{ color: '#fff', lineHeight: 1.2 }}
+          >
+            {totalMatches.toLocaleString()}
+          </Typography>
+        </Box>
       </Stack>
     </Box>
   );

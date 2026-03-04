@@ -3,13 +3,13 @@
 import type { Part } from '@prisma/client';
 import {
   createContext,
-  useContext,
-  useReducer,
-  useMemo,
-  useEffect,
-  useRef,
-  type ReactNode,
   type Dispatch,
+  type ReactNode,
+  useContext,
+  useEffect,
+  useMemo,
+  useReducer,
+  useRef,
 } from 'react';
 
 // --- Types ---
@@ -24,7 +24,13 @@ export interface BeySlot {
   nickname: string;
 }
 
-export type BuilderStep = 'BLADE' | 'OVER_BLADE' | 'RATCHET' | 'BIT' | 'LOCK_CHIP' | 'ASSIST_BLADE';
+export type BuilderStep =
+  | 'BLADE'
+  | 'OVER_BLADE'
+  | 'RATCHET'
+  | 'BIT'
+  | 'LOCK_CHIP'
+  | 'ASSIST_BLADE';
 
 export interface DeckSummary {
   id: string;
@@ -80,7 +86,15 @@ export interface LoadDeckPayload {
 
 // --- Helpers ---
 
-const emptySlot: BeySlot = { blade: null, overBlade: null, ratchet: null, bit: null, lockChip: null, assistBlade: null, nickname: '' };
+const emptySlot: BeySlot = {
+  blade: null,
+  overBlade: null,
+  ratchet: null,
+  bit: null,
+  lockChip: null,
+  assistBlade: null,
+  nickname: '',
+};
 
 function createEmptyBeys(): [BeySlot, BeySlot, BeySlot] {
   return [{ ...emptySlot }, { ...emptySlot }, { ...emptySlot }];
@@ -114,12 +128,18 @@ function isSlotComplete(slot: BeySlot): boolean {
 
 function stepKey(step: BuilderStep): keyof BeySlot {
   switch (step) {
-    case 'BLADE': return 'blade';
-    case 'OVER_BLADE': return 'overBlade';
-    case 'RATCHET': return 'ratchet';
-    case 'BIT': return 'bit';
-    case 'LOCK_CHIP': return 'lockChip';
-    case 'ASSIST_BLADE': return 'assistBlade';
+    case 'BLADE':
+      return 'blade';
+    case 'OVER_BLADE':
+      return 'overBlade';
+    case 'RATCHET':
+      return 'ratchet';
+    case 'BIT':
+      return 'bit';
+    case 'LOCK_CHIP':
+      return 'lockChip';
+    case 'ASSIST_BLADE':
+      return 'assistBlade';
   }
 }
 
@@ -143,10 +163,17 @@ export const initialState: BuilderState = {
 
 // --- Reducer ---
 
-export function builderReducer(state: BuilderState, action: BuilderAction): BuilderState {
+export function builderReducer(
+  state: BuilderState,
+  action: BuilderAction,
+): BuilderState {
   switch (action.type) {
     case 'SET_PART': {
-      const newBeys: [BeySlot, BeySlot, BeySlot] = [{ ...state.beys[0] }, { ...state.beys[1] }, { ...state.beys[2] }];
+      const newBeys: [BeySlot, BeySlot, BeySlot] = [
+        { ...state.beys[0] },
+        { ...state.beys[1] },
+        { ...state.beys[2] },
+      ];
       const key = stepKey(state.activeStep);
       const idx = state.activeSlotIndex as 0 | 1 | 2;
 
@@ -175,13 +202,19 @@ export function builderReducer(state: BuilderState, action: BuilderAction): Buil
 
       if (isSlotComplete(updatedSlot)) {
         // Find next incomplete slot
-        const nextIncomplete = newBeys.findIndex((s, i) => i > idx && !isSlotComplete(s)) as 0 | 1 | 2 | -1;
+        const nextIncomplete = newBeys.findIndex(
+          (s, i) => i > idx && !isSlotComplete(s),
+        ) as 0 | 1 | 2 | -1;
         if (nextIncomplete !== -1) {
           nextSlotIndex = nextIncomplete;
           nextStep = getNextStep(newBeys[nextIncomplete]);
         } else {
           // Check earlier slots
-          const earlier = newBeys.findIndex((s) => !isSlotComplete(s)) as 0 | 1 | 2 | -1;
+          const earlier = newBeys.findIndex((s) => !isSlotComplete(s)) as
+            | 0
+            | 1
+            | 2
+            | -1;
           if (earlier !== -1) {
             nextSlotIndex = earlier;
             nextStep = getNextStep(newBeys[earlier]);
@@ -203,7 +236,11 @@ export function builderReducer(state: BuilderState, action: BuilderAction): Buil
     }
 
     case 'REMOVE_PART': {
-      const newBeys: [BeySlot, BeySlot, BeySlot] = [{ ...state.beys[0] }, { ...state.beys[1] }, { ...state.beys[2] }];
+      const newBeys: [BeySlot, BeySlot, BeySlot] = [
+        { ...state.beys[0] },
+        { ...state.beys[1] },
+        { ...state.beys[2] },
+      ];
       const rmIdx = action.slotIndex as 0 | 1 | 2;
       const rmKey = stepKey(action.partType);
       newBeys[rmIdx] = {
@@ -247,7 +284,11 @@ export function builderReducer(state: BuilderState, action: BuilderAction): Buil
       return { ...state, isActive: action.isActive };
 
     case 'SET_NICKNAME': {
-      const newBeys: [BeySlot, BeySlot, BeySlot] = [{ ...state.beys[0] }, { ...state.beys[1] }, { ...state.beys[2] }];
+      const newBeys: [BeySlot, BeySlot, BeySlot] = [
+        { ...state.beys[0] },
+        { ...state.beys[1] },
+        { ...state.beys[2] },
+      ];
       const nnIdx = action.slotIndex as 0 | 1 | 2;
       newBeys[nnIdx] = {
         ...newBeys[nnIdx],
@@ -271,7 +312,11 @@ export function builderReducer(state: BuilderState, action: BuilderAction): Buil
           };
         }
       });
-      const firstIncomplete = newBeys.findIndex((s) => !isSlotComplete(s)) as 0 | 1 | 2 | -1;
+      const firstIncomplete = newBeys.findIndex((s) => !isSlotComplete(s)) as
+        | 0
+        | 1
+        | 2
+        | -1;
       const ldIdx = (firstIncomplete !== -1 ? firstIncomplete : 0) as 0 | 1 | 2;
       return {
         ...state,
@@ -306,7 +351,14 @@ export function builderReducer(state: BuilderState, action: BuilderAction): Buil
         ...state,
         savedDecks: state.savedDecks.filter((d) => d.id !== action.deckId),
         ...(state.deckId === action.deckId
-          ? { deckId: null, deckName: '', isActive: false, beys: createEmptyBeys(), activeSlotIndex: 0, activeStep: 'BLADE' as BuilderStep }
+          ? {
+              deckId: null,
+              deckName: '',
+              isActive: false,
+              beys: createEmptyBeys(),
+              activeSlotIndex: 0,
+              activeStep: 'BLADE' as BuilderStep,
+            }
           : {}),
       };
 
@@ -341,7 +393,9 @@ function saveDraft(state: BuilderState) {
       beys: state.beys,
     };
     localStorage.setItem(LS_KEY, JSON.stringify(draft));
-  } catch { /* quota exceeded or SSR */ }
+  } catch {
+    /* quota exceeded or SSR */
+  }
 }
 
 function loadDraft(): Partial<BuilderState> | null {
@@ -351,7 +405,9 @@ function loadDraft(): Partial<BuilderState> | null {
     const draft: LocalDraft = JSON.parse(raw);
     // Validate structure
     if (!Array.isArray(draft.beys) || draft.beys.length !== 3) return null;
-    const hasParts = draft.beys.some((b) => b.blade || b.ratchet || b.bit || b.lockChip || b.assistBlade);
+    const hasParts = draft.beys.some(
+      (b) => b.blade || b.ratchet || b.bit || b.lockChip || b.assistBlade,
+    );
     if (!hasParts && !draft.deckName) return null;
     // Ensure CX fields exist (migration from old drafts)
     for (const bey of draft.beys) {
@@ -377,7 +433,11 @@ function loadDraft(): Partial<BuilderState> | null {
 }
 
 export function clearDraft() {
-  try { localStorage.removeItem(LS_KEY); } catch { /* noop */ }
+  try {
+    localStorage.removeItem(LS_KEY);
+  } catch {
+    /* noop */
+  }
 }
 
 // --- Context ---
@@ -413,7 +473,7 @@ export function BuilderProvider({ children }: { children: ReactNode }) {
       return;
     }
     saveDraft(state);
-  }, [state.beys, state.deckName, state.deckId, state.isActive]);
+  }, [state.beys, state.deckName, state.deckId, state.isActive, state]);
 
   const usedPartIds = useMemo(() => {
     const ids = new Set<string>();
@@ -442,12 +502,13 @@ export function BuilderProvider({ children }: { children: ReactNode }) {
     return names;
   }, [state.beys]);
 
-  const value = useMemo(() => ({ state, dispatch, usedPartIds, usedPartNames }), [state, dispatch, usedPartIds, usedPartNames]);
+  const value = useMemo(
+    () => ({ state, dispatch, usedPartIds, usedPartNames }),
+    [state, usedPartIds, usedPartNames],
+  );
 
   return (
-    <BuilderContext.Provider value={value}>
-      {children}
-    </BuilderContext.Provider>
+    <BuilderContext.Provider value={value}>{children}</BuilderContext.Provider>
   );
 }
 

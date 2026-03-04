@@ -85,3 +85,17 @@ export async function getBotMember(userId: string): Promise<BotMember | null> {
     return null;
   }
 }
+
+export async function dispatchBotAction(
+  action: string,
+  params: any,
+): Promise<any> {
+  try {
+    return await botClient.post('/api/dispatch', {
+      body: { action, params },
+    });
+  } catch (error) {
+    console.error(`[BotAPI] Failed to dispatch action ${action}:`, error);
+    return { success: false, error: (error as Error).message };
+  }
+}

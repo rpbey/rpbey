@@ -15,7 +15,7 @@ import { toast } from 'sonner';
 import { useSession } from '@/lib/auth-client';
 import { validateDeck } from '@/lib/tournament-logic';
 import { BeySlotCard } from './BeySlotCard';
-import { useBuilder, clearDraft, isCXBlade } from './BuilderContext';
+import { clearDraft, isCXBlade, useBuilder } from './BuilderContext';
 
 export function DeckComposition() {
   const { state, dispatch } = useBuilder();
@@ -108,16 +108,25 @@ export function DeckComposition() {
         const { data } = await decksRes.json();
         dispatch({
           type: 'SET_SAVED_DECKS',
-          decks: data.map((d: { id: string; name: string; isActive: boolean; updatedAt: string }) => ({
-            id: d.id,
-            name: d.name,
-            isActive: d.isActive,
-            updatedAt: d.updatedAt,
-          })),
+          decks: data.map(
+            (d: {
+              id: string;
+              name: string;
+              isActive: boolean;
+              updatedAt: string;
+            }) => ({
+              id: d.id,
+              name: d.name,
+              isActive: d.isActive,
+              updatedAt: d.updatedAt,
+            }),
+          ),
         });
       }
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Erreur lors de la sauvegarde');
+      toast.error(
+        err instanceof Error ? err.message : 'Erreur lors de la sauvegarde',
+      );
     }
   }, [session, state, allComplete, validation, dispatch]);
 
@@ -128,22 +137,33 @@ export function DeckComposition() {
           placeholder="Nom du deck"
           size="small"
           value={state.deckName}
-          onChange={(e) => dispatch({ type: 'SET_DECK_NAME', name: e.target.value })}
+          onChange={(e) =>
+            dispatch({ type: 'SET_DECK_NAME', name: e.target.value })
+          }
           sx={{
             flex: 1,
-            '& .MuiOutlinedInput-root': { borderRadius: 2.5, fontWeight: 'bold' },
+            '& .MuiOutlinedInput-root': {
+              borderRadius: 2.5,
+              fontWeight: 'bold',
+            },
           }}
         />
         <FormControlLabel
           control={
             <Checkbox
               checked={state.isActive}
-              onChange={(e) => dispatch({ type: 'SET_IS_ACTIVE', isActive: e.target.checked })}
+              onChange={(e) =>
+                dispatch({ type: 'SET_IS_ACTIVE', isActive: e.target.checked })
+              }
               size="small"
               color="success"
             />
           }
-          label={<Typography variant="caption" fontWeight="bold">Actif</Typography>}
+          label={
+            <Typography variant="caption" fontWeight="bold">
+              Actif
+            </Typography>
+          }
           sx={{ mr: 0 }}
         />
       </Box>

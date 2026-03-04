@@ -1,0 +1,2412 @@
+{
+  "url": "https://challonge.com/fr/B_TS3",
+  "scrapedAt": "2026-03-04T09:28:46.109Z",
+  "participantsCount": 73,
+  "matchesCount": 145,
+  "participants": [
+    {
+      "name": "Team Arc | Kreepy✅",
+      "rank": 1,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 8,
+      "exactLosses": 1,
+      "matchHistory": [
+        "W",
+        "W",
+        "W",
+        "W",
+        "W",
+        "L",
+        "W",
+        "W",
+        "W"
+      ]
+    },
+    {
+      "name": "azurekun✅",
+      "rank": 2,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 6,
+      "exactLosses": 2,
+      "matchHistory": [
+        "W",
+        "W",
+        "W",
+        "W",
+        "W",
+        "W",
+        "L",
+        "L"
+      ]
+    },
+    {
+      "name": "KamenZ✅",
+      "rank": 3,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 10,
+      "exactLosses": 2,
+      "matchHistory": [
+        "W",
+        "L",
+        "W",
+        "W",
+        "W",
+        "W",
+        "W",
+        "W",
+        "W",
+        "W",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "Lewis973✅",
+      "rank": 4,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 5,
+      "exactLosses": 2,
+      "matchHistory": [
+        "W",
+        "W",
+        "W",
+        "W",
+        "L",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "Kaiouss✅",
+      "rank": 5,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 4,
+      "exactLosses": 2,
+      "matchHistory": [
+        "W",
+        "W",
+        "W",
+        "W",
+        "L",
+        "L"
+      ]
+    },
+    {
+      "name": "SkarnGameMaster✅",
+      "rank": 5,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 5,
+      "exactLosses": 2,
+      "matchHistory": [
+        "W",
+        "W",
+        "W",
+        "L",
+        "W",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "DarkSpirit4✅",
+      "rank": 7,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 4,
+      "exactLosses": 2,
+      "matchHistory": [
+        "W",
+        "W",
+        "W",
+        "L",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "Vincent___✅",
+      "rank": 7,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 4,
+      "exactLosses": 2,
+      "matchHistory": [
+        "W",
+        "W",
+        "W",
+        "L",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "Emp97✅",
+      "rank": 9,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 5,
+      "exactLosses": 2,
+      "matchHistory": [
+        "W",
+        "L",
+        "W",
+        "W",
+        "W",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "Inazo13✅",
+      "rank": 9,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 5,
+      "exactLosses": 2,
+      "matchHistory": [
+        "W",
+        "L",
+        "W",
+        "W",
+        "W",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "LightYamani✅",
+      "rank": 9,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 3,
+      "exactLosses": 2,
+      "matchHistory": [
+        "W",
+        "W",
+        "W",
+        "L",
+        "L"
+      ]
+    },
+    {
+      "name": "MrFantome✅",
+      "rank": 9,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 5,
+      "exactLosses": 2,
+      "matchHistory": [
+        "W",
+        "W",
+        "W",
+        "L",
+        "W",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "JojoKirino✅",
+      "rank": 13,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 3,
+      "exactLosses": 2,
+      "matchHistory": [
+        "W",
+        "W",
+        "L",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "Rami✅",
+      "rank": 13,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 4,
+      "exactLosses": 2,
+      "matchHistory": [
+        "W",
+        "W",
+        "W",
+        "L",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "RNSX_Yumetoo✅",
+      "rank": 13,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 3,
+      "exactLosses": 2,
+      "matchHistory": [
+        "W",
+        "W",
+        "L",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "Snipblast✅",
+      "rank": 13,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 4,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "W",
+        "W",
+        "W",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "09Illu✅",
+      "rank": 17,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 2,
+      "exactLosses": 2,
+      "matchHistory": [
+        "W",
+        "W",
+        "L",
+        "L"
+      ]
+    },
+    {
+      "name": "Flower✅",
+      "rank": 17,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 4,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "W",
+        "W",
+        "W",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "Masamune_Kadoya✅",
+      "rank": 17,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 3,
+      "exactLosses": 2,
+      "matchHistory": [
+        "W",
+        "W",
+        "W",
+        "L",
+        "L"
+      ]
+    },
+    {
+      "name": "MtS_95✅",
+      "rank": 17,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 2,
+      "exactLosses": 2,
+      "matchHistory": [
+        "W",
+        "W",
+        "L",
+        "L"
+      ]
+    },
+    {
+      "name": "nthanb_✅",
+      "rank": 17,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 3,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "W",
+        "W",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "SAtR_Younsi✅",
+      "rank": 17,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 2,
+      "exactLosses": 2,
+      "matchHistory": [
+        "W",
+        "W",
+        "L",
+        "L"
+      ]
+    },
+    {
+      "name": "Tategamii✅",
+      "rank": 17,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 3,
+      "exactLosses": 2,
+      "matchHistory": [
+        "W",
+        "L",
+        "W",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "Yolkster_✅",
+      "rank": 17,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 3,
+      "exactLosses": 2,
+      "matchHistory": [
+        "W",
+        "L",
+        "W",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "Berserk91✅",
+      "rank": 25,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 2,
+      "exactLosses": 2,
+      "matchHistory": [
+        "W",
+        "L",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "Beymael✅",
+      "rank": 25,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 2,
+      "exactLosses": 2,
+      "matchHistory": [
+        "W",
+        "L",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "Kameny✅",
+      "rank": 25,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 2,
+      "exactLosses": 2,
+      "matchHistory": [
+        "W",
+        "L",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "Liquid Snake✅",
+      "rank": 25,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 2,
+      "exactLosses": 2,
+      "matchHistory": [
+        "W",
+        "L",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "Loup_✅",
+      "rank": 25,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 2,
+      "exactLosses": 2,
+      "matchHistory": [
+        "W",
+        "L",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "Nathan031107✅",
+      "rank": 25,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 3,
+      "exactLosses": 2,
+      "matchHistory": [
+        "W",
+        "W",
+        "L",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "SAtR | Zeikuo✅",
+      "rank": 25,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 2,
+      "exactLosses": 2,
+      "matchHistory": [
+        "W",
+        "L",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "sh1ro1✅",
+      "rank": 25,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 3,
+      "exactLosses": 2,
+      "matchHistory": [
+        "W",
+        "L",
+        "W",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "Elliot✅",
+      "rank": 33,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 1,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "Gelofy✅",
+      "rank": 33,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 1,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "Ilou✅",
+      "rank": 33,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 1,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "Iloveatingsushi✅",
+      "rank": 33,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 1,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "Lady_Barbatrucc✅",
+      "rank": 33,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 1,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "LeKingJoker✅",
+      "rank": 33,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 1,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "MiNiGeLoFy✅",
+      "rank": 33,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 2,
+      "exactLosses": 2,
+      "matchHistory": [
+        "W",
+        "L",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "Nahil12✅",
+      "rank": 33,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 2,
+      "exactLosses": 2,
+      "matchHistory": [
+        "W",
+        "W",
+        "L",
+        "L"
+      ]
+    },
+    {
+      "name": "OMNIYAYA✅",
+      "rank": 33,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 2,
+      "exactLosses": 2,
+      "matchHistory": [
+        "W",
+        "L",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "RNSX_Hisunu✅",
+      "rank": 33,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 1,
+      "exactLosses": 2,
+      "matchHistory": [
+        "W",
+        "L",
+        "L"
+      ]
+    },
+    {
+      "name": "RNSX_Kiiro✅",
+      "rank": 33,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 1,
+      "exactLosses": 2,
+      "matchHistory": [
+        "W",
+        "L",
+        "L"
+      ]
+    },
+    {
+      "name": "Robin✅",
+      "rank": 33,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 1,
+      "exactLosses": 2,
+      "matchHistory": [
+        "W",
+        "L",
+        "L"
+      ]
+    },
+    {
+      "name": "Shishi✅",
+      "rank": 33,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 1,
+      "exactLosses": 2,
+      "matchHistory": [
+        "W",
+        "L",
+        "L"
+      ]
+    },
+    {
+      "name": "Sufhhc✅",
+      "rank": 33,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 1,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "Twii_✅",
+      "rank": 33,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 2,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "W",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "Upolemmo✅",
+      "rank": 33,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 2,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "W",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "a2m1desfables✅",
+      "rank": 49,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 1,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "A2ns✅",
+      "rank": 49,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 0,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "L"
+      ]
+    },
+    {
+      "name": "Andjy✅",
+      "rank": 49,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 1,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "CharlieFlanders✅",
+      "rank": 49,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 0,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "L"
+      ]
+    },
+    {
+      "name": "Fox✅",
+      "rank": 49,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 0,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "L"
+      ]
+    },
+    {
+      "name": "Kineria✅",
+      "rank": 49,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 0,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "L"
+      ]
+    },
+    {
+      "name": "Lezkoko✅",
+      "rank": 49,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 1,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "Loic77370✅",
+      "rank": 49,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 1,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "Meiden_Meiko✅",
+      "rank": 49,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 0,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "L"
+      ]
+    },
+    {
+      "name": "Mirero✅",
+      "rank": 49,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 1,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "Nazha✅",
+      "rank": 49,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 0,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "L"
+      ]
+    },
+    {
+      "name": "Ramen S✅",
+      "rank": 49,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 0,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "L"
+      ]
+    },
+    {
+      "name": "Sasane✅",
+      "rank": 49,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 0,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "L"
+      ]
+    },
+    {
+      "name": "sewpoo_0192✅",
+      "rank": 49,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 1,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "Zeln3090✅",
+      "rank": 49,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 0,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "L"
+      ]
+    },
+    {
+      "name": "Şêro✅",
+      "rank": 49,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 0,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "L"
+      ]
+    },
+    {
+      "name": "_Equalizer_✅",
+      "rank": 65,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 0,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "L"
+      ]
+    },
+    {
+      "name": "Clem ✅",
+      "rank": 65,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 0,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "L"
+      ]
+    },
+    {
+      "name": "Elijah✅",
+      "rank": 65,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 0,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "L"
+      ]
+    },
+    {
+      "name": "Frednivrae✅",
+      "rank": 65,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 0,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "L"
+      ]
+    },
+    {
+      "name": "Igris𖣠",
+      "rank": 65,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 0,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "L"
+      ]
+    },
+    {
+      "name": "Le parrain✅",
+      "rank": 65,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 0,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "L"
+      ]
+    },
+    {
+      "name": "Legoshi✅",
+      "rank": 65,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 0,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "L"
+      ]
+    },
+    {
+      "name": "Philou✅",
+      "rank": 65,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 0,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "L"
+      ]
+    },
+    {
+      "name": "Sofy✅",
+      "rank": 65,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "avatarUrl": null,
+      "exactWins": 0,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "L"
+      ]
+    }
+  ],
+  "matches": [
+    {
+      "id": 447476872,
+      "round": 1,
+      "winnerId": 287040144,
+      "scores": "2-4",
+      "state": "complete"
+    },
+    {
+      "id": 447476873,
+      "round": 1,
+      "winnerId": 287157739,
+      "scores": "4-1",
+      "state": "complete"
+    },
+    {
+      "id": 447476874,
+      "round": 1,
+      "winnerId": 286312064,
+      "scores": "5-3",
+      "state": "complete"
+    },
+    {
+      "id": 447476875,
+      "round": 1,
+      "winnerId": 287157784,
+      "scores": "1-5",
+      "state": "complete"
+    },
+    {
+      "id": 447476876,
+      "round": 1,
+      "winnerId": 286318488,
+      "scores": "4-0",
+      "state": "complete"
+    },
+    {
+      "id": 447476877,
+      "round": 1,
+      "winnerId": 286375147,
+      "scores": "1-4",
+      "state": "complete"
+    },
+    {
+      "id": 447476878,
+      "round": 1,
+      "winnerId": 286323122,
+      "scores": "0-4",
+      "state": "complete"
+    },
+    {
+      "id": 447476879,
+      "round": 1,
+      "winnerId": 286391135,
+      "scores": "6-3",
+      "state": "complete"
+    },
+    {
+      "id": 447476880,
+      "round": 1,
+      "winnerId": 286326412,
+      "scores": "6-2",
+      "state": "complete"
+    },
+    {
+      "id": 447476881,
+      "round": 2,
+      "winnerId": 287040144,
+      "scores": "2-4",
+      "state": "complete"
+    },
+    {
+      "id": 447476882,
+      "round": 2,
+      "winnerId": 286318394,
+      "scores": "4-1",
+      "state": "complete"
+    },
+    {
+      "id": 447476883,
+      "round": 2,
+      "winnerId": 286323212,
+      "scores": "0-4",
+      "state": "complete"
+    },
+    {
+      "id": 447476884,
+      "round": 2,
+      "winnerId": 286320285,
+      "scores": "5-0",
+      "state": "complete"
+    },
+    {
+      "id": 447476885,
+      "round": 2,
+      "winnerId": 286327400,
+      "scores": "5-1",
+      "state": "complete"
+    },
+    {
+      "id": 447476886,
+      "round": 2,
+      "winnerId": 286319273,
+      "scores": "4-2",
+      "state": "complete"
+    },
+    {
+      "id": 447476887,
+      "round": 2,
+      "winnerId": 286312064,
+      "scores": "1-4",
+      "state": "complete"
+    },
+    {
+      "id": 447476888,
+      "round": 2,
+      "winnerId": 286320453,
+      "scores": "4-0",
+      "state": "complete"
+    },
+    {
+      "id": 447476889,
+      "round": 2,
+      "winnerId": 287157784,
+      "scores": "0-4",
+      "state": "complete"
+    },
+    {
+      "id": 447476890,
+      "round": 2,
+      "winnerId": 286329594,
+      "scores": "0-5",
+      "state": "complete"
+    },
+    {
+      "id": 447476891,
+      "round": 2,
+      "winnerId": 286319129,
+      "scores": "4-2",
+      "state": "complete"
+    },
+    {
+      "id": 447476892,
+      "round": 2,
+      "winnerId": 286316710,
+      "scores": "0-5",
+      "state": "complete"
+    },
+    {
+      "id": 447476893,
+      "round": 2,
+      "winnerId": 286318705,
+      "scores": "6-3",
+      "state": "complete"
+    },
+    {
+      "id": 447476894,
+      "round": 2,
+      "winnerId": 286348930,
+      "scores": "4-0",
+      "state": "complete"
+    },
+    {
+      "id": 447476895,
+      "round": 2,
+      "winnerId": 286388493,
+      "scores": "4-3",
+      "state": "complete"
+    },
+    {
+      "id": 447476896,
+      "round": 2,
+      "winnerId": 286961021,
+      "scores": "4-3",
+      "state": "complete"
+    },
+    {
+      "id": 447476897,
+      "round": 2,
+      "winnerId": 286375147,
+      "scores": "1-6",
+      "state": "complete"
+    },
+    {
+      "id": 447476898,
+      "round": 2,
+      "winnerId": 286318446,
+      "scores": "5-3",
+      "state": "complete"
+    },
+    {
+      "id": 447476899,
+      "round": 2,
+      "winnerId": 286308828,
+      "scores": "2-4",
+      "state": "complete"
+    },
+    {
+      "id": 447476900,
+      "round": 2,
+      "winnerId": 286312139,
+      "scores": "1-6",
+      "state": "complete"
+    },
+    {
+      "id": 447476901,
+      "round": 2,
+      "winnerId": 286323122,
+      "scores": "2-4",
+      "state": "complete"
+    },
+    {
+      "id": 447476902,
+      "round": 2,
+      "winnerId": 286312144,
+      "scores": "4-3",
+      "state": "complete"
+    },
+    {
+      "id": 447476903,
+      "round": 2,
+      "winnerId": 286383742,
+      "scores": "5-0",
+      "state": "complete"
+    },
+    {
+      "id": 447476904,
+      "round": 2,
+      "winnerId": 286312099,
+      "scores": "3-4",
+      "state": "complete"
+    },
+    {
+      "id": 447476905,
+      "round": 2,
+      "winnerId": 286924811,
+      "scores": "4-0",
+      "state": "complete"
+    },
+    {
+      "id": 447476906,
+      "round": 2,
+      "winnerId": 286341283,
+      "scores": "4-0",
+      "state": "complete"
+    },
+    {
+      "id": 447476907,
+      "round": 2,
+      "winnerId": 286328402,
+      "scores": "3-4",
+      "state": "complete"
+    },
+    {
+      "id": 447476908,
+      "round": 2,
+      "winnerId": 286318332,
+      "scores": "1-6",
+      "state": "complete"
+    },
+    {
+      "id": 447476909,
+      "round": 2,
+      "winnerId": 286318756,
+      "scores": "4-0",
+      "state": "complete"
+    },
+    {
+      "id": 447476910,
+      "round": 2,
+      "winnerId": 286398278,
+      "scores": "4-0",
+      "state": "complete"
+    },
+    {
+      "id": 447476911,
+      "round": 2,
+      "winnerId": 286318452,
+      "scores": "4-3",
+      "state": "complete"
+    },
+    {
+      "id": 447476912,
+      "round": 2,
+      "winnerId": 286318451,
+      "scores": "4-0",
+      "state": "complete"
+    },
+    {
+      "id": 447476913,
+      "round": 3,
+      "winnerId": 286318394,
+      "scores": "2-5",
+      "state": "complete"
+    },
+    {
+      "id": 447476914,
+      "round": 3,
+      "winnerId": 286323212,
+      "scores": "4-3",
+      "state": "complete"
+    },
+    {
+      "id": 447476915,
+      "round": 3,
+      "winnerId": 286319273,
+      "scores": "0-4",
+      "state": "complete"
+    },
+    {
+      "id": 447476916,
+      "round": 3,
+      "winnerId": 286312064,
+      "scores": "4-3",
+      "state": "complete"
+    },
+    {
+      "id": 447476917,
+      "round": 3,
+      "winnerId": 287157784,
+      "scores": "4-1",
+      "state": "complete"
+    },
+    {
+      "id": 447476918,
+      "round": 3,
+      "winnerId": 286319129,
+      "scores": "5-1",
+      "state": "complete"
+    },
+    {
+      "id": 447476919,
+      "round": 3,
+      "winnerId": 286348930,
+      "scores": "0-4",
+      "state": "complete"
+    },
+    {
+      "id": 447476920,
+      "round": 3,
+      "winnerId": 286961021,
+      "scores": "2-4",
+      "state": "complete"
+    },
+    {
+      "id": 447476921,
+      "round": 3,
+      "winnerId": 286318446,
+      "scores": "1-4",
+      "state": "complete"
+    },
+    {
+      "id": 447476922,
+      "round": 3,
+      "winnerId": 286308828,
+      "scores": "4-0",
+      "state": "complete"
+    },
+    {
+      "id": 447476923,
+      "round": 3,
+      "winnerId": 286323122,
+      "scores": "4-2",
+      "state": "complete"
+    },
+    {
+      "id": 447476924,
+      "round": 3,
+      "winnerId": 286383742,
+      "scores": "4-2",
+      "state": "complete"
+    },
+    {
+      "id": 447476925,
+      "round": 3,
+      "winnerId": 286341283,
+      "scores": "1-4",
+      "state": "complete"
+    },
+    {
+      "id": 447476926,
+      "round": 3,
+      "winnerId": 286328402,
+      "scores": "4-2",
+      "state": "complete"
+    },
+    {
+      "id": 447476927,
+      "round": 3,
+      "winnerId": 286318756,
+      "scores": "4-0",
+      "state": "complete"
+    },
+    {
+      "id": 447476928,
+      "round": 3,
+      "winnerId": 286318451,
+      "scores": "1-5",
+      "state": "complete"
+    },
+    {
+      "id": 447476929,
+      "round": 4,
+      "winnerId": 286323212,
+      "scores": "1-5",
+      "state": "complete"
+    },
+    {
+      "id": 447476930,
+      "round": 4,
+      "winnerId": 286319273,
+      "scores": "4-0",
+      "state": "complete"
+    },
+    {
+      "id": 447476931,
+      "round": 4,
+      "winnerId": 286319129,
+      "scores": "0-4",
+      "state": "complete"
+    },
+    {
+      "id": 447476932,
+      "round": 4,
+      "winnerId": 286348930,
+      "scores": "4-1",
+      "state": "complete"
+    },
+    {
+      "id": 447476933,
+      "round": 4,
+      "winnerId": 286308828,
+      "scores": "3-4",
+      "state": "complete"
+    },
+    {
+      "id": 447476934,
+      "round": 4,
+      "winnerId": 286383742,
+      "scores": "1-4",
+      "state": "complete"
+    },
+    {
+      "id": 447476935,
+      "round": 4,
+      "winnerId": 286328402,
+      "scores": "0-4",
+      "state": "complete"
+    },
+    {
+      "id": 447476936,
+      "round": 4,
+      "winnerId": 286318756,
+      "scores": "4-3",
+      "state": "complete"
+    },
+    {
+      "id": 447476937,
+      "round": 5,
+      "winnerId": 286319273,
+      "scores": "3-5",
+      "state": "complete"
+    },
+    {
+      "id": 447476938,
+      "round": 5,
+      "winnerId": 286348930,
+      "scores": "0-4",
+      "state": "complete"
+    },
+    {
+      "id": 447476939,
+      "round": 5,
+      "winnerId": 286308828,
+      "scores": "5-0",
+      "state": "complete"
+    },
+    {
+      "id": 447476940,
+      "round": 5,
+      "winnerId": 286328402,
+      "scores": "5-3",
+      "state": "complete"
+    },
+    {
+      "id": 447476941,
+      "round": 6,
+      "winnerId": 286348930,
+      "scores": "3-4",
+      "state": "complete"
+    },
+    {
+      "id": 447476942,
+      "round": 6,
+      "winnerId": 286328402,
+      "scores": "0-4",
+      "state": "complete"
+    },
+    {
+      "id": 447476943,
+      "round": 7,
+      "winnerId": 286348930,
+      "scores": "4-3",
+      "state": "complete"
+    },
+    {
+      "id": 447477015,
+      "round": 8,
+      "winnerId": 286328402,
+      "scores": "2-5",
+      "state": "complete"
+    },
+    {
+      "id": 447520348,
+      "round": 8,
+      "winnerId": 286328402,
+      "scores": "2-5",
+      "state": "complete"
+    },
+    {
+      "id": 447476944,
+      "round": -1,
+      "winnerId": 287155716,
+      "scores": "4-0",
+      "state": "complete"
+    },
+    {
+      "id": 447476945,
+      "round": -1,
+      "winnerId": 286312096,
+      "scores": "0-5",
+      "state": "complete"
+    },
+    {
+      "id": 447476946,
+      "round": -1,
+      "winnerId": 286323626,
+      "scores": "0-4",
+      "state": "complete"
+    },
+    {
+      "id": 447476947,
+      "round": -1,
+      "winnerId": 287160007,
+      "scores": "4-3",
+      "state": "complete"
+    },
+    {
+      "id": 447476948,
+      "round": -1,
+      "winnerId": 286320939,
+      "scores": "4-0",
+      "state": "complete"
+    },
+    {
+      "id": 447476949,
+      "round": -1,
+      "winnerId": 286384654,
+      "scores": "4-0",
+      "state": "complete"
+    },
+    {
+      "id": 447476950,
+      "round": -1,
+      "winnerId": 286320085,
+      "scores": "4-0",
+      "state": "complete"
+    },
+    {
+      "id": 447476951,
+      "round": -1,
+      "winnerId": 286318901,
+      "scores": "4-1",
+      "state": "complete"
+    },
+    {
+      "id": 447476952,
+      "round": -1,
+      "winnerId": 286622296,
+      "scores": "4-0",
+      "state": "complete"
+    },
+    {
+      "id": 447476953,
+      "round": -2,
+      "winnerId": 287155716,
+      "scores": "0-4",
+      "state": "complete"
+    },
+    {
+      "id": 447476954,
+      "round": -2,
+      "winnerId": 286326412,
+      "scores": "0-4",
+      "state": "complete"
+    },
+    {
+      "id": 447476955,
+      "round": -2,
+      "winnerId": 286971587,
+      "scores": "5-0",
+      "state": "complete"
+    },
+    {
+      "id": 447476956,
+      "round": -2,
+      "winnerId": 286391135,
+      "scores": "4-1",
+      "state": "complete"
+    },
+    {
+      "id": 447476957,
+      "round": -2,
+      "winnerId": 286318438,
+      "scores": "6-2",
+      "state": "complete"
+    },
+    {
+      "id": 447476958,
+      "round": -2,
+      "winnerId": 286318751,
+      "scores": "0-6",
+      "state": "complete"
+    },
+    {
+      "id": 447476959,
+      "round": -2,
+      "winnerId": 286318382,
+      "scores": "5-0",
+      "state": "complete"
+    },
+    {
+      "id": 447476960,
+      "round": -2,
+      "winnerId": 286308848,
+      "scores": "1-4",
+      "state": "complete"
+    },
+    {
+      "id": 447476961,
+      "round": -2,
+      "winnerId": 286384654,
+      "scores": "3-4",
+      "state": "complete"
+    },
+    {
+      "id": 447476962,
+      "round": -2,
+      "winnerId": 286318488,
+      "scores": "3-4",
+      "state": "complete"
+    },
+    {
+      "id": 447476963,
+      "round": -2,
+      "winnerId": 286323647,
+      "scores": "4-0",
+      "state": "complete"
+    },
+    {
+      "id": 447476964,
+      "round": -2,
+      "winnerId": 286319713,
+      "scores": "6-3",
+      "state": "complete"
+    },
+    {
+      "id": 447476965,
+      "round": -2,
+      "winnerId": 286318901,
+      "scores": "1-6",
+      "state": "complete"
+    },
+    {
+      "id": 447476966,
+      "round": -2,
+      "winnerId": 287157739,
+      "scores": "0-4",
+      "state": "complete"
+    },
+    {
+      "id": 447476967,
+      "round": -2,
+      "winnerId": 286327450,
+      "scores": "4-1",
+      "state": "complete"
+    },
+    {
+      "id": 447476968,
+      "round": -2,
+      "winnerId": 286318768,
+      "scores": "4-0",
+      "state": "complete"
+    },
+    {
+      "id": 447476969,
+      "round": -3,
+      "winnerId": 286388493,
+      "scores": "6-0",
+      "state": "complete"
+    },
+    {
+      "id": 447476970,
+      "round": -3,
+      "winnerId": 286326412,
+      "scores": "0-4",
+      "state": "complete"
+    },
+    {
+      "id": 447476971,
+      "round": -3,
+      "winnerId": 286316710,
+      "scores": "4-0",
+      "state": "complete"
+    },
+    {
+      "id": 447476972,
+      "round": -3,
+      "winnerId": 286391135,
+      "scores": "2-6",
+      "state": "complete"
+    },
+    {
+      "id": 447476973,
+      "round": -3,
+      "winnerId": 286320453,
+      "scores": "4-2",
+      "state": "complete"
+    },
+    {
+      "id": 447476974,
+      "round": -3,
+      "winnerId": 286318751,
+      "scores": "2-4",
+      "state": "complete"
+    },
+    {
+      "id": 447476975,
+      "round": -3,
+      "winnerId": 286320285,
+      "scores": "4-0",
+      "state": "complete"
+    },
+    {
+      "id": 447476976,
+      "round": -3,
+      "winnerId": 287040144,
+      "scores": "4-0",
+      "state": "complete"
+    },
+    {
+      "id": 447476977,
+      "round": -3,
+      "winnerId": 286384654,
+      "scores": "3-6",
+      "state": "complete"
+    },
+    {
+      "id": 447476978,
+      "round": -3,
+      "winnerId": 286398278,
+      "scores": "6-2",
+      "state": "complete"
+    },
+    {
+      "id": 447476979,
+      "round": -3,
+      "winnerId": 286318332,
+      "scores": "4-1",
+      "state": "complete"
+    },
+    {
+      "id": 447476980,
+      "round": -3,
+      "winnerId": 286924811,
+      "scores": "4-3",
+      "state": "complete"
+    },
+    {
+      "id": 447476981,
+      "round": -3,
+      "winnerId": 286312099,
+      "scores": "5-3",
+      "state": "complete"
+    },
+    {
+      "id": 447476982,
+      "round": -3,
+      "winnerId": 286312144,
+      "scores": "5-0",
+      "state": "complete"
+    },
+    {
+      "id": 447476983,
+      "round": -3,
+      "winnerId": 286312139,
+      "scores": "4-0",
+      "state": "complete"
+    },
+    {
+      "id": 447476984,
+      "round": -3,
+      "winnerId": 286318768,
+      "scores": "0-4",
+      "state": "complete"
+    },
+    {
+      "id": 447476985,
+      "round": -4,
+      "winnerId": 286326412,
+      "scores": "0-6",
+      "state": "complete"
+    },
+    {
+      "id": 447476986,
+      "round": -4,
+      "winnerId": 286316710,
+      "scores": "6-0",
+      "state": "complete"
+    },
+    {
+      "id": 447476987,
+      "round": -4,
+      "winnerId": 286318751,
+      "scores": "1-4",
+      "state": "complete"
+    },
+    {
+      "id": 447476988,
+      "round": -4,
+      "winnerId": 286320285,
+      "scores": "5-3",
+      "state": "complete"
+    },
+    {
+      "id": 447476989,
+      "round": -4,
+      "winnerId": 286384654,
+      "scores": "4-1",
+      "state": "complete"
+    },
+    {
+      "id": 447476990,
+      "round": -4,
+      "winnerId": 286318332,
+      "scores": "4-0",
+      "state": "complete"
+    },
+    {
+      "id": 447476991,
+      "round": -4,
+      "winnerId": 286312099,
+      "scores": "5-0",
+      "state": "complete"
+    },
+    {
+      "id": 447476992,
+      "round": -4,
+      "winnerId": 286318768,
+      "scores": "1-5",
+      "state": "complete"
+    },
+    {
+      "id": 447476993,
+      "round": -5,
+      "winnerId": 286326412,
+      "scores": "2-4",
+      "state": "complete"
+    },
+    {
+      "id": 447476994,
+      "round": -5,
+      "winnerId": 286323122,
+      "scores": "5-2",
+      "state": "complete"
+    },
+    {
+      "id": 447476995,
+      "round": -5,
+      "winnerId": 286318751,
+      "scores": "0-4",
+      "state": "complete"
+    },
+    {
+      "id": 447476996,
+      "round": -5,
+      "winnerId": 286320285,
+      "scores": "2-4",
+      "state": "complete"
+    },
+    {
+      "id": 447476997,
+      "round": -5,
+      "winnerId": 286318394,
+      "scores": "5-1",
+      "state": "complete"
+    },
+    {
+      "id": 447476998,
+      "round": -5,
+      "winnerId": 286318332,
+      "scores": "0-5",
+      "state": "complete"
+    },
+    {
+      "id": 447476999,
+      "round": -5,
+      "winnerId": 287157784,
+      "scores": "4-0",
+      "state": "complete"
+    },
+    {
+      "id": 447477000,
+      "round": -5,
+      "winnerId": 286961021,
+      "scores": "4-3",
+      "state": "complete"
+    },
+    {
+      "id": 447477001,
+      "round": -6,
+      "winnerId": 286326412,
+      "scores": "4-2",
+      "state": "complete"
+    },
+    {
+      "id": 447477002,
+      "round": -6,
+      "winnerId": 286320285,
+      "scores": "0-4",
+      "state": "complete"
+    },
+    {
+      "id": 447477003,
+      "round": -6,
+      "winnerId": 286318332,
+      "scores": "2-5",
+      "state": "complete"
+    },
+    {
+      "id": 447477004,
+      "round": -6,
+      "winnerId": 287157784,
+      "scores": "4-2",
+      "state": "complete"
+    },
+    {
+      "id": 447477005,
+      "round": -7,
+      "winnerId": 286326412,
+      "scores": "0-4",
+      "state": "complete"
+    },
+    {
+      "id": 447477006,
+      "round": -7,
+      "winnerId": 286319129,
+      "scores": "4-2",
+      "state": "complete"
+    },
+    {
+      "id": 447477007,
+      "round": -7,
+      "winnerId": 286383742,
+      "scores": "5-3",
+      "state": "complete"
+    },
+    {
+      "id": 447477008,
+      "round": -7,
+      "winnerId": 286318756,
+      "scores": "5-2",
+      "state": "complete"
+    },
+    {
+      "id": 447477009,
+      "round": -8,
+      "winnerId": 286326412,
+      "scores": "4-0",
+      "state": "complete"
+    },
+    {
+      "id": 447477010,
+      "round": -8,
+      "winnerId": 286383742,
+      "scores": "5-2",
+      "state": "complete"
+    },
+    {
+      "id": 447477011,
+      "round": -9,
+      "winnerId": 286326412,
+      "scores": "3-4",
+      "state": "complete"
+    },
+    {
+      "id": 447477012,
+      "round": -9,
+      "winnerId": 286319273,
+      "scores": "4-3",
+      "state": "complete"
+    },
+    {
+      "id": 447477013,
+      "round": -10,
+      "winnerId": 286326412,
+      "scores": "4-3",
+      "state": "complete"
+    },
+    {
+      "id": 447477014,
+      "round": -11,
+      "winnerId": 286328402,
+      "scores": "4-0",
+      "state": "complete"
+    }
+  ],
+  "standings": [
+    {
+      "name": "Team Arc | Kreepy✅",
+      "rank": 1
+    },
+    {
+      "name": "azurekun✅",
+      "rank": 2
+    },
+    {
+      "name": "KamenZ✅",
+      "rank": 3
+    },
+    {
+      "name": "Lewis973✅",
+      "rank": 4
+    },
+    {
+      "name": "Kaiouss✅",
+      "rank": 5
+    },
+    {
+      "name": "SkarnGameMaster✅",
+      "rank": 5
+    },
+    {
+      "name": "DarkSpirit4✅",
+      "rank": 7
+    },
+    {
+      "name": "Vincent___✅",
+      "rank": 7
+    },
+    {
+      "name": "Emp97✅",
+      "rank": 9
+    },
+    {
+      "name": "Inazo13✅",
+      "rank": 9
+    },
+    {
+      "name": "LightYamani✅",
+      "rank": 9
+    },
+    {
+      "name": "MrFantome✅",
+      "rank": 9
+    },
+    {
+      "name": "JojoKirino✅",
+      "rank": 13
+    },
+    {
+      "name": "Rami✅",
+      "rank": 13
+    },
+    {
+      "name": "RNSX_Yumetoo✅",
+      "rank": 13
+    },
+    {
+      "name": "Snipblast✅",
+      "rank": 13
+    },
+    {
+      "name": "09Illu✅",
+      "rank": 17
+    },
+    {
+      "name": "Flower✅",
+      "rank": 17
+    },
+    {
+      "name": "Masamune_Kadoya✅",
+      "rank": 17
+    },
+    {
+      "name": "MtS_95✅",
+      "rank": 17
+    },
+    {
+      "name": "nthanb_✅",
+      "rank": 17
+    },
+    {
+      "name": "SAtR_Younsi✅",
+      "rank": 17
+    },
+    {
+      "name": "Tategamii✅",
+      "rank": 17
+    },
+    {
+      "name": "Yolkster_✅",
+      "rank": 17
+    },
+    {
+      "name": "Berserk91✅",
+      "rank": 25
+    },
+    {
+      "name": "Beymael✅",
+      "rank": 25
+    },
+    {
+      "name": "Kameny✅",
+      "rank": 25
+    },
+    {
+      "name": "Liquid Snake✅",
+      "rank": 25
+    },
+    {
+      "name": "Loup_✅",
+      "rank": 25
+    },
+    {
+      "name": "Nathan031107✅",
+      "rank": 25
+    },
+    {
+      "name": "SAtR | Zeikuo✅",
+      "rank": 25
+    },
+    {
+      "name": "sh1ro1✅",
+      "rank": 25
+    },
+    {
+      "name": "Elliot✅",
+      "rank": 33
+    },
+    {
+      "name": "Gelofy✅",
+      "rank": 33
+    },
+    {
+      "name": "Ilou✅",
+      "rank": 33
+    },
+    {
+      "name": "Iloveatingsushi✅",
+      "rank": 33
+    },
+    {
+      "name": "Lady_Barbatrucc✅",
+      "rank": 33
+    },
+    {
+      "name": "LeKingJoker✅",
+      "rank": 33
+    },
+    {
+      "name": "MiNiGeLoFy✅",
+      "rank": 33
+    },
+    {
+      "name": "Nahil12✅",
+      "rank": 33
+    },
+    {
+      "name": "OMNIYAYA✅",
+      "rank": 33
+    },
+    {
+      "name": "RNSX_Hisunu✅",
+      "rank": 33
+    },
+    {
+      "name": "RNSX_Kiiro✅",
+      "rank": 33
+    },
+    {
+      "name": "Robin✅",
+      "rank": 33
+    },
+    {
+      "name": "Shishi✅",
+      "rank": 33
+    },
+    {
+      "name": "Sufhhc✅",
+      "rank": 33
+    },
+    {
+      "name": "Twii_✅",
+      "rank": 33
+    },
+    {
+      "name": "Upolemmo✅",
+      "rank": 33
+    },
+    {
+      "name": "a2m1desfables✅",
+      "rank": 49
+    },
+    {
+      "name": "A2ns✅",
+      "rank": 49
+    },
+    {
+      "name": "Andjy✅",
+      "rank": 49
+    },
+    {
+      "name": "CharlieFlanders✅",
+      "rank": 49
+    },
+    {
+      "name": "Fox✅",
+      "rank": 49
+    },
+    {
+      "name": "Kineria✅",
+      "rank": 49
+    },
+    {
+      "name": "Lezkoko✅",
+      "rank": 49
+    },
+    {
+      "name": "Loic77370✅",
+      "rank": 49
+    },
+    {
+      "name": "Meiden_Meiko✅",
+      "rank": 49
+    },
+    {
+      "name": "Mirero✅",
+      "rank": 49
+    },
+    {
+      "name": "Nazha✅",
+      "rank": 49
+    },
+    {
+      "name": "Ramen S✅",
+      "rank": 49
+    },
+    {
+      "name": "Sasane✅",
+      "rank": 49
+    },
+    {
+      "name": "sewpoo_0192✅",
+      "rank": 49
+    },
+    {
+      "name": "Zeln3090✅",
+      "rank": 49
+    },
+    {
+      "name": "Şêro✅",
+      "rank": 49
+    },
+    {
+      "name": "_Equalizer_✅",
+      "rank": 65
+    },
+    {
+      "name": "Clem ✅",
+      "rank": 65
+    },
+    {
+      "name": "Elijah✅",
+      "rank": 65
+    },
+    {
+      "name": "Frednivrae✅",
+      "rank": 65
+    },
+    {
+      "name": "Igris𖣠",
+      "rank": 65
+    },
+    {
+      "name": "Le parrain✅",
+      "rank": 65
+    },
+    {
+      "name": "Legoshi✅",
+      "rank": 65
+    },
+    {
+      "name": "Philou✅",
+      "rank": 65
+    },
+    {
+      "name": "Sofy✅",
+      "rank": 65
+    }
+  ]
+}

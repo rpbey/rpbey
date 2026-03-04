@@ -10,7 +10,6 @@ export function setupLogCapture() {
     const originalMethod = logger[level];
 
     // Override the static method
-    // @ts-ignore
     logger[level] = (...args: unknown[]) => {
       // Call original method
       originalMethod(...args);

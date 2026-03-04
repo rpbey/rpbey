@@ -72,29 +72,47 @@ export function DeckBuilderModal({
         setBeys([
           {
             blade: sortedBeys[0]?.blade ?? null,
-            overBlade: (sortedBeys[0] as { overBlade?: BeyData['overBlade'] })?.overBlade ?? null,
+            overBlade:
+              (sortedBeys[0] as { overBlade?: BeyData['overBlade'] })
+                ?.overBlade ?? null,
             ratchet: sortedBeys[0]?.ratchet ?? null,
             bit: sortedBeys[0]?.bit ?? null,
-            lockChip: (sortedBeys[0] as { lockChip?: BeyData['lockChip'] })?.lockChip ?? null,
-            assistBlade: (sortedBeys[0] as { assistBlade?: BeyData['assistBlade'] })?.assistBlade ?? null,
+            lockChip:
+              (sortedBeys[0] as { lockChip?: BeyData['lockChip'] })?.lockChip ??
+              null,
+            assistBlade:
+              (sortedBeys[0] as { assistBlade?: BeyData['assistBlade'] })
+                ?.assistBlade ?? null,
             nickname: sortedBeys[0]?.nickname ?? '',
           },
           {
             blade: sortedBeys[1]?.blade ?? null,
-            overBlade: (sortedBeys[1] as { overBlade?: BeyData['overBlade'] })?.overBlade ?? null,
+            overBlade:
+              (sortedBeys[1] as { overBlade?: BeyData['overBlade'] })
+                ?.overBlade ?? null,
             ratchet: sortedBeys[1]?.ratchet ?? null,
             bit: sortedBeys[1]?.bit ?? null,
-            lockChip: (sortedBeys[1] as { lockChip?: BeyData['lockChip'] })?.lockChip ?? null,
-            assistBlade: (sortedBeys[1] as { assistBlade?: BeyData['assistBlade'] })?.assistBlade ?? null,
+            lockChip:
+              (sortedBeys[1] as { lockChip?: BeyData['lockChip'] })?.lockChip ??
+              null,
+            assistBlade:
+              (sortedBeys[1] as { assistBlade?: BeyData['assistBlade'] })
+                ?.assistBlade ?? null,
             nickname: sortedBeys[1]?.nickname ?? '',
           },
           {
             blade: sortedBeys[2]?.blade ?? null,
-            overBlade: (sortedBeys[2] as { overBlade?: BeyData['overBlade'] })?.overBlade ?? null,
+            overBlade:
+              (sortedBeys[2] as { overBlade?: BeyData['overBlade'] })
+                ?.overBlade ?? null,
             ratchet: sortedBeys[2]?.ratchet ?? null,
             bit: sortedBeys[2]?.bit ?? null,
-            lockChip: (sortedBeys[2] as { lockChip?: BeyData['lockChip'] })?.lockChip ?? null,
-            assistBlade: (sortedBeys[2] as { assistBlade?: BeyData['assistBlade'] })?.assistBlade ?? null,
+            lockChip:
+              (sortedBeys[2] as { lockChip?: BeyData['lockChip'] })?.lockChip ??
+              null,
+            assistBlade:
+              (sortedBeys[2] as { assistBlade?: BeyData['assistBlade'] })
+                ?.assistBlade ?? null,
             nickname: sortedBeys[2]?.nickname ?? '',
           },
         ]);
@@ -120,7 +138,8 @@ export function DeckBuilderModal({
     const isFullDeck = beys.every((b) => {
       const baseComplete = b.blade && b.ratchet && b.bit;
       if (!baseComplete) return false;
-      if (b.blade?.system === 'CX') return !!b.overBlade && !!b.lockChip && !!b.assistBlade;
+      if (b.blade?.system === 'CX')
+        return !!b.overBlade && !!b.lockChip && !!b.assistBlade;
       return true;
     });
 
@@ -154,13 +173,21 @@ export function DeckBuilderModal({
 
   // Get all used part IDs across all beys
   const usedPartIds = beys.flatMap((bey) =>
-    [bey.blade?.id, bey.overBlade?.id, bey.ratchet?.id, bey.bit?.id, bey.lockChip?.id, bey.assistBlade?.id].filter(Boolean),
+    [
+      bey.blade?.id,
+      bey.overBlade?.id,
+      bey.ratchet?.id,
+      bey.bit?.id,
+      bey.lockChip?.id,
+      bey.assistBlade?.id,
+    ].filter(Boolean),
   ) as string[];
 
   const isComplete = beys.every((bey) => {
     const baseComplete = bey.blade && bey.ratchet && bey.bit;
     if (!baseComplete) return false;
-    if (bey.blade?.system === 'CX') return !!bey.overBlade && !!bey.lockChip && !!bey.assistBlade;
+    if (bey.blade?.system === 'CX')
+      return !!bey.overBlade && !!bey.lockChip && !!bey.assistBlade;
     return true;
   });
   const isValid = name.trim() && isComplete && validationErrors.length === 0;

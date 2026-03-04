@@ -297,13 +297,15 @@ export default function HomeClient({
                       boxShadow: '0 40px 100px rgba(0,0,0,0.6)',
                       border: '1px solid rgba(255,255,255,0.1)',
                       aspectRatio: '1040/1467',
-                      bgcolor: 'black'
+                      bgcolor: 'black',
                     }}
                   >
                     <Image
                       src={
-                        activeTournament?.id === 'cm-bts3-auto-imported' || 
-                        activeTournament?.name.toLowerCase().includes('bey-tamashii series #3')
+                        activeTournament?.id === 'cm-bts3-auto-imported' ||
+                        activeTournament?.name
+                          .toLowerCase()
+                          .includes('bey-tamashii series #3')
                           ? '/tournaments/BTS3_poster.gif'
                           : '/canvas.webp'
                       }
@@ -314,8 +316,10 @@ export default function HomeClient({
                         objectFit: 'cover',
                       }}
                       unoptimized={
-                        activeTournament?.id === 'cm-bts3-auto-imported' || 
-                        activeTournament?.name.toLowerCase().includes('bey-tamashii series #3')
+                        activeTournament?.id === 'cm-bts3-auto-imported' ||
+                        activeTournament?.name
+                          .toLowerCase()
+                          .includes('bey-tamashii series #3')
                       }
                       priority
                     />

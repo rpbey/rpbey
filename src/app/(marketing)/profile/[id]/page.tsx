@@ -103,6 +103,7 @@ export default function PublicProfilePage({ params }: ProfilePageProps) {
           avatarUrl={user?.profile?.avatarUrl ?? user?.image}
           joinDate={user?.createdAt}
           bio={user?.profile?.bio}
+          challongeUsername={stats.challongeUsername}
           onDownloadCard={handleDownloadCard}
           isOwnProfile={false}
         />

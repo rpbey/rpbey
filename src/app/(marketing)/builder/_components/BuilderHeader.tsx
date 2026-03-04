@@ -1,13 +1,7 @@
 'use client';
 
 import { Add, Close, Construction } from '@mui/icons-material';
-import {
-  Box,
-  Chip,
-  IconButton,
-  Skeleton,
-  Typography,
-} from '@mui/material';
+import { Box, Chip, IconButton, Skeleton, Typography } from '@mui/material';
 import { alpha } from '@mui/material/styles';
 import { useCallback, useEffect } from 'react';
 import { toast } from 'sonner';
@@ -29,12 +23,19 @@ export function BuilderHeader() {
         if (data) {
           dispatch({
             type: 'SET_SAVED_DECKS',
-            decks: data.map((d: { id: string; name: string; isActive: boolean; updatedAt: string }) => ({
-              id: d.id,
-              name: d.name,
-              isActive: d.isActive,
-              updatedAt: d.updatedAt,
-            })),
+            decks: data.map(
+              (d: {
+                id: string;
+                name: string;
+                isActive: boolean;
+                updatedAt: string;
+              }) => ({
+                id: d.id,
+                name: d.name,
+                isActive: d.isActive,
+                updatedAt: d.updatedAt,
+              }),
+            ),
           });
         }
       })
@@ -54,13 +55,21 @@ export function BuilderHeader() {
             id: data.id,
             name: data.name,
             isActive: data.isActive,
-            beys: (data.items || []).map((item: { blade: unknown; ratchet: unknown; bit: unknown; assistBlade?: unknown; nickname?: string }) => ({
-              blade: item.blade,
-              ratchet: item.ratchet,
-              bit: item.bit,
-              assistBlade: item.assistBlade ?? null,
-              nickname: item.nickname || '',
-            })),
+            beys: (data.items || []).map(
+              (item: {
+                blade: unknown;
+                ratchet: unknown;
+                bit: unknown;
+                assistBlade?: unknown;
+                nickname?: string;
+              }) => ({
+                blade: item.blade,
+                ratchet: item.ratchet,
+                bit: item.bit,
+                assistBlade: item.assistBlade ?? null,
+                nickname: item.nickname || '',
+              }),
+            ),
           },
         });
         toast.success(`Deck "${data.name}" charge`);
@@ -145,10 +154,11 @@ export function BuilderHeader() {
                 color: 'error.main',
                 borderColor: 'error.main',
               }),
-              ...(deck.isActive && state.deckId !== deck.id && {
-                border: '1px solid',
-                borderColor: 'success.main',
-              }),
+              ...(deck.isActive &&
+                state.deckId !== deck.id && {
+                  border: '1px solid',
+                  borderColor: 'success.main',
+                }),
             }}
           />
         ))}

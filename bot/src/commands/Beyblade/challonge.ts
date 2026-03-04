@@ -39,7 +39,6 @@ export class ChallongeCommand {
           email: `${interaction.user.id}@discord.rpbey.fr`,
           profile: {
             create: {
-              // @ts-ignore
               challongeUsername,
               bladerName: interaction.user.displayName,
             },
@@ -50,12 +49,10 @@ export class ChallongeCommand {
           profile: {
             upsert: {
               create: {
-                // @ts-ignore
                 challongeUsername,
                 bladerName: interaction.user.displayName,
               },
               update: {
-                // @ts-ignore
                 challongeUsername,
               },
             },
@@ -96,7 +93,6 @@ export class ChallongeCommand {
         include: { profile: true },
       });
 
-      // @ts-ignore
       if (!user?.profile?.challongeUsername) {
         return interaction.editReply({
           content:
@@ -109,12 +105,10 @@ export class ChallongeCommand {
         .setColor(Colors.Primary)
         .addFields({
           name: 'Pseudo Lié',
-          // @ts-ignore
           value: user.profile.challongeUsername,
           inline: true,
         })
         .setDescription(
-          // @ts-ignore
           `Lien profil : [Voir sur Challonge](https://challonge.com/users/${user.profile.challongeUsername})`,
         )
         .setFooter({ text: RPB.FullName });

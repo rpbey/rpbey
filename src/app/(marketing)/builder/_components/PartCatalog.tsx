@@ -12,11 +12,17 @@ import {
   Typography,
 } from '@mui/material';
 import type { Part } from '@prisma/client';
-import { useCallback, useEffect, useMemo, useState, useTransition } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  useTransition,
+} from 'react';
 import { getPublicParts } from '@/server/actions/parts';
+import { type BuilderStep, isCXBlade, useBuilder } from './BuilderContext';
 import { CatalogFilters } from './CatalogFilters';
 import { CatalogPartCard } from './CatalogPartCard';
-import { useBuilder, isCXBlade, type BuilderStep } from './BuilderContext';
 
 const STEP_TO_TYPE: Record<BuilderStep, string> = {
   BLADE: 'BLADE',
@@ -68,7 +74,13 @@ export function PartCatalog() {
     (p: number) => {
       startTransition(async () => {
         const result = await getPublicParts({
-          type: STEP_TO_TYPE[state.activeStep] as 'BLADE' | 'RATCHET' | 'BIT' | 'LOCK_CHIP' | 'ASSIST_BLADE' | 'OVER_BLADE',
+          type: STEP_TO_TYPE[state.activeStep] as
+            | 'BLADE'
+            | 'RATCHET'
+            | 'BIT'
+            | 'LOCK_CHIP'
+            | 'ASSIST_BLADE'
+            | 'OVER_BLADE',
           search: search || undefined,
           systems: systems.length > 0 ? systems : undefined,
           beyTypes: beyTypes.length > 0 ? beyTypes : undefined,
@@ -105,7 +117,9 @@ export function PartCatalog() {
   const resolvedTabIndex = activeTabIndex !== -1 ? activeTabIndex : 0;
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, height: '100%' }}>
+    <Box
+      sx={{ display: 'flex', flexDirection: 'column', gap: 2, height: '100%' }}
+    >
       <TextField
         placeholder="Rechercher une piece..."
         size="small"
@@ -140,21 +154,31 @@ export function PartCatalog() {
       <Tabs
         value={resolvedTabIndex}
         onChange={handleTabChange}
-        variant="fullWidth"
+        variant={showCXTabs ? 'scrollable' : 'fullWidth'}
+        scrollButtons={showCXTabs ? 'auto' : false}
+        allowScrollButtonsMobile={showCXTabs}
         sx={{
           minHeight: 40,
           bgcolor: (theme) => theme.palette.action.hover,
           borderRadius: 2,
+          '& .MuiTabs-flexContainer': {
+            justifyContent: showCXTabs ? 'flex-start' : 'space-between',
+          },
           '& .MuiTab-root': {
             minHeight: 40,
+            minWidth: showCXTabs ? 'auto' : 0,
+            flexGrow: showCXTabs ? 0 : 1,
             py: 0.5,
+            px: showCXTabs ? 2 : 1,
             fontWeight: 'bold',
-            fontSize: '0.85rem',
+            fontSize: { xs: '0.75rem', sm: '0.85rem' },
             borderRadius: 2,
             textTransform: 'none',
+            whiteSpace: 'nowrap',
           },
           '& .Mui-selected': {
             bgcolor: 'background.paper',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
           },
           '& .MuiTabs-indicator': {
             display: 'none',
@@ -207,7 +231,9 @@ export function PartCatalog() {
               <CatalogPartCard
                 key={part.id}
                 part={part}
-                isUsed={usedPartIds.has(part.id) || usedPartNames.has(part.name)}
+                isUsed={
+                  usedPartIds.has(part.id) || usedPartNames.has(part.name)
+                }
                 onClick={() => handlePartClick(part)}
               />
             ))}
@@ -216,16 +242,31 @@ export function PartCatalog() {
       </Box>
 
       {totalPages > 1 && (
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 1.5, pt: 1 }}>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            gap: 1.5,
+            pt: 1,
+          }}
+        >
           <Pagination
             count={totalPages}
             page={page}
-            onChange={(_, p) => { setPage(p); fetchParts(p); }}
+            onChange={(_, p) => {
+              setPage(p);
+              fetchParts(p);
+            }}
             size="small"
             siblingCount={1}
             color="standard"
           />
-          <Typography variant="caption" color="text.secondary" fontWeight="bold">
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            fontWeight="bold"
+          >
             {total} pieces
           </Typography>
         </Box>

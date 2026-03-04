@@ -3,15 +3,15 @@
 import {
   Box,
   Grid,
+  Skeleton,
   Stack,
   Tab,
   Tabs,
   Typography,
   useMediaQuery,
   useTheme,
-  Skeleton,
 } from '@mui/material';
-import { use, useState, Suspense } from 'react';
+import { Suspense, use, useState } from 'react';
 import type { BeyTubeVideo } from '@/lib/beytube';
 import type { TikTokVideo } from '@/lib/tiktok';
 import type { VideoInfo } from '@/lib/twitch';
@@ -32,13 +32,24 @@ function SectionSkeleton() {
   return (
     <Stack spacing={2}>
       {[1, 2, 3].map((i) => (
-        <Skeleton key={i} variant="rectangular" height={160} sx={{ borderRadius: 2 }} />
+        <Skeleton
+          key={i}
+          variant="rectangular"
+          height={160}
+          sx={{ borderRadius: 2 }}
+        />
       ))}
     </Stack>
   );
 }
 
-function ClipsContent({ promise, onVideoClick }: { promise: Promise<VideoInfo[]>, onVideoClick: (v: VideoInfo) => void }) {
+function ClipsContent({
+  promise,
+  onVideoClick,
+}: {
+  promise: Promise<VideoInfo[]>;
+  onVideoClick: (v: VideoInfo) => void;
+}) {
   const clips = use(promise);
   return (
     <Stack spacing={3}>
@@ -60,7 +71,13 @@ function ClipsContent({ promise, onVideoClick }: { promise: Promise<VideoInfo[]>
   );
 }
 
-function VideosContent({ promise, onVideoClick }: { promise: Promise<VideoInfo[]>, onVideoClick: (v: VideoInfo) => void }) {
+function VideosContent({
+  promise,
+  onVideoClick,
+}: {
+  promise: Promise<VideoInfo[]>;
+  onVideoClick: (v: VideoInfo) => void;
+}) {
   const videos = use(promise);
   return (
     <Stack spacing={3}>
@@ -116,9 +133,7 @@ function TikTokContent({ promise }: { promise: Promise<TikTokVideo[]> }) {
   return (
     <Stack spacing={3}>
       {videos.length > 0 ? (
-        videos.map((video) => (
-          <TikTokVideoCard key={video.id} video={video} />
-        ))
+        videos.map((video) => <TikTokVideoCard key={video.id} video={video} />)
       ) : (
         <Typography textAlign="center" color="text.secondary" py={4}>
           Aucune vidéo TikTok disponible.
@@ -151,7 +166,10 @@ export function TvFeed({
       label: 'Clips Twitch',
       content: (
         <Suspense fallback={<SectionSkeleton />}>
-          <ClipsContent promise={clipsPromise} onVideoClick={(v) => handleVideoClick(v, 'twitch')} />
+          <ClipsContent
+            promise={clipsPromise}
+            onVideoClick={(v) => handleVideoClick(v, 'twitch')}
+          />
         </Suspense>
       ),
     },
@@ -159,7 +177,10 @@ export function TvFeed({
       label: 'Rediffusions',
       content: (
         <Suspense fallback={<SectionSkeleton />}>
-          <VideosContent promise={rpbVideosPromise} onVideoClick={(v) => handleVideoClick(v, 'youtube')} />
+          <VideosContent
+            promise={rpbVideosPromise}
+            onVideoClick={(v) => handleVideoClick(v, 'youtube')}
+          />
         </Suspense>
       ),
     },
@@ -180,7 +201,6 @@ export function TvFeed({
       ),
     },
   ];
-
 
   if (isDesktop) {
     return (

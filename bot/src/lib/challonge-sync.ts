@@ -40,12 +40,10 @@ export async function scrapeAndSyncTournament(
         status,
         challongeUrl: meta.url,
         challongeState: meta.state,
-        // @ts-ignore
         standings:
           result.standings.length > 0
             ? (result.standings as unknown as Prisma.InputJsonValue)
             : undefined,
-        // @ts-ignore
         stations:
           result.stations.length > 0
             ? (result.stations as unknown as Prisma.InputJsonValue)
@@ -64,12 +62,10 @@ export async function scrapeAndSyncTournament(
         challongeUrl: meta.url,
         challongeState: meta.state,
         maxPlayers: raw.signup_cap || 64,
-        // @ts-ignore
         standings:
           result.standings.length > 0
             ? (result.standings as unknown as Prisma.InputJsonValue)
             : undefined,
-        // @ts-ignore
         stations:
           result.stations.length > 0
             ? (result.stations as unknown as Prisma.InputJsonValue)
@@ -93,7 +89,6 @@ export async function scrapeAndSyncTournament(
             { username: { equals: p.name, mode: 'insensitive' } },
             {
               profile: {
-                // @ts-ignore
                 challongeUsername: { equals: p.name, mode: 'insensitive' },
               },
             },
@@ -119,28 +114,37 @@ export async function scrapeAndSyncTournament(
 
       if (user) {
         challongeIdToUserId.set(p.id, user.id);
-        await prisma.tournamentParticipant.upsert({
-          where: {
-            tournamentId_userId: {
+
+        const existingParticipant =
+          await prisma.tournamentParticipant.findFirst({
+            where: {
               tournamentId: dbTournament.id,
               userId: user.id,
             },
-          },
-          update: {
-            challongeParticipantId: String(p.id),
-            seed: p.seed,
-            finalPlacement: p.finalRank || null,
-            checkedIn: true,
-          },
-          create: {
-            tournamentId: dbTournament.id,
-            userId: user.id,
-            challongeParticipantId: String(p.id),
-            seed: p.seed,
-            finalPlacement: p.finalRank || null,
-            checkedIn: true,
-          },
-        });
+          });
+
+        if (existingParticipant) {
+          await prisma.tournamentParticipant.update({
+            where: { id: existingParticipant.id },
+            data: {
+              challongeParticipantId: String(p.id),
+              seed: p.seed,
+              finalPlacement: p.finalRank || null,
+              checkedIn: true,
+            },
+          });
+        } else {
+          await prisma.tournamentParticipant.create({
+            data: {
+              tournamentId: dbTournament.id,
+              userId: user.id,
+              challongeParticipantId: String(p.id),
+              seed: p.seed,
+              finalPlacement: p.finalRank || null,
+              checkedIn: true,
+            },
+          });
+        }
         importedParticipants++;
       }
     }

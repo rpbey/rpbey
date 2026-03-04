@@ -145,7 +145,7 @@ export async function getRPBClips(limit = 6): Promise<VideoInfo[]> {
       }
     },
     [`twitch-clips-${limit}`],
-    { revalidate: 3600, tags: ['twitch'] }
+    { revalidate: 3600, tags: ['twitch'] },
   )();
 }
 
@@ -180,6 +180,6 @@ export async function getRPBVideos(limit = 6): Promise<VideoInfo[]> {
       }
     },
     [`twitch-videos-${limit}`],
-    { revalidate: 3600, tags: ['twitch'] }
+    { revalidate: 3600, tags: ['twitch'] },
   )();
 }

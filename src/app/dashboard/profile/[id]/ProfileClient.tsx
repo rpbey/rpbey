@@ -109,6 +109,7 @@ export default function ProfilePage({ params }: ProfilePageProps) {
           }
           joinDate={user?.createdAt}
           bio={user?.profile?.bio}
+          challongeUsername={stats.challongeUsername}
           onDownloadCard={handleDownloadCard}
           isOwnProfile={currentUser?.id === userId}
           socials={{

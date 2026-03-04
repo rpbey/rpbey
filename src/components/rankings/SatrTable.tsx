@@ -1,6 +1,6 @@
 'use client';
 
-import { useTheme, alpha, useMediaQuery } from '@mui/material';
+import { alpha, useMediaQuery, useTheme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Pagination from '@mui/material/Pagination';
 import Paper from '@mui/material/Paper';
@@ -11,13 +11,13 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
-import type { SatrRanking, SatrBlader } from '@prisma/client';
-import { useRouter, useSearchParams } from 'next/navigation';
+import type { SatrBlader, SatrRanking } from '@prisma/client';
 import { motion } from 'framer-motion';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
-import { SatrBladerDialog } from './SatrBladerDialog';
-import { getSatrBladerByName } from '@/server/actions/satr';
 import { toast } from 'sonner';
+import { getSatrBladerByName } from '@/server/actions/satr';
+import { SatrBladerDialog } from './SatrBladerDialog';
 
 interface SatrTableProps {
   rankings: SatrRanking[];
@@ -26,7 +26,11 @@ interface SatrTableProps {
   totalCount: number;
 }
 
-export function SatrTable({ rankings, totalPages, currentPage }: SatrTableProps) {
+export function SatrTable({
+  rankings,
+  totalPages,
+  currentPage,
+}: SatrTableProps) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const router = useRouter();
@@ -44,19 +48,19 @@ export function SatrTable({ rankings, totalPages, currentPage }: SatrTableProps)
   };
 
   const handleRowClick = async (name: string) => {
-      setLoadingBlader(true);
-      try {
-          const res = await getSatrBladerByName(name);
-          if (res.success && res.data) {
-              setSelectedBlader(res.data as SatrBlader);
-          } else {
-              toast.error(`Historique introuvable pour ${name}`);
-          }
-      } catch (e) {
-          toast.error("Erreur lors de la récupération de l'historique");
-      } finally {
-          setLoadingBlader(false);
+    setLoadingBlader(true);
+    try {
+      const res = await getSatrBladerByName(name);
+      if (res.success && res.data) {
+        setSelectedBlader(res.data as SatrBlader);
+      } else {
+        toast.error(`Historique introuvable pour ${name}`);
       }
+    } catch (_e) {
+      toast.error("Erreur lors de la récupération de l'historique");
+    } finally {
+      setLoadingBlader(false);
+    }
   };
 
   const getRankBadge = (rank: number) => {
@@ -64,9 +68,9 @@ export function SatrTable({ rankings, totalPages, currentPage }: SatrTableProps)
       const colors = {
         1: '#FFD700',
         2: '#C0C0C0',
-        3: '#CD7F32'
+        3: '#CD7F32',
       };
-      const color = colors[rank as 1|2|3];
+      const color = colors[rank as 1 | 2 | 3];
       return (
         <Box
           sx={{
@@ -82,7 +86,7 @@ export function SatrTable({ rankings, totalPages, currentPage }: SatrTableProps)
             fontSize: { xs: '0.7rem', md: '0.8rem' },
             mx: 'auto',
             boxShadow: `0 0 15px ${alpha(color, 0.4)}`,
-            border: '2px solid rgba(255,255,255,0.2)'
+            border: '2px solid rgba(255,255,255,0.2)',
           }}
         >
           {rank}
@@ -91,7 +95,11 @@ export function SatrTable({ rankings, totalPages, currentPage }: SatrTableProps)
     }
 
     return (
-      <Typography fontWeight="900" color="text.secondary" sx={{ fontSize: { xs: '0.75rem', md: '0.85rem' }, opacity: 0.6 }}>
+      <Typography
+        fontWeight="900"
+        color="text.secondary"
+        sx={{ fontSize: { xs: '0.75rem', md: '0.85rem' }, opacity: 0.6 }}
+      >
         #{rank}
       </Typography>
     );
@@ -99,120 +107,244 @@ export function SatrTable({ rankings, totalPages, currentPage }: SatrTableProps)
 
   return (
     <Box sx={{ position: 'relative' }}>
-        <TableContainer
+      <TableContainer
         component={Paper}
         elevation={0}
         sx={{
-            background: 'rgba(255,255,255,0.02)',
-            backdropFilter: 'blur(10px)',
-            border: '1px solid rgba(255,255,255,0.05)',
-            borderRadius: 4,
-            overflowX: 'auto',
-            mb: 3,
-            '&::-webkit-scrollbar': { height: '4px' },
-            '&::-webkit-scrollbar-thumb': { bgcolor: 'rgba(255,255,255,0.1)', borderRadius: '4px' }
+          background: 'rgba(255,255,255,0.02)',
+          backdropFilter: 'blur(10px)',
+          border: '1px solid rgba(255,255,255,0.05)',
+          borderRadius: 4,
+          overflowX: 'auto',
+          mb: 3,
+          '&::-webkit-scrollbar': { height: '4px' },
+          '&::-webkit-scrollbar-thumb': {
+            bgcolor: 'rgba(255,255,255,0.1)',
+            borderRadius: '4px',
+          },
         }}
-        >
+      >
         <Table size="small" sx={{ minWidth: { xs: 450, md: '100%' } }}>
-            <TableHead>
+          <TableHead>
             <TableRow sx={{ bgcolor: 'rgba(255,255,255,0.03)' }}>
-                <TableCell width={60} align="center" sx={{ py: 2, fontWeight: 900, textTransform: 'uppercase', fontSize: '0.65rem', letterSpacing: 1 }}>Rang</TableCell>
-                <TableCell sx={{ py: 2, fontWeight: 900, textTransform: 'uppercase', fontSize: '0.65rem', letterSpacing: 1 }}>Blader</TableCell>
-                <TableCell align="center" sx={{ py: 2, fontWeight: 900, textTransform: 'uppercase', fontSize: '0.65rem', letterSpacing: 1 }}>Score</TableCell>
-                <TableCell align="center" sx={{ py: 2, fontWeight: 900, textTransform: 'uppercase', fontSize: '0.65rem', letterSpacing: 1 }}>Wins</TableCell>
-                <TableCell align="center" sx={{ py: 2, display: { xs: 'none', sm: 'table-cell' }, fontWeight: 900, textTransform: 'uppercase', fontSize: '0.65rem', letterSpacing: 1 }}>Part.</TableCell>
-                <TableCell align="center" sx={{ py: 2, fontWeight: 900, textTransform: 'uppercase', fontSize: '0.65rem', letterSpacing: 1 }}>Winrate</TableCell>
-                <TableCell align="center" sx={{ py: 2, display: { xs: 'none', md: 'table-cell' }, fontWeight: 900, textTransform: 'uppercase', fontSize: '0.65rem', letterSpacing: 1 }}>Moyenne</TableCell>
-            </TableRow>
-            </TableHead>
-            <TableBody>
-            {rankings.length > 0 ? (
-                rankings.map((row) => (
-                    <TableRow 
-                        key={row.id} 
-                        component={motion.tr}
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        hover 
-                        onClick={() => handleRowClick(row.playerName)}
-                        sx={{ 
-                            '& td': { py: 1, borderBottom: '1px solid rgba(255,255,255,0.02)' },
-                            '&:hover': { bgcolor: 'rgba(255,255,255,0.03) !important' },
-                            cursor: loadingBlader ? 'wait' : 'pointer'
-                        }}
-                    >
-                    <TableCell align="center">{getRankBadge(row.rank)}</TableCell>
-                    <TableCell>
-                        <Typography fontWeight="800" sx={{ fontSize: { xs: '0.85rem', md: '0.95rem' }, color: '#fff', whiteSpace: 'nowrap' }}>{row.playerName}</Typography>
-                    </TableCell>
-                    <TableCell align="center">
-                        <Typography fontWeight="900" sx={{ fontSize: { xs: '0.85rem', md: '1rem' }, color: '#fbbf24' }}>{row.score.toLocaleString()}</Typography>
-                    </TableCell>
-                    <TableCell align="center">
-                        <Typography fontWeight="700" color="success.main" sx={{ fontSize: '0.85rem' }}>{row.wins}</Typography>
-                    </TableCell>
-                    <TableCell align="center" sx={{ display: { xs: 'none', sm: 'table-cell' } }}>
-                        <Typography sx={{ fontSize: '0.85rem', opacity: 0.8 }}>{row.participation}</Typography>
-                    </TableCell>
-                    <TableCell align="center">
-                        <Box sx={{ 
-                            display: 'inline-block', 
-                            px: 1, 
-                            py: 0.25, 
-                            borderRadius: 1, 
-                            bgcolor: 'rgba(255,255,255,0.05)',
-                            border: '1px solid rgba(255,255,255,0.1)'
-                        }}>
-                            <Typography fontWeight="800" sx={{ fontSize: '0.8rem' }}>{row.winRate}</Typography>
-                        </Box>
-                    </TableCell>
-                    <TableCell align="center" sx={{ display: { xs: 'none', md: 'table-cell' } }}>
-                        <Typography sx={{ fontSize: '0.85rem', fontWeight: 600 }}>{row.pointsAverage}</Typography>
-                    </TableCell>
-                    </TableRow>
-                ))
-            ) : (
-                <TableRow>
-                    <TableCell colSpan={7} align="center" sx={{ py: 10 }}>
-                        <Typography variant="body2" color="text.secondary">Aucun blader trouvé</Typography>
-                    </TableCell>
-                </TableRow>
-            )}
-            </TableBody>
-        </Table>
-        </TableContainer>
-
-        {totalPages > 1 && (
-            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4, mb: 4 }}>
-            <Pagination
-                count={totalPages}
-                page={currentPage}
-                onChange={handlePageChange}
-                color="primary"
-                size={isMobile ? "small" : "large"}
-                showFirstButton
-                showLastButton
+              <TableCell
+                width={60}
+                align="center"
                 sx={{
-                    '& .MuiPaginationItem-root': {
-                        fontWeight: 900,
-                        borderRadius: 2,
-                        border: '1px solid rgba(255,255,255,0.1)',
-                        '&.Mui-selected': {
-                            bgcolor: '#fbbf24',
-                            color: '#000',
-                            '&:hover': { bgcolor: '#f59e0b' }
-                        }
-                    }
+                  py: 2,
+                  fontWeight: 900,
+                  textTransform: 'uppercase',
+                  fontSize: '0.65rem',
+                  letterSpacing: 1,
                 }}
-            />
-            </Box>
-        )}
+              >
+                Rang
+              </TableCell>
+              <TableCell
+                sx={{
+                  py: 2,
+                  fontWeight: 900,
+                  textTransform: 'uppercase',
+                  fontSize: '0.65rem',
+                  letterSpacing: 1,
+                }}
+              >
+                Blader
+              </TableCell>
+              <TableCell
+                align="center"
+                sx={{
+                  py: 2,
+                  fontWeight: 900,
+                  textTransform: 'uppercase',
+                  fontSize: '0.65rem',
+                  letterSpacing: 1,
+                }}
+              >
+                Score
+              </TableCell>
+              <TableCell
+                align="center"
+                sx={{
+                  py: 2,
+                  fontWeight: 900,
+                  textTransform: 'uppercase',
+                  fontSize: '0.65rem',
+                  letterSpacing: 1,
+                }}
+              >
+                Wins
+              </TableCell>
+              <TableCell
+                align="center"
+                sx={{
+                  py: 2,
+                  display: { xs: 'none', sm: 'table-cell' },
+                  fontWeight: 900,
+                  textTransform: 'uppercase',
+                  fontSize: '0.65rem',
+                  letterSpacing: 1,
+                }}
+              >
+                Part.
+              </TableCell>
+              <TableCell
+                align="center"
+                sx={{
+                  py: 2,
+                  fontWeight: 900,
+                  textTransform: 'uppercase',
+                  fontSize: '0.65rem',
+                  letterSpacing: 1,
+                }}
+              >
+                Winrate
+              </TableCell>
+              <TableCell
+                align="center"
+                sx={{
+                  py: 2,
+                  display: { xs: 'none', md: 'table-cell' },
+                  fontWeight: 900,
+                  textTransform: 'uppercase',
+                  fontSize: '0.65rem',
+                  letterSpacing: 1,
+                }}
+              >
+                Moyenne
+              </TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {rankings.length > 0 ? (
+              rankings.map((row) => (
+                <TableRow
+                  key={row.id}
+                  component={motion.tr}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  hover
+                  onClick={() => handleRowClick(row.playerName)}
+                  sx={{
+                    '& td': {
+                      py: 1,
+                      borderBottom: '1px solid rgba(255,255,255,0.02)',
+                    },
+                    '&:hover': { bgcolor: 'rgba(255,255,255,0.03) !important' },
+                    cursor: loadingBlader ? 'wait' : 'pointer',
+                  }}
+                >
+                  <TableCell align="center">{getRankBadge(row.rank)}</TableCell>
+                  <TableCell>
+                    <Typography
+                      fontWeight="800"
+                      sx={{
+                        fontSize: { xs: '0.85rem', md: '0.95rem' },
+                        color: '#fff',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      {row.playerName}
+                    </Typography>
+                  </TableCell>
+                  <TableCell align="center">
+                    <Typography
+                      fontWeight="900"
+                      sx={{
+                        fontSize: { xs: '0.85rem', md: '1rem' },
+                        color: '#fbbf24',
+                      }}
+                    >
+                      {row.score.toLocaleString()}
+                    </Typography>
+                  </TableCell>
+                  <TableCell align="center">
+                    <Typography
+                      fontWeight="700"
+                      color="success.main"
+                      sx={{ fontSize: '0.85rem' }}
+                    >
+                      {row.wins}
+                    </Typography>
+                  </TableCell>
+                  <TableCell
+                    align="center"
+                    sx={{ display: { xs: 'none', sm: 'table-cell' } }}
+                  >
+                    <Typography sx={{ fontSize: '0.85rem', opacity: 0.8 }}>
+                      {row.participation}
+                    </Typography>
+                  </TableCell>
+                  <TableCell align="center">
+                    <Box
+                      sx={{
+                        display: 'inline-block',
+                        px: 1,
+                        py: 0.25,
+                        borderRadius: 1,
+                        bgcolor: 'rgba(255,255,255,0.05)',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                      }}
+                    >
+                      <Typography fontWeight="800" sx={{ fontSize: '0.8rem' }}>
+                        {row.winRate}
+                      </Typography>
+                    </Box>
+                  </TableCell>
+                  <TableCell
+                    align="center"
+                    sx={{ display: { xs: 'none', md: 'table-cell' } }}
+                  >
+                    <Typography sx={{ fontSize: '0.85rem', fontWeight: 600 }}>
+                      {row.pointsAverage}
+                    </Typography>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={7} align="center" sx={{ py: 10 }}>
+                  <Typography variant="body2" color="text.secondary">
+                    Aucun blader trouvé
+                  </Typography>
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
 
-        <SatrBladerDialog 
-            blader={selectedBlader}
-            open={!!selectedBlader}
-            onClose={() => setSelectedBlader(null)}
-        />
+      {totalPages > 1 && (
+        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4, mb: 4 }}>
+          <Pagination
+            count={totalPages}
+            page={currentPage}
+            onChange={handlePageChange}
+            color="primary"
+            size={isMobile ? 'small' : 'large'}
+            showFirstButton
+            showLastButton
+            sx={{
+              '& .MuiPaginationItem-root': {
+                fontWeight: 900,
+                borderRadius: 2,
+                border: '1px solid rgba(255,255,255,0.1)',
+                '&.Mui-selected': {
+                  bgcolor: '#fbbf24',
+                  color: '#000',
+                  '&:hover': { bgcolor: '#f59e0b' },
+                },
+              },
+            }}
+          />
+        </Box>
+      )}
+
+      <SatrBladerDialog
+        blader={selectedBlader}
+        open={!!selectedBlader}
+        onClose={() => setSelectedBlader(null)}
+      />
     </Box>
   );
 }

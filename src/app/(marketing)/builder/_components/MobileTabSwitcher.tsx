@@ -7,7 +7,9 @@ import { useBuilder } from './BuilderContext';
 export function MobileTabSwitcher() {
   const { state, dispatch } = useBuilder();
 
-  const filledCount = state.beys.filter((b) => b.blade || b.ratchet || b.bit).length;
+  const filledCount = state.beys.filter(
+    (b) => b.blade || b.ratchet || b.bit,
+  ).length;
 
   return (
     <Box
@@ -25,7 +27,12 @@ export function MobileTabSwitcher() {
     >
       <Tabs
         value={state.mobileTab === 'catalog' ? 0 : 1}
-        onChange={(_, v) => dispatch({ type: 'SET_MOBILE_TAB', tab: v === 0 ? 'catalog' : 'deck' })}
+        onChange={(_, v) =>
+          dispatch({
+            type: 'SET_MOBILE_TAB',
+            tab: v === 0 ? 'catalog' : 'deck',
+          })
+        }
         variant="fullWidth"
         textColor="inherit"
         TabIndicatorProps={{ sx: { bgcolor: 'error.main', height: 3 } }}
@@ -39,7 +46,11 @@ export function MobileTabSwitcher() {
           },
         }}
       >
-        <Tab icon={<ViewList sx={{ fontSize: 20 }} />} iconPosition="start" label="Catalogue" />
+        <Tab
+          icon={<ViewList sx={{ fontSize: 20 }} />}
+          iconPosition="start"
+          label="Catalogue"
+        />
         <Tab
           icon={
             <Badge badgeContent={filledCount} color="error" max={3}>

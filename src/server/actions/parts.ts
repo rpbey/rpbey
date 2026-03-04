@@ -12,7 +12,15 @@ export async function getPublicParts(params: {
   page?: number;
   pageSize?: number;
 }) {
-  const { search, type, systems, spin, beyTypes, page = 1, pageSize = 24 } = params;
+  const {
+    search,
+    type,
+    systems,
+    spin,
+    beyTypes,
+    page = 1,
+    pageSize = 24,
+  } = params;
   const take = pageSize;
   const skip = (page - 1) * take;
 

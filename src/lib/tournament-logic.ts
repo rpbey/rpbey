@@ -175,7 +175,9 @@ export function validateDeck(deck: {
     // Over Blade uniqueness
     if (bey.overBladeId) {
       if (usedParts.has(bey.overBladeId)) {
-        errors.push(`L'Over Blade du Bey #${pos} est déjà utilisé dans le deck.`);
+        errors.push(
+          `L'Over Blade du Bey #${pos} est déjà utilisé dans le deck.`,
+        );
       }
       usedParts.add(bey.overBladeId);
     }
@@ -183,7 +185,9 @@ export function validateDeck(deck: {
     // Assist Blade uniqueness
     if (bey.assistBladeId) {
       if (usedParts.has(bey.assistBladeId)) {
-        errors.push(`L'Assist Blade du Bey #${pos} est déjà utilisé dans le deck.`);
+        errors.push(
+          `L'Assist Blade du Bey #${pos} est déjà utilisé dans le deck.`,
+        );
       }
       usedParts.add(bey.assistBladeId);
     }
@@ -210,7 +214,7 @@ export function validateDeck(deck: {
 
   // Metal lock chip limit: max 1 per deck
   if (metalLockChipCount > 1) {
-    errors.push('Un deck ne peut contenir qu\'un seul Metal Lock Chip.');
+    errors.push("Un deck ne peut contenir qu'un seul Metal Lock Chip.");
   }
 
   return {

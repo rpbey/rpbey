@@ -92,7 +92,12 @@ async function main() {
                 imageUrl: finalImageUrl,
                 system: system,
                 beyType: beyType,
-                // Optional: update stats if needed, or leave existing
+                // On met à jour les stats si elles sont présentes dans le JSON
+                attack: part.specs['Attack'] || undefined,
+                defense: part.specs['Defense'] || undefined,
+                stamina: part.specs['Stamina'] || undefined,
+                dash: part.specs['Dash'] || undefined,
+                burst: part.specs['Burst'] || undefined,
             },
             create: {
                 externalId: part.id,

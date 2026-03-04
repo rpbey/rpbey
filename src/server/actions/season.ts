@@ -46,6 +46,7 @@ export async function getSeasonStandings(slug: string) {
               _count: {
                 select: { tournaments: true },
               },
+              profile: true,
             },
           },
         },
@@ -106,11 +107,11 @@ export async function archiveCurrentSeason(
   // Transaction to ensure atomic operation
   await prisma.$transaction(
     async (tx) => {
-      // 1. Snapshot profiles to SeasonEntry
-      const profiles = await tx.profile.findMany({
+      // 1. Snapshot global rankings to SeasonEntry
+      const rankings = await tx.globalRanking.findMany({
         where: {
           OR: [
-            { rankingPoints: { gt: 0 } },
+            { points: { gt: 0 } },
             { wins: { gt: 0 } },
             { losses: { gt: 0 } },
             { tournamentWins: { gt: 0 } },
@@ -118,13 +119,14 @@ export async function archiveCurrentSeason(
         },
       });
 
-      const entriesData = profiles.map((p) => ({
+      const entriesData = rankings.map((r) => ({
         seasonId: currentSeason.id,
-        userId: p.userId,
-        points: p.rankingPoints,
-        wins: p.wins,
-        losses: p.losses,
-        tournamentWins: p.tournamentWins,
+        userId: r.userId,
+        playerName: r.playerName,
+        points: r.points,
+        wins: r.wins,
+        losses: r.losses,
+        tournamentWins: r.tournamentWins,
       }));
 
       if (entriesData.length > 0) {
@@ -143,7 +145,16 @@ export async function archiveCurrentSeason(
         data: { status: 'ARCHIVED' },
       });
 
-      // 3. Reset Profiles
+      // 3. Reset Rankings & Profiles
+      await tx.globalRanking.updateMany({
+        data: {
+          points: 0,
+          wins: 0,
+          losses: 0,
+          tournamentWins: 0,
+        },
+      });
+
       await tx.profile.updateMany({
         data: {
           rankingPoints: 0,

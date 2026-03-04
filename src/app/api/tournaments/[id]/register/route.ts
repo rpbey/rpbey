@@ -44,12 +44,10 @@ export async function POST(_request: Request, { params }: RouteParams) {
     }
 
     // Check if already registered
-    const existingParticipant = await prisma.tournamentParticipant.findUnique({
+    const existingParticipant = await prisma.tournamentParticipant.findFirst({
       where: {
-        tournamentId_userId: {
-          tournamentId: id,
-          userId: session.user.id,
-        },
+        tournamentId: id,
+        userId: session.user.id,
       },
     });
 
@@ -107,12 +105,10 @@ export async function DELETE(_request: Request, { params }: RouteParams) {
     }
 
     // Delete registration
-    await prisma.tournamentParticipant.delete({
+    await prisma.tournamentParticipant.deleteMany({
       where: {
-        tournamentId_userId: {
-          tournamentId: id,
-          userId: session.user.id,
-        },
+        tournamentId: id,
+        userId: session.user.id,
       },
     });
 

@@ -140,7 +140,7 @@ async function linkParticipants() {
     }
 
     if (bestMatch) {
-      console.log(`🔗 [${matchType.toUpperCase()}] "${searchName}" -> "${bestMatch.displayName}"`);
+      console.log(`🔗 [${matchType.toUpperCase()}] "${searchName}" -> "${bestMatch.username}"`);
       
       // Vérifier si un autre utilisateur a déjà ce discordId
       const existingUser = await prisma.user.findUnique({

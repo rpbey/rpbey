@@ -282,7 +282,9 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
             (p) =>
               p.attributes.misc === localParticipant.userId ||
               p.attributes.name ===
-                (localParticipant.user.name || localParticipant.user.email),
+                (localParticipant.playerName ||
+                  localParticipant.user?.name ||
+                  localParticipant.user?.email),
           );
 
           if (existingInChallonge) {
@@ -292,8 +294,12 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
             });
           } else {
             participantsToCreate.push({
-              name: localParticipant.user.name || localParticipant.user.email,
-              misc: localParticipant.userId,
+              name:
+                localParticipant.playerName ||
+                localParticipant.user?.name ||
+                localParticipant.user?.email ||
+                'Unknown',
+              misc: localParticipant.userId ?? undefined,
               seed: localParticipant.seed ?? undefined,
             });
           }

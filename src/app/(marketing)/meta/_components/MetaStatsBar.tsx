@@ -2,7 +2,7 @@
 
 import { Box, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
-import { useTheme, alpha } from '@mui/material/styles';
+import { alpha, useTheme } from '@mui/material/styles';
 
 import type { PeriodMetadata } from './types';
 
@@ -24,7 +24,7 @@ function StatCard({ label, value }: { label: string; value: string }) {
           borderColor: alpha(theme.palette.primary.main, 0.3),
           bgcolor: 'surface.high',
           transform: 'translateY(-2px)',
-        }
+        },
       }}
     >
       <Typography
@@ -43,8 +43,8 @@ function StatCard({ label, value }: { label: string; value: string }) {
         variant="body2"
         fontWeight={900}
         noWrap
-        sx={{ 
-          mt: 0.25, 
+        sx={{
+          mt: 0.25,
           fontSize: { xs: '0.75rem', md: '0.875rem' },
           color: 'text.primary',
         }}

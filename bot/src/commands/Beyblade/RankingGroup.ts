@@ -22,19 +22,21 @@ import type { PrismaService } from '../../lib/prisma.js';
 
 @Discord()
 @SlashGroup({
-  name: 'classement',
   description: 'Commandes de classement et profils',
+  name: 'classement',
 })
 @SlashGroup('classement')
 @injectable()
 export class RankingGroup {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) {
+    logger.info('[Bot] RankingGroup initialized.');
+  }
 
-  @Slash({ name: 'profil', description: "Voir le profil d'un blader" })
+  @Slash({ description: "Voir le profil d'un blader", name: 'profil' })
   async profile(
     @SlashOption({
-      name: 'joueur',
       description: 'Le blader à voir',
+      name: 'joueur',
       required: false,
       type: ApplicationCommandOptionType.User,
     })
@@ -46,28 +48,18 @@ export class RankingGroup {
 
     try {
       const user = await this.prisma.user.findFirst({
-        where: { discordId: target.id },
         include: {
-          profile: true,
-          decks: {
-            where: { isActive: true },
-            include: {
-              items: {
-                include: { blade: true, ratchet: true, bit: true },
-                orderBy: { position: 'asc' },
-              },
-            },
-            take: 1,
+          _count: {
+            select: { tournaments: true },
           },
+          profile: true,
           tournaments: {
             include: { tournament: true },
             orderBy: { createdAt: 'desc' },
             take: 5,
           },
-          _count: {
-            select: { tournaments: true },
-          },
         },
+        where: { discordId: target.id },
       });
 
       if (!user || !user.profile) {
@@ -80,12 +72,14 @@ export class RankingGroup {
       }
 
       const profile = user.profile;
+
+      // Get matches for streak calculation
       const matches = await this.prisma.tournamentMatch.findMany({
+        orderBy: { createdAt: 'asc' },
         where: {
           OR: [{ player1Id: user.id }, { player2Id: user.id }],
           state: 'complete',
         },
-        orderBy: { createdAt: 'asc' },
       });
 
       let bestStreak = 0;
@@ -100,16 +94,17 @@ export class RankingGroup {
       }
 
       const rank =
-        (await this.prisma.profile.count({
-          where: { rankingPoints: { gt: profile.rankingPoints } },
+        (await this.prisma.globalRanking.count({
+          where: { points: { gt: profile.rankingPoints } },
         })) + 1;
 
-      const elo = 1000 + (profile.wins * 15 - profile.losses * 15);
+      // Dynamic Title based on points/wins
       let rankTitle = 'Débutant';
-      if (elo >= 1500) rankTitle = 'Champion';
-      else if (elo >= 1300) rankTitle = 'Expert';
-      else if (elo >= 1150) rankTitle = 'Confirmé';
-      else if (elo >= 1000) rankTitle = 'Intermédiaire';
+      if (profile.rankingPoints >= 15000) rankTitle = 'Légende';
+      else if (profile.rankingPoints >= 10000) rankTitle = 'Champion';
+      else if (profile.rankingPoints >= 5000) rankTitle = 'Expert';
+      else if (profile.rankingPoints >= 2000) rankTitle = 'Confirmé';
+      else if (profile.rankingPoints >= 1000) rankTitle = 'Intermédiaire';
 
       const totalMatches = profile.wins + profile.losses;
       const winRate =
@@ -117,73 +112,98 @@ export class RankingGroup {
           ? `${Math.round((profile.wins / totalMatches) * 100)}%`
           : '0%';
 
-      const activeDeck = user.decks[0];
+      // Get Active Deck
+      const activeDeck = await this.prisma.deck.findFirst({
+        include: {
+          items: {
+            include: { bit: true, blade: true, ratchet: true },
+            orderBy: { position: 'asc' },
+          },
+        },
+        where: { isActive: true, userId: user.id },
+      });
+
       const deckData = activeDeck
         ? {
-            name: activeDeck.name,
             blades: activeDeck.items
-              .map((item: any) => ({
-                name: item.blade?.name || '?',
+              .map((item) => ({
                 imageUrl: item.blade?.imageUrl || null,
+                name: item.blade?.name || '?',
               }))
-              .filter((b: any) => b.name !== '?'),
+              .filter((b) => b.name !== '?'),
+            name: activeDeck.name,
           }
         : null;
 
+      const displayBladerName =
+        profile.bladerName || profile.challongeUsername || target.displayName;
+
       const cardBuffer = await generateProfileCard({
-        bladerName: profile.bladerName || target.displayName,
+        activeDeck: deckData,
         avatarUrl: target.displayAvatarURL({ extension: 'png', size: 512 }),
-        wins: profile.wins,
+        bestStreak,
+        bladerName: displayBladerName,
+        currentStreak: tempStreak,
+        joinedAt: user.createdAt.toLocaleDateString('fr-FR'),
         losses: profile.losses,
+        rank,
+        rankingPoints: profile.rankingPoints,
+        rankTitle,
         tournamentWins: profile.tournamentWins,
         tournamentsPlayed: user._count.tournaments,
-        rankingPoints: profile.rankingPoints,
-        joinedAt: user.createdAt.toLocaleDateString('fr-FR'),
-        rank,
-        rankTitle,
-        currentStreak: tempStreak,
-        bestStreak,
         winRate,
-        activeDeck: deckData,
+        wins: profile.wins,
       });
 
       const attachment = new AttachmentBuilder(cardBuffer, {
         name: `profile-${target.id}.png`,
       });
+
       const embed = new EmbedBuilder()
         .setColor(Colors.Primary)
         .setImage(`attachment://profile-${target.id}.png`);
 
       if (profile.bio) embed.setDescription(profile.bio);
 
+      // Footer with Challonge hint
+      if (profile.challongeUsername) {
+        embed.setFooter({
+          text: `Compte Challonge : ${profile.challongeUsername} • rpbey.fr`,
+        });
+      } else {
+        embed.setFooter({
+          text: `rpbey.fr - Lie ton compte Challonge avec /challonge lier`,
+        });
+      }
+
       const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
         new ButtonBuilder()
           .setLabel('Voir sur le site')
-          .setURL(`https://rpbey.fr/profile/${user.id}`)
-          .setStyle(ButtonStyle.Link),
+          .setStyle(ButtonStyle.Link)
+          .setURL(`https://rpbey.fr/profile/${user.id}`),
       );
 
       return interaction.editReply({
+        components: [row],
         embeds: [embed],
         files: [attachment],
-        components: [row],
       });
     } catch (error) {
-      logger.error(error);
+      logger.error('[RankingGroup.profile]', error);
       return interaction.editReply(
-        '❌ Erreur lors de la récupération du profil.',
+        '❌ Une erreur est survenue lors de la génération du profil.',
       );
     }
   }
 
   @Slash({
-    name: 'card',
     description: 'Génère une carte de rang alternative (Canvacord)',
+    name: 'card',
   })
   async rankCard(
     @SlashOption({
-      name: 'joueur',
       description: 'Le joueur à afficher',
+      name: 'joueur',
       required: false,
       type: ApplicationCommandOptionType.User,
     })
@@ -195,14 +215,14 @@ export class RankingGroup {
 
     try {
       const user = await this.prisma.user.findFirst({
-        where: { discordId: target.id },
         include: { profile: true },
+        where: { discordId: target.id },
       });
 
       const rankingPoints = user?.profile?.rankingPoints ?? 0;
       const rankPosition =
-        (await this.prisma.profile.count({
-          where: { rankingPoints: { gt: rankingPoints } },
+        (await this.prisma.globalRanking.count({
+          where: { points: { gt: rankingPoints } },
         })) + 1;
 
       const level = Math.floor(Math.sqrt(rankingPoints / 10));
@@ -212,12 +232,12 @@ export class RankingGroup {
       const card = new RankCardBuilder()
         .setAvatar(target.displayAvatarURL({ extension: 'png', size: 256 }))
         .setCurrentXP(currentLevelExp)
-        .setRequiredXP(requiredExp)
+        .setDisplayName(target.displayName)
         .setLevel(level)
         .setRank(rankPosition)
-        .setDisplayName(target.displayName)
-        .setUsername(target.username)
-        .setStatus('online');
+        .setRequiredXP(requiredExp)
+        .setStatus('online')
+        .setUsername(target.username);
 
       const buffer = await card.build();
       const attachment = new AttachmentBuilder(buffer, {
@@ -226,20 +246,20 @@ export class RankingGroup {
 
       return interaction.editReply({ files: [attachment] });
     } catch (error) {
-      logger.error(error);
+      logger.error('[RankingGroup.rankCard]', error);
       return interaction.editReply(
         '❌ Erreur lors de la génération de la carte.',
       );
     }
   }
 
-  @Slash({ name: 'top', description: 'Afficher le top des bladers RPB' })
+  @Slash({ description: 'Afficher le top des bladers RPB', name: 'top' })
   async leaderboard(
     @SlashChoice({ name: 'Image (Top 10)', value: 'image' })
     @SlashChoice({ name: 'Texte Complet (.txt)', value: 'text' })
     @SlashOption({
-      name: 'format',
       description: "Format de l'affichage",
+      name: 'format',
       required: false,
       type: ApplicationCommandOptionType.String,
     })
@@ -249,35 +269,36 @@ export class RankingGroup {
     await interaction.deferReply();
 
     try {
-      const profiles = await this.prisma.profile.findMany({
-        where: {
-          rankingPoints: { gt: 0 },
-        },
+      const rankings = await this.prisma.globalRanking.findMany({
+        include: { user: { include: { profile: true } } },
         orderBy: [
-          { rankingPoints: 'desc' },
+          { points: 'desc' },
           { tournamentWins: 'desc' },
           { wins: 'desc' },
         ],
         take: format === 'image' ? 10 : undefined,
-        include: { user: true },
+        where: {
+          points: { gt: 0 },
+        },
       });
 
-      if (profiles.length === 0)
+      if (rankings.length === 0) {
         return interaction.editReply('Aucun blader classé.');
+      }
 
       if (format === 'image') {
-        const entries = profiles.map((p, i) => ({
+        const entries = rankings.map((p, i) => ({
+          avatarUrl:
+            p.user?.image ||
+            p.user?.serverAvatar ||
+            'https://cdn.discordapp.com/embed/avatars/0.png',
+          name: p.playerName,
+          points: p.points,
           rank: i + 1,
-          name: p.bladerName || p.user.name || 'Blader',
-          points: p.rankingPoints,
           winRate:
             p.wins + p.losses > 0
               ? ((p.wins / (p.wins + p.losses)) * 100).toFixed(1)
               : '0',
-          avatarUrl:
-            p.user.image ||
-            p.user.serverAvatar ||
-            'https://cdn.discordapp.com/embed/avatars/0.png',
         }));
 
         const buffer = await generateLeaderboardCard(entries);
@@ -291,10 +312,10 @@ export class RankingGroup {
         });
       }
 
-      const textOutput = profiles
+      const textOutput = rankings
         .map(
           (p, i) =>
-            `#${i + 1} | ${p.bladerName || p.user.name} | ${p.rankingPoints} pts`,
+            `#${i + 1} | ${p.playerName || 'Anonyme'} | ${p.points} pts`,
         )
         .join('\n');
       const attachment = new AttachmentBuilder(Buffer.from(textOutput), {
@@ -305,8 +326,70 @@ export class RankingGroup {
         files: [attachment],
       });
     } catch (error) {
+      logger.error('[RankingGroup.leaderboard]', error);
+      return interaction.editReply('❌ Une erreur est survenue.');
+    }
+  }
+
+  @Slash({
+    name: 'top100_backup',
+    description: 'Afficher le Top 100 autonome Challonge (Données Backup)',
+  })
+  async top100Backup(interaction: CommandInteraction) {
+    await interaction.deferReply();
+
+    try {
+      const fs = await import('node:fs');
+      const path = await import('node:path');
+      const filePath = path.resolve(
+        process.cwd(),
+        '../data/exports/standalone_ranking.json',
+      );
+
+      if (!fs.existsSync(filePath)) {
+        return interaction.editReply(
+          "❌ Le fichier de backup n'a pas encore été généré.",
+        );
+      }
+
+      const data = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+      const top100 = data.slice(0, 100);
+
+      const embed = new EmbedBuilder()
+        .setTitle('🏆 Top 100 Autonome Challonge (Backup)')
+        .setColor(Colors.Secondary)
+        .setDescription(
+          `Basé uniquement sur les handles Challonge des deux derniers tournois.\n\n` +
+            top100
+              .slice(0, 20)
+              .map(
+                (r: any, i: number) =>
+                  `**#${i + 1}** | \`@${r.handle}\` | **${r.points}** pts`,
+              )
+              .join('\n'),
+        )
+        .setTimestamp()
+        .setFooter({ text: 'Données brutes Challonge (sans lien Discord)' });
+
+      if (data.length > 20) {
+        // Generate full text for .txt attachment
+        const fullText = data
+          .map(
+            (r: any, i: number) =>
+              `#${i + 1} | @${r.handle} | ${r.points} pts | ${r.wins}W/${r.losses}L | ${r.tournaments} Tournois`,
+          )
+          .join('\n');
+        const attachment = new AttachmentBuilder(Buffer.from(fullText), {
+          name: 'top100_challonge_backup.txt',
+        });
+
+        return interaction.editReply({ embeds: [embed], files: [attachment] });
+      }
+
+      return interaction.editReply({ embeds: [embed] });
+    } catch (error) {
       logger.error(error);
-      return interaction.editReply('❌ Erreur.');
+      return interaction.editReply('❌ Erreur lors de la lecture du backup.');
     }
   }
 }

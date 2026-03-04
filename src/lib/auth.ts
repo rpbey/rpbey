@@ -50,6 +50,7 @@ export const auth = betterAuth({
       clientSecret: process.env.DISCORD_CLIENT_SECRET || '',
       mapProfileToUser: (profile) => {
         return {
+          name: profile.username, // Force username instead of display name
           discordId: profile.id,
           discordTag:
             profile.discriminator === '0'

@@ -1,6 +1,7 @@
 import {
   ActionRowBuilder,
   ApplicationCommandOptionType,
+  type AutocompleteInteraction,
   ButtonBuilder,
   ButtonStyle,
   type CommandInteraction,
@@ -21,13 +22,36 @@ import prisma from '../../lib/prisma.js';
 })
 @SlashGroup('inscription')
 export class RegisterCommand {
+  static async autocomplete(interaction: AutocompleteInteraction) {
+    const focusedOption = interaction.options.getFocused(true);
+    const query = focusedOption.value.toLowerCase();
+
+    // Suggérer les tournois à venir ou en cours
+    const tournaments = await prisma.tournament.findMany({
+      where: {
+        status: { in: ['UPCOMING', 'UNDERWAY'] },
+        name: { contains: query, mode: 'insensitive' },
+      },
+      take: 25,
+      orderBy: { date: 'asc' },
+    });
+
+    return interaction.respond(
+      tournaments.map((t) => ({
+        name: t.name,
+        value: t.challongeId || t.challongeUrl?.split('/').pop() || t.id,
+      })),
+    );
+  }
+
   @Slash({ name: 'rejoindre', description: "S'inscrire à un tournoi" })
   async join(
     @SlashOption({
       name: 'tournoi',
-      description: 'ID du tournoi (ex: B_TS1)',
+      description: 'ID ou Nom du tournoi (ex: B_TS1)',
       required: true,
       type: ApplicationCommandOptionType.String,
+      autocomplete: RegisterCommand.autocomplete,
     })
     tournamentId: string,
     @SlashOption({
@@ -46,16 +70,21 @@ export class RegisterCommand {
     try {
       const challonge = getChallongeClient();
 
-      const tournamentRes = await challonge.getTournament(tournamentId);
+      // Ensure we have a valid slug or ID
+      const targetId = tournamentId.includes('/')
+        ? tournamentId.split('/').pop()!
+        : tournamentId;
+      const tournamentRes = await challonge.getTournament(targetId);
       const tournament = tournamentRes.data;
 
       if (tournament.attributes.state !== 'pending') {
         return interaction.editReply({
-          content: '❌ Les inscriptions sont fermées pour ce tournoi.',
+          content:
+            '❌ Les inscriptions sont fermées pour ce tournoi (il est déjà commencé ou terminé).',
         });
       }
 
-      const participantsRes = await challonge.listParticipants(tournamentId);
+      const participantsRes = await challonge.listParticipants(targetId);
       const existingParticipant = participantsRes.data?.find(
         (p) =>
           p.attributes.name.toLowerCase() === playerName.toLowerCase() ||
@@ -68,7 +97,7 @@ export class RegisterCommand {
         });
       }
 
-      await challonge.createParticipant(tournamentId, {
+      await challonge.createParticipant(targetId, {
         name: playerName,
         misc: interaction.user.id,
       });
@@ -96,10 +125,10 @@ export class RegisterCommand {
         });
 
         const dbTournament = await prisma.tournament.upsert({
-          where: { challongeId: tournamentId },
+          where: { challongeId: targetId },
           update: { name: tournament.attributes.name },
           create: {
-            challongeId: tournamentId,
+            challongeId: targetId,
             name: tournament.attributes.name,
             date: tournament.attributes.startAt
               ? new Date(tournament.attributes.startAt)
@@ -108,20 +137,22 @@ export class RegisterCommand {
           },
         });
 
-        await prisma.tournamentParticipant.upsert({
-          where: {
-            tournamentId_userId: {
+        const existingParticipantDb =
+          await prisma.tournamentParticipant.findFirst({
+            where: {
               tournamentId: dbTournament.id,
               userId: user.id,
             },
-          },
-          update: {},
-          create: {
-            tournamentId: dbTournament.id,
-            userId: user.id,
-            checkedIn: false,
-          },
-        });
+          });
+        if (!existingParticipantDb) {
+          await prisma.tournamentParticipant.create({
+            data: {
+              tournamentId: dbTournament.id,
+              userId: user.id,
+              checkedIn: false,
+            },
+          });
+        }
       } catch (dbError) {
         logger.warn('DB sync failed:', dbError);
       }
@@ -163,7 +194,7 @@ export class RegisterCommand {
     } catch (error) {
       logger.error('Join tournament error:', error);
       return interaction.editReply(
-        "❌ Erreur lors de l'inscription. Le tournoi existe-t-il ?",
+        "❌ Erreur lors de l'inscription. Le tournoi existe-t-il sur Challonge ?",
       );
     }
   }
@@ -172,9 +203,10 @@ export class RegisterCommand {
   async leave(
     @SlashOption({
       name: 'tournoi',
-      description: 'ID du tournoi',
+      description: 'ID ou Nom du tournoi',
       required: true,
       type: ApplicationCommandOptionType.String,
+      autocomplete: RegisterCommand.autocomplete,
     })
     tournamentId: string,
     interaction: CommandInteraction,
@@ -183,8 +215,11 @@ export class RegisterCommand {
 
     try {
       const challonge = getChallongeClient();
+      const targetId = tournamentId.includes('/')
+        ? tournamentId.split('/').pop()!
+        : tournamentId;
 
-      const tournamentRes = await challonge.getTournament(tournamentId);
+      const tournamentRes = await challonge.getTournament(targetId);
       const tournament = tournamentRes.data;
 
       if (tournament.attributes.state !== 'pending') {
@@ -194,7 +229,7 @@ export class RegisterCommand {
         });
       }
 
-      const participantsRes = await challonge.listParticipants(tournamentId);
+      const participantsRes = await challonge.listParticipants(targetId);
       const participant = participantsRes.data?.find(
         (p) => p.attributes.misc === interaction.user.id,
       );
@@ -239,7 +274,7 @@ export class RegisterCommand {
         });
 
         if (confirmation.customId === 'confirm-leave') {
-          await challonge.deleteParticipant(tournamentId, participant.id);
+          await challonge.deleteParticipant(targetId, participant.id);
 
           const successEmbed = new EmbedBuilder()
             .setTitle('✅ Désinscription confirmée')
@@ -275,9 +310,10 @@ export class RegisterCommand {
   async status(
     @SlashOption({
       name: 'tournoi',
-      description: 'ID du tournoi',
+      description: 'ID ou Nom du tournoi',
       required: true,
       type: ApplicationCommandOptionType.String,
+      autocomplete: RegisterCommand.autocomplete,
     })
     tournamentId: string,
     interaction: CommandInteraction,
@@ -286,10 +322,13 @@ export class RegisterCommand {
 
     try {
       const challonge = getChallongeClient();
+      const targetId = tournamentId.includes('/')
+        ? tournamentId.split('/').pop()!
+        : tournamentId;
 
       const [tournamentRes, participantsRes] = await Promise.all([
-        challonge.getTournament(tournamentId),
-        challonge.listParticipants(tournamentId),
+        challonge.getTournament(targetId),
+        challonge.listParticipants(targetId),
       ]);
 
       const tournament = tournamentRes.data;
@@ -332,7 +371,7 @@ export class RegisterCommand {
           },
           {
             name: '🌱 Seed',
-            value: `#${participant.attributes.seed}`,
+            value: `#${participant.attributes.seed || '?'}`,
             inline: true,
           },
           {
