@@ -10,7 +10,6 @@ import {
   Logout,
   Menu as MenuIcon,
   People,
-  SmartToy,
   WorkspacePremium,
 } from '@mui/icons-material';
 import {
@@ -18,7 +17,6 @@ import {
   Avatar,
   Box,
   Button,
-  Chip, // Added
   Drawer,
   IconButton,
   List,
@@ -32,10 +30,8 @@ import {
 } from '@mui/material';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { useSocket } from '@/components/providers/SocketProvider';
+import { useState } from 'react';
 import { CacheBuster } from '@/components/system/CacheBuster';
-import { useToast } from '@/components/ui';
 import { TrophyIcon } from '@/components/ui/Icons';
 import { PageTransition } from '@/components/ui/PageTransition';
 import { RpbLogo } from '@/components/ui/RpbLogo';
@@ -45,7 +41,6 @@ const RAIL_WIDTH = 280;
 
 const ADMIN_NAV_ITEMS = [
   { label: "Vue d'ensemble", path: '/admin', icon: Dashboard },
-  { label: 'Bot Discord', path: '/admin/bot', icon: SmartToy },
   { label: 'Maintenance', path: '/admin/maintenance', icon: Hub },
   { label: 'Liaison Comptes', path: '/admin/link', icon: LinkIcon },
   { label: 'Meta', path: '/admin/meta', icon: Hub },
@@ -62,50 +57,6 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const { data: session } = useSession();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [ping, setPing] = useState<number | null>(null);
-  const { socket } = useSocket();
-  const { showToast } = useToast();
-
-  // Global Admin Notifications & Ping
-  useEffect(() => {
-    if (!socket) return;
-
-    const handleStatus = (status: { ping: number }) => {
-      setPing(status.ping);
-    };
-
-    socket.on('status_update', handleStatus);
-
-    return () => {
-      socket.off('status_update', handleStatus);
-    };
-  }, [socket]);
-  useEffect(() => {
-    if (!socket) return;
-
-    const handleSystemMessage = (msg: { type: string; message: string }) => {
-      if (msg.type === 'error') {
-        showToast(msg.message, 'error');
-      } else {
-        showToast(msg.message, 'info');
-      }
-    };
-
-    const handleLog = (log: { level: string; message: string }) => {
-      // Alert admins on critical errors instantly
-      if (log.level === 'ERROR') {
-        showToast(`Bot Error: ${log.message}`, 'error');
-      }
-    };
-
-    socket.on('system_message', handleSystemMessage);
-    socket.on('log_new', handleLog);
-
-    return () => {
-      socket.off('system_message', handleSystemMessage);
-      socket.off('log_new', handleLog);
-    };
-  }, [socket, showToast]);
 
   const handleSignOut = async () => {
     await signOut();
@@ -379,29 +330,6 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
               }}
             >
               Administration
-              {ping !== null && (
-                <Chip
-                  label={`${Math.round(ping)}ms`}
-                  size="small"
-                  color={
-                    ping < 100 ? 'success' : ping < 300 ? 'warning' : 'error'
-                  }
-                  variant="outlined"
-                  sx={{
-                    height: 20,
-                    fontSize: '0.7rem',
-                    fontWeight: 'bold',
-                    borderColor:
-                      ping < 100
-                        ? 'success.main'
-                        : ping < 300
-                          ? 'warning.main'
-                          : 'error.main',
-                    bgcolor:
-                      ping < 100 ? 'rgba(34, 197, 94, 0.1)' : 'transparent',
-                  }}
-                />
-              )}
             </Typography>
 
             <Stack direction="row" spacing={2} alignItems="center">

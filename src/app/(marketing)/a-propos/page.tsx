@@ -19,7 +19,7 @@ import { headers } from 'next/headers';
 import Link from 'next/link';
 import { DiscordWidget } from '@/components/ui/DiscordWidget';
 import { DiscordIcon } from '@/components/ui/Icons';
-import { getBotStatus } from '@/lib/bot';
+import { getDiscordStats } from '@/lib/discord-data';
 import { prisma } from '@/lib/prisma';
 
 export const metadata = {
@@ -124,16 +124,16 @@ async function getContent(slug: string) {
 
 export default async function AboutPage() {
   await headers();
-  const [botStatus, tournamentCount, introBlock, valuesBlock, rulesBlock] =
+  const [discordStats, tournamentCount, introBlock, valuesBlock, rulesBlock] =
     await Promise.all([
-      getBotStatus(),
+      getDiscordStats(),
       prisma.tournament.count(),
       getContent('about-intro'),
       getContent('about-values'),
       getContent('about-rules'),
     ]);
 
-  const memberCount = botStatus?.memberCount || 500;
+  const memberCount = discordStats.memberCount || 500;
   const displayMemberCount =
     memberCount > 500 ? `${memberCount}+` : memberCount.toString();
   const displayTournamentCount =

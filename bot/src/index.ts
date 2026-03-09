@@ -8,7 +8,6 @@ import { Player } from 'discord-player';
 import { DIService } from 'discordx';
 import { container } from 'tsyringe';
 
-import { startApiServer } from './lib/api-server.js';
 import { bot } from './lib/bot.js';
 import { logger } from './lib/logger.js';
 import { prisma } from './lib/prisma.js';
@@ -52,11 +51,6 @@ async function waitForSessions(token: string): Promise<void> {
 }
 
 async function run() {
-  // Start API server immediately so dashboard can communicate
-  const apiPort = parseInt(process.env.BOT_API_PORT ?? '3001', 10);
-  startApiServer(apiPort);
-  logger.info('[Bot] API server started, waiting for Discord gateway...');
-
   // Config DI
   DIService.engine = tsyringeDependencyRegistryEngine.setInjector(container);
 

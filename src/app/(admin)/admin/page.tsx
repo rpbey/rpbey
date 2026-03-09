@@ -1,30 +1,26 @@
 import {
   BarChart as BarChartIcon,
-  CheckCircle,
   Dns,
-  Error as ErrorIcon,
   History,
   People,
-  SmartToy,
   Visibility,
 } from '@mui/icons-material';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardHeader from '@mui/material/CardHeader';
-import Chip from '@mui/material/Chip';
 import Grid from '@mui/material/Grid';
-import List from '@mui/material/List'; // Added
-import ListItem from '@mui/material/ListItem'; // Added
-import ListItemText from '@mui/material/ListItemText'; // Added
-import Stack from '@mui/material/Stack'; // Added
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { headers } from 'next/headers';
 import { QuickActions } from '@/components/admin/QuickActions';
 import { StatsCharts } from '@/components/admin/StatsCharts';
 import { FadeIn } from '@/components/ui/FadeIn';
 import { TrophyIcon } from '@/components/ui/Icons';
-import { getBotStatus } from '@/lib/bot';
+import { getDiscordStats } from '@/lib/discord-data';
 import { prisma } from '@/lib/prisma';
 import { formatDateTime } from '@/lib/utils';
 import AdminOverviewIntegrations from './_components/AdminOverviewIntegrations';
@@ -45,7 +41,7 @@ export default async function AdminDashboardPage() {
     userCount,
     activeTournamentCount,
     profileCount,
-    botStatus,
+    discordStats,
     usersLastMonth,
     profilesLastMonth,
     recentUsers,
@@ -60,7 +56,7 @@ export default async function AdminDashboardPage() {
       where: { status: { in: ['REGISTRATION_OPEN', 'UNDERWAY', 'CHECKIN'] } },
     }),
     prisma.profile.count(),
-    getBotStatus(),
+    getDiscordStats(),
     prisma.user.count({ where: { createdAt: { lte: thirtyDaysAgo } } }),
     prisma.profile.count({ where: { createdAt: { lte: thirtyDaysAgo } } }),
     prisma.user.findMany({
@@ -148,11 +144,9 @@ export default async function AdminDashboardPage() {
     },
     {
       label: 'Membres Discord',
-      value: botStatus?.memberCount?.toLocaleString() || '---',
-      change: botStatus
-        ? `${botStatus.onlineCount || 0} En ligne`
-        : 'Hors ligne',
-      icon: SmartToy,
+      value: discordStats.memberCount.toLocaleString(),
+      change: `${discordStats.onlineCount} En ligne`,
+      icon: People,
       color: '#5865F2',
     },
     {
@@ -196,12 +190,6 @@ export default async function AdminDashboardPage() {
               Bienvenue sur le panel d'administration RPB
             </Typography>
           </Box>
-          <Chip
-            icon={botStatus ? <CheckCircle /> : <ErrorIcon />}
-            label={botStatus ? 'Systèmes Opérationnels' : 'Bot Hors Ligne'}
-            color={botStatus ? 'success' : 'error'}
-            variant="outlined"
-          />
         </Box>
       </FadeIn>
 
@@ -260,7 +248,9 @@ export default async function AdminDashboardPage() {
 
             {/* Integrations Section */}
             <AdminOverviewIntegrations
-              env={botStatus ? { TWITCH_CLIENT_ID: 'set' } : {}}
+              env={{
+                TWITCH_CLIENT_ID: process.env.TWITCH_CLIENT_ID ? 'set' : '',
+              }}
             />
           </Stack>
         </Grid>
@@ -315,17 +305,6 @@ export default async function AdminDashboardPage() {
                     <Typography variant="caption">Database</Typography>
                     <Typography variant="caption" color="success.main">
                       Connecté
-                    </Typography>
-                  </Box>
-                  <Box
-                    sx={{ display: 'flex', justifyContent: 'space-between' }}
-                  >
-                    <Typography variant="caption">Bot Discord</Typography>
-                    <Typography
-                      variant="caption"
-                      color={botStatus ? 'success.main' : 'error.main'}
-                    >
-                      {botStatus ? `${botStatus.ping}ms` : 'Offline'}
                     </Typography>
                   </Box>
                 </Stack>

@@ -1,23 +1,16 @@
 'use client';
 
 import {
-  Avatar,
-  Box,
-  CircularProgress,
-  Divider,
   FormControlLabel,
   Grid,
   MenuItem,
   Switch,
   TextField,
-  Typography,
 } from '@mui/material';
 import type { StaffMember } from '@prisma/client';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FormDialog } from '@/components/ui';
-import type { BotMember, BotRole } from '@/types';
 import type { StaffMemberInput } from './actions';
-import { getDiscordRoles, getMembersByRole } from './actions';
 
 const TEAMS = [
   { value: 'admin', label: 'Administration' },
@@ -54,42 +47,6 @@ export function StaffDialog({
     displayIndex: 0,
     isActive: true,
   });
-
-  const [roles, setRoles] = useState<BotRole[]>([]);
-  const [selectedRoleId, setSelectedRoleId] = useState<string>('');
-  const [discordMembers, setDiscordMembers] = useState<BotMember[]>([]);
-  const [loadingRoles, setLoadingRoles] = useState(false);
-  const [loadingMembers, setLoadingMembers] = useState(false);
-
-  const fetchRoles = useCallback(async () => {
-    setLoadingRoles(true);
-    const data = await getDiscordRoles();
-    setRoles(data);
-    setLoadingRoles(false);
-  }, []);
-
-  useEffect(() => {
-    if (open) {
-      fetchRoles();
-    }
-  }, [open, fetchRoles]);
-
-  const handleRoleChange = async (roleId: string) => {
-    setSelectedRoleId(roleId);
-    setLoadingMembers(true);
-    const data = await getMembersByRole(roleId);
-    setDiscordMembers(data);
-    setLoadingMembers(false);
-  };
-
-  const handleSelectDiscordMember = (member: BotMember) => {
-    setFormData({
-      ...formData,
-      name: member.displayName || member.username,
-      discordId: member.id,
-      imageUrl: member.avatar || '',
-    });
-  };
 
   useEffect(() => {
     if (initialData) {
@@ -129,96 +86,6 @@ export function StaffDialog({
       maxWidth="md"
     >
       <Grid container spacing={3} sx={{ mt: 0.5 }}>
-        {/* Discord Sync Section */}
-        {!initialData && (
-          <Grid size={{ xs: 12 }}>
-            <Box
-              sx={{
-                p: 2,
-                bgcolor: 'action.hover',
-                borderRadius: 2,
-                border: '1px dashed',
-                borderColor: 'divider',
-              }}
-            >
-              <Typography variant="subtitle2" fontWeight="bold" gutterBottom>
-                Synchronisation Discord (Optionnel)
-              </Typography>
-              <Grid container spacing={2}>
-                <Grid size={{ xs: 12, sm: 6 }}>
-                  <TextField
-                    fullWidth
-                    select
-                    size="small"
-                    label="Sélectionner un rôle Discord"
-                    value={selectedRoleId}
-                    onChange={(e) => handleRoleChange(e.target.value)}
-                    disabled={loadingRoles}
-                  >
-                    {loadingRoles ? (
-                      <MenuItem disabled>
-                        <CircularProgress size={20} sx={{ mr: 1 }} />{' '}
-                        Chargement...
-                      </MenuItem>
-                    ) : (
-                      roles.map((role) => (
-                        <MenuItem key={role.id} value={role.id}>
-                          <Box
-                            sx={{
-                              width: 12,
-                              height: 12,
-                              borderRadius: '50%',
-                              bgcolor: role.color,
-                              mr: 1,
-                            }}
-                          />
-                          {role.name}
-                        </MenuItem>
-                      ))
-                    )}
-                  </TextField>
-                </Grid>
-                <Grid size={{ xs: 12, sm: 6 }}>
-                  <TextField
-                    fullWidth
-                    select
-                    size="small"
-                    label="Sélectionner un membre"
-                    disabled={!selectedRoleId || loadingMembers}
-                    onChange={(e) => {
-                      const member = discordMembers.find(
-                        (m) => m.id === e.target.value,
-                      );
-                      if (member) handleSelectDiscordMember(member);
-                    }}
-                  >
-                    {loadingMembers ? (
-                      <MenuItem disabled>
-                        <CircularProgress size={20} sx={{ mr: 1 }} />{' '}
-                        Chargement...
-                      </MenuItem>
-                    ) : (
-                      discordMembers.map((member) => (
-                        <MenuItem key={member.id} value={member.id}>
-                          <Avatar
-                            src={member.avatar || undefined}
-                            sx={{ width: 20, height: 20, mr: 1 }}
-                          />
-                          {member.displayName}
-                        </MenuItem>
-                      ))
-                    )}
-                  </TextField>
-                </Grid>
-              </Grid>
-            </Box>
-          </Grid>
-        )}
-
-        <Grid size={{ xs: 12 }}>
-          <Divider />
-        </Grid>
-
         <Grid size={{ xs: 12, sm: 6 }}>
           <TextField
             fullWidth

@@ -5,10 +5,6 @@ import { promisify } from 'node:util';
 import { revalidatePath } from 'next/cache';
 import { headers } from 'next/headers';
 import { auth } from '@/lib/auth';
-import {
-  getMembersByRole as getBotMembersByRole,
-  getDiscordRoles as getBotRoles,
-} from '@/lib/bot';
 import { prisma } from '@/lib/prisma';
 
 const execAsync = promisify(exec);
@@ -110,14 +106,4 @@ export async function syncStaffFromDiscord() {
     console.error('[SyncStaff] Execution failed:', error);
     throw new Error('Failed to run sync script');
   }
-}
-
-export async function getDiscordRoles() {
-  await checkAdmin();
-  return getBotRoles();
-}
-
-export async function getMembersByRole(roleId: string) {
-  await checkAdmin();
-  return getBotMembersByRole(roleId);
 }

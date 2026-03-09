@@ -115,19 +115,6 @@ const nextConfig: NextConfig = {
     ];
   },
 
-  async rewrites() {
-    const botUrl = process.env.BOT_API_URL || "http://localhost:3001";
-    return [
-      {
-        source: "/api/bot/socket/:path*",
-        destination: `${botUrl}/socket.io/:path*`,
-      },
-      {
-        source: "/api/bot/:path*",
-        destination: `${botUrl}/api/:path*`,
-      },
-    ];
-  },
 };
 
 export default nextConfig;

@@ -1,4 +1,3 @@
-import { getBotStatus } from '@/lib/bot';
 import { prisma } from '@/lib/prisma';
 import { DiscordRoleMapping, type RoleType } from '@/lib/role-colors';
 import type { BotMember } from '@/types';
@@ -25,7 +24,6 @@ export async function getDiscordStats(): Promise<DiscordStats> {
   let memberCount = 0;
 
   try {
-    // 1. Fetch Invite API for accurate server name and fallback counts
     const inviteRes = await fetch(DISCORD_INVITE_URL, {
       next: { revalidate: 60 },
     });
@@ -34,18 +32,6 @@ export async function getDiscordStats(): Promise<DiscordStats> {
       serverName = inviteData.guild?.name || fallbackName;
       onlineCount = inviteData.approximate_presence_count || 0;
       memberCount = inviteData.approximate_member_count || 0;
-    }
-
-    // 2. Try internal bot API for potentially more accurate realtime counts
-    // (Only if available, avoiding critical failure if bot is ratelimited)
-    try {
-      const status = await getBotStatus();
-      if (status && status.memberCount > 0) {
-        onlineCount = status.onlineCount;
-        memberCount = status.memberCount;
-      }
-    } catch {
-      // Ignore bot status error
     }
   } catch (error) {
     console.error('Failed to fetch Discord stats:', error);

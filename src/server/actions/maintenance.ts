@@ -1,19 +1,9 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { dispatchBotAction } from '@/lib/bot';
 import { prisma } from '@/lib/prisma';
 import { ChallongeScraper } from '@/lib/scrapers/challonge-scraper';
 import { recalculateRankings } from './ranking';
-
-const POINT_ROLES = [
-  { threshold: 40000, id: '1332498533504520224' },
-  { threshold: 30000, id: '1332498472817131530' },
-  { threshold: 20000, id: '1332498407457161236' },
-  { threshold: 15000, id: '1332498580665143306' },
-  { threshold: 10000, id: '1332498339744321536' },
-  { threshold: 1000, id: '1332498240712736851' },
-];
 
 function normalizeName(s: string | null | undefined): string {
   if (!s) return '';
@@ -374,55 +364,6 @@ export async function actionUpdateRankingConfig(
       },
     });
     return { success: true, message: 'Barème mis à jour.' };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : String(error),
-    };
-  }
-}
-
-// 7. Sync Ranking Roles
-export async function actionSyncRankingRoles() {
-  try {
-    const profiles = await prisma.profile.findMany({
-      where: { user: { discordId: { not: null } } },
-      include: { user: true },
-    });
-
-    let updates = 0;
-    for (const profile of profiles) {
-      const discordId = profile.user.discordId;
-      if (!discordId) continue;
-
-      const points = profile.rankingPoints;
-      const correctRole = POINT_ROLES.find((r) => points >= r.threshold);
-
-      const userRoles = (profile.user.roles as string[]) || [];
-
-      if (correctRole && !userRoles.some((ur) => ur === correctRole.id)) {
-        await dispatchBotAction('add_role', {
-          userId: discordId,
-          roleId: correctRole.id,
-        });
-        updates++;
-      }
-
-      for (const r of POINT_ROLES) {
-        if (r.id !== correctRole?.id && userRoles.some((ur) => ur === r.id)) {
-          await dispatchBotAction('remove_role', {
-            userId: discordId,
-            roleId: r.id,
-          });
-          updates++;
-        }
-      }
-    }
-
-    return {
-      success: true,
-      message: `${updates} rôles mis à jour sur Discord.`,
-    };
   } catch (error: unknown) {
     return {
       success: false,

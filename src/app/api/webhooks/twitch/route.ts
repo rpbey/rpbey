@@ -52,22 +52,7 @@ export async function POST(req: Request) {
     if (subscription.type === 'stream.online') {
       console.log(`Stream online event for ${event.broadcaster_user_name}`);
 
-      // Notify the bot
-      try {
-        const { getBotApiUrl, BOT_API_KEY } = await import('@/lib/bot-config');
-        const botApiUrl = getBotApiUrl();
-
-        await fetch(`${botApiUrl}/api/webhook/twitch`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-api-key': BOT_API_KEY,
-          },
-          body: JSON.stringify({ event }),
-        });
-      } catch (error) {
-        console.error('Failed to notify bot:', error);
-      }
+      console.log('Twitch stream online event received:', event);
     }
 
     return new NextResponse('OK', { status: 200 });

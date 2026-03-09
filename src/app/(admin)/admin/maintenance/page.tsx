@@ -6,7 +6,6 @@ import {
   DeleteSweep,
   Handyman,
   History,
-  Memory,
   Refresh,
   Storage,
   Update,
@@ -36,7 +35,6 @@ import {
   actionImportTournament,
   actionMergeDuplicates,
   actionRecalculateRankings,
-  actionSyncRankingRoles,
   actionTriggerSyncParts,
 } from '@/server/actions/maintenance';
 import { archiveCurrentSeason } from '@/server/actions/season';
@@ -121,15 +119,6 @@ export default function MaintenancePage() {
       icon: <DeleteSweep />,
       color: 'error',
       action: actionClearTournamentCache,
-    },
-    {
-      id: 'sync-roles',
-      title: 'Sync Rôles Discord',
-      description:
-        'Met à jour les rôles de points (10k, 20k, etc.) sur le serveur Discord de la RPB.',
-      icon: <Memory />,
-      color: 'secondary',
-      action: actionSyncRankingRoles,
     },
   ];
 
