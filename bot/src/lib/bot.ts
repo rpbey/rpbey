@@ -11,7 +11,7 @@ export const bot = new Client({
     'GuildPresences',
     'GuildVoiceStates',
   ],
-  // We will configure more options in index.ts or here
+  botGuilds: process.env.GUILD_ID ? [process.env.GUILD_ID] : undefined,
   silent: false,
   simpleCommand: {
     prefix: '!',

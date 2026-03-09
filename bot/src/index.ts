@@ -109,32 +109,19 @@ async function run() {
     try {
       const guildId = process.env.GUILD_ID || process.env.DISCORD_GUILD_ID;
 
-      // 1. Clear ALL global commands (to remove duplicates)
+      // Clear global commands to avoid duplicates
       await bot.clearApplicationCommands();
       logger.info('[Bot] Global commands cleared.');
 
       if (guildId) {
-        logger.info(`[Bot] Syncing commands ONLY for guild: ${guildId}`);
-
-        // 2. Register all commands to internal registry
-        await bot.initApplicationCommands();
-
-        const guild = await bot.guilds.fetch(guildId);
-        if (guild) {
-          // 3. Force update of guild commands
-          // discordx toJSON() returns ApplicationCommandData-compatible objects
-          await guild.commands.set(
-            bot.applicationCommands.map(
-              (c) => c.toJSON() as Parameters<typeof guild.commands.set>[0][0],
-            ),
-          );
-          logger.info(
-            `[Bot] Successfully synchronized ${bot.applicationCommands.length} commands to guild.`,
-          );
-        }
+        logger.info(`[Bot] Syncing commands for guild: ${guildId}`);
       }
+
+      // Register commands via discordx (handles guild registration automatically)
+      await bot.initApplicationCommands();
+
       logger.info(
-        `[Bot] Logged in as ${bot.user?.tag} and commands are ready.`,
+        `[Bot] Logged in as ${bot.user?.tag} — ${bot.applicationCommands.length} commands registered.`,
       );
     } catch (e) {
       logger.error('[Bot] Failed to init application commands:', e);
