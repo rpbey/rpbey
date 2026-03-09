@@ -31,7 +31,6 @@ services:
     environment:
       DATABASE_URL: postgresql://postgres:rpb_password@db:5432/rpb_dashboard
       NEXT_PUBLIC_APP_URL: https://rpbey.fr
-      BOT_API_URL: http://bot:3001
       NODE_ENV: production
     volumes:
       - ./public/uploads:/app/public/uploads
@@ -52,14 +51,17 @@ services:
       DATABASE_URL: postgresql://postgres:rpb_password@db:5432/rpb_dashboard
       RUN_BOT: "true"
       NODE_ENV: production
-      BOT_API_PORT: "3001"
     volumes:
       - ./data:/app/data
       - ./public/uploads:/app/public/uploads
+    healthcheck:
+      test: ["CMD", "node", "-e", "process.exit(0)"]
+      interval: 30s
+      timeout: 5s
+      start_period: 30s
+      retries: 3
     depends_on:
       db:
-        condition: service_healthy
-      dashboard:
         condition: service_healthy
     networks:
       - rpb-network
