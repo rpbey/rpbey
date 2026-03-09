@@ -27,18 +27,18 @@ import { Colors, RPB } from '../../lib/constants.js';
 @Discord()
 @SlashGroup({
   name: 'moderation',
-  description: 'Outils de modération et support',
+  description: 'Moderation and support tools',
   defaultMemberPermissions: PermissionFlagsBits.ModerateMembers,
 })
 @SlashGroup('moderation')
 @injectable()
 export class ModerationGroup {
-  @Slash({ name: 'effacer', description: 'Supprimer un nombre de messages' })
+  @Slash({ name: 'clear', description: 'Delete a number of messages' })
   @SlashGroup('moderation')
   async clear(
     @SlashOption({
-      name: 'nombre',
-      description: 'Nombre de messages (1-100)',
+      name: 'amount',
+      description: 'Number of messages (1-100)',
       required: true,
       type: ApplicationCommandOptionType.Integer,
       minValue: 1,
@@ -48,114 +48,114 @@ export class ModerationGroup {
     interaction: CommandInteraction,
   ) {
     const channel = interaction.channel as TextChannel;
-    if (!channel) return interaction.reply('❌ Uniquement en salon textuel.');
+    if (!channel) return interaction.reply('❌ Text channel only.');
     await channel.bulkDelete(amount);
     return interaction.reply({
-      content: `✅ **${amount}** messages supprimés.`,
+      content: `✅ **${amount}** messages deleted.`,
       ephemeral: true,
     });
   }
 
-  @Slash({ name: 'bannir', description: 'Bannir un membre du serveur' })
+  @Slash({ name: 'ban', description: 'Ban a member from the server' })
   @SlashGroup('moderation')
   async ban(
     @SlashOption({
-      name: 'cible',
-      description: 'Le membre à bannir',
+      name: 'target',
+      description: 'The member to ban',
       required: true,
       type: ApplicationCommandOptionType.User,
     })
     target: User,
     @SlashOption({
-      name: 'raison',
-      description: 'Raison du bannissement',
+      name: 'reason',
+      description: 'Reason for the ban',
       required: false,
       type: ApplicationCommandOptionType.String,
     })
-    reason: string = 'Aucune raison spécifiée',
+    reason: string = 'No reason specified',
     interaction: CommandInteraction,
   ) {
     const member = interaction.guild?.members.cache.get(target.id);
     if (member && !member.bannable)
-      return interaction.reply('❌ Je ne peux pas bannir ce membre.');
+      return interaction.reply('❌ I cannot ban this member.');
     await interaction.guild?.members.ban(target, { reason });
     return interaction.reply(
-      `🔨 **${target.tag}** a été banni. Raison : ${reason}`,
+      `🔨 **${target.tag}** has been banned. Reason: ${reason}`,
     );
   }
 
-  @Slash({ name: 'expulser', description: 'Expulser un membre du serveur' })
+  @Slash({ name: 'kick', description: 'Kick a member from the server' })
   @SlashGroup('moderation')
   async kick(
     @SlashOption({
-      name: 'cible',
-      description: 'Le membre à expulser',
+      name: 'target',
+      description: 'The member to kick',
       required: true,
       type: ApplicationCommandOptionType.User,
     })
     target: User,
     @SlashOption({
-      name: 'raison',
-      description: "Raison de l'expulsion",
+      name: 'reason',
+      description: 'Reason for the kick',
       required: false,
       type: ApplicationCommandOptionType.String,
     })
-    reason: string = 'Aucune raison spécifiée',
+    reason: string = 'No reason specified',
     interaction: CommandInteraction,
   ) {
     const member = interaction.guild?.members.cache.get(target.id);
     if (!member || !member.kickable)
-      return interaction.reply('❌ Je ne peux pas expulser ce membre.');
+      return interaction.reply('❌ I cannot kick this member.');
     await member.kick(reason);
     return interaction.reply(
-      `👢 **${target.tag}** a été expulsé. Raison : ${reason}`,
+      `👢 **${target.tag}** has been kicked. Reason: ${reason}`,
     );
   }
 
   @Slash({
-    name: 'muet',
-    description: 'Mettre un membre en sourdine (Timeout)',
+    name: 'mute',
+    description: 'Timeout a member',
   })
   @SlashGroup('moderation')
   async mute(
     @SlashOption({
-      name: 'cible',
-      description: 'Le membre à rendre muet',
+      name: 'target',
+      description: 'The member to mute',
       required: true,
       type: ApplicationCommandOptionType.User,
     })
     target: User,
-    @SlashChoice({ name: '60 secondes', value: 60 * 1000 })
+    @SlashChoice({ name: '60 seconds', value: 60 * 1000 })
     @SlashChoice({ name: '5 minutes', value: 5 * 60 * 1000 })
     @SlashChoice({ name: '10 minutes', value: 10 * 60 * 1000 })
-    @SlashChoice({ name: '1 heure', value: 60 * 60 * 1000 })
-    @SlashChoice({ name: '1 jour', value: 24 * 60 * 60 * 1000 })
+    @SlashChoice({ name: '1 hour', value: 60 * 60 * 1000 })
+    @SlashChoice({ name: '1 day', value: 24 * 60 * 60 * 1000 })
     @SlashOption({
-      name: 'duree',
-      description: 'Durée du silence',
+      name: 'duration',
+      description: 'Mute duration',
       required: true,
       type: ApplicationCommandOptionType.Integer,
     })
     duration: number,
     @SlashOption({
-      name: 'raison',
-      description: 'Raison',
+      name: 'reason',
+      description: 'Reason',
       required: false,
       type: ApplicationCommandOptionType.String,
     })
-    reason: string = 'Aucune raison spécifiée',
+    reason: string = 'No reason specified',
     interaction: CommandInteraction,
   ) {
     const member = interaction.guild?.members.cache.get(target.id);
     if (!member || !member.moderatable)
-      return interaction.reply('❌ Je ne peux pas agir sur ce membre.');
+      return interaction.reply('❌ I cannot act on this member.');
     await member.timeout(duration, reason);
     return interaction.reply(
-      `🔇 **${target.tag}** est muet pour ${duration / 60000} min. Raison : ${reason}`,
+      `🔇 **${target.tag}** muted for ${duration / 60000} min. Reason: ${reason}`,
     );
   }
 
-  @Slash({ name: 'tickets', description: 'Déployer le panneau de support' })
+  @Slash({ name: 'tickets', description: 'Deploy the support panel' })
   @SlashGroup('moderation')
   async setupTickets(interaction: CommandInteraction) {
     const embed = new EmbedBuilder()
