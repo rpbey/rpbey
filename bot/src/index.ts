@@ -63,6 +63,32 @@ async function run() {
   if (!process.env.DISCORD_TOKEN)
     throw Error('Could not find DISCORD_TOKEN in environment');
 
+  // Check session availability before connecting to avoid burning sessions
+  try {
+    const { REST, Routes } = await import('discord.js');
+    const rest = new REST().setToken(process.env.DISCORD_TOKEN);
+    const gateway = (await rest.get(Routes.gatewayBot())) as {
+      session_start_limit: {
+        total: number;
+        remaining: number;
+        reset_after: number;
+      };
+    };
+    const { remaining, reset_after } = gateway.session_start_limit;
+    logger.info(
+      `[Bot] Sessions: ${remaining} remaining (resets in ${Math.round(reset_after / 60000)}min)`,
+    );
+    if (remaining < 1) {
+      const waitMs = reset_after + 5000;
+      logger.warn(
+        `[Bot] No sessions remaining. Waiting ${Math.round(waitMs / 60000)}min for reset...`,
+      );
+      await new Promise((r) => setTimeout(r, waitMs));
+    }
+  } catch (e) {
+    logger.warn('[Bot] Could not check session limit:', e);
+  }
+
   await bot.login(process.env.DISCORD_TOKEN);
 
   bot.once('ready', async () => {
@@ -178,7 +204,10 @@ process.on('unhandledRejection', (reason) => {
   logger.error('Unhandled Rejection:', reason);
 });
 
-void run().catch((err) => {
+void run().catch(async (err) => {
   logger.error('Fatal Startup Error:', err);
+  // Wait 60s before exiting to avoid rapid restart loops burning Discord sessions
+  logger.info('[Bot] Waiting 60s before exit to prevent session burn...');
+  await new Promise((r) => setTimeout(r, 60_000));
   process.exit(1);
 });
