@@ -7,17 +7,17 @@ import {
 } from 'discord.js';
 import DIG from 'discord-image-generation';
 import { Discord, Slash, SlashGroup, SlashOption } from 'discordx';
-import { injectable } from 'tsyringe';
+import { inject, injectable } from 'tsyringe';
 
 import { Colors } from '../../lib/constants.js';
-import type { PrismaService } from '../../lib/prisma.js';
+import { PrismaService } from '../../lib/prisma.js';
 
 @Discord()
 @SlashGroup({ name: 'jeu', description: 'Activités ludiques et Beyblade' })
 @SlashGroup('jeu')
 @injectable()
 export class GameGroup {
-  constructor(private prisma: PrismaService) {}
+  constructor(@inject(PrismaService) private prisma: PrismaService) {}
 
   @Slash({
     name: 'combat',

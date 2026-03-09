@@ -1,15 +1,15 @@
 import { Pagination } from '@discordx/pagination';
 import { type CommandInteraction, EmbedBuilder } from 'discord.js';
 import { Discord, Slash } from 'discordx';
-import { injectable } from 'tsyringe';
+import { inject, injectable } from 'tsyringe';
 
 import { Colors, RPB } from '../../lib/constants.js';
-import type { PrismaService } from '../../lib/prisma.js';
+import { PrismaService } from '../../lib/prisma.js';
 
 @Discord()
 @injectable()
 export class ListBeysCommand {
-  constructor(private prisma: PrismaService) {}
+  constructor(@inject(PrismaService) private prisma: PrismaService) {}
 
   @Slash({
     name: 'beys',

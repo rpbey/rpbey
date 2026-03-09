@@ -9,11 +9,11 @@ import {
   EmbedBuilder,
 } from 'discord.js';
 import { Discord, Slash, SlashChoice, SlashGroup, SlashOption } from 'discordx';
-import { injectable } from 'tsyringe';
+import { inject, injectable } from 'tsyringe';
 
 import { generateDeckCard } from '../../lib/canvas-utils.js';
 import { Colors } from '../../lib/constants.js';
-import type { PrismaService } from '../../lib/prisma.js';
+import { PrismaService } from '../../lib/prisma.js';
 
 const parseStat = (val: string | number | null | undefined): number => {
   if (typeof val === 'number') return val;
@@ -27,7 +27,7 @@ const parseStat = (val: string | number | null | undefined): number => {
 @SlashGroup('deck')
 @injectable()
 export class DeckCommand {
-  constructor(private prisma: PrismaService) {}
+  constructor(@inject(PrismaService) private prisma: PrismaService) {}
 
   static async autocomplete(
     interaction: AutocompleteInteraction,

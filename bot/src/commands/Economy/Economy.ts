@@ -3,16 +3,16 @@ import {
   type CommandInteraction,
 } from 'discord.js';
 import { Discord, Slash, SlashGroup, SlashOption } from 'discordx';
-import { injectable } from 'tsyringe';
+import { inject, injectable } from 'tsyringe';
 
-import type { PrismaService } from '../../lib/prisma.js';
+import { PrismaService } from '../../lib/prisma.js';
 
 @Discord()
 @SlashGroup({ name: 'economie', description: 'Système économique de la RPB' })
 @SlashGroup('economie')
 @injectable()
 export class EconomyCommand {
-  constructor(private prisma: PrismaService) {}
+  constructor(@inject(PrismaService) private prisma: PrismaService) {}
 
   @Slash({
     name: 'quotidien',

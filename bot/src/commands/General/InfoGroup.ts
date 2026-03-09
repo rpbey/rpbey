@@ -4,10 +4,10 @@ import {
   EmbedBuilder,
 } from 'discord.js';
 import { Discord, Slash, SlashGroup } from 'discordx';
-import { injectable } from 'tsyringe';
+import { inject, injectable } from 'tsyringe';
 
 import { Colors, RPB } from '../../lib/constants.js';
-import type { PrismaService } from '../../lib/prisma.js';
+import { PrismaService } from '../../lib/prisma.js';
 
 @Discord()
 @SlashGroup({
@@ -17,7 +17,7 @@ import type { PrismaService } from '../../lib/prisma.js';
 @SlashGroup('info')
 @injectable()
 export class InfoGroup {
-  constructor(private prisma: PrismaService) {}
+  constructor(@inject(PrismaService) private prisma: PrismaService) {}
 
   @Slash({
     name: 'bot',

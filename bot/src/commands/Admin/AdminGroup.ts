@@ -1,9 +1,9 @@
 import { type CommandInteraction, PermissionFlagsBits } from 'discord.js';
 import { Discord, Slash, SlashGroup } from 'discordx';
-import { injectable } from 'tsyringe';
+import { inject, injectable } from 'tsyringe';
 import { syncRankingRolesTask } from '../../cron/tasks/SyncRankingRoles.js';
 import { logger } from '../../lib/logger.js';
-import type { PrismaService } from '../../lib/prisma.js';
+import { PrismaService } from '../../lib/prisma.js';
 
 @Discord()
 @SlashGroup({
@@ -14,7 +14,7 @@ import type { PrismaService } from '../../lib/prisma.js';
 @SlashGroup('admin')
 @injectable()
 export class AdminGroup {
-  constructor(private prisma: PrismaService) {}
+  constructor(@inject(PrismaService) private prisma: PrismaService) {}
 
   @Slash({
     name: 'synchroniser-roles',

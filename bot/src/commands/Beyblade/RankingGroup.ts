@@ -7,14 +7,14 @@ import {
   type User,
 } from 'discord.js';
 import { Discord, Slash, SlashChoice, SlashGroup, SlashOption } from 'discordx';
-import { injectable } from 'tsyringe';
+import { inject, injectable } from 'tsyringe';
 
 import {
   generateLeaderboardCard,
   generateProfileCard,
 } from '../../lib/canvas-utils.js';
 import { Colors } from '../../lib/constants.js';
-import type { PrismaService } from '../../lib/prisma.js';
+import { PrismaService } from '../../lib/prisma.js';
 
 @Discord()
 @SlashGroup({
@@ -24,7 +24,7 @@ import type { PrismaService } from '../../lib/prisma.js';
 @SlashGroup('classement')
 @injectable()
 export class RankingGroup {
-  constructor(private prisma: PrismaService) {}
+  constructor(@inject(PrismaService) private prisma: PrismaService) {}
 
   @Slash({ description: "Voir le profil d'un blader", name: 'profil' })
   @SlashGroup('classement')

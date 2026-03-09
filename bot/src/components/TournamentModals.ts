@@ -1,15 +1,15 @@
 import { EmbedBuilder, type ModalSubmitInteraction } from 'discord.js';
 import { Discord, ModalComponent } from 'discordx';
-import { injectable } from 'tsyringe';
+import { inject, injectable } from 'tsyringe';
 
 import { Colors, RPB } from '../lib/constants.js';
 import { logger } from '../lib/logger.js';
-import type { PrismaService } from '../lib/prisma.js';
+import { PrismaService } from '../lib/prisma.js';
 
 @Discord()
 @injectable()
 export class TournamentModalHandler {
-  constructor(private prisma: PrismaService) {}
+  constructor(@inject(PrismaService) private prisma: PrismaService) {}
 
   @ModalComponent({ id: /^tournament-register-modal-/ })
   async handleTournamentModal(interaction: ModalSubmitInteraction) {
