@@ -56,8 +56,52 @@ export class WikiGroup {
   @Slash({ name: 'meta', description: 'Combos populaires du moment' })
   @SlashGroup('wiki')
   async meta(interaction: CommandInteraction) {
+    await interaction.deferReply();
+    try {
+      const dataPath = path.resolve(process.cwd(), '..', 'data/meta.json');
+      if (fs.existsSync(dataPath)) {
+        const meta = JSON.parse(fs.readFileSync(dataPath, 'utf-8')) as {
+          updatedAt?: string;
+          categories?: { name: string; emoji: string; combos: string[] }[];
+        };
+        const date = meta.updatedAt
+          ? new Date(meta.updatedAt).toLocaleDateString('fr-FR', {
+              month: 'long',
+              year: 'numeric',
+            })
+          : new Date().toLocaleDateString('fr-FR', {
+              month: 'long',
+              year: 'numeric',
+            });
+        const embed = new EmbedBuilder()
+          .setTitle(`📊 Méta Beyblade X (${date})`)
+          .setColor(0xfbbf24)
+          .setFooter({
+            text: 'Consultez rpbey.fr/meta pour plus de détails.',
+          });
+
+        if (meta.categories) {
+          for (const cat of meta.categories.slice(0, 6)) {
+            embed.addFields({
+              name: `${cat.emoji} ${cat.name}`,
+              value: cat.combos.map((c) => `• ${c}`).join('\n') || 'N/A',
+              inline: true,
+            });
+          }
+        }
+        return interaction.editReply({ embeds: [embed] });
+      }
+    } catch (err) {
+      console.error('Failed to load meta data:', err);
+    }
+
+    // Fallback to hardcoded meta
+    const currentMonth = new Date().toLocaleDateString('fr-FR', {
+      month: 'long',
+      year: 'numeric',
+    });
     const embed = new EmbedBuilder()
-      .setTitle('📊 Méta Beyblade X (Février 2026)')
+      .setTitle(`📊 Méta Beyblade X (${currentMonth})`)
       .setColor(0xfbbf24)
       .addFields(
         {
@@ -77,7 +121,7 @@ export class WikiGroup {
         },
       )
       .setFooter({ text: 'Consultez rpbey.fr/meta pour plus de détails.' });
-    return interaction.reply({ embeds: [embed] });
+    return interaction.editReply({ embeds: [embed] });
   }
 
   @Slash({ name: 'formats', description: 'Formats de tournoi officiels' })

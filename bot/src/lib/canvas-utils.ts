@@ -16,7 +16,9 @@ const fontPath = getAssetPath(
 );
 GlobalFonts.registerFromPath(fontPath, 'GoogleSans');
 
-async function safeLoadImage(url: string | null): Promise<any> {
+type CanvasImage = Awaited<ReturnType<typeof loadImage>>;
+
+async function safeLoadImage(url: string | null): Promise<CanvasImage | null> {
   if (!url) return null;
   try {
     let imageToLoad = url;
@@ -272,7 +274,22 @@ export async function generateProfileCard(data: ProfileCardData) {
   return canvas.toBuffer('image/png');
 }
 
-export async function generateComboCard(data: any) {
+export interface ComboCardData {
+  color: number;
+  name: string;
+  type: string;
+  blade: string;
+  ratchet: string;
+  bit: string;
+  bladeImageUrl: string | null;
+  attack: number;
+  defense: number;
+  stamina: number;
+  dash: number;
+  weight: number;
+}
+
+export async function generateComboCard(data: ComboCardData) {
   const width = 800;
   const height = 550;
   const canvas = createCanvas(width, height);
@@ -382,7 +399,17 @@ export async function generateComboCard(data: any) {
   return canvas.toBuffer('image/png');
 }
 
-export async function generateBattleCard(data: any) {
+export interface BattleCardData {
+  winnerName: string;
+  winnerAvatarUrl: string;
+  loserName: string;
+  loserAvatarUrl: string;
+  finishType: string;
+  finishMessage: string;
+  finishEmoji: string;
+}
+
+export async function generateBattleCard(data: BattleCardData) {
   const width = 1000;
   const height = 400;
   const canvas = createCanvas(width, height);
@@ -409,7 +436,7 @@ export async function generateBattleCard(data: any) {
   ctx.fillText('VS', width / 2, height / 2 + 30);
 
   const drawAvatar = (
-    avatar: any,
+    avatar: CanvasImage | null,
     x: number,
     y: number,
     r: number,
@@ -536,7 +563,15 @@ export async function generateDeckCard(data: DeckCardData) {
   return canvas.toBuffer('image/png');
 }
 
-export async function generateLeaderboardCard(entries: any[]) {
+export interface LeaderboardEntry {
+  rank: number;
+  name: string;
+  points: number;
+  winRate: string | number;
+  avatarUrl: string | null;
+}
+
+export async function generateLeaderboardCard(entries: LeaderboardEntry[]) {
   const width = 1000;
   const height = 1200;
   const canvas = createCanvas(width, height);

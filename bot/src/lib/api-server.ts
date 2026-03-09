@@ -212,7 +212,7 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse) {
         const commands = bot.applicationCommands.map((cmd) => ({
           name: cmd.name,
           description: cmd.description,
-          category: (cmd as any).group || 'Général',
+          category: 'group' in cmd ? String(cmd.group) : 'Général',
           enabled: true,
         }));
         return sendJSON(res, { commands });
@@ -296,7 +296,13 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse) {
         req.on('end', () => {
           void (async () => {
             try {
-              const data = JSON.parse(body) as any;
+              const data = JSON.parse(body) as {
+                event?: {
+                  type: string;
+                  broadcaster_user_name?: string;
+                  broadcaster_user_login?: string;
+                };
+              };
               if (data.event?.type === 'live') {
                 const channel = bot.channels.cache.get(RPB.Channels.Social);
                 if (channel?.isTextBased()) {

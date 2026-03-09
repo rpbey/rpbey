@@ -89,7 +89,11 @@ export class GameGroup {
     const target = targetUser ?? interaction.user;
     await interaction.deferReply();
     const avatar = target.displayAvatarURL({ extension: 'png', size: 512 });
-    const image = await new (DIG as any).Wanted().getImage(avatar, '€');
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- DIG lacks proper type exports
+    const image = await new (DIG as Record<string, any>).Wanted().getImage(
+      avatar,
+      '€',
+    );
     return interaction.editReply({
       files: [new AttachmentBuilder(image, { name: 'wanted.png' })],
     });

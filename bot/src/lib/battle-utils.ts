@@ -101,12 +101,35 @@ export function getRandomStats() {
   };
 }
 
+interface BattleStats {
+  attack: number;
+  defense: number;
+  stamina: number;
+  dash: number;
+  power: number;
+}
+
+import type { ImageURLOptions } from 'discord.js';
+
+interface BattleUser {
+  id: string;
+  displayName: string;
+  displayAvatarURL: (opts?: ImageURLOptions) => string;
+}
+
+interface BattleInteraction {
+  replied: boolean;
+  deferred: boolean;
+  editReply: (options: Record<string, unknown>) => Promise<unknown>;
+  reply: (options: Record<string, unknown>) => Promise<unknown>;
+}
+
 export async function runBattleSimulation(
-  interaction: any,
-  challenger: any,
-  opponent: any,
-  statsA: any,
-  statsB: any,
+  interaction: BattleInteraction,
+  challenger: BattleUser,
+  opponent: BattleUser,
+  statsA: BattleStats,
+  statsB: BattleStats,
 ) {
   // Determine winner based on Power Ratio + Luck
   const luckA = 0.8 + Math.random() * 0.4;

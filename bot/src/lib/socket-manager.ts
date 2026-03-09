@@ -1,7 +1,14 @@
+import type { Server as HttpServer } from 'node:http';
 import { Server, type Socket } from 'socket.io';
 
 import { bot } from './bot.js';
 import { logger } from './logger.js';
+
+interface AdminAction {
+  type: 'update_score' | 'reset_game';
+  points?: number;
+  label?: string;
+}
 
 export class SocketManager {
   private static instance: SocketManager;
@@ -18,7 +25,7 @@ export class SocketManager {
     return SocketManager.instance;
   }
 
-  public init(server: any) {
+  public init(server: HttpServer) {
     this.io = new Server(server, {
       cors: {
         origin: '*',
@@ -40,9 +47,9 @@ export class SocketManager {
         return;
       }
 
-      socket.on('admin_action', (data: any) => {
+      socket.on('admin_action', (data: AdminAction) => {
         if (data.type === 'update_score') {
-          this.p1 += data.points;
+          this.p1 += data.points ?? 0;
           this.io?.emit('game_score_update', {
             p1: this.p1,
             p2: this.p2,
@@ -74,7 +81,7 @@ export class SocketManager {
     logger.info('[Socket] Socket.IO initialized');
   }
 
-  public emit(event: string, data: any) {
+  public emit(event: string, data: unknown) {
     if (this.io) {
       this.io.emit(event, data);
     }

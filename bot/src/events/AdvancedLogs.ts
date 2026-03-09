@@ -35,7 +35,11 @@ export class AdvancedLogs {
       .setColor(Colors.Success)
       .setTimestamp();
 
-    await channel.send({ embeds: [embed] }).catch(() => null);
+    await channel
+      .send({ embeds: [embed] })
+      .catch((err) =>
+        logger.error('[AdvancedLogs] Failed to send role log:', err),
+      );
   }
 
   @On({ event: 'guildMemberBoost' as 'guildMemberUpdate' })
@@ -52,6 +56,8 @@ export class AdvancedLogs {
 
     await channel
       .send({ content: '🎉🚀🎉', embeds: [embed] })
-      .catch(() => null);
+      .catch((err) =>
+        logger.error('[AdvancedLogs] Failed to send boost log:', err),
+      );
   }
 }
