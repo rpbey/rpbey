@@ -1,16 +1,30 @@
 'use client';
 
 import {
+  Block,
+  Delete,
   Edit,
   Search,
   Send as SendIcon,
   Visibility,
 } from '@mui/icons-material';
+import Alert from '@mui/material/Alert';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import Chip from '@mui/material/Chip';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import FormControl from '@mui/material/FormControl';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import InputAdornment from '@mui/material/InputAdornment';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import Switch from '@mui/material/Switch';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import {
@@ -25,20 +39,20 @@ import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 import { useDebounce } from '@/hooks/use-debounce';
 import { formatDateShort } from '@/lib/utils';
-import { getUsers } from './actions';
+import { deleteUser, getUsers, updateUser } from './actions';
 
 const roleColors: Record<string, 'error' | 'warning' | 'info' | 'default'> = {
   admin: 'error',
-  staff: 'warning',
-  mod: 'info',
+  moderator: 'warning',
+  staff: 'info',
   user: 'default',
 };
 
+type UserRow = User & { _count: { tournaments: number } };
+
 export default function AdminUsersPage() {
   const router = useRouter();
-  const [users, setUsers] = useState<
-    (User & { _count: { tournaments: number } })[]
-  >([]);
+  const [users, setUsers] = useState<UserRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
@@ -46,6 +60,19 @@ export default function AdminUsersPage() {
     pageSize: 10,
   });
   const [total, setTotal] = useState(0);
+
+  // Edit dialog state
+  const [editUser, setEditUser] = useState<UserRow | null>(null);
+  const [editName, setEditName] = useState('');
+  const [editRole, setEditRole] = useState('user');
+  const [editBanned, setEditBanned] = useState(false);
+  const [editBanReason, setEditBanReason] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
+
+  // Delete confirmation
+  const [deleteTarget, setDeleteTarget] = useState<UserRow | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   const debouncedSearch = useDebounce(search, 500);
 
@@ -59,8 +86,8 @@ export default function AdminUsersPage() {
       );
       setUsers(data);
       setTotal(totalCount);
-    } catch (error) {
-      console.error('Failed to fetch users:', error);
+    } catch (err) {
+      console.error('Failed to fetch users:', err);
     } finally {
       setLoading(false);
     }
@@ -69,6 +96,50 @@ export default function AdminUsersPage() {
   useEffect(() => {
     fetchUsers();
   }, [fetchUsers]);
+
+  const openEditDialog = (user: UserRow) => {
+    setEditUser(user);
+    setEditName(user.name || '');
+    setEditRole(user.role || 'user');
+    setEditBanned(user.banned || false);
+    setEditBanReason(user.banReason || '');
+    setError('');
+  };
+
+  const handleSave = async () => {
+    if (!editUser) return;
+    setSaving(true);
+    setError('');
+    try {
+      await updateUser(editUser.id, {
+        name: editName,
+        role: editRole,
+        banned: editBanned,
+        banReason: editBanned ? editBanReason : undefined,
+      });
+      setEditUser(null);
+      fetchUsers();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erreur inconnue');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
+    setDeleting(true);
+    try {
+      await deleteUser(deleteTarget.id);
+      setDeleteTarget(null);
+      fetchUsers();
+    } catch (err) {
+      console.error('Failed to delete user:', err);
+      alert('Impossible de supprimer cet utilisateur.');
+    } finally {
+      setDeleting(false);
+    }
+  };
 
   const columns: GridColDef[] = [
     {
@@ -85,9 +156,19 @@ export default function AdminUsersPage() {
           >
             {params.row.name?.charAt(0)}
           </Avatar>
-          <Typography fontWeight="bold" variant="body2">
-            {params.row.name || 'Anonyme'}
-          </Typography>
+          <Box>
+            <Typography fontWeight="bold" variant="body2">
+              {params.row.name || 'Anonyme'}
+            </Typography>
+            {params.row.banned && (
+              <Chip
+                label="Banni"
+                color="error"
+                size="small"
+                sx={{ height: 18, fontSize: '0.65rem' }}
+              />
+            )}
+          </Box>
         </Box>
       ),
     },
@@ -121,12 +202,25 @@ export default function AdminUsersPage() {
       field: 'actions',
       type: 'actions',
       headerName: 'Actions',
-      width: 120,
+      width: 150,
       getActions: (params) => [
+        <GridActionsCellItem
+          key="view"
+          icon={<Visibility />}
+          label="Voir le profil"
+          onClick={() => router.push(`/profile/${params.id}`)}
+        />,
+        <GridActionsCellItem
+          key="edit"
+          icon={<Edit />}
+          label="Éditer"
+          onClick={() => openEditDialog(params.row as UserRow)}
+        />,
         <GridActionsCellItem
           key="dm"
           icon={<SendIcon />}
           label="Envoyer un DM"
+          showInMenu
           onClick={() => {
             const discordId = (params.row as User).discordId;
             if (discordId) {
@@ -137,17 +231,23 @@ export default function AdminUsersPage() {
           }}
         />,
         <GridActionsCellItem
-          key="view"
-          icon={<Visibility />}
-          label="Voir le profil"
-          onClick={() => router.push(`/dashboard/profile/${params.id}`)}
+          key="ban"
+          icon={<Block />}
+          label={(params.row as UserRow).banned ? 'Débannir' : 'Bannir'}
+          showInMenu
+          onClick={() => {
+            const user = params.row as UserRow;
+            openEditDialog(user);
+            // Pre-toggle ban state
+            setEditBanned(!user.banned);
+          }}
         />,
         <GridActionsCellItem
-          key="edit"
-          icon={<Edit />}
-          label="Éditer"
+          key="delete"
+          icon={<Delete />}
+          label="Supprimer"
           showInMenu
-          disabled // Action not implemented yet
+          onClick={() => setDeleteTarget(params.row as UserRow)}
         />,
       ],
     },
@@ -212,6 +312,133 @@ export default function AdminUsersPage() {
           }}
         />
       </Card>
+
+      {/* Edit User Dialog */}
+      <Dialog
+        open={!!editUser}
+        onClose={() => setEditUser(null)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle sx={{ fontWeight: 'bold' }}>
+          Éditer l&apos;utilisateur
+        </DialogTitle>
+        <DialogContent>
+          {error && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {error}
+            </Alert>
+          )}
+
+          <Box
+            sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3, mt: 1 }}
+          >
+            <Avatar
+              src={editUser?.image || undefined}
+              sx={{ width: 48, height: 48 }}
+            >
+              {editUser?.name?.charAt(0)}
+            </Avatar>
+            <Box>
+              <Typography variant="body2" color="text.secondary">
+                {editUser?.email}
+              </Typography>
+              {editUser?.discordTag && (
+                <Typography variant="caption" color="text.disabled">
+                  Discord : {editUser.discordTag}
+                </Typography>
+              )}
+            </Box>
+          </Box>
+
+          <TextField
+            fullWidth
+            label="Nom"
+            value={editName}
+            onChange={(e) => setEditName(e.target.value)}
+            sx={{ mb: 2 }}
+          />
+
+          <FormControl fullWidth sx={{ mb: 2 }}>
+            <InputLabel>Rôle</InputLabel>
+            <Select
+              value={editRole}
+              label="Rôle"
+              onChange={(e) => setEditRole(e.target.value)}
+            >
+              <MenuItem value="user">Utilisateur</MenuItem>
+              <MenuItem value="moderator">Modérateur</MenuItem>
+              <MenuItem value="staff">Staff</MenuItem>
+              <MenuItem value="admin">Administrateur</MenuItem>
+            </Select>
+          </FormControl>
+
+          <FormControlLabel
+            control={
+              <Switch
+                checked={editBanned}
+                onChange={(e) => setEditBanned(e.target.checked)}
+                color="error"
+              />
+            }
+            label="Banni"
+            sx={{ mb: 1 }}
+          />
+
+          {editBanned && (
+            <TextField
+              fullWidth
+              label="Raison du ban"
+              value={editBanReason}
+              onChange={(e) => setEditBanReason(e.target.value)}
+              multiline
+              rows={2}
+              placeholder="Raison du bannissement..."
+            />
+          )}
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button onClick={() => setEditUser(null)} disabled={saving}>
+            Annuler
+          </Button>
+          <Button variant="contained" onClick={handleSave} disabled={saving}>
+            {saving ? 'Enregistrement...' : 'Enregistrer'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        maxWidth="xs"
+        fullWidth
+      >
+        <DialogTitle sx={{ fontWeight: 'bold', color: 'error.main' }}>
+          Supprimer l&apos;utilisateur
+        </DialogTitle>
+        <DialogContent>
+          <Typography>
+            Êtes-vous sûr de vouloir supprimer{' '}
+            <strong>{deleteTarget?.name || deleteTarget?.email}</strong> ? Cette
+            action est irréversible et supprimera toutes les données associées
+            (profil, decks, participations aux tournois).
+          </Typography>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button onClick={() => setDeleteTarget(null)} disabled={deleting}>
+            Annuler
+          </Button>
+          <Button
+            variant="contained"
+            color="error"
+            onClick={handleDelete}
+            disabled={deleting}
+          >
+            {deleting ? 'Suppression...' : 'Supprimer'}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }
