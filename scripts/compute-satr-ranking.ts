@@ -11,7 +11,7 @@ import { join } from 'node:path';
 // Season config: which BBT numbers belong to each season
 const SEASON_CONFIG: Record<number, number[]> = {
   1: [12, 13, 14, 15, 16, 17, 18, 19, 20, 21],
-  2: [22],
+  2: [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22],
 };
 
 interface TournamentMatch {
