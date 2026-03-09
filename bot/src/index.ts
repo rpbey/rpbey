@@ -7,7 +7,6 @@ import { PermissionsBitField } from 'discord.js';
 import { Player } from 'discord-player';
 import { DIService } from 'discordx';
 import { container } from 'tsyringe';
-
 import { bot } from './lib/bot.js';
 import { logger } from './lib/logger.js';
 import { prisma } from './lib/prisma.js';
@@ -54,9 +53,9 @@ async function run() {
   // Config DI
   DIService.engine = tsyringeDependencyRegistryEngine.setInjector(container);
 
-  // Import Commands/Events
+  // Import Commands/Events/Components
   await importx(
-    `${dirname(import.meta.url)}/{events,commands,interaction-handlers}/**/*.{ts,js}`,
+    `${dirname(import.meta.url)}/{events,commands,components}/**/*.{ts,js}`,
   );
 
   // Login
@@ -123,6 +122,10 @@ async function run() {
       logger.info(
         `[Bot] Logged in as ${bot.user?.tag} — ${bot.applicationCommands.length} commands registered.`,
       );
+
+      // Start scheduled tasks
+      const { setupCronJobs } = await import('./cron/index.js');
+      setupCronJobs();
     } catch (e) {
       logger.error('[Bot] Failed to init application commands:', e);
     }
