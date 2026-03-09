@@ -49,6 +49,14 @@ export interface BuilderState {
   savedDecks: DeckSummary[];
   loadingDecks: boolean;
   mobileTab: 'catalog' | 'deck';
+  history: Omit<
+    BuilderState,
+    'history' | 'future' | 'savedDecks' | 'loadingDecks'
+  >[];
+  future: Omit<
+    BuilderState,
+    'history' | 'future' | 'savedDecks' | 'loadingDecks'
+  >[];
 }
 
 // --- Actions ---
@@ -67,7 +75,9 @@ export type BuilderAction =
   | { type: 'SET_LOADING_DECKS'; loading: boolean }
   | { type: 'DELETE_DECK'; deckId: string }
   | { type: 'SET_MOBILE_TAB'; tab: 'catalog' | 'deck' }
-  | { type: 'RESTORE_DRAFT'; draft: Partial<BuilderState> };
+  | { type: 'RESTORE_DRAFT'; draft: Partial<BuilderState> }
+  | { type: 'UNDO' }
+  | { type: 'REDO' };
 
 export interface LoadDeckPayload {
   id: string;
@@ -146,6 +156,33 @@ function stepToPartType(step: BuilderStep): string {
   return step; // Part.type matches the step name
 }
 
+// --- History Helper ---
+const HISTORY_EXCLUDE_KEYS = [
+  'history',
+  'future',
+  'savedDecks',
+  'loadingDecks',
+] as const;
+
+function omitHistoryKeys(
+  state: BuilderState,
+): Omit<BuilderState, (typeof HISTORY_EXCLUDE_KEYS)[number]> {
+  return Object.fromEntries(
+    Object.entries(state).filter(
+      ([k]) => !(HISTORY_EXCLUDE_KEYS as readonly string[]).includes(k),
+    ),
+  ) as Omit<BuilderState, (typeof HISTORY_EXCLUDE_KEYS)[number]>;
+}
+
+function pushHistory(state: BuilderState): BuilderState {
+  const snapshot = omitHistoryKeys(state);
+  return {
+    ...state,
+    history: [snapshot, ...state.history].slice(0, 50), // Limit history to 50 steps
+    future: [], // Clear future on new action
+  };
+}
+
 // --- Initial State ---
 
 export const initialState: BuilderState = {
@@ -158,6 +195,8 @@ export const initialState: BuilderState = {
   savedDecks: [],
   loadingDecks: false,
   mobileTab: 'catalog',
+  history: [],
+  future: [],
 };
 
 // --- Reducer ---
@@ -167,7 +206,32 @@ export function builderReducer(
   action: BuilderAction,
 ): BuilderState {
   switch (action.type) {
+    case 'UNDO': {
+      if (state.history.length === 0) return state;
+      const [previous, ...remainingHistory] = state.history;
+      const current = omitHistoryKeys(state);
+      return {
+        ...state,
+        ...previous,
+        history: remainingHistory,
+        future: [current, ...state.future],
+      };
+    }
+
+    case 'REDO': {
+      if (state.future.length === 0) return state;
+      const [next, ...remainingFuture] = state.future;
+      const current = omitHistoryKeys(state);
+      return {
+        ...state,
+        ...next,
+        history: [current, ...state.history],
+        future: remainingFuture,
+      };
+    }
+
     case 'SET_PART': {
+      const nextState = pushHistory(state);
       const newBeys: [BeySlot, BeySlot, BeySlot] = [
         { ...state.beys[0] },
         { ...state.beys[1] },
@@ -227,7 +291,7 @@ export function builderReducer(
       }
 
       return {
-        ...state,
+        ...nextState,
         beys: newBeys,
         activeSlotIndex: nextSlotIndex,
         activeStep: nextStep,
@@ -235,6 +299,7 @@ export function builderReducer(
     }
 
     case 'REMOVE_PART': {
+      const nextState = pushHistory(state);
       const newBeys: [BeySlot, BeySlot, BeySlot] = [
         { ...state.beys[0] },
         { ...state.beys[1] },
@@ -256,7 +321,7 @@ export function builderReducer(
         };
       }
       return {
-        ...state,
+        ...nextState,
         beys: newBeys,
         activeSlotIndex: action.slotIndex,
         activeStep: action.partType,
@@ -283,6 +348,7 @@ export function builderReducer(
       return { ...state, isActive: action.isActive };
 
     case 'SET_NICKNAME': {
+      const nextState = pushHistory(state);
       const newBeys: [BeySlot, BeySlot, BeySlot] = [
         { ...state.beys[0] },
         { ...state.beys[1] },
@@ -293,10 +359,11 @@ export function builderReducer(
         ...newBeys[nnIdx],
         nickname: action.nickname,
       };
-      return { ...state, beys: newBeys };
+      return { ...nextState, beys: newBeys };
     }
 
     case 'LOAD_DECK': {
+      const nextState = pushHistory(state);
       const newBeys = createEmptyBeys();
       action.deck.beys.forEach((bey, i) => {
         if (i < 3) {
@@ -318,7 +385,7 @@ export function builderReducer(
         | -1;
       const ldIdx = (firstIncomplete !== -1 ? firstIncomplete : 0) as 0 | 1 | 2;
       return {
-        ...state,
+        ...nextState,
         deckId: action.deck.id,
         deckName: action.deck.name,
         isActive: action.deck.isActive,
@@ -330,7 +397,7 @@ export function builderReducer(
 
     case 'NEW_DECK':
       return {
-        ...state,
+        ...pushHistory(state),
         deckId: null,
         deckName: '',
         isActive: false,
@@ -439,6 +506,26 @@ export function clearDraft() {
   }
 }
 
+// --- URL Sharing Helper ---
+function encodeState(state: BuilderState): string {
+  const data = {
+    n: state.deckName,
+    b: state.beys.map((s) => ({
+      b: s.blade?.externalId,
+      o: s.overBlade?.externalId,
+      r: s.ratchet?.externalId,
+      t: s.bit?.externalId,
+      l: s.lockChip?.externalId,
+      a: s.assistBlade?.externalId,
+    })),
+  };
+  try {
+    return btoa(JSON.stringify(data));
+  } catch {
+    return '';
+  }
+}
+
 // --- Context ---
 
 interface BuilderContextValue {
@@ -446,6 +533,9 @@ interface BuilderContextValue {
   dispatch: Dispatch<BuilderAction>;
   usedPartIds: Set<string>;
   usedPartNames: Set<string>;
+  canUndo: boolean;
+  canRedo: boolean;
+  shareUrl: string;
 }
 
 const BuilderContext = createContext<BuilderContextValue | null>(null);
@@ -453,7 +543,6 @@ const BuilderContext = createContext<BuilderContextValue | null>(null);
 export function BuilderProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(builderReducer, initialState);
   const hasRestoredDraft = useRef(false);
-
   // Restore draft from localStorage on client mount (avoids SSR mismatch)
   useEffect(() => {
     if (hasRestoredDraft.current) return;
@@ -462,6 +551,44 @@ export function BuilderProvider({ children }: { children: ReactNode }) {
     if (draft) {
       dispatch({ type: 'RESTORE_DRAFT', draft });
     }
+  }, []);
+
+  // Keyboard Shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (
+        e.target instanceof HTMLInputElement ||
+        e.target instanceof HTMLTextAreaElement
+      )
+        return;
+
+      const key = e.key.toLowerCase();
+
+      if (e.ctrlKey || e.metaKey) {
+        if (key === 'z') {
+          if (e.shiftKey) dispatch({ type: 'REDO' });
+          else dispatch({ type: 'UNDO' });
+          e.preventDefault();
+        } else if (key === 'y') {
+          dispatch({ type: 'REDO' });
+          e.preventDefault();
+        }
+      }
+
+      if (['1', '2', '3'].includes(e.key)) {
+        dispatch({
+          type: 'SET_ACTIVE_SLOT',
+          slotIndex: parseInt(e.key, 10) - 1,
+        });
+      }
+
+      if (key === 'b') dispatch({ type: 'SET_ACTIVE_STEP', step: 'BLADE' });
+      if (key === 'r') dispatch({ type: 'SET_ACTIVE_STEP', step: 'RATCHET' });
+      if (key === 't') dispatch({ type: 'SET_ACTIVE_STEP', step: 'BIT' });
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
   // Persist to localStorage on every relevant change (skip first render)
@@ -481,7 +608,8 @@ export function BuilderProvider({ children }: { children: ReactNode }) {
       if (bey.overBlade) ids.add(bey.overBlade.id);
       if (bey.ratchet) ids.add(bey.ratchet.id);
       if (bey.bit) ids.add(bey.bit.id);
-      if (bey.lockChip && bey.lockChip.name.toLowerCase().includes('metal')) ids.add(bey.lockChip.id);
+      if (bey.lockChip?.name.toLowerCase().includes('metal'))
+        ids.add(bey.lockChip.id);
       if (bey.assistBlade) ids.add(bey.assistBlade.id);
     }
     return ids;
@@ -495,15 +623,31 @@ export function BuilderProvider({ children }: { children: ReactNode }) {
       if (bey.overBlade) names.add(bey.overBlade.name);
       if (bey.ratchet) names.add(bey.ratchet.name);
       if (bey.bit) names.add(bey.bit.name);
-      if (bey.lockChip && bey.lockChip.name.toLowerCase().includes('metal')) names.add(bey.lockChip.name);
+      if (bey.lockChip?.name.toLowerCase().includes('metal'))
+        names.add(bey.lockChip.name);
       if (bey.assistBlade) names.add(bey.assistBlade.name);
     }
     return names;
   }, [state.beys]);
 
+  const shareUrl = useMemo(() => {
+    if (typeof window === 'undefined') return '';
+    const baseUrl = window.location.origin + window.location.pathname;
+    const code = encodeState(state);
+    return code ? `${baseUrl}?share=${code}` : baseUrl;
+  }, [state]);
+
   const value = useMemo(
-    () => ({ state, dispatch, usedPartIds, usedPartNames }),
-    [state, usedPartIds, usedPartNames],
+    () => ({
+      state,
+      dispatch,
+      usedPartIds,
+      usedPartNames,
+      canUndo: state.history.length > 0,
+      canRedo: state.future.length > 0,
+      shareUrl,
+    }),
+    [state, usedPartIds, usedPartNames, shareUrl],
   );
 
   return (

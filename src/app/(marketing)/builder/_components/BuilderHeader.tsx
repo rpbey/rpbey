@@ -1,7 +1,21 @@
 'use client';
 
-import { Add, Close, Construction } from '@mui/icons-material';
-import { Box, Chip, IconButton, Skeleton, Typography } from '@mui/material';
+import {
+  Add,
+  Close,
+  Construction,
+  Redo,
+  Share,
+  Undo,
+} from '@mui/icons-material';
+import {
+  Box,
+  Chip,
+  IconButton,
+  Skeleton,
+  Tooltip,
+  Typography,
+} from '@mui/material';
 import { alpha } from '@mui/material/styles';
 import { useCallback, useEffect } from 'react';
 import { toast } from 'sonner';
@@ -9,8 +23,14 @@ import { useSession } from '@/lib/auth-client';
 import { useBuilder } from './BuilderContext';
 
 export function BuilderHeader() {
-  const { state, dispatch } = useBuilder();
+  const { state, dispatch, canUndo, canRedo, shareUrl } = useBuilder();
   const { data: session } = useSession();
+
+  const handleShare = () => {
+    if (!shareUrl) return;
+    navigator.clipboard.writeText(shareUrl);
+    toast.success('Lien de partage copié !');
+  };
 
   // Load saved decks on mount if authenticated
   useEffect(() => {
@@ -102,19 +122,60 @@ export function BuilderHeader() {
         alignItems: 'center',
         gap: 2,
         flexWrap: 'wrap',
-        mb: 1,
+        mb: 2,
       }}
     >
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mr: 'auto' }}>
-        <Construction sx={{ fontSize: 28, color: 'error.main' }} />
+        <Construction sx={{ fontSize: 32, color: 'error.main' }} />
         <Box>
-          <Typography variant="h5" fontWeight="900" lineHeight={1.2}>
+          <Typography variant="h5" fontWeight="900" lineHeight={1.1}>
             DECK BUILDER
           </Typography>
-          <Typography variant="caption" color="text.secondary">
-            Construis ton deck 3on3
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            fontWeight="bold"
+          >
+            CONFIGURATION 3ON3
           </Typography>
         </Box>
+      </Box>
+
+      {/* Tools: Undo, Redo, Share */}
+      <Box sx={{ display: 'flex', gap: 0.5, mr: 1 }}>
+        <Tooltip title="Annuler (Ctrl+Z)" arrow>
+          <span>
+            <IconButton
+              size="small"
+              onClick={() => dispatch({ type: 'UNDO' })}
+              disabled={!canUndo}
+              sx={{ bgcolor: alpha('#000', 0.03) }}
+            >
+              <Undo fontSize="small" />
+            </IconButton>
+          </span>
+        </Tooltip>
+        <Tooltip title="Rétablir (Ctrl+Y)" arrow>
+          <span>
+            <IconButton
+              size="small"
+              onClick={() => dispatch({ type: 'REDO' })}
+              disabled={!canRedo}
+              sx={{ bgcolor: alpha('#000', 0.03) }}
+            >
+              <Redo fontSize="small" />
+            </IconButton>
+          </span>
+        </Tooltip>
+        <Tooltip title="Partager le brouillon" arrow>
+          <IconButton
+            size="small"
+            onClick={handleShare}
+            sx={{ bgcolor: alpha('#000', 0.03), color: 'info.main' }}
+          >
+            <Share fontSize="small" />
+          </IconButton>
+        </Tooltip>
       </Box>
 
       <Box

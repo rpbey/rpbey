@@ -20,7 +20,10 @@ import {
 } from '@/server/actions/maintenance';
 
 export default function RankingConfigForm() {
-  const [config, setConfig] = useState<any>(null);
+  const [config, setConfig] = useState<Record<
+    string,
+    string | number | Date
+  > | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const { showToast } = useToast();
@@ -48,7 +51,7 @@ export default function RankingConfigForm() {
     setConfig({ ...config, [key]: val });
   };
 
-  if (loading) return <CircularProgress />;
+  if (loading || !config) return <CircularProgress />;
 
   return (
     <Card variant="outlined">

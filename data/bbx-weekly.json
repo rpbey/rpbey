@@ -1,114 +1,106 @@
 {
-  "scrapedAt": "2026-02-27T16:28:27.689Z",
+  "scrapedAt": "2026-03-09T00:49:36.160Z",
   "periods": {
     "2weeks": {
       "metadata": {
         "dataSource": "bbxweekly.com/2weeks",
-        "weekId": "2026-W07",
-        "startDate": "2026-02-06",
-        "endDate": "2026-02-19",
+        "weekId": "2026-W09",
+        "startDate": "2026-02-20",
+        "endDate": "2026-03-05",
         "eventsScanned": 91,
-        "partsAnalyzed": 2641
+        "partsAnalyzed": 2628
       },
       "categories": [
         {
           "category": "Lock Chip",
           "components": [
             {
-              "name": "Plastic Chip",
-              "score": 54,
+              "name": "Metal Chip",
+              "score": 59,
               "position_change": 0,
               "synergy": [
                 {
-                  "name": "3-60",
-                  "score": 80
-                },
-                {
                   "name": "Heavy",
-                  "score": 79
-                },
-                {
-                  "name": "Jolt",
-                  "score": 77
+                  "score": 85
                 },
                 {
                   "name": "Blast",
-                  "score": 75
-                },
-                {
-                  "name": "9-60",
-                  "score": 71
-                },
-                {
-                  "name": "Level",
-                  "score": 71
-                },
-                {
-                  "name": "Kick",
-                  "score": 64
+                  "score": 83
                 },
                 {
                   "name": "7-60",
-                  "score": 62
+                  "score": 81
+                },
+                {
+                  "name": "9-60",
+                  "score": 78
+                },
+                {
+                  "name": "Kick",
+                  "score": 74
                 },
                 {
                   "name": "Wheel",
-                  "score": 62
+                  "score": 73
                 },
                 {
-                  "name": "Flare",
-                  "score": 58
+                  "name": "Rush",
+                  "score": 70
+                },
+                {
+                  "name": "Level",
+                  "score": 67
+                },
+                {
+                  "name": "Taper",
+                  "score": 64
                 },
                 {
                   "name": "Low Rush",
                   "score": 57
+                },
+                {
+                  "name": "1-60",
+                  "score": 51
+                },
+                {
+                  "name": "3-60",
+                  "score": 44
                 }
               ]
             },
             {
-              "name": "Metal Chip",
-              "score": 52,
+              "name": "Plastic Chip",
+              "score": 44,
               "position_change": 0,
               "synergy": [
                 {
-                  "name": "Heavy",
-                  "score": 81
-                },
-                {
                   "name": "Blast",
-                  "score": 80
-                },
-                {
-                  "name": "Kick",
-                  "score": 79
-                },
-                {
-                  "name": "7-60",
-                  "score": 73
-                },
-                {
-                  "name": "Level",
-                  "score": 66
+                  "score": 71
                 },
                 {
                   "name": "3-60",
-                  "score": 64
+                  "score": 69
+                },
+                {
+                  "name": "Heavy",
+                  "score": 66
                 },
                 {
                   "name": "9-60",
-                  "score": 62
-                },
-                {
-                  "name": "Rush",
-                  "score": 59
+                  "score": 65
                 },
                 {
                   "name": "Low Rush",
-                  "score": 53
+                  "score": 62
                 },
                 {
-                  "name": "1-60",
-                  "score": 42
+                  "name": "Jolt",
+                  "score": 60
+                },
+                {
+                  "name": "Kick",
+                  "score": 55
                 }
               ]
             }
@@ -119,7 +111,7 @@
           "components": [
             {
               "name": "1-60",
-              "score": 100,
+              "score": 95,
               "position_change": 0,
               "synergy": [
                 {
@@ -128,55 +120,63 @@
                 },
                 {
                   "name": "Hexa",
-                  "score": 94
-                },
-                {
-                  "name": "Shark Scale",
-                  "score": 93
-                },
-                {
-                  "name": "Rush",
-                  "score": 80
-                },
-                {
-                  "name": "Free Ball",
-                  "score": 79
-                },
-                {
-                  "name": "Low Orb",
-                  "score": 77
-                },
-                {
-                  "name": "Low Rush",
-                  "score": 74
-                },
-                {
-                  "name": "Phoenix Wing",
-                  "score": 55
-                },
-                {
-                  "name": "Wyvern Hover",
-                  "score": 51
-                },
-                {
-                  "name": "Kick",
-                  "score": 50
+                  "score": 100
                 },
                 {
                   "name": "Aero Pegasus",
-                  "score": 49
+                  "score": 82
+                },
+                {
+                  "name": "Free Ball",
+                  "score": 80
+                },
+                {
+                  "name": "Low Rush",
+                  "score": 72
+                },
+                {
+                  "name": "Rush",
+                  "score": 69
+                },
+                {
+                  "name": "Shark Scale",
+                  "score": 67
+                },
+                {
+                  "name": "Phoenix Wing",
+                  "score": 63
+                },
+                {
+                  "name": "Jolt",
+                  "score": 60
+                },
+                {
+                  "name": "Kick",
+                  "score": 53
                 },
                 {
                   "name": "Heavy",
-                  "score": 47
+                  "score": 51
                 },
                 {
-                  "name": "Blast",
-                  "score": 46
+                  "name": "Low Orb",
+                  "score": 51
                 },
                 {
                   "name": "Metal Chip",
-                  "score": 42
+                  "score": 51
+                },
+                {
+                  "name": "Mummy Curse",
+                  "score": 51
+                },
+                {
+                  "name": "Wedge",
+                  "score": 45
+                },
+                {
+                  "name": "Wyvern Hover",
+                  "score": 32
                 }
               ]
             },
@@ -186,1880 +186,355 @@
               "position_change": 0,
               "synergy": [
                 {
-                  "name": "Wyvern Hover",
-                  "score": 84
-                },
-                {
-                  "name": "Golem Rock",
-                  "score": 77
+                  "name": "Hexa",
+                  "score": 94
                 },
                 {
                   "name": "Jolt",
-                  "score": 77
-                },
-                {
-                  "name": "Wedge",
-                  "score": 77
-                },
-                {
-                  "name": "Free Ball",
-                  "score": 76
-                },
-                {
-                  "name": "Rush",
-                  "score": 76
-                },
-                {
-                  "name": "Heavy",
-                  "score": 74
-                },
-                {
-                  "name": "Plastic Chip",
-                  "score": 71
+                  "score": 90
                 },
                 {
                   "name": "Blast",
-                  "score": 69
-                },
-                {
-                  "name": "Kick",
-                  "score": 67
-                },
-                {
-                  "name": "Hexa",
-                  "score": 66
-                },
-                {
-                  "name": "Shark Scale",
-                  "score": 65
-                },
-                {
-                  "name": "Elevate",
-                  "score": 64
+                  "score": 81
                 },
                 {
                   "name": "Metal Chip",
-                  "score": 62
+                  "score": 78
                 },
                 {
-                  "name": "Cobalt Dragoon",
-                  "score": 60
+                  "name": "Heavy",
+                  "score": 75
                 },
                 {
-                  "name": "Low Orb",
-                  "score": 60
-                },
-                {
-                  "name": "Silver Wolf",
-                  "score": 60
-                },
-                {
-                  "name": "Wizard Rod",
-                  "score": 58
-                },
-                {
-                  "name": "Phoenix Wing",
-                  "score": 57
+                  "name": "Kick",
+                  "score": 75
                 },
                 {
                   "name": "Level",
-                  "score": 49
+                  "score": 74
+                },
+                {
+                  "name": "Rush",
+                  "score": 74
+                },
+                {
+                  "name": "Cobalt Dragoon",
+                  "score": 73
+                },
+                {
+                  "name": "Silver Wolf",
+                  "score": 72
+                },
+                {
+                  "name": "Elevate",
+                  "score": 71
+                },
+                {
+                  "name": "Wyvern Hover",
+                  "score": 71
+                },
+                {
+                  "name": "Free Ball",
+                  "score": 69
+                },
+                {
+                  "name": "Wizard Rod",
+                  "score": 68
+                },
+                {
+                  "name": "Scorpio Spear",
+                  "score": 67
+                },
+                {
+                  "name": "Plastic Chip",
+                  "score": 65
+                },
+                {
+                  "name": "Phoenix Wing",
+                  "score": 62
+                },
+                {
+                  "name": "Shark Scale",
+                  "score": 56
                 },
                 {
                   "name": "Low Rush",
-                  "score": 39
+                  "score": 55
                 },
                 {
                   "name": "Ball",
-                  "score": 31
+                  "score": 51
+                },
+                {
+                  "name": "Wedge",
+                  "score": 51
+                },
+                {
+                  "name": "Low Orb",
+                  "score": 46
                 }
               ]
             },
             {
               "name": "3-60",
               "score": 64,
-              "position_change": 1,
+              "position_change": 0,
               "synergy": [
                 {
-                  "name": "Wizard Rod",
-                  "score": 92
-                },
-                {
-                  "name": "Plastic Chip",
-                  "score": 80
-                },
-                {
-                  "name": "Kick",
-                  "score": 77
-                },
-                {
-                  "name": "Level",
-                  "score": 73
+                  "name": "Free Ball",
+                  "score": 94
                 },
                 {
                   "name": "Low Rush",
-                  "score": 72
-                },
-                {
-                  "name": "Blast",
-                  "score": 72
-                },
-                {
-                  "name": "Heavy",
-                  "score": 70
+                  "score": 92
                 },
                 {
                   "name": "Shark Scale",
-                  "score": 66
-                },
-                {
-                  "name": "Metal Chip",
-                  "score": 64
+                  "score": 82
                 },
                 {
                   "name": "Rush",
-                  "score": 57
+                  "score": 77
                 },
                 {
-                  "name": "Wyvern Hover",
-                  "score": 57
-                },
-                {
-                  "name": "Free Ball",
-                  "score": 45
-                },
-                {
-                  "name": "Jolt",
-                  "score": 45
+                  "name": "Aero Pegasus",
+                  "score": 74
                 },
                 {
                   "name": "Phoenix Wing",
+                  "score": 72
+                },
+                {
+                  "name": "Plastic Chip",
+                  "score": 69
+                },
+                {
+                  "name": "Wyvern Hover",
+                  "score": 60
+                },
+                {
+                  "name": "Blast",
+                  "score": 58
+                },
+                {
+                  "name": "Level",
+                  "score": 56
+                },
+                {
+                  "name": "Heavy",
+                  "score": 51
+                },
+                {
+                  "name": "Hexa",
+                  "score": 51
+                },
+                {
+                  "name": "Wizard Rod",
+                  "score": 51
+                },
+                {
+                  "name": "Kick",
+                  "score": 49
+                },
+                {
+                  "name": "Metal Chip",
+                  "score": 44
+                }
+              ]
+            },
+            {
+              "name": "1-70",
+              "score": 58,
+              "position_change": 0,
+              "synergy": [
+                {
+                  "name": "Shark Scale",
+                  "score": 90
+                },
+                {
+                  "name": "Low Rush",
+                  "score": 76
+                },
+                {
+                  "name": "Jolt",
+                  "score": 66
+                },
+                {
+                  "name": "Hexa",
+                  "score": 54
+                },
+                {
+                  "name": "Rush",
+                  "score": 51
+                },
+                {
+                  "name": "Wizard Rod",
+                  "score": 49
+                },
+                {
+                  "name": "Kick",
+                  "score": 43
+                },
+                {
+                  "name": "Wyvern Hover",
                   "score": 34
                 }
               ]
             },
             {
               "name": "7-60",
-              "score": 57,
-              "position_change": 2,
+              "score": 54,
+              "position_change": 1,
               "synergy": [
                 {
-                  "name": "Wyvern Hover",
-                  "score": 82
+                  "name": "Shark Scale",
+                  "score": 100
                 },
                 {
-                  "name": "Meteor Dragoon",
-                  "score": 80
+                  "name": "Hexa",
+                  "score": 96
                 },
                 {
-                  "name": "Blast",
-                  "score": 80
-                },
-                {
-                  "name": "Kick",
-                  "score": 77
-                },
-                {
-                  "name": "Level",
-                  "score": 77
+                  "name": "Wizard Rod",
+                  "score": 96
                 },
                 {
                   "name": "Rush",
-                  "score": 77
+                  "score": 83
                 },
                 {
-                  "name": "Heavy",
-                  "score": 74
+                  "name": "Phoenix Wing",
+                  "score": 82
                 },
                 {
                   "name": "Metal Chip",
-                  "score": 73
+                  "score": 81
                 },
                 {
-                  "name": "Mummy Curse",
-                  "score": 69
-                },
-                {
-                  "name": "Wizard Rod",
-                  "score": 66
-                },
-                {
-                  "name": "Shark Scale",
-                  "score": 65
-                },
-                {
-                  "name": "Plastic Chip",
-                  "score": 62
-                },
-                {
-                  "name": "Low Rush",
-                  "score": 54
-                },
-                {
-                  "name": "Hexa",
-                  "score": 51
-                }
-              ]
-            },
-            {
-              "name": "1-70",
-              "score": 56,
-              "position_change": 0,
-              "synergy": [
-                {
-                  "name": "Shark Scale",
-                  "score": 82
-                },
-                {
-                  "name": "Low Rush",
-                  "score": 82
-                },
-                {
-                  "name": "Kick",
-                  "score": 64
-                },
-                {
-                  "name": "Hexa",
-                  "score": 63
-                },
-                {
-                  "name": "Wizard Rod",
-                  "score": 58
+                  "name": "Heavy",
+                  "score": 72
                 },
                 {
                   "name": "Wyvern Hover",
-                  "score": 48
+                  "score": 68
                 },
                 {
-                  "name": "Jolt",
-                  "score": 41
-                }
-              ]
-            },
-            {
-              "name": "5-60",
-              "score": 53,
-              "position_change": -3,
-              "synergy": [
-                {
-                  "name": "Wizard Rod",
-                  "score": 77
-                },
-                {
-                  "name": "Elevate",
+                  "name": "Blast",
                   "score": 64
                 },
                 {
-                  "name": "Cobalt Dragoon",
-                  "score": 62
+                  "name": "Low Rush",
+                  "score": 64
+                },
+                {
+                  "name": "Meteor Dragoon",
+                  "score": 53
+                },
+                {
+                  "name": "Aero Pegasus",
+                  "score": 51
                 },
                 {
                   "name": "Level",
-                  "score": 62
+                  "score": 48
                 }
               ]
             },
             {
               "name": "6-60",
-              "score": 48,
-              "position_change": 1,
-              "synergy": [
-                {
-                  "name": "Wizard Rod",
-                  "score": 100
-                },
-                {
-                  "name": "Hexa",
-                  "score": 100
-                }
-              ]
-            },
-            {
-              "name": "7-70",
-              "score": 47,
-              "position_change": 1,
-              "synergy": [
-                {
-                  "name": "Level",
-                  "score": 64
-                },
-                {
-                  "name": "Shark Scale",
-                  "score": 64
-                },
-                {
-                  "name": "Meteor Dragoon",
-                  "score": 63
-                }
-              ]
-            },
-            {
-              "name": "9-70",
-              "score": 46,
-              "position_change": -2,
-              "synergy": []
-            },
-            {
-              "name": "7-55",
-              "score": 42,
-              "position_change": 1,
-              "synergy": [
-                {
-                  "name": "Clock Mirage",
-                  "score": 63
-                }
-              ]
-            },
-            {
-              "name": "4-50",
-              "score": 37,
-              "position_change": -1,
-              "synergy": [
-                {
-                  "name": "Level",
-                  "score": 59
-                },
-                {
-                  "name": "Low Rush",
-                  "score": 57
-                },
-                {
-                  "name": "Shark Scale",
-                  "score": 55
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "category": "Blade",
-          "components": [
-            {
-              "name": "Shark Scale",
-              "score": 98,
-              "position_change": 0,
-              "synergy": [
-                {
-                  "name": "Low Rush",
-                  "score": 100
-                },
-                {
-                  "name": "Low Orb",
-                  "score": 99
-                },
-                {
-                  "name": "1-60",
-                  "score": 93
-                },
-                {
-                  "name": "1-70",
-                  "score": 82
-                },
-                {
-                  "name": "Rush",
-                  "score": 82
-                },
-                {
-                  "name": "Kick",
-                  "score": 73
-                },
-                {
-                  "name": "Free Ball",
-                  "score": 66
-                },
-                {
-                  "name": "3-60",
-                  "score": 66
-                },
-                {
-                  "name": "7-60",
-                  "score": 65
-                },
-                {
-                  "name": "9-60",
-                  "score": 65
-                },
-                {
-                  "name": "7-70",
-                  "score": 64
-                },
-                {
-                  "name": "Jolt",
-                  "score": 58
-                },
-                {
-                  "name": "4-50",
-                  "score": 55
-                },
-                {
-                  "name": "Level",
-                  "score": 53
-                }
-              ]
-            },
-            {
-              "name": "Wizard Rod",
-              "score": 87,
-              "position_change": 0,
-              "synergy": [
-                {
-                  "name": "6-60",
-                  "score": 100
-                },
-                {
-                  "name": "Hexa",
-                  "score": 100
-                },
-                {
-                  "name": "1-60",
-                  "score": 100
-                },
-                {
-                  "name": "3-60",
-                  "score": 92
-                },
-                {
-                  "name": "Free Ball",
-                  "score": 85
-                },
-                {
-                  "name": "5-60",
-                  "score": 77
-                },
-                {
-                  "name": "Low Orb",
-                  "score": 66
-                },
-                {
-                  "name": "7-60",
-                  "score": 66
-                },
-                {
-                  "name": "Kick",
-                  "score": 64
-                },
-                {
-                  "name": "1-70",
-                  "score": 58
-                },
-                {
-                  "name": "9-60",
-                  "score": 58
-                },
-                {
-                  "name": "Ball",
-                  "score": 57
-                },
-                {
-                  "name": "Low Rush",
-                  "score": 51
-                }
-              ]
-            },
-            {
-              "name": "Wyvern Hover",
-              "score": 59,
-              "position_change": 1,
-              "synergy": [
-                {
-                  "name": "9-60",
-                  "score": 84
-                },
-                {
-                  "name": "7-60",
-                  "score": 82
-                },
-                {
-                  "name": "Rush",
-                  "score": 77
-                },
-                {
-                  "name": "Kick",
-                  "score": 71
-                },
-                {
-                  "name": "Jolt",
-                  "score": 62
-                },
-                {
-                  "name": "3-60",
-                  "score": 57
-                },
-                {
-                  "name": "1-60",
-                  "score": 51
-                },
-                {
-                  "name": "1-70",
-                  "score": 48
-                }
-              ]
-            },
-            {
-              "name": "Blast",
-              "score": 57,
-              "position_change": 1,
-              "synergy": [
-                {
-                  "name": "Heavy",
-                  "score": 86
-                },
-                {
-                  "name": "7-60",
-                  "score": 80
-                },
-                {
-                  "name": "Metal Chip",
-                  "score": 80
-                },
-                {
-                  "name": "Kick",
-                  "score": 76
-                },
-                {
-                  "name": "Plastic Chip",
-                  "score": 75
-                },
-                {
-                  "name": "Level",
-                  "score": 75
-                },
-                {
-                  "name": "3-60",
-                  "score": 72
-                },
-                {
-                  "name": "9-60",
-                  "score": 69
-                },
-                {
-                  "name": "Wheel",
-                  "score": 66
-                },
-                {
-                  "name": "Rush",
-                  "score": 64
-                },
-                {
-                  "name": "Low Rush",
-                  "score": 59
-                },
-                {
-                  "name": "1-60",
-                  "score": 46
-                }
-              ]
-            },
-            {
-              "name": "Mummy Curse",
-              "score": 55,
-              "position_change": 1,
-              "synergy": [
-                {
-                  "name": "7-60",
-                  "score": 69
-                },
-                {
-                  "name": "Wedge",
-                  "score": 62
-                }
-              ]
-            },
-            {
-              "name": "Samurai Calibur",
-              "score": 49,
-              "position_change": "NEW",
-              "synergy": []
-            },
-            {
-              "name": "Meteor Dragoon",
-              "score": 48,
-              "position_change": 1,
-              "synergy": [
-                {
-                  "name": "7-60",
-                  "score": 80
-                },
-                {
-                  "name": "Level",
-                  "score": 67
-                },
-                {
-                  "name": "7-70",
-                  "score": 63
-                }
-              ]
-            },
-            {
-              "name": "Golem Rock",
-              "score": 48,
-              "position_change": -5,
-              "synergy": [
-                {
-                  "name": "9-60",
-                  "score": 77
-                }
-              ]
-            },
-            {
-              "name": "Clock Mirage",
-              "score": 44,
-              "position_change": 2,
-              "synergy": [
-                {
-                  "name": "7-55",
-                  "score": 63
-                },
-                {
-                  "name": "Under Needle",
-                  "score": 55
-                }
-              ]
-            },
-            {
-              "name": "Cobalt Dragoon",
-              "score": 43,
-              "position_change": -3,
-              "synergy": [
-                {
-                  "name": "Elevate",
-                  "score": 62
-                },
-                {
-                  "name": "5-60",
-                  "score": 62
-                },
-                {
-                  "name": "9-60",
-                  "score": 60
-                }
-              ]
-            },
-            {
-              "name": "Aero Pegasus",
-              "score": 40,
-              "position_change": -2,
-              "synergy": [
-                {
-                  "name": "Rush",
-                  "score": 69
-                },
-                {
-                  "name": "1-60",
-                  "score": 49
-                }
-              ]
-            },
-            {
-              "name": "Phoenix Wing",
-              "score": 39,
-              "position_change": 0,
-              "synergy": [
-                {
-                  "name": "Rush",
-                  "score": 59
-                },
-                {
-                  "name": "9-60",
-                  "score": 57
-                },
-                {
-                  "name": "1-60",
-                  "score": 55
-                },
-                {
-                  "name": "3-60",
-                  "score": 34
-                }
-              ]
-            },
-            {
-              "name": "Silver Wolf",
-              "score": 38,
-              "position_change": -3,
-              "synergy": [
-                {
-                  "name": "Hexa",
-                  "score": 71
-                },
-                {
-                  "name": "9-60",
-                  "score": 60
-                },
-                {
-                  "name": "Free Ball",
-                  "score": 39
-                }
-              ]
-            },
-            {
-              "name": "Knight Mail",
-              "score": 22,
-              "position_change": -1,
-              "synergy": [
-                {
-                  "name": "Rush",
-                  "score": 41
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "category": "Assist Blade",
-          "components": [
-            {
-              "name": "Heavy",
-              "score": 63,
-              "position_change": 0,
-              "synergy": [
-                {
-                  "name": "Blast",
-                  "score": 86
-                },
-                {
-                  "name": "Jolt",
-                  "score": 82
-                },
-                {
-                  "name": "Metal Chip",
-                  "score": 81
-                },
-                {
-                  "name": "Kick",
-                  "score": 81
-                },
-                {
-                  "name": "Plastic Chip",
-                  "score": 79
-                },
-                {
-                  "name": "7-60",
-                  "score": 74
-                },
-                {
-                  "name": "9-60",
-                  "score": 74
-                },
-                {
-                  "name": "3-60",
-                  "score": 70
-                },
-                {
-                  "name": "Level",
-                  "score": 69
-                },
-                {
-                  "name": "Eclipse",
-                  "score": 62
-                },
-                {
-                  "name": "Low Rush",
-                  "score": 59
-                },
-                {
-                  "name": "Rush",
-                  "score": 59
-                },
-                {
-                  "name": "1-60",
-                  "score": 47
-                }
-              ]
-            },
-            {
-              "name": "Wheel",
-              "score": 42,
-              "position_change": "NEW",
-              "synergy": [
-                {
-                  "name": "Blast",
-                  "score": 66
-                },
-                {
-                  "name": "Plastic Chip",
-                  "score": 62
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "category": "Bit",
-          "components": [
-            {
-              "name": "Low Rush",
-              "score": 76,
-              "position_change": 0,
-              "synergy": [
-                {
-                  "name": "Shark Scale",
-                  "score": 100
-                },
-                {
-                  "name": "1-70",
-                  "score": 82
-                },
-                {
-                  "name": "1-60",
-                  "score": 74
-                },
-                {
-                  "name": "3-60",
-                  "score": 72
-                },
-                {
-                  "name": "Blast",
-                  "score": 59
-                },
-                {
-                  "name": "Heavy",
-                  "score": 59
-                },
-                {
-                  "name": "4-50",
-                  "score": 57
-                },
-                {
-                  "name": "Plastic Chip",
-                  "score": 57
-                },
-                {
-                  "name": "7-60",
-                  "score": 54
-                },
-                {
-                  "name": "Metal Chip",
-                  "score": 53
-                },
-                {
-                  "name": "Wizard Rod",
-                  "score": 51
-                },
-                {
-                  "name": "9-60",
-                  "score": 39
-                }
-              ]
-            },
-            {
-              "name": "Hexa",
-              "score": 75,
-              "position_change": 0,
-              "synergy": [
-                {
-                  "name": "Wizard Rod",
-                  "score": 100
-                },
-                {
-                  "name": "6-60",
-                  "score": 100
-                },
-                {
-                  "name": "1-60",
-                  "score": 94
-                },
-                {
-                  "name": "Silver Wolf",
-                  "score": 71
-                },
-                {
-                  "name": "9-60",
-                  "score": 66
-                },
-                {
-                  "name": "1-70",
-                  "score": 63
-                },
-                {
-                  "name": "7-60",
-                  "score": 51
-                }
-              ]
-            },
-            {
-              "name": "Kick",
-              "score": 61,
-              "position_change": 0,
-              "synergy": [
-                {
-                  "name": "Heavy",
-                  "score": 81
-                },
-                {
-                  "name": "Metal Chip",
-                  "score": 79
-                },
-                {
-                  "name": "3-60",
-                  "score": 77
-                },
-                {
-                  "name": "7-60",
-                  "score": 77
-                },
-                {
-                  "name": "Blast",
-                  "score": 76
-                },
-                {
-                  "name": "Shark Scale",
-                  "score": 73
-                },
-                {
-                  "name": "Wyvern Hover",
-                  "score": 71
-                },
-                {
-                  "name": "9-60",
-                  "score": 67
-                },
-                {
-                  "name": "1-70",
-                  "score": 64
-                },
-                {
-                  "name": "Plastic Chip",
-                  "score": 64
-                },
-                {
-                  "name": "Wizard Rod",
-                  "score": 64
-                },
-                {
-                  "name": "1-60",
-                  "score": 50
-                }
-              ]
-            },
-            {
-              "name": "Rush",
-              "score": 57,
-              "position_change": 1,
-              "synergy": [
-                {
-                  "name": "Shark Scale",
-                  "score": 82
-                },
-                {
-                  "name": "1-60",
-                  "score": 80
-                },
-                {
-                  "name": "7-60",
-                  "score": 77
-                },
-                {
-                  "name": "Wyvern Hover",
-                  "score": 77
-                },
-                {
-                  "name": "9-60",
-                  "score": 76
-                },
-                {
-                  "name": "Aero Pegasus",
-                  "score": 69
-                },
-                {
-                  "name": "Blast",
-                  "score": 64
-                },
-                {
-                  "name": "Phoenix Wing",
-                  "score": 59
-                },
-                {
-                  "name": "Heavy",
-                  "score": 59
-                },
-                {
-                  "name": "Metal Chip",
-                  "score": 59
-                },
-                {
-                  "name": "3-60",
-                  "score": 57
-                },
-                {
-                  "name": "Knight Mail",
-                  "score": 41
-                }
-              ]
-            },
-            {
-              "name": "Free Ball",
-              "score": 57,
-              "position_change": 2,
-              "synergy": [
-                {
-                  "name": "Wizard Rod",
-                  "score": 85
-                },
-                {
-                  "name": "1-60",
-                  "score": 79
-                },
-                {
-                  "name": "9-60",
-                  "score": 76
-                },
-                {
-                  "name": "Shark Scale",
-                  "score": 66
-                },
-                {
-                  "name": "3-60",
-                  "score": 45
-                },
-                {
-                  "name": "Silver Wolf",
-                  "score": 39
-                }
-              ]
-            },
-            {
-              "name": "Level",
-              "score": 55,
-              "position_change": 2,
-              "synergy": [
-                {
-                  "name": "7-60",
-                  "score": 77
-                },
-                {
-                  "name": "Blast",
-                  "score": 75
-                },
-                {
-                  "name": "3-60",
-                  "score": 73
-                },
-                {
-                  "name": "Plastic Chip",
-                  "score": 71
-                },
-                {
-                  "name": "Heavy",
-                  "score": 69
-                },
-                {
-                  "name": "Meteor Dragoon",
-                  "score": 67
-                },
-                {
-                  "name": "Metal Chip",
-                  "score": 66
-                },
-                {
-                  "name": "7-70",
-                  "score": 64
-                },
-                {
-                  "name": "5-60",
-                  "score": 62
-                },
-                {
-                  "name": "4-50",
-                  "score": 59
-                },
-                {
-                  "name": "Shark Scale",
-                  "score": 53
-                },
-                {
-                  "name": "9-60",
-                  "score": 49
-                }
-              ]
-            },
-            {
-              "name": "Under Needle",
-              "score": 51,
-              "position_change": -3,
-              "synergy": [
-                {
-                  "name": "Clock Mirage",
-                  "score": 55
-                }
-              ]
-            },
-            {
-              "name": "Low Orb",
-              "score": 47,
-              "position_change": 2,
-              "synergy": [
-                {
-                  "name": "Shark Scale",
-                  "score": 99
-                },
-                {
-                  "name": "1-60",
-                  "score": 77
-                },
-                {
-                  "name": "Wizard Rod",
-                  "score": 66
-                },
-                {
-                  "name": "9-60",
-                  "score": 60
-                }
-              ]
-            },
-            {
-              "name": "Rubber Accel",
-              "score": 47,
-              "position_change": "NEW",
-              "synergy": []
-            },
-            {
-              "name": "Wedge",
-              "score": 45,
-              "position_change": -4,
-              "synergy": [
-                {
-                  "name": "9-60",
-                  "score": 77
-                },
-                {
-                  "name": "Mummy Curse",
-                  "score": 62
-                }
-              ]
-            },
-            {
-              "name": "Elevate",
-              "score": 44,
-              "position_change": 0,
-              "synergy": [
-                {
-                  "name": "5-60",
-                  "score": 64
-                },
-                {
-                  "name": "9-60",
-                  "score": 64
-                },
-                {
-                  "name": "Cobalt Dragoon",
-                  "score": 62
-                }
-              ]
-            },
-            {
-              "name": "Jolt",
-              "score": 42,
-              "position_change": 0,
-              "synergy": [
-                {
-                  "name": "Heavy",
-                  "score": 82
-                },
-                {
-                  "name": "9-60",
-                  "score": 77
-                },
-                {
-                  "name": "Plastic Chip",
-                  "score": 77
-                },
-                {
-                  "name": "Wyvern Hover",
-                  "score": 62
-                },
-                {
-                  "name": "Shark Scale",
-                  "score": 58
-                },
-                {
-                  "name": "3-60",
-                  "score": 45
-                },
-                {
-                  "name": "1-70",
-                  "score": 41
-                }
-              ]
-            },
-            {
-              "name": "Point",
-              "score": 41,
-              "position_change": -4,
-              "synergy": []
-            },
-            {
-              "name": "Taper",
-              "score": 37,
-              "position_change": "NEW",
-              "synergy": []
-            },
-            {
-              "name": "Ball",
-              "score": 37,
-              "position_change": -2,
-              "synergy": [
-                {
-                  "name": "Wizard Rod",
-                  "score": 57
-                },
-                {
-                  "name": "9-60",
-                  "score": 31
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    "4weeks": {
-      "metadata": {
-        "dataSource": "bbxweekly.com/4weeks",
-        "weekId": "2026-W07",
-        "startDate": "2026-01-23",
-        "endDate": "2026-02-19",
-        "eventsScanned": 160,
-        "partsAnalyzed": 4612
-      },
-      "categories": [
-        {
-          "category": "Lock Chip",
-          "components": [
-            {
-              "name": "Plastic Chip",
               "score": 52,
-              "position_change": 1,
-              "synergy": [
-                {
-                  "name": "Jolt",
-                  "score": 81
-                },
-                {
-                  "name": "Heavy",
-                  "score": 80
-                },
-                {
-                  "name": "3-60",
-                  "score": 75
-                },
-                {
-                  "name": "9-60",
-                  "score": 75
-                },
-                {
-                  "name": "Blast",
-                  "score": 74
-                },
-                {
-                  "name": "Kick",
-                  "score": 66
-                },
-                {
-                  "name": "Wheel",
-                  "score": 66
-                },
-                {
-                  "name": "Level",
-                  "score": 64
-                },
-                {
-                  "name": "7-60",
-                  "score": 62
-                },
-                {
-                  "name": "Low Rush",
-                  "score": 51
-                }
-              ]
-            },
-            {
-              "name": "Metal Chip",
-              "score": 47,
               "position_change": -1,
               "synergy": [
-                {
-                  "name": "Kick",
-                  "score": 75
-                },
-                {
-                  "name": "Blast",
-                  "score": 72
-                },
-                {
-                  "name": "Heavy",
-                  "score": 69
-                },
-                {
-                  "name": "7-60",
-                  "score": 67
-                },
-                {
-                  "name": "Wheel",
-                  "score": 66
-                },
-                {
-                  "name": "9-60",
-                  "score": 61
-                },
-                {
-                  "name": "Hexa",
-                  "score": 60
-                },
-                {
-                  "name": "3-60",
-                  "score": 56
-                },
-                {
-                  "name": "Level",
-                  "score": 54
-                },
-                {
-                  "name": "Low Rush",
-                  "score": 54
-                },
-                {
-                  "name": "Rush",
-                  "score": 54
-                },
-                {
-                  "name": "1-60",
-                  "score": 44
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "category": "Ratchet",
-          "components": [
-            {
-              "name": "1-60",
-              "score": 100,
-              "position_change": 0,
-              "synergy": [
-                {
-                  "name": "Wizard Rod",
-                  "score": 100
-                },
                 {
                   "name": "Hexa",
                   "score": 95
                 },
                 {
-                  "name": "Shark Scale",
-                  "score": 85
-                },
-                {
-                  "name": "Samurai Calibur",
-                  "score": 77
-                },
-                {
-                  "name": "Rush",
-                  "score": 73
-                },
-                {
-                  "name": "Golem Rock",
-                  "score": 73
-                },
-                {
-                  "name": "Free Ball",
-                  "score": 70
-                },
-                {
-                  "name": "Low Orb",
-                  "score": 69
-                },
-                {
-                  "name": "Low Rush",
-                  "score": 68
-                },
-                {
-                  "name": "Mummy Curse",
-                  "score": 68
-                },
-                {
-                  "name": "Aero Pegasus",
-                  "score": 57
-                },
-                {
-                  "name": "Wyvern Hover",
-                  "score": 56
-                },
-                {
-                  "name": "Kick",
-                  "score": 53
-                },
-                {
-                  "name": "Jolt",
-                  "score": 51
-                },
-                {
-                  "name": "Knight Mail",
-                  "score": 51
-                },
-                {
-                  "name": "Level",
-                  "score": 51
-                },
-                {
-                  "name": "Heavy",
-                  "score": 48
-                },
-                {
-                  "name": "Blast",
-                  "score": 47
-                },
-                {
-                  "name": "Phoenix Wing",
-                  "score": 46
-                },
-                {
-                  "name": "Metal Chip",
-                  "score": 44
-                },
-                {
-                  "name": "Ball",
-                  "score": 40
-                }
-              ]
-            },
-            {
-              "name": "9-60",
-              "score": 81,
-              "position_change": 0,
-              "synergy": [
-                {
-                  "name": "Wedge",
-                  "score": 79
-                },
-                {
-                  "name": "Heavy",
-                  "score": 76
-                },
-                {
-                  "name": "Plastic Chip",
-                  "score": 75
-                },
-                {
-                  "name": "Blast",
-                  "score": 72
-                },
-                {
-                  "name": "Wyvern Hover",
-                  "score": 72
-                },
-                {
-                  "name": "Jolt",
-                  "score": 70
-                },
-                {
-                  "name": "Mummy Curse",
-                  "score": 70
-                },
-                {
-                  "name": "Low Orb",
-                  "score": 68
-                },
-                {
-                  "name": "Golem Rock",
-                  "score": 68
-                },
-                {
-                  "name": "Kick",
-                  "score": 67
-                },
-                {
-                  "name": "Meteor Dragoon",
-                  "score": 67
-                },
-                {
-                  "name": "Wizard Rod",
-                  "score": 65
-                },
-                {
-                  "name": "Rush",
-                  "score": 65
-                },
-                {
-                  "name": "Free Ball",
-                  "score": 63
-                },
-                {
-                  "name": "Phoenix Wing",
-                  "score": 63
-                },
-                {
-                  "name": "Shark Scale",
-                  "score": 61
-                },
-                {
-                  "name": "Metal Chip",
-                  "score": 61
-                },
-                {
-                  "name": "Cobalt Dragoon",
-                  "score": 60
-                },
-                {
-                  "name": "Silver Wolf",
-                  "score": 60
-                },
-                {
-                  "name": "Level",
-                  "score": 59
-                },
-                {
-                  "name": "Elevate",
-                  "score": 59
-                },
-                {
-                  "name": "Hexa",
-                  "score": 59
-                },
-                {
-                  "name": "Low Rush",
-                  "score": 50
-                },
-                {
-                  "name": "Ball",
-                  "score": 41
-                }
-              ]
-            },
-            {
-              "name": "3-60",
-              "score": 62,
-              "position_change": 1,
-              "synergy": [
-                {
                   "name": "Wizard Rod",
                   "score": 89
-                },
-                {
-                  "name": "Plastic Chip",
-                  "score": 75
-                },
-                {
-                  "name": "Low Rush",
-                  "score": 73
-                },
-                {
-                  "name": "Kick",
-                  "score": 71
-                },
-                {
-                  "name": "Shark Scale",
-                  "score": 70
-                },
-                {
-                  "name": "Aero Pegasus",
-                  "score": 70
-                },
-                {
-                  "name": "Hexa",
-                  "score": 70
-                },
-                {
-                  "name": "Heavy",
-                  "score": 69
-                },
-                {
-                  "name": "Blast",
-                  "score": 67
-                },
-                {
-                  "name": "Rush",
-                  "score": 63
-                },
-                {
-                  "name": "Wyvern Hover",
-                  "score": 62
-                },
-                {
-                  "name": "Point",
-                  "score": 61
-                },
-                {
-                  "name": "Low Orb",
-                  "score": 60
-                },
-                {
-                  "name": "Metal Chip",
-                  "score": 56
-                },
-                {
-                  "name": "Level",
-                  "score": 56
-                },
-                {
-                  "name": "Free Ball",
-                  "score": 51
-                },
-                {
-                  "name": "Jolt",
-                  "score": 49
-                },
-                {
-                  "name": "Phoenix Wing",
-                  "score": 48
-                }
-              ]
-            },
-            {
-              "name": "1-70",
-              "score": 61,
-              "position_change": -1,
-              "synergy": [
-                {
-                  "name": "Low Rush",
-                  "score": 89
-                },
-                {
-                  "name": "Shark Scale",
-                  "score": 85
-                },
-                {
-                  "name": "Jolt",
-                  "score": 63
-                },
-                {
-                  "name": "Wizard Rod",
-                  "score": 63
-                },
-                {
-                  "name": "Wyvern Hover",
-                  "score": 57
-                },
-                {
-                  "name": "Hexa",
-                  "score": 56
-                },
-                {
-                  "name": "Kick",
-                  "score": 56
-                },
-                {
-                  "name": "Rush",
-                  "score": 40
                 }
               ]
             },
             {
               "name": "5-60",
-              "score": 54,
-              "position_change": 0,
+              "score": 46,
+              "position_change": 1,
               "synergy": [
                 {
-                  "name": "Mummy Curse",
-                  "score": 90
-                },
-                {
-                  "name": "Level",
-                  "score": 79
-                },
-                {
-                  "name": "Meteor Dragoon",
-                  "score": 77
-                },
-                {
-                  "name": "Wizard Rod",
+                  "name": "Shark Scale",
                   "score": 73
                 },
                 {
                   "name": "Cobalt Dragoon",
-                  "score": 68
+                  "score": 58
                 },
                 {
                   "name": "Elevate",
-                  "score": 68
-                },
-                {
-                  "name": "Kick",
-                  "score": 64
-                },
-                {
-                  "name": "Shark Scale",
-                  "score": 56
-                },
-                {
-                  "name": "Heavy",
-                  "score": 48
-                },
-                {
-                  "name": "Low Rush",
-                  "score": 44
+                  "score": 58
                 }
               ]
             },
             {
-              "name": "7-60",
-              "score": 53,
-              "position_change": 0,
+              "name": "3-70",
+              "score": 46,
+              "position_change": -1,
               "synergy": [
                 {
-                  "name": "Meteor Dragoon",
-                  "score": 76
-                },
-                {
-                  "name": "Level",
-                  "score": 74
-                },
-                {
-                  "name": "Blast",
-                  "score": 73
-                },
-                {
-                  "name": "Phoenix Wing",
-                  "score": 72
-                },
-                {
-                  "name": "Kick",
-                  "score": 71
-                },
-                {
-                  "name": "Wyvern Hover",
-                  "score": 71
-                },
-                {
-                  "name": "Metal Chip",
+                  "name": "Low Rush",
                   "score": 67
-                },
-                {
-                  "name": "Heavy",
-                  "score": 65
-                },
-                {
-                  "name": "Wizard Rod",
-                  "score": 65
-                },
-                {
-                  "name": "Shark Scale",
-                  "score": 65
-                },
-                {
-                  "name": "Plastic Chip",
-                  "score": 62
-                },
-                {
-                  "name": "Low Rush",
-                  "score": 59
-                },
-                {
-                  "name": "Mummy Curse",
-                  "score": 58
-                },
-                {
-                  "name": "Rush",
-                  "score": 58
-                },
-                {
-                  "name": "Hexa",
-                  "score": 56
-                }
-              ]
-            },
-            {
-              "name": "6-60",
-              "score": 49,
-              "position_change": 0,
-              "synergy": [
-                {
-                  "name": "Wizard Rod",
-                  "score": 100
-                },
-                {
-                  "name": "Hexa",
-                  "score": 93
-                },
-                {
-                  "name": "Blast",
-                  "score": 51
-                }
-              ]
-            },
-            {
-              "name": "9-70",
-              "score": 47,
-              "position_change": 0,
-              "synergy": [
-                {
-                  "name": "Low Rush",
-                  "score": 72
-                },
-                {
-                  "name": "Silver Wolf",
-                  "score": 62
-                },
-                {
-                  "name": "Wyvern Hover",
-                  "score": 56
                 }
               ]
             },
             {
               "name": "7-70",
-              "score": 41,
-              "position_change": 2,
+              "score": 39,
+              "position_change": 1,
               "synergy": [
                 {
-                  "name": "Shark Scale",
-                  "score": 57
-                },
-                {
                   "name": "Level",
-                  "score": 56
+                  "score": 63
                 },
                 {
                   "name": "Meteor Dragoon",
-                  "score": 53
+                  "score": 63
                 }
               ]
             },
             {
               "name": "4-50",
               "score": 37,
-              "position_change": -1,
+              "position_change": 1,
               "synergy": [
                 {
                   "name": "Shark Scale",
-                  "score": 58
-                },
-                {
-                  "name": "Level",
-                  "score": 54
+                  "score": 60
                 },
                 {
                   "name": "Low Rush",
-                  "score": 50
-                }
-              ]
-            },
-            {
-              "name": "4-55",
-              "score": 36,
-              "position_change": -1,
-              "synergy": [
-                {
-                  "name": "Clock Mirage",
-                  "score": 51
+                  "score": 39
                 }
               ]
             },
             {
               "name": "7-55",
-              "score": 35,
-              "position_change": 1,
+              "score": 36,
+              "position_change": "NEW",
               "synergy": [
                 {
-                  "name": "Clock Mirage",
-                  "score": 53
+                  "name": "Under Needle",
+                  "score": 62
                 },
                 {
-                  "name": "Low Orb",
-                  "score": 40
+                  "name": "Clock Mirage",
+                  "score": 54
                 }
               ]
+            },
+            {
+              "name": "9-70",
+              "score": 34,
+              "position_change": -3,
+              "synergy": []
             }
           ]
         },
@@ -2072,86 +547,481 @@
               "position_change": 0,
               "synergy": [
                 {
-                  "name": "Low Rush",
+                  "name": "7-60",
                   "score": 100
                 },
                 {
-                  "name": "Low Orb",
-                  "score": 91
+                  "name": "Low Rush",
+                  "score": 99
                 },
                 {
                   "name": "1-70",
-                  "score": 85
-                },
-                {
-                  "name": "1-60",
-                  "score": 85
-                },
-                {
-                  "name": "Kick",
-                  "score": 73
-                },
-                {
-                  "name": "Rush",
-                  "score": 72
+                  "score": 90
                 },
                 {
                   "name": "3-60",
+                  "score": 82
+                },
+                {
+                  "name": "Rush",
+                  "score": 79
+                },
+                {
+                  "name": "5-60",
+                  "score": 73
+                },
+                {
+                  "name": "Level",
                   "score": 70
+                },
+                {
+                  "name": "1-60",
+                  "score": 67
                 },
                 {
                   "name": "Free Ball",
                   "score": 67
                 },
                 {
-                  "name": "7-60",
-                  "score": 65
-                },
-                {
-                  "name": "Rubber Accel",
+                  "name": "Jolt",
                   "score": 64
                 },
                 {
-                  "name": "Jolt",
-                  "score": 62
-                },
-                {
-                  "name": "Level",
-                  "score": 62
+                  "name": "4-50",
+                  "score": 60
                 },
                 {
                   "name": "9-60",
-                  "score": 61
-                },
-                {
-                  "name": "4-50",
-                  "score": 58
-                },
-                {
-                  "name": "7-70",
-                  "score": 57
-                },
-                {
-                  "name": "5-60",
                   "score": 56
                 },
                 {
-                  "name": "Hexa",
-                  "score": 43
+                  "name": "Low Orb",
+                  "score": 46
+                },
+                {
+                  "name": "Kick",
+                  "score": 45
                 }
               ]
             },
             {
               "name": "Wizard Rod",
-              "score": 86,
+              "score": 88,
               "position_change": 0,
               "synergy": [
                 {
-                  "name": "6-60",
+                  "name": "1-60",
                   "score": 100
                 },
                 {
                   "name": "Hexa",
+                  "score": 100
+                },
+                {
+                  "name": "7-60",
+                  "score": 96
+                },
+                {
+                  "name": "6-60",
+                  "score": 89
+                },
+                {
+                  "name": "Free Ball",
+                  "score": 70
+                },
+                {
+                  "name": "9-60",
+                  "score": 68
+                },
+                {
+                  "name": "3-60",
+                  "score": 51
+                },
+                {
+                  "name": "Ball",
+                  "score": 51
+                },
+                {
+                  "name": "Low Orb",
+                  "score": 51
+                },
+                {
+                  "name": "1-70",
+                  "score": 49
+                }
+              ]
+            },
+            {
+              "name": "Blast",
+              "score": 58,
+              "position_change": 0,
+              "synergy": [
+                {
+                  "name": "Metal Chip",
+                  "score": 83
+                },
+                {
+                  "name": "Heavy",
+                  "score": 83
+                },
+                {
+                  "name": "Wheel",
+                  "score": 82
+                },
+                {
+                  "name": "9-60",
+                  "score": 81
+                },
+                {
+                  "name": "Plastic Chip",
+                  "score": 71
+                },
+                {
+                  "name": "Jolt",
+                  "score": 67
+                },
+                {
+                  "name": "Kick",
+                  "score": 67
+                },
+                {
+                  "name": "Rush",
+                  "score": 67
+                },
+                {
+                  "name": "7-60",
+                  "score": 64
+                },
+                {
+                  "name": "Low Rush",
+                  "score": 62
+                },
+                {
+                  "name": "3-60",
+                  "score": 58
+                },
+                {
+                  "name": "Hexa",
+                  "score": 46
+                }
+              ]
+            },
+            {
+              "name": "Phoenix Wing",
+              "score": 54,
+              "position_change": 4,
+              "synergy": [
+                {
+                  "name": "7-60",
+                  "score": 82
+                },
+                {
+                  "name": "Rush",
+                  "score": 73
+                },
+                {
+                  "name": "3-60",
+                  "score": 72
+                },
+                {
+                  "name": "Low Rush",
+                  "score": 70
+                },
+                {
+                  "name": "1-60",
+                  "score": 63
+                },
+                {
+                  "name": "9-60",
+                  "score": 62
+                }
+              ]
+            },
+            {
+              "name": "Aero Pegasus",
+              "score": 54,
+              "position_change": 4,
+              "synergy": [
+                {
+                  "name": "1-60",
+                  "score": 82
+                },
+                {
+                  "name": "Low Rush",
+                  "score": 74
+                },
+                {
+                  "name": "3-60",
+                  "score": 74
+                },
+                {
+                  "name": "Rush",
+                  "score": 69
+                },
+                {
+                  "name": "Level",
+                  "score": 69
+                },
+                {
+                  "name": "Kick",
+                  "score": 62
+                },
+                {
+                  "name": "7-60",
+                  "score": 51
+                },
+                {
+                  "name": "Jolt",
+                  "score": 47
+                }
+              ]
+            },
+            {
+              "name": "Wyvern Hover",
+              "score": 51,
+              "position_change": -1,
+              "synergy": [
+                {
+                  "name": "Jolt",
+                  "score": 73
+                },
+                {
+                  "name": "9-60",
+                  "score": 71
+                },
+                {
+                  "name": "Rush",
+                  "score": 68
+                },
+                {
+                  "name": "7-60",
+                  "score": 68
+                },
+                {
+                  "name": "Kick",
+                  "score": 67
+                },
+                {
+                  "name": "3-60",
+                  "score": 60
+                },
+                {
+                  "name": "Low Rush",
+                  "score": 39
+                },
+                {
+                  "name": "1-70",
+                  "score": 34
+                },
+                {
+                  "name": "1-60",
+                  "score": 32
+                }
+              ]
+            },
+            {
+              "name": "Meteor Dragoon",
+              "score": 50,
+              "position_change": 0,
+              "synergy": [
+                {
+                  "name": "Level",
+                  "score": 72
+                },
+                {
+                  "name": "7-70",
+                  "score": 63
+                },
+                {
+                  "name": "7-60",
+                  "score": 53
+                }
+              ]
+            },
+            {
+              "name": "Cobalt Dragoon",
+              "score": 49,
+              "position_change": 2,
+              "synergy": [
+                {
+                  "name": "Elevate",
+                  "score": 75
+                },
+                {
+                  "name": "9-60",
+                  "score": 73
+                },
+                {
+                  "name": "5-60",
+                  "score": 58
+                }
+              ]
+            },
+            {
+              "name": "Silver Wolf",
+              "score": 48,
+              "position_change": -3,
+              "synergy": [
+                {
+                  "name": "Low Orb",
+                  "score": 77
+                },
+                {
+                  "name": "9-60",
+                  "score": 72
+                },
+                {
+                  "name": "Free Ball",
+                  "score": 65
+                }
+              ]
+            },
+            {
+              "name": "Mummy Curse",
+              "score": 48,
+              "position_change": -6,
+              "synergy": [
+                {
+                  "name": "Hexa",
+                  "score": 77
+                },
+                {
+                  "name": "1-60",
+                  "score": 51
+                }
+              ]
+            },
+            {
+              "name": "Scorpio Spear",
+              "score": 43,
+              "position_change": "NEW",
+              "synergy": [
+                {
+                  "name": "9-60",
+                  "score": 67
+                }
+              ]
+            },
+            {
+              "name": "Golem Rock",
+              "score": 38,
+              "position_change": -1,
+              "synergy": []
+            },
+            {
+              "name": "Clock Mirage",
+              "score": 34,
+              "position_change": "NEW",
+              "synergy": [
+                {
+                  "name": "Under Needle",
+                  "score": 62
+                },
+                {
+                  "name": "7-55",
+                  "score": 54
+                },
+                {
+                  "name": "Low Orb",
+                  "score": 39
+                }
+              ]
+            },
+            {
+              "name": "Orochi Cluster",
+              "score": 33,
+              "position_change": "NEW",
+              "synergy": []
+            },
+            {
+              "name": "Tyranno Beat",
+              "score": 32,
+              "position_change": "NEW",
+              "synergy": []
+            }
+          ]
+        },
+        {
+          "category": "Assist Blade",
+          "components": [
+            {
+              "name": "Heavy",
+              "score": 59,
+              "position_change": 0,
+              "synergy": [
+                {
+                  "name": "Metal Chip",
+                  "score": 85
+                },
+                {
+                  "name": "Blast",
+                  "score": 83
+                },
+                {
+                  "name": "Jolt",
+                  "score": 77
+                },
+                {
+                  "name": "Rush",
+                  "score": 77
+                },
+                {
+                  "name": "9-60",
+                  "score": 75
+                },
+                {
+                  "name": "7-60",
+                  "score": 72
+                },
+                {
+                  "name": "Kick",
+                  "score": 66
+                },
+                {
+                  "name": "Plastic Chip",
+                  "score": 66
+                },
+                {
+                  "name": "Low Rush",
+                  "score": 62
+                },
+                {
+                  "name": "1-60",
+                  "score": 51
+                },
+                {
+                  "name": "3-60",
+                  "score": 51
+                }
+              ]
+            },
+            {
+              "name": "Wheel",
+              "score": 45,
+              "position_change": 0,
+              "synergy": [
+                {
+                  "name": "Blast",
+                  "score": 82
+                },
+                {
+                  "name": "Metal Chip",
+                  "score": 73
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "category": "Bit",
+          "components": [
+            {
+              "name": "Hexa",
+              "score": 78,
+              "position_change": 0,
+              "synergy": [
+                {
+                  "name": "Wizard Rod",
                   "score": 100
                 },
                 {
@@ -2159,142 +1029,979 @@
                   "score": 100
                 },
                 {
-                  "name": "3-60",
-                  "score": 89
-                },
-                {
-                  "name": "Free Ball",
-                  "score": 78
-                },
-                {
-                  "name": "5-60",
-                  "score": 73
-                },
-                {
-                  "name": "Low Orb",
-                  "score": 73
-                },
-                {
                   "name": "7-60",
-                  "score": 65
+                  "score": 96
+                },
+                {
+                  "name": "6-60",
+                  "score": 95
                 },
                 {
                   "name": "9-60",
-                  "score": 65
+                  "score": 94
                 },
                 {
-                  "name": "Kick",
-                  "score": 64
+                  "name": "Mummy Curse",
+                  "score": 77
                 },
                 {
                   "name": "1-70",
-                  "score": 63
+                  "score": 54
                 },
                 {
-                  "name": "Ball",
-                  "score": 59
+                  "name": "3-60",
+                  "score": 51
+                },
+                {
+                  "name": "Blast",
+                  "score": 46
                 }
               ]
             },
             {
-              "name": "Wyvern Hover",
-              "score": 58,
+              "name": "Low Rush",
+              "score": 76,
               "position_change": 0,
               "synergy": [
                 {
-                  "name": "Rush",
-                  "score": 83
+                  "name": "Shark Scale",
+                  "score": 99
                 },
                 {
-                  "name": "9-60",
+                  "name": "3-60",
+                  "score": 92
+                },
+                {
+                  "name": "1-70",
+                  "score": 76
+                },
+                {
+                  "name": "Aero Pegasus",
+                  "score": 74
+                },
+                {
+                  "name": "1-60",
                   "score": 72
                 },
                 {
+                  "name": "Phoenix Wing",
+                  "score": 70
+                },
+                {
+                  "name": "3-70",
+                  "score": 67
+                },
+                {
                   "name": "7-60",
+                  "score": 64
+                },
+                {
+                  "name": "Blast",
+                  "score": 62
+                },
+                {
+                  "name": "Heavy",
+                  "score": 62
+                },
+                {
+                  "name": "Plastic Chip",
+                  "score": 62
+                },
+                {
+                  "name": "Metal Chip",
+                  "score": 57
+                },
+                {
+                  "name": "9-60",
+                  "score": 55
+                },
+                {
+                  "name": "4-50",
+                  "score": 39
+                },
+                {
+                  "name": "Wyvern Hover",
+                  "score": 39
+                }
+              ]
+            },
+            {
+              "name": "Rush",
+              "score": 61,
+              "position_change": 0,
+              "synergy": [
+                {
+                  "name": "7-60",
+                  "score": 83
+                },
+                {
+                  "name": "Shark Scale",
+                  "score": 79
+                },
+                {
+                  "name": "3-60",
+                  "score": 77
+                },
+                {
+                  "name": "Heavy",
+                  "score": 77
+                },
+                {
+                  "name": "9-60",
+                  "score": 74
+                },
+                {
+                  "name": "Phoenix Wing",
+                  "score": 73
+                },
+                {
+                  "name": "Metal Chip",
+                  "score": 70
+                },
+                {
+                  "name": "Aero Pegasus",
+                  "score": 69
+                },
+                {
+                  "name": "1-60",
+                  "score": 69
+                },
+                {
+                  "name": "Wyvern Hover",
+                  "score": 68
+                },
+                {
+                  "name": "Blast",
+                  "score": 67
+                },
+                {
+                  "name": "1-70",
+                  "score": 51
+                }
+              ]
+            },
+            {
+              "name": "Kick",
+              "score": 56,
+              "position_change": 2,
+              "synergy": [
+                {
+                  "name": "9-60",
+                  "score": 75
+                },
+                {
+                  "name": "Metal Chip",
+                  "score": 74
+                },
+                {
+                  "name": "Wyvern Hover",
+                  "score": 67
+                },
+                {
+                  "name": "Blast",
+                  "score": 67
+                },
+                {
+                  "name": "Heavy",
+                  "score": 66
+                },
+                {
+                  "name": "Aero Pegasus",
+                  "score": 62
+                },
+                {
+                  "name": "Plastic Chip",
+                  "score": 55
+                },
+                {
+                  "name": "1-60",
+                  "score": 53
+                },
+                {
+                  "name": "3-60",
+                  "score": 49
+                },
+                {
+                  "name": "Shark Scale",
+                  "score": 45
+                },
+                {
+                  "name": "1-70",
+                  "score": 43
+                }
+              ]
+            },
+            {
+              "name": "Level",
+              "score": 56,
+              "position_change": -1,
+              "synergy": [
+                {
+                  "name": "9-60",
+                  "score": 74
+                },
+                {
+                  "name": "Meteor Dragoon",
+                  "score": 72
+                },
+                {
+                  "name": "Shark Scale",
+                  "score": 70
+                },
+                {
+                  "name": "Aero Pegasus",
+                  "score": 69
+                },
+                {
+                  "name": "Metal Chip",
+                  "score": 67
+                },
+                {
+                  "name": "7-70",
+                  "score": 63
+                },
+                {
+                  "name": "3-60",
+                  "score": 56
+                },
+                {
+                  "name": "7-60",
+                  "score": 48
+                }
+              ]
+            },
+            {
+              "name": "Free Ball",
+              "score": 55,
+              "position_change": -1,
+              "synergy": [
+                {
+                  "name": "3-60",
+                  "score": 94
+                },
+                {
+                  "name": "1-60",
+                  "score": 80
+                },
+                {
+                  "name": "Wizard Rod",
+                  "score": 70
+                },
+                {
+                  "name": "9-60",
+                  "score": 69
+                },
+                {
+                  "name": "Shark Scale",
+                  "score": 67
+                },
+                {
+                  "name": "Silver Wolf",
+                  "score": 65
+                }
+              ]
+            },
+            {
+              "name": "Elevate",
+              "score": 51,
+              "position_change": 1,
+              "synergy": [
+                {
+                  "name": "Cobalt Dragoon",
+                  "score": 75
+                },
+                {
+                  "name": "9-60",
                   "score": 71
                 },
                 {
+                  "name": "5-60",
+                  "score": 58
+                }
+              ]
+            },
+            {
+              "name": "Unite",
+              "score": 47,
+              "position_change": "NEW",
+              "synergy": []
+            },
+            {
+              "name": "Jolt",
+              "score": 47,
+              "position_change": -2,
+              "synergy": [
+                {
+                  "name": "9-60",
+                  "score": 90
+                },
+                {
+                  "name": "Heavy",
+                  "score": 77
+                },
+                {
+                  "name": "Wyvern Hover",
+                  "score": 73
+                },
+                {
+                  "name": "Blast",
+                  "score": 67
+                },
+                {
+                  "name": "1-70",
+                  "score": 66
+                },
+                {
+                  "name": "Shark Scale",
+                  "score": 64
+                },
+                {
+                  "name": "1-60",
+                  "score": 60
+                },
+                {
+                  "name": "Plastic Chip",
+                  "score": 60
+                },
+                {
+                  "name": "Aero Pegasus",
+                  "score": 47
+                }
+              ]
+            },
+            {
+              "name": "Under Needle",
+              "score": 43,
+              "position_change": "NEW",
+              "synergy": [
+                {
+                  "name": "7-55",
+                  "score": 62
+                },
+                {
+                  "name": "Clock Mirage",
+                  "score": 62
+                }
+              ]
+            },
+            {
+              "name": "Point",
+              "score": 41,
+              "position_change": -2,
+              "synergy": []
+            },
+            {
+              "name": "Low Orb",
+              "score": 39,
+              "position_change": -2,
+              "synergy": [
+                {
+                  "name": "Silver Wolf",
+                  "score": 77
+                },
+                {
+                  "name": "1-60",
+                  "score": 51
+                },
+                {
+                  "name": "Wizard Rod",
+                  "score": 51
+                },
+                {
+                  "name": "Shark Scale",
+                  "score": 46
+                },
+                {
+                  "name": "9-60",
+                  "score": 46
+                },
+                {
+                  "name": "Clock Mirage",
+                  "score": 39
+                }
+              ]
+            },
+            {
+              "name": "Taper",
+              "score": 37,
+              "position_change": 0,
+              "synergy": [
+                {
+                  "name": "Metal Chip",
+                  "score": 64
+                }
+              ]
+            },
+            {
+              "name": "Wedge",
+              "score": 35,
+              "position_change": -3,
+              "synergy": [
+                {
+                  "name": "9-60",
+                  "score": 51
+                },
+                {
+                  "name": "1-60",
+                  "score": 45
+                }
+              ]
+            },
+            {
+              "name": "Ball",
+              "score": 30,
+              "position_change": -3,
+              "synergy": [
+                {
+                  "name": "9-60",
+                  "score": 51
+                },
+                {
+                  "name": "Wizard Rod",
+                  "score": 51
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "4weeks": {
+      "metadata": {
+        "dataSource": "bbxweekly.com/4weeks",
+        "weekId": "2026-W09",
+        "startDate": "2026-02-06",
+        "endDate": "2026-03-05",
+        "eventsScanned": 182,
+        "partsAnalyzed": 5269
+      },
+      "categories": [
+        {
+          "category": "Lock Chip",
+          "components": [
+            {
+              "name": "Metal Chip",
+              "score": 56,
+              "position_change": 1,
+              "synergy": [
+                {
+                  "name": "Heavy",
+                  "score": 83
+                },
+                {
+                  "name": "Blast",
+                  "score": 81
+                },
+                {
+                  "name": "7-60",
+                  "score": 77
+                },
+                {
                   "name": "Kick",
+                  "score": 77
+                },
+                {
+                  "name": "9-60",
+                  "score": 71
+                },
+                {
+                  "name": "Wheel",
+                  "score": 70
+                },
+                {
+                  "name": "Eclipse",
+                  "score": 69
+                },
+                {
+                  "name": "Level",
+                  "score": 66
+                },
+                {
+                  "name": "Rush",
+                  "score": 66
+                },
+                {
+                  "name": "Taper",
+                  "score": 61
+                },
+                {
+                  "name": "Hexa",
+                  "score": 56
+                },
+                {
+                  "name": "3-60",
+                  "score": 55
+                },
+                {
+                  "name": "Low Rush",
+                  "score": 55
+                },
+                {
+                  "name": "1-60",
+                  "score": 45
+                }
+              ]
+            },
+            {
+              "name": "Plastic Chip",
+              "score": 50,
+              "position_change": -1,
+              "synergy": [
+                {
+                  "name": "3-60",
+                  "score": 75
+                },
+                {
+                  "name": "Blast",
+                  "score": 74
+                },
+                {
+                  "name": "Heavy",
+                  "score": 74
+                },
+                {
+                  "name": "9-60",
                   "score": 69
                 },
                 {
                   "name": "Jolt",
+                  "score": 68
+                },
+                {
+                  "name": "Level",
+                  "score": 66
+                },
+                {
+                  "name": "Kick",
+                  "score": 61
+                },
+                {
+                  "name": "Low Rush",
+                  "score": 60
+                },
+                {
+                  "name": "Flare",
+                  "score": 57
+                },
+                {
+                  "name": "Wheel",
+                  "score": 56
+                },
+                {
+                  "name": "7-60",
+                  "score": 54
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "category": "Ratchet",
+          "components": [
+            {
+              "name": "1-60",
+              "score": 98,
+              "position_change": 0,
+              "synergy": [
+                {
+                  "name": "Wizard Rod",
+                  "score": 100
+                },
+                {
+                  "name": "Hexa",
+                  "score": 100
+                },
+                {
+                  "name": "Shark Scale",
+                  "score": 82
+                },
+                {
+                  "name": "Free Ball",
+                  "score": 79
+                },
+                {
+                  "name": "Rush",
+                  "score": 75
+                },
+                {
+                  "name": "Low Rush",
+                  "score": 73
+                },
+                {
+                  "name": "Samurai Calibur",
+                  "score": 69
+                },
+                {
+                  "name": "Aero Pegasus",
+                  "score": 67
+                },
+                {
+                  "name": "Low Orb",
                   "score": 65
+                },
+                {
+                  "name": "Phoenix Wing",
+                  "score": 59
+                },
+                {
+                  "name": "Wedge",
+                  "score": 59
+                },
+                {
+                  "name": "Mummy Curse",
+                  "score": 57
+                },
+                {
+                  "name": "Jolt",
+                  "score": 51
+                },
+                {
+                  "name": "Kick",
+                  "score": 51
+                },
+                {
+                  "name": "Level",
+                  "score": 51
+                },
+                {
+                  "name": "Heavy",
+                  "score": 49
+                },
+                {
+                  "name": "Blast",
+                  "score": 49
+                },
+                {
+                  "name": "Metal Chip",
+                  "score": 45
+                },
+                {
+                  "name": "Wyvern Hover",
+                  "score": 41
+                }
+              ]
+            },
+            {
+              "name": "9-60",
+              "score": 81,
+              "position_change": 0,
+              "synergy": [
+                {
+                  "name": "Jolt",
+                  "score": 83
+                },
+                {
+                  "name": "Hexa",
+                  "score": 79
+                },
+                {
+                  "name": "Wyvern Hover",
+                  "score": 78
+                },
+                {
+                  "name": "Wheel",
+                  "score": 77
+                },
+                {
+                  "name": "Blast",
+                  "score": 75
+                },
+                {
+                  "name": "Rush",
+                  "score": 75
+                },
+                {
+                  "name": "Heavy",
+                  "score": 74
+                },
+                {
+                  "name": "Meteor Dragoon",
+                  "score": 73
+                },
+                {
+                  "name": "Free Ball",
+                  "score": 72
+                },
+                {
+                  "name": "Metal Chip",
+                  "score": 71
+                },
+                {
+                  "name": "Kick",
+                  "score": 70
+                },
+                {
+                  "name": "Plastic Chip",
+                  "score": 69
+                },
+                {
+                  "name": "Cobalt Dragoon",
+                  "score": 69
+                },
+                {
+                  "name": "Elevate",
+                  "score": 69
+                },
+                {
+                  "name": "Scorpio Spear",
+                  "score": 69
+                },
+                {
+                  "name": "Silver Wolf",
+                  "score": 68
+                },
+                {
+                  "name": "Wedge",
+                  "score": 64
+                },
+                {
+                  "name": "Wizard Rod",
+                  "score": 64
+                },
+                {
+                  "name": "Shark Scale",
+                  "score": 61
+                },
+                {
+                  "name": "Aero Pegasus",
+                  "score": 60
+                },
+                {
+                  "name": "Mummy Curse",
+                  "score": 60
+                },
+                {
+                  "name": "Level",
+                  "score": 59
+                },
+                {
+                  "name": "Phoenix Wing",
+                  "score": 59
+                },
+                {
+                  "name": "Taper",
+                  "score": 59
+                },
+                {
+                  "name": "Flare",
+                  "score": 56
+                },
+                {
+                  "name": "Golem Rock",
+                  "score": 55
+                },
+                {
+                  "name": "Low Orb",
+                  "score": 51
+                },
+                {
+                  "name": "Low Rush",
+                  "score": 47
+                },
+                {
+                  "name": "Ball",
+                  "score": 44
+                }
+              ]
+            },
+            {
+              "name": "3-60",
+              "score": 64,
+              "position_change": 0,
+              "synergy": [
+                {
+                  "name": "Low Rush",
+                  "score": 84
+                },
+                {
+                  "name": "Plastic Chip",
+                  "score": 75
+                },
+                {
+                  "name": "Wizard Rod",
+                  "score": 75
+                },
+                {
+                  "name": "Shark Scale",
+                  "score": 74
+                },
+                {
+                  "name": "Aero Pegasus",
+                  "score": 73
+                },
+                {
+                  "name": "Free Ball",
+                  "score": 71
+                },
+                {
+                  "name": "Rush",
+                  "score": 66
+                },
+                {
+                  "name": "Blast",
+                  "score": 66
                 },
                 {
                   "name": "Level",
                   "score": 64
                 },
                 {
-                  "name": "3-60",
+                  "name": "Heavy",
+                  "score": 63
+                },
+                {
+                  "name": "Kick",
                   "score": 62
+                },
+                {
+                  "name": "Ball",
+                  "score": 60
                 },
                 {
                   "name": "Hexa",
                   "score": 60
                 },
                 {
-                  "name": "Low Rush",
+                  "name": "Low Orb",
+                  "score": 60
+                },
+                {
+                  "name": "Wyvern Hover",
                   "score": 58
                 },
                 {
-                  "name": "1-70",
-                  "score": 57
+                  "name": "Phoenix Wing",
+                  "score": 55
                 },
                 {
-                  "name": "9-70",
-                  "score": 56
+                  "name": "Metal Chip",
+                  "score": 55
                 },
                 {
-                  "name": "1-60",
-                  "score": 56
+                  "name": "Silver Wolf",
+                  "score": 55
+                },
+                {
+                  "name": "Jolt",
+                  "score": 44
+                },
+                {
+                  "name": "Wedge",
+                  "score": 43
+                },
+                {
+                  "name": "Point",
+                  "score": 37
                 }
               ]
             },
             {
-              "name": "Blast",
-              "score": 54,
+              "name": "1-70",
+              "score": 57,
               "position_change": 0,
               "synergy": [
                 {
-                  "name": "Heavy",
+                  "name": "Shark Scale",
+                  "score": 86
+                },
+                {
+                  "name": "Low Rush",
                   "score": 79
+                },
+                {
+                  "name": "Level",
+                  "score": 59
+                },
+                {
+                  "name": "Hexa",
+                  "score": 58
+                },
+                {
+                  "name": "Jolt",
+                  "score": 56
+                },
+                {
+                  "name": "Wizard Rod",
+                  "score": 54
+                },
+                {
+                  "name": "Kick",
+                  "score": 51
+                },
+                {
+                  "name": "Rush",
+                  "score": 51
+                },
+                {
+                  "name": "Wyvern Hover",
+                  "score": 42
+                }
+              ]
+            },
+            {
+              "name": "7-60",
+              "score": 56,
+              "position_change": 0,
+              "synergy": [
+                {
+                  "name": "Phoenix Wing",
+                  "score": 92
+                },
+                {
+                  "name": "Rush",
+                  "score": 81
+                },
+                {
+                  "name": "Metal Chip",
+                  "score": 77
+                },
+                {
+                  "name": "Shark Scale",
+                  "score": 77
+                },
+                {
+                  "name": "Wizard Rod",
+                  "score": 75
                 },
                 {
                   "name": "Kick",
                   "score": 75
                 },
                 {
-                  "name": "Plastic Chip",
+                  "name": "Blast",
                   "score": 74
                 },
                 {
-                  "name": "7-60",
+                  "name": "Heavy",
                   "score": 73
                 },
                 {
-                  "name": "9-60",
-                  "score": 72
+                  "name": "Wyvern Hover",
+                  "score": 73
                 },
                 {
-                  "name": "Metal Chip",
-                  "score": 72
+                  "name": "Aero Pegasus",
+                  "score": 66
                 },
                 {
-                  "name": "Jolt",
-                  "score": 69
-                },
-                {
-                  "name": "Wheel",
-                  "score": 69
-                },
-                {
-                  "name": "3-60",
-                  "score": 67
+                  "name": "Mummy Curse",
+                  "score": 66
                 },
                 {
                   "name": "Hexa",
+                  "score": 65
+                },
+                {
+                  "name": "Free Ball",
                   "score": 64
+                },
+                {
+                  "name": "Meteor Dragoon",
+                  "score": 63
+                },
+                {
+                  "name": "Wheel",
+                  "score": 62
                 },
                 {
                   "name": "Level",
@@ -2305,16 +2012,402 @@
                   "score": 58
                 },
                 {
-                  "name": "Rush",
+                  "name": "Plastic Chip",
+                  "score": 54
+                }
+              ]
+            },
+            {
+              "name": "6-60",
+              "score": 50,
+              "position_change": 1,
+              "synergy": [
+                {
+                  "name": "Wizard Rod",
+                  "score": 100
+                },
+                {
+                  "name": "Hexa",
+                  "score": 100
+                }
+              ]
+            },
+            {
+              "name": "3-70",
+              "score": 50,
+              "position_change": 2,
+              "synergy": [
+                {
+                  "name": "Shark Scale",
+                  "score": 81
+                },
+                {
+                  "name": "Low Rush",
+                  "score": 73
+                }
+              ]
+            },
+            {
+              "name": "5-60",
+              "score": 50,
+              "position_change": -2,
+              "synergy": [
+                {
+                  "name": "Heavy",
+                  "score": 81
+                },
+                {
+                  "name": "Wizard Rod",
+                  "score": 74
+                },
+                {
+                  "name": "Hexa",
+                  "score": 73
+                },
+                {
+                  "name": "Level",
+                  "score": 71
+                },
+                {
+                  "name": "Meteor Dragoon",
+                  "score": 69
+                },
+                {
+                  "name": "Elevate",
+                  "score": 62
+                },
+                {
+                  "name": "Cobalt Dragoon",
+                  "score": 61
+                },
+                {
+                  "name": "Shark Scale",
+                  "score": 59
+                },
+                {
+                  "name": "Free Ball",
+                  "score": 55
+                },
+                {
+                  "name": "Low Rush",
+                  "score": 45
+                }
+              ]
+            },
+            {
+              "name": "7-70",
+              "score": 42,
+              "position_change": 1,
+              "synergy": [
+                {
+                  "name": "Level",
+                  "score": 64
+                },
+                {
+                  "name": "Meteor Dragoon",
+                  "score": 63
+                },
+                {
+                  "name": "Shark Scale",
+                  "score": 61
+                }
+              ]
+            },
+            {
+              "name": "9-70",
+              "score": 40,
+              "position_change": -2,
+              "synergy": [
+                {
+                  "name": "Shark Scale",
+                  "score": 69
+                },
+                {
+                  "name": "Silver Wolf",
+                  "score": 48
+                }
+              ]
+            },
+            {
+              "name": "7-55",
+              "score": 39,
+              "position_change": 0,
+              "synergy": [
+                {
+                  "name": "Clock Mirage",
+                  "score": 59
+                },
+                {
+                  "name": "Under Needle",
+                  "score": 57
+                }
+              ]
+            },
+            {
+              "name": "4-50",
+              "score": 37,
+              "position_change": 0,
+              "synergy": [
+                {
+                  "name": "Level",
+                  "score": 59
+                },
+                {
+                  "name": "Shark Scale",
                   "score": 57
                 },
                 {
+                  "name": "Low Rush",
+                  "score": 50
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "category": "Blade",
+          "components": [
+            {
+              "name": "Shark Scale",
+              "score": 96,
+              "position_change": 0,
+              "synergy": [
+                {
+                  "name": "Low Rush",
+                  "score": 100
+                },
+                {
+                  "name": "1-70",
+                  "score": 86
+                },
+                {
+                  "name": "1-60",
+                  "score": 82
+                },
+                {
+                  "name": "3-70",
+                  "score": 81
+                },
+                {
+                  "name": "Rush",
+                  "score": 81
+                },
+                {
+                  "name": "7-60",
+                  "score": 77
+                },
+                {
+                  "name": "Low Orb",
+                  "score": 77
+                },
+                {
+                  "name": "3-60",
+                  "score": 74
+                },
+                {
+                  "name": "9-70",
+                  "score": 69
+                },
+                {
+                  "name": "Free Ball",
+                  "score": 66
+                },
+                {
+                  "name": "Hexa",
+                  "score": 64
+                },
+                {
+                  "name": "7-70",
+                  "score": 61
+                },
+                {
+                  "name": "9-60",
+                  "score": 61
+                },
+                {
+                  "name": "Level",
+                  "score": 61
+                },
+                {
+                  "name": "Jolt",
+                  "score": 61
+                },
+                {
+                  "name": "5-60",
+                  "score": 59
+                },
+                {
+                  "name": "4-50",
+                  "score": 57
+                },
+                {
+                  "name": "Kick",
+                  "score": 54
+                }
+              ]
+            },
+            {
+              "name": "Wizard Rod",
+              "score": 87,
+              "position_change": 0,
+              "synergy": [
+                {
+                  "name": "Hexa",
+                  "score": 100
+                },
+                {
+                  "name": "1-60",
+                  "score": 100
+                },
+                {
                   "name": "6-60",
+                  "score": 100
+                },
+                {
+                  "name": "Free Ball",
+                  "score": 78
+                },
+                {
+                  "name": "7-60",
+                  "score": 75
+                },
+                {
+                  "name": "3-60",
+                  "score": 75
+                },
+                {
+                  "name": "5-60",
+                  "score": 74
+                },
+                {
+                  "name": "Kick",
+                  "score": 64
+                },
+                {
+                  "name": "9-60",
+                  "score": 64
+                },
+                {
+                  "name": "Low Orb",
+                  "score": 59
+                },
+                {
+                  "name": "1-70",
+                  "score": 54
+                },
+                {
+                  "name": "Ball",
+                  "score": 54
+                },
+                {
+                  "name": "Low Rush",
+                  "score": 51
+                }
+              ]
+            },
+            {
+              "name": "Blast",
+              "score": 58,
+              "position_change": 0,
+              "synergy": [
+                {
+                  "name": "Heavy",
+                  "score": 84
+                },
+                {
+                  "name": "Metal Chip",
+                  "score": 81
+                },
+                {
+                  "name": "9-60",
+                  "score": 75
+                },
+                {
+                  "name": "7-60",
+                  "score": 74
+                },
+                {
+                  "name": "Jolt",
+                  "score": 74
+                },
+                {
+                  "name": "Level",
+                  "score": 74
+                },
+                {
+                  "name": "Plastic Chip",
+                  "score": 74
+                },
+                {
+                  "name": "Wheel",
+                  "score": 73
+                },
+                {
+                  "name": "Kick",
+                  "score": 72
+                },
+                {
+                  "name": "3-60",
+                  "score": 66
+                },
+                {
+                  "name": "Rush",
+                  "score": 66
+                },
+                {
+                  "name": "Low Rush",
+                  "score": 61
+                },
+                {
+                  "name": "Hexa",
                   "score": 51
                 },
                 {
                   "name": "1-60",
-                  "score": 47
+                  "score": 49
+                }
+              ]
+            },
+            {
+              "name": "Wyvern Hover",
+              "score": 55,
+              "position_change": 0,
+              "synergy": [
+                {
+                  "name": "9-60",
+                  "score": 78
+                },
+                {
+                  "name": "7-60",
+                  "score": 73
+                },
+                {
+                  "name": "Rush",
+                  "score": 73
+                },
+                {
+                  "name": "Kick",
+                  "score": 70
+                },
+                {
+                  "name": "Jolt",
+                  "score": 67
+                },
+                {
+                  "name": "3-60",
+                  "score": 58
+                },
+                {
+                  "name": "Low Rush",
+                  "score": 46
+                },
+                {
+                  "name": "1-70",
+                  "score": 42
+                },
+                {
+                  "name": "1-60",
+                  "score": 41
                 }
               ]
             },
@@ -2324,130 +2417,23 @@
               "position_change": 0,
               "synergy": [
                 {
-                  "name": "5-60",
-                  "score": 90
-                },
-                {
                   "name": "Free Ball",
-                  "score": 77
-                },
-                {
-                  "name": "Wedge",
-                  "score": 74
-                },
-                {
-                  "name": "9-60",
-                  "score": 70
-                },
-                {
-                  "name": "1-60",
-                  "score": 68
+                  "score": 81
                 },
                 {
                   "name": "Hexa",
-                  "score": 62
+                  "score": 71
                 },
                 {
                   "name": "7-60",
-                  "score": 58
-                }
-              ]
-            },
-            {
-              "name": "Samurai Calibur",
-              "score": 47,
-              "position_change": 4,
-              "synergy": [
-                {
-                  "name": "1-60",
-                  "score": 77
-                }
-              ]
-            },
-            {
-              "name": "Cobalt Dragoon",
-              "score": 46,
-              "position_change": 2,
-              "synergy": [
-                {
-                  "name": "Elevate",
-                  "score": 69
+                  "score": 66
                 },
-                {
-                  "name": "5-60",
-                  "score": 68
-                },
-                {
-                  "name": "9-60",
-                  "score": 60
-                }
-              ]
-            },
-            {
-              "name": "Golem Rock",
-              "score": 46,
-              "position_change": 0,
-              "synergy": [
                 {
                   "name": "Wedge",
-                  "score": 77
-                },
-                {
-                  "name": "1-60",
-                  "score": 73
+                  "score": 66
                 },
                 {
                   "name": "9-60",
-                  "score": 68
-                },
-                {
-                  "name": "Free Ball",
-                  "score": 67
-                }
-              ]
-            },
-            {
-              "name": "Meteor Dragoon",
-              "score": 45,
-              "position_change": -3,
-              "synergy": [
-                {
-                  "name": "5-60",
-                  "score": 77
-                },
-                {
-                  "name": "7-60",
-                  "score": 76
-                },
-                {
-                  "name": "9-60",
-                  "score": 67
-                },
-                {
-                  "name": "Level",
-                  "score": 67
-                },
-                {
-                  "name": "7-70",
-                  "score": 53
-                }
-              ]
-            },
-            {
-              "name": "Aero Pegasus",
-              "score": 42,
-              "position_change": -3,
-              "synergy": [
-                {
-                  "name": "3-60",
-                  "score": 70
-                },
-                {
-                  "name": "Rush",
-                  "score": 65
-                },
-                {
-                  "name": "Kick",
                   "score": 60
                 },
                 {
@@ -2455,57 +2441,69 @@
                   "score": 57
                 },
                 {
-                  "name": "Low Rush",
-                  "score": 44
+                  "name": "Low Orb",
+                  "score": 56
                 }
               ]
             },
             {
-              "name": "Phoenix Wing",
-              "score": 40,
-              "position_change": 1,
+              "name": "Meteor Dragoon",
+              "score": 49,
+              "position_change": 0,
               "synergy": [
                 {
-                  "name": "7-60",
-                  "score": 72
+                  "name": "9-60",
+                  "score": 73
                 },
                 {
-                  "name": "9-60",
+                  "name": "Level",
+                  "score": 70
+                },
+                {
+                  "name": "5-60",
+                  "score": 69
+                },
+                {
+                  "name": "7-60",
                   "score": 63
                 },
                 {
-                  "name": "Rush",
-                  "score": 56
-                },
-                {
-                  "name": "3-60",
-                  "score": 48
-                },
-                {
-                  "name": "Low Rush",
-                  "score": 48
-                },
-                {
-                  "name": "1-60",
-                  "score": 46
-                },
-                {
-                  "name": "Kick",
-                  "score": 40
+                  "name": "7-70",
+                  "score": 63
                 }
               ]
             },
             {
-              "name": "Silver Wolf",
-              "score": 39,
-              "position_change": 1,
+              "name": "Aero Pegasus",
+              "score": 47,
+              "position_change": 4,
               "synergy": [
                 {
-                  "name": "9-70",
+                  "name": "3-60",
+                  "score": 73
+                },
+                {
+                  "name": "Rush",
+                  "score": 69
+                },
+                {
+                  "name": "1-60",
+                  "score": 67
+                },
+                {
+                  "name": "7-60",
+                  "score": 66
+                },
+                {
+                  "name": "Kick",
                   "score": 62
                 },
                 {
-                  "name": "Hexa",
+                  "name": "Level",
+                  "score": 62
+                },
+                {
+                  "name": "Low Rush",
                   "score": 61
                 },
                 {
@@ -2513,31 +2511,170 @@
                   "score": 60
                 },
                 {
-                  "name": "Low Orb",
-                  "score": 56
-                },
-                {
-                  "name": "Free Ball",
-                  "score": 43
+                  "name": "Jolt",
+                  "score": 45
                 }
               ]
             },
             {
-              "name": "Clock Mirage",
-              "score": 36,
+              "name": "Phoenix Wing",
+              "score": 47,
+              "position_change": 4,
+              "synergy": [
+                {
+                  "name": "7-60",
+                  "score": 92
+                },
+                {
+                  "name": "Rush",
+                  "score": 68
+                },
+                {
+                  "name": "Low Rush",
+                  "score": 62
+                },
+                {
+                  "name": "1-60",
+                  "score": 59
+                },
+                {
+                  "name": "9-60",
+                  "score": 59
+                },
+                {
+                  "name": "3-60",
+                  "score": 55
+                }
+              ]
+            },
+            {
+              "name": "Cobalt Dragoon",
+              "score": 46,
               "position_change": 1,
               "synergy": [
                 {
-                  "name": "7-55",
-                  "score": 53
+                  "name": "9-60",
+                  "score": 69
                 },
                 {
-                  "name": "4-55",
-                  "score": 51
+                  "name": "Elevate",
+                  "score": 68
+                },
+                {
+                  "name": "5-60",
+                  "score": 61
+                }
+              ]
+            },
+            {
+              "name": "Eclipse",
+              "score": 45,
+              "position_change": "NEW",
+              "synergy": [
+                {
+                  "name": "Heavy",
+                  "score": 77
+                },
+                {
+                  "name": "Metal Chip",
+                  "score": 69
+                }
+              ]
+            },
+            {
+              "name": "Scorpio Spear",
+              "score": 44,
+              "position_change": 2,
+              "synergy": [
+                {
+                  "name": "9-60",
+                  "score": 69
+                }
+              ]
+            },
+            {
+              "name": "Silver Wolf",
+              "score": 43,
+              "position_change": -5,
+              "synergy": [
+                {
+                  "name": "Hexa",
+                  "score": 70
+                },
+                {
+                  "name": "9-60",
+                  "score": 68
+                },
+                {
+                  "name": "Low Orb",
+                  "score": 59
+                },
+                {
+                  "name": "Free Ball",
+                  "score": 55
+                },
+                {
+                  "name": "3-60",
+                  "score": 55
+                },
+                {
+                  "name": "9-70",
+                  "score": 48
+                }
+              ]
+            },
+            {
+              "name": "Samurai Calibur",
+              "score": 41,
+              "position_change": -4,
+              "synergy": [
+                {
+                  "name": "1-60",
+                  "score": 69
+                }
+              ]
+            },
+            {
+              "name": "Golem Rock",
+              "score": 41,
+              "position_change": -6,
+              "synergy": [
+                {
+                  "name": "Free Ball",
+                  "score": 62
+                },
+                {
+                  "name": "9-60",
+                  "score": 55
+                },
+                {
+                  "name": "Wedge",
+                  "score": 48
+                }
+              ]
+            },
+            {
+              "name": "Tyranno Roar",
+              "score": 41,
+              "position_change": "NEW",
+              "synergy": []
+            },
+            {
+              "name": "Clock Mirage",
+              "score": 39,
+              "position_change": -1,
+              "synergy": [
+                {
+                  "name": "7-55",
+                  "score": 59
                 },
                 {
                   "name": "Under Needle",
-                  "score": 51
+                  "score": 58
+                },
+                {
+                  "name": "4-55",
+                  "score": 56
                 },
                 {
                   "name": "Low Orb",
@@ -2546,28 +2683,49 @@
               ]
             },
             {
+              "name": "Flare",
+              "score": 38,
+              "position_change": -3,
+              "synergy": [
+                {
+                  "name": "Plastic Chip",
+                  "score": 57
+                },
+                {
+                  "name": "9-60",
+                  "score": 56
+                },
+                {
+                  "name": "Heavy",
+                  "score": 56
+                }
+              ]
+            },
+            {
+              "name": "Orochi Cluster",
+              "score": 31,
+              "position_change": "NEW",
+              "synergy": []
+            },
+            {
               "name": "Tyranno Beat",
-              "score": 33,
+              "score": 29,
               "position_change": -3,
               "synergy": [
                 {
                   "name": "Rush",
-                  "score": 49
+                  "score": 51
                 }
               ]
             },
             {
               "name": "Knight Mail",
-              "score": 29,
-              "position_change": 0,
+              "score": 25,
+              "position_change": -3,
               "synergy": [
                 {
-                  "name": "1-60",
-                  "score": 51
-                },
-                {
                   "name": "Rush",
-                  "score": 48
+                  "score": 43
                 }
               ]
             }
@@ -2578,83 +2736,95 @@
           "components": [
             {
               "name": "Heavy",
-              "score": 56,
+              "score": 61,
               "position_change": 0,
               "synergy": [
                 {
-                  "name": "Plastic Chip",
-                  "score": 80
-                },
-                {
                   "name": "Blast",
-                  "score": 79
-                },
-                {
-                  "name": "Kick",
-                  "score": 78
-                },
-                {
-                  "name": "9-60",
-                  "score": 76
-                },
-                {
-                  "name": "Jolt",
-                  "score": 71
+                  "score": 84
                 },
                 {
                   "name": "Metal Chip",
-                  "score": 69
-                },
-                {
-                  "name": "3-60",
-                  "score": 69
-                },
-                {
-                  "name": "Eclipse",
-                  "score": 69
-                },
-                {
-                  "name": "7-60",
-                  "score": 65
-                },
-                {
-                  "name": "Level",
-                  "score": 61
-                },
-                {
-                  "name": "Low Rush",
-                  "score": 56
-                },
-                {
-                  "name": "Rush",
-                  "score": 54
-                },
-                {
-                  "name": "1-60",
-                  "score": 48
+                  "score": 83
                 },
                 {
                   "name": "5-60",
-                  "score": 48
+                  "score": 81
+                },
+                {
+                  "name": "Jolt",
+                  "score": 79
+                },
+                {
+                  "name": "Eclipse",
+                  "score": 77
+                },
+                {
+                  "name": "9-60",
+                  "score": 74
+                },
+                {
+                  "name": "Kick",
+                  "score": 74
+                },
+                {
+                  "name": "Plastic Chip",
+                  "score": 74
+                },
+                {
+                  "name": "7-60",
+                  "score": 73
+                },
+                {
+                  "name": "Rush",
+                  "score": 70
+                },
+                {
+                  "name": "Level",
+                  "score": 67
+                },
+                {
+                  "name": "3-60",
+                  "score": 63
+                },
+                {
+                  "name": "Low Rush",
+                  "score": 61
+                },
+                {
+                  "name": "Flare",
+                  "score": 56
+                },
+                {
+                  "name": "1-60",
+                  "score": 49
                 }
               ]
             },
             {
               "name": "Wheel",
-              "score": 44,
+              "score": 43,
               "position_change": 0,
               "synergy": [
                 {
+                  "name": "9-60",
+                  "score": 77
+                },
+                {
                   "name": "Blast",
-                  "score": 69
+                  "score": 73
                 },
                 {
                   "name": "Metal Chip",
-                  "score": 66
+                  "score": 70
+                },
+                {
+                  "name": "7-60",
+                  "score": 62
                 },
                 {
                   "name": "Plastic Chip",
-                  "score": 66
+                  "score": 56
                 }
               ]
             }
@@ -2664,79 +2834,8 @@
           "category": "Bit",
           "components": [
             {
-              "name": "Low Rush",
-              "score": 75,
-              "position_change": 0,
-              "synergy": [
-                {
-                  "name": "Shark Scale",
-                  "score": 100
-                },
-                {
-                  "name": "1-70",
-                  "score": 89
-                },
-                {
-                  "name": "3-60",
-                  "score": 73
-                },
-                {
-                  "name": "9-70",
-                  "score": 72
-                },
-                {
-                  "name": "1-60",
-                  "score": 68
-                },
-                {
-                  "name": "7-60",
-                  "score": 59
-                },
-                {
-                  "name": "Blast",
-                  "score": 58
-                },
-                {
-                  "name": "Wyvern Hover",
-                  "score": 58
-                },
-                {
-                  "name": "Heavy",
-                  "score": 56
-                },
-                {
-                  "name": "Metal Chip",
-                  "score": 54
-                },
-                {
-                  "name": "Plastic Chip",
-                  "score": 51
-                },
-                {
-                  "name": "9-60",
-                  "score": 50
-                },
-                {
-                  "name": "4-50",
-                  "score": 50
-                },
-                {
-                  "name": "Phoenix Wing",
-                  "score": 48
-                },
-                {
-                  "name": "Aero Pegasus",
-                  "score": 44
-                },
-                {
-                  "name": "5-60",
-                  "score": 44
-                }
-              ]
-            },
-            {
               "name": "Hexa",
-              "score": 74,
+              "score": 77,
               "position_change": 0,
               "synergy": [
                 {
@@ -2745,469 +2844,568 @@
                 },
                 {
                   "name": "1-60",
-                  "score": 95
+                  "score": 100
                 },
                 {
                   "name": "6-60",
-                  "score": 93
-                },
-                {
-                  "name": "3-60",
-                  "score": 70
-                },
-                {
-                  "name": "Blast",
-                  "score": 64
-                },
-                {
-                  "name": "Mummy Curse",
-                  "score": 62
-                },
-                {
-                  "name": "Silver Wolf",
-                  "score": 61
-                },
-                {
-                  "name": "Metal Chip",
-                  "score": 60
-                },
-                {
-                  "name": "Wyvern Hover",
-                  "score": 60
+                  "score": 100
                 },
                 {
                   "name": "9-60",
-                  "score": 59
+                  "score": 79
                 },
                 {
-                  "name": "1-70",
-                  "score": 56
+                  "name": "5-60",
+                  "score": 73
+                },
+                {
+                  "name": "Mummy Curse",
+                  "score": 71
+                },
+                {
+                  "name": "Silver Wolf",
+                  "score": 70
                 },
                 {
                   "name": "7-60",
-                  "score": 56
+                  "score": 65
                 },
                 {
                   "name": "Shark Scale",
+                  "score": 64
+                },
+                {
+                  "name": "3-60",
+                  "score": 60
+                },
+                {
+                  "name": "1-70",
+                  "score": 58
+                },
+                {
+                  "name": "Metal Chip",
+                  "score": 56
+                },
+                {
+                  "name": "Blast",
+                  "score": 51
+                }
+              ]
+            },
+            {
+              "name": "Low Rush",
+              "score": 76,
+              "position_change": 0,
+              "synergy": [
+                {
+                  "name": "Shark Scale",
+                  "score": 100
+                },
+                {
+                  "name": "3-60",
+                  "score": 84
+                },
+                {
+                  "name": "1-70",
+                  "score": 79
+                },
+                {
+                  "name": "1-60",
+                  "score": 73
+                },
+                {
+                  "name": "3-70",
+                  "score": 73
+                },
+                {
+                  "name": "Phoenix Wing",
+                  "score": 62
+                },
+                {
+                  "name": "Aero Pegasus",
+                  "score": 61
+                },
+                {
+                  "name": "Blast",
+                  "score": 61
+                },
+                {
+                  "name": "Heavy",
+                  "score": 61
+                },
+                {
+                  "name": "Plastic Chip",
+                  "score": 60
+                },
+                {
+                  "name": "7-60",
+                  "score": 58
+                },
+                {
+                  "name": "Metal Chip",
+                  "score": 55
+                },
+                {
+                  "name": "Wizard Rod",
+                  "score": 51
+                },
+                {
+                  "name": "4-50",
+                  "score": 50
+                },
+                {
+                  "name": "9-60",
+                  "score": 47
+                },
+                {
+                  "name": "Wyvern Hover",
+                  "score": 46
+                },
+                {
+                  "name": "5-60",
+                  "score": 45
+                }
+              ]
+            },
+            {
+              "name": "Rush",
+              "score": 59,
+              "position_change": 0,
+              "synergy": [
+                {
+                  "name": "7-60",
+                  "score": 81
+                },
+                {
+                  "name": "Shark Scale",
+                  "score": 81
+                },
+                {
+                  "name": "9-60",
+                  "score": 75
+                },
+                {
+                  "name": "1-60",
+                  "score": 75
+                },
+                {
+                  "name": "Wyvern Hover",
+                  "score": 73
+                },
+                {
+                  "name": "Heavy",
+                  "score": 70
+                },
+                {
+                  "name": "Aero Pegasus",
+                  "score": 69
+                },
+                {
+                  "name": "Phoenix Wing",
+                  "score": 68
+                },
+                {
+                  "name": "3-60",
+                  "score": 66
+                },
+                {
+                  "name": "Blast",
+                  "score": 66
+                },
+                {
+                  "name": "Metal Chip",
+                  "score": 66
+                },
+                {
+                  "name": "1-70",
+                  "score": 51
+                },
+                {
+                  "name": "Tyranno Beat",
+                  "score": 51
+                },
+                {
+                  "name": "Knight Mail",
                   "score": 43
                 }
               ]
             },
             {
               "name": "Kick",
-              "score": 58,
+              "score": 59,
               "position_change": 0,
               "synergy": [
                 {
-                  "name": "Heavy",
-                  "score": 78
-                },
-                {
                   "name": "Metal Chip",
-                  "score": 75
-                },
-                {
-                  "name": "Blast",
-                  "score": 75
-                },
-                {
-                  "name": "Shark Scale",
-                  "score": 73
-                },
-                {
-                  "name": "3-60",
-                  "score": 71
+                  "score": 77
                 },
                 {
                   "name": "7-60",
-                  "score": 71
+                  "score": 75
                 },
                 {
-                  "name": "Wyvern Hover",
-                  "score": 69
+                  "name": "Heavy",
+                  "score": 74
+                },
+                {
+                  "name": "Blast",
+                  "score": 72
                 },
                 {
                   "name": "9-60",
-                  "score": 67
+                  "score": 70
                 },
                 {
-                  "name": "Plastic Chip",
-                  "score": 66
-                },
-                {
-                  "name": "5-60",
-                  "score": 64
+                  "name": "Wyvern Hover",
+                  "score": 70
                 },
                 {
                   "name": "Wizard Rod",
                   "score": 64
                 },
                 {
-                  "name": "Aero Pegasus",
-                  "score": 60
-                },
-                {
-                  "name": "1-70",
-                  "score": 56
-                },
-                {
-                  "name": "1-60",
-                  "score": 53
-                },
-                {
-                  "name": "Phoenix Wing",
-                  "score": 40
-                }
-              ]
-            },
-            {
-              "name": "Rush",
-              "score": 54,
-              "position_change": 0,
-              "synergy": [
-                {
-                  "name": "Wyvern Hover",
-                  "score": 83
-                },
-                {
-                  "name": "1-60",
-                  "score": 73
-                },
-                {
-                  "name": "Shark Scale",
-                  "score": 72
-                },
-                {
-                  "name": "Aero Pegasus",
-                  "score": 65
-                },
-                {
-                  "name": "9-60",
-                  "score": 65
-                },
-                {
                   "name": "3-60",
-                  "score": 63
+                  "score": 62
                 },
                 {
-                  "name": "7-60",
-                  "score": 58
-                },
-                {
-                  "name": "Blast",
-                  "score": 57
-                },
-                {
-                  "name": "Phoenix Wing",
-                  "score": 56
-                },
-                {
-                  "name": "Metal Chip",
-                  "score": 54
-                },
-                {
-                  "name": "Heavy",
-                  "score": 54
-                },
-                {
-                  "name": "Tyranno Beat",
-                  "score": 49
-                },
-                {
-                  "name": "Knight Mail",
-                  "score": 48
-                },
-                {
-                  "name": "1-70",
-                  "score": 40
-                }
-              ]
-            },
-            {
-              "name": "Level",
-              "score": 53,
-              "position_change": 1,
-              "synergy": [
-                {
-                  "name": "5-60",
-                  "score": 79
-                },
-                {
-                  "name": "7-60",
-                  "score": 74
-                },
-                {
-                  "name": "Meteor Dragoon",
-                  "score": 67
+                  "name": "Aero Pegasus",
+                  "score": 62
                 },
                 {
                   "name": "Plastic Chip",
-                  "score": 64
-                },
-                {
-                  "name": "Wyvern Hover",
-                  "score": 64
-                },
-                {
-                  "name": "Blast",
-                  "score": 62
-                },
-                {
-                  "name": "Shark Scale",
-                  "score": 62
-                },
-                {
-                  "name": "Heavy",
                   "score": 61
                 },
                 {
-                  "name": "9-60",
-                  "score": 59
-                },
-                {
-                  "name": "7-70",
-                  "score": 56
-                },
-                {
-                  "name": "3-60",
-                  "score": 56
-                },
-                {
-                  "name": "Metal Chip",
-                  "score": 54
-                },
-                {
-                  "name": "4-50",
+                  "name": "Shark Scale",
                   "score": 54
                 },
                 {
                   "name": "1-60",
+                  "score": 51
+                },
+                {
+                  "name": "1-70",
                   "score": 51
                 }
               ]
             },
             {
               "name": "Free Ball",
-              "score": 52,
+              "score": 56,
               "position_change": 1,
               "synergy": [
+                {
+                  "name": "Mummy Curse",
+                  "score": 81
+                },
+                {
+                  "name": "1-60",
+                  "score": 79
+                },
                 {
                   "name": "Wizard Rod",
                   "score": 78
                 },
                 {
-                  "name": "Mummy Curse",
-                  "score": 77
-                },
-                {
-                  "name": "1-60",
-                  "score": 70
-                },
-                {
-                  "name": "Golem Rock",
-                  "score": 67
-                },
-                {
-                  "name": "Shark Scale",
-                  "score": 67
-                },
-                {
                   "name": "9-60",
-                  "score": 63
+                  "score": 72
                 },
                 {
                   "name": "3-60",
-                  "score": 51
+                  "score": 71
+                },
+                {
+                  "name": "Shark Scale",
+                  "score": 66
+                },
+                {
+                  "name": "7-60",
+                  "score": 64
+                },
+                {
+                  "name": "Golem Rock",
+                  "score": 62
+                },
+                {
+                  "name": "5-60",
+                  "score": 55
                 },
                 {
                   "name": "Silver Wolf",
-                  "score": 43
+                  "score": 55
                 }
               ]
             },
             {
-              "name": "Wedge",
-              "score": 50,
-              "position_change": -2,
+              "name": "Level",
+              "score": 55,
+              "position_change": -1,
+              "synergy": [
+                {
+                  "name": "Blast",
+                  "score": 74
+                },
+                {
+                  "name": "5-60",
+                  "score": 71
+                },
+                {
+                  "name": "Meteor Dragoon",
+                  "score": 70
+                },
+                {
+                  "name": "Heavy",
+                  "score": 67
+                },
+                {
+                  "name": "Metal Chip",
+                  "score": 66
+                },
+                {
+                  "name": "Plastic Chip",
+                  "score": 66
+                },
+                {
+                  "name": "3-60",
+                  "score": 64
+                },
+                {
+                  "name": "7-70",
+                  "score": 64
+                },
+                {
+                  "name": "7-60",
+                  "score": 62
+                },
+                {
+                  "name": "Aero Pegasus",
+                  "score": 62
+                },
+                {
+                  "name": "Shark Scale",
+                  "score": 61
+                },
+                {
+                  "name": "4-50",
+                  "score": 59
+                },
+                {
+                  "name": "9-60",
+                  "score": 59
+                },
+                {
+                  "name": "1-70",
+                  "score": 59
+                },
+                {
+                  "name": "1-60",
+                  "score": 51
+                }
+              ]
+            },
+            {
+              "name": "Under Needle",
+              "score": 48,
+              "position_change": 0,
+              "synergy": [
+                {
+                  "name": "Clock Mirage",
+                  "score": 58
+                },
+                {
+                  "name": "7-55",
+                  "score": 57
+                }
+              ]
+            },
+            {
+              "name": "Elevate",
+              "score": 47,
+              "position_change": 3,
               "synergy": [
                 {
                   "name": "9-60",
+                  "score": 69
+                },
+                {
+                  "name": "Cobalt Dragoon",
+                  "score": 68
+                },
+                {
+                  "name": "5-60",
+                  "score": 62
+                }
+              ]
+            },
+            {
+              "name": "Unite",
+              "score": 44,
+              "position_change": "NEW",
+              "synergy": []
+            },
+            {
+              "name": "Jolt",
+              "score": 44,
+              "position_change": 0,
+              "synergy": [
+                {
+                  "name": "9-60",
+                  "score": 83
+                },
+                {
+                  "name": "Heavy",
                   "score": 79
                 },
                 {
-                  "name": "Golem Rock",
-                  "score": 77
+                  "name": "Blast",
+                  "score": 74
                 },
                 {
-                  "name": "Mummy Curse",
-                  "score": 74
+                  "name": "Plastic Chip",
+                  "score": 68
+                },
+                {
+                  "name": "Wyvern Hover",
+                  "score": 67
+                },
+                {
+                  "name": "Shark Scale",
+                  "score": 61
+                },
+                {
+                  "name": "1-70",
+                  "score": 56
+                },
+                {
+                  "name": "1-60",
+                  "score": 51
+                },
+                {
+                  "name": "Aero Pegasus",
+                  "score": 45
+                },
+                {
+                  "name": "3-60",
+                  "score": 44
                 }
               ]
             },
             {
               "name": "Low Orb",
-              "score": 48,
-              "position_change": 0,
+              "score": 43,
+              "position_change": 1,
               "synergy": [
                 {
                   "name": "Shark Scale",
-                  "score": 91
-                },
-                {
-                  "name": "Wizard Rod",
-                  "score": 73
+                  "score": 77
                 },
                 {
                   "name": "1-60",
-                  "score": 69
-                },
-                {
-                  "name": "9-60",
-                  "score": 68
+                  "score": 65
                 },
                 {
                   "name": "3-60",
                   "score": 60
                 },
                 {
+                  "name": "Wizard Rod",
+                  "score": 59
+                },
+                {
                   "name": "Silver Wolf",
+                  "score": 59
+                },
+                {
+                  "name": "Mummy Curse",
                   "score": 56
+                },
+                {
+                  "name": "9-60",
+                  "score": 51
                 },
                 {
                   "name": "Clock Mirage",
                   "score": 49
-                },
-                {
-                  "name": "7-55",
-                  "score": 40
-                }
-              ]
-            },
-            {
-              "name": "Rubber Accel",
-              "score": 46,
-              "position_change": 0,
-              "synergy": [
-                {
-                  "name": "Shark Scale",
-                  "score": 64
-                }
-              ]
-            },
-            {
-              "name": "Low Flat",
-              "score": 46,
-              "position_change": 1,
-              "synergy": []
-            },
-            {
-              "name": "Elevate",
-              "score": 45,
-              "position_change": 1,
-              "synergy": [
-                {
-                  "name": "Cobalt Dragoon",
-                  "score": 69
-                },
-                {
-                  "name": "5-60",
-                  "score": 68
-                },
-                {
-                  "name": "9-60",
-                  "score": 59
                 }
               ]
             },
             {
               "name": "Point",
-              "score": 45,
-              "position_change": 1,
-              "synergy": [
-                {
-                  "name": "3-60",
-                  "score": 61
-                }
-              ]
-            },
-            {
-              "name": "Jolt",
-              "score": 44,
+              "score": 41,
               "position_change": -3,
               "synergy": [
                 {
-                  "name": "Plastic Chip",
-                  "score": 81
-                },
+                  "name": "3-60",
+                  "score": 37
+                }
+              ]
+            },
+            {
+              "name": "Rubber Accel",
+              "score": 40,
+              "position_change": 0,
+              "synergy": []
+            },
+            {
+              "name": "Wedge",
+              "score": 39,
+              "position_change": -6,
+              "synergy": [
                 {
-                  "name": "Heavy",
-                  "score": 71
+                  "name": "Mummy Curse",
+                  "score": 66
                 },
                 {
                   "name": "9-60",
-                  "score": 70
-                },
-                {
-                  "name": "Blast",
-                  "score": 69
-                },
-                {
-                  "name": "Wyvern Hover",
-                  "score": 65
-                },
-                {
-                  "name": "1-70",
-                  "score": 63
-                },
-                {
-                  "name": "Shark Scale",
-                  "score": 62
+                  "score": 64
                 },
                 {
                   "name": "1-60",
-                  "score": 51
-                },
-                {
-                  "name": "3-60",
-                  "score": 49
-                }
-              ]
-            },
-            {
-              "name": "Under Needle",
-              "score": 42,
-              "position_change": 0,
-              "synergy": [
-                {
-                  "name": "Clock Mirage",
-                  "score": 51
-                }
-              ]
-            },
-            {
-              "name": "Ball",
-              "score": 39,
-              "position_change": 0,
-              "synergy": [
-                {
-                  "name": "Wizard Rod",
                   "score": 59
                 },
                 {
-                  "name": "9-60",
-                  "score": 41
+                  "name": "Golem Rock",
+                  "score": 48
                 },
                 {
-                  "name": "1-60",
-                  "score": 40
+                  "name": "3-60",
+                  "score": 43
                 }
               ]
             },
             {
               "name": "Taper",
-              "score": 38,
+              "score": 37,
               "position_change": 0,
-              "synergy": []
+              "synergy": [
+                {
+                  "name": "Metal Chip",
+                  "score": 61
+                },
+                {
+                  "name": "9-60",
+                  "score": 59
+                }
+              ]
+            },
+            {
+              "name": "Ball",
+              "score": 33,
+              "position_change": -2,
+              "synergy": [
+                {
+                  "name": "3-60",
+                  "score": 60
+                },
+                {
+                  "name": "Wizard Rod",
+                  "score": 54
+                },
+                {
+                  "name": "9-60",
+                  "score": 44
+                }
+              ]
             }
           ]
         }

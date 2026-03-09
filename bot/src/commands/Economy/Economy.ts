@@ -50,7 +50,7 @@ export class EconomyCommand {
       });
     }
 
-    const profile = user?.profile as any;
+    const profile = user?.profile;
     const lastDaily = profile?.lastDaily;
 
     if (
@@ -71,7 +71,7 @@ export class EconomyCommand {
       data: {
         currency: { increment: reward },
         lastDaily: now,
-      } as any,
+      },
     });
 
     return interaction.editReply(
@@ -87,7 +87,7 @@ export class EconomyCommand {
       required: false,
       type: ApplicationCommandOptionType.User,
     })
-    targetUser: any,
+    targetUser: { id: string; username: string } | undefined,
     interaction: CommandInteraction,
   ) {
     await interaction.deferReply();
@@ -98,7 +98,7 @@ export class EconomyCommand {
       include: { profile: true },
     });
 
-    const balance = (user?.profile as any)?.currency || 0;
+    const balance = user?.profile?.currency ?? 0;
 
     return interaction.editReply(
       `💳 **${target.username}** possède actuellement **${balance} pièces**.`,
@@ -129,7 +129,7 @@ export class EconomyCommand {
       include: { profile: true },
     });
 
-    const balance = (user?.profile as any)?.currency || 0;
+    const balance = user?.profile?.currency ?? 0;
     if (balance < amount)
       return interaction.editReply(
         `❌ Tu n'as pas assez de pièces (Solde actuel : ${balance}).`,
@@ -140,7 +140,7 @@ export class EconomyCommand {
 
     await this.prisma.profile.update({
       where: { userId: user?.id },
-      data: { currency: newBalance } as any,
+      data: { currency: newBalance },
     });
 
     const text = win

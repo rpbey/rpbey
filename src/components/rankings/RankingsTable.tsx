@@ -4,6 +4,7 @@ import {
   EmojiEvents as TrophyIcon,
   CheckCircle as VerifiedIcon,
 } from '@mui/icons-material';
+import type { Theme } from '@mui/material';
 import { Tooltip, useTheme } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
@@ -22,7 +23,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { authClient } from '@/lib/auth-client';
 import { getInitials } from '@/lib/utils';
 
-type ProfileWithUser = Profile & {
+export type ProfileWithUser = Profile & {
   user: User & {
     _count: {
       tournaments: number;
@@ -30,7 +31,13 @@ type ProfileWithUser = Profile & {
   };
 };
 
-function BladerInfo({ profile, theme }: { profile: any, theme: any }) {
+function BladerInfo({
+  profile,
+  theme,
+}: {
+  profile: ProfileWithUser;
+  theme: Theme;
+}) {
   return (
     <Box
       sx={{
@@ -52,9 +59,7 @@ function BladerInfo({ profile, theme }: { profile: any, theme: any }) {
           border: `1px solid ${theme.palette.divider}`,
         }}
       >
-        {getInitials(
-          profile.bladerName || profile.user?.name,
-        )}
+        {getInitials(profile.bladerName || profile.user?.name)}
       </Avatar>
       <Box sx={{ minWidth: 0 }}>
         <Box
@@ -78,16 +83,11 @@ function BladerInfo({ profile, theme }: { profile: any, theme: any }) {
             {profile.bladerName ||
               profile.user?.name ||
               profile.challongeUsername ||
-              profile.user?.username?.replace(
-                /^bts[1-3]_/,
-                '',
-              ) ||
+              profile.user?.username?.replace(/^bts[1-3]_/, '') ||
               'Anonyme'}
           </Typography>
           {profile.challongeUsername && (
-            <Tooltip
-              title={`Compte Challonge : ${profile.challongeUsername}`}
-            >
+            <Tooltip title={`Compte Challonge : ${profile.challongeUsername}`}>
               <Link
                 href={`https://challonge.com/fr/users/${profile.challongeUsername}`}
                 target="_blank"
@@ -110,15 +110,12 @@ function BladerInfo({ profile, theme }: { profile: any, theme: any }) {
           )}
         </Box>
         {profile.tournamentWins > 0 && (
-          <Tooltip
-            title={`${profile.tournamentWins} tournoi(s) remporté(s)`}
-          >
+          <Tooltip title={`${profile.tournamentWins} tournoi(s) remporté(s)`}>
             <TrophyIcon
               sx={{
                 fontSize: { xs: '0.8rem', sm: '1.1rem' },
                 color: '#FFD700',
-                filter:
-                  'drop-shadow(0 0 2px rgba(255, 215, 0, 0.4))',
+                filter: 'drop-shadow(0 0 2px rgba(255, 215, 0, 0.4))',
                 mt: 0.2,
               }}
             />

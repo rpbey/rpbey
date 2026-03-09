@@ -62,7 +62,7 @@ export class ChallongeScraper {
     if (!this.browser) await this.init();
     const slug = urlId.replace('https://challonge.com/', '').replace(/^\//, '');
     const baseUrl = `https://challonge.com/${slug}`;
-    const page = await this.browser!.newPage();
+    const page = await this.browser?.newPage();
     if (!page) throw new Error('Failed to create a new page');
     if (this.cookies.length > 0) await page.setCookie(...this.cookies);
 

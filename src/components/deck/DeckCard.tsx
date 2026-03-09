@@ -28,8 +28,10 @@ export interface DeckBey {
   position: number;
   nickname: string | null;
   blade: Part | null;
+  overBlade?: Part | null;
   ratchet: Part | null;
   bit: Part | null;
+  lockChip?: Part | null;
   assistBlade?: Part | null;
 }
 
@@ -57,9 +59,14 @@ function parseStat(stat: string | number | null | undefined): number {
 }
 
 function calculateStats(bey: DeckBey) {
-  const parts = [bey.blade, bey.ratchet, bey.bit, bey.assistBlade].filter(
-    Boolean,
-  ) as Part[];
+  const parts = [
+    bey.blade,
+    bey.overBlade,
+    bey.ratchet,
+    bey.bit,
+    bey.lockChip,
+    bey.assistBlade,
+  ].filter(Boolean) as Part[];
   return parts.reduce(
     (acc, part) => ({
       attack: acc.attack + parseStat(part.attack),
@@ -246,11 +253,11 @@ export function DeckCard({
     if (!el) return;
     try {
       const html2canvas = (await import('html2canvas')).default;
-      const canvas = await html2canvas(el, { 
+      const canvas = await html2canvas(el, {
         backgroundColor: '#111',
         useCORS: true,
         allowTaint: true,
-        scale: 2 // Higher quality
+        scale: 2, // Higher quality
       });
       const link = document.createElement('a');
       link.download = `deck-${deck.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.png`;
@@ -261,7 +268,9 @@ export function DeckCard({
     }
   };
 
-  const sortedBeys = deck?.beys ? [...deck.beys].sort((a, b) => a.position - b.position) : [];
+  const sortedBeys = deck?.beys
+    ? [...deck.beys].sort((a, b) => a.position - b.position)
+    : [];
 
   return (
     <Card

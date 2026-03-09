@@ -159,7 +159,12 @@ export function SatrBladersTable({
                   totalMatches > 0
                     ? ((row.totalWins / totalMatches) * 100).toFixed(1)
                     : '0';
-                const history = row.history as any[];
+                const history = row.history as Array<{
+                  tournament: string;
+                  wins: number;
+                  losses: number;
+                  rank?: number;
+                }>;
                 const absoluteIndex = (currentPage - 1) * 100 + index + 1;
 
                 const hasPodium = history.some((h) => h.rank && h.rank <= 3);

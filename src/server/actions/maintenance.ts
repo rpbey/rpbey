@@ -29,8 +29,11 @@ export async function actionRecalculateRankings() {
   try {
     const result = await recalculateRankings();
     return { success: true, message: result.message };
-  } catch (error: any) {
-    return { success: false, error: error.message };
+  } catch (error: unknown) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : String(error),
+    };
   }
 }
 
@@ -92,8 +95,11 @@ export async function actionMergeDuplicates() {
     }
 
     return { success: true, message: `${mergedCount} doublons fusionnés.` };
-  } catch (error: any) {
-    return { success: false, error: error.message };
+  } catch (error: unknown) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : String(error),
+    };
   }
 }
 
@@ -116,7 +122,7 @@ export async function actionImportTournament(slug: string) {
         challongeUrl: result.metadata.url,
         challongeId: String(result.metadata.id || ''),
         status: 'COMPLETE',
-        standings: result.standings as any,
+        standings: result.standings as never,
         categoryId: categoryId,
         description: result.raw.description || '',
       },
@@ -127,7 +133,7 @@ export async function actionImportTournament(slug: string) {
         challongeId: String(result.metadata.id || ''),
         date: new Date(),
         status: 'COMPLETE',
-        standings: result.standings as any,
+        standings: result.standings as never,
         categoryId: categoryId,
         description: result.raw.description || '',
       },
@@ -163,7 +169,7 @@ export async function actionImportTournament(slug: string) {
       });
 
       if (!matchedUser) {
-        matchedUser = await (prisma.user.create({
+        matchedUser = await prisma.user.create({
           data: {
             name: p.name,
             username: p.challongeUsername || `${normalizedSlug}_${sName}`,
@@ -171,12 +177,12 @@ export async function actionImportTournament(slug: string) {
             profile: { create: { bladerName: p.name, rankingPoints: 0 } },
           },
           include: { profile: true },
-        }) as any);
+        });
       }
 
       if (!matchedUser) continue;
 
-      challongeIdToUserId.set(p.id, (matchedUser as any).id);
+      challongeIdToUserId.set(p.id, matchedUser.id);
       const stats = statsMap.get(p.id) || { wins: 0, losses: 0 };
       const standing = result.standings.find(
         (s) => normalizeName(s.name) === sName,
@@ -185,7 +191,7 @@ export async function actionImportTournament(slug: string) {
       const existingPart = await prisma.tournamentParticipant.findFirst({
         where: {
           tournamentId,
-          userId: (matchedUser as any).id,
+          userId: matchedUser.id,
         },
       });
 
@@ -202,7 +208,7 @@ export async function actionImportTournament(slug: string) {
         await prisma.tournamentParticipant.create({
           data: {
             tournamentId,
-            userId: (matchedUser as any).id,
+            userId: matchedUser.id,
             challongeParticipantId: String(p.id),
             finalPlacement: standing?.rank || p.finalRank || 999,
             wins: stats.wins,
@@ -253,8 +259,11 @@ export async function actionImportTournament(slug: string) {
       success: true,
       message: `Tournoi ${result.metadata.name} importé.`,
     };
-  } catch (error: any) {
-    return { success: false, error: error.message };
+  } catch (error: unknown) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : String(error),
+    };
   }
 }
 
@@ -307,8 +316,11 @@ export async function actionTriggerSyncParts() {
       success: true,
       message: `${scrapedParts.length} pièces synchronisées.`,
     };
-  } catch (error: any) {
-    return { success: false, error: error.message };
+  } catch (error: unknown) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : String(error),
+    };
   }
 }
 
@@ -322,14 +334,17 @@ export async function actionClearTournamentCache() {
     for (const t of tournaments) {
       await prisma.tournament.update({
         where: { id: t.id },
-        data: { standings: [] as any },
+        data: { standings: [] as never },
       });
     }
 
     revalidatePath('/rankings');
     return { success: true, message: 'Cache des tournois vidé.' };
-  } catch (error: any) {
-    return { success: false, error: error.message };
+  } catch (error: unknown) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : String(error),
+    };
   }
 }
 
@@ -338,7 +353,10 @@ export async function getRankingConfig() {
   return await prisma.rankingSystem.findFirst();
 }
 
-export async function actionUpdateRankingConfig(data: any) {
+export async function actionUpdateRankingConfig(
+  data: Record<string, string | number | Date> | null,
+) {
+  if (!data) return { success: false, error: 'Données manquantes' };
   const config = await prisma.rankingSystem.findFirst();
   if (!config) return { success: false, error: 'Config non trouvée' };
 
@@ -356,8 +374,11 @@ export async function actionUpdateRankingConfig(data: any) {
       },
     });
     return { success: true, message: 'Barème mis à jour.' };
-  } catch (error: any) {
-    return { success: false, error: error.message };
+  } catch (error: unknown) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : String(error),
+    };
   }
 }
 
@@ -377,7 +398,7 @@ export async function actionSyncRankingRoles() {
       const points = profile.rankingPoints;
       const correctRole = POINT_ROLES.find((r) => points >= r.threshold);
 
-      const userRoles = (profile.user.roles as any[]) || [];
+      const userRoles = (profile.user.roles as string[]) || [];
 
       if (correctRole && !userRoles.some((ur) => ur === correctRole.id)) {
         await dispatchBotAction('add_role', {
@@ -402,7 +423,10 @@ export async function actionSyncRankingRoles() {
       success: true,
       message: `${updates} rôles mis à jour sur Discord.`,
     };
-  } catch (error: any) {
-    return { success: false, error: error.message };
+  } catch (error: unknown) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : String(error),
+    };
   }
 }

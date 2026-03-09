@@ -22,12 +22,9 @@ interface TournamentLiveCarouselProps {
   tournament: {
     id: string;
     name: string;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    standings: any;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    stations: any;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    activityLog: any;
+    standings: unknown;
+    stations: unknown;
+    activityLog: unknown;
   };
 }
 

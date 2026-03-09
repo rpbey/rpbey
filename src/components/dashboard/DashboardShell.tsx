@@ -1,10 +1,11 @@
 'use client';
 
 import {
+  AdminPanelSettings,
   ArrowBack,
   Build,
+  Casino,
   Launch,
-  Leaderboard,
   Logout,
   MoreHoriz,
   Person,
@@ -62,14 +63,22 @@ const NAV_ITEMS: NavItem[] = [
     path: '/builder',
   },
   {
+    label: 'Aléatoire',
+    icon: Casino,
+    path: '/dashboard/random',
+  },
+  {
     label: 'Paramètres',
     icon: Settings,
     path: '/dashboard/settings',
   },
+];
+
+const ADMIN_ITEMS: NavItem[] = [
   {
-    label: 'Classement',
-    icon: Leaderboard,
-    path: '/dashboard/leaderboard',
+    label: 'Administration',
+    icon: AdminPanelSettings,
+    path: '/admin',
   },
 ];
 
@@ -86,7 +95,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
     session?.user?.role === 'admin' || session?.user?.role === 'superadmin';
 
   // Determine active item
-  const activeNavItem = NAV_ITEMS.find((item) =>
+  const activeNavItem = [...NAV_ITEMS, ...ADMIN_ITEMS].find((item) =>
     pathname.startsWith(item.path),
   );
 
@@ -100,7 +109,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
       ? 'menu'
       : false;
 
-  const showBackButton = pathname !== '/dashboard/profile'; // Profile is usually "Home" for dashboard
+  const showBackButton = pathname !== '/dashboard/profile';
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleBottomNavChange = (_: any, newValue: string) => {
@@ -255,6 +264,73 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             );
           })}
         </List>
+
+        {isAdmin && (
+          <List
+            disablePadding
+            sx={{ mt: 2 }}
+            subheader={
+              <Typography
+                variant="caption"
+                fontWeight="bold"
+                color="text.secondary"
+                sx={{
+                  px: 3,
+                  mb: 1,
+                  display: 'block',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.1em',
+                }}
+              >
+                Administration
+              </Typography>
+            }
+          >
+            {ADMIN_ITEMS.map((item) => {
+              const isActive = pathname.startsWith(item.path);
+              const Icon = item.icon;
+              return (
+                <ListItem key={item.path} disablePadding>
+                  <ListItemButton
+                    component={Link}
+                    href={item.path}
+                    selected={isActive}
+                    onClick={() => setMobileOpen(false)}
+                    sx={{
+                      mx: 1.5,
+                      mb: 0.5,
+                      px: 3,
+                      py: 1.5,
+                      minHeight: 56,
+                      borderRadius: '28px',
+                      gap: 1.5,
+                      color: 'primary.main',
+                      '&:hover': {
+                        bgcolor: alpha(theme.palette.primary.main, 0.08),
+                      },
+                    }}
+                  >
+                    <ListItemIcon
+                      sx={{
+                        minWidth: 'auto',
+                        color: 'primary.main',
+                      }}
+                    >
+                      <Icon sx={{ fontSize: 24 }} />
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={item.label}
+                      primaryTypographyProps={{
+                        fontSize: '0.9rem',
+                        fontWeight: 700,
+                      }}
+                    />
+                  </ListItemButton>
+                </ListItem>
+              );
+            })}
+          </List>
+        )}
       </Box>
 
       <Box sx={{ p: 2, borderTop: '1px solid', borderColor: 'divider' }}>
@@ -316,10 +392,10 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         </Drawer>
       </Box>
 
-      {/* Mobile Menu Drawer (Accessed via 'Menu' tab) */}
+      {/* Mobile Menu Drawer */}
       <Drawer
         variant="temporary"
-        anchor="right" // More natural for a "More" menu on mobile
+        anchor="right"
         open={mobileOpen}
         onClose={() => setMobileOpen(false)}
         ModalProps={{ keepMounted: true }}
@@ -327,7 +403,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           display: { xs: 'block', md: 'none' },
           '& .MuiDrawer-paper': {
             boxSizing: 'border-box',
-            width: '80%', // Not full width to keep context
+            width: '80%',
             maxWidth: 300,
             bgcolor: 'background.paper',
           },
@@ -345,11 +421,9 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           minHeight: '100vh',
           display: 'flex',
           flexDirection: 'column',
-          // Space for bottom nav on mobile
           pb: { xs: 'calc(64px + env(safe-area-inset-bottom))', md: 0 },
         }}
       >
-        {/* Header App Bar */}
         <AppBar
           position="sticky"
           elevation={0}
@@ -357,11 +431,9 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             bgcolor: 'background.default',
             borderBottom: 'none',
             color: 'text.primary',
-            // On mobile, we only show Title + User. No hamburger.
           }}
         >
           <Toolbar sx={{ px: { xs: 2, md: 3 } }}>
-            {/* Mobile Logo */}
             <Box
               sx={{
                 display: { xs: 'flex', md: 'none' },
@@ -373,7 +445,6 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
               <RpbLogo size={28} animated />
             </Box>
 
-            {/* Page Title & Back Button */}
             <Box
               sx={{
                 display: 'flex',
@@ -410,24 +481,21 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
               </Typography>
             </Box>
 
-            {/* User Actions */}
             <Stack direction="row" spacing={1} alignItems="center">
-              {isAdmin && (
-                <Button
-                  component={Link}
-                  href="/"
-                  variant="outlined"
-                  size="small"
-                  startIcon={<Launch fontSize="small" />}
-                  sx={{
-                    display: { xs: 'none', sm: 'inline-flex' },
-                    fontWeight: 600,
-                    borderRadius: 2,
-                  }}
-                >
-                  Site
-                </Button>
-              )}
+              <Button
+                component={Link}
+                href="/"
+                variant="outlined"
+                size="small"
+                startIcon={<Launch fontSize="small" />}
+                sx={{
+                  display: { xs: 'none', sm: 'inline-flex' },
+                  fontWeight: 600,
+                  borderRadius: 2,
+                }}
+              >
+                Site
+              </Button>
 
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0.5 }}>
                 <Avatar
@@ -446,17 +514,16 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
 
         <Box
           sx={{
-            p: { xs: 2, md: 4 }, // Reduced padding on mobile
+            p: { xs: 2, md: 4 },
             width: '100%',
             maxWidth: 1600,
-            mx: 'auto', // Center on ultra-wide screens
+            mx: 'auto',
           }}
         >
           <PageTransition>{children}</PageTransition>
         </Box>
       </Box>
 
-      {/* Mobile Bottom Nav */}
       {isMobile && (
         <Box
           sx={{
@@ -465,11 +532,11 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             left: 0,
             right: 0,
             zIndex: 1100,
-            bgcolor: 'background.paper', // Solid background
+            bgcolor: 'background.paper',
             borderTop: '1px solid',
             borderColor: 'divider',
             pb: 'env(safe-area-inset-bottom)',
-            boxShadow: '0 -4px 20px rgba(0,0,0,0.1)', // Subtle shadow
+            boxShadow: '0 -4px 20px rgba(0,0,0,0.1)',
           }}
         >
           <BottomNavigation
@@ -489,7 +556,6 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
               },
             }}
           >
-            {/* Primary User Tabs */}
             {NAV_ITEMS.slice(0, 4).map((item) => {
               const Icon = item.icon;
               return (
@@ -502,7 +568,6 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
               );
             })}
 
-            {/* "Menu" Tab for everything else */}
             <BottomNavigationAction
               label="Menu"
               value="menu"
@@ -512,7 +577,6 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         </Box>
       )}
 
-      {/* User Menu Dropdown */}
       <Menu
         sx={{ mt: '45px' }}
         id="menu-appbar"

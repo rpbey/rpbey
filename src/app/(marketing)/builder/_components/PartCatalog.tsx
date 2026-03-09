@@ -1,6 +1,14 @@
 'use client';
 
-import { Search } from '@mui/icons-material';
+import {
+  AutoFixHigh,
+  Bolt,
+  Casino,
+  Construction,
+  Layers,
+  Search,
+  Shield,
+} from '@mui/icons-material';
 import {
   Box,
   CircularProgress,
@@ -11,6 +19,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
+import { alpha } from '@mui/material/styles';
 import type { Part } from '@prisma/client';
 import {
   useCallback,
@@ -36,21 +45,38 @@ const STEP_TO_TYPE: Record<BuilderStep, string> = {
 interface TabDef {
   label: string;
   value: BuilderStep;
+  icon: React.ReactElement;
 }
 
 const BASE_TABS: TabDef[] = [
-  { label: 'Lames', value: 'BLADE' },
-  { label: 'Ratchets', value: 'RATCHET' },
-  { label: 'Bits', value: 'BIT' },
+  { label: 'Lames', value: 'BLADE', icon: <Shield sx={{ fontSize: 18 }} /> },
+  {
+    label: 'Ratchets',
+    value: 'RATCHET',
+    icon: <Construction sx={{ fontSize: 18 }} />,
+  },
+  { label: 'Bits', value: 'BIT', icon: <Bolt sx={{ fontSize: 18 }} /> },
 ];
 
 const CX_TABS: TabDef[] = [
-  { label: 'Lames', value: 'BLADE' },
-  { label: 'Over Blade', value: 'OVER_BLADE' },
-  { label: 'Lock Chip', value: 'LOCK_CHIP' },
-  { label: 'Assist', value: 'ASSIST_BLADE' },
-  { label: 'Ratchets', value: 'RATCHET' },
-  { label: 'Bits', value: 'BIT' },
+  { label: 'Lames', value: 'BLADE', icon: <Shield sx={{ fontSize: 18 }} /> },
+  {
+    label: 'Over',
+    value: 'OVER_BLADE',
+    icon: <Layers sx={{ fontSize: 18 }} />,
+  },
+  { label: 'Chip', value: 'LOCK_CHIP', icon: <Casino sx={{ fontSize: 18 }} /> },
+  {
+    label: 'Assist',
+    value: 'ASSIST_BLADE',
+    icon: <AutoFixHigh sx={{ fontSize: 18 }} />,
+  },
+  {
+    label: 'Ratchets',
+    value: 'RATCHET',
+    icon: <Construction sx={{ fontSize: 18 }} />,
+  },
+  { label: 'Bits', value: 'BIT', icon: <Bolt sx={{ fontSize: 18 }} /> },
 ];
 
 export function PartCatalog() {
@@ -86,7 +112,7 @@ export function PartCatalog() {
           beyTypes: beyTypes.length > 0 ? beyTypes : undefined,
           spin: spin !== 'ALL' ? spin : undefined,
           page: p,
-          pageSize: 30,
+          pageSize: 24, // Reduced for better grid fit
         });
         setParts(result.parts);
         setTotal(result.total);
@@ -109,76 +135,108 @@ export function PartCatalog() {
 
   const handlePartClick = (part: Part) => {
     dispatch({ type: 'SET_PART', part });
-    dispatch({ type: 'SET_MOBILE_TAB', tab: 'deck' });
+    // Scroll to top or switch tab on mobile
+    if (window.innerWidth < 900) {
+      dispatch({ type: 'SET_MOBILE_TAB', tab: 'deck' });
+    }
   };
 
-  // If active step is a CX-only tab but we're not in CX mode, redirect to BLADE
   const activeTabIndex = TABS.findIndex((t) => t.value === state.activeStep);
   const resolvedTabIndex = activeTabIndex !== -1 ? activeTabIndex : 0;
 
   return (
     <Box
-      sx={{ display: 'flex', flexDirection: 'column', gap: 2, height: '100%' }}
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 3,
+        height: '100%',
+        animation: 'fadeIn 0.5s ease-out',
+      }}
     >
-      <TextField
-        placeholder="Rechercher une piece..."
-        size="small"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        slotProps={{
-          input: {
-            startAdornment: (
-              <InputAdornment position="start">
-                <Search fontSize="small" color="action" />
-              </InputAdornment>
-            ),
-          },
-        }}
-        sx={{
-          '& .MuiOutlinedInput-root': {
-            borderRadius: 2.5,
-          },
-        }}
-        fullWidth
-      />
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <TextField
+          placeholder="Rechercher une pièce par nom..."
+          size="medium"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Search
+                    fontSize="medium"
+                    sx={{ color: 'error.main', opacity: 0.7 }}
+                  />
+                </InputAdornment>
+              ),
+            },
+          }}
+          sx={{
+            '& .MuiOutlinedInput-root': {
+              borderRadius: 4,
+              bgcolor: 'background.paper',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.03)',
+              transition: 'all 0.2s',
+              '&:hover': {
+                boxShadow: '0 4px 20px rgba(0,0,0,0.06)',
+              },
+              '&.Mui-focused': {
+                boxShadow: (theme) =>
+                  `0 4px 20px ${alpha(theme.palette.error.main, 0.1)}`,
+              },
+            },
+          }}
+          fullWidth
+        />
 
-      <CatalogFilters
-        systems={systems}
-        onSystemsChange={setSystems}
-        beyTypes={beyTypes}
-        onBeyTypesChange={setBeyTypes}
-        spin={spin}
-        onSpinChange={setSpin}
-      />
+        <CatalogFilters
+          systems={systems}
+          onSystemsChange={setSystems}
+          beyTypes={beyTypes}
+          onBeyTypesChange={setBeyTypes}
+          spin={spin}
+          onSpinChange={setSpin}
+        />
+      </Box>
 
       <Tabs
         value={resolvedTabIndex}
         onChange={handleTabChange}
-        variant={showCXTabs ? 'scrollable' : 'fullWidth'}
-        scrollButtons={showCXTabs ? 'auto' : false}
-        allowScrollButtonsMobile={showCXTabs}
+        variant="scrollable"
+        scrollButtons="auto"
         sx={{
-          minHeight: 40,
-          bgcolor: (theme) => theme.palette.action.hover,
-          borderRadius: 2,
+          minHeight: 48,
+          bgcolor: (theme) => alpha(theme.palette.action.hover, 0.04),
+          borderRadius: 4,
+          p: 0.5,
           '& .MuiTabs-flexContainer': {
-            justifyContent: showCXTabs ? 'flex-start' : 'space-between',
+            gap: 1,
           },
           '& .MuiTab-root': {
             minHeight: 40,
-            minWidth: showCXTabs ? 'auto' : 0,
-            flexGrow: showCXTabs ? 0 : 1,
-            py: 0.5,
-            px: showCXTabs ? 2 : 1,
-            fontWeight: 'bold',
-            fontSize: { xs: '0.75rem', sm: '0.85rem' },
-            borderRadius: 2,
-            textTransform: 'none',
-            whiteSpace: 'nowrap',
+            py: 1,
+            px: 2,
+            fontWeight: '900',
+            fontSize: '0.8rem',
+            borderRadius: 3.5,
+            textTransform: 'uppercase',
+            letterSpacing: 0.5,
+            color: 'text.secondary',
+            transition: 'all 0.2s',
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 1,
+            '&:hover': {
+              color: 'error.main',
+              bgcolor: (theme) => alpha(theme.palette.error.main, 0.04),
+            },
           },
           '& .Mui-selected': {
+            color: 'error.main !important',
             bgcolor: 'background.paper',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
           },
           '& .MuiTabs-indicator': {
             display: 'none',
@@ -186,11 +244,16 @@ export function PartCatalog() {
         }}
       >
         {TABS.map((tab) => (
-          <Tab key={tab.value} label={tab.label} />
+          <Tab
+            key={tab.value}
+            label={tab.label}
+            icon={tab.icon}
+            iconPosition="start"
+          />
         ))}
       </Tabs>
 
-      <Box sx={{ position: 'relative', flex: 1, minHeight: 0 }}>
+      <Box sx={{ position: 'relative', flex: 1, minHeight: 400 }}>
         {isPending && (
           <Box
             sx={{
@@ -199,20 +262,33 @@ export function PartCatalog() {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              bgcolor: 'rgba(0,0,0,0.15)',
-              zIndex: 2,
-              borderRadius: 2,
-              backdropFilter: 'blur(2px)',
+              bgcolor: 'rgba(255,255,255,0.4)',
+              zIndex: 10,
+              borderRadius: 4,
+              backdropFilter: 'blur(4px)',
+              transition: 'all 0.3s',
             }}
           >
-            <CircularProgress size={32} color="error" />
+            <CircularProgress size={40} thickness={5} color="error" />
           </Box>
         )}
 
         {parts.length === 0 && !isPending ? (
-          <Box sx={{ textAlign: 'center', py: 8 }}>
-            <Typography color="text.secondary" variant="body2">
-              Aucune piece trouvee
+          <Box
+            sx={{
+              textAlign: 'center',
+              py: 12,
+              bgcolor: (theme) => alpha(theme.palette.action.hover, 0.02),
+              borderRadius: 4,
+              border: '2px dashed',
+              borderColor: 'divider',
+            }}
+          >
+            <Typography color="text.disabled" variant="h6" fontWeight="bold">
+              Aucune pièce trouvée
+            </Typography>
+            <Typography color="text.secondary" variant="body2" sx={{ mt: 1 }}>
+              Essayez de modifier vos filtres ou votre recherche.
             </Typography>
           </Box>
         ) : (
@@ -220,11 +296,11 @@ export function PartCatalog() {
             sx={{
               display: 'grid',
               gridTemplateColumns: {
-                xs: 'repeat(auto-fill, minmax(120px, 1fr))',
-                sm: 'repeat(auto-fill, minmax(140px, 1fr))',
-                lg: 'repeat(auto-fill, minmax(150px, 1fr))',
+                xs: 'repeat(auto-fill, minmax(130px, 1fr))',
+                sm: 'repeat(auto-fill, minmax(150px, 1fr))',
+                lg: 'repeat(auto-fill, minmax(170px, 1fr))',
               },
-              gap: 1.5,
+              gap: 2,
             }}
           >
             {parts.map((part) => (
@@ -245,30 +321,40 @@ export function PartCatalog() {
         <Box
           sx={{
             display: 'flex',
-            justifyContent: 'center',
+            justifyContent: 'space-between',
             alignItems: 'center',
-            gap: 1.5,
-            pt: 1,
+            pt: 2,
+            borderTop: '1px solid',
+            borderColor: 'divider',
           }}
         >
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            fontWeight="900"
+            sx={{ letterSpacing: 1 }}
+          >
+            {total} PIÈCES DISPONIBLES
+          </Typography>
+
           <Pagination
             count={totalPages}
             page={page}
             onChange={(_, p) => {
               setPage(p);
               fetchParts(p);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
-            size="small"
+            size="medium"
             siblingCount={1}
             color="standard"
+            sx={{
+              '& .MuiPaginationItem-root': {
+                fontWeight: 'bold',
+                borderRadius: 2,
+              },
+            }}
           />
-          <Typography
-            variant="caption"
-            color="text.secondary"
-            fontWeight="bold"
-          >
-            {total} pieces
-          </Typography>
         </Box>
       )}
     </Box>

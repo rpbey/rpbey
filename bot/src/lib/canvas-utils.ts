@@ -456,6 +456,86 @@ export async function generateBattleCard(data: any) {
   return canvas.toBuffer('image/png');
 }
 
+export interface DeckCardData {
+  name: string;
+  beys: {
+    name: string;
+    imageUrl: string | null;
+    type?: string;
+  }[];
+}
+
+export async function generateDeckCard(data: DeckCardData) {
+  const width = 800;
+  const height = 550;
+  const canvas = createCanvas(width, height);
+  const ctx = canvas.getContext('2d');
+
+  // Load images
+  const [background, ...beyImages] = await Promise.all([
+    safeLoadImage('/deckbox.png'),
+    ...data.beys.map((b) => safeLoadImage(b.imageUrl)),
+  ]);
+
+  // Background
+  if (background) {
+    ctx.drawImage(background, 0, 0, width, 500); // Box image is 1.6 aspect, 800/500 = 1.6
+  } else {
+    ctx.fillStyle = '#dc2626';
+    ctx.fillRect(0, 0, width, 500);
+  }
+
+  // Draw Beys in slots
+  const positions = [
+    { x: width * 0.21, y: 500 * 0.65 }, // Left
+    { x: width * 0.5, y: 500 * 0.65 }, // Center
+    { x: width * 0.79, y: 500 * 0.65 }, // Right
+  ];
+
+  const beySize = width * 0.22;
+
+  for (let i = 0; i < 3; i++) {
+    const _bey = data.beys[i];
+    const img = beyImages[i];
+    const pos = positions[i];
+
+    if (img) {
+      ctx.save();
+      ctx.translate(pos.x, pos.y);
+
+      // Simulate 3D tilt
+      ctx.transform(1, 0, 0, 0.85, 0, 0); // Scale Y
+
+      // Shadow
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
+      ctx.shadowBlur = 15;
+      ctx.shadowOffsetY = 10;
+
+      ctx.drawImage(img, -beySize / 2, -beySize / 2, beySize, beySize);
+      ctx.restore();
+    }
+  }
+
+  // Bottom Area for Text
+  ctx.fillStyle = '#0a0a0a';
+  ctx.fillRect(0, 500, width, 50);
+
+  // Deck Name
+  ctx.font = 'bold 28px GoogleSans';
+  ctx.fillStyle = '#fbbf24';
+  ctx.textAlign = 'left';
+  ctx.fillText(data.name.toUpperCase(), 30, 535);
+
+  // Bey Names (Compact)
+  ctx.textAlign = 'right';
+  ctx.font = 'italic 18px GoogleSans';
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+  const names = data.beys.map((b) => b.name).join('  |  ');
+  ctx.fillText(names, width - 30, 535);
+
+  return canvas.toBuffer('image/png');
+}
+
 export async function generateLeaderboardCard(entries: any[]) {
   const width = 1000;
   const height = 1200;

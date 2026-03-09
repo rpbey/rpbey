@@ -31,14 +31,14 @@ export class RankingService {
 
     // Initialisation des compteurs
     const allUsers = await prisma.user.findMany({ select: { id: true } });
-    allUsers.forEach((u) =>
+    for (const u of allUsers) {
       userPoints.set(u.id, {
         points: 0,
         wins: 0,
         losses: 0,
         tournamentWins: 0,
-      }),
-    );
+      });
+    }
 
     // 4. Boucle de calcul
     for (const t of tournaments) {

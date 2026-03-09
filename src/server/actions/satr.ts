@@ -391,11 +391,11 @@ export async function getTournamentTop10(slug: string) {
     const content = await readFile(path, 'utf-8');
     const data = JSON.parse(content);
 
-    const top10 = data.participants
-      .filter((p: any) => p.finalRank && p.finalRank <= 10)
-      .sort((a: any, b: any) => a.finalRank - b.finalRank)
+    const top10 = (data.participants as TournamentParticipant[])
+      .filter((p) => p.finalRank && p.finalRank <= 10)
+      .sort((a, b) => a.finalRank - b.finalRank)
       .slice(0, 10)
-      .map((p: any) => ({
+      .map((p) => ({
         rank: p.finalRank,
         name: p.name,
       }));

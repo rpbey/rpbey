@@ -17,13 +17,13 @@ import {
 } from '@mui/material';
 import { useState } from 'react';
 
-export default function AdminOverviewIntegrations({ env }: { env: any }) {
+export default function AdminOverviewIntegrations(_props: {
+  env: Record<string, string>;
+}) {
   const [challongeStatus, setChallongeStatus] = useState<
     'idle' | 'loading' | 'success' | 'error'
   >('idle');
-  const [_challongeMessage, setChallongeMessage] = useState<string | null>(
-    null,
-  );
+  const [, setChallongeMessage] = useState<string | null>(null);
 
   const testChallonge = async () => {
     setChallongeStatus('loading');

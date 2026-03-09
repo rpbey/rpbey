@@ -12,8 +12,8 @@ import {
 } from '@mui/material';
 import Link from 'next/link';
 import useSWR from 'swr';
-import { type Deck, DeckCard } from '@/components/deck/DeckCard';
 import { DeckBoxDisplay } from '@/components/deck/DeckBoxDisplay';
+import { type Deck, DeckCard } from '@/components/deck/DeckCard';
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -27,7 +27,7 @@ export function ProfileDecksSection({
   userId,
 }: ProfileDecksSectionProps) {
   const { data, isLoading } = useSWR<{ data: Deck[] }>(
-    userId ? `/api/decks?userId=${userId}` : (isOwnProfile ? '/api/decks' : null),
+    userId ? `/api/decks?userId=${userId}` : isOwnProfile ? '/api/decks' : null,
     fetcher,
   );
 
@@ -83,7 +83,11 @@ export function ProfileDecksSection({
               size="small"
               startIcon={<BuildIcon />}
               variant="outlined"
-              sx={{ borderRadius: 2, fontWeight: 'bold', textTransform: 'none' }}
+              sx={{
+                borderRadius: 2,
+                fontWeight: 'bold',
+                textTransform: 'none',
+              }}
             >
               Deck Builder
             </Button>
@@ -112,7 +116,7 @@ export function ProfileDecksSection({
                 <DeckBoxDisplay deck={activeDeck} />
               </Box>
             )}
-            
+
             {isOwnProfile && (
               <Grid container spacing={2}>
                 {decks.map((deck) => (

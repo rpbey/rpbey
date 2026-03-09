@@ -153,6 +153,16 @@ export function Header() {
                   anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
                   transformOrigin={{ vertical: 'top', horizontal: 'right' }}
                 >
+                  {(session.user.role === 'admin' ||
+                    session.user.role === 'superadmin') && (
+                    <MenuItem
+                      component={Link}
+                      href="/admin"
+                      onClick={handleCloseUserMenu}
+                    >
+                      Administration
+                    </MenuItem>
+                  )}
                   <MenuItem
                     component={Link}
                     href="/profile"

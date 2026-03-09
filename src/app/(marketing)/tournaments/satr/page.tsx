@@ -13,6 +13,7 @@ import {
   Typography,
 } from '@mui/material';
 import type { SvgIconProps } from '@mui/material/SvgIcon';
+import type { SatrBlader, SatrRanking } from '@prisma/client';
 import Image from 'next/image';
 import { Suspense } from 'react';
 import RankingSearch from '@/components/rankings/RankingSearch';
@@ -111,8 +112,8 @@ export default async function SatrPage({ searchParams }: SatrPageProps) {
     rankingData,
     globalStats,
     lastUpdate,
-    _seasonStatsRes,
-    _season1StatsRes,
+    seasonStatsRes,
+    season1StatsRes,
   ] = await Promise.all([
     getChampions(),
     (async () => {
@@ -181,7 +182,7 @@ export default async function SatrPage({ searchParams }: SatrPageProps) {
             ((stats._sum.totalWins || 0) + (stats._sum.totalLosses || 0)) / 2,
           ),
         };
-      } catch (_e) {
+      } catch {
         return { totalBladers: 0, totalMatches: 0 };
       }
     })(),
@@ -197,12 +198,12 @@ export default async function SatrPage({ searchParams }: SatrPageProps) {
 
   const totalPages = Math.ceil(rankingData.total / pageSize);
   const s2Data =
-    _seasonStatsRes?.success && _seasonStatsRes.data
-      ? _seasonStatsRes.data
+    seasonStatsRes?.success && seasonStatsRes.data
+      ? seasonStatsRes.data
       : { tournamentCount: 0, uniqueParticipants: 0, metas: [] };
   const s1Data =
-    _season1StatsRes?.success && _season1StatsRes.data
-      ? _season1StatsRes.data
+    season1StatsRes?.success && season1StatsRes.data
+      ? season1StatsRes.data
       : { tournamentCount: 0, uniqueParticipants: 0, metas: [] };
   const allTournamentMetas = [...s1Data.metas, ...s2Data.metas];
 
@@ -400,21 +401,21 @@ export default async function SatrPage({ searchParams }: SatrPageProps) {
           <Box sx={{ mt: { xs: 1, md: 2 } }}>
             {mode === 'career' && (
               <SatrCharts
-                bladers={rankingData.items as any[]}
+                bladers={rankingData.items as SatrBlader[]}
                 allTournamentMetas={allTournamentMetas}
               />
             )}
 
             {mode === 'ranking' ? (
               <SatrTable
-                rankings={rankingData.items as any[]}
+                rankings={rankingData.items as SatrRanking[]}
                 totalPages={totalPages}
                 currentPage={page}
                 totalCount={rankingData.total}
               />
             ) : (
               <SatrBladersTable
-                bladers={rankingData.items as any[]}
+                bladers={rankingData.items as SatrBlader[]}
                 totalPages={totalPages}
                 currentPage={page}
                 totalCount={rankingData.total}

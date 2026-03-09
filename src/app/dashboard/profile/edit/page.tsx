@@ -435,7 +435,11 @@ export default function EditProfilePage() {
                   </Button>
                 </Stack>
               ) : (
-                <Link href="/api/auth/challonge" passHref style={{ textDecoration: 'none' }}>
+                <Link
+                  href="/api/auth/challonge"
+                  passHref
+                  style={{ textDecoration: 'none' }}
+                >
                   <Button
                     variant="outlined"
                     size="small"

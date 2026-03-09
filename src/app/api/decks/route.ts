@@ -40,7 +40,9 @@ export async function GET(request: NextRequest) {
     }
 
     // If viewing someone else's decks, only show the active one
-    const where: any = { userId: targetUserId };
+    const where: { userId: string; isActive?: boolean } = {
+      userId: targetUserId,
+    };
     if (userIdParam && userIdParam !== session?.user?.id) {
       where.isActive = true;
     }

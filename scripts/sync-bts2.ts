@@ -2,7 +2,6 @@ import 'dotenv/config';
 import { ChallongeScraper } from '../src/lib/scrapers/challonge-scraper';
 import { prisma } from '../src/lib/prisma';
 import fs from 'node:fs';
-import natural from 'natural';
 
 const LOCK_FILE = '/tmp/sync-bts2.lock';
 

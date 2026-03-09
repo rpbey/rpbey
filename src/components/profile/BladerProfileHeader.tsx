@@ -95,7 +95,7 @@ export function BladerProfileHeader({
     if (!userId || isSyncing) return;
     setIsSyncing(true);
     try {
-      const res = await fetch(`/api/users/${userId}/sync-roles`, {
+      const res = await fetch(`/api/users/${userId}/sync`, {
         method: 'POST',
       });
       if (res.ok) {
@@ -180,14 +180,14 @@ export function BladerProfileHeader({
                 {stats.bladerName}
               </Typography>
               {isOwnProfile && (
-                <Link href="/dashboard/profile/edit" passHref style={{ textDecoration: 'none' }}>
-                  <IconButton
-                    size="small"
-                    sx={{ bgcolor: 'action.hover' }}
-                  >
-                    <EditIcon fontSize="small" />
-                  </IconButton>
-                </Link>
+                <IconButton
+                  component={Link}
+                  href="/dashboard/profile/edit"
+                  size="small"
+                  sx={{ bgcolor: 'action.hover' }}
+                >
+                  <EditIcon fontSize="small" />
+                </IconButton>
               )}
             </Stack>
 
@@ -212,20 +212,24 @@ export function BladerProfileHeader({
               justifyContent={{ xs: 'center', md: 'flex-start' }}
               sx={{ mb: 3, gap: 1 }}
             >
-              {discordRoles?.map((role) => (
-                <Chip
-                  key={role.id}
-                  label={role.name}
-                  size="small"
-                  sx={{
-                    bgcolor: alpha(role.color, 0.1),
-                    color: role.color,
-                    borderColor: alpha(role.color, 0.2),
-                    fontWeight: 'bold',
-                    border: '1px solid',
-                  }}
-                />
-              ))}
+              {Array.isArray(discordRoles) &&
+                discordRoles.map((role) => {
+                  const roleColor = role.color || '#666';
+                  return (
+                    <Chip
+                      key={role.id}
+                      label={role.name}
+                      size="small"
+                      sx={{
+                        bgcolor: alpha(roleColor, 0.1),
+                        color: roleColor,
+                        borderColor: alpha(roleColor, 0.2),
+                        fontWeight: 'bold',
+                        border: '1px solid',
+                      }}
+                    />
+                  );
+                })}
               {isOwnProfile && (
                 <Tooltip title="Synchroniser les rôles Discord">
                   <Chip

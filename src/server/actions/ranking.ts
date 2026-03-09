@@ -101,9 +101,12 @@ export async function recalculateRankings() {
   >();
 
   // 1. Load Mapper & JSON Data
-  let mapper: any = {};
-  let bts2: any = null;
-  let bts3: any = null;
+  let mapper: Record<
+    string,
+    { primaryName: string; challongeUsername: string; aliases: string[] }
+  > = {};
+  let bts2: Record<string, unknown> | null = null;
+  let bts3: Record<string, unknown> | null = null;
   try {
     const { readFileSync } = await import('node:fs');
     const { join } = await import('node:path');
@@ -120,14 +123,24 @@ export async function recalculateRankings() {
   // Inverse mapping: Map alias to normalized key
   const aliasToKey = new Map<string, string>();
   for (const [key, data] of Object.entries(mapper)) {
-    const pData = data as any;
-    for (const alias of pData.aliases) {
+    for (const alias of data.aliases) {
       aliasToKey.set(alias, key);
     }
   }
 
   // 2. Process JSON Tournaments
-  const processJsonTournament = (tournament: any) => {
+  interface JsonParticipant {
+    name: string;
+    rank?: number;
+    avatarUrl?: string;
+    challongeUsername?: string;
+    matchHistory?: string[];
+    exactWins?: number;
+    exactLosses?: number;
+  }
+  const processJsonTournament = (
+    tournament: { participants?: JsonParticipant[] } | null,
+  ) => {
     if (!tournament || !tournament.participants) return;
 
     // In JSON, we don't have weight/category yet, assume multiplier = 1.0
@@ -147,7 +160,7 @@ export async function recalculateRankings() {
         p.name.toLowerCase().replace(/[^a-z0-9]/g, '');
       const mapData = mapper[playerKey] || {
         primaryName: p.name,
-        challongeUsername: p.challongeUsername,
+        challongeUsername: p.challongeUsername ?? null,
       };
 
       let points = 0;
@@ -182,7 +195,7 @@ export async function recalculateRankings() {
 
       // Points de victoire (Matches)
       let winPts = 0;
-      
+
       if (p.matchHistory && p.matchHistory.length > 0) {
         // Use exact sequence (B_TS3)
         let inLB = false;
@@ -203,33 +216,41 @@ export async function recalculateRankings() {
         // Fallback deduction (B_TS2)
         const exactW = p.exactWins || 0;
         const exactL = p.exactLosses || (p.rank === 1 ? 0 : 2);
-        
+
         stats.wins += exactW;
         stats.losses += exactL;
-        
+
         if (exactW > 0) {
           if (p.rank === 1) {
             // 1st place: if 0 losses, all WB. If 1 loss (reset), 1 win in LB.
             if (exactL === 0) {
               winPts += exactW * config.matchWinWinner;
             } else {
-              winPts += (exactW - 1) * config.matchWinWinner + 1 * config.matchWinLoser;
+              winPts +=
+                (exactW - 1) * config.matchWinWinner + 1 * config.matchWinLoser;
             }
           } else if (p.rank === 2) {
             // 2nd place: usually lost WB final, won LB final, lost GF. So 1 win in LB, rest in WB.
-            winPts += Math.max(0, exactW - 1) * config.matchWinWinner + 1 * config.matchWinLoser;
+            winPts +=
+              Math.max(0, exactW - 1) * config.matchWinWinner +
+              1 * config.matchWinLoser;
           } else if (p.rank === 3) {
             // 3rd place: usually lost WB semi, won LB semi & quarter, lost LB final. 2 wins in LB.
             const lbWins = Math.min(exactW, 2);
-            winPts += (exactW - lbWins) * config.matchWinWinner + lbWins * config.matchWinLoser;
+            winPts +=
+              (exactW - lbWins) * config.matchWinWinner +
+              lbWins * config.matchWinLoser;
           } else if (p.rank === 4) {
             const lbWins = Math.min(exactW, 2);
-            winPts += (exactW - lbWins) * config.matchWinWinner + lbWins * config.matchWinLoser;
+            winPts +=
+              (exactW - lbWins) * config.matchWinWinner +
+              lbWins * config.matchWinLoser;
           } else {
             // General case for lower ranks: assume 1 or 2 wins were in LB if they had wins.
             const wbWins = Math.min(exactW, 1);
             const lbWins = exactW - wbWins;
-            winPts += wbWins * config.matchWinWinner + lbWins * config.matchWinLoser;
+            winPts +=
+              wbWins * config.matchWinWinner + lbWins * config.matchWinLoser;
           }
         }
       }
@@ -388,7 +409,9 @@ export async function recalculateRankings() {
 
       if (newRankings.length > 0) {
         await tx.globalRanking.createMany({
-          data: newRankings.map(({ challongeUsername, ...rest }) => rest),
+          data: newRankings.map(
+            ({ challongeUsername: _challongeUsername, ...rest }) => rest,
+          ),
           skipDuplicates: true,
         });
       }
@@ -417,7 +440,7 @@ export async function recalculateRankings() {
   try {
     revalidatePath('/rankings');
     revalidatePath('/admin/rankings');
-  } catch (e) {
+  } catch {
     // Ignore error if revalidatePath is called outside of Next.js context
   }
 

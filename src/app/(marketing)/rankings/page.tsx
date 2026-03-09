@@ -12,7 +12,10 @@ import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import { Suspense } from 'react';
 import RankingSearch from '@/components/rankings/RankingSearch';
-import { RankingsTable } from '@/components/rankings/RankingsTable';
+import {
+  type ProfileWithUser,
+  RankingsTable,
+} from '@/components/rankings/RankingsTable';
 import SeasonSelector from '@/components/rankings/SeasonSelector';
 import { prisma } from '@/lib/prisma';
 import { getSeasonStandings, getSeasons } from '@/server/actions/season';
@@ -94,8 +97,8 @@ export default async function RankingsPage({
       : '';
 
   // Initialize data variables
-  let seasons: any[] = [];
-  let profiles: any[] = [];
+  let seasons: Awaited<ReturnType<typeof getSeasons>> = [];
+  let profiles: ProfileWithUser[] = [];
   let totalCount = 0;
 
   try {
@@ -153,22 +156,23 @@ export default async function RankingsPage({
             createdAt: new Date(),
             updatedAt: new Date(),
             experience: 'BEGINNER',
-          }));
+          })) as unknown as ProfileWithUser[];
       }
     } else {
       // Current Season (Global Rankings)
 
-      const whereCondition: any = {
-        points: { gt: 0 },
-        playerName: { notIn: ['Yoyo', 'Loteux', '𝓡𝓟𝓑 | LOTTEUX!'] },
-      };
-
-      if (searchQuery) {
-        whereCondition.playerName = {
-          contains: searchQuery,
-          mode: 'insensitive',
-        };
-      }
+      const whereCondition = searchQuery
+        ? {
+            points: { gt: 0 },
+            playerName: {
+              contains: searchQuery,
+              mode: 'insensitive' as const,
+            },
+          }
+        : {
+            points: { gt: 0 },
+            playerName: { notIn: ['Yoyo', 'Loteux', '𝓡𝓟𝓑 | LOTTEUX!'] },
+          };
 
       const [liveRankings, count] = await Promise.all([
         prisma.globalRanking.findMany({
@@ -219,7 +223,7 @@ export default async function RankingsPage({
         createdAt: r.updatedAt,
         updatedAt: r.updatedAt,
         experience: r.user?.profile?.experience || 'BEGINNER',
-      }));
+      })) as unknown as ProfileWithUser[];
       totalCount = count;
     }
   } catch (error) {
@@ -411,7 +415,7 @@ export default async function RankingsPage({
             }
           >
             <RankingsTable
-              profiles={profiles}
+              profiles={profiles as ProfileWithUser[]}
               totalPages={totalPages}
               currentPage={page}
               totalCount={totalCount}

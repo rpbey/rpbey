@@ -1,6 +1,6 @@
 'use client';
 
-import { Box, Grid, Paper, Typography, useTheme } from '@mui/material';
+import { Box, Grid, Paper, Typography } from '@mui/material';
 import type { SatrBlader } from '@prisma/client';
 import { motion } from 'framer-motion';
 import {
@@ -26,8 +26,6 @@ export function SatrCharts({
   bladers,
   allTournamentMetas = [],
 }: SatrChartsProps) {
-  const _theme = useTheme();
-
   // 1. Data for Bar Chart: Top 7 Bladers by Wins
   const topWinsData = [...bladers]
     .sort((a, b) => b.totalWins - a.totalWins)
@@ -115,11 +113,7 @@ export function SatrCharts({
                 series={[
                   { dataKey: 'wins', color: '#fbbf24', label: 'Victoires' },
                 ]}
-                slotProps={
-                  {
-                    legend: { hidden: true },
-                  } as any
-                }
+                slotProps={{ legend: { hidden: true } } as never}
                 sx={{
                   '& .MuiChartsAxis-bottom .MuiChartsAxis-tickLabel': {
                     fill: 'rgba(255,255,255,0.5)',
@@ -181,7 +175,7 @@ export function SatrCharts({
                       additionalRadius: -30,
                       color: 'gray',
                     },
-                  } as any,
+                  } as never,
                 ]}
                 slotProps={
                   {
@@ -192,7 +186,7 @@ export function SatrCharts({
                         fontSize: 12,
                       },
                     },
-                  } as any
+                  } as never
                 }
               />
             </Box>
@@ -239,7 +233,7 @@ export function SatrCharts({
                   slotProps={
                     {
                       legend: { hidden: true },
-                    } as any
+                    } as never
                   }
                   sx={{
                     '& .MuiChartsAxis-bottom .MuiChartsAxis-tickLabel': {

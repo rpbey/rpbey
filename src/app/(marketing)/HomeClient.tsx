@@ -95,38 +95,67 @@ export default function HomeClient({
           alignItems: { xs: 'flex-start', md: 'center' },
           overflow: 'hidden',
           pt: { xs: 4, md: 0 },
-          bgcolor: 'surface.lowest', // MD3 base
+          bgcolor: 'black', // Pure black base for video/image contrast
         }}
       >
-        {/* Background Overlay with subtle gradient */}
+        {/* Background Layer */}
         <Box
           sx={{
             position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundImage: `url(${backgroundImage})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            zIndex: -1,
+            inset: 0,
+            zIndex: 0,
             '&::after': {
               content: '""',
               position: 'absolute',
               inset: 0,
               background:
                 mode === 'tournament'
-                  ? 'linear-gradient(to bottom, rgba(15,23,42,0.3) 0%, rgba(15,23,42,0.95) 100%)'
-                  : 'linear-gradient(to bottom, rgba(15,15,15,0.2) 0%, rgba(15,15,15,0.9) 100%)',
+                  ? 'linear-gradient(to bottom, rgba(15,23,42,0.4) 0%, rgba(15,23,42,0.9) 50%, #020617 100%)'
+                  : 'linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.7) 50%, #0F0F0F 100%)',
+              zIndex: 2,
             },
           }}
-        />
+        >
+          {/* Video Background (Desktop) */}
+          {!isTablet && (
+            <video
+              autoPlay
+              loop
+              muted
+              playsInline
+              style={{
+                position: 'absolute',
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                zIndex: 1,
+                opacity: 0.6,
+              }}
+            >
+              <source src="/rpb.mp4" type="video/mp4" />
+            </video>
+          )}
+
+          {/* Fallback Image / Mobile Background */}
+          <Box
+            sx={{
+              position: 'absolute',
+              inset: 0,
+              backgroundImage: `url(${backgroundImage})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              zIndex: 0,
+              opacity: isTablet ? 1 : 0.4,
+              filter: 'blur(2px)', // Subtle blur for depth
+            }}
+          />
+        </Box>
 
         <Container
           maxWidth="lg"
           sx={{
             position: 'relative',
-            zIndex: 1,
+            zIndex: 3, // Above all background layers
             px: { xs: 3, md: 4 },
             py: { xs: 8, md: 10 },
           }}
@@ -141,40 +170,40 @@ export default function HomeClient({
               >
                 {activeTournament && (
                   <FadeIn delay={0.2}>
-                    <Link href={`/tournaments/${activeTournament.id}`} passHref style={{ textDecoration: 'none', display: 'inline-block' }}>
-                      <Chip
-                        icon={
-                          <FiberManualRecord
-                            sx={{
-                              fontSize: 12,
-                              animation: 'pulse 1.5s infinite',
-                            }}
-                          />
-                        }
-                        label={`EN DIRECT : ${activeTournament.name}`}
-                        sx={{
-                          mb: 3,
-                          px: 1,
-                          py: 2.5,
-                          borderRadius: '24px',
-                          bgcolor: 'rgba(220, 38, 38, 0.1)',
-                          color: '#ef4444',
-                          fontWeight: 800,
-                          border: '1px solid rgba(220, 38, 38, 0.3)',
-                          backdropFilter: 'blur(8px)',
-                          cursor: 'pointer',
-                          '&:hover': {
-                            bgcolor: 'rgba(220, 38, 38, 0.2)',
-                            borderColor: '#ef4444',
-                          },
-                          '@keyframes pulse': {
-                            '0%': { opacity: 1 },
-                            '50%': { opacity: 0.5 },
-                            '100%': { opacity: 1 },
-                          },
-                        }}
-                      />
-                    </Link>
+                    <Chip
+                      icon={
+                        <FiberManualRecord
+                          sx={{
+                            fontSize: 12,
+                            animation: 'pulse 1.5s infinite',
+                          }}
+                        />
+                      }
+                      label={`EN DIRECT : ${activeTournament.name}`}
+                      component={Link}
+                      href={`/tournaments/${activeTournament.id}`}
+                      sx={{
+                        mb: 3,
+                        px: 1,
+                        py: 2.5,
+                        borderRadius: '24px',
+                        bgcolor: 'rgba(220, 38, 38, 0.1)',
+                        color: '#ef4444',
+                        fontWeight: 800,
+                        border: '1px solid rgba(220, 38, 38, 0.3)',
+                        backdropFilter: 'blur(8px)',
+                        cursor: 'pointer',
+                        '&:hover': {
+                          bgcolor: 'rgba(220, 38, 38, 0.2)',
+                          borderColor: '#ef4444',
+                        },
+                        '@keyframes pulse': {
+                          '0%': { opacity: 1 },
+                          '50%': { opacity: 0.5 },
+                          '100%': { opacity: 1 },
+                        },
+                      }}
+                    />
                   </FadeIn>
                 )}
 
@@ -235,30 +264,30 @@ export default function HomeClient({
                   spacing={2}
                   alignItems={{ xs: 'center', md: 'flex-start' }}
                 >
-                  <Link href="/tournaments" passHref style={{ textDecoration: 'none', width: '100%', display: 'inline-block' }}>
-                    <Button
-                      variant="contained"
-                      size="large"
-                      sx={{
-                        width: { xs: '100%', sm: 'auto' },
-                        height: 64,
-                        px: 6,
-                        borderRadius: '32px', // MD3 Full Round
-                        fontSize: '1.1rem',
-                        fontWeight: 800,
-                        background: '#dc2626',
-                        color: 'white',
-                        boxShadow: '0 15px 30px rgba(220,38,38,0.4)',
-                        '&:hover': {
-                          background: '#b91c1c',
-                          transform: 'scale(1.05)',
-                        },
-                        transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
-                      }}
-                    >
-                      Rejoindre l'Arène
-                    </Button>
-                  </Link>
+                  <Button
+                    component={Link}
+                    href="/tournaments"
+                    variant="contained"
+                    size="large"
+                    sx={{
+                      width: { xs: '100%', sm: 'auto' },
+                      height: 64,
+                      px: 6,
+                      borderRadius: '32px', // MD3 Full Round
+                      fontSize: '1.1rem',
+                      fontWeight: 800,
+                      background: '#dc2626',
+                      color: 'white',
+                      boxShadow: '0 15px 30px rgba(220,38,38,0.4)',
+                      '&:hover': {
+                        background: '#b91c1c',
+                        transform: 'scale(1.05)',
+                      },
+                      transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                    }}
+                  >
+                    Rejoindre l'Arène
+                  </Button>
                   <Button
                     component="a"
                     href="https://discord.gg/rpb"
@@ -392,18 +421,17 @@ export default function HomeClient({
                     </Stack>
 
                     <RankingPreview rankings={topRankings} />
-                    
+
                     <Box sx={{ mt: 3, display: 'flex', gap: 2 }}>
-                      <Link href="/rankings" passHref style={{ flex: 1, textDecoration: 'none' }}>
-                        <Button variant="outlined" fullWidth sx={{ borderRadius: 2 }}>
-                          Voir tout
-                        </Button>
-                      </Link>
-                      <Link href="/tournaments/satr" passHref style={{ flex: 1, textDecoration: 'none' }}>
-                        <Button variant="contained" color="warning" fullWidth sx={{ borderRadius: 2, bgcolor: '#fbbf24', color: 'black', '&:hover': { bgcolor: '#f59e0b' } }}>
-                          SATR
-                        </Button>
-                      </Link>
+                      <Button
+                        variant="outlined"
+                        fullWidth
+                        sx={{ borderRadius: 2 }}
+                        component={Link}
+                        href="/rankings"
+                      >
+                        Voir tout
+                      </Button>
                     </Box>
                   </CardContent>
                 </Card>
@@ -419,15 +447,6 @@ export default function HomeClient({
           </Grid>
         </Container>
       </Box>
-
-      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-      <style {...({ jsx: true, global: true } as any)}>{`
-        @keyframes pulse {
-          0% { transform: scale(0.95); opacity: 0.7; }
-          70% { transform: scale(1.1); opacity: 1; }
-          100% { transform: scale(0.95); opacity: 0.7; }
-        }
-      `}</style>
 
       <TournamentVideo videoId="qsgE1YTgYF4" />
 

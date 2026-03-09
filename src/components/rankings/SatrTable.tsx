@@ -56,7 +56,7 @@ export function SatrTable({
       } else {
         toast.error(`Historique introuvable pour ${name}`);
       }
-    } catch (_e) {
+    } catch {
       toast.error("Erreur lors de la récupération de l'historique");
     } finally {
       setLoadingBlader(false);

@@ -42,10 +42,6 @@ const DispatchSchema = z.discriminatedUnion('action', [
     action: z.literal('remove_role'),
     params: z.object({ userId: z.string(), roleId: z.string() }),
   }),
-  z.object({
-    action: z.literal('join_voice'),
-    params: z.object({ channelId: z.string() }),
-  }),
 ]);
 
 let lastMemberFetch = 0;
@@ -212,6 +208,15 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse) {
     switch (url.pathname) {
       case '/api/status':
         return sendJSON(res, await getBotStatus());
+      case '/api/commands': {
+        const commands = bot.applicationCommands.map((cmd) => ({
+          name: cmd.name,
+          description: cmd.description,
+          category: (cmd as any).group || 'Général',
+          enabled: true,
+        }));
+        return sendJSON(res, { commands });
+      }
       case '/api/logs':
         return sendJSON(res, {
           logs: getLogs(parseInt(url.searchParams.get('tail') ?? '100', 10)),
@@ -220,15 +225,15 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse) {
         const guild = bot.guilds.cache.get(process.env.GUILD_ID ?? '');
         if (!guild) return sendJSON(res, { error: 'Guild not found' }, 404);
         const roles = guild.roles.cache
-          .filter((r: any) => r.name !== '@everyone')
-          .map((r: any) => ({
+          .filter((r) => r.name !== '@everyone')
+          .map((r) => ({
             id: r.id,
             name: r.name,
             color: r.hexColor,
             position: r.position,
             managed: r.managed,
           }))
-          .sort((a: any, b: any) => b.position - a.position);
+          .sort((a, b) => b.position - a.position);
         return sendJSON(res, { roles });
       }
       case '/api/channels': {
@@ -236,14 +241,14 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse) {
         if (!guild) return sendJSON(res, { error: 'Guild not found' }, 404);
         const channels = guild.channels.cache
           .filter((c) => c.isTextBased())
-          .map((c: any) => ({
+          .map((c) => ({
             id: c.id,
             name: c.name,
             type: c.type,
-            parentId: c.parentId,
-            position: c.position,
+            parentId: 'parentId' in c ? c.parentId : null,
+            position: 'position' in c ? c.position : 0,
           }))
-          .sort((a: any, b: any) => a.position - b.position);
+          .sort((a, b) => (a.position ?? 0) - (b.position ?? 0));
         return sendJSON(res, { channels });
       }
       case '/api/members-by-role': {
@@ -377,13 +382,6 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse) {
                   const member = await guild.members.fetch(params.userId);
                   await member.roles.remove(params.roleId);
                   return sendJSON(res, { success: true });
-                }
-                case 'join_voice': {
-                  // Placeholder for future implementation
-                  return sendJSON(res, {
-                    success: false,
-                    message: 'Voice join via API not fully implemented yet',
-                  });
                 }
               }
             } catch (e) {

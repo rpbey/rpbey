@@ -163,14 +163,18 @@ export function TournamentCardGrid({
   onRegister,
 }: TournamentCardGridProps) {
   const router = useRouter();
-  
+
   return (
     <Grid container spacing={3}>
       {tournaments.map((tournament) => (
         <Grid key={tournament.id} size={{ xs: 12, sm: 6, md: 4 }}>
           <TournamentCard
             {...tournament}
-            onClick={onTournamentClick ? () => onTournamentClick(tournament.id) : () => router.push(`/tournaments/${tournament.id}`)}
+            onClick={
+              onTournamentClick
+                ? () => onTournamentClick(tournament.id)
+                : () => router.push(`/tournaments/${tournament.id}`)
+            }
             onRegister={() => onRegister?.(tournament.id)}
           />
         </Grid>

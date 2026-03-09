@@ -24,6 +24,7 @@ import {
 } from '@mui/icons-material';
 import {
   Alert,
+  alpha,
   Box,
   Button,
   Card,
@@ -32,16 +33,19 @@ import {
   Chip,
   CircularProgress,
   Collapse,
+  FormControlLabel,
   IconButton,
   List,
   ListItem,
   ListItemText,
   Paper,
   Stack,
+  Switch,
   Tab,
   Tabs,
   TextField,
   Typography,
+  useTheme,
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import type { BotCommand } from '@prisma/client';
@@ -112,6 +116,7 @@ const sectionIcons: Record<string, string> = {
 };
 
 export default function UnifiedBotPage() {
+  const theme = useTheme();
   const [activeTab, setActiveTab] = useState(0);
   const [status, setStatus] = useState<BotStatus | null>(null);
   const [nativeCommands, setNativeCommands] = useState<NativeCommand[]>([]);
@@ -119,8 +124,9 @@ export default function UnifiedBotPage() {
   const [config, setConfig] = useState<BotConfig | null>(null);
   const [roles, setRoles] = useState<BotRole[]>([]);
   const [disabledCommands, setDisabledCommands] = useState<string[]>([]);
+  const [maintenanceMode, setMaintenanceMode] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [_error, setError] = useState<string | null>(null);
+  const [, setError] = useState<string | null>(null);
   const { socket } = useSocket();
   const { showToast } = useToast();
   const { confirm } = useConfirmDialog();
@@ -191,7 +197,8 @@ export default function UnifiedBotPage() {
         try {
           const parsed = JSON.parse(settings.content);
           setDisabledCommands(parsed.disabledCommands || []);
-        } catch (_e) {
+          setMaintenanceMode(parsed.maintenanceMode || false);
+        } catch {
           // Ignore error
         }
       }
@@ -207,6 +214,26 @@ export default function UnifiedBotPage() {
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  const toggleMaintenance = async () => {
+    const newValue = !maintenanceMode;
+    setMaintenanceMode(newValue);
+
+    try {
+      await upsertContent(
+        'bot-settings',
+        JSON.stringify({ disabledCommands, maintenanceMode: newValue }),
+        'Bot - Paramètres',
+      );
+      showToast(
+        `Mode maintenance ${newValue ? 'activé' : 'désactivé'}`,
+        newValue ? 'warning' : 'success',
+      );
+    } catch {
+      showToast('Erreur de configuration', 'error');
+      setMaintenanceMode(!newValue);
+    }
+  };
 
   const handleSavePhrases = async () => {
     setSubmitting(true);
@@ -224,7 +251,7 @@ export default function UnifiedBotPage() {
         ),
       ]);
       showToast('Phrases enregistrées', 'success');
-    } catch (_e) {
+    } catch {
       showToast("Erreur lors de l'enregistrement", 'error');
     } finally {
       setSubmitting(false);
@@ -242,14 +269,14 @@ export default function UnifiedBotPage() {
     try {
       await upsertContent(
         'bot-settings',
-        JSON.stringify({ disabledCommands: newList }),
+        JSON.stringify({ disabledCommands: newList, maintenanceMode }),
         'Bot - Paramètres',
       );
       showToast(
         `Commande ${isCurrentlyDisabled ? 'activée' : 'désactivée'}`,
         'info',
       );
-    } catch (_e) {
+    } catch {
       showToast('Erreur de configuration', 'error');
     }
   };
@@ -478,6 +505,64 @@ export default function UnifiedBotPage() {
       {/* Tab 0: Overview */}
       {activeTab === 0 && (
         <Grid container spacing={3}>
+          <Grid size={12}>
+            <Card
+              sx={{
+                bgcolor: maintenanceMode
+                  ? alpha(theme.palette.warning.main, 0.05)
+                  : 'background.paper',
+                border: maintenanceMode ? '1px solid' : 'none',
+                borderColor: 'warning.main',
+              }}
+            >
+              <CardContent>
+                <Stack
+                  direction="row"
+                  spacing={3}
+                  alignItems="center"
+                  justifyContent="space-between"
+                >
+                  <Stack direction="row" spacing={2} alignItems="center">
+                    <Box
+                      sx={{
+                        p: 1.5,
+                        borderRadius: '50%',
+                        bgcolor: maintenanceMode
+                          ? 'warning.main'
+                          : 'success.main',
+                        color: 'white',
+                        display: 'flex',
+                      }}
+                    >
+                      <SettingsIcon />
+                    </Box>
+                    <Box>
+                      <Typography variant="h6" fontWeight="bold">
+                        Mode Maintenance Global
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {maintenanceMode
+                          ? 'Le bot refuse actuellement toutes les commandes (sauf admins).'
+                          : 'Le bot est en mode opérationnel normal.'}
+                      </Typography>
+                    </Box>
+                  </Stack>
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={maintenanceMode}
+                        onChange={toggleMaintenance}
+                        color="warning"
+                      />
+                    }
+                    label={maintenanceMode ? 'ACTIVÉ' : 'DÉSACTIVÉ'}
+                    labelPlacement="start"
+                    sx={{ mr: 0 }}
+                  />
+                </Stack>
+              </CardContent>
+            </Card>
+          </Grid>
           <Grid size={{ xs: 12, md: 4 }}>
             <Card>
               <CardContent>

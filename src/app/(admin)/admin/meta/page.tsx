@@ -16,8 +16,11 @@ import {
 import { useEffect, useState } from 'react';
 import { getMetaStats } from '@/server/actions/admin-meta';
 
+type MetaStats = Awaited<ReturnType<typeof getMetaStats>>;
+type MetaItem = MetaStats['blades'][number];
+
 export default function AdminMetaPage() {
-  const [stats, setStats] = useState<any>(null);
+  const [stats, setStats] = useState<MetaStats | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -27,7 +30,7 @@ export default function AdminMetaPage() {
     });
   }, []);
 
-  if (loading) {
+  if (loading || !stats) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', py: 10 }}>
         <CircularProgress color="error" />
@@ -104,8 +107,8 @@ function StatSection({
   color,
 }: {
   title: string;
-  data: any[];
-  icon: any;
+  data: MetaItem[];
+  icon: React.ReactNode;
   color: string;
 }) {
   const maxUsage = data.length > 0 ? Math.max(...data.map((d) => d.count)) : 1;
@@ -159,7 +162,7 @@ function StatSection({
                     }}
                   >
                     <Avatar
-                      src={item.imageUrl}
+                      src={item.imageUrl ?? undefined}
                       variant="rounded"
                       sx={{
                         width: 32,

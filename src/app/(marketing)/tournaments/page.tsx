@@ -1,14 +1,8 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Card from '@mui/material/Card';
 import Container from '@mui/material/Container';
-import Divider from '@mui/material/Divider';
-import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import Image from 'next/image';
-import Link from 'next/link';
 import { TournamentCardGrid } from '@/components/cards/TournamentCard';
 import { PageHeader } from '@/components/ui';
 
@@ -17,7 +11,15 @@ export const dynamic = 'force-dynamic';
 export default function TournamentsPage() {
   const exportDir = join(process.cwd(), 'data/exports');
 
-  let tournaments: any[] = [];
+  let tournaments: Array<{
+    id: string;
+    name: string;
+    description: string;
+    startDate: string;
+    status: 'complete';
+    currentParticipants: number;
+    maxParticipants: number;
+  }> = [];
 
   try {
     const bts2 = JSON.parse(
@@ -86,90 +88,6 @@ export default function TournamentsPage() {
             </Typography>
           </Box>
         )}
-      </Box>
-
-      <Divider sx={{ mb: 8, opacity: 0.1 }} />
-
-      {/* Section 2: Nos Partenaires */}
-      <Box>
-        <Typography
-          variant="h5"
-          fontWeight="900"
-          sx={{ mb: 4, letterSpacing: -0.5 }}
-        >
-          Nos <span style={{ color: '#fbbf24' }}>Partenaires</span>
-        </Typography>
-
-        <Stack spacing={3}>
-          {/* SATR Card */}
-          <Card
-            elevation={0}
-            sx={{
-              p: { xs: 2, md: 3 },
-              borderRadius: 4,
-              border: '1px solid',
-              borderColor: 'divider',
-              display: 'flex',
-              flexDirection: { xs: 'column', sm: 'row' },
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              gap: 3,
-            }}
-          >
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 3,
-                width: '100%',
-              }}
-            >
-              <Box
-                sx={{
-                  position: 'relative',
-                  width: { xs: 100, md: 140 },
-                  height: { xs: 50, md: 70 },
-                  flexShrink: 0,
-                }}
-              >
-                <Image
-                  src="/satr-logo.webp"
-                  alt="SATR Logo"
-                  fill
-                  style={{ objectFit: 'contain', mixBlendMode: 'screen' }}
-                />
-              </Box>
-              <Box>
-                <Typography variant="h6" fontWeight="bold">
-                  Sun After The Reign
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  La série de tournois Beyblade Battle Tournament et ses
-                  classements officiels.
-                </Typography>
-              </Box>
-            </Box>
-
-            <Link href="/tournaments/satr" passHref style={{ textDecoration: 'none' }}>
-              <Button
-                variant="contained"
-                color="warning"
-                sx={{
-                  borderRadius: 2,
-                  fontWeight: 900,
-                  px: 4,
-                  py: 1.2,
-                  bgcolor: '#fbbf24',
-                  color: '#000',
-                  whiteSpace: 'nowrap',
-                  '&:hover': { bgcolor: '#f59e0b' },
-                }}
-              >
-                VOIR LE CLASSEMENT
-              </Button>
-            </Link>
-          </Card>
-        </Stack>
       </Box>
     </Container>
   );

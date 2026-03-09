@@ -1,17 +1,19 @@
 import {
   ActionRowBuilder,
   ApplicationCommandOptionType,
+  AttachmentBuilder,
   type AutocompleteInteraction,
   ButtonBuilder,
   ButtonStyle,
   type CommandInteraction,
   EmbedBuilder,
 } from 'discord.js';
-import { Discord, Slash, SlashGroup, SlashOption } from 'discordx';
+import { Discord, Slash, SlashChoice, SlashGroup, SlashOption } from 'discordx';
+import { injectable } from 'tsyringe';
 
+import { generateDeckCard } from '../../lib/canvas-utils.js';
 import { Colors } from '../../lib/constants.js';
-import { logger } from '../../lib/logger.js';
-import prisma from '../../lib/prisma.js';
+import type { PrismaService } from '../../lib/prisma.js';
 
 const parseStat = (val: string | number | null | undefined): number => {
   if (typeof val === 'number') return val;
@@ -21,11 +23,16 @@ const parseStat = (val: string | number | null | undefined): number => {
 };
 
 @Discord()
-@SlashGroup({ name: 'deck', description: 'Gérer tes decks Beyblade X' })
+@SlashGroup({ name: 'deck', description: 'Gestion des équipements et decks' })
 @SlashGroup('deck')
+@injectable()
 export class DeckCommand {
-  // Autocomplete handler
-  static async autocomplete(interaction: AutocompleteInteraction) {
+  constructor(private prisma: PrismaService) {}
+
+  static async autocomplete(
+    interaction: AutocompleteInteraction,
+    prisma: PrismaService,
+  ) {
     const focusedOption = interaction.options.getFocused(true);
     const query = focusedOption.value.toLowerCase();
 
@@ -34,26 +41,29 @@ export class DeckCommand {
         where: { discordId: interaction.user.id },
         include: { decks: true },
       });
-
       if (!user) return interaction.respond([]);
-
-      const filtered = user.decks.filter((d) =>
-        d.name.toLowerCase().includes(query),
-      );
       return interaction.respond(
-        filtered.slice(0, 25).map((d) => ({ name: d.name, value: d.id })),
+        user.decks
+          .filter((d) => d.name.toLowerCase().includes(query))
+          .slice(0, 25)
+          .map((d) => ({ name: d.name, value: d.id })),
       );
     }
 
     let type: 'BLADE' | 'RATCHET' | 'BIT' = 'BLADE';
-    if (focusedOption.name === 'ratchet') type = 'RATCHET';
-    if (focusedOption.name === 'bit') type = 'BIT';
+    if (
+      focusedOption.name === 'ratchet' ||
+      interaction.options.getSubcommand() === 'ratchet'
+    )
+      type = 'RATCHET';
+    if (
+      focusedOption.name === 'bit' ||
+      interaction.options.getSubcommand() === 'bit'
+    )
+      type = 'BIT';
 
     const parts = await prisma.part.findMany({
-      where: {
-        type: type,
-        name: { contains: query, mode: 'insensitive' },
-      },
+      where: { type, name: { contains: query, mode: 'insensitive' } },
       take: 25,
       orderBy: { name: 'asc' },
     });
@@ -63,12 +73,11 @@ export class DeckCommand {
     );
   }
 
-  @Slash({ name: 'list', description: 'Lister tes decks' })
+  @Slash({ name: 'liste', description: 'Lister tes decks' })
   async list(interaction: CommandInteraction) {
     await interaction.deferReply({ ephemeral: true });
-
     try {
-      const user = await prisma.user.findFirst({
+      const user = await this.prisma.user.findFirst({
         where: { discordId: interaction.user.id },
         include: {
           decks: {
@@ -83,117 +92,104 @@ export class DeckCommand {
         },
       });
 
-      if (!user) {
+      if (!user) return interaction.editReply("❌ Tu n'es pas inscrit.");
+      if (user.decks.length === 0)
         return interaction.editReply(
-          "❌ Tu n'es pas inscrit. Utilise `/inscription rejoindre`.",
+          "📦 Tu n'as pas de deck. Utilise `/deck creer`.",
         );
-      }
-
-      if (user.decks.length === 0) {
-        return interaction.editReply(
-          "📦 Tu n'as pas de deck. Utilise `/deck create` pour en créer un !",
-        );
-      }
 
       const embeds: EmbedBuilder[] = [];
-      const decksToShow = user.decks.slice(0, 10);
+      const files: AttachmentBuilder[] = [];
 
-      for (const deck of decksToShow) {
+      for (const deck of user.decks.slice(0, 5)) {
         const embed = new EmbedBuilder()
-          .setTitle(deck.isActive ? `⭐ ${deck.name} (Actif)` : deck.name)
-          .setColor(deck.isActive ? Colors.Primary : Colors.Secondary)
-          .setFooter({ text: `ID: ${deck.id.slice(-6)}` });
+          .setTitle(deck.isActive ? `⭐ ${deck.name}` : deck.name)
+          .setColor(deck.isActive ? Colors.Primary : Colors.Secondary);
 
         const beyLines = deck.items.map((item) => {
-          const partsAvailable = item.blade && item.ratchet && item.bit;
-          if (!partsAvailable) return `**${item.position}**. ⚠️ Bey incomplet`;
-
-          const beyName = `${item.blade?.name} ${item.ratchet?.name} ${item.bit?.name}`;
-          const parts = [item.blade, item.ratchet, item.bit];
-          const atk = parts.reduce((acc, p) => acc + parseStat(p?.attack), 0);
-          const def = parts.reduce((acc, p) => acc + parseStat(p?.defense), 0);
-          const sta = parts.reduce((acc, p) => acc + parseStat(p?.stamina), 0);
-          const dash = parts.reduce((acc, p) => acc + parseStat(p?.dash), 0);
-
-          return `**${item.position}**. ${beyName}\n└ ⚔️${atk} 🛡️${def} 🔋${sta} 🚀${dash}`;
+          if (!item.blade || !item.ratchet || !item.bit)
+            return `**${item.position}**. ⚠️ Bey incomplet`;
+          const atk =
+            parseStat(item.blade.attack) +
+            parseStat(item.ratchet.attack) +
+            parseStat(item.bit.attack);
+          const def =
+            parseStat(item.blade.defense) +
+            parseStat(item.ratchet.defense) +
+            parseStat(item.bit.defense);
+          return `**${item.position}**. ${item.blade.name} ${item.ratchet.name} ${item.bit.name}\n└ ⚔️${atk} 🛡️${def}`;
         });
 
-        if (beyLines.length > 0) {
-          embed.setDescription(beyLines.join('\n\n'));
-        } else {
-          embed.setDescription('*Ce deck est vide.*');
+        embed.setDescription(
+          beyLines.length > 0 ? beyLines.join('\n\n') : '*Deck vide*',
+        );
+        if (deck.isActive && deck.items.every((i) => i.blade)) {
+          const buffer = await generateDeckCard({
+            name: deck.name,
+            beys: deck.items.map((i) => ({
+              name: i.blade?.name || '?',
+              imageUrl: i.blade?.imageUrl || null,
+            })),
+          });
+          const attachment = new AttachmentBuilder(buffer, {
+            name: `deck-${deck.id}.png`,
+          });
+          files.push(attachment);
+          embed.setImage(`attachment://deck-${deck.id}.png`);
         }
         embeds.push(embed);
       }
 
-      const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
-        new ButtonBuilder()
-          .setLabel('Gérer mes Decks')
-          .setURL('https://rpbey.fr/dashboard/deck')
-          .setStyle(ButtonStyle.Link),
-      );
-
       return interaction.editReply({
-        content: `📦 **Tes Decks (${user.decks.length})**`,
-        embeds: embeds,
-        components: [row],
+        embeds,
+        files,
+        components: [
+          new ActionRowBuilder<ButtonBuilder>().addComponents(
+            new ButtonBuilder()
+              .setLabel('Gérer en ligne')
+              .setURL('https://rpbey.fr/dashboard/deck')
+              .setStyle(ButtonStyle.Link),
+          ),
+        ],
       });
-    } catch (_error) {
-      return interaction.editReply('❌ Erreur lors de la récupération.');
+    } catch (_e) {
+      return interaction.editReply('❌ Erreur récupération.');
     }
   }
 
-  @Slash({ name: 'create', description: 'Créer un nouveau deck' })
+  @Slash({ name: 'creer', description: 'Créer un nouveau deck' })
   async create(
     @SlashOption({
       name: 'nom',
-      description: 'Le nom de ton deck',
+      description: 'Nom du deck',
       required: true,
       type: ApplicationCommandOptionType.String,
     })
     name: string,
     interaction: CommandInteraction,
   ) {
-    await interaction.deferReply({ ephemeral: true });
-
-    try {
-      const user = await prisma.user.findUnique({
-        where: { discordId: interaction.user.id },
-      });
-
-      if (!user) return interaction.editReply("❌ Tu n'es pas inscrit.");
-
-      const count = await prisma.deck.count({ where: { userId: user.id } });
-      if (count >= 10) {
-        return interaction.editReply('❌ Tu as atteint la limite de 10 decks.');
-      }
-
-      const isActive = count === 0;
-
-      const deck = await prisma.deck.create({
-        data: {
-          userId: user.id,
-          name,
-          isActive,
-          items: {
-            create: [{ position: 1 }, { position: 2 }, { position: 3 }],
-          },
-        },
-      });
-
-      return interaction.editReply(
-        `✅ Deck **${deck.name}** créé ! Utilise \`/deck edit\` pour ajouter des Beys.`,
-      );
-    } catch (_e) {
-      return interaction.editReply('❌ Erreur création deck.');
-    }
+    const user = await this.prisma.user.findUnique({
+      where: { discordId: interaction.user.id },
+    });
+    if (!user) return interaction.reply("❌ Inscris-toi d'abord.");
+    const count = await this.prisma.deck.count({ where: { userId: user.id } });
+    if (count >= 10) return interaction.reply('❌ Max 10 decks.');
+    await this.prisma.deck.create({
+      data: {
+        userId: user.id,
+        name,
+        isActive: count === 0,
+        items: { create: [{ position: 1 }, { position: 2 }, { position: 3 }] },
+      },
+    });
+    return interaction.reply(`✅ Deck **${name}** créé !`);
   }
 
-  @Slash({ name: 'edit', description: 'Modifier le deck ACTIF' })
+  @Slash({ name: 'modifier', description: 'Modifier le deck ACTIF' })
   async edit(
     @SlashOption({
       name: 'slot',
-      description: 'Emplacement (1, 2 ou 3)',
+      description: 'Position (1-3)',
       required: true,
       type: ApplicationCommandOptionType.Integer,
       minValue: 1,
@@ -202,123 +198,86 @@ export class DeckCommand {
     slot: number,
     @SlashOption({
       name: 'blade',
-      description: 'La Blade (anneau)',
+      description: 'Blade',
       required: true,
       type: ApplicationCommandOptionType.String,
-      autocomplete: DeckCommand.autocomplete,
+      autocomplete: true,
     })
     bladeId: string,
     @SlashOption({
       name: 'ratchet',
-      description: 'Le Ratchet (axe)',
+      description: 'Ratchet',
       required: true,
       type: ApplicationCommandOptionType.String,
-      autocomplete: DeckCommand.autocomplete,
+      autocomplete: true,
     })
     ratchetId: string,
     @SlashOption({
       name: 'bit',
-      description: 'Le Bit (pointe)',
+      description: 'Bit',
       required: true,
       type: ApplicationCommandOptionType.String,
-      autocomplete: DeckCommand.autocomplete,
+      autocomplete: true,
     })
     bitId: string,
     interaction: CommandInteraction,
   ) {
     await interaction.deferReply({ ephemeral: true });
+    const user = await this.prisma.user.findUnique({
+      where: { discordId: interaction.user.id },
+      include: {
+        decks: { where: { isActive: true }, include: { items: true } },
+      },
+    });
+    if (!user || !user.decks[0])
+      return interaction.editReply('❌ Pas de deck actif.');
 
-    try {
-      const user = await prisma.user.findUnique({
-        where: { discordId: interaction.user.id },
-        include: {
-          decks: { where: { isActive: true }, include: { items: true } },
-        },
-      });
+    await this.prisma.deckItem.updateMany({
+      where: { deckId: user.decks[0].id, position: slot },
+      data: { bladeId, ratchetId, bitId },
+    });
 
-      if (!user) return interaction.editReply('❌ Inconnu.');
-
-      const activeDeck = user.decks[0];
-      if (!activeDeck) {
-        return interaction.editReply(
-          "❌ Tu n'as pas de deck actif. Crées-en un ou actives-en un.",
-        );
-      }
-
-      const [blade, ratchet, bit] = await Promise.all([
-        prisma.part.findUnique({ where: { id: bladeId, type: 'BLADE' } }),
-        prisma.part.findUnique({ where: { id: ratchetId, type: 'RATCHET' } }),
-        prisma.part.findUnique({ where: { id: bitId, type: 'BIT' } }),
-      ]);
-
-      if (!blade || !ratchet || !bit) {
-        return interaction.editReply(
-          '❌ Une des pièces sélectionnées est invalide.',
-        );
-      }
-
-      const item = activeDeck.items.find((i) => i.position === slot);
-
-      if (item) {
-        await prisma.deckItem.update({
-          where: { id: item.id },
-          data: { bladeId, ratchetId, bitId },
-        });
-      } else {
-        await prisma.deckItem.create({
-          data: {
-            deckId: activeDeck.id,
-            position: slot,
-            bladeId,
-            ratchetId,
-            bitId,
-          },
-        });
-      }
-
-      const beyName = `${blade.name} ${ratchet.name} ${bit.name}`;
-      return interaction.editReply(
-        `✅ Slot ${slot} mis à jour : **${beyName}**`,
-      );
-    } catch (e) {
-      logger.error(e);
-      return interaction.editReply('❌ Erreur lors de la modification.');
-    }
+    return interaction.editReply(`✅ Slot ${slot} mis à jour !`);
   }
 
-  @Slash({ name: 'active', description: 'Choisir ton deck actif' })
-  async active(
+  @Slash({ name: 'piece', description: "Statistiques d'une pièce" })
+  async part(
+    @SlashChoice({ name: 'Blade', value: 'BLADE' })
+    @SlashChoice({ name: 'Ratchet', value: 'RATCHET' })
+    @SlashChoice({ name: 'Bit', value: 'BIT' })
     @SlashOption({
-      name: 'deck',
-      description: 'Le deck à activer',
+      name: 'type',
+      description: 'Type de pièce',
       required: true,
       type: ApplicationCommandOptionType.String,
-      autocomplete: DeckCommand.autocomplete,
     })
-    deckId: string,
+    type: 'BLADE' | 'RATCHET' | 'BIT',
+    @SlashOption({
+      name: 'nom',
+      description: 'Nom de la pièce',
+      required: true,
+      type: ApplicationCommandOptionType.String,
+      autocomplete: true,
+    })
+    partId: string,
     interaction: CommandInteraction,
   ) {
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply();
+    const part = await this.prisma.part.findUnique({ where: { id: partId } });
+    if (!part) return interaction.editReply('❌ Pièce introuvable.');
 
-    try {
-      const user = await prisma.user.findUnique({
-        where: { discordId: interaction.user.id },
-      });
-      if (!user) return interaction.editReply('❌ Inconnu.');
-
-      await prisma.deck.updateMany({
-        where: { userId: user.id },
-        data: { isActive: false },
-      });
-
-      const deck = await prisma.deck.update({
-        where: { id: deckId, userId: user.id },
-        data: { isActive: true },
-      });
-
-      return interaction.editReply(`⭐ Deck **${deck.name}** activé !`);
-    } catch (_e) {
-      return interaction.editReply('❌ Deck introuvable ou erreur.');
-    }
+    const embed = new EmbedBuilder()
+      .setTitle(`${part.system || 'BX'} | ${part.name}`)
+      .setColor(
+        type === 'BLADE' ? 0xdc2626 : type === 'RATCHET' ? 0x3b82f6 : 0x22c55e,
+      )
+      .addFields(
+        { name: 'Poids', value: `${part.weight || '?'}g`, inline: true },
+        { name: 'Attaque', value: String(part.attack || '?'), inline: true },
+        { name: 'Défense', value: String(part.defense || '?'), inline: true },
+        { name: 'Endurance', value: String(part.stamina || '?'), inline: true },
+      );
+    if (part.imageUrl) embed.setThumbnail(`https://rpbey.fr${part.imageUrl}`);
+    return interaction.editReply({ embeds: [embed] });
   }
 }

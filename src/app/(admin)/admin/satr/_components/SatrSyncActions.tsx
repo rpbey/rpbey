@@ -20,7 +20,7 @@ export default function SatrSyncActions() {
       } else {
         toast.error(`Erreur: ${result.error}`);
       }
-    } catch (_e) {
+    } catch {
       toast.error('Erreur réseau');
     } finally {
       setLoadingRanking(false);
@@ -36,7 +36,7 @@ export default function SatrSyncActions() {
       } else {
         toast.error(`Erreur: ${result.error}`);
       }
-    } catch (_e) {
+    } catch {
       toast.error('Erreur réseau');
     } finally {
       setLoadingLinking(false);

@@ -126,7 +126,7 @@ export async function runBattleSimulation(
   const staRatio = winnerStats.stamina / total;
   const dashBonus = winnerStats.dash > 50 ? 0.2 : 0;
 
-  let finishType;
+  let finishType: (typeof battleResults)[number];
   const roll = Math.random();
 
   if (roll < atkRatio * 0.5 + dashBonus) {

@@ -48,7 +48,14 @@ export default function MaintenancePage() {
   const [nextSeasonName, setNextSeasonName] = useState('');
   const { showToast } = useToast();
 
-  const handleAction = async (id: string, action: () => Promise<any>) => {
+  const handleAction = async (
+    id: string,
+    action: () => Promise<{
+      success?: boolean;
+      message?: string;
+      error?: string;
+    }>,
+  ) => {
     setLoading(id);
     try {
       const res = await action();
@@ -57,8 +64,8 @@ export default function MaintenancePage() {
       } else {
         showToast(res?.error || 'Erreur inconnue', 'error');
       }
-    } catch (err: any) {
-      showToast(err.message, 'error');
+    } catch (err: unknown) {
+      showToast(err instanceof Error ? err.message : String(err), 'error');
     } finally {
       setLoading(null);
     }
@@ -260,7 +267,14 @@ export default function MaintenancePage() {
                       <Button
                         fullWidth
                         variant="contained"
-                        color={task.color as any}
+                        color={
+                          task.color as
+                            | 'primary'
+                            | 'warning'
+                            | 'info'
+                            | 'error'
+                            | 'secondary'
+                        }
                         onClick={() => handleAction(task.id, task.action)}
                         disabled={loading !== null}
                         startIcon={

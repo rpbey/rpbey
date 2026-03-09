@@ -85,7 +85,9 @@ export function PartDialog({
                 label="ID Externe"
                 fullWidth
                 value={form.externalId || ''}
-                onChange={(e) => setForm({ ...form, externalId: e.target.value })}
+                onChange={(e) =>
+                  setForm({ ...form, externalId: e.target.value })
+                }
                 placeholder="ex: bx-01-blade"
                 helperText="Identifiant unique pour le builder"
               />
@@ -136,7 +138,9 @@ export function PartDialog({
                 label="URL Texture"
                 fullWidth
                 value={form.textureUrl || ''}
-                onChange={(e) => setForm({ ...form, textureUrl: e.target.value })}
+                onChange={(e) =>
+                  setForm({ ...form, textureUrl: e.target.value })
+                }
               />
             </MuiGrid>
 
@@ -148,7 +152,12 @@ export function PartDialog({
                 fullWidth
                 value={form.weight ?? ''}
                 onChange={(e) =>
-                  setForm({ ...form, weight: e.target.value ? parseFloat(e.target.value) : undefined })
+                  setForm({
+                    ...form,
+                    weight: e.target.value
+                      ? parseFloat(e.target.value)
+                      : undefined,
+                  })
                 }
               />
             </MuiGrid>
@@ -159,7 +168,12 @@ export function PartDialog({
                 fullWidth
                 value={form.height ?? ''}
                 onChange={(e) =>
-                  setForm({ ...form, height: e.target.value ? parseInt(e.target.value, 10) : undefined })
+                  setForm({
+                    ...form,
+                    height: e.target.value
+                      ? parseInt(e.target.value, 10)
+                      : undefined,
+                  })
                 }
               />
             </MuiGrid>
@@ -170,7 +184,12 @@ export function PartDialog({
                 fullWidth
                 value={form.protrusions ?? ''}
                 onChange={(e) =>
-                  setForm({ ...form, protrusions: e.target.value ? parseInt(e.target.value, 10) : undefined })
+                  setForm({
+                    ...form,
+                    protrusions: e.target.value
+                      ? parseInt(e.target.value, 10)
+                      : undefined,
+                  })
                 }
               />
             </MuiGrid>
@@ -208,7 +227,9 @@ export function PartDialog({
                 label="Gear Ratio"
                 fullWidth
                 value={form.gearRatio || ''}
-                onChange={(e) => setForm({ ...form, gearRatio: e.target.value })}
+                onChange={(e) =>
+                  setForm({ ...form, gearRatio: e.target.value })
+                }
               />
             </MuiGrid>
             <MuiGrid size={{ xs: 3 }}>
@@ -216,7 +237,9 @@ export function PartDialog({
                 label="Shaft Width"
                 fullWidth
                 value={form.shaftWidth || ''}
-                onChange={(e) => setForm({ ...form, shaftWidth: e.target.value })}
+                onChange={(e) =>
+                  setForm({ ...form, shaftWidth: e.target.value })
+                }
               />
             </MuiGrid>
             <MuiGrid size={{ xs: 3 }}>

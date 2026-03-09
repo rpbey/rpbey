@@ -445,7 +445,11 @@ export default async function AboutPage() {
                 >
                   Rejoindre le Discord
                 </Button>
-                <Link href="/tournaments" passHref style={{ textDecoration: 'none' }}>
+                <Link
+                  href="/tournaments"
+                  passHref
+                  style={{ textDecoration: 'none' }}
+                >
                   <Button
                     variant="outlined"
                     size="large"

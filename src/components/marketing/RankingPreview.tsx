@@ -68,7 +68,7 @@ export function RankingPreview({ rankings }: RankingPreviewProps) {
                       borderColor: theme.palette.primary.main,
                       transform: 'translateX(8px)',
                     },
-                  })
+                  }),
                 }}
               >
                 {/* Rank Badge */}

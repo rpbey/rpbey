@@ -138,8 +138,7 @@ export function DeckBuilderModal({
     const isFullDeck = beys.every((b) => {
       const baseComplete = b.blade && b.ratchet && b.bit;
       if (!baseComplete) return false;
-      if (b.blade?.system === 'CX')
-        return !!b.lockChip && !!b.assistBlade;
+      if (b.blade?.system === 'CX') return !!b.lockChip && !!b.assistBlade;
       return true;
     });
 
@@ -178,7 +177,9 @@ export function DeckBuilderModal({
       bey.overBlade?.id,
       bey.ratchet?.id,
       bey.bit?.id,
-      bey.lockChip?.name.toLowerCase().includes('metal') ? bey.lockChip.id : undefined,
+      bey.lockChip?.name.toLowerCase().includes('metal')
+        ? bey.lockChip.id
+        : undefined,
       bey.assistBlade?.id,
     ].filter(Boolean),
   ) as string[];

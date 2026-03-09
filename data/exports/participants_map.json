@@ -644,8 +644,7 @@
     "avatarUrl": "none",
     "aliases": [
       "Kiiroh",
-      "RNSX_Kiiro✅",
-      "Şêro✅"
+      "RNSX_Kiiro✅"
     ],
     "tournaments": [
       "bts2",
@@ -1144,6 +1143,18 @@
     "challongeUsername": null,
     "aliases": [
       "Sofy✅"
+    ],
+    "tournaments": [
+      "bts3"
+    ]
+  },
+  "sero": {
+    "key": "sero",
+    "primaryName": "Sero",
+    "challongeUsername": null,
+    "avatarUrl": null,
+    "aliases": [
+      "Şêro✅"
     ],
     "tournaments": [
       "bts3"

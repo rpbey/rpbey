@@ -66,7 +66,12 @@ export function SatrBladerDialog({
 
   if (!blader) return null;
 
-  const history = blader.history as any[];
+  const history = blader.history as Array<{
+    tournament: string;
+    wins: number;
+    losses: number;
+    rank?: number;
+  }>;
   const totalMatches = blader.totalWins + blader.totalLosses;
   const winrate =
     totalMatches > 0

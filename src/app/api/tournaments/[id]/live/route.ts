@@ -29,9 +29,11 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
         const data = JSON.parse(readFileSync(filePath, 'utf-8'));
         return NextResponse.json({
           data: {
-            standings: data.participants
-              .filter((p: any) => p.rank > 0)
-              .sort((a: any, b: any) => a.rank - b.rank),
+            standings: (
+              data.participants as Array<{ rank: number; name: string }>
+            )
+              .filter((p) => p.rank > 0)
+              .sort((a, b) => a.rank - b.rank),
             stations: [],
             activityLog: [],
             lastUpdated: data.scrapedAt,
@@ -128,9 +130,9 @@ export async function POST(_request: NextRequest, { params }: RouteParams) {
       await prisma.tournament.update({
         where: { id },
         data: {
-          standings: result.standings as unknown as undefined,
-          stations: result.stations as unknown as undefined,
-          activityLog: result.log as unknown as undefined,
+          standings: result.standings as never,
+          stations: result.stations as never,
+          activityLog: result.log as never,
         },
       });
 

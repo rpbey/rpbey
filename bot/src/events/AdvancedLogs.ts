@@ -1,4 +1,10 @@
-import { EmbedBuilder, type GuildTextBasedChannel } from 'discord.js';
+import {
+  EmbedBuilder,
+  type Guild,
+  type GuildMember,
+  type GuildTextBasedChannel,
+  type Role,
+} from 'discord.js';
 import { Discord, On } from 'discordx';
 import { injectable } from 'tsyringe';
 
@@ -8,14 +14,16 @@ import { logger } from '../lib/logger.js';
 @Discord()
 @injectable()
 export class AdvancedLogs {
-  private getLogChannel(guild: any) {
+  private getLogChannel(guild: Guild) {
     const logChannelId = process.env.LOG_CHANNEL_ID;
-    if (!logChannelId) return null; // Ne plus utiliser Annonces par défaut
-    return guild.channels.cache.get(logChannelId) as GuildTextBasedChannel;
+    if (!logChannelId) return null;
+    return guild.channels.cache.get(logChannelId) as
+      | GuildTextBasedChannel
+      | undefined;
   }
 
-  @On({ event: 'guildMemberRoleAdd' as any })
-  async onRoleAdd([member, role]: [any, any]) {
+  @On({ event: 'guildMemberRoleAdd' as 'guildMemberUpdate' })
+  async onRoleAdd([member, role]: [GuildMember, Role]) {
     logger.info(`Rôle ${role.name} ajouté à ${member.user.tag}`);
 
     const channel = this.getLogChannel(member.guild);
@@ -30,8 +38,8 @@ export class AdvancedLogs {
     await channel.send({ embeds: [embed] }).catch(() => null);
   }
 
-  @On({ event: 'guildMemberBoost' as any })
-  async onBoost([member]: [any]) {
+  @On({ event: 'guildMemberBoost' as 'guildMemberUpdate' })
+  async onBoost([member]: [GuildMember]) {
     const channel = this.getLogChannel(member.guild);
     if (!channel) return;
 

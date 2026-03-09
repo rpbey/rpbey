@@ -1,6 +1,6 @@
 'use client';
 
-import { BarChart, Close } from '@mui/icons-material';
+import { CheckCircle, Close, InfoOutlined } from '@mui/icons-material';
 import {
   Box,
   Card,
@@ -47,7 +47,7 @@ function parseStat(val: string | number | null | undefined): number {
 
 const ALL_STATS: { key: keyof Part; label: string; color: string }[] = [
   { key: 'attack', label: 'Attaque', color: '#ef4444' },
-  { key: 'defense', label: 'Defense', color: '#3b82f6' },
+  { key: 'defense', label: 'Défense', color: '#3b82f6' },
   { key: 'stamina', label: 'Endurance', color: '#22c55e' },
   { key: 'dash', label: 'Dash', color: '#fbbf24' },
   { key: 'burst', label: 'Anti-Burst', color: '#a855f7' },
@@ -84,14 +84,14 @@ export function CatalogPartCard({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        borderRadius: '12px',
+        borderRadius: '16px',
       }}
     >
       <Typography
         variant="h4"
         color="text.disabled"
         fontWeight="900"
-        sx={{ opacity: 0.5 }}
+        sx={{ opacity: 0.3 }}
       >
         {part.name.charAt(0)}
       </Typography>
@@ -103,7 +103,6 @@ export function CatalogPartCard({
       return renderFallback();
     }
 
-    // External URLs (beybladeplanner.com etc) - use native img
     if (isExternalUrl(part.imageUrl)) {
       return (
         <img
@@ -113,6 +112,7 @@ export function CatalogPartCard({
             width: '100%',
             height: '100%',
             objectFit: 'contain',
+            filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.15))',
           }}
           loading="lazy"
           onError={() => setImgError(true)}
@@ -120,14 +120,16 @@ export function CatalogPartCard({
       );
     }
 
-    // Local images - use Next.js Image
     return (
       <Image
         src={part.imageUrl}
         alt={part.name}
         fill
-        sizes="80px"
-        style={{ objectFit: 'contain' }}
+        sizes="100px"
+        style={{
+          objectFit: 'contain',
+          filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.15))',
+        }}
         loading="lazy"
         onError={() => setImgError(true)}
       />
@@ -139,15 +141,21 @@ export function CatalogPartCard({
       variant="outlined"
       sx={{
         height: '100%',
-        transition: 'all 0.2s ease-out',
-        opacity: isUsed ? 0.35 : 1,
+        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+        opacity: isUsed ? 0.45 : 1,
         pointerEvents: isUsed ? 'none' : 'auto',
-        borderRadius: 2.5,
-        borderColor: 'divider',
+        borderRadius: 4,
+        borderColor: isUsed ? 'divider' : alpha(color, 0.1),
+        bgcolor: isUsed ? alpha('#000', 0.02) : 'background.paper',
         '&:hover': {
-          transform: isUsed ? 'none' : 'translateY(-3px)',
-          boxShadow: isUsed ? 'none' : `0 8px 24px -8px ${alpha(color, 0.35)}`,
+          transform: isUsed ? 'none' : 'translateY(-6px)',
+          boxShadow: isUsed
+            ? 'none'
+            : `0 12px 30px -10px ${alpha(color, 0.45)}`,
           borderColor: color,
+          '& .part-image-box': {
+            transform: 'scale(1.1) rotate(5deg)',
+          },
         },
         position: 'relative',
         overflow: 'visible',
@@ -156,86 +164,124 @@ export function CatalogPartCard({
       <CardActionArea
         onClick={onClick}
         disabled={isUsed}
-        sx={{ height: '100%' }}
+        sx={{ height: '100%', borderRadius: 4 }}
       >
         <CardContent
           sx={{
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            gap: 0.75,
+            gap: 1,
             p: 1.5,
+            pt: 2.5,
             '&:last-child': { pb: 1.5 },
           }}
         >
+          {/* Type Badge */}
           {part.beyType && (
-            <Chip
-              label={part.beyType.slice(0, 3)}
-              size="small"
+            <Box
               sx={{
                 position: 'absolute',
-                top: 6,
-                right: 6,
-                bgcolor: alpha(color, 0.15),
-                color: color,
-                fontWeight: 'bold',
-                fontSize: '0.6rem',
-                height: 18,
-                '& .MuiChip-label': { px: 0.75 },
+                top: -10,
+                right: 12,
+                bgcolor: color,
+                color: '#fff',
+                px: 1.2,
+                py: 0.3,
+                borderRadius: 2,
+                fontSize: '0.65rem',
+                fontWeight: '900',
+                boxShadow: `0 4px 10px ${alpha(color, 0.4)}`,
+                zIndex: 2,
+                textTransform: 'uppercase',
+                letterSpacing: 0.5,
               }}
-            />
+            >
+              {part.beyType}
+            </Box>
           )}
 
           {isUsed && (
-            <Chip
-              label="Utilise"
-              size="small"
+            <Box
               sx={{
                 position: 'absolute',
-                top: 6,
-                left: 6,
-                bgcolor: 'rgba(0,0,0,0.75)',
-                color: '#fff',
-                fontWeight: 'bold',
-                fontSize: '0.6rem',
-                height: 18,
-                zIndex: 2,
-                '& .MuiChip-label': { px: 0.75 },
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+                bgcolor: 'rgba(255,255,255,0.6)',
+                backdropFilter: 'grayscale(1)',
+                zIndex: 1,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: 4,
               }}
-            />
+            >
+              <CheckCircle
+                sx={{ color: 'text.secondary', opacity: 0.5, fontSize: 32 }}
+              />
+            </Box>
           )}
 
-          <Box sx={{ position: 'relative', width: 80, height: 80 }}>
+          <Box
+            className="part-image-box"
+            sx={{
+              position: 'relative',
+              width: 90,
+              height: 90,
+              transition:
+                'transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+            }}
+          >
             {renderImage()}
           </Box>
 
-          <Box sx={{ textAlign: 'center', width: '100%' }}>
+          <Box sx={{ textAlign: 'center', width: '100%', mt: 0.5 }}>
             <Typography
-              variant="caption"
+              variant="body2"
               fontWeight="900"
               noWrap
-              sx={{ display: 'block', lineHeight: 1.3 }}
+              sx={{
+                display: 'block',
+                lineHeight: 1.2,
+                color: 'text.primary',
+                fontSize: '0.8rem',
+              }}
             >
               {part.name}
             </Typography>
-            <Typography
-              variant="caption"
-              color="text.secondary"
-              fontSize="0.6rem"
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                gap: 1,
+                mt: 0.25,
+              }}
             >
-              {part.weight ? `${part.weight}g` : part.type}
-            </Typography>
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                sx={{ fontSize: '0.65rem', fontWeight: 'bold' }}
+              >
+                {part.weight
+                  ? `${part.weight}g`
+                  : SYSTEM_LABELS[part.system || 'BX']}
+              </Typography>
+            </Box>
           </Box>
 
+          {/* Stat Bars Grid */}
           <Box
             sx={{
               display: 'flex',
-              gap: 0.5,
+              gap: 0.4,
               width: '100%',
               alignItems: 'center',
+              mt: 0.5,
             }}
           >
-            <Box sx={{ display: 'flex', gap: 0.5, flex: 1 }}>
+            <Box sx={{ display: 'flex', gap: 0.4, flex: 1 }}>
               {(['attack', 'defense', 'stamina', 'dash'] as const).map(
                 (stat) => {
                   const val = part[stat as keyof Part];
@@ -249,16 +295,16 @@ export function CatalogPartCard({
                   return (
                     <Tooltip
                       key={stat}
-                      title={`${statInfo.label} ${numericVal}`}
+                      title={`${statInfo.label}: ${numericVal}`}
                       arrow
                       placement="top"
                     >
                       <Box
                         sx={{
                           flex: 1,
-                          height: 4,
-                          bgcolor: 'action.hover',
-                          borderRadius: 2,
+                          height: 5,
+                          bgcolor: alpha(statInfo.color, 0.1),
+                          borderRadius: 3,
                           overflow: 'hidden',
                           cursor: 'help',
                         }}
@@ -268,7 +314,8 @@ export function CatalogPartCard({
                             width: `${Math.min(numericVal, 100)}%`,
                             height: '100%',
                             bgcolor: statInfo.color,
-                            borderRadius: 2,
+                            borderRadius: 3,
+                            boxShadow: `0 0 4px ${alpha(statInfo.color, 0.4)}`,
                           }}
                         />
                       </Box>
@@ -277,53 +324,76 @@ export function CatalogPartCard({
                 },
               )}
             </Box>
-            <Tooltip title="Voir les stats" arrow>
-              <Box
-                component="span"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setStatsOpen(true);
-                }}
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  cursor: 'pointer',
-                  color: 'text.disabled',
-                  '&:hover': { color: 'error.main' },
-                  transition: 'color 0.15s',
-                  ml: 0.25,
-                }}
-              >
-                <BarChart sx={{ fontSize: 14 }} />
-              </Box>
-            </Tooltip>
+
+            <IconButton
+              size="small"
+              onClick={(e) => {
+                e.stopPropagation();
+                setStatsOpen(true);
+              }}
+              sx={{
+                p: 0.3,
+                color: 'text.disabled',
+                '&:hover': {
+                  color: color,
+                  bgcolor: alpha(color, 0.1),
+                },
+                ml: 0.5,
+              }}
+            >
+              <InfoOutlined sx={{ fontSize: 16 }} />
+            </IconButton>
           </Box>
         </CardContent>
       </CardActionArea>
 
+      {/* Stats Modal */}
       <Dialog
         open={statsOpen}
         onClose={() => setStatsOpen(false)}
         maxWidth="xs"
         fullWidth
-        slotProps={{ paper: { sx: { borderRadius: 3, overflow: 'hidden' } } }}
+        slotProps={{
+          paper: {
+            sx: {
+              borderRadius: 5,
+              overflow: 'hidden',
+              boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)',
+            },
+          },
+        }}
       >
         <DialogTitle
-          sx={{ display: 'flex', alignItems: 'center', gap: 1.5, pb: 1 }}
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 2,
+            pb: 2,
+            pt: 3,
+            px: 3,
+            bgcolor: alpha(color, 0.05),
+          }}
         >
           <Box sx={{ flex: 1, minWidth: 0 }}>
-            <Typography variant="h6" fontWeight="900" noWrap>
+            <Typography
+              variant="h5"
+              fontWeight="900"
+              sx={{ letterSpacing: -0.5 }}
+            >
               {part.name}
             </Typography>
-            <Box sx={{ display: 'flex', gap: 0.5, mt: 0.5, flexWrap: 'wrap' }}>
+            <Box sx={{ display: 'flex', gap: 1, mt: 1 }}>
               <Chip
                 label={part.type}
                 size="small"
                 sx={{
-                  fontWeight: 'bold',
+                  fontWeight: '900',
                   fontSize: '0.65rem',
-                  height: 20,
-                  borderRadius: 1.5,
+                  height: 22,
+                  borderRadius: 2,
+                  textTransform: 'uppercase',
+                  bgcolor: 'text.primary',
+                  color: 'background.paper',
                 }}
               />
               {part.beyType && (
@@ -331,46 +401,36 @@ export function CatalogPartCard({
                   label={part.beyType}
                   size="small"
                   sx={{
-                    fontWeight: 'bold',
+                    fontWeight: '900',
                     fontSize: '0.65rem',
-                    height: 20,
-                    borderRadius: 1.5,
-                    bgcolor: alpha(color, 0.15),
-                    color,
-                  }}
-                />
-              )}
-              {part.system && (
-                <Chip
-                  label={SYSTEM_LABELS[part.system] ?? part.system}
-                  size="small"
-                  variant="outlined"
-                  sx={{
-                    fontWeight: 'bold',
-                    fontSize: '0.65rem',
-                    height: 20,
-                    borderRadius: 1.5,
+                    height: 22,
+                    borderRadius: 2,
+                    textTransform: 'uppercase',
+                    bgcolor: color,
+                    color: '#fff',
                   }}
                 />
               )}
             </Box>
           </Box>
           <IconButton
-            size="small"
             onClick={() => setStatsOpen(false)}
-            sx={{ ml: 'auto' }}
+            sx={{ bgcolor: 'action.hover' }}
           >
-            <Close fontSize="small" />
+            <Close />
           </IconButton>
         </DialogTitle>
-        <DialogContent sx={{ pb: 3 }}>
-          <Box sx={{ display: 'flex', gap: 2.5, mb: 2.5 }}>
+
+        <DialogContent sx={{ p: 3 }}>
+          <Box sx={{ display: 'flex', gap: 3, mb: 4, alignItems: 'center' }}>
             <Box
               sx={{
                 position: 'relative',
-                width: 100,
-                height: 100,
+                width: 120,
+                height: 120,
                 flexShrink: 0,
+                filter: `drop-shadow(0 10px 20px ${alpha(color, 0.3)})`,
+                transform: 'rotate(-5deg)',
               }}
             >
               {renderImage()}
@@ -378,80 +438,46 @@ export function CatalogPartCard({
             <Box
               sx={{
                 display: 'flex',
-                flexWrap: 'wrap',
+                flexDirection: 'column',
                 gap: 1,
-                alignContent: 'center',
+                flex: 1,
               }}
             >
-              {part.weight != null && (
-                <Chip
-                  label={`${part.weight}g`}
-                  size="small"
-                  variant="outlined"
-                  sx={{
-                    fontWeight: 'bold',
-                    fontSize: '0.7rem',
-                    height: 24,
-                    borderRadius: 1.5,
-                  }}
-                />
-              )}
-              {part.spinDirection && (
-                <Chip
-                  label={`Spin: ${part.spinDirection}`}
-                  size="small"
-                  variant="outlined"
-                  sx={{
-                    fontWeight: 'bold',
-                    fontSize: '0.7rem',
-                    height: 24,
-                    borderRadius: 1.5,
-                  }}
-                />
-              )}
-              {part.height != null && (
-                <Chip
-                  label={`Hauteur: ${part.height}`}
-                  size="small"
-                  variant="outlined"
-                  sx={{
-                    fontWeight: 'bold',
-                    fontSize: '0.7rem',
-                    height: 24,
-                    borderRadius: 1.5,
-                  }}
-                />
-              )}
-              {part.protrusions != null && (
-                <Chip
-                  label={`Contacts: ${part.protrusions}`}
-                  size="small"
-                  variant="outlined"
-                  sx={{
-                    fontWeight: 'bold',
-                    fontSize: '0.7rem',
-                    height: 24,
-                    borderRadius: 1.5,
-                  }}
-                />
-              )}
-              {part.tipType && (
-                <Chip
-                  label={`Tip: ${part.tipType}`}
-                  size="small"
-                  variant="outlined"
-                  sx={{
-                    fontWeight: 'bold',
-                    fontSize: '0.7rem',
-                    height: 24,
-                    borderRadius: 1.5,
-                  }}
-                />
-              )}
+              {[
+                {
+                  label: 'Poids',
+                  value: part.weight ? `${part.weight}g` : '?',
+                },
+                { label: 'Système', value: SYSTEM_LABELS[part.system || 'BX'] },
+                { label: 'Rotation', value: part.spinDirection || 'Droite' },
+              ].map((item) => (
+                <Box
+                  key={item.label}
+                  sx={{ display: 'flex', justifyContent: 'space-between' }}
+                >
+                  <Typography
+                    variant="caption"
+                    color="text.secondary"
+                    fontWeight="bold"
+                  >
+                    {item.label}
+                  </Typography>
+                  <Typography variant="caption" fontWeight="900">
+                    {item.value}
+                  </Typography>
+                </Box>
+              ))}
             </Box>
           </Box>
 
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.25 }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <Typography
+              variant="overline"
+              fontWeight="900"
+              color="text.disabled"
+            >
+              Statistiques de Combat
+            </Typography>
             {ALL_STATS.map(({ key, label, color: statColor }) => {
               const val = parseStat(part[key] as string | number | null);
               if (!val) return null;
@@ -461,7 +487,7 @@ export function CatalogPartCard({
                     sx={{
                       display: 'flex',
                       justifyContent: 'space-between',
-                      mb: 0.25,
+                      mb: 0.5,
                     }}
                   >
                     <Typography
@@ -483,12 +509,13 @@ export function CatalogPartCard({
                     variant="determinate"
                     value={Math.min(val, 100)}
                     sx={{
-                      height: 6,
-                      borderRadius: 3,
-                      bgcolor: (theme) => alpha(theme.palette.divider, 0.12),
+                      height: 8,
+                      borderRadius: 4,
+                      bgcolor: alpha(statColor, 0.1),
                       '& .MuiLinearProgress-bar': {
                         bgcolor: statColor,
-                        borderRadius: 3,
+                        borderRadius: 4,
+                        boxShadow: `0 0 10px ${alpha(statColor, 0.4)}`,
                       },
                     }}
                   />

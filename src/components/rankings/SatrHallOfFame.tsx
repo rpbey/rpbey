@@ -50,7 +50,9 @@ export function SatrHallOfFame({
   const [selectedTournament, setSelectedTournament] = useState<string | null>(
     null,
   );
-  const [top10Data, setTop10Data] = useState<any[]>([]);
+  const [top10Data, setTop10Data] = useState<
+    Array<{ rank: number; name: string }>
+  >([]);
   const [loading, setLoading] = useState(false);
 
   const handleChampionClick = (name: string) => {

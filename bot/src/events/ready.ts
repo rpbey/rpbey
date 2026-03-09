@@ -14,7 +14,7 @@ export class ReadyListener {
   async onReady([client]: ArgsOf<'clientReady'>) {
     logger.info('Connecté en tant que :', client.user.tag);
 
-    await this.syncAdminRoles(client as any);
+    await this.syncAdminRoles(client as unknown as Client);
 
     if (process.env.CLEAR_GUILD_COMMANDS === 'true' && process.env.GUILD_ID) {
       try {

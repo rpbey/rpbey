@@ -3,50 +3,30 @@ import 'dotenv/config';
 import { DefaultExtractors } from '@discord-player/extractor';
 import { tsyringeDependencyRegistryEngine } from '@discordx/di';
 import { dirname, importx } from '@discordx/importer';
-import logs from 'discord-logs';
+import { PermissionsBitField } from 'discord.js';
 import { Player } from 'discord-player';
 import { DIService } from 'discordx';
 import { container } from 'tsyringe';
 
-import { setupCronJobs } from './cron/index.js';
 import { startApiServer } from './lib/api-server.js';
 import { bot } from './lib/bot.js';
-import { generateCustomCommands } from './lib/command-generator.js';
-import { setupLogCapture } from './lib/log-capture.js';
 import { logger } from './lib/logger.js';
-import prisma from './lib/prisma.js'; // Added
-import { twitchBot } from './lib/twitch-bot.js';
-
-// Initialize DI
-DIService.engine = tsyringeDependencyRegistryEngine.setInjector(container);
+import { prisma } from './lib/prisma.js';
 
 async function run() {
-  setupLogCapture();
+  // Config DI
+  DIService.engine = tsyringeDependencyRegistryEngine.setInjector(container);
 
-  // Initialize discord-logs
-  logs(bot as any);
-
-  // Parallelize independent initializations
-  logger.info('[Bot] Starting initializations...');
+  // Import Commands/Events
   await importx(
-    `${dirname(import.meta.url)}/{events,commands,components}/**/*.{ts,js}`,
+    `${dirname(import.meta.url)}/{events,commands,interaction-handlers}/**/*.{ts,js}`,
   );
-  logger.info('[Bot] Files imported.');
 
-  await Promise.all([
-    generateCustomCommands().catch((e) =>
-      logger.error('[Init] Custom Commands failed:', e),
-    ),
-    twitchBot.init().catch((e) => logger.error('[Init] Twitch Bot failed:', e)),
-  ]);
-
-  // Setup Cron
-  setupCronJobs();
-
-  // Initialize Discord Player
-  const player = new Player(bot as any);
+  // Config Player
+  const player = new Player(
+    bot as unknown as ConstructorParameters<typeof Player>[0],
+  );
   await player.extractors.loadMulti(DefaultExtractors);
-  logger.info('[Music] Discord Player extractors loaded.');
 
   // Verify FFmpeg async
   void import('node:child_process').then(({ spawnSync }) => {
@@ -69,9 +49,11 @@ async function run() {
   );
   player.events.on('playerStart', (queue, track) => {
     logger.info(`[Music] Started playing: ${track.title}`);
-    const interaction = queue.metadata as any;
-    if (interaction?.channel) {
-      void (interaction.channel as any)
+    const meta = queue.metadata as
+      | { channel?: { send: (msg: string) => Promise<unknown> } }
+      | undefined;
+    if (meta?.channel) {
+      void meta.channel
         .send(`▶️ **Lecture en cours :** ${track.title}`)
         .catch(() => null);
     }
@@ -83,10 +65,37 @@ async function run() {
 
   await bot.login(process.env.DISCORD_TOKEN);
 
-  bot.once('clientReady', async () => {
+  bot.once('ready', async () => {
     try {
-      await bot.initApplicationCommands();
-      logger.info(`[Bot] Logged in as ${bot.user?.tag}`);
+      const guildId = process.env.GUILD_ID || process.env.DISCORD_GUILD_ID;
+
+      // 1. Clear ALL global commands (to remove duplicates)
+      await bot.clearApplicationCommands();
+      logger.info('[Bot] Global commands cleared.');
+
+      if (guildId) {
+        logger.info(`[Bot] Syncing commands ONLY for guild: ${guildId}`);
+
+        // 2. Register all commands to internal registry
+        await bot.initApplicationCommands();
+
+        const guild = await bot.guilds.fetch(guildId);
+        if (guild) {
+          // 3. Force update of guild commands
+          // discordx toJSON() returns ApplicationCommandData-compatible objects
+          await guild.commands.set(
+            bot.applicationCommands.map(
+              (c) => c.toJSON() as Parameters<typeof guild.commands.set>[0][0],
+            ),
+          );
+          logger.info(
+            `[Bot] Successfully synchronized ${bot.applicationCommands.length} commands to guild.`,
+          );
+        }
+      }
+      logger.info(
+        `[Bot] Logged in as ${bot.user?.tag} and commands are ready.`,
+      );
     } catch (e) {
       logger.error('[Bot] Failed to init application commands:', e);
     }
@@ -94,15 +103,34 @@ async function run() {
 
   bot.on('interactionCreate', async (interaction) => {
     try {
-      // Global Disabled Commands Check
-      if (interaction.isCommand()) {
-        const settingsBlock = await prisma.contentBlock.findUnique({
-          where: { slug: 'bot-settings' },
-        });
-        if (settingsBlock?.content) {
-          const { disabledCommands = [] } = JSON.parse(settingsBlock.content);
+      const settingsBlock = await prisma.contentBlock.findUnique({
+        where: { slug: 'bot-settings' },
+      });
+
+      if (settingsBlock?.content) {
+        const settings = JSON.parse(settingsBlock.content);
+
+        // 1. Check Global Maintenance Mode
+        if (settings.maintenanceMode && interaction.isCommand()) {
+          const perms = interaction.member?.permissions;
+          const isAdmin =
+            perms instanceof PermissionsBitField
+              ? perms.has('Administrator')
+              : false;
+          if (!isAdmin) {
+            return interaction.reply({
+              content:
+                "🛠️ **Le bot est actuellement en maintenance.**\nNous revenons très vite ! Suivez les annonces pour plus d'infos.",
+              ephemeral: true,
+            });
+          }
+        }
+
+        // 2. Check Specific Disabled Commands
+        if (interaction.isCommand()) {
+          const { disabledCommands = [] } = settings;
           if (disabledCommands.includes(interaction.commandName)) {
-            return (interaction as any).reply({
+            return interaction.reply({
               content:
                 '⚠️ Cette commande est temporairement désactivée par un administrateur.',
               ephemeral: true,
@@ -119,7 +147,7 @@ async function run() {
   bot.on('messageCreate', async (message) => {
     try {
       // Global Disabled Commands Check
-      const prefix = '!'; // Default prefix for simple commands
+      const prefix = '!';
       if (message.content.startsWith(prefix)) {
         const cmdName = message.content.slice(prefix.length).split(' ')[0];
         const settingsBlock = await prisma.contentBlock.findUnique({

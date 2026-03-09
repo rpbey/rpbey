@@ -88,8 +88,8 @@ export async function getBotMember(userId: string): Promise<BotMember | null> {
 
 export async function dispatchBotAction(
   action: string,
-  params: any,
-): Promise<any> {
+  params: Record<string, unknown>,
+): Promise<Record<string, unknown>> {
   try {
     return await botClient.post('/api/dispatch', {
       body: { action, params },

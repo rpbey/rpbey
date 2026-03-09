@@ -361,21 +361,21 @@ export default function TournamentDetail({
                           </Typography>
                         </Stack>
                       ) : (
-                        <Link href={`/api/auth/challonge?returnTo=/tournaments/${tournament.id}`} passHref style={{ textDecoration: 'none', width: '100%' }}>
-                          <Button
-                            fullWidth
-                            size="small"
-                            variant="outlined"
-                            sx={{
-                              color: '#fbbf24',
-                              borderColor: '#fbbf24',
-                              fontWeight: 900,
-                              fontSize: '0.7rem',
-                            }}
-                          >
-                            LIER MON COMPTE CHALLONGE
-                          </Button>
-                        </Link>
+                        <Button
+                          fullWidth
+                          size="small"
+                          variant="outlined"
+                          component={Link}
+                          href={`/api/auth/challonge?returnTo=/tournaments/${tournament.id}`}
+                          sx={{
+                            color: '#fbbf24',
+                            borderColor: '#fbbf24',
+                            fontWeight: 900,
+                            fontSize: '0.7rem',
+                          }}
+                        >
+                          LIER MON COMPTE CHALLONGE
+                        </Button>
                       )}
                     </Box>
                   )}

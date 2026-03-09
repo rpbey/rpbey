@@ -1,9 +1,5 @@
-import {
-  ApplicationCommandOptionType,
-  type CommandInteraction,
-  PermissionFlagsBits,
-} from 'discord.js';
-import { Discord, Slash, SlashGroup, SlashOption } from 'discordx';
+import { type CommandInteraction, PermissionFlagsBits } from 'discord.js';
+import { Discord, Slash, SlashGroup } from 'discordx';
 import { injectable } from 'tsyringe';
 import { syncRankingRolesTask } from '../../cron/tasks/SyncRankingRoles.js';
 import { logger } from '../../lib/logger.js';
@@ -49,43 +45,6 @@ export class AdminGroup {
       });
       return interaction.editReply(
         `✅ Classement réinitialisé (${result.count} profils).`,
-      );
-    } catch (error) {
-      logger.error(error);
-      return interaction.editReply('❌ Erreur.');
-    }
-  }
-
-  @Slash({
-    name: 'apprendre',
-    description: "Enseigner quelque chose à l'IA du bot",
-  })
-  async teach(
-    @SlashOption({
-      name: 'sujet',
-      description: 'Le sujet (ex: Dranzer)',
-      required: true,
-      type: ApplicationCommandOptionType.String,
-    })
-    topic: string,
-    @SlashOption({
-      name: 'contenu',
-      description: 'Le contenu informatif',
-      required: true,
-      type: ApplicationCommandOptionType.String,
-    })
-    content: string,
-    interaction: CommandInteraction,
-  ) {
-    await interaction.deferReply({ ephemeral: true });
-    try {
-      await this.prisma.contentBlock.upsert({
-        where: { slug: topic.toLowerCase() },
-        create: { slug: topic.toLowerCase(), title: topic, content },
-        update: { content },
-      });
-      return interaction.editReply(
-        `✅ Information sur **${topic}** enregistrée.`,
       );
     } catch (error) {
       logger.error(error);

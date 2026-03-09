@@ -51,9 +51,9 @@ async function getScrapedTournament(id: string) {
     maxPlayers: 128,
     challongeId: id,
     challongeUrl: data.url,
-    standings: data.participants
-      .filter((p: any) => p.rank > 0)
-      .sort((a: any, b: any) => a.rank - b.rank),
+    standings: (data.participants as Array<{ rank: number; name: string }>)
+      .filter((p) => p.rank > 0)
+      .sort((a, b) => a.rank - b.rank),
     stations: [],
     activityLog: [],
     updatedAt: new Date(data.scrapedAt),
@@ -94,11 +94,11 @@ export async function generateMetadata({
 export default async function TournamentDetailPage({ params }: PageProps) {
   const { id } = await params;
 
-  let tournament: any = await getScrapedTournament(id);
+  const scraped = await getScrapedTournament(id);
 
-  if (!tournament) {
-    tournament =
-      (await prisma.tournament.findUnique({
+  const dbResult = scraped
+    ? null
+    : ((await prisma.tournament.findUnique({
         where: { id },
         select: tournamentSelect,
       })) ??
@@ -107,8 +107,9 @@ export default async function TournamentDetailPage({ params }: PageProps) {
           OR: [{ challongeId: id }, { challongeUrl: { contains: id } }],
         },
         select: tournamentSelect,
-      }));
-  }
+      })));
+
+  const tournament = scraped ?? dbResult;
 
   if (!tournament) notFound();
 
