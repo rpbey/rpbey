@@ -31,10 +31,9 @@ services:
     environment:
       DATABASE_URL: postgresql://postgres:rpb_password@db:5432/rpb_dashboard
       NEXT_PUBLIC_APP_URL: https://rpbey.fr
-      BOT_API_URL: http://46.224.145.55:3001
+      BOT_API_URL: http://bot:3001
       NODE_ENV: production
     volumes:
-      # Persist user uploads and data
       - ./public/uploads:/app/public/uploads
       - ./data:/app/data
     depends_on:
@@ -42,6 +41,34 @@ services:
         condition: service_healthy
     networks:
       - rpb-network
+
+  # Discord Bot
+  bot:
+    image: rpb-dashboard-dashboard
+    container_name: rpb-bot
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://postgres:rpb_password@db:5432/rpb_dashboard
+      RUN_BOT: "true"
+      NODE_ENV: production
+      BOT_API_PORT: "3001"
+    volumes:
+      - ./data:/app/data
+      - ./public/uploads:/app/public/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+      dashboard:
+        condition: service_healthy
+    networks:
+      - rpb-network
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 30s
+        max_attempts: 3
+        window: 120s
 
   # Nginx Reverse Proxy
   nginx:
