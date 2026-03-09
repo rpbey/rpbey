@@ -13,7 +13,50 @@ import { bot } from './lib/bot.js';
 import { logger } from './lib/logger.js';
 import { prisma } from './lib/prisma.js';
 
+// Check Discord session availability via REST API
+async function waitForSessions(token: string): Promise<void> {
+  const { REST, Routes } = await import('discord.js');
+  const rest = new REST().setToken(token);
+  const CHECK_INTERVAL = 5 * 60_000; // Re-check every 5 minutes
+
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    try {
+      const gateway = (await rest.get(Routes.gatewayBot())) as {
+        session_start_limit: {
+          total: number;
+          remaining: number;
+          reset_after: number;
+        };
+      };
+      const { remaining, reset_after } = gateway.session_start_limit;
+      logger.info(
+        `[Bot] Sessions: ${remaining} remaining (resets in ${Math.round(reset_after / 60000)}min)`,
+      );
+
+      if (remaining > 0) {
+        logger.info('[Bot] Sessions available, proceeding to login...');
+        return;
+      }
+
+      const waitMs = Math.min(reset_after + 5000, CHECK_INTERVAL);
+      logger.warn(
+        `[Bot] No sessions remaining. Re-checking in ${Math.round(waitMs / 60000)}min...`,
+      );
+      await new Promise((r) => setTimeout(r, waitMs));
+    } catch (e) {
+      logger.warn('[Bot] Could not check session limit, retrying in 5min:', e);
+      await new Promise((r) => setTimeout(r, CHECK_INTERVAL));
+    }
+  }
+}
+
 async function run() {
+  // Start API server immediately so dashboard can communicate
+  const apiPort = parseInt(process.env.BOT_API_PORT ?? '3001', 10);
+  startApiServer(apiPort);
+  logger.info('[Bot] API server started, waiting for Discord gateway...');
+
   // Config DI
   DIService.engine = tsyringeDependencyRegistryEngine.setInjector(container);
 
@@ -21,6 +64,13 @@ async function run() {
   await importx(
     `${dirname(import.meta.url)}/{events,commands,interaction-handlers}/**/*.{ts,js}`,
   );
+
+  // Login
+  if (!process.env.DISCORD_TOKEN)
+    throw Error('Could not find DISCORD_TOKEN in environment');
+
+  // Wait for sessions to be available before connecting
+  await waitForSessions(process.env.DISCORD_TOKEN);
 
   // Config Player
   const player = new Player(
@@ -58,36 +108,6 @@ async function run() {
         .catch(() => null);
     }
   });
-
-  // Login
-  if (!process.env.DISCORD_TOKEN)
-    throw Error('Could not find DISCORD_TOKEN in environment');
-
-  // Check session availability before connecting to avoid burning sessions
-  try {
-    const { REST, Routes } = await import('discord.js');
-    const rest = new REST().setToken(process.env.DISCORD_TOKEN);
-    const gateway = (await rest.get(Routes.gatewayBot())) as {
-      session_start_limit: {
-        total: number;
-        remaining: number;
-        reset_after: number;
-      };
-    };
-    const { remaining, reset_after } = gateway.session_start_limit;
-    logger.info(
-      `[Bot] Sessions: ${remaining} remaining (resets in ${Math.round(reset_after / 60000)}min)`,
-    );
-    if (remaining < 1) {
-      const waitMs = reset_after + 5000;
-      logger.warn(
-        `[Bot] No sessions remaining. Waiting ${Math.round(waitMs / 60000)}min for reset...`,
-      );
-      await new Promise((r) => setTimeout(r, waitMs));
-    }
-  } catch (e) {
-    logger.warn('[Bot] Could not check session limit:', e);
-  }
 
   await bot.login(process.env.DISCORD_TOKEN);
 
@@ -193,10 +213,6 @@ async function run() {
       logger.error('[Bot] Message command error:', e);
     }
   });
-
-  // Start API
-  const apiPort = parseInt(process.env.BOT_API_PORT ?? '3001', 10);
-  startApiServer(apiPort);
 }
 
 // Global Rejection Handler
