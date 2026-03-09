@@ -22,4 +22,4 @@ export function getBotApiUrl() {
   return 'http://localhost:3001';
 }
 
-export const BOT_API_KEY = process.env.BOT_API_KEY || '';
+export const BOT_API_KEY = process.env.BOT_API_KEY ?? '';
