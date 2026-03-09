@@ -22,6 +22,11 @@ export const DynamicPieChart = dynamic(
   { ssr: false, loading: () => <ChartSkeleton /> },
 );
 
+export const DynamicLineChart = dynamic(
+  () => import('@mui/x-charts/LineChart').then((mod) => mod.LineChart),
+  { ssr: false, loading: () => <ChartSkeleton /> },
+);
+
 export const DynamicRadarChart = dynamic(
   () => import('@mui/x-charts/RadarChart').then((mod) => mod.RadarChart),
   { ssr: false, loading: () => <ChartSkeleton /> },

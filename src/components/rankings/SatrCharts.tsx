@@ -5,14 +5,27 @@ import type { SatrBlader } from '@prisma/client';
 import { motion } from 'framer-motion';
 import {
   DynamicBarChart as BarChart,
+  DynamicLineChart as LineChart,
   DynamicPieChart as PieChart,
 } from '@/components/ui/DynamicCharts';
 
-interface SatrChartsProps {
-  bladers: SatrBlader[];
+interface TournamentMeta {
+  slug: string;
+  bbtNumber: number;
+  participantsCount: number;
+  matchesCount: number;
+  format: string;
 }
 
-export function SatrCharts({ bladers }: SatrChartsProps) {
+interface SatrChartsProps {
+  bladers: SatrBlader[];
+  allTournamentMetas?: TournamentMeta[];
+}
+
+export function SatrCharts({
+  bladers,
+  allTournamentMetas = [],
+}: SatrChartsProps) {
   const _theme = useTheme();
 
   // 1. Data for Bar Chart: Top 7 Bladers by Wins
@@ -54,6 +67,14 @@ export function SatrCharts({ bladers }: SatrChartsProps) {
             ? '#ff9800'
             : '#f44336',
   }));
+
+  // 3. Line chart data: participants evolution per BBT
+  const participantsEvolution = [...allTournamentMetas]
+    .sort((a, b) => a.bbtNumber - b.bbtNumber)
+    .map((m) => ({
+      bbt: `BBT ${m.bbtNumber}`,
+      participants: m.participantsCount,
+    }));
 
   return (
     <Box
@@ -177,6 +198,67 @@ export function SatrCharts({ bladers }: SatrChartsProps) {
             </Box>
           </Paper>
         </Grid>
+
+        {/* Participants Evolution Line Chart */}
+        {participantsEvolution.length > 1 && (
+          <Grid size={{ xs: 12 }}>
+            <Paper
+              sx={{
+                p: 3,
+                height: 350,
+                background: 'rgba(255,255,255,0.02)',
+                border: '1px solid rgba(255,255,255,0.05)',
+                borderRadius: 4,
+                overflow: 'hidden',
+              }}
+            >
+              <Typography
+                variant="subtitle2"
+                sx={{
+                  fontWeight: 900,
+                  mb: 2,
+                  color: '#60a5fa',
+                  textTransform: 'uppercase',
+                  letterSpacing: 1,
+                }}
+              >
+                Évolution des Participants par BBT
+              </Typography>
+              <Box sx={{ width: '100%', height: 280 }}>
+                <LineChart
+                  dataset={participantsEvolution}
+                  xAxis={[{ scaleType: 'band', dataKey: 'bbt' }]}
+                  series={[
+                    {
+                      dataKey: 'participants',
+                      color: '#60a5fa',
+                      label: 'Participants',
+                      area: true,
+                    },
+                  ]}
+                  slotProps={
+                    {
+                      legend: { hidden: true },
+                    } as any
+                  }
+                  sx={{
+                    '& .MuiChartsAxis-bottom .MuiChartsAxis-tickLabel': {
+                      fill: 'rgba(255,255,255,0.5)',
+                      fontWeight: 700,
+                      fontSize: 10,
+                    },
+                    '& .MuiChartsAxis-left .MuiChartsAxis-tickLabel': {
+                      fill: 'rgba(255,255,255,0.5)',
+                    },
+                    '& .MuiAreaElement-root': {
+                      fillOpacity: 0.15,
+                    },
+                  }}
+                />
+              </Box>
+            </Paper>
+          </Grid>
+        )}
       </Grid>
     </Box>
   );

@@ -22,6 +22,7 @@ import { SatrHallOfFame } from '@/components/rankings/SatrHallOfFame';
 import { SatrTable } from '@/components/rankings/SatrTable';
 import { SatrTabs } from '@/components/rankings/SatrTabs';
 import { prisma } from '@/lib/prisma';
+import { getSatrSeasonStats } from '@/server/actions/satr';
 
 // Custom icons
 const TwitchIcon = (props: SvgIconProps) => (
@@ -105,7 +106,14 @@ export default async function SatrPage({ searchParams }: SatrPageProps) {
     resolvedSearchParams.view === 'career' ? 'career' : 'ranking'
   ) as 'ranking' | 'career';
 
-  const [champions, rankingData, globalStats, lastUpdate] = await Promise.all([
+  const [
+    champions,
+    rankingData,
+    globalStats,
+    lastUpdate,
+    _seasonStatsRes,
+    _season1StatsRes,
+  ] = await Promise.all([
     getChampions(),
     (async () => {
       try {
@@ -133,7 +141,10 @@ export default async function SatrPage({ searchParams }: SatrPageProps) {
           if (!prisma.satrBlader) return { items: [], total: 0 };
           const whereCondition = searchQuery
             ? {
-                name: { contains: searchQuery, mode: 'insensitive' as const },
+                name: {
+                  contains: searchQuery,
+                  mode: 'insensitive' as const,
+                },
               }
             : {};
           const [bladers, count] = await Promise.all([
@@ -180,9 +191,20 @@ export default async function SatrPage({ searchParams }: SatrPageProps) {
           select: { updatedAt: true },
         })
       : null,
+    getSatrSeasonStats(2),
+    getSatrSeasonStats(1),
   ]);
 
   const totalPages = Math.ceil(rankingData.total / pageSize);
+  const s2Data =
+    _seasonStatsRes?.success && _seasonStatsRes.data
+      ? _seasonStatsRes.data
+      : { tournamentCount: 0, uniqueParticipants: 0, metas: [] };
+  const s1Data =
+    _season1StatsRes?.success && _season1StatsRes.data
+      ? _season1StatsRes.data
+      : { tournamentCount: 0, uniqueParticipants: 0, metas: [] };
+  const allTournamentMetas = [...s1Data.metas, ...s2Data.metas];
 
   const socials = [
     {
@@ -336,13 +358,18 @@ export default async function SatrPage({ searchParams }: SatrPageProps) {
         </Box>
 
         {/* Hall of Fame */}
-        <SatrHallOfFame champions={champions} />
+        <SatrHallOfFame
+          champions={champions}
+          tournamentMetas={allTournamentMetas}
+        />
 
         <Box sx={{ position: 'relative' }}>
           <SatrTabs
             mode={mode}
             totalBladers={globalStats.totalBladers}
             totalMatches={globalStats.totalMatches}
+            tournamentCount={s2Data.tournamentCount}
+            uniqueParticipants={s2Data.uniqueParticipants}
           />
 
           {lastUpdate?.updatedAt && (
@@ -372,7 +399,10 @@ export default async function SatrPage({ searchParams }: SatrPageProps) {
 
           <Box sx={{ mt: { xs: 1, md: 2 } }}>
             {mode === 'career' && (
-              <SatrCharts bladers={rankingData.items as any[]} />
+              <SatrCharts
+                bladers={rankingData.items as any[]}
+                allTournamentMetas={allTournamentMetas}
+              />
             )}
 
             {mode === 'ranking' ? (

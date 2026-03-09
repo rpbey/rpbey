@@ -49,7 +49,6 @@ model User {
   ipAddress        String?
   lastIpAddress    String?
   accounts         Account[]
-  botConversations BotConversation[]
   decks            Deck[]
   adminAdjustments PointAdjustment[]       @relation("AdminAdjustments")
   pointAdjustments PointAdjustment[]
@@ -65,32 +64,6 @@ model User {
   twoFactors       TwoFactor[]
 
   @@map("users")
-}
-
-model BotConversation {
-  id        String       @id @default(cuid())
-  userId    String
-  title     String?
-  isActive  Boolean      @default(true)
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
-  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  messages  BotMessage[]
-
-  @@index([userId])
-  @@map("bot_conversations")
-}
-
-model BotMessage {
-  id             String          @id @default(cuid())
-  conversationId String
-  role           String          @default("user")
-  content        String
-  timestamp      DateTime        @default(now())
-  conversation   BotConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
-
-  @@index([conversationId])
-  @@map("bot_messages")
 }
 
 model RankingSeason {
@@ -584,6 +557,7 @@ model SatrRanking {
   playerName    String
   score         Int
   wins          Int
+  losses        Int      @default(0)
   participation Int
   winRate       String
   pointsAverage String

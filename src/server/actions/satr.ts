@@ -1,58 +1,256 @@
 'use server';
 
+import { readdir, readFile } from 'node:fs/promises';
+import { join } from 'node:path';
 import { revalidatePath } from 'next/cache';
 import { prisma } from '@/lib/prisma';
 
-const SHEET_ID =
-  '2PACX-1vR3SoKvCW1BTnWs4ikQdlMxYDSOlUlEeeb_Qi0RpQoKSZG1dfEVluU3uj5LzLvwhKdRZh9IA4V8qa89';
-const CSV_URL = `https://docs.google.com/spreadsheets/d/e/${SHEET_ID}/pub?gid=0&output=csv`;
+// Season config: which BBT numbers belong to each season
+const SEASON_CONFIG: Record<number, number[]> = {
+  1: [12, 13, 14, 15, 16, 17, 18, 19, 20, 21],
+  2: [22],
+};
 
-function parseCSVRow(row: string): string[] {
-  const result = [];
-  let current = '';
-  let inQuotes = false;
-
-  for (let i = 0; i < row.length; i++) {
-    const char = row[i];
-    if (char === '"') {
-      inQuotes = !inQuotes;
-    } else if (char === ',' && !inQuotes) {
-      result.push(current);
-      current = '';
-    } else {
-      current += char;
-    }
-  }
-  result.push(current);
-  return result;
+interface TournamentMatch {
+  id: number;
+  identifier: number;
+  round: number;
+  player1Id: number;
+  player2Id: number;
+  winnerId: number;
+  loserId: number;
+  scores: string;
+  state: string;
 }
 
-export async function syncSatrRanking() {
+interface TournamentParticipant {
+  id: number;
+  name: string;
+  seed: number;
+  finalRank: number;
+}
+
+interface TournamentData {
+  metadata: {
+    id: number;
+    name: string;
+    url: string;
+    state: string;
+    type: string;
+    participantsCount: number;
+  };
+  participants: TournamentParticipant[];
+  matches: TournamentMatch[];
+}
+
+export interface TournamentMeta {
+  slug: string;
+  bbtNumber: number;
+  participantsCount: number;
+  matchesCount: number;
+  format: string;
+}
+
+interface PlayerStats {
+  wins: number;
+  losses: number;
+  points: number;
+  participations: number;
+  tournaments: string[];
+}
+
+/**
+ * Load all tournament data for a given season from local JSON files.
+ */
+async function loadTournamentData(season: number) {
+  const historyDir = join(process.cwd(), 'data', 'satr_history');
+  const files = await readdir(historyDir);
+  const bbtNumbers = SEASON_CONFIG[season] || [];
+
+  const tournaments: TournamentData[] = [];
+  const metas: TournamentMeta[] = [];
+
+  for (const file of files.sort()) {
+    const match = file.match(/satr_bbt(\d+)\.json/);
+    if (!match?.[1]) continue;
+    const bbtNum = parseInt(match[1], 10);
+    if (!bbtNumbers.includes(bbtNum)) continue;
+
+    const content = await readFile(join(historyDir, file), 'utf-8');
+    const data: TournamentData = JSON.parse(content);
+    tournaments.push(data);
+    metas.push({
+      slug: `satr_bbt${bbtNum}`,
+      bbtNumber: bbtNum,
+      participantsCount: data.metadata.participantsCount,
+      matchesCount: data.matches?.length || 0,
+      format: data.metadata.type || 'double elimination',
+    });
+  }
+
+  return { tournaments, metas };
+}
+
+/**
+ * Parse loser score from a score string like "4-2" → 2.
+ */
+function getLoserScore(scores: string): number {
+  const parts = scores.split('-').map(Number);
+  const a = parts[0];
+  const b = parts[1];
+  if (
+    parts.length !== 2 ||
+    a === undefined ||
+    b === undefined ||
+    Number.isNaN(a) ||
+    Number.isNaN(b)
+  )
+    return 0;
+  return Math.min(a, b);
+}
+
+/**
+ * Compute SATR ranking using the Ichigo algorithm.
+ *
+ * For each player:
+ *   points = 4 × W + Σ(loser score per loss)
+ *   point_avg = points / (W + L)
+ *   winrate = W / (W + L)
+ *   winscore = winrate + (point_avg / 100)
+ *   punish = 1 / (1 + (floor(nb_tournois / 1.25) + 2) × (1 / (participations × point_avg)))
+ *   score = floor(punish × winscore × 100000)
+ */
+function computeRanking(tournaments: TournamentData[]) {
+  const playerStats = new Map<string, PlayerStats>();
+
+  for (const tournament of tournaments) {
+    const idToName = new Map<number, string>();
+    for (const p of tournament.participants) {
+      idToName.set(p.id, p.name);
+    }
+
+    for (const match of tournament.matches || []) {
+      if (match.state !== 'complete' || !match.winnerId || !match.loserId)
+        continue;
+
+      const winnerName = idToName.get(match.winnerId);
+      const loserName = idToName.get(match.loserId);
+      if (!winnerName || !loserName) continue;
+
+      const loserScore = getLoserScore(match.scores);
+
+      // Winner
+      if (!playerStats.has(winnerName)) {
+        playerStats.set(winnerName, {
+          wins: 0,
+          losses: 0,
+          points: 0,
+          participations: 0,
+          tournaments: [],
+        });
+      }
+      const winner = playerStats.get(winnerName)!;
+      winner.wins += 1;
+      winner.points += 4;
+
+      // Loser
+      if (!playerStats.has(loserName)) {
+        playerStats.set(loserName, {
+          wins: 0,
+          losses: 0,
+          points: 0,
+          participations: 0,
+          tournaments: [],
+        });
+      }
+      const loser = playerStats.get(loserName)!;
+      loser.losses += 1;
+      loser.points += loserScore;
+    }
+
+    const slug = tournament.metadata.url.split('/').pop() || '';
+    for (const p of tournament.participants) {
+      const stats = playerStats.get(p.name);
+      if (stats && !stats.tournaments.includes(slug)) {
+        stats.tournaments.push(slug);
+        stats.participations += 1;
+      }
+    }
+  }
+
+  const nbTournois = tournaments.length;
+  const rankings: Array<{
+    rank: number;
+    playerName: string;
+    score: number;
+    wins: number;
+    losses: number;
+    participation: number;
+    winRate: string;
+    pointsAverage: string;
+  }> = [];
+
+  for (const [name, stats] of playerStats) {
+    const totalMatches = stats.wins + stats.losses;
+    if (totalMatches === 0) continue;
+
+    const pointAvg = stats.points / totalMatches;
+    const winrate = stats.wins / totalMatches;
+    const winscore = winrate + pointAvg / 100;
+
+    let punish = 1;
+    if (stats.participations > 0 && pointAvg > 0) {
+      punish =
+        1 /
+        (1 +
+          (Math.floor(nbTournois / 1.25) + 2) *
+            (1 / (stats.participations * pointAvg)));
+    } else {
+      punish = 0;
+    }
+
+    const score = Math.floor(punish * winscore * 100000);
+
+    rankings.push({
+      rank: 0,
+      playerName: name,
+      score,
+      wins: stats.wins,
+      losses: stats.losses,
+      participation: stats.participations,
+      winRate: `${(winrate * 100).toFixed(1)}%`,
+      pointsAverage: pointAvg.toFixed(2),
+    });
+  }
+
+  rankings.sort((a, b) => {
+    if (b.score !== a.score) return b.score - a.score;
+    const avgDiff = parseFloat(b.pointsAverage) - parseFloat(a.pointsAverage);
+    if (avgDiff !== 0) return avgDiff;
+    return b.participation - a.participation;
+  });
+
+  for (let i = 0; i < rankings.length; i++) {
+    const entry = rankings[i];
+    if (entry) entry.rank = i + 1;
+  }
+
+  return rankings;
+}
+
+/**
+ * Sync SATR ranking by computing it natively from local tournament JSON data.
+ * Replaces the previous Google Sheet-based sync.
+ */
+export async function syncSatrRanking(season = 2) {
   try {
-    const response = await fetch(CSV_URL, { cache: 'no-store' });
-    if (!response.ok) throw new Error('Fetch failed');
+    const { tournaments } = await loadTournamentData(season);
+    if (tournaments.length === 0) {
+      return { success: false, error: 'No tournament data found' };
+    }
 
-    const csvText = await response.text();
-    const rows = csvText.split('\n').map((row) => parseCSVRow(row));
+    const rankings = computeRanking(tournaments);
 
-    if (rows.length < 2) return { success: false, error: 'Empty sheet' };
-
-    const rankings = rows
-      .slice(1)
-      .filter((row) => row.length >= 7 && row[1] && row[0])
-      .map((row) => ({
-        rank: parseInt((row[0] || '0').replace(/[^0-9]/g, ''), 10) || 0,
-        playerName: (row[1] || '').trim(),
-        score: parseInt((row[2] || '0').replace(/[^0-9]/g, ''), 10) || 0,
-        wins: parseInt((row[3] || '0').replace(/[^0-9]/g, ''), 10) || 0,
-        participation:
-          parseInt((row[4] || '0').replace(/[^0-9]/g, ''), 10) || 0,
-        winRate: (row[5] || '').trim(),
-        pointsAverage: (row[6] || '').trim(),
-      }))
-      .filter((r) => r.rank > 0);
-
-    // Transaction to ensure atomicity
     await prisma.$transaction([
       prisma.satrRanking.deleteMany(),
       prisma.satrRanking.createMany({ data: rankings }),
@@ -62,6 +260,90 @@ export async function syncSatrRanking() {
     return { success: true, count: rankings.length };
   } catch (error) {
     console.error('Sync Error:', error);
+    return { success: false, error: String(error) };
+  }
+}
+
+/**
+ * Get season stats: tournament count, unique participants, tournament metadata.
+ */
+export async function getSatrSeasonStats(season = 2) {
+  try {
+    const { tournaments, metas } = await loadTournamentData(season);
+    const uniqueNames = new Set<string>();
+    for (const t of tournaments) {
+      for (const p of t.participants) {
+        uniqueNames.add(p.name);
+      }
+    }
+
+    return {
+      success: true,
+      data: {
+        tournamentCount: tournaments.length,
+        uniqueParticipants: uniqueNames.size,
+        metas,
+      },
+    };
+  } catch (error) {
+    return { success: false, error: String(error) };
+  }
+}
+
+/**
+ * Get match details for a specific player in a specific tournament.
+ */
+export async function getPlayerTournamentMatches(
+  tournamentSlug: string,
+  playerName: string,
+) {
+  try {
+    const path = join(
+      process.cwd(),
+      'data',
+      'satr_history',
+      `${tournamentSlug.toLowerCase()}.json`,
+    );
+    const content = await readFile(path, 'utf-8');
+    const data: TournamentData = JSON.parse(content);
+
+    const idToName = new Map<number, string>();
+    for (const p of data.participants) {
+      idToName.set(p.id, p.name);
+    }
+
+    const playerId = data.participants.find(
+      (p) => p.name.toLowerCase() === playerName.toLowerCase(),
+    )?.id;
+
+    if (!playerId) return { success: true, data: [] };
+
+    const matches = (data.matches || [])
+      .filter(
+        (m) =>
+          m.state === 'complete' &&
+          (m.player1Id === playerId || m.player2Id === playerId),
+      )
+      .map((m) => {
+        const opponentId = m.player1Id === playerId ? m.player2Id : m.player1Id;
+        return {
+          opponent: idToName.get(opponentId) || 'Unknown',
+          scores: m.scores,
+          won: m.winnerId === playerId,
+          round: m.round,
+        };
+      })
+      .sort((a, b) => {
+        // Winners bracket first (positive rounds), then losers bracket (negative)
+        const aAbs = Math.abs(a.round);
+        const bAbs = Math.abs(b.round);
+        if (a.round > 0 && b.round > 0) return a.round - b.round;
+        if (a.round < 0 && b.round < 0) return bAbs - aAbs;
+        return a.round > 0 ? -1 : 1;
+      });
+
+    return { success: true, data: matches };
+  } catch (error) {
     return { success: false, error: String(error) };
   }
 }
@@ -100,8 +382,6 @@ export async function linkSatrBladers() {
 
 export async function getTournamentTop10(slug: string) {
   try {
-    const { readFile } = await import('node:fs/promises');
-    const { join } = await import('node:path');
     const path = join(
       process.cwd(),
       'data',
@@ -121,6 +401,33 @@ export async function getTournamentTop10(slug: string) {
       }));
 
     return { success: true, data: top10 };
+  } catch (error) {
+    return { success: false, error: String(error) };
+  }
+}
+
+/**
+ * Get tournament metadata (participants count, format) for a given slug.
+ */
+export async function getTournamentMeta(slug: string) {
+  try {
+    const path = join(
+      process.cwd(),
+      'data',
+      'satr_history',
+      `${slug.toLowerCase()}.json`,
+    );
+    const content = await readFile(path, 'utf-8');
+    const data: TournamentData = JSON.parse(content);
+
+    return {
+      success: true,
+      data: {
+        participantsCount: data.metadata.participantsCount,
+        matchesCount: data.matches?.length || 0,
+        format: data.metadata.type || 'double elimination',
+      },
+    };
   } catch (error) {
     return { success: false, error: String(error) };
   }

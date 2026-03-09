@@ -8,9 +8,17 @@ interface SatrTabsProps {
   mode: 'ranking' | 'career';
   totalBladers: number;
   totalMatches: number;
+  tournamentCount: number;
+  uniqueParticipants: number;
 }
 
-export function SatrTabs({ mode, totalBladers, totalMatches }: SatrTabsProps) {
+export function SatrTabs({
+  mode,
+  totalBladers,
+  totalMatches,
+  tournamentCount,
+  uniqueParticipants,
+}: SatrTabsProps) {
   const searchParams = useSearchParams();
 
   const getHref = (view: string) => {
@@ -19,6 +27,21 @@ export function SatrTabs({ mode, totalBladers, totalMatches }: SatrTabsProps) {
     params.delete('page');
     return `/tournaments/satr?${params.toString()}`;
   };
+
+  const stats = [
+    { label: 'BLADERS', value: totalBladers, color: '#fbbf24' },
+    {
+      label: 'MATCHS',
+      value: totalMatches.toLocaleString(),
+      color: '#fff',
+    },
+    { label: 'TOURNOIS', value: tournamentCount, color: '#60a5fa' },
+    {
+      label: 'PARTICIPANTS',
+      value: uniqueParticipants,
+      color: '#a78bfa',
+    },
+  ];
 
   return (
     <Box
@@ -75,39 +98,30 @@ export function SatrTabs({ mode, totalBladers, totalMatches }: SatrTabsProps) {
         />
       </Tabs>
 
-      <Stack direction="row" spacing={4} sx={{ px: 2 }}>
-        <Box sx={{ textAlign: 'center' }}>
-          <Typography
-            variant="caption"
-            color="text.secondary"
-            sx={{ display: 'block', fontWeight: 800, letterSpacing: 1 }}
-          >
-            BLADERS
-          </Typography>
-          <Typography
-            variant="h6"
-            fontWeight="900"
-            sx={{ color: '#fbbf24', lineHeight: 1.2 }}
-          >
-            {totalBladers}
-          </Typography>
-        </Box>
-        <Box sx={{ textAlign: 'center' }}>
-          <Typography
-            variant="caption"
-            color="text.secondary"
-            sx={{ display: 'block', fontWeight: 800, letterSpacing: 1 }}
-          >
-            MATCHS
-          </Typography>
-          <Typography
-            variant="h6"
-            fontWeight="900"
-            sx={{ color: '#fff', lineHeight: 1.2 }}
-          >
-            {totalMatches.toLocaleString()}
-          </Typography>
-        </Box>
+      <Stack direction="row" spacing={{ xs: 2, md: 4 }} sx={{ px: 2 }}>
+        {stats.map((s) => (
+          <Box key={s.label} sx={{ textAlign: 'center' }}>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              sx={{
+                display: 'block',
+                fontWeight: 800,
+                letterSpacing: 1,
+                fontSize: { xs: '0.55rem', md: '0.65rem' },
+              }}
+            >
+              {s.label}
+            </Typography>
+            <Typography
+              variant="h6"
+              fontWeight="900"
+              sx={{ color: s.color, lineHeight: 1.2 }}
+            >
+              {s.value}
+            </Typography>
+          </Box>
+        ))}
       </Stack>
     </Box>
   );

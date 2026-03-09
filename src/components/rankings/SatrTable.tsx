@@ -173,7 +173,7 @@ export function SatrTable({
                   letterSpacing: 1,
                 }}
               >
-                Wins
+                W-L
               </TableCell>
               <TableCell
                 align="center"
@@ -259,12 +259,19 @@ export function SatrTable({
                     </Typography>
                   </TableCell>
                   <TableCell align="center">
-                    <Typography
-                      fontWeight="700"
-                      color="success.main"
-                      sx={{ fontSize: '0.85rem' }}
-                    >
-                      {row.wins}
+                    <Typography fontWeight="700" sx={{ fontSize: '0.85rem' }}>
+                      <Box component="span" sx={{ color: 'success.main' }}>
+                        {row.wins}
+                      </Box>
+                      <Box
+                        component="span"
+                        sx={{ color: 'text.secondary', mx: 0.25 }}
+                      >
+                        -
+                      </Box>
+                      <Box component="span" sx={{ color: 'error.main' }}>
+                        {row.losses}
+                      </Box>
                     </Typography>
                   </TableCell>
                   <TableCell

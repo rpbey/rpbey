@@ -25,7 +25,25 @@ import {
 import type { SatrBlader } from '@prisma/client';
 import Link from 'next/link';
 import { useState } from 'react';
-import { getTournamentTop10 } from '@/server/actions/satr';
+import {
+  getPlayerTournamentMatches,
+  getTournamentMeta,
+  getTournamentTop10,
+} from '@/server/actions/satr';
+
+interface MatchDetail {
+  opponent: string;
+  scores: string;
+  won: boolean;
+  round: number;
+}
+
+interface TournamentExpandData {
+  top10: Array<{ rank: number; name: string }>;
+  matches: MatchDetail[];
+  participantsCount: number;
+  format: string;
+}
 
 interface SatrBladerDialogProps {
   blader: SatrBlader | null;
@@ -41,8 +59,10 @@ export function SatrBladerDialog({
   const [expandedTournament, setExpandedTournament] = useState<string | null>(
     null,
   );
-  const [top10Data, setTop10Data] = useState<any[]>([]);
-  const [loadingTop10, setLoadingTop10] = useState(false);
+  const [expandData, setExpandData] = useState<TournamentExpandData | null>(
+    null,
+  );
+  const [loading, setLoading] = useState(false);
 
   if (!blader) return null;
 
@@ -65,14 +85,24 @@ export function SatrBladerDialog({
     }
 
     setExpandedTournament(slug);
-    setLoadingTop10(true);
-    setTop10Data([]);
+    setLoading(true);
+    setExpandData(null);
 
-    const res = await getTournamentTop10(slug);
-    if (res.success && res.data) {
-      setTop10Data(res.data);
-    }
-    setLoadingTop10(false);
+    const [top10Res, matchesRes, metaRes] = await Promise.all([
+      getTournamentTop10(slug),
+      getPlayerTournamentMatches(slug, blader.name),
+      getTournamentMeta(slug),
+    ]);
+
+    setExpandData({
+      top10: top10Res.success && top10Res.data ? top10Res.data : [],
+      matches: matchesRes.success && matchesRes.data ? matchesRes.data : [],
+      participantsCount: metaRes.success
+        ? (metaRes.data?.participantsCount ?? 0)
+        : 0,
+      format: metaRes.success ? (metaRes.data?.format ?? '') : '',
+    });
+    setLoading(false);
   };
 
   return (
@@ -217,19 +247,7 @@ export function SatrBladerDialog({
                       borderColor: 'divider',
                     }}
                   >
-                    <Typography
-                      variant="overline"
-                      sx={{
-                        fontWeight: 900,
-                        color: 'primary.main',
-                        mb: 1,
-                        display: 'block',
-                      }}
-                    >
-                      Top 10 du tournoi
-                    </Typography>
-
-                    {loadingTop10 ? (
+                    {loading ? (
                       <Box
                         sx={{
                           display: 'flex',
@@ -239,39 +257,128 @@ export function SatrBladerDialog({
                       >
                         <CircularProgress size={20} />
                       </Box>
-                    ) : (
-                      <Stack spacing={0.5}>
-                        {top10Data.map((top, i) => (
-                          <Box
-                            key={i}
+                    ) : expandData ? (
+                      <>
+                        {/* Tournament info */}
+                        {expandData.participantsCount > 0 && (
+                          <Typography
+                            variant="caption"
                             sx={{
-                              display: 'flex',
-                              justifyContent: 'space-between',
-                              alignItems: 'center',
+                              display: 'block',
+                              color: 'text.secondary',
+                              mb: 1,
+                              fontWeight: 600,
                             }}
                           >
+                            {expandData.participantsCount} participants
+                            {expandData.format ? ` • ${expandData.format}` : ''}
+                          </Typography>
+                        )}
+
+                        {/* Match details */}
+                        {expandData.matches.length > 0 && (
+                          <>
                             <Typography
-                              variant="body2"
+                              variant="overline"
                               sx={{
-                                fontWeight:
-                                  top.name === blader.name ? 900 : 500,
-                                color:
-                                  top.name === blader.name
-                                    ? 'primary.main'
-                                    : 'inherit',
+                                fontWeight: 900,
+                                color: 'primary.main',
+                                mb: 0.5,
+                                display: 'block',
                               }}
                             >
-                              {top.rank}. {top.name}
+                              Matchs
                             </Typography>
-                            {top.rank === 1 && (
-                              <Typography sx={{ fontSize: '0.8rem' }}>
-                                🏆
+                            <Stack spacing={0.25} sx={{ mb: 1.5 }}>
+                              {expandData.matches.map((m, i) => (
+                                <Box
+                                  key={i}
+                                  sx={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                    py: 0.25,
+                                  }}
+                                >
+                                  <Typography
+                                    variant="body2"
+                                    sx={{
+                                      fontSize: '0.8rem',
+                                      color: m.won
+                                        ? 'success.main'
+                                        : 'error.main',
+                                      fontWeight: 600,
+                                    }}
+                                  >
+                                    {m.won ? 'W' : 'L'} vs {m.opponent}
+                                  </Typography>
+                                  <Chip
+                                    label={m.scores}
+                                    size="small"
+                                    variant="outlined"
+                                    sx={{
+                                      fontWeight: 700,
+                                      fontSize: '0.7rem',
+                                      height: 20,
+                                      borderColor: m.won
+                                        ? 'success.main'
+                                        : 'error.main',
+                                      color: m.won
+                                        ? 'success.main'
+                                        : 'error.main',
+                                    }}
+                                  />
+                                </Box>
+                              ))}
+                            </Stack>
+                          </>
+                        )}
+
+                        {/* Top 10 */}
+                        <Typography
+                          variant="overline"
+                          sx={{
+                            fontWeight: 900,
+                            color: 'primary.main',
+                            mb: 0.5,
+                            display: 'block',
+                          }}
+                        >
+                          Top 10 du tournoi
+                        </Typography>
+                        <Stack spacing={0.5}>
+                          {expandData.top10.map((top, i) => (
+                            <Box
+                              key={i}
+                              sx={{
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                alignItems: 'center',
+                              }}
+                            >
+                              <Typography
+                                variant="body2"
+                                sx={{
+                                  fontWeight:
+                                    top.name === blader.name ? 900 : 500,
+                                  color:
+                                    top.name === blader.name
+                                      ? 'primary.main'
+                                      : 'inherit',
+                                }}
+                              >
+                                {top.rank}. {top.name}
                               </Typography>
-                            )}
-                          </Box>
-                        ))}
-                      </Stack>
-                    )}
+                              {top.rank === 1 && (
+                                <Typography sx={{ fontSize: '0.8rem' }}>
+                                  🏆
+                                </Typography>
+                              )}
+                            </Box>
+                          ))}
+                        </Stack>
+                      </>
+                    ) : null}
                   </Box>
                 </Collapse>
               </Box>
