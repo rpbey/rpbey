@@ -12,6 +12,17 @@ export class MemberJoinListener {
   async onMemberJoin([member]: ArgsOf<'guildMemberAdd'>) {
     logger.info(`Nouveau membre: ${member.user.tag} sur ${member.guild.name}`);
 
+    // Auto-assign Blader role
+    try {
+      await member.roles.add(RPB.Roles.Blader);
+      logger.info(`[AutoRole] Blader role assigned to ${member.user.tag}`);
+    } catch (err) {
+      logger.error(
+        `[AutoRole] Failed to assign Blader role to ${member.user.tag}:`,
+        err,
+      );
+    }
+
     let attachmentItems: AttachmentBuilder[] = [];
     let hasImage = false;
 
