@@ -1,10 +1,12 @@
 import {
   ApplicationCommandOptionType,
   type CommandInteraction,
+  EmbedBuilder,
 } from 'discord.js';
 import { Discord, Slash, SlashGroup, SlashOption } from 'discordx';
 import { inject, injectable } from 'tsyringe';
 
+import { Colors } from '../../lib/constants.js';
 import { PrismaService } from '../../lib/prisma.js';
 
 @Discord()
@@ -23,6 +25,11 @@ export class EconomyCommand {
 
     const userId = interaction.user.id;
     const now = new Date();
+    const todayStart = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+    );
 
     let user = await this.prisma.user.findFirst({
       where: { discordId: userId },
@@ -53,18 +60,22 @@ export class EconomyCommand {
     const profile = user?.profile;
     const lastDaily = profile?.lastDaily;
 
-    if (
-      lastDaily &&
-      new Date(lastDaily).getDate() === now.getDate() &&
-      new Date(lastDaily).getMonth() === now.getMonth() &&
-      new Date(lastDaily).getFullYear() === now.getFullYear()
-    ) {
-      return interaction.editReply(
-        "❌ Tu as déjà récupéré ta récompense aujourd'hui ! Reviens demain.",
-      );
+    if (lastDaily && new Date(lastDaily) >= todayStart) {
+      const tomorrow = new Date(todayStart);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      const resetTimestamp = Math.floor(tomorrow.getTime() / 1000);
+
+      const embed = new EmbedBuilder()
+        .setTitle('⏰ Déjà récupéré !')
+        .setDescription(
+          `Tu as déjà récupéré ta récompense aujourd'hui.\nProchaine récompense : <t:${resetTimestamp}:R>`,
+        )
+        .setColor(Colors.Warning);
+      return interaction.editReply({ embeds: [embed] });
     }
 
     const reward = 100 + Math.floor(Math.random() * 50);
+    const newBalance = (profile?.currency ?? 0) + reward;
 
     await this.prisma.profile.update({
       where: { userId: user?.id },
@@ -74,9 +85,16 @@ export class EconomyCommand {
       },
     });
 
-    return interaction.editReply(
-      `💰 Tu as reçu **${reward} pièces** ! Reviens demain pour tenter ta chance à nouveau.`,
-    );
+    const embed = new EmbedBuilder()
+      .setTitle('💰 Récompense quotidienne')
+      .setDescription(
+        `Tu as reçu **${reward} pièces** !\nNouveau solde : **${newBalance} pièces**`,
+      )
+      .setColor(Colors.Success)
+      .setFooter({ text: 'Reviens demain pour une nouvelle récompense !' })
+      .setTimestamp();
+
+    return interaction.editReply({ embeds: [embed] });
   }
 
   @Slash({ name: 'solde', description: 'Consulter votre balance de pièces' })
@@ -87,7 +105,9 @@ export class EconomyCommand {
       required: false,
       type: ApplicationCommandOptionType.User,
     })
-    targetUser: { id: string; username: string } | undefined,
+    targetUser:
+      | { id: string; username: string; displayAvatarURL?: () => string }
+      | undefined,
     interaction: CommandInteraction,
   ) {
     await interaction.deferReply();
@@ -100,9 +120,13 @@ export class EconomyCommand {
 
     const balance = user?.profile?.currency ?? 0;
 
-    return interaction.editReply(
-      `💳 **${target.username}** possède actuellement **${balance} pièces**.`,
-    );
+    const embed = new EmbedBuilder()
+      .setTitle(`💳 Solde de ${target.username}`)
+      .setDescription(`**${balance.toLocaleString('fr-FR')}** pièces`)
+      .setColor(Colors.Info)
+      .setTimestamp();
+
+    return interaction.editReply({ embeds: [embed] });
   }
 
   @Slash({
@@ -112,17 +136,16 @@ export class EconomyCommand {
   async gamble(
     @SlashOption({
       name: 'montant',
-      description: 'Le montant de pièces à mettre en jeu',
+      description: 'Le montant de pièces à mettre en jeu (10 - 10 000)',
       required: true,
       type: ApplicationCommandOptionType.Integer,
+      minValue: 10,
+      maxValue: 10000,
     })
     amount: number,
     interaction: CommandInteraction,
   ) {
     await interaction.deferReply();
-
-    if (amount < 10)
-      return interaction.editReply('❌ La mise minimale est de 10 pièces.');
 
     const user = await this.prisma.user.findFirst({
       where: { discordId: interaction.user.id },
@@ -130,10 +153,15 @@ export class EconomyCommand {
     });
 
     const balance = user?.profile?.currency ?? 0;
-    if (balance < amount)
-      return interaction.editReply(
-        `❌ Tu n'as pas assez de pièces (Solde actuel : ${balance}).`,
-      );
+    if (balance < amount) {
+      const embed = new EmbedBuilder()
+        .setTitle('❌ Fonds insuffisants')
+        .setDescription(
+          `Tu n'as pas assez de pièces.\n**Solde actuel :** ${balance.toLocaleString('fr-FR')} pièces\n**Mise demandée :** ${amount.toLocaleString('fr-FR')} pièces`,
+        )
+        .setColor(Colors.Error);
+      return interaction.editReply({ embeds: [embed] });
+    }
 
     const win = Math.random() > 0.5;
     const newBalance = win ? balance + amount : balance - amount;
@@ -143,10 +171,33 @@ export class EconomyCommand {
       data: { currency: newBalance },
     });
 
-    const text = win
-      ? `🎰 **BRAVO !** Tu remportes **${amount} pièces** ! Ton nouveau solde est de **${newBalance}**.`
-      : `🎰 **DOMMAGE...** Tu as perdu **${amount} pièces**. Il te reste **${newBalance}** pièces.`;
+    const embed = new EmbedBuilder()
+      .setTitle(win ? '🎰 VICTOIRE !' : '🎰 Perdu...')
+      .setDescription(
+        win
+          ? `Tu remportes **${amount.toLocaleString('fr-FR')} pièces** !`
+          : `Tu perds **${amount.toLocaleString('fr-FR')} pièces**...`,
+      )
+      .addFields(
+        {
+          name: '💰 Mise',
+          value: `${amount.toLocaleString('fr-FR')}`,
+          inline: true,
+        },
+        {
+          name: win ? '📈 Gain' : '📉 Perte',
+          value: `${win ? '+' : '-'}${amount.toLocaleString('fr-FR')}`,
+          inline: true,
+        },
+        {
+          name: '💳 Nouveau solde',
+          value: `${newBalance.toLocaleString('fr-FR')}`,
+          inline: true,
+        },
+      )
+      .setColor(win ? Colors.Success : Colors.Error)
+      .setTimestamp();
 
-    return interaction.editReply({ content: text });
+    return interaction.editReply({ embeds: [embed] });
   }
 }

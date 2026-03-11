@@ -9,6 +9,7 @@ import { Discord, Slash, SlashGroup, SlashOption } from 'discordx';
 import { injectable } from 'tsyringe';
 
 import { Colors } from '../../lib/constants.js';
+import { logger } from '../../lib/logger.js';
 
 @Discord()
 @SlashGroup({ name: 'wiki', description: 'Base de connaissances Beyblade X' })
@@ -92,35 +93,18 @@ export class WikiGroup {
         return interaction.editReply({ embeds: [embed] });
       }
     } catch (err) {
-      console.error('Failed to load meta data:', err);
+      logger.error('Failed to load meta data:', err);
     }
 
-    // Fallback to hardcoded meta
-    const currentMonth = new Date().toLocaleDateString('fr-FR', {
-      month: 'long',
-      year: 'numeric',
-    });
     const embed = new EmbedBuilder()
-      .setTitle(`📊 Méta Beyblade X (${currentMonth})`)
+      .setTitle('📊 Méta Beyblade X')
       .setColor(0xfbbf24)
-      .addFields(
-        {
-          name: '🚀 Attaque',
-          value: '• Dran Buster 1-60 Flat\n• Phoenix Wing 9-60 Rush',
-          inline: true,
-        },
-        {
-          name: '🔋 Endurance',
-          value: '• Rod 9-60 Ball\n• Wizard Rod 5-70 Ball',
-          inline: true,
-        },
-        {
-          name: '🛡️ Défense',
-          value: '• Knight Shield 3-80 High Needle',
-          inline: true,
-        },
+      .setDescription(
+        'Les données méta ne sont pas disponibles actuellement.\n\n' +
+          '**Consultez la page dédiée pour les informations à jour :**\n' +
+          '[rpbey.fr/meta](https://rpbey.fr/meta)',
       )
-      .setFooter({ text: 'Consultez rpbey.fr/meta pour plus de détails.' });
+      .setFooter({ text: 'Données mises à jour régulièrement sur le site.' });
     return interaction.editReply({ embeds: [embed] });
   }
 
@@ -130,17 +114,46 @@ export class WikiGroup {
     const embed = new EmbedBuilder()
       .setTitle('🏆 Formats de Tournoi RPB')
       .setColor(Colors.Secondary)
+      .setDescription(
+        'Voici les formats utilisés lors des tournois organisés par la RPB et ses partenaires.',
+      )
       .addFields(
         {
-          name: 'Standard (3 Beys)',
-          value: 'Le format classique de la 3on3 Battle.',
+          name: '⚔️ 3on3 (Standard)',
+          value:
+            'Chaque joueur prépare un deck de **3 Beyblades**. Format le plus courant en compétition.\n' +
+            '• Double Élimination (bracket Winners + Losers)\n' +
+            '• First to 3 points par match',
+          inline: false,
         },
         {
-          name: 'Deck (Limited)',
-          value: 'Restrictions sur certaines pièces méta.',
+          name: '🎯 1on1',
+          value:
+            'Un seul Beyblade par joueur. Teste la maîtrise technique pure.\n' +
+            '• First to 5 points\n' +
+            '• Changement de combo autorisé entre les rounds',
+          inline: false,
         },
-        { name: 'Extreme', value: 'Points doublés sur les lignes X.' },
-      );
+        {
+          name: '🔒 Deck Limited',
+          value:
+            'Format avec restrictions sur certaines pièces méta.\n' +
+            '• Banlist mise à jour chaque saison\n' +
+            '• Encourage la diversité des combos',
+          inline: false,
+        },
+        {
+          name: '🔄 Round Robin',
+          value:
+            "Tous les joueurs s'affrontent entre eux.\n" +
+            '• Classement par victoires/défaites\n' +
+            '• Idéal pour les petits groupes (8-16 joueurs)',
+          inline: false,
+        },
+      )
+      .setFooter({
+        text: 'Règlement complet sur rpbey.fr/reglement',
+      });
     return interaction.reply({ embeds: [embed] });
   }
 }

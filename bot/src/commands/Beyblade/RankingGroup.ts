@@ -93,7 +93,7 @@ export class RankingGroup {
         rankTitle: 'Blader',
         tournamentWins: user.profile.tournamentWins,
         tournamentsPlayed: user._count.tournaments,
-        winRate: '0%',
+        winRate: this.computeWinRate(user.profile.wins, user.profile.losses),
         wins: user.profile.wins,
       });
       return interaction.editReply({
@@ -120,25 +120,65 @@ export class RankingGroup {
       type: ApplicationCommandOptionType.String,
       description: 'Type de top',
     })
-    _type: string = 'global',
+    type: string = 'global',
     interaction: CommandInteraction,
   ) {
     await interaction.deferReply();
-    const rankings = await this.prisma.globalRanking.findMany({
-      take: 10,
-      orderBy: { points: 'desc' },
-      include: { user: true },
-    });
-    const entries = rankings.map((p, i) => ({
-      avatarUrl: p.user?.image || '',
-      name: p.playerName,
-      points: p.points,
-      rank: i + 1,
-      winRate: '0',
-    }));
-    const buffer = await generateLeaderboardCard(entries);
-    return interaction.editReply({
-      files: [new AttachmentBuilder(buffer, { name: 'top10.png' })],
-    });
+    try {
+      if (type === 'satr') {
+        const satrEntries = await this.prisma.seasonEntry.findMany({
+          take: 10,
+          orderBy: { points: 'desc' },
+          where: {
+            season: { name: { contains: 'SATR', mode: 'insensitive' } },
+          },
+          include: { user: true },
+        });
+        if (satrEntries.length === 0) {
+          return interaction.editReply('❌ Aucune donnée SATR disponible.');
+        }
+        const entries = satrEntries.map((e, i) => ({
+          avatarUrl: e.user?.image || '',
+          name: e.playerName || e.user?.name || 'Blader',
+          points: e.points,
+          rank: i + 1,
+          winRate: this.computeWinRate(e.wins, e.losses),
+        }));
+        const buffer = await generateLeaderboardCard(entries);
+        return interaction.editReply({
+          files: [new AttachmentBuilder(buffer, { name: 'top10-satr.png' })],
+        });
+      }
+
+      const rankings = await this.prisma.globalRanking.findMany({
+        take: 10,
+        orderBy: { points: 'desc' },
+        include: { user: { include: { profile: true } } },
+      });
+      const entries = rankings.map((p, i) => ({
+        avatarUrl: p.user?.image || '',
+        name: p.playerName,
+        points: p.points,
+        rank: i + 1,
+        winRate: this.computeWinRate(
+          p.user?.profile?.wins ?? 0,
+          p.user?.profile?.losses ?? 0,
+        ),
+      }));
+      const buffer = await generateLeaderboardCard(entries);
+      return interaction.editReply({
+        files: [new AttachmentBuilder(buffer, { name: 'top10.png' })],
+      });
+    } catch (_error) {
+      return interaction.editReply(
+        '❌ Erreur lors du chargement du classement.',
+      );
+    }
+  }
+
+  private computeWinRate(wins: number, losses: number): string {
+    const total = wins + losses;
+    if (total === 0) return '0%';
+    return `${Math.round((wins / total) * 100)}%`;
   }
 }

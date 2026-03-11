@@ -649,8 +649,10 @@ export class AnnounceCommand {
     await interaction.deferReply({ ephemeral: true });
 
     try {
-      const files = image ? [image.url] : [];
-      const sentMessage = await channel.send({ content: announcement, files });
+      const sentMessage = await channel.send({
+        content: announcement,
+        files: image ? [{ attachment: image.url, name: image.name }] : [],
+      });
 
       await Promise.allSettled([
         sentMessage.react('✅'),

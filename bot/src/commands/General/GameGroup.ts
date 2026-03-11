@@ -58,20 +58,34 @@ export class GameGroup {
   })
   @SlashGroup('jeu')
   async random(interaction: CommandInteraction) {
-    const parts = await this.prisma.part.findMany({ take: 100 });
-    if (parts.length < 3) return interaction.reply('❌ Pas assez de pièces.');
+    const parts = await this.prisma.part.findMany({ take: 500 });
 
     const blades = parts.filter((p) => p.type === 'BLADE');
     const ratchets = parts.filter((p) => p.type === 'RATCHET');
     const bits = parts.filter((p) => p.type === 'BIT');
 
-    const b = blades[Math.floor(Math.random() * blades.length)];
-    const r = ratchets[Math.floor(Math.random() * ratchets.length)];
-    const bit = bits[Math.floor(Math.random() * bits.length)];
+    if (blades.length === 0 || ratchets.length === 0 || bits.length === 0) {
+      return interaction.reply(
+        '❌ Pas assez de pièces en base de données pour générer un combo.',
+      );
+    }
 
-    return interaction.reply(
-      `🎲 Combo Aléatoire : **${b.name} ${r.name} ${bit.name}**`,
-    );
+    const b = blades[Math.floor(Math.random() * blades.length)]!;
+    const r = ratchets[Math.floor(Math.random() * ratchets.length)]!;
+    const bit = bits[Math.floor(Math.random() * bits.length)]!;
+
+    const embed = new EmbedBuilder()
+      .setTitle('🎲 Combo Aléatoire')
+      .setDescription(`**${b.name} ${r.name} ${bit.name}**`)
+      .addFields(
+        { name: '⚔️ Blade', value: b.name, inline: true },
+        { name: '🔩 Ratchet', value: r.name, inline: true },
+        { name: '💎 Bit', value: bit.name, inline: true },
+      )
+      .setColor(Colors.Beyblade)
+      .setFooter({ text: 'Bonne chance avec ce combo !' });
+
+    return interaction.reply({ embeds: [embed] });
   }
 
   @Slash({ name: 'fun-wanted', description: 'Générer une affiche WANTED' })
