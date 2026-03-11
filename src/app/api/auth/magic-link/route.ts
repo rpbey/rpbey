@@ -1,0 +1,96 @@
+import { cookies } from 'next/headers';
+import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
+
+export const dynamic = 'force-dynamic';
+
+// GET: magic link with token
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const token = searchParams.get('token');
+
+  if (!token) {
+    return NextResponse.json({ error: 'Token manquant' }, { status: 400 });
+  }
+
+  const session = await prisma.session.findFirst({
+    where: { token, expiresAt: { gt: new Date() } },
+  });
+
+  if (!session) {
+    return NextResponse.json(
+      { error: 'Token invalide ou expiré' },
+      { status: 401 },
+    );
+  }
+
+  const cookieStore = await cookies();
+  cookieStore.set('rpb-auth.session_token', token, {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'lax',
+    path: '/',
+    maxAge: 60 * 60 * 24 * 30,
+  });
+
+  return NextResponse.redirect(new URL('/admin', request.url));
+}
+
+// POST: admin quick login with Discord ID + PIN
+export async function POST(request: Request) {
+  const body = await request.json();
+  const { discordId, pin } = body as { discordId?: string; pin?: string };
+
+  if (!discordId || !pin) {
+    return NextResponse.json(
+      { error: 'Discord ID et PIN requis' },
+      { status: 400 },
+    );
+  }
+
+  const expectedPin = process.env.ADMIN_PIN;
+  if (!expectedPin || pin !== expectedPin) {
+    return NextResponse.json({ error: 'PIN incorrect' }, { status: 401 });
+  }
+
+  const user = await prisma.user.findFirst({
+    where: {
+      discordId,
+      role: { in: ['admin', 'superadmin'] },
+    },
+  });
+
+  if (!user) {
+    return NextResponse.json(
+      { error: 'Aucun compte admin trouvé avec ce Discord ID' },
+      { status: 404 },
+    );
+  }
+
+  // Create session
+  const crypto = await import('node:crypto');
+  const token = crypto.randomBytes(32).toString('hex');
+  const sessionId = crypto.randomBytes(16).toString('hex');
+
+  await prisma.session.create({
+    data: {
+      id: sessionId,
+      token,
+      userId: user.id,
+      expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+      ipAddress: request.headers.get('x-forwarded-for') || '0.0.0.0',
+      userAgent: request.headers.get('user-agent') || 'Admin Quick Login',
+    },
+  });
+
+  const cookieStore = await cookies();
+  cookieStore.set('rpb-auth.session_token', token, {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'lax',
+    path: '/',
+    maxAge: 60 * 60 * 24 * 30,
+  });
+
+  return NextResponse.json({ success: true, name: user.name });
+}

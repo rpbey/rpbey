@@ -15,8 +15,6 @@ async function checkAdmin() {
 }
 
 export async function getPartsStats() {
-  await checkAdmin();
-
   const [total, byType, bySystem, byBeyType, missingImage, recentlyUpdated] =
     await Promise.all([
       prisma.part.count(),
@@ -67,7 +65,6 @@ export async function getParts(
     missingImage?: boolean;
   },
 ) {
-  await checkAdmin();
   const take = 100;
   const skip = (page - 1) * take;
 
@@ -254,8 +251,6 @@ export async function duplicatePart(id: string) {
 
 // Beyblades management
 export async function getBeyblades(search?: string) {
-  await checkAdmin();
-
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const where: any = {};
   if (search) {
