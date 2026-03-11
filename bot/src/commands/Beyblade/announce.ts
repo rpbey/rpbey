@@ -3,7 +3,6 @@ import {
   type Attachment,
   ChannelType,
   type CommandInteraction,
-  EmbedBuilder,
   type NewsChannel,
   PermissionFlagsBits,
   type Role,
@@ -20,7 +19,7 @@ import {
 
 import { ModeratorOnly } from '../../guards/ModeratorOnly.js';
 import { getChallongeClient } from '../../lib/challonge.js';
-import { Colors, RPB } from '../../lib/constants.js';
+import { RPB } from '../../lib/constants.js';
 import { logger } from '../../lib/logger.js';
 import { twitchBot } from '../../lib/twitch-bot.js';
 
@@ -81,57 +80,37 @@ export class AnnounceCommand {
       const participantCount =
         participantsRes.data?.length ?? t.attributes.participantsCount;
 
-      const embed = new EmbedBuilder()
-        .setTitle(`🏆 ${t.attributes.name}`)
-        .setDescription(
-          `${t.attributes.description ?? 'Un nouveau tournoi Beyblade vous attend !'}\n\n` +
-            `**🌀 Let it rip !**`,
-        )
-        .setColor(Colors.Primary)
-        .addFields(
-          {
-            name: '🎮 Jeu',
-            value: t.attributes.gameName ?? 'Beyblade X',
-            inline: true,
-          },
-          {
-            name: '🏷️ Format',
-            value: this.formatTournamentType(t.attributes.tournamentType),
-            inline: true,
-          },
-          {
-            name: '👥 Inscrits',
-            value: `${participantCount} joueur(s)`,
-            inline: true,
-          },
-        )
-        .setFooter({ text: `${RPB.FullName} | ID: ${tournamentId}` })
-        .setTimestamp();
-
-      if (t.attributes.startAt) {
-        const startDate = new Date(t.attributes.startAt);
-        embed.addFields({
-          name: '📅 Date',
-          value: `<t:${Math.floor(startDate.getTime() / 1000)}:F> (<t:${Math.floor(startDate.getTime() / 1000)}:R>)`,
-          inline: false,
-        });
-      }
-
-      embed.addFields({
-        name: '🔗 Inscription',
-        value: `[S'inscrire sur Challonge](https://challonge.com/${t.attributes.url})`,
-        inline: false,
-      });
-
-      if (image) {
-        embed.setImage(image.url);
-      }
-
-      const content = mentionRole
+      const mention = mentionRole
         ? `${mentionRole}`
         : `<@&${RPB.Roles.TournoiNotification}>`;
 
-      const sentMessage = await channel.send({ content, embeds: [embed] });
+      const dateLine = t.attributes.startAt
+        ? `📅 **Date :** <t:${Math.floor(new Date(t.attributes.startAt).getTime() / 1000)}:F> (<t:${Math.floor(new Date(t.attributes.startAt).getTime() / 1000)}:R>)`
+        : '';
+
+      const announcement = [
+        mention,
+        ``,
+        `# 🏆 ${t.attributes.name}`,
+        ``,
+        t.attributes.description ?? 'Un nouveau tournoi Beyblade vous attend !',
+        ``,
+        `🎮 **Jeu :** ${t.attributes.gameName ?? 'Beyblade X'}`,
+        `🏷️ **Format :** ${this.formatTournamentType(t.attributes.tournamentType)}`,
+        `👥 **Inscrits :** ${participantCount} joueur(s)`,
+        dateLine,
+        ``,
+        `🔗 **Inscription :** https://challonge.com/${t.attributes.url}`,
+        ``,
+        `**🌀 Let it rip !**`,
+      ]
+        .filter(Boolean)
+        .join('\n');
+
+      const sentMessage = await channel.send({
+        content: announcement,
+        files: image ? [{ attachment: image.url, name: image.name }] : [],
+      });
 
       await Promise.allSettled([
         sentMessage.react('✅'),
@@ -205,50 +184,34 @@ export class AnnounceCommand {
       const tournamentRes = await challonge.getTournament(tournamentId);
       const t = tournamentRes.data;
 
-      const embed = new EmbedBuilder()
-        .setTitle(`⏰ Rappel : ${t.attributes.name}`)
-        .setDescription(
-          customMessage ??
-            `**Le tournoi commence bientôt !**\n\n` +
-              `N'oubliez pas de vous inscrire si ce n'est pas déjà fait.\n` +
-              `Préparez vos combos et soyez prêts à donner le meilleur de vous-même !`,
-        )
-        .setColor(Colors.Warning)
-        .addFields(
-          {
-            name: '👥 Inscrits',
-            value: `${t.attributes.participantsCount} joueur(s)`,
-            inline: true,
-          },
-          {
-            name: '📊 État',
-            value: this.formatState(t.attributes.state),
-            inline: true,
-          },
-        )
-        .setFooter({ text: RPB.FullName })
-        .setTimestamp();
+      const body =
+        customMessage ??
+        `N'oubliez pas de vous inscrire si ce n'est pas déjà fait.\nPréparez vos combos et soyez prêts à donner le meilleur de vous-même !`;
 
-      if (t.attributes.startAt) {
-        const startDate = new Date(t.attributes.startAt);
-        embed.addFields({
-          name: '📅 Début',
-          value: `<t:${Math.floor(startDate.getTime() / 1000)}:R>`,
-          inline: true,
-        });
-      }
+      const dateLine = t.attributes.startAt
+        ? `📅 **Début :** <t:${Math.floor(new Date(t.attributes.startAt).getTime() / 1000)}:R>`
+        : '';
 
-      embed.addFields({
-        name: '🔗 Lien',
-        value: `[Voir le tournoi](https://challonge.com/${t.attributes.url})`,
-        inline: false,
+      const announcement = [
+        `# ⏰ Rappel : ${t.attributes.name}`,
+        ``,
+        `**Le tournoi commence bientôt !**`,
+        ``,
+        body,
+        ``,
+        `👥 **Inscrits :** ${t.attributes.participantsCount} joueur(s)`,
+        `📊 **État :** ${this.formatState(t.attributes.state)}`,
+        dateLine,
+        ``,
+        `🔗 https://challonge.com/${t.attributes.url}`,
+      ]
+        .filter(Boolean)
+        .join('\n');
+
+      const sentMessage = await channel.send({
+        content: announcement,
+        files: image ? [{ attachment: image.url, name: image.name }] : [],
       });
-
-      if (image) {
-        embed.setImage(image.url);
-      }
-
-      const sentMessage = await channel.send({ embeds: [embed] });
 
       await Promise.allSettled([
         sentMessage.react('✅'),
@@ -317,46 +280,36 @@ export class AnnounceCommand {
         .map((p, i) => `${medals[i]} **${p.attributes.name}**`)
         .join('\n');
 
-      const embed = new EmbedBuilder()
-        .setTitle(`🏆 Résultats : ${t.attributes.name}`)
-        .setDescription(
-          `Le tournoi est terminé ! Voici les résultats :\n\n${podiumText}`,
-        )
-        .setColor(Colors.Secondary)
-        .addFields(
-          {
-            name: '👥 Participants',
-            value: `${participants.length}`,
-            inline: true,
-          },
-          {
-            name: '🏷️ Format',
-            value: this.formatTournamentType(t.attributes.tournamentType),
-            inline: true,
-          },
-        )
-        .setFooter({ text: `${RPB.FullName} | GG à tous !` })
-        .setTimestamp();
+      const top8Lines =
+        ranked.length > 3
+          ? `\n**📊 Top 8 :**\n${ranked
+              .slice(3, 8)
+              .map((p, i) => `${i + 4}. ${p.attributes.name}`)
+              .join('\n')}`
+          : '';
 
-      if (ranked.length > 3) {
-        const top8 = ranked
-          .slice(3, 8)
-          .map((p, i) => `${i + 4}. ${p.attributes.name}`)
-          .join('\n');
-        embed.addFields({ name: '📊 Top 8', value: top8, inline: false });
-      }
+      const announcement = [
+        `# 🏆 Résultats : ${t.attributes.name}`,
+        ``,
+        `Le tournoi est terminé ! Voici les résultats :`,
+        ``,
+        podiumText,
+        top8Lines,
+        ``,
+        `👥 **Participants :** ${participants.length}`,
+        `🏷️ **Format :** ${this.formatTournamentType(t.attributes.tournamentType)}`,
+        ``,
+        `🔗 **Bracket complet :** https://challonge.com/${t.attributes.url}`,
+        ``,
+        `GG à tous ! 🎉`,
+      ]
+        .filter((line) => line !== undefined)
+        .join('\n');
 
-      embed.addFields({
-        name: '🔗 Bracket complet',
-        value: `[Voir sur Challonge](https://challonge.com/${t.attributes.url})`,
-        inline: false,
+      await channel.send({
+        content: announcement,
+        files: image ? [{ attachment: image.url, name: image.name }] : [],
       });
-
-      if (image) {
-        embed.setImage(image.url);
-      }
-
-      await channel.send({ embeds: [embed] });
 
       return interaction.editReply(`✅ Résultats envoyés dans ${channel} !`);
     } catch (error) {
@@ -405,11 +358,11 @@ export class AnnounceCommand {
     @SlashChoice({ name: '🟣 Beyblade', value: '8b5cf6' })
     @SlashOption({
       name: 'couleur',
-      description: "Couleur de l'embed (hex)",
+      description: 'Couleur de la barre latérale (thème)',
       required: false,
       type: ApplicationCommandOptionType.String,
     })
-    colorHex: string = 'dc2626',
+    _colorHex: string = 'dc2626',
     @SlashOption({
       name: 'image',
       description: "Image à ajouter à l'annonce",
@@ -423,20 +376,21 @@ export class AnnounceCommand {
       channelOption ?? (interaction.channel as TextChannel | NewsChannel);
     await interaction.deferReply({ ephemeral: true });
 
-    const embed = new EmbedBuilder()
-      .setTitle(`📢 ${title}`)
-      .setDescription(message)
-      .setColor(parseInt(colorHex, 16))
-      .setFooter({ text: RPB.FullName })
-      .setTimestamp();
+    const mention = mentionRole ? `${mentionRole}\n\n` : '';
 
-    if (image) {
-      embed.setImage(image.url);
-    }
+    const announcement = [
+      mention ? mention.trim() : null,
+      `# 📢 ${title}`,
+      ``,
+      message,
+    ]
+      .filter((line) => line !== null)
+      .join('\n');
 
-    const content = mentionRole ? `${mentionRole}` : undefined;
-
-    const sentMessage = await channel.send({ content, embeds: [embed] });
+    const sentMessage = await channel.send({
+      content: announcement,
+      files: image ? [{ attachment: image.url, name: image.name }] : [],
+    });
 
     await Promise.allSettled([
       sentMessage.react('✅'),
@@ -610,37 +564,17 @@ export class AnnounceCommand {
       `*La suite ? Vous n'êtes pas prêts... 👀*`,
     ].join('\n');
 
-    const embed = new EmbedBuilder()
-      .setTitle(`📋 Aperçu : ${nom}`)
-      .setDescription(
-        `**Mode :** ${preview ? 'Aperçu (non envoyé)' : 'Envoi direct'}\n` +
-          `**Salon :** ${channel}\n` +
-          `**Caractères :** ${announcement.length}/2000`,
-      )
-      .setColor(Colors.Primary)
-      .addFields(
-        { name: '📅 Date', value: date, inline: true },
-        { name: '⏰ Heure', value: heure, inline: true },
-        { name: '📍 Lieu', value: lieu, inline: true },
-        { name: '🎮 Format', value: format, inline: true },
-        { name: '👥 Places', value: `${places}`, inline: true },
-        {
-          name: '🔗 Challonge',
-          value: `[Lien](${challongeUrl})`,
-          inline: true,
-        },
-      )
-      .setFooter({ text: RPB.FullName })
-      .setTimestamp();
-
-    if (image) {
-      embed.setImage(image.url);
-    }
-
     if (preview) {
+      const previewText = [
+        `### Aperçu de l'annonce :`,
+        `**Salon :** ${channel}`,
+        `**Caractères :** ${announcement.length}/2000`,
+        ``,
+        announcement,
+      ].join('\n');
+
       await interaction.reply({
-        content: `### Aperçu de l'annonce :\n\n${announcement}`,
-        embeds: [embed],
+        content: previewText,
         ephemeral: true,
       });
       return;
@@ -671,10 +605,9 @@ export class AnnounceCommand {
         }
       }
 
-      return interaction.editReply({
-        content: `✅ Annonce envoyée dans ${channel} !\n[Voir le message](${sentMessage.url})`,
-        embeds: [embed],
-      });
+      return interaction.editReply(
+        `✅ Annonce envoyée dans ${channel} !\n[Voir le message](${sentMessage.url})`,
+      );
     } catch (error) {
       logger.error('Generate announcement error:', error);
       return interaction.editReply("❌ Erreur lors de l'envoi de l'annonce.");
