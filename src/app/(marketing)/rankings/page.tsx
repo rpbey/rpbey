@@ -296,8 +296,7 @@ export default async function RankingsPage({
           left: 0,
           right: 0,
           height: { xs: '40vh', md: '50vh' },
-          background: (t) =>
-            `radial-gradient(ellipse 80% 60% at 50% -10%, ${alpha(t.palette.primary.main, 0.15)} 0%, transparent 70%)`,
+          background: `radial-gradient(ellipse 80% 60% at 50% -10%, ${alpha('#dc2626', 0.15)} 0%, transparent 70%)`,
           pointerEvents: 'none',
         },
       }}
