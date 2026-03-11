@@ -1,4 +1,6 @@
-import { Box, Container, Typography } from '@mui/material';
+import { Box, Container, Paper, Typography } from '@mui/material';
+import { YouTubeEmbed } from '@next/third-parties/google';
+import { connection } from 'next/server';
 import { getBeyTubeFeatured } from '@/lib/beytube';
 import { getTikTokVideos } from '@/lib/tiktok';
 import { getRPBClips } from '@/lib/twitch';
@@ -11,7 +13,7 @@ export const metadata = {
     'Le meilleur du Beyblade X : Clips Twitch, vidéos Rediffusion et sélection BeyTube FR.',
 };
 
-import { connection } from 'next/server';
+const FEATURED_VIDEO_ID = '4T_oJDeY8PU';
 
 export default async function TVPage() {
   await connection();
@@ -69,6 +71,26 @@ export default async function TVPage() {
           Clips, Rediffusions et BeyTube FR
         </Typography>
       </Box>
+
+      {/* Featured video */}
+      <Paper
+        elevation={0}
+        sx={{
+          mb: 4,
+          borderRadius: { xs: 3, sm: 4 },
+          overflow: 'hidden',
+          border: '1px solid',
+          borderColor: 'divider',
+          bgcolor: 'black',
+          boxShadow: '0 12px 40px rgba(0,0,0,0.3)',
+        }}
+      >
+        <YouTubeEmbed
+          videoid={FEATURED_VIDEO_ID}
+          params="rel=0&modestbranding=1"
+          style="border-radius: inherit;"
+        />
+      </Paper>
 
       <TvFeed
         clipsPromise={clipsPromise}

@@ -448,7 +448,7 @@ export default function HomeClient({
         </Container>
       </Box>
 
-      <TournamentVideo videoId="qsgE1YTgYF4" />
+      <TournamentVideo videoId="4T_oJDeY8PU" />
 
       <Container maxWidth="lg" sx={{ py: 10 }}>
         <FeedMyPartnership />
