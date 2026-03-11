@@ -16,7 +16,6 @@ import {
   DialogTitle,
   Divider,
   IconButton,
-  LinearProgress,
   Slide,
   Stack,
   Typography,
@@ -27,6 +26,14 @@ import type { TransitionProps } from '@mui/material/transitions';
 import { AnimatePresence, motion } from 'framer-motion';
 import Link from 'next/link';
 import React, { forwardRef } from 'react';
+import {
+  Legend,
+  PolarAngleAxis,
+  PolarGrid,
+  Radar,
+  RadarChart,
+  ResponsiveContainer,
+} from 'recharts';
 import type { ProfileWithUser } from './RankingsTable';
 
 const Transition = forwardRef(function Transition(
@@ -44,149 +51,99 @@ interface BladerComparatorProps {
   allProfiles: ProfileWithUser[];
 }
 
+const COLOR_A = '#dc2626';
+const COLOR_B = '#3b82f6';
+
 function CompareRadar({
   bladerA,
   bladerB,
+  nameA,
+  nameB,
 }: {
   bladerA: ProfileWithUser;
   bladerB: ProfileWithUser;
+  nameA: string;
+  nameB: string;
 }) {
   const totalA = bladerA.wins + bladerA.losses;
   const totalB = bladerB.wins + bladerB.losses;
+  const wrA = totalA > 0 ? (bladerA.wins / totalA) * 100 : 0;
+  const wrB = totalB > 0 ? (bladerB.wins / totalB) * 100 : 0;
   const maxPoints = Math.max(bladerA.rankingPoints, bladerB.rankingPoints, 1);
   const maxWins = Math.max(bladerA.wins, bladerB.wins, 1);
   const maxMatches = Math.max(totalA, totalB, 1);
   const maxTW = Math.max(bladerA.tournamentWins, bladerB.tournamentWins, 1);
 
-  const stats = [
-    { label: 'Points', key: 'points' },
-    { label: 'Victoires', key: 'wins' },
-    { label: 'Matchs', key: 'matches' },
-    { label: 'Win Rate', key: 'winrate' },
-    { label: 'Tournois gagnés', key: 'tw' },
+  const data = [
+    {
+      stat: 'Points',
+      A: (bladerA.rankingPoints / maxPoints) * 100,
+      B: (bladerB.rankingPoints / maxPoints) * 100,
+      fullMark: 100,
+    },
+    {
+      stat: 'Victoires',
+      A: (bladerA.wins / maxWins) * 100,
+      B: (bladerB.wins / maxWins) * 100,
+      fullMark: 100,
+    },
+    {
+      stat: 'Matchs',
+      A: (totalA / maxMatches) * 100,
+      B: (totalB / maxMatches) * 100,
+      fullMark: 100,
+    },
+    {
+      stat: 'Win Rate',
+      A: wrA,
+      B: wrB,
+      fullMark: 100,
+    },
+    {
+      stat: 'Tournois',
+      A: maxTW > 0 ? (bladerA.tournamentWins / maxTW) * 100 : 0,
+      B: maxTW > 0 ? (bladerB.tournamentWins / maxTW) * 100 : 0,
+      fullMark: 100,
+    },
   ];
 
-  const getValues = (profile: ProfileWithUser) => {
-    const total = profile.wins + profile.losses;
-    const wr = total > 0 ? (profile.wins / total) * 100 : 0;
-    return {
-      points: {
-        value: profile.rankingPoints,
-        normalized: (profile.rankingPoints / maxPoints) * 100,
-      },
-      wins: { value: profile.wins, normalized: (profile.wins / maxWins) * 100 },
-      matches: { value: total, normalized: (total / maxMatches) * 100 },
-      winrate: { value: wr, normalized: wr },
-      tw: {
-        value: profile.tournamentWins,
-        normalized: (profile.tournamentWins / maxTW) * 100,
-      },
-    };
-  };
-
-  const valuesA = getValues(bladerA);
-  const valuesB = getValues(bladerB);
-
-  const colorA = '#dc2626';
-  const colorB = '#3b82f6';
-
   return (
-    <Stack spacing={{ xs: 1.5, sm: 2 }}>
-      {stats.map((stat) => {
-        const a = valuesA[stat.key as keyof typeof valuesA];
-        const b = valuesB[stat.key as keyof typeof valuesB];
-        const aWins = a.value > b.value;
-        const bWins = b.value > a.value;
-        const formatValue = (v: number) =>
-          stat.key === 'winrate' ? `${v.toFixed(1)}%` : v.toString();
-
-        return (
-          <Box key={stat.key}>
-            <Typography
-              variant="caption"
-              fontWeight={700}
-              sx={{
-                opacity: 0.6,
-                textTransform: 'uppercase',
-                letterSpacing: 1,
-                mb: 0.5,
-                display: 'block',
-                fontSize: { xs: '0.6rem', sm: '0.75rem' },
-              }}
-            >
-              {stat.label}
-            </Typography>
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: { xs: 0.5, sm: 1 },
-              }}
-            >
-              <Typography
-                variant="body2"
-                fontWeight={aWins ? 900 : 500}
-                sx={{
-                  minWidth: { xs: 38, sm: 50 },
-                  textAlign: 'right',
-                  color: aWins ? colorA : 'text.secondary',
-                  fontSize: { xs: '0.75rem', sm: '0.875rem' },
-                }}
-              >
-                {formatValue(a.value)}
-              </Typography>
-              <Box sx={{ flex: 1, display: 'flex', gap: 0.5 }}>
-                <Box sx={{ flex: 1, transform: 'scaleX(-1)' }}>
-                  <LinearProgress
-                    variant="determinate"
-                    value={a.normalized}
-                    sx={{
-                      height: { xs: 6, sm: 8 },
-                      borderRadius: 4,
-                      bgcolor: alpha(colorA, 0.1),
-                      '& .MuiLinearProgress-bar': {
-                        bgcolor: colorA,
-                        borderRadius: 4,
-                        transition:
-                          'transform 0.8s cubic-bezier(0.4, 0, 0.2, 1)',
-                      },
-                    }}
-                  />
-                </Box>
-                <Box sx={{ flex: 1 }}>
-                  <LinearProgress
-                    variant="determinate"
-                    value={b.normalized}
-                    sx={{
-                      height: { xs: 6, sm: 8 },
-                      borderRadius: 4,
-                      bgcolor: alpha(colorB, 0.1),
-                      '& .MuiLinearProgress-bar': {
-                        bgcolor: colorB,
-                        borderRadius: 4,
-                        transition:
-                          'transform 0.8s cubic-bezier(0.4, 0, 0.2, 1)',
-                      },
-                    }}
-                  />
-                </Box>
-              </Box>
-              <Typography
-                variant="body2"
-                fontWeight={bWins ? 900 : 500}
-                sx={{
-                  minWidth: { xs: 38, sm: 50 },
-                  color: bWins ? colorB : 'text.secondary',
-                  fontSize: { xs: '0.75rem', sm: '0.875rem' },
-                }}
-              >
-                {formatValue(b.value)}
-              </Typography>
-            </Box>
-          </Box>
-        );
-      })}
-    </Stack>
+    <Box sx={{ width: '100%', height: { xs: 240, sm: 300 }, mx: 'auto' }}>
+      <ResponsiveContainer width="100%" height="100%">
+        <RadarChart cx="50%" cy="50%" outerRadius="75%" data={data}>
+          <PolarGrid stroke="rgba(255,255,255,0.08)" />
+          <PolarAngleAxis
+            dataKey="stat"
+            tick={{
+              fill: 'rgba(255,255,255,0.6)',
+              fontSize: 11,
+              fontWeight: 600,
+            }}
+          />
+          <Radar
+            name={nameA}
+            dataKey="A"
+            stroke={COLOR_A}
+            fill={COLOR_A}
+            fillOpacity={0.25}
+            strokeWidth={2}
+          />
+          <Radar
+            name={nameB}
+            dataKey="B"
+            stroke={COLOR_B}
+            fill={COLOR_B}
+            fillOpacity={0.25}
+            strokeWidth={2}
+          />
+          <Legend
+            wrapperStyle={{ fontSize: 12, fontWeight: 700 }}
+            iconType="circle"
+            iconSize={8}
+          />
+        </RadarChart>
+      </ResponsiveContainer>
+    </Box>
   );
 }
 
@@ -465,6 +422,16 @@ export default function BladerComparator({
               <CompareRadar
                 bladerA={selectedBladers[0]!}
                 bladerB={selectedBladers[1]!}
+                nameA={
+                  selectedBladers[0]?.bladerName ||
+                  selectedBladers[0]?.user?.name ||
+                  'Blader A'
+                }
+                nameB={
+                  selectedBladers[1]?.bladerName ||
+                  selectedBladers[1]?.user?.name ||
+                  'Blader B'
+                }
               />
 
               {/* Summary */}

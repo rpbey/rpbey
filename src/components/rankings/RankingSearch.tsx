@@ -10,9 +10,8 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useState, useTransition } from 'react';
-import { useDebounce } from '@/hooks/use-debounce';
+import { debounce, parseAsString, useQueryState } from 'nuqs';
+import { useEffect, useState } from 'react';
 import { searchBladers } from '@/server/actions/search';
 
 interface SearchOption {
@@ -25,21 +24,22 @@ export default function RankingSearch({
 }: {
   defaultValue?: string;
 }) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const [isPending, startTransition] = useTransition();
-  const [value, setValue] = useState(defaultValue);
+  const [search, setSearch] = useQueryState(
+    'search',
+    parseAsString.withDefault('').withOptions({
+      shallow: false,
+      clearOnDefault: true,
+    }),
+  );
+  const [inputValue, setInputValue] = useState(defaultValue || search);
   const [options, setOptions] = useState<SearchOption[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const debouncedValue = useDebounce(value, 300);
-
-  // Effect for fetching suggestions
+  // Fetch suggestions when input changes
   useEffect(() => {
     let active = true;
 
-    if (debouncedValue.length < 2) {
+    if (inputValue.length < 2) {
       setOptions([]);
       return;
     }
@@ -48,7 +48,7 @@ export default function RankingSearch({
 
     (async () => {
       try {
-        const results = await searchBladers(debouncedValue);
+        const results = await searchBladers(inputValue);
         if (active) {
           setOptions(results);
         }
@@ -64,26 +64,7 @@ export default function RankingSearch({
     return () => {
       active = false;
     };
-  }, [debouncedValue]);
-
-  // Effect for updating URL (the main search logic)
-  useEffect(() => {
-    // Only trigger URL update if user explicitly typed something
-    // We don't want to trigger on initial load if defaultValue is present
-    if (value === defaultValue && !searchParams.get('search')) return;
-
-    const params = new URLSearchParams(searchParams.toString());
-    if (debouncedValue) {
-      params.set('search', debouncedValue);
-    } else {
-      params.delete('search');
-    }
-    params.delete('page');
-
-    startTransition(() => {
-      router.push(`${pathname}?${params.toString()}`);
-    });
-  }, [debouncedValue, value, router, pathname, searchParams, defaultValue]);
+  }, [inputValue]);
 
   return (
     <Autocomplete
@@ -92,9 +73,14 @@ export default function RankingSearch({
       getOptionLabel={(option) =>
         typeof option === 'string' ? option : option.name
       }
-      filterOptions={(x) => x} // Disable client-side filtering, we do it server-side
-      inputValue={value}
-      onInputChange={(_, newValue) => setValue(newValue)}
+      filterOptions={(x) => x}
+      inputValue={inputValue}
+      onInputChange={(_, newValue) => {
+        setInputValue(newValue);
+        void setSearch(newValue || null, {
+          limitUrlUpdates: newValue === '' ? undefined : debounce(400),
+        });
+      }}
       loading={loading}
       renderOption={(props, option) => (
         <li {...props} key={option.name}>
@@ -120,12 +106,12 @@ export default function RankingSearch({
               ...params.InputProps,
               startAdornment: (
                 <InputAdornment position="start">
-                  <SearchIcon color={value ? 'primary' : 'action'} />
+                  <SearchIcon color={inputValue ? 'primary' : 'action'} />
                 </InputAdornment>
               ),
               endAdornment: (
                 <>
-                  {loading || isPending ? (
+                  {loading ? (
                     <CircularProgress color="inherit" size={20} />
                   ) : null}
                   {params.InputProps.endAdornment}
@@ -137,7 +123,7 @@ export default function RankingSearch({
             '& .MuiOutlinedInput-root': {
               bgcolor: 'background.paper',
               borderRadius: 3,
-              pr: '39px !important', // Fix overlap with clear button
+              pr: '39px !important',
               transition: 'all 0.2s',
               '&.Mui-focused': {
                 boxShadow: '0 4px 20px rgba(0,0,0,0.1)',

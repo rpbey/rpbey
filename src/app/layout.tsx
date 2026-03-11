@@ -1,6 +1,7 @@
 import InitColorSchemeScript from '@mui/material/InitColorSchemeScript';
 import type { Metadata, Viewport } from 'next';
 import Script from 'next/script';
+import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import { JsonLd } from '@/components/seo/JsonLd';
 import ThemeRegistry from '@/components/theme/ThemeRegistry';
 import { Toaster } from '@/components/ui/Toaster';
@@ -115,10 +116,12 @@ export default function RootLayout({
         />
         <InitColorSchemeScript attribute="class" defaultMode="dark" />
         <JsonLd data={generateWebsiteJsonLd()} />
-        <ThemeRegistry>
-          <Toaster />
-          {children}
-        </ThemeRegistry>
+        <NuqsAdapter>
+          <ThemeRegistry>
+            <Toaster />
+            {children}
+          </ThemeRegistry>
+        </NuqsAdapter>
       </body>
     </html>
   );
