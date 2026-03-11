@@ -53,7 +53,8 @@ function BladerInfo({
       sx={{
         display: 'flex',
         alignItems: 'center',
-        gap: { xs: 0.5, sm: 2 },
+        gap: { xs: 1, sm: 1.5 },
+        py: { xs: 0.5, sm: 0 },
         '&:hover': {
           '& .MuiTypography-root': {
             color: 'primary.main',
@@ -64,15 +65,15 @@ function BladerInfo({
       <Avatar
         src={profile.user?.image || undefined}
         sx={{
-          width: { xs: 24, sm: 40 },
-          height: { xs: 24, sm: 40 },
+          width: { xs: 28, sm: 36 },
+          height: { xs: 28, sm: 36 },
           border: `1px solid ${theme.palette.divider}`,
-          transition: 'transform 0.2s ease',
+          flexShrink: 0,
         }}
       >
         {getInitials(profile.bladerName || profile.user?.name)}
       </Avatar>
-      <Box sx={{ minWidth: 0 }}>
+      <Box sx={{ minWidth: 0, flex: 1 }}>
         <Box
           sx={{
             display: 'flex',
@@ -84,8 +85,7 @@ function BladerInfo({
             fontWeight="bold"
             sx={{
               transition: 'color 0.2s',
-              fontSize: { xs: '0.8rem', sm: '0.9rem' },
-              maxWidth: { xs: '150px', sm: '250px' },
+              fontSize: { xs: '0.78rem', sm: '0.9rem' },
               overflow: 'hidden',
               textOverflow: 'ellipsis',
               whiteSpace: 'nowrap',
@@ -98,7 +98,7 @@ function BladerInfo({
               'Anonyme'}
           </Typography>
           {profile.challongeUsername && (
-            <Tooltip title={`Compte Challonge : ${profile.challongeUsername}`}>
+            <Tooltip title={`Challonge : ${profile.challongeUsername}`}>
               <Link
                 href={`https://challonge.com/fr/users/${profile.challongeUsername}`}
                 target="_blank"
@@ -108,30 +108,28 @@ function BladerInfo({
               >
                 <VerifiedIcon
                   sx={{
-                    fontSize: { xs: '0.7rem', sm: '0.9rem' },
+                    fontSize: { xs: '0.65rem', sm: '0.85rem' },
                     color: 'info.main',
                     opacity: 0.8,
                     flexShrink: 0,
-                    transition: 'opacity 0.2s',
-                    '&:hover': { opacity: 1, filter: 'brightness(1.2)' },
                   }}
                 />
               </Link>
             </Tooltip>
           )}
+          {profile.tournamentWins > 0 && (
+            <Tooltip title={`${profile.tournamentWins} tournoi(s) remporté(s)`}>
+              <TrophyIcon
+                sx={{
+                  fontSize: { xs: '0.7rem', sm: '0.95rem' },
+                  color: '#FFD700',
+                  filter: 'drop-shadow(0 0 2px rgba(255, 215, 0, 0.4))',
+                  flexShrink: 0,
+                }}
+              />
+            </Tooltip>
+          )}
         </Box>
-        {profile.tournamentWins > 0 && (
-          <Tooltip title={`${profile.tournamentWins} tournoi(s) remporté(s)`}>
-            <TrophyIcon
-              sx={{
-                fontSize: { xs: '0.8rem', sm: '1.1rem' },
-                color: '#FFD700',
-                filter: 'drop-shadow(0 0 2px rgba(255, 215, 0, 0.4))',
-                mt: 0.2,
-              }}
-            />
-          </Tooltip>
-        )}
       </Box>
     </Box>
   );
@@ -245,17 +243,24 @@ export function RankingsTable({
       <Box
         sx={{
           display: 'flex',
-          gap: { xs: 1, sm: 2 },
+          gap: 1,
           mb: 2,
           flexWrap: 'wrap',
           alignItems: 'center',
           justifyContent: 'space-between',
         }}
       >
-        <Box sx={{ display: 'flex', gap: { xs: 1, sm: 2 }, flexWrap: 'wrap' }}>
+        <Box
+          sx={{
+            display: 'flex',
+            gap: 1,
+            flexWrap: 'wrap',
+            alignItems: 'center',
+          }}
+        >
           <Box
             sx={{
-              px: 1.5,
+              px: { xs: 1, sm: 1.5 },
               py: 0.5,
               borderRadius: 2,
               bgcolor: alpha(theme.palette.primary.main, 0.08),
@@ -263,17 +268,25 @@ export function RankingsTable({
               borderColor: alpha(theme.palette.primary.main, 0.15),
             }}
           >
-            <Typography variant="caption" sx={{ opacity: 0.6 }}>
+            <Typography
+              variant="caption"
+              sx={{ opacity: 0.6, fontSize: { xs: '0.65rem', sm: '0.75rem' } }}
+            >
               Total
             </Typography>
-            <Typography variant="body2" fontWeight={900} color="primary.main">
+            <Typography
+              variant="body2"
+              fontWeight={900}
+              color="primary.main"
+              sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}
+            >
               {totalCount} bladers
             </Typography>
           </Box>
           {profiles.length > 0 && (
             <Box
               sx={{
-                px: 1.5,
+                px: { xs: 1, sm: 1.5 },
                 py: 0.5,
                 borderRadius: 2,
                 bgcolor: alpha(theme.palette.success.main, 0.08),
@@ -281,10 +294,21 @@ export function RankingsTable({
                 borderColor: alpha(theme.palette.success.main, 0.15),
               }}
             >
-              <Typography variant="caption" sx={{ opacity: 0.6 }}>
+              <Typography
+                variant="caption"
+                sx={{
+                  opacity: 0.6,
+                  fontSize: { xs: '0.65rem', sm: '0.75rem' },
+                }}
+              >
                 Moy. points
               </Typography>
-              <Typography variant="body2" fontWeight={900} color="success.main">
+              <Typography
+                variant="body2"
+                fontWeight={900}
+                color="success.main"
+                sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}
+              >
                 {Math.round(
                   profiles.reduce((s, p) => s + p.rankingPoints, 0) /
                     profiles.length,
@@ -294,11 +318,20 @@ export function RankingsTable({
           )}
         </Box>
         {compareSelection.length > 0 && (
-          <Typography variant="caption" color="primary.main" fontWeight={700}>
+          <Typography
+            variant="caption"
+            color="primary.main"
+            fontWeight={700}
+            sx={{ fontSize: { xs: '0.65rem', sm: '0.75rem' } }}
+          >
             <CompareIcon
-              sx={{ fontSize: '0.9rem', verticalAlign: 'middle', mr: 0.5 }}
+              sx={{
+                fontSize: { xs: '0.75rem', sm: '0.9rem' },
+                verticalAlign: 'middle',
+                mr: 0.5,
+              }}
             />
-            {compareSelection.length}/2 sélectionnés
+            {compareSelection.length}/2
           </Typography>
         )}
       </Box>
@@ -309,10 +342,12 @@ export function RankingsTable({
         sx={{
           border: '1px solid',
           borderColor: 'divider',
-          borderRadius: { xs: 2, sm: 4 },
+          borderRadius: { xs: 2, sm: 3 },
           overflowX: 'auto',
-          maxHeight: '80vh',
-          mb: 4,
+          maxHeight: { xs: 'none', md: '80vh' },
+          mb: { xs: 2, sm: 4 },
+          bgcolor: alpha(theme.palette.background.paper, 0.6),
+          backdropFilter: 'blur(8px)',
           '&::-webkit-scrollbar': { height: '4px', width: '4px' },
           '&::-webkit-scrollbar-thumb': {
             bgcolor: 'divider',
@@ -329,7 +364,7 @@ export function RankingsTable({
                   sx={{
                     width: 40,
                     px: 0.5,
-                    bgcolor: 'action.hover',
+                    bgcolor: 'background.paper',
                     fontWeight: 'bold',
                   }}
                 >
@@ -341,9 +376,9 @@ export function RankingsTable({
               <TableCell
                 align="center"
                 sx={{
-                  width: { xs: 30, sm: 60 },
-                  px: { xs: 0.2, sm: 2 },
-                  bgcolor: 'action.hover',
+                  width: { xs: 36, sm: 60 },
+                  px: { xs: 0.5, sm: 2 },
+                  bgcolor: 'background.paper',
                   fontWeight: 'bold',
                 }}
               >
@@ -351,8 +386,8 @@ export function RankingsTable({
               </TableCell>
               <TableCell
                 sx={{
-                  px: { xs: 0.5, sm: 2 },
-                  bgcolor: 'action.hover',
+                  px: { xs: 1, sm: 2 },
+                  bgcolor: 'background.paper',
                   fontWeight: 'bold',
                 }}
               >
@@ -361,18 +396,18 @@ export function RankingsTable({
               <TableCell
                 align="center"
                 sx={{
-                  px: { xs: 0.2, sm: 2 },
-                  bgcolor: 'action.hover',
+                  px: { xs: 0.5, sm: 2 },
+                  bgcolor: 'background.paper',
                   fontWeight: 'bold',
                 }}
               >
-                Points
+                Pts
               </TableCell>
               <TableCell
                 align="center"
                 sx={{
-                  px: { xs: 0.2, sm: 2 },
-                  bgcolor: 'action.hover',
+                  px: { xs: 0.5, sm: 2 },
+                  bgcolor: 'background.paper',
                   fontWeight: 'bold',
                   display: { xs: 'none', sm: 'table-cell' },
                 }}
@@ -384,23 +419,22 @@ export function RankingsTable({
               <TableCell
                 align="center"
                 sx={{
-                  px: { xs: 0.2, sm: 2 },
-                  bgcolor: 'action.hover',
+                  px: { xs: 0.5, sm: 2 },
+                  bgcolor: 'background.paper',
                   fontWeight: 'bold',
-                  display: { xs: 'table-cell', md: 'table-cell' },
                 }}
               >
-                <Tooltip title="Nombre de matchs (Victoires / Défaites)">
-                  <span>M.</span>
+                <Tooltip title="Victoires / Défaites">
+                  <span>V/D</span>
                 </Tooltip>
               </TableCell>
               <TableCell
                 align="center"
                 sx={{
-                  px: { xs: 0.2, sm: 2 },
-                  bgcolor: 'action.hover',
+                  px: { xs: 0.5, sm: 2 },
+                  bgcolor: 'background.paper',
                   fontWeight: 'bold',
-                  display: { xs: 'table-cell', md: 'table-cell' },
+                  display: { xs: 'none', md: 'table-cell' },
                 }}
               >
                 <Tooltip title="Taux de victoire (Win Rate)">
@@ -440,17 +474,16 @@ export function RankingsTable({
                         bgcolor: isSelected
                           ? alpha(theme.palette.primary.main, 0.06)
                           : isCurrentUser
-                            ? 'rgba(220, 38, 38, 0.08)'
+                            ? alpha(theme.palette.primary.main, 0.08)
                             : index % 2 === 0
                               ? 'transparent'
-                              : 'rgba(255, 255, 255, 0.02)',
+                              : 'rgba(255, 255, 255, 0.015)',
                         transition: 'background-color 0.2s',
                         borderLeft: isCurrentUser
-                          ? '4px solid #dc2626'
+                          ? `3px solid ${theme.palette.primary.main}`
                           : isSelected
-                            ? `4px solid ${theme.palette.primary.main}`
-                            : 'none',
-                        cursor: 'pointer',
+                            ? `3px solid ${alpha(theme.palette.primary.main, 0.6)}`
+                            : '3px solid transparent',
                         '&:hover': {
                           bgcolor: alpha(theme.palette.action.hover, 0.08),
                         },
@@ -459,7 +492,7 @@ export function RankingsTable({
                       {!isMobile && (
                         <TableCell
                           align="center"
-                          sx={{ px: 0.5, width: 40 }}
+                          sx={{ px: 0.5, width: 40, cursor: 'pointer' }}
                           onClick={(e) => {
                             e.stopPropagation();
                             handleToggleCompare(profile);
@@ -479,10 +512,10 @@ export function RankingsTable({
                           />
                         </TableCell>
                       )}
-                      <TableCell align="center" sx={{ px: { xs: 0.2, sm: 2 } }}>
+                      <TableCell align="center" sx={{ px: { xs: 0.5, sm: 2 } }}>
                         {getRankBadge(index)}
                       </TableCell>
-                      <TableCell sx={{ px: { xs: 0.2, sm: 2 } }}>
+                      <TableCell sx={{ px: { xs: 1, sm: 2 } }}>
                         {profile.userId ? (
                           <Link
                             href={`${profileUrlPrefix}/${profile.userId}`}
@@ -496,11 +529,11 @@ export function RankingsTable({
                           </Box>
                         )}
                       </TableCell>
-                      <TableCell align="center" sx={{ px: { xs: 0.1, sm: 2 } }}>
+                      <TableCell align="center" sx={{ px: { xs: 0.5, sm: 2 } }}>
                         <Typography
                           fontWeight="900"
                           color="primary.main"
-                          sx={{ fontSize: { xs: '0.75rem', sm: '1.1rem' } }}
+                          sx={{ fontSize: { xs: '0.8rem', sm: '1.1rem' } }}
                         >
                           {profile.rankingPoints}
                         </Typography>
@@ -508,33 +541,29 @@ export function RankingsTable({
                       <TableCell
                         align="center"
                         sx={{
-                          px: { xs: 0.1, sm: 2 },
+                          px: { xs: 0.5, sm: 2 },
                           display: { xs: 'none', sm: 'table-cell' },
                         }}
                       >
                         <Typography
-                          sx={{ fontSize: { xs: '0.7rem', sm: '0.9rem' } }}
+                          sx={{ fontSize: { xs: '0.75rem', sm: '0.9rem' } }}
                         >
                           {profile.user?._count?.tournaments || 0}
                         </Typography>
                       </TableCell>
-                      <TableCell
-                        align="center"
-                        sx={{
-                          px: { xs: 0.1, sm: 2 },
-                          display: { xs: 'table-cell', md: 'table-cell' },
-                        }}
-                      >
+                      <TableCell align="center" sx={{ px: { xs: 0.5, sm: 2 } }}>
                         <Typography
                           sx={{
-                            fontSize: { xs: '0.65rem', sm: '0.85rem' },
+                            fontSize: { xs: '0.7rem', sm: '0.85rem' },
                             whiteSpace: 'nowrap',
                           }}
                         >
                           <span style={{ color: theme.palette.success.main }}>
                             {profile.wins}
                           </span>
-                          <span style={{ opacity: 0.5 }}>/</span>
+                          <span style={{ opacity: 0.4, margin: '0 1px' }}>
+                            /
+                          </span>
                           <span style={{ color: theme.palette.error.main }}>
                             {profile.losses}
                           </span>
@@ -543,13 +572,13 @@ export function RankingsTable({
                       <TableCell
                         align="center"
                         sx={{
-                          px: { xs: 0.1, sm: 2 },
-                          display: { xs: 'table-cell', md: 'table-cell' },
+                          px: { xs: 0.5, sm: 2 },
+                          display: { xs: 'none', md: 'table-cell' },
                         }}
                       >
                         <Typography
                           fontWeight="bold"
-                          sx={{ fontSize: { xs: '0.65rem', sm: '0.9rem' } }}
+                          sx={{ fontSize: { xs: '0.7rem', sm: '0.9rem' } }}
                           color={
                             Number.parseFloat(winRate) >= 50
                               ? 'success.main'
@@ -565,7 +594,7 @@ export function RankingsTable({
               ) : (
                 <TableRow>
                   <TableCell
-                    colSpan={isMobile ? 6 : 8}
+                    colSpan={isMobile ? 4 : 7}
                     align="center"
                     sx={{ py: 8 }}
                   >
@@ -577,7 +606,7 @@ export function RankingsTable({
                       Aucun blader trouvé
                     </Typography>
                     <Typography variant="body2" color="text.disabled">
-                      Essayez de changer de page.
+                      Essayez de modifier votre recherche.
                     </Typography>
                   </TableCell>
                 </TableRow>
@@ -588,21 +617,22 @@ export function RankingsTable({
       </TableContainer>
 
       {totalPages > 1 && (
-        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            mt: { xs: 2, sm: 4 },
+          }}
+        >
           <Pagination
             count={totalPages}
             page={currentPage}
             onChange={handlePageChange}
             color="primary"
-            size="medium"
-            showFirstButton
-            showLastButton
+            size={isMobile ? 'small' : 'medium'}
+            showFirstButton={!isMobile}
+            showLastButton={!isMobile}
             shape="rounded"
-            sx={{
-              '& .MuiPaginationItem-firstLast': {
-                display: { xs: 'none', sm: 'inline-flex' },
-              },
-            }}
           />
         </Box>
       )}

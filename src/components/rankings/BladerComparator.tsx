@@ -91,7 +91,7 @@ function CompareRadar({
   const colorB = '#3b82f6';
 
   return (
-    <Stack spacing={2}>
+    <Stack spacing={{ xs: 1.5, sm: 2 }}>
       {stats.map((stat) => {
         const a = valuesA[stat.key as keyof typeof valuesA];
         const b = valuesB[stat.key as keyof typeof valuesB];
@@ -111,18 +111,26 @@ function CompareRadar({
                 letterSpacing: 1,
                 mb: 0.5,
                 display: 'block',
+                fontSize: { xs: '0.6rem', sm: '0.75rem' },
               }}
             >
               {stat.label}
             </Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: { xs: 0.5, sm: 1 },
+              }}
+            >
               <Typography
                 variant="body2"
                 fontWeight={aWins ? 900 : 500}
                 sx={{
-                  minWidth: 50,
+                  minWidth: { xs: 38, sm: 50 },
                   textAlign: 'right',
                   color: aWins ? colorA : 'text.secondary',
+                  fontSize: { xs: '0.75rem', sm: '0.875rem' },
                 }}
               >
                 {formatValue(a.value)}
@@ -133,7 +141,7 @@ function CompareRadar({
                     variant="determinate"
                     value={a.normalized}
                     sx={{
-                      height: 8,
+                      height: { xs: 6, sm: 8 },
                       borderRadius: 4,
                       bgcolor: alpha(colorA, 0.1),
                       '& .MuiLinearProgress-bar': {
@@ -150,7 +158,7 @@ function CompareRadar({
                     variant="determinate"
                     value={b.normalized}
                     sx={{
-                      height: 8,
+                      height: { xs: 6, sm: 8 },
                       borderRadius: 4,
                       bgcolor: alpha(colorB, 0.1),
                       '& .MuiLinearProgress-bar': {
@@ -167,8 +175,9 @@ function CompareRadar({
                 variant="body2"
                 fontWeight={bWins ? 900 : 500}
                 sx={{
-                  minWidth: 50,
+                  minWidth: { xs: 38, sm: 50 },
                   color: bWins ? colorB : 'text.secondary',
+                  fontSize: { xs: '0.75rem', sm: '0.875rem' },
                 }}
               >
                 {formatValue(b.value)}
@@ -212,12 +221,12 @@ export default function BladerComparator({
           transition={{ type: 'spring', stiffness: 300, damping: 30 }}
           style={{
             position: 'fixed',
-            bottom: isMobile ? 70 : 24,
+            bottom: isMobile ? 90 : 24,
             left: '50%',
             transform: 'translateX(-50%)',
             zIndex: 1300,
-            width: isMobile ? 'calc(100% - 32px)' : 'auto',
-            maxWidth: 600,
+            width: isMobile ? 'calc(100% - 24px)' : 'auto',
+            maxWidth: 560,
           }}
         >
           <Box
@@ -226,23 +235,27 @@ export default function BladerComparator({
               backdropFilter: 'blur(20px)',
               border: '1px solid',
               borderColor: alpha(theme.palette.primary.main, 0.3),
-              borderRadius: 3,
-              px: 2,
-              py: 1.5,
-              boxShadow: `0 8px 32px ${alpha('#000', 0.4)}`,
+              borderRadius: { xs: 2.5, sm: 3 },
+              px: { xs: 1.5, sm: 2 },
+              py: { xs: 1, sm: 1.5 },
+              boxShadow: `0 8px 32px ${alpha('#000', 0.5)}`,
               display: 'flex',
               alignItems: 'center',
-              gap: 1.5,
+              gap: { xs: 1, sm: 1.5 },
             }}
           >
             <CompareArrowsIcon
-              sx={{ color: 'primary.main', fontSize: '1.3rem' }}
+              sx={{
+                color: 'primary.main',
+                fontSize: { xs: '1.1rem', sm: '1.3rem' },
+                flexShrink: 0,
+              }}
             />
 
             <Stack
               direction="row"
-              spacing={1}
-              sx={{ flex: 1, overflow: 'hidden' }}
+              spacing={0.5}
+              sx={{ flex: 1, overflow: 'hidden', minWidth: 0 }}
             >
               {selectedBladers.map((blader) => (
                 <Chip
@@ -251,27 +264,43 @@ export default function BladerComparator({
                   avatar={
                     <Avatar
                       src={blader.user?.image || undefined}
-                      sx={{ width: 24, height: 24 }}
+                      sx={{ width: 20, height: 20 }}
                     />
                   }
                   onDelete={() => onRemove(blader.id)}
-                  deleteIcon={<RemoveCircleOutlineIcon />}
+                  deleteIcon={
+                    <RemoveCircleOutlineIcon
+                      sx={{ fontSize: '0.9rem !important' }}
+                    />
+                  }
                   size="small"
                   sx={{
                     bgcolor: alpha(theme.palette.primary.main, 0.1),
                     border: '1px solid',
                     borderColor: alpha(theme.palette.primary.main, 0.2),
-                    maxWidth: 180,
+                    maxWidth: { xs: 120, sm: 160 },
+                    height: { xs: 28, sm: 32 },
+                    '& .MuiChip-label': {
+                      fontSize: { xs: '0.7rem', sm: '0.8rem' },
+                      px: { xs: 0.5, sm: 1 },
+                    },
                   }}
                 />
               ))}
-              {selectedBladers.length === 1 && (
+              {selectedBladers.length === 1 && !isMobile && (
                 <Chip
                   icon={<PersonIcon />}
-                  label="Choisir un 2e blader"
+                  label="2e blader..."
                   size="small"
                   variant="outlined"
-                  sx={{ opacity: 0.5, borderStyle: 'dashed' }}
+                  sx={{
+                    opacity: 0.5,
+                    borderStyle: 'dashed',
+                    height: { xs: 28, sm: 32 },
+                    '& .MuiChip-label': {
+                      fontSize: { xs: '0.7rem', sm: '0.8rem' },
+                    },
+                  }}
                 />
               )}
             </Stack>
@@ -281,20 +310,27 @@ export default function BladerComparator({
               size="small"
               disabled={!canCompare}
               onClick={() => setDialogOpen(true)}
-              startIcon={<CompareArrowsIcon />}
+              startIcon={!isMobile ? <CompareArrowsIcon /> : undefined}
               sx={{
                 borderRadius: 2,
                 textTransform: 'none',
                 fontWeight: 700,
                 whiteSpace: 'nowrap',
-                px: 2,
+                px: { xs: 1.5, sm: 2 },
+                py: { xs: 0.5, sm: 0.75 },
+                minWidth: { xs: 'auto', sm: 120 },
+                fontSize: { xs: '0.75rem', sm: '0.8rem' },
               }}
             >
-              Comparer
+              {isMobile ? 'VS' : 'Comparer'}
             </Button>
 
-            <IconButton size="small" onClick={onClear} sx={{ opacity: 0.5 }}>
-              <CloseIcon fontSize="small" />
+            <IconButton
+              size="small"
+              onClick={onClear}
+              sx={{ opacity: 0.5, p: { xs: 0.5, sm: 1 } }}
+            >
+              <CloseIcon sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }} />
             </IconButton>
           </Box>
         </motion.div>
@@ -312,7 +348,19 @@ export default function BladerComparator({
           sx: {
             bgcolor: 'background.default',
             backgroundImage: 'none',
-            borderRadius: isMobile ? 0 : 4,
+            borderRadius: isMobile ? 0 : 3,
+            overflow: 'hidden',
+            '&::before': {
+              content: '""',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              height: '30%',
+              background: (t) =>
+                `radial-gradient(ellipse at 50% -20%, ${alpha(t.palette.primary.main, 0.08)} 0%, transparent 70%)`,
+              pointerEvents: 'none',
+            },
           },
         }}
       >
@@ -322,11 +370,19 @@ export default function BladerComparator({
             alignItems: 'center',
             justifyContent: 'space-between',
             pb: 1,
+            px: { xs: 2, sm: 3 },
           }}
         >
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <CompareArrowsIcon color="primary" />
-            <Typography variant="h6" fontWeight={900}>
+            <CompareArrowsIcon
+              color="primary"
+              sx={{ fontSize: { xs: '1.2rem', sm: '1.5rem' } }}
+            />
+            <Typography
+              variant="h6"
+              fontWeight={900}
+              sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }}
+            >
               Comparaison
             </Typography>
           </Box>
@@ -335,7 +391,7 @@ export default function BladerComparator({
           </IconButton>
         </DialogTitle>
 
-        <DialogContent>
+        <DialogContent sx={{ px: { xs: 2, sm: 3 } }}>
           {canCompare && (
             <Box>
               {/* Header with both bladers */}
@@ -344,53 +400,66 @@ export default function BladerComparator({
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-around',
-                  mb: 3,
-                  gap: 2,
+                  mb: { xs: 2, sm: 3 },
+                  gap: { xs: 1, sm: 2 },
                 }}
               >
-                {selectedBladers.map((blader, idx) => (
-                  <Box key={blader.id} sx={{ textAlign: 'center', flex: 1 }}>
-                    <Link
-                      href={blader.userId ? `/profile/${blader.userId}` : '#'}
-                      style={{ textDecoration: 'none', color: 'inherit' }}
+                {selectedBladers.map((blader, idx) => {
+                  const bladerColor = idx === 0 ? '#dc2626' : '#3b82f6';
+                  return (
+                    <Box
+                      key={blader.id}
+                      sx={{ textAlign: 'center', flex: 1, minWidth: 0 }}
                     >
-                      <Avatar
-                        src={blader.user?.image || undefined}
+                      <Link
+                        href={blader.userId ? `/profile/${blader.userId}` : '#'}
+                        style={{ textDecoration: 'none', color: 'inherit' }}
+                      >
+                        <Avatar
+                          src={blader.user?.image || undefined}
+                          sx={{
+                            width: { xs: 48, sm: 68 },
+                            height: { xs: 48, sm: 68 },
+                            mx: 'auto',
+                            mb: 0.5,
+                            border: '2px solid',
+                            borderColor: bladerColor,
+                            boxShadow: `0 0 16px ${alpha(bladerColor, 0.25)}`,
+                          }}
+                        />
+                        <Typography
+                          variant="subtitle2"
+                          fontWeight={900}
+                          noWrap
+                          sx={{ fontSize: { xs: '0.8rem', sm: '0.95rem' } }}
+                        >
+                          {blader.bladerName || blader.user?.name || 'Blader'}
+                        </Typography>
+                      </Link>
+                      <Chip
+                        icon={
+                          <EmojiEventsIcon
+                            sx={{ fontSize: '0.75rem !important' }}
+                          />
+                        }
+                        label={`#${getRank(blader)}`}
+                        size="small"
                         sx={{
-                          width: { xs: 56, sm: 72 },
-                          height: { xs: 56, sm: 72 },
-                          mx: 'auto',
-                          mb: 1,
-                          border: '3px solid',
-                          borderColor: idx === 0 ? '#dc2626' : '#3b82f6',
-                          boxShadow: `0 0 20px ${alpha(idx === 0 ? '#dc2626' : '#3b82f6', 0.3)}`,
+                          mt: 0.5,
+                          height: 22,
+                          bgcolor: alpha(bladerColor, 0.1),
+                          color: bladerColor,
+                          fontWeight: 700,
+                          fontSize: '0.7rem',
+                          '& .MuiChip-label': { px: 0.5 },
                         }}
                       />
-                      <Typography variant="subtitle1" fontWeight={900} noWrap>
-                        {blader.bladerName || blader.user?.name || 'Blader'}
-                      </Typography>
-                    </Link>
-                    <Chip
-                      icon={
-                        <EmojiEventsIcon
-                          sx={{ fontSize: '0.9rem !important' }}
-                        />
-                      }
-                      label={`Rang #${getRank(blader)}`}
-                      size="small"
-                      sx={{
-                        mt: 0.5,
-                        bgcolor: alpha(idx === 0 ? '#dc2626' : '#3b82f6', 0.1),
-                        color: idx === 0 ? '#dc2626' : '#3b82f6',
-                        fontWeight: 700,
-                        fontSize: '0.75rem',
-                      }}
-                    />
-                  </Box>
-                ))}
+                    </Box>
+                  );
+                })}
               </Box>
 
-              <Divider sx={{ mb: 3 }} />
+              <Divider sx={{ mb: { xs: 2, sm: 3 } }} />
 
               {/* Stats comparison */}
               <CompareRadar
@@ -401,9 +470,9 @@ export default function BladerComparator({
               {/* Summary */}
               <Box
                 sx={{
-                  mt: 3,
-                  p: 2,
-                  borderRadius: 3,
+                  mt: { xs: 2, sm: 3 },
+                  p: { xs: 1.5, sm: 2 },
+                  borderRadius: 2,
                   bgcolor: alpha(theme.palette.primary.main, 0.05),
                   border: '1px solid',
                   borderColor: alpha(theme.palette.primary.main, 0.1),
@@ -433,23 +502,37 @@ export default function BladerComparator({
 
                   if (scoreA > scoreB) {
                     return (
-                      <Typography variant="body2" fontWeight={700}>
+                      <Typography
+                        variant="body2"
+                        fontWeight={700}
+                        sx={{ fontSize: { xs: '0.8rem', sm: '0.875rem' } }}
+                      >
                         <span style={{ color: '#dc2626' }}>{nameA}</span> domine
-                        dans {scoreA} catégorie{scoreA > 1 ? 's' : ''} sur 4
+                        dans {scoreA} catégorie
+                        {scoreA > 1 ? 's' : ''} sur 4
                       </Typography>
                     );
                   }
                   if (scoreB > scoreA) {
                     return (
-                      <Typography variant="body2" fontWeight={700}>
+                      <Typography
+                        variant="body2"
+                        fontWeight={700}
+                        sx={{ fontSize: { xs: '0.8rem', sm: '0.875rem' } }}
+                      >
                         <span style={{ color: '#3b82f6' }}>{nameB}</span> domine
-                        dans {scoreB} catégorie{scoreB > 1 ? 's' : ''} sur 4
+                        dans {scoreB} catégorie
+                        {scoreB > 1 ? 's' : ''} sur 4
                       </Typography>
                     );
                   }
                   return (
-                    <Typography variant="body2" fontWeight={700}>
-                      Egalité parfaite entre les deux bladers !
+                    <Typography
+                      variant="body2"
+                      fontWeight={700}
+                      sx={{ fontSize: { xs: '0.8rem', sm: '0.875rem' } }}
+                    >
+                      Egalité parfaite !
                     </Typography>
                   );
                 })()}

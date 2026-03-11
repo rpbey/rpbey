@@ -48,10 +48,11 @@ export default function TopRankingsPodium({
         flexDirection: { xs: 'column', md: 'row' },
         alignItems: { xs: 'stretch', md: 'flex-end' },
         justifyContent: 'center',
-        gap: { xs: 1.5, md: 2 },
-        mb: { xs: 4, md: 8 },
-        mt: { xs: 2, md: 4 },
+        gap: { xs: 1, sm: 1.5, md: 2 },
+        mb: { xs: 3, md: 8 },
+        mt: { xs: 1, md: 4 },
         perspective: '1000px',
+        px: { xs: 1, sm: 0 },
       }}
     >
       {podiumOrder.map((profile, index) => {
@@ -61,9 +62,9 @@ export default function TopRankingsPodium({
         return (
           <motion.div
             key={profile.id}
-            initial={{ opacity: 0, y: 50 }}
+            initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.2, duration: 0.5 }}
+            transition={{ delay: index * 0.15, duration: 0.5, ease: 'easeOut' }}
             style={{ width: '100%' }}
           >
             <Card
@@ -72,29 +73,32 @@ export default function TopRankingsPodium({
               sx={{
                 position: 'relative',
                 overflow: 'visible',
-                bgcolor: alpha(theme.palette.background.paper, 0.6),
-                backdropFilter: 'blur(10px)',
-                border: '2px solid',
-                borderColor: alpha(rankColor, 0.5),
+                bgcolor: alpha(theme.palette.background.paper, 0.5),
+                backdropFilter: 'blur(12px)',
+                border: '1px solid',
+                borderColor: alpha(rankColor, 0.3),
                 borderRadius: { xs: 3, md: 5 },
                 textDecoration: 'none',
                 height: {
-                  xs: isFirst ? 100 : 80,
+                  xs: 'auto',
                   md: isFirst ? 280 : 240,
                 },
+                minHeight: { xs: isFirst ? 80 : 68 },
                 display: 'flex',
                 flexDirection: { xs: 'row', md: 'column' },
                 alignItems: 'center',
                 justifyContent: { xs: 'flex-start', md: 'center' },
                 transition: 'all 0.3s ease',
                 px: { xs: 2, md: 0 },
+                py: { xs: 1.5, md: 0 },
+                ml: { xs: 2, md: 0 },
                 boxShadow: isFirst
-                  ? `0 0 30px ${alpha(rankColor, 0.2)}`
-                  : `0 10px 20px ${alpha('#000', 0.2)}`,
+                  ? `0 0 30px ${alpha(rankColor, 0.15)}`
+                  : `0 8px 16px ${alpha('#000', 0.15)}`,
                 '&:hover': {
-                  transform: { xs: 'none', md: 'translateY(-10px)' },
-                  borderColor: rankColor,
-                  boxShadow: `0 0 40px ${alpha(rankColor, 0.4)}`,
+                  transform: { xs: 'none', md: 'translateY(-8px)' },
+                  borderColor: alpha(rankColor, 0.6),
+                  boxShadow: `0 0 30px ${alpha(rankColor, 0.3)}`,
                 },
               }}
             >
@@ -102,11 +106,14 @@ export default function TopRankingsPodium({
               <Box
                 sx={{
                   position: 'absolute',
-                  top: { xs: '50%', md: -25 },
-                  left: { xs: -15, md: '50%' },
-                  transform: { xs: 'translateY(-50%)', md: 'translateX(-50%)' },
-                  width: { xs: 32, md: 50 },
-                  height: { xs: 32, md: 50 },
+                  top: { xs: '50%', md: -20 },
+                  left: { xs: -14, md: '50%' },
+                  transform: {
+                    xs: 'translateY(-50%)',
+                    md: 'translateX(-50%)',
+                  },
+                  width: { xs: 28, sm: 32, md: 42 },
+                  height: { xs: 28, sm: 32, md: 42 },
                   bgcolor: rankColor,
                   borderRadius: '50%',
                   display: 'flex',
@@ -119,46 +126,40 @@ export default function TopRankingsPodium({
                 <EmojiEventsIcon
                   sx={{
                     color: profile.rank === 1 ? 'black' : 'white',
-                    fontSize: { xs: '1.2rem', md: '1.5rem' },
+                    fontSize: { xs: '0.9rem', sm: '1rem', md: '1.3rem' },
                   }}
                 />
               </Box>
 
               <CardContent
                 sx={{
-                  p: { xs: 0, md: 4 },
-                  pt: { xs: 0, md: 4 },
+                  p: { xs: 0, md: 3 },
+                  pt: { xs: 0, md: 3 },
                   display: 'flex',
                   flexDirection: { xs: 'row', md: 'column' },
                   alignItems: 'center',
-                  gap: { xs: 2, md: 0 },
+                  gap: { xs: 1.5, md: 0 },
                   textAlign: { xs: 'left', md: 'center' },
                   width: '100%',
-                  '&:last-child': { pb: { xs: 0, md: 4 } },
+                  '&:last-child': { pb: { xs: 0, md: 3 } },
                 }}
               >
-                <Box
+                <Avatar
+                  src={profile.user?.image || undefined}
                   sx={{
-                    position: 'relative',
-                    display: 'inline-block',
-                    mb: { xs: 0, md: 2 },
+                    width: { xs: 40, sm: 48, md: isFirst ? 90 : 72 },
+                    height: { xs: 40, sm: 48, md: isFirst ? 90 : 72 },
+                    mx: { md: 'auto' },
+                    mb: { xs: 0, md: 1.5 },
+                    border: `2px solid ${rankColor}`,
+                    boxShadow: `0 0 10px ${alpha(rankColor, 0.3)}`,
+                    flexShrink: 0,
                   }}
                 >
-                  <Avatar
-                    src={profile.user?.image || undefined}
-                    sx={{
-                      width: { xs: 50, md: isFirst ? 100 : 80 },
-                      height: { xs: 50, md: isFirst ? 100 : 80 },
-                      mx: 'auto',
-                      border: `2px solid ${rankColor}`,
-                      boxShadow: `0 0 10px ${alpha(rankColor, 0.3)}`,
-                    }}
-                  >
-                    {getInitials(profile.bladerName || profile.user?.name)}
-                  </Avatar>
-                </Box>
+                  {getInitials(profile.bladerName || profile.user?.name)}
+                </Avatar>
 
-                <Box sx={{ flex: 1 }}>
+                <Box sx={{ flex: 1, minWidth: 0 }}>
                   <Box
                     sx={{
                       display: 'flex',
@@ -175,7 +176,8 @@ export default function TopRankingsPodium({
                         color: 'text.primary',
                         mb: 0,
                         fontSize: {
-                          xs: isFirst ? '1rem' : '0.9rem',
+                          xs: isFirst ? '0.9rem' : '0.85rem',
+                          sm: isFirst ? '1rem' : '0.9rem',
                           md: 'inherit',
                         },
                       }}
@@ -191,9 +193,10 @@ export default function TopRankingsPodium({
                       >
                         <VerifiedIcon
                           sx={{
-                            fontSize: { xs: '0.8rem', md: '1rem' },
+                            fontSize: { xs: '0.7rem', md: '0.9rem' },
                             color: 'info.main',
                             opacity: 0.8,
+                            flexShrink: 0,
                           }}
                         />
                       </Tooltip>
@@ -204,12 +207,12 @@ export default function TopRankingsPodium({
                     variant="caption"
                     color="text.secondary"
                     sx={{
-                      display: { xs: 'none', sm: 'block' },
+                      display: { xs: 'none', md: 'block' },
                       mb: 1,
                       fontWeight: 700,
                       textTransform: 'uppercase',
                       letterSpacing: 1,
-                      opacity: 0.8,
+                      opacity: 0.6,
                     }}
                   >
                     BLADER RPB
@@ -221,27 +224,33 @@ export default function TopRankingsPodium({
                     display: 'inline-flex',
                     alignItems: 'center',
                     gap: 0.5,
-                    px: { xs: 1.5, md: 2 },
-                    py: 0.5,
+                    px: { xs: 1, sm: 1.5, md: 2 },
+                    py: { xs: 0.3, md: 0.5 },
                     borderRadius: 10,
                     bgcolor: alpha(rankColor, 0.1),
                     color: rankColor,
                     border: `1px solid ${alpha(rankColor, 0.2)}`,
+                    flexShrink: 0,
                   }}
                 >
                   <Typography
                     variant="h6"
                     fontWeight={900}
-                    sx={{ fontSize: { xs: '1rem', md: '1.25rem' } }}
+                    sx={{
+                      fontSize: { xs: '0.85rem', sm: '0.95rem', md: '1.2rem' },
+                    }}
                   >
                     {profile.rankingPoints}
                   </Typography>
                   <Typography
                     variant="caption"
                     fontWeight={700}
-                    sx={{ display: { xs: 'none', md: 'block' } }}
+                    sx={{
+                      display: { xs: 'none', md: 'block' },
+                      fontSize: '0.65rem',
+                    }}
                   >
-                    POINTS
+                    PTS
                   </Typography>
                 </Box>
               </CardContent>

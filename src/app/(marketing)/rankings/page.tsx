@@ -285,69 +285,72 @@ export default async function RankingsPage({
     <Box
       sx={{
         minHeight: '100vh',
-        background:
-          'radial-gradient(circle at 50% -20%, #2a0a0a 0%, #050505 100%)',
-        pt: { xs: 2, md: 4 },
-        pb: 8,
+        position: 'relative',
+        bgcolor: 'background.default',
+        pt: { xs: 1, sm: 2, md: 4 },
+        pb: { xs: 12, sm: 8 },
+        '&::before': {
+          content: '""',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          height: { xs: '40vh', md: '50vh' },
+          background: (t) =>
+            `radial-gradient(ellipse 80% 60% at 50% -10%, ${alpha(t.palette.primary.main, 0.15)} 0%, transparent 70%)`,
+          pointerEvents: 'none',
+        },
       }}
     >
-      <Container maxWidth="lg" sx={{ px: { xs: 1, sm: 2, md: 3 } }}>
-        {/* Header Layout Similar to SATR */}
+      <Container
+        maxWidth="lg"
+        sx={{ position: 'relative', px: { xs: 1.5, sm: 2, md: 3 } }}
+      >
+        {/* Header */}
         <Box
           sx={{
-            mb: { xs: 4, md: 6 },
+            mb: { xs: 3, md: 5 },
             display: 'flex',
-            flexDirection: { xs: 'column', md: 'row' },
-            alignItems: 'center',
-            justifyContent: 'space-between',
+            flexDirection: 'column',
             gap: { xs: 2, md: 3 },
-            px: { xs: 1, md: 0 },
           }}
         >
-          {/* Left: Empty Space for Layout Balance */}
+          {/* Search + Socials row */}
           <Box
             sx={{
-              flex: 1,
-              display: { xs: 'none', md: 'block' },
-            }}
-          />
-
-          {/* Center: Search */}
-          <Box
-            sx={{
-              flex: 2,
-              width: '100%',
-              maxWidth: { xs: '100%', md: 600 },
-              order: { xs: 3, md: 2 },
-            }}
-          >
-            <Suspense
-              fallback={
-                <Paper
-                  sx={{
-                    height: 44,
-                    width: '100%',
-                    bgcolor: 'rgba(255,255,255,0.05)',
-                    borderRadius: 3,
-                  }}
-                />
-              }
-            >
-              <RankingSearch defaultValue={searchQuery} />
-            </Suspense>
-          </Box>
-
-          {/* Right: Socials */}
-          <Box
-            sx={{
-              flex: 1,
               display: 'flex',
-              justifyContent: { xs: 'center', md: 'flex-end' },
-              width: '100%',
-              order: { xs: 2, md: 3 },
+              flexDirection: { xs: 'column', md: 'row' },
+              alignItems: { xs: 'stretch', md: 'center' },
+              gap: { xs: 1.5, md: 3 },
             }}
           >
-            <Stack direction="row" spacing={1}>
+            {/* Search */}
+            <Box sx={{ flex: 1, maxWidth: { md: 500 } }}>
+              <Suspense
+                fallback={
+                  <Paper
+                    sx={{
+                      height: 44,
+                      width: '100%',
+                      bgcolor: 'rgba(255,255,255,0.05)',
+                      borderRadius: 3,
+                    }}
+                  />
+                }
+              >
+                <RankingSearch defaultValue={searchQuery} />
+              </Suspense>
+            </Box>
+
+            {/* Socials */}
+            <Stack
+              direction="row"
+              spacing={0.5}
+              sx={{
+                justifyContent: { xs: 'center', md: 'flex-end' },
+                flexShrink: 0,
+              }}
+            >
               {socials.map((s) => (
                 <Tooltip key={s.name} title={s.name}>
                   <IconButton
@@ -359,48 +362,47 @@ export default async function RankingsPage({
                       color: 'rgba(255,255,255,0.4)',
                       bgcolor: 'rgba(255,255,255,0.03)',
                       border: '1px solid rgba(255,255,255,0.05)',
+                      width: { xs: 36, md: 40 },
+                      height: { xs: 36, md: 40 },
                       '&:hover': {
                         color: s.color,
                         bgcolor: 'rgba(255,255,255,0.08)',
-                        transform: 'translateY(-3px)',
-                        boxShadow: `0 5px 15px ${alpha(s.color, 0.2)}`,
+                        transform: 'translateY(-2px)',
+                        boxShadow: `0 4px 12px ${alpha(s.color, 0.2)}`,
                       },
                       transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
                     }}
                   >
-                    <s.icon sx={{ fontSize: { xs: 18, md: 20 } }} />
+                    <s.icon sx={{ fontSize: { xs: 16, md: 20 } }} />
                   </IconButton>
                 </Tooltip>
               ))}
             </Stack>
           </Box>
-        </Box>
 
-        <Box
-          sx={{
-            mb: { xs: 2, md: 4 },
-            mt: { xs: 2, md: 4 },
-            display: 'flex',
-            flexDirection: { xs: 'column', md: 'row' },
-            gap: 2,
-            alignItems: 'center',
-            justifyContent: 'space-between',
-          }}
-        >
-          <Suspense
-            fallback={
-              <Box
-                sx={{
-                  height: 40,
-                  width: 200,
-                  bgcolor: 'action.hover',
-                  borderRadius: 1,
-                }}
-              />
-            }
+          {/* Season selector */}
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 2,
+            }}
           >
-            <SeasonSelector seasons={seasons} />
-          </Suspense>
+            <Suspense
+              fallback={
+                <Box
+                  sx={{
+                    height: 40,
+                    width: 200,
+                    bgcolor: 'action.hover',
+                    borderRadius: 1,
+                  }}
+                />
+              }
+            >
+              <SeasonSelector seasons={seasons} />
+            </Suspense>
+          </Box>
         </Box>
 
         {/* Top 3 Podium */}
@@ -409,7 +411,7 @@ export default async function RankingsPage({
             fallback={
               <Box
                 sx={{
-                  height: { xs: 300, md: 350 },
+                  height: { xs: 280, md: 350 },
                   width: '100%',
                   bgcolor: 'rgba(255,255,255,0.02)',
                   borderRadius: 4,
@@ -449,11 +451,11 @@ export default async function RankingsPage({
           sx={{
             display: 'block',
             textAlign: 'center',
-            mt: 6,
-            opacity: 0.2,
+            mt: { xs: 4, md: 6 },
+            opacity: 0.15,
             letterSpacing: 2,
             fontWeight: 900,
-            fontSize: { xs: '0.6rem', md: '0.75rem' },
+            fontSize: { xs: '0.55rem', md: '0.7rem' },
           }}
         >
           RÉPUBLIQUE POPULAIRE DU BEYBLADE • CLASSEMENT OFFICIEL
