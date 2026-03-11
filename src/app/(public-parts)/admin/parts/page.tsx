@@ -168,6 +168,8 @@ export default function AdminPartsPage() {
       <Tabs
         value={activeTab}
         onChange={(_, v) => setActiveTab(v)}
+        variant="scrollable"
+        scrollButtons="auto"
         sx={{ mb: 3, borderBottom: 1, borderColor: 'divider' }}
       >
         <Tab icon={<Inventory2 />} label="Pièces" iconPosition="start" />
@@ -417,13 +419,8 @@ function PartsTab({ onStatsChange }: { onStatsChange: () => void }) {
   return (
     <>
       {/* Toolbar */}
-      <Stack
-        direction="row"
-        spacing={2}
-        sx={{ mb: 2 }}
-        flexWrap="wrap"
-        useFlexGap
-      >
+      <Stack spacing={1.5} sx={{ mb: 2 }}>
+        {/* Search - full width on mobile */}
         <TextField
           placeholder="Rechercher (nom, ID, JP)..."
           size="small"
@@ -432,7 +429,7 @@ function PartsTab({ onStatsChange }: { onStatsChange: () => void }) {
             setSearch(e.target.value);
             setPage(1);
           }}
-          sx={{ minWidth: 250 }}
+          fullWidth
           slotProps={{
             input: {
               startAdornment: (
@@ -443,90 +440,102 @@ function PartsTab({ onStatsChange }: { onStatsChange: () => void }) {
             },
           }}
         />
-        <TextField
-          select
-          size="small"
-          label="Type"
-          value={filterType}
-          onChange={(e) => {
-            setFilterType(e.target.value);
-            setPage(1);
-          }}
-          sx={{ minWidth: 130 }}
-        >
-          <MenuItem value="">Tous</MenuItem>
-          {Object.entries(TYPE_LABELS).map(([k, v]) => (
-            <MenuItem key={k} value={k}>
-              {v}
-            </MenuItem>
-          ))}
-        </TextField>
-        <TextField
-          select
-          size="small"
-          label="Système"
-          value={filterSystem}
-          onChange={(e) => {
-            setFilterSystem(e.target.value);
-            setPage(1);
-          }}
-          sx={{ minWidth: 100 }}
-        >
-          <MenuItem value="">Tous</MenuItem>
-          <MenuItem value="BX">BX</MenuItem>
-          <MenuItem value="UX">UX</MenuItem>
-          <MenuItem value="CX">CX</MenuItem>
-        </TextField>
-        <TextField
-          select
-          size="small"
-          label="Bey Type"
-          value={filterBeyType}
-          onChange={(e) => {
-            setFilterBeyType(e.target.value);
-            setPage(1);
-          }}
-          sx={{ minWidth: 120 }}
-        >
-          <MenuItem value="">Tous</MenuItem>
-          <MenuItem value="ATTACK">Attack</MenuItem>
-          <MenuItem value="DEFENSE">Defense</MenuItem>
-          <MenuItem value="STAMINA">Stamina</MenuItem>
-          <MenuItem value="BALANCE">Balance</MenuItem>
-        </TextField>
-        <Button
-          size="small"
-          variant={filterMissingImage ? 'contained' : 'outlined'}
-          color="warning"
-          startIcon={<HideImage />}
-          onClick={() => {
-            setFilterMissingImage(!filterMissingImage);
-            setPage(1);
-          }}
-        >
-          Sans image
-        </Button>
 
-        <Box sx={{ flex: 1 }} />
+        {/* Filters row - wraps on mobile */}
+        <Stack
+          direction="row"
+          spacing={1}
+          flexWrap="wrap"
+          useFlexGap
+          alignItems="center"
+        >
+          <TextField
+            select
+            size="small"
+            label="Type"
+            value={filterType}
+            onChange={(e) => {
+              setFilterType(e.target.value);
+              setPage(1);
+            }}
+            sx={{ minWidth: { xs: 'calc(50% - 4px)', sm: 130 } }}
+          >
+            <MenuItem value="">Tous</MenuItem>
+            {Object.entries(TYPE_LABELS).map(([k, v]) => (
+              <MenuItem key={k} value={k}>
+                {v}
+              </MenuItem>
+            ))}
+          </TextField>
+          <TextField
+            select
+            size="small"
+            label="Système"
+            value={filterSystem}
+            onChange={(e) => {
+              setFilterSystem(e.target.value);
+              setPage(1);
+            }}
+            sx={{ minWidth: { xs: 'calc(50% - 4px)', sm: 100 } }}
+          >
+            <MenuItem value="">Tous</MenuItem>
+            <MenuItem value="BX">BX</MenuItem>
+            <MenuItem value="UX">UX</MenuItem>
+            <MenuItem value="CX">CX</MenuItem>
+          </TextField>
+          <TextField
+            select
+            size="small"
+            label="Bey Type"
+            value={filterBeyType}
+            onChange={(e) => {
+              setFilterBeyType(e.target.value);
+              setPage(1);
+            }}
+            sx={{ minWidth: { xs: 'calc(50% - 4px)', sm: 120 } }}
+          >
+            <MenuItem value="">Tous</MenuItem>
+            <MenuItem value="ATTACK">Attack</MenuItem>
+            <MenuItem value="DEFENSE">Defense</MenuItem>
+            <MenuItem value="STAMINA">Stamina</MenuItem>
+            <MenuItem value="BALANCE">Balance</MenuItem>
+          </TextField>
+          <Button
+            size="small"
+            variant={filterMissingImage ? 'contained' : 'outlined'}
+            color="warning"
+            onClick={() => {
+              setFilterMissingImage(!filterMissingImage);
+              setPage(1);
+            }}
+            sx={{ minHeight: 40 }}
+          >
+            <HideImage sx={{ fontSize: 18 }} />
+          </Button>
+        </Stack>
 
-        <Button
-          size="small"
-          variant="outlined"
-          startIcon={<Download />}
-          onClick={handleExportJSON}
-        >
-          Export JSON
-        </Button>
-        <Button
-          variant="contained"
-          startIcon={<Add />}
-          onClick={() => {
-            setSelectedPart(null);
-            setDialogOpen(true);
-          }}
-        >
-          Ajouter
-        </Button>
+        {/* Action buttons */}
+        <Stack direction="row" spacing={1} justifyContent="flex-end">
+          <Button
+            size="small"
+            variant="outlined"
+            startIcon={<Download />}
+            onClick={handleExportJSON}
+          >
+            Export
+          </Button>
+          <Button
+            size="small"
+            variant="contained"
+            startIcon={<Add />}
+            onClick={() => {
+              setSelectedPart(null);
+              setDialogOpen(true);
+            }}
+          >
+            Ajouter
+          </Button>
+        </Stack>
       </Stack>
 
       {/* Pagination info */}
@@ -540,7 +549,7 @@ function PartsTab({ onStatsChange }: { onStatsChange: () => void }) {
       </Typography>
 
       {/* DataGrid */}
-      <Card sx={{ height: '68vh' }}>
+      <Card sx={{ height: { xs: '60vh', md: '68vh' }, overflow: 'auto' }}>
         <DataGrid
           rows={rows}
           columns={columns}
@@ -555,6 +564,7 @@ function PartsTab({ onStatsChange }: { onStatsChange: () => void }) {
           pageSizeOptions={[100]}
           density="compact"
           sx={{
+            minWidth: 600,
             '& .MuiDataGrid-cell--editable': { bgcolor: 'action.hover' },
             '& .MuiDataGrid-row:hover': { bgcolor: 'action.selected' },
           }}
@@ -672,13 +682,19 @@ function BeybladesTab() {
 
   return (
     <>
-      <Stack direction="row" spacing={2} sx={{ mb: 2 }}>
+      <Stack
+        direction={{ xs: 'column', sm: 'row' }}
+        spacing={1.5}
+        sx={{ mb: 2 }}
+        alignItems={{ sm: 'center' }}
+      >
         <TextField
           placeholder="Rechercher un Beyblade..."
           size="small"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          sx={{ minWidth: 300 }}
+          fullWidth
+          sx={{ maxWidth: { sm: 350 } }}
           slotProps={{
             input: {
               startAdornment: (
@@ -694,7 +710,7 @@ function BeybladesTab() {
         </Badge>
       </Stack>
 
-      <Card sx={{ height: '68vh' }}>
+      <Card sx={{ height: { xs: '60vh', md: '68vh' }, overflow: 'auto' }}>
         <DataGrid
           rows={beyblades}
           columns={columns}
@@ -705,6 +721,7 @@ function BeybladesTab() {
             pagination: { paginationModel: { pageSize: 50 } },
           }}
           pageSizeOptions={[50, 100]}
+          sx={{ minWidth: 600 }}
         />
       </Card>
     </>
@@ -805,7 +822,7 @@ function ImportTab({ onStatsChange }: { onStatsChange: () => void }) {
             <TextField
               fullWidth
               multiline
-              rows={16}
+              rows={10}
               value={jsonInput}
               onChange={(e) => setJsonInput(e.target.value)}
               placeholder="Collez votre JSON ici ou chargez un fichier..."

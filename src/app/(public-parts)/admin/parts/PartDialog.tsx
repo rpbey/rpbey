@@ -15,6 +15,8 @@ import {
   Stack,
   TextField,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material';
 import type { BeyType, Part, PartType } from '@prisma/client';
 import { useEffect, useState } from 'react';
@@ -44,6 +46,8 @@ export function PartDialog({
 }: PartDialogProps) {
   const [form, setForm] = useState<Partial<Part>>({});
   const [loading, setLoading] = useState(false);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   useEffect(() => {
     if (initialData) {
@@ -64,7 +68,13 @@ export function PartDialog({
     setForm((prev) => ({ ...prev, [field]: value }));
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth="md"
+      fullWidth
+      fullScreen={isMobile}
+    >
       <DialogTitle sx={{ pb: 1 }}>
         <Stack direction="row" spacing={2} alignItems="center">
           {/* Preview */}
@@ -113,7 +123,7 @@ export function PartDialog({
               Identité
             </Typography>
             <MuiGrid container spacing={2} sx={{ mt: 0.5 }}>
-              <MuiGrid size={{ xs: 8 }}>
+              <MuiGrid size={{ xs: 12, sm: 8 }}>
                 <TextField
                   label="Nom *"
                   fullWidth
@@ -122,7 +132,7 @@ export function PartDialog({
                   onChange={(e) => update('name', e.target.value)}
                 />
               </MuiGrid>
-              <MuiGrid size={{ xs: 4 }}>
+              <MuiGrid size={{ xs: 12, sm: 4 }}>
                 <TextField
                   label="Nom Japonais"
                   fullWidth
@@ -131,7 +141,7 @@ export function PartDialog({
                   onChange={(e) => update('nameJp', e.target.value)}
                 />
               </MuiGrid>
-              <MuiGrid size={{ xs: 4 }}>
+              <MuiGrid size={{ xs: 6, sm: 4 }}>
                 <TextField
                   select
                   label="Type *"
@@ -148,7 +158,7 @@ export function PartDialog({
                   <MenuItem value="ASSIST_BLADE">Assist Blade</MenuItem>
                 </TextField>
               </MuiGrid>
-              <MuiGrid size={{ xs: 4 }}>
+              <MuiGrid size={{ xs: 6, sm: 4 }}>
                 <TextField
                   select
                   label="Système"
@@ -162,7 +172,7 @@ export function PartDialog({
                   <MenuItem value="CX">CX</MenuItem>
                 </TextField>
               </MuiGrid>
-              <MuiGrid size={{ xs: 4 }}>
+              <MuiGrid size={{ xs: 12, sm: 4 }}>
                 <TextField
                   label="ID Externe"
                   fullWidth
@@ -187,7 +197,7 @@ export function PartDialog({
               Classification
             </Typography>
             <MuiGrid container spacing={2} sx={{ mt: 0.5 }}>
-              <MuiGrid size={{ xs: 3 }}>
+              <MuiGrid size={{ xs: 6, sm: 3 }}>
                 <TextField
                   select
                   label="Type Bey"
@@ -203,7 +213,7 @@ export function PartDialog({
                   <MenuItem value="BALANCE">Balance</MenuItem>
                 </TextField>
               </MuiGrid>
-              <MuiGrid size={{ xs: 3 }}>
+              <MuiGrid size={{ xs: 6, sm: 3 }}>
                 <TextField
                   select
                   label="Rotation"
@@ -218,7 +228,7 @@ export function PartDialog({
                   <MenuItem value="Dual">Dual</MenuItem>
                 </TextField>
               </MuiGrid>
-              <MuiGrid size={{ xs: 3 }}>
+              <MuiGrid size={{ xs: 6, sm: 3 }}>
                 <TextField
                   label="Rareté"
                   fullWidth
@@ -228,7 +238,7 @@ export function PartDialog({
                   placeholder="Common, Rare..."
                 />
               </MuiGrid>
-              <MuiGrid size={{ xs: 3 }}>
+              <MuiGrid size={{ xs: 6, sm: 3 }}>
                 <TextField
                   label="Date de sortie"
                   type="date"
@@ -263,7 +273,7 @@ export function PartDialog({
               Spécifications physiques
             </Typography>
             <MuiGrid container spacing={2} sx={{ mt: 0.5 }}>
-              <MuiGrid size={{ xs: 3 }}>
+              <MuiGrid size={{ xs: 6, sm: 3 }}>
                 <TextField
                   label="Poids (g)"
                   type="number"
@@ -278,7 +288,7 @@ export function PartDialog({
                   }
                 />
               </MuiGrid>
-              <MuiGrid size={{ xs: 3 }}>
+              <MuiGrid size={{ xs: 6, sm: 3 }}>
                 <TextField
                   label="Hauteur (mm)"
                   type="number"
@@ -293,7 +303,7 @@ export function PartDialog({
                   }
                 />
               </MuiGrid>
-              <MuiGrid size={{ xs: 3 }}>
+              <MuiGrid size={{ xs: 6, sm: 3 }}>
                 <TextField
                   label="Protrusions"
                   type="number"
@@ -308,7 +318,7 @@ export function PartDialog({
                   }
                 />
               </MuiGrid>
-              <MuiGrid size={{ xs: 3 }}>
+              <MuiGrid size={{ xs: 6, sm: 3 }}>
                 <TextField
                   label="Gear Ratio"
                   fullWidth
@@ -317,7 +327,7 @@ export function PartDialog({
                   onChange={(e) => update('gearRatio', e.target.value)}
                 />
               </MuiGrid>
-              <MuiGrid size={{ xs: 4 }}>
+              <MuiGrid size={{ xs: 6, sm: 4 }}>
                 <TextField
                   label="Shaft Width"
                   fullWidth
@@ -326,7 +336,7 @@ export function PartDialog({
                   onChange={(e) => update('shaftWidth', e.target.value)}
                 />
               </MuiGrid>
-              <MuiGrid size={{ xs: 4 }}>
+              <MuiGrid size={{ xs: 6, sm: 4 }}>
                 <TextField
                   label="Tip Type"
                   fullWidth
@@ -351,7 +361,7 @@ export function PartDialog({
             </Typography>
             <MuiGrid container spacing={2} sx={{ mt: 0.5 }}>
               {STAT_FIELDS.map((stat) => (
-                <MuiGrid key={stat} size={{ xs: 2.4 }}>
+                <MuiGrid key={stat} size={{ xs: 4, sm: 2.4 }}>
                   <TextField
                     label={stat.charAt(0).toUpperCase() + stat.slice(1)}
                     fullWidth
