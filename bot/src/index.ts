@@ -7,9 +7,17 @@ import { PermissionsBitField } from 'discord.js';
 import { Player } from 'discord-player';
 import { DIService } from 'discordx';
 import { container } from 'tsyringe';
+import { startApiServer } from './lib/api-server.js';
 import { bot } from './lib/bot.js';
+import { setupLogCapture } from './lib/log-capture.js';
 import { logger } from './lib/logger.js';
 import { prisma } from './lib/prisma.js';
+
+// Capture logs to in-memory buffer for API access
+setupLogCapture();
+
+// Start the bot HTTP API server
+startApiServer(parseInt(process.env.BOT_API_PORT ?? '3001', 10));
 
 // Check Discord session availability via REST API
 async function waitForSessions(token: string): Promise<void> {

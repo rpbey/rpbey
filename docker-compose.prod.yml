@@ -31,6 +31,7 @@ services:
     environment:
       DATABASE_URL: postgresql://postgres:rpb_password@db:5432/rpb_dashboard
       NEXT_PUBLIC_APP_URL: https://rpbey.fr
+      BOT_API_URL: http://bot:3001
       NODE_ENV: production
     volumes:
       - ./public/uploads:/app/public/uploads
@@ -50,6 +51,7 @@ services:
     environment:
       DATABASE_URL: postgresql://postgres:rpb_password@db:5432/rpb_dashboard
       RUN_BOT: "true"
+      BOT_API_PORT: "3001"
       NODE_ENV: production
     volumes:
       - ./data:/app/data

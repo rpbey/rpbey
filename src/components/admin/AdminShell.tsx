@@ -10,6 +10,7 @@ import {
   Logout,
   Menu as MenuIcon,
   People,
+  Terminal,
   WorkspacePremium,
 } from '@mui/icons-material';
 import {
@@ -41,6 +42,7 @@ const RAIL_WIDTH = 280;
 
 const ADMIN_NAV_ITEMS = [
   { label: "Vue d'ensemble", path: '/admin', icon: Dashboard },
+  { label: 'Console & Logs', path: '/admin/logs', icon: Terminal },
   { label: 'Maintenance', path: '/admin/maintenance', icon: Hub },
   { label: 'Liaison Comptes', path: '/admin/link', icon: LinkIcon },
   { label: 'Meta', path: '/admin/meta', icon: Hub },
