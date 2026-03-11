@@ -17,6 +17,7 @@ import {
   RankingsTable,
 } from '@/components/rankings/RankingsTable';
 import SeasonSelector from '@/components/rankings/SeasonSelector';
+import TopRankingsPodium from '@/components/rankings/TopRankingsPodium';
 import { prisma } from '@/lib/prisma';
 import { getSeasonStandings, getSeasons } from '@/server/actions/season';
 
@@ -239,6 +240,7 @@ export default async function RankingsPage({
   }
 
   const totalPages = Math.ceil(totalCount / pageSize);
+  const showPodium = page === 1 && !searchQuery && profiles.length >= 3;
 
   const socials = [
     {
@@ -400,6 +402,24 @@ export default async function RankingsPage({
             <SeasonSelector seasons={seasons} />
           </Suspense>
         </Box>
+
+        {/* Top 3 Podium */}
+        {showPodium && (
+          <Suspense
+            fallback={
+              <Box
+                sx={{
+                  height: { xs: 300, md: 350 },
+                  width: '100%',
+                  bgcolor: 'rgba(255,255,255,0.02)',
+                  borderRadius: 4,
+                }}
+              />
+            }
+          >
+            <TopRankingsPodium topProfiles={profiles.slice(0, 3)} />
+          </Suspense>
+        )}
 
         <Box sx={{ position: 'relative' }}>
           <Suspense
