@@ -28,15 +28,10 @@ export async function GET(request: Request) {
 
   try {
     const challonge = getChallongeService();
-    console.log('🔄 Exchanging code for token...');
     const tokenData = await challonge.exchangeCodeForToken(code);
-
-    // Fetch Challonge User Info
-    console.log('📥 Fetching Challonge user info...');
     const challongeUser = await challonge.getCurrentUser(
       tokenData.access_token,
     );
-    console.log(`✅ Linked to Challonge user: ${challongeUser.username}`);
 
     // Store in Account table for API access
     await prisma.account.upsert({

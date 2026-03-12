@@ -171,16 +171,11 @@ function enrichWithStats(
 ): BbxWeeklyData {
   if (!data?.periods) return data;
 
-  let totalComps = 0;
-  let matchedComps = 0;
-
   // Create a normalized map for better matching
   const normalizedMap = new Map<string, PartMetadata>();
   for (const [name, meta] of metadataMap.entries()) {
     normalizedMap.set(normalizeName(name), meta);
   }
-
-  const unmatched = new Set<string>();
 
   for (const periodKey of ['2weeks', '4weeks'] as const) {
     const period = data.periods[periodKey];
@@ -190,7 +185,6 @@ function enrichWithStats(
       if (!category?.components) continue;
 
       for (const comp of category.components) {
-        totalComps++;
         const normName = normalizeName(comp.name);
 
         // Try direct match first, then normalized match
@@ -199,7 +193,6 @@ function enrichWithStats(
           normalizedMap.get(normName);
 
         if (metadata) {
-          matchedComps++;
           if (
             metadata.stats.attack +
               metadata.stats.defense +
@@ -213,8 +206,6 @@ function enrichWithStats(
           if (metadata.imageUrl) {
             comp.imageUrl = metadata.imageUrl;
           }
-        } else {
-          unmatched.add(`${category.category}: ${comp.name}`);
         }
 
         // Enrich synergies
@@ -229,10 +220,6 @@ function enrichWithStats(
         }
       }
     }
-  }
-  console.log(`[Meta] Enriched ${matchedComps}/${totalComps} components.`);
-  if (unmatched.size > 0) {
-    console.log(`[Meta] Unmatched: ${Array.from(unmatched).join(', ')}`);
   }
   return data;
 }

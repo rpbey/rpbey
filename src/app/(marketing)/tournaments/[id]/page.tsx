@@ -67,28 +67,125 @@ export async function generateMetadata({
 
   const scraped = await getScrapedTournament(id);
   if (scraped) {
+    const formattedDate = scraped.date
+      ? new Date(scraped.date).toLocaleDateString('fr-FR', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        })
+      : null;
+    const participantCount = scraped.standings?.length ?? 0;
+    const description = buildMetaDescription(
+      scraped.name,
+      scraped.description ?? null,
+      formattedDate,
+      participantCount,
+    );
+
     return {
       title: scraped.name,
-      description: scraped.description,
+      description,
+      openGraph: {
+        type: 'website',
+        locale: 'fr_FR',
+        url: `https://rpbey.fr/tournaments/${id}`,
+        siteName: 'RPB - République Populaire du Beyblade',
+        title: `${scraped.name} | RPB`,
+        description,
+        images: [
+          { url: '/banner.png', width: 1200, height: 630, alt: scraped.name },
+        ],
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: `${scraped.name} | RPB`,
+        description,
+        images: ['/banner.png'],
+      },
     };
   }
+
+  const metaSelect = {
+    name: true,
+    description: true,
+    date: true,
+    location: true,
+    format: true,
+    _count: { select: { participants: true } },
+  } as const;
 
   const tournament =
     (await prisma.tournament.findUnique({
       where: { id },
-      select: { name: true, description: true },
+      select: metaSelect,
     })) ??
     (await prisma.tournament.findFirst({
       where: { OR: [{ challongeId: id }, { challongeUrl: { contains: id } }] },
-      select: { name: true, description: true },
+      select: metaSelect,
     }));
 
-  if (!tournament) return { title: 'Tournoi non trouvé' };
+  if (!tournament) {
+    return {
+      title: 'Tournoi non trouvé',
+      description: 'Ce tournoi est introuvable ou a été supprimé.',
+    };
+  }
+
+  const formattedDate = tournament.date
+    ? new Date(tournament.date).toLocaleDateString('fr-FR', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      })
+    : null;
+  const participantCount = tournament._count?.participants ?? 0;
+  const description = buildMetaDescription(
+    tournament.name,
+    tournament.description ?? null,
+    formattedDate,
+    participantCount,
+  );
 
   return {
     title: tournament.name,
-    description: tournament.description || `Tournoi ${tournament.name} - RPB`,
+    description,
+    openGraph: {
+      type: 'website',
+      locale: 'fr_FR',
+      url: `https://rpbey.fr/tournaments/${id}`,
+      siteName: 'RPB - République Populaire du Beyblade',
+      title: `${tournament.name} | RPB`,
+      description,
+      images: [
+        { url: '/banner.png', width: 1200, height: 630, alt: tournament.name },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${tournament.name} | RPB`,
+      description,
+      images: ['/banner.png'],
+    },
   };
+}
+
+function buildMetaDescription(
+  name: string,
+  description: string | null,
+  formattedDate: string | null,
+  participantCount: number,
+): string {
+  if (description) return description;
+
+  const parts = [`Tournoi ${name}`];
+  if (formattedDate) parts.push(`le ${formattedDate}`);
+  if (participantCount > 0)
+    parts.push(
+      `${participantCount} participant${participantCount > 1 ? 's' : ''}`,
+    );
+  parts.push('organisé par la RPB');
+
+  return `${parts.join(' - ')}.`;
 }
 
 export default async function TournamentDetailPage({ params }: PageProps) {

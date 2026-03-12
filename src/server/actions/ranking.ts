@@ -73,13 +73,11 @@ export async function updateRankingConfig(data: {
     data: result.data,
   });
 
-  // revalidateTag('ranking-config'); // Temporarily removed
   revalidatePath('/admin/rankings');
 }
 
 export async function recalculateRankings() {
   const config = await getRankingConfig();
-  console.log('⚙️ Ranking Config:', config);
 
   const currentSeason = await prisma.rankingSeason.findFirst({
     where: { isActive: true },
@@ -116,8 +114,8 @@ export async function recalculateRankings() {
     );
     bts2 = JSON.parse(readFileSync(join(exportsDir, 'B_TS2.json'), 'utf-8'));
     bts3 = JSON.parse(readFileSync(join(exportsDir, 'B_TS3.json'), 'utf-8'));
-  } catch (e) {
-    console.log('⚠️ Could not load JSON data for ranking calculation.', e);
+  } catch (_e) {
+    // JSON data files not available, skip BTS ranking data
   }
 
   // Inverse mapping: Map alias to normalized key
@@ -381,8 +379,6 @@ export async function recalculateRankings() {
     const currentPoints = playerPoints.get(playerKey) || 0;
     playerPoints.set(playerKey, currentPoints + adj.points);
   }
-
-  console.log(`💾 Saving points for ${playerPoints.size} players...`);
 
   // 5. Batch update DB
   await prisma.$transaction(

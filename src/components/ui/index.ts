@@ -16,9 +16,18 @@ export {
   Icons,
   RPBIcon,
   RPBLogoIcon,
+  TikTokIcon,
   TrophyIcon,
+  TwitchIcon,
+  XIcon,
 } from './Icons';
 export { LoadingSkeleton } from './LoadingSkeleton';
+export {
+  MuiDiscordIcon,
+  MuiTikTokIcon,
+  MuiTwitchIcon,
+  MuiXIcon,
+} from './MuiIcons';
 export { NextTournamentButton } from './NextTournamentButton';
 export { PageHeader } from './PageHeader';
 export { RoleIcon } from './RoleIcon';

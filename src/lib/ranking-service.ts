@@ -6,7 +6,7 @@ export class RankingService {
    * basé sur l'historique complet des tournois.
    */
   static async recalculateAll() {
-    console.log('🔄 Recalcul global du classement...');
+    // console.log('🔄 Recalcul global du classement...');
 
     // 1. Récupérer les règles
     const rules = await prisma.rankingSystem.findFirst();
@@ -21,7 +21,7 @@ export class RankingService {
       },
     });
 
-    console.log(`📊 Analyse de ${tournaments.length} tournois terminés.`);
+    // console.log(`📊 Analyse de ${tournaments.length} tournois terminés.`);
 
     // 3. Map pour stocker les points temporaires : UserId -> Points
     const userPoints = new Map<
@@ -104,11 +104,7 @@ export class RankingService {
     }
 
     // 5. Sauvegarde en Batch
-    console.log(`💾 Mise à jour de ${userPoints.size} profils...`);
-
-    let updatedCount = 0;
     for (const [userId, stats] of userPoints.entries()) {
-      // On met à jour le profil (on force la mise à jour pour réinitialiser les anciens points)
       await prisma.profile.upsert({
         where: { userId },
         create: {
@@ -125,9 +121,6 @@ export class RankingService {
           tournamentWins: stats.tournamentWins,
         },
       });
-      updatedCount++;
     }
-
-    console.log(`✅ ${updatedCount} profils mis à jour avec succès.`);
   }
 }
