@@ -69,17 +69,17 @@ const BTS_EDITIONS = [
 // ── Partner series (SATR, WB) ──
 
 const PARTNER_SERIES = [
-  {
-    id: 'satr',
-    name: 'Sun After The Reign',
-    subtitle: 'Beyblade Battle Tournament',
-    href: '/tournaments/satr',
-    logo: '/satr-logo.webp',
-    logoWidth: 56,
-    logoHeight: 28,
-    logoRounded: false,
-    color: '#fbbf24',
-  },
+  // {
+  //   id: 'satr',
+  //   name: 'Sun After The Reign',
+  //   subtitle: 'Beyblade Battle Tournament',
+  //   href: '/tournaments/satr',
+  //   logo: '/satr-logo.webp',
+  //   logoWidth: 56,
+  //   logoHeight: 28,
+  //   logoRounded: false,
+  //   color: '#fbbf24',
+  // },
   {
     id: 'wb',
     name: 'Wild Breakers',
