@@ -143,15 +143,11 @@ export default async function TournamentsPage() {
     (t) =>
       t.status === 'upcoming' ||
       t.status === 'pending' ||
-      t.status === 'registration_open',
+      t.status === 'registration_open' ||
+      t.status === 'underway' ||
+      t.status === 'in_progress',
   );
-  const live = dbCards.filter(
-    (t) => t.status === 'underway' || t.status === 'in_progress',
-  );
-  const completed = [
-    ...dbCards.filter((t) => t.status === 'complete'),
-    ...scrapedTournaments,
-  ];
+  const completed = dbCards.filter((t) => t.status === 'complete');
 
   const totalTournaments = dbCards.length + scrapedTournaments.length;
   const totalParticipants =
@@ -312,6 +308,167 @@ export default async function TournamentsPage() {
           ))}
         </Stack>
 
+        {/* Bey-Tamashii Séries - Featured */}
+        {scrapedTournaments.length > 0 && (
+          <Box sx={{ mb: { xs: 6, md: 8 } }}>
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1.5,
+                mb: 3,
+              }}
+            >
+              <Box
+                sx={{
+                  width: 4,
+                  height: 28,
+                  borderRadius: 2,
+                  background:
+                    'linear-gradient(180deg, #dc2626 0%, #991b1b 100%)',
+                }}
+              />
+              <Image
+                src="/logo.png"
+                alt="RPB"
+                width={28}
+                height={28}
+                style={{ borderRadius: '50%' }}
+              />
+              <Typography
+                variant="h5"
+                fontWeight="900"
+                sx={{ letterSpacing: -0.5 }}
+              >
+                Bey-Tamashii{' '}
+                <Box component="span" sx={{ color: '#dc2626' }}>
+                  Séries
+                </Box>
+              </Typography>
+              <Chip
+                label="OFFICIEL RPB"
+                size="small"
+                sx={{
+                  fontWeight: 900,
+                  fontSize: '0.6rem',
+                  height: 22,
+                  bgcolor: alpha('#dc2626', 0.15),
+                  color: '#dc2626',
+                  border: `1px solid ${alpha('#fbbf24', 0.3)}`,
+                }}
+              />
+            </Box>
+
+            <Grid container spacing={{ xs: 2, md: 3 }}>
+              {scrapedTournaments.map((bts) => {
+                const posterMap: Record<string, string> = {
+                  bts3: '/tournaments/BTS3_poster.gif',
+                  bts2: '/tournaments/BTS2_optimized.webp',
+                };
+                const poster = posterMap[bts.id];
+                return (
+                  <Grid key={bts.id} size={{ xs: 12, md: 6 }}>
+                    <Link
+                      href={`/tournaments/${bts.id}`}
+                      style={{ textDecoration: 'none', color: 'inherit' }}
+                    >
+                      <Paper
+                        elevation={0}
+                        sx={{
+                          borderRadius: 4,
+                          overflow: 'hidden',
+                          bgcolor: alpha('#dc2626', 0.04),
+                          border: `1px solid ${alpha('#dc2626', 0.15)}`,
+                          transition:
+                            'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                          '&:hover': {
+                            borderColor: alpha('#dc2626', 0.4),
+                            transform: 'translateY(-4px)',
+                            boxShadow: `0 12px 32px ${alpha('#dc2626', 0.2)}`,
+                          },
+                        }}
+                      >
+                        {/* Poster */}
+                        {poster && (
+                          <Box
+                            sx={{
+                              position: 'relative',
+                              height: { xs: 160, md: 200 },
+                              overflow: 'hidden',
+                            }}
+                          >
+                            <Image
+                              src={poster}
+                              alt={bts.name}
+                              fill
+                              style={{ objectFit: 'cover' }}
+                            />
+                            <Box
+                              sx={{
+                                position: 'absolute',
+                                bottom: 0,
+                                left: 0,
+                                right: 0,
+                                height: '50%',
+                                background:
+                                  'linear-gradient(transparent, rgba(0,0,0,0.8))',
+                              }}
+                            />
+                          </Box>
+                        )}
+
+                        {/* Info */}
+                        <Box sx={{ p: { xs: 2, md: 2.5 } }}>
+                          <Stack
+                            direction="row"
+                            alignItems="center"
+                            justifyContent="space-between"
+                          >
+                            <Box>
+                              <Typography
+                                variant="subtitle1"
+                                fontWeight="900"
+                                sx={{ lineHeight: 1.3 }}
+                              >
+                                {bts.name}
+                              </Typography>
+                              <Typography
+                                variant="caption"
+                                color="text.secondary"
+                              >
+                                {new Date(bts.startDate).toLocaleDateString(
+                                  'fr-FR',
+                                  {
+                                    day: 'numeric',
+                                    month: 'long',
+                                    year: 'numeric',
+                                  },
+                                )}{' '}
+                                • {bts.currentParticipants} joueurs
+                              </Typography>
+                            </Box>
+                            <Chip
+                              label="Terminé"
+                              size="small"
+                              sx={{
+                                fontWeight: 700,
+                                fontSize: '0.65rem',
+                                height: 22,
+                                bgcolor: 'rgba(255,255,255,0.06)',
+                                color: 'text.secondary',
+                              }}
+                            />
+                          </Stack>
+                        </Box>
+                      </Paper>
+                    </Link>
+                  </Grid>
+                );
+              })}
+            </Grid>
+          </Box>
+        )}
+
         {/* Community Tournament Series */}
         <Box sx={{ mb: { xs: 6, md: 8 } }}>
           <Box
@@ -327,7 +484,7 @@ export default async function TournamentsPage() {
                 width: 4,
                 height: 28,
                 borderRadius: 2,
-                background: 'linear-gradient(180deg, #dc2626 0%, #fbbf24 100%)',
+                background: 'linear-gradient(180deg, #fbbf24 0%, #f87171 100%)',
               }}
             />
             <Typography
@@ -336,7 +493,7 @@ export default async function TournamentsPage() {
               sx={{ letterSpacing: -0.5 }}
             >
               Séries{' '}
-              <Box component="span" sx={{ color: '#dc2626' }}>
+              <Box component="span" sx={{ color: '#fbbf24' }}>
                 Communautaires
               </Box>
             </Typography>
@@ -435,56 +592,6 @@ export default async function TournamentsPage() {
           </Grid>
         </Box>
 
-        {/* Live Tournaments */}
-        {live.length > 0 && (
-          <Box sx={{ mb: { xs: 6, md: 8 } }}>
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 1.5,
-                mb: 3,
-              }}
-            >
-              <Box
-                sx={{
-                  width: 4,
-                  height: 28,
-                  borderRadius: 2,
-                  bgcolor: '#ef4444',
-                }}
-              />
-              <Typography
-                variant="h5"
-                fontWeight="900"
-                sx={{ letterSpacing: -0.5 }}
-              >
-                En{' '}
-                <Box component="span" sx={{ color: '#ef4444' }}>
-                  Direct
-                </Box>
-              </Typography>
-              <Chip
-                label="LIVE"
-                size="small"
-                sx={{
-                  fontWeight: 900,
-                  fontSize: '0.65rem',
-                  height: 22,
-                  bgcolor: '#ef4444',
-                  color: '#fff',
-                  animation: 'pulse 2s infinite',
-                  '@keyframes pulse': {
-                    '0%, 100%': { opacity: 1 },
-                    '50%': { opacity: 0.5 },
-                  },
-                }}
-              />
-            </Box>
-            <TournamentCardGrid tournaments={live} />
-          </Box>
-        )}
-
         {/* Upcoming Tournaments */}
         {upcoming.length > 0 && (
           <Box sx={{ mb: { xs: 6, md: 8 } }}>
@@ -532,7 +639,7 @@ export default async function TournamentsPage() {
         )}
 
         {/* No upcoming tournaments message */}
-        {upcoming.length === 0 && live.length === 0 && (
+        {upcoming.length === 0 && (
           <Paper
             elevation={0}
             sx={{
