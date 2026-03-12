@@ -187,7 +187,7 @@ export default async function AboutPage() {
           background:
             'linear-gradient(135deg, #dc2626 0%, #991b1b 50%, #7f1d1d 100%)',
           color: 'white',
-          py: { xs: 8, md: 12 },
+          py: { xs: 4, md: 12 },
           position: 'relative',
           overflow: 'hidden',
         }}

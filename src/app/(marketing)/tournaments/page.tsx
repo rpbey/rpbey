@@ -181,8 +181,8 @@ export default async function TournamentsPage() {
         {/* ── Hero ── */}
         <Box
           sx={{
-            pt: { xs: 5, md: 8 },
-            pb: { xs: 4, md: 6 },
+            pt: { xs: 2, md: 8 },
+            pb: { xs: 2, md: 6 },
             textAlign: 'center',
           }}
         >
@@ -192,8 +192,8 @@ export default async function TournamentsPage() {
             sx={{
               fontWeight: 900,
               letterSpacing: '-0.03em',
-              fontSize: { xs: '2.5rem', md: '3.5rem' },
-              mb: 2,
+              fontSize: { xs: '1.8rem', md: '3.5rem' },
+              mb: 1,
             }}
           >
             Nos{' '}

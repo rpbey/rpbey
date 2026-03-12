@@ -59,8 +59,8 @@ export function TeamClientContent({
         sx={{
           background: `linear-gradient(135deg, ${primaryColor} 0%, ${theme.palette.primary.dark} 100%)`,
           color: 'white',
-          pt: { xs: 10, md: 14 },
-          pb: { xs: 8, md: 12 },
+          pt: { xs: 4, md: 14 },
+          pb: { xs: 4, md: 12 },
           position: 'relative',
           overflow: 'hidden',
         }}
@@ -79,7 +79,7 @@ export function TeamClientContent({
         <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
           <Breadcrumbs
             separator={<NavigateNext fontSize="small" />}
-            sx={{ color: 'rgba(255,255,255,0.7)', mb: 4 }}
+            sx={{ color: 'rgba(255,255,255,0.7)', mb: { xs: 2, md: 4 } }}
           >
             <Link href="/" style={{ color: 'inherit', textDecoration: 'none' }}>
               Accueil
@@ -90,7 +90,7 @@ export function TeamClientContent({
           <Typography
             variant="h1"
             sx={{
-              fontSize: { xs: '2.5rem', md: '4rem' },
+              fontSize: { xs: '1.8rem', md: '4rem' },
               fontWeight: 900,
               mb: 2,
               textShadow: '0 4px 12px rgba(0,0,0,0.2)',

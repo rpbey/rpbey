@@ -94,7 +94,7 @@ export default function HomeClient({
           display: 'flex',
           alignItems: { xs: 'flex-start', md: 'center' },
           overflow: 'hidden',
-          pt: { xs: 4, md: 0 },
+          pt: { xs: 1, md: 0 },
           bgcolor: 'black', // Pure black base for video/image contrast
         }}
       >
@@ -156,8 +156,8 @@ export default function HomeClient({
           sx={{
             position: 'relative',
             zIndex: 3, // Above all background layers
-            px: { xs: 3, md: 4 },
-            py: { xs: 8, md: 10 },
+            px: { xs: 2.5, md: 4 },
+            py: { xs: 4, md: 10 },
           }}
         >
           <Grid container spacing={6} alignItems="center">
@@ -211,15 +211,15 @@ export default function HomeClient({
                   variant="h1"
                   sx={{
                     fontSize: {
-                      xs: 'clamp(2.5rem, 10vw, 3.5rem)',
+                      xs: 'clamp(2rem, 9vw, 3rem)',
                       sm: '4.5rem',
                       md: '5.5rem',
                       lg: '6.5rem',
                     },
                     fontWeight: 900,
-                    lineHeight: { xs: 1.1, md: 0.95 },
+                    lineHeight: { xs: 1.05, md: 0.95 },
                     letterSpacing: '-0.05em',
-                    mb: 3,
+                    mb: { xs: 2, md: 3 },
                     textTransform: 'uppercase',
                     textAlign: { xs: 'center', md: 'left' },
                     fontVariationSettings: '"wght" 900, "opsz" 100',
@@ -245,7 +245,7 @@ export default function HomeClient({
 
                 <Box
                   sx={{
-                    mb: 5,
+                    mb: { xs: 3, md: 5 },
                     pl: 0.5,
                     borderLeft: { xs: 'none', md: '4px solid #dc2626' },
                     textAlign: { xs: 'center', md: 'left' },
@@ -271,10 +271,10 @@ export default function HomeClient({
                     size="large"
                     sx={{
                       width: { xs: '100%', sm: 'auto' },
-                      height: 64,
-                      px: 6,
+                      height: { xs: 48, sm: 64 },
+                      px: { xs: 4, sm: 6 },
                       borderRadius: '32px', // MD3 Full Round
-                      fontSize: '1.1rem',
+                      fontSize: { xs: '0.95rem', sm: '1.1rem' },
                       fontWeight: 800,
                       background: '#dc2626',
                       color: 'white',
@@ -295,7 +295,7 @@ export default function HomeClient({
                     size="large"
                     sx={{
                       width: { xs: '100%', sm: 'auto' },
-                      height: 64,
+                      height: { xs: 48, sm: 64 },
                       px: 4,
                       borderRadius: '32px',
                       borderWidth: 2,
@@ -366,7 +366,7 @@ export default function HomeClient({
       </Box>
 
       {/* Sections with Surface Colors */}
-      <Box sx={{ bgcolor: 'surface.low', py: 10 }}>
+      <Box sx={{ bgcolor: 'surface.low', py: { xs: 5, md: 10 } }}>
         <Container maxWidth="lg">
           <Grid container spacing={4}>
             <Grid size={{ xs: 12, md: 5 }}>
@@ -450,7 +450,7 @@ export default function HomeClient({
 
       <TournamentVideo videoId="4T_oJDeY8PU" />
 
-      <Container maxWidth="lg" sx={{ py: 10 }}>
+      <Container maxWidth="lg" sx={{ py: { xs: 5, md: 10 } }}>
         <FeedMyPartnership />
       </Container>
     </LazyMotion>

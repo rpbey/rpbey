@@ -94,7 +94,7 @@ export default function RulesPage() {
           background:
             'linear-gradient(135deg, #dc2626 0%, #991b1b 50%, #7f1d1d 100%)',
           color: 'white',
-          py: { xs: 8, md: 10 },
+          py: { xs: 4, md: 10 },
           position: 'relative',
           overflow: 'hidden',
         }}
@@ -115,7 +115,7 @@ export default function RulesPage() {
             textAlign="center"
             sx={{
               mb: 2,
-              fontSize: { xs: '2.5rem', md: '3.75rem' },
+              fontSize: { xs: '1.8rem', md: '3.75rem' },
               textTransform: 'uppercase',
               letterSpacing: '0.1em',
             }}
