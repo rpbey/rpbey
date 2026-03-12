@@ -1,137 +1,103 @@
 /**
  * RPB - Public Profile Page
- * Publicly accessible blader profile
+ * Publicly accessible blader profile with dynamic metadata
  */
 
-'use client';
+import type { Metadata } from 'next';
+import { prisma } from '@/lib/prisma';
+import PublicProfile from './_components/PublicProfile';
 
-import Box from '@mui/material/Box';
-import Container from '@mui/material/Container';
-import Grid from '@mui/material/Grid';
-import Skeleton from '@mui/material/Skeleton';
-import Typography from '@mui/material/Typography';
-import { use } from 'react';
-import useSWR from 'swr';
-import {
-  BladerProfileHeader,
-  FavoritePartsCard,
-  MatchHistory,
-  ProfileDecksSection,
-  RivalriesCard,
-  UserProfileStatsCard,
-} from '@/components/profile';
-import type { UserStats } from '@/lib/stats';
-
-interface ProfilePageProps {
+interface PageProps {
   params: Promise<{ id: string }>;
 }
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
+  const { id } = await params;
 
-export default function PublicProfilePage({ params }: ProfilePageProps) {
-  const { id } = use(params);
+  const user = await prisma.user.findUnique({
+    where: { id },
+    select: {
+      name: true,
+      image: true,
+      profile: {
+        select: {
+          bladerName: true,
+          rankingPoints: true,
+          wins: true,
+          losses: true,
+          tournamentWins: true,
+        },
+      },
+    },
+  });
 
-  const { data: statsData, isLoading: statsLoading } = useSWR<{
-    data: UserStats;
-  }>(id ? `/api/stats?userId=${id}` : null, fetcher);
+  if (!user) {
+    return {
+      title: 'Profil introuvable',
+      description: 'Ce profil de blader est introuvable sur RPB.',
+    };
+  }
 
-  const { data: userData, isLoading: userLoading } = useSWR(
-    id ? `/api/users/${id}` : null,
-    fetcher,
-  );
+  const bladerName = user.profile?.bladerName ?? user.name ?? 'Blader';
+  const wins = user.profile?.wins ?? 0;
+  const losses = user.profile?.losses ?? 0;
+  const totalMatches = wins + losses;
+  const winRate =
+    totalMatches > 0 ? Math.round((wins / totalMatches) * 100) : 0;
+  const points = user.profile?.rankingPoints ?? 0;
+  const tournamentWins = user.profile?.tournamentWins ?? 0;
 
-  const stats = statsData?.data;
-  const user = userData?.data;
+  // Build a rich description
+  const descriptionParts: string[] = [`Profil de ${bladerName} sur RPB.`];
 
-  const handleDownloadCard = async () => {
-    const response = await fetch(`/api/users/${id}/card`);
-    if (response.ok) {
-      const blob = await response.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${stats?.bladerName ?? 'profile'}-card.png`;
-      a.click();
-      URL.revokeObjectURL(url);
-    }
+  if (totalMatches > 0) {
+    descriptionParts.push(`${wins}V/${losses}D (${winRate}% de victoires).`);
+  }
+
+  if (points > 0) {
+    descriptionParts.push(`${points} points au classement.`);
+  }
+
+  if (tournamentWins > 0) {
+    descriptionParts.push(
+      `${tournamentWins} tournoi${tournamentWins > 1 ? 's' : ''} remporté${tournamentWins > 1 ? 's' : ''}.`,
+    );
+  }
+
+  const description = descriptionParts.join(' ');
+  const avatarUrl = user.image;
+
+  return {
+    title: `${bladerName} - Profil`,
+    description,
+    openGraph: {
+      title: `${bladerName} - Profil | RPB`,
+      description,
+      type: 'profile',
+      ...(avatarUrl && {
+        images: [
+          {
+            url: avatarUrl,
+            width: 256,
+            height: 256,
+            alt: `Avatar de ${bladerName}`,
+          },
+        ],
+      }),
+    },
+    twitter: {
+      card: 'summary',
+      title: `${bladerName} - Profil | RPB`,
+      description,
+      ...(avatarUrl && { images: [avatarUrl] }),
+    },
   };
+}
 
-  if (statsLoading || userLoading) {
-    return (
-      <Container maxWidth="lg" sx={{ py: 4 }}>
-        <Skeleton
-          variant="rectangular"
-          height={200}
-          sx={{ borderRadius: 2, mb: 3 }}
-        />
-        <Grid container spacing={3}>
-          <Grid size={{ xs: 12, md: 8 }}>
-            <Skeleton
-              variant="rectangular"
-              height={300}
-              sx={{ borderRadius: 2 }}
-            />
-          </Grid>
-          <Grid size={{ xs: 12, md: 4 }}>
-            <Skeleton
-              variant="rectangular"
-              height={300}
-              sx={{ borderRadius: 2 }}
-            />
-          </Grid>
-        </Grid>
-      </Container>
-    );
-  }
+export default async function PublicProfilePage({ params }: PageProps) {
+  const { id } = await params;
 
-  if (!stats) {
-    return (
-      <Container maxWidth="lg" sx={{ py: 4 }}>
-        <Box textAlign="center" py={8}>
-          <Typography variant="h5" color="text.secondary">
-            Profil introuvable
-          </Typography>
-        </Box>
-      </Container>
-    );
-  }
-
-  return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Box sx={{ mb: 4 }}>
-        <BladerProfileHeader
-          stats={stats}
-          avatarUrl={user?.profile?.avatarUrl ?? user?.image}
-          joinDate={user?.createdAt}
-          bio={user?.profile?.bio}
-          challongeUsername={stats.challongeUsername}
-          onDownloadCard={handleDownloadCard}
-          isOwnProfile={false}
-        />
-      </Box>
-
-      <Grid container spacing={3}>
-        {/* Main content */}
-        <Grid size={{ xs: 12, md: 8 }}>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-            <UserProfileStatsCard stats={stats} />
-            <ProfileDecksSection userId={id} isOwnProfile={false} />
-            <MatchHistory userId={id} />
-          </Box>
-        </Grid>
-
-        {/* Sidebar */}
-        <Grid size={{ xs: 12, md: 4 }}>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-            <RivalriesCard rivalries={stats.rivalries} />
-            <FavoritePartsCard
-              blades={stats.mostUsedBlades}
-              ratchets={stats.mostUsedRatchets}
-              bits={stats.mostUsedBits}
-            />
-          </Box>
-        </Grid>
-      </Grid>
-    </Container>
-  );
+  return <PublicProfile id={id} />;
 }
