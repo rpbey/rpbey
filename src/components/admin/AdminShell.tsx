@@ -48,6 +48,7 @@ const ADMIN_NAV_ITEMS = [
   { label: 'Meta', path: '/admin/meta', icon: Hub },
   { label: 'Contenu', path: '/admin/content', icon: Article },
   { label: 'Gestion SATR', path: '/admin/satr', icon: WorkspacePremium },
+  { label: 'Gestion WB', path: '/admin/wb', icon: WorkspacePremium },
   { label: 'Tournois', path: '/admin/tournaments', icon: TrophyIcon },
   { label: 'Classements', path: '/admin/rankings', icon: Leaderboard },
   { label: 'Équipe', path: '/admin/staff', icon: People },

@@ -1,11 +1,16 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import EventIcon from '@mui/icons-material/Event';
+import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
 import Container from '@mui/material/Container';
+import Grid from '@mui/material/Grid';
+import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import type { Metadata } from 'next';
+import Image from 'next/image';
+import Link from 'next/link';
 import { TournamentCardGrid } from '@/components/cards/TournamentCard';
 import { PageHeader } from '@/components/ui';
 import type { TournamentStatus } from '@/components/ui/StatusChip';
@@ -129,6 +134,123 @@ export default async function TournamentsPage() {
         title="Tournois"
         description="Participez aux tournois Beyblade X organisés par la communauté RPB."
       />
+
+      {/* Community Tournament Series */}
+      <Box sx={{ mb: 8 }}>
+        <Typography
+          variant="h5"
+          fontWeight="900"
+          sx={{ mb: 3, letterSpacing: -0.5 }}
+        >
+          Séries <span style={{ color: '#dc2626' }}>Communautaires</span>
+        </Typography>
+        <Grid container spacing={3}>
+          <Grid size={{ xs: 12, md: 6 }}>
+            <Paper
+              component={Link}
+              href="/tournaments/satr"
+              sx={{
+                p: 3,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 2.5,
+                borderRadius: 4,
+                bgcolor: 'rgba(251, 191, 36, 0.05)',
+                border: '1px solid rgba(251, 191, 36, 0.15)',
+                textDecoration: 'none',
+                color: 'inherit',
+                transition: 'all 0.2s ease',
+                '&:hover': {
+                  bgcolor: 'rgba(251, 191, 36, 0.1)',
+                  borderColor: 'rgba(251, 191, 36, 0.3)',
+                  transform: 'translateY(-2px)',
+                },
+              }}
+            >
+              <Box
+                sx={{
+                  position: 'relative',
+                  width: 56,
+                  height: 28,
+                  flexShrink: 0,
+                }}
+              >
+                <Image
+                  src="/satr-logo.webp"
+                  alt="SATR"
+                  fill
+                  style={{ objectFit: 'contain' }}
+                />
+              </Box>
+              <Box sx={{ flex: 1, minWidth: 0 }}>
+                <Typography
+                  variant="subtitle1"
+                  fontWeight="900"
+                  sx={{ color: '#fbbf24' }}
+                >
+                  Sun After The Reign
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                  Beyblade Battle Tournament • Classement & Historique
+                </Typography>
+              </Box>
+              <NavigateNextIcon sx={{ color: 'rgba(251, 191, 36, 0.5)' }} />
+            </Paper>
+          </Grid>
+          <Grid size={{ xs: 12, md: 6 }}>
+            <Paper
+              component={Link}
+              href="/tournaments/wb"
+              sx={{
+                p: 3,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 2.5,
+                borderRadius: 4,
+                bgcolor: 'rgba(248, 113, 113, 0.05)',
+                border: '1px solid rgba(248, 113, 113, 0.15)',
+                textDecoration: 'none',
+                color: 'inherit',
+                transition: 'all 0.2s ease',
+                '&:hover': {
+                  bgcolor: 'rgba(248, 113, 113, 0.1)',
+                  borderColor: 'rgba(248, 113, 113, 0.3)',
+                  transform: 'translateY(-2px)',
+                },
+              }}
+            >
+              <Box
+                sx={{
+                  position: 'relative',
+                  width: 44,
+                  height: 44,
+                  flexShrink: 0,
+                }}
+              >
+                <Image
+                  src="/wb-logo.jpg"
+                  alt="Wild Breakers"
+                  fill
+                  style={{ objectFit: 'contain', borderRadius: '50%' }}
+                />
+              </Box>
+              <Box sx={{ flex: 1, minWidth: 0 }}>
+                <Typography
+                  variant="subtitle1"
+                  fontWeight="900"
+                  sx={{ color: '#f87171' }}
+                >
+                  Wild Breakers
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                  Ultime Bataille • Classement & Historique
+                </Typography>
+              </Box>
+              <NavigateNextIcon sx={{ color: 'rgba(248, 113, 113, 0.5)' }} />
+            </Paper>
+          </Grid>
+        </Grid>
+      </Box>
 
       {/* Live Tournaments */}
       {live.length > 0 && (
