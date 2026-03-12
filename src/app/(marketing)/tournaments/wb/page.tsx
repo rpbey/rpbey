@@ -11,6 +11,7 @@ import {
 } from '@mui/material';
 import type { SvgIconProps } from '@mui/material/SvgIcon';
 import type { WbBlader, WbRanking } from '@prisma/client';
+import Image from 'next/image';
 import { Suspense } from 'react';
 import RankingSearch from '@/components/rankings/RankingSearch';
 import { WbBladersTable } from '@/components/rankings/WbBladersTable';
@@ -204,7 +205,7 @@ export default async function WbPage({ searchParams }: WbPageProps) {
             px: { xs: 1, md: 0 },
           }}
         >
-          {/* Left: Title */}
+          {/* Left: Logo */}
           <Box
             sx={{
               flex: 1,
@@ -213,18 +214,21 @@ export default async function WbPage({ searchParams }: WbPageProps) {
               width: '100%',
             }}
           >
-            <Typography
-              variant="h5"
+            <Box
               sx={{
-                fontWeight: 900,
-                letterSpacing: 2,
-                color: '#f87171',
-                textTransform: 'uppercase',
-                textShadow: '0 0 20px rgba(248, 113, 113, 0.3)',
+                position: 'relative',
+                width: { xs: 60, md: 80 },
+                height: { xs: 60, md: 80 },
               }}
             >
-              Wild Breakers
-            </Typography>
+              <Image
+                src="/wb-logo.jpg"
+                alt="Wild Breakers Logo"
+                fill
+                style={{ objectFit: 'contain', borderRadius: '50%' }}
+                priority
+              />
+            </Box>
           </Box>
 
           {/* Center: Search */}
