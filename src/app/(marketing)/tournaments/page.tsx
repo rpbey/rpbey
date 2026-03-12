@@ -1,18 +1,21 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import EventIcon from '@mui/icons-material/Event';
+import GroupsIcon from '@mui/icons-material/Groups';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
+import Stack from '@mui/material/Stack';
+import { alpha } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { TournamentCardGrid } from '@/components/cards/TournamentCard';
-import { PageHeader } from '@/components/ui';
 import type { TournamentStatus } from '@/components/ui/StatusChip';
 import { prisma } from '@/lib/prisma';
 
@@ -29,7 +32,6 @@ export const metadata: Metadata = {
   },
 };
 
-// Map DB status to TournamentCard status
 function mapDbStatus(status: string): TournamentStatus {
   const mapping: Record<string, TournamentStatus> = {
     UPCOMING: 'upcoming',
@@ -43,8 +45,34 @@ function mapDbStatus(status: string): TournamentStatus {
   return mapping[status] || 'pending';
 }
 
+const SERIES = [
+  {
+    id: 'satr',
+    name: 'Sun After The Reign',
+    subtitle: 'Beyblade Battle Tournament',
+    href: '/tournaments/satr',
+    logo: '/satr-logo.webp',
+    logoWidth: 56,
+    logoHeight: 28,
+    logoRounded: false,
+    color: '#fbbf24',
+    colorRgb: '251, 191, 36',
+  },
+  {
+    id: 'wb',
+    name: 'Wild Breakers',
+    subtitle: 'Ultime Bataille',
+    href: '/tournaments/wb',
+    logo: '/wb-logo.jpg',
+    logoWidth: 44,
+    logoHeight: 44,
+    logoRounded: true,
+    color: '#f87171',
+    colorRgb: '248, 113, 113',
+  },
+] as const;
+
 export default async function TournamentsPage() {
-  // 1. Load DB tournaments
   const dbTournaments = await prisma.tournament.findMany({
     orderBy: { date: 'desc' },
     include: {
@@ -54,7 +82,6 @@ export default async function TournamentsPage() {
     },
   });
 
-  // 2. Load scraped JSON tournaments
   const exportDir = join(process.cwd(), 'data/exports');
   let scrapedTournaments: Array<{
     id: string;
@@ -99,7 +126,6 @@ export default async function TournamentsPage() {
     console.error('Failed to load scraped tournaments:', error);
   }
 
-  // 3. Convert DB tournaments to card format
   const dbScrapedIds = new Set(['bts2', 'bts3']);
   const dbCards = dbTournaments
     .filter((t) => !dbScrapedIds.has(t.id))
@@ -113,7 +139,6 @@ export default async function TournamentsPage() {
       maxParticipants: t.maxPlayers,
     }));
 
-  // 4. Categorize
   const upcoming = dbCards.filter(
     (t) =>
       t.status === 'upcoming' ||
@@ -128,226 +153,519 @@ export default async function TournamentsPage() {
     ...scrapedTournaments,
   ];
 
+  const totalTournaments = dbCards.length + scrapedTournaments.length;
+  const totalParticipants =
+    dbTournaments.reduce((sum, t) => sum + t._count.participants, 0) +
+    scrapedTournaments.reduce((sum, t) => sum + t.currentParticipants, 0);
+
+  const stats = [
+    {
+      label: 'Tournois',
+      value: totalTournaments,
+      icon: EmojiEventsIcon,
+      color: '#fbbf24',
+    },
+    {
+      label: 'Participations',
+      value: totalParticipants,
+      icon: GroupsIcon,
+      color: '#dc2626',
+    },
+    {
+      label: 'Séries',
+      value: SERIES.length,
+      icon: EventIcon,
+      color: '#60a5fa',
+    },
+  ];
+
   return (
-    <Container maxWidth="lg" sx={{ py: { xs: 4, md: 8 } }}>
-      <PageHeader
-        title="Tournois"
-        description="Participez aux tournois Beyblade X organisés par la communauté RPB."
-      />
-
-      {/* Community Tournament Series */}
-      <Box sx={{ mb: 8 }}>
-        <Typography
-          variant="h5"
-          fontWeight="900"
-          sx={{ mb: 3, letterSpacing: -0.5 }}
-        >
-          Séries <span style={{ color: '#dc2626' }}>Communautaires</span>
-        </Typography>
-        <Grid container spacing={3}>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Paper
-              component={Link}
-              href="/tournaments/satr"
-              sx={{
-                p: 3,
-                display: 'flex',
-                alignItems: 'center',
-                gap: 2.5,
-                borderRadius: 4,
-                bgcolor: 'rgba(251, 191, 36, 0.05)',
-                border: '1px solid rgba(251, 191, 36, 0.15)',
-                textDecoration: 'none',
-                color: 'inherit',
-                transition: 'all 0.2s ease',
-                '&:hover': {
-                  bgcolor: 'rgba(251, 191, 36, 0.1)',
-                  borderColor: 'rgba(251, 191, 36, 0.3)',
-                  transform: 'translateY(-2px)',
-                },
-              }}
-            >
-              <Box
-                sx={{
-                  position: 'relative',
-                  width: 56,
-                  height: 28,
-                  flexShrink: 0,
-                }}
-              >
-                <Image
-                  src="/satr-logo.webp"
-                  alt="SATR"
-                  fill
-                  style={{ objectFit: 'contain' }}
-                />
-              </Box>
-              <Box sx={{ flex: 1, minWidth: 0 }}>
-                <Typography
-                  variant="subtitle1"
-                  fontWeight="900"
-                  sx={{ color: '#fbbf24' }}
-                >
-                  Sun After The Reign
-                </Typography>
-                <Typography variant="caption" color="text.secondary">
-                  Beyblade Battle Tournament • Classement & Historique
-                </Typography>
-              </Box>
-              <NavigateNextIcon sx={{ color: 'rgba(251, 191, 36, 0.5)' }} />
-            </Paper>
-          </Grid>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Paper
-              component={Link}
-              href="/tournaments/wb"
-              sx={{
-                p: 3,
-                display: 'flex',
-                alignItems: 'center',
-                gap: 2.5,
-                borderRadius: 4,
-                bgcolor: 'rgba(248, 113, 113, 0.05)',
-                border: '1px solid rgba(248, 113, 113, 0.15)',
-                textDecoration: 'none',
-                color: 'inherit',
-                transition: 'all 0.2s ease',
-                '&:hover': {
-                  bgcolor: 'rgba(248, 113, 113, 0.1)',
-                  borderColor: 'rgba(248, 113, 113, 0.3)',
-                  transform: 'translateY(-2px)',
-                },
-              }}
-            >
-              <Box
-                sx={{
-                  position: 'relative',
-                  width: 44,
-                  height: 44,
-                  flexShrink: 0,
-                }}
-              >
-                <Image
-                  src="/wb-logo.jpg"
-                  alt="Wild Breakers"
-                  fill
-                  style={{ objectFit: 'contain', borderRadius: '50%' }}
-                />
-              </Box>
-              <Box sx={{ flex: 1, minWidth: 0 }}>
-                <Typography
-                  variant="subtitle1"
-                  fontWeight="900"
-                  sx={{ color: '#f87171' }}
-                >
-                  Wild Breakers
-                </Typography>
-                <Typography variant="caption" color="text.secondary">
-                  Ultime Bataille • Classement & Historique
-                </Typography>
-              </Box>
-              <NavigateNextIcon sx={{ color: 'rgba(248, 113, 113, 0.5)' }} />
-            </Paper>
-          </Grid>
-        </Grid>
-      </Box>
-
-      {/* Live Tournaments */}
-      {live.length > 0 && (
-        <Box sx={{ mb: 8 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 4 }}>
-            <Typography
-              variant="h5"
-              fontWeight="900"
-              sx={{ letterSpacing: -0.5 }}
-            >
-              En <span style={{ color: '#dc2626' }}>Direct</span>
-            </Typography>
-            <Chip
-              label="LIVE"
-              color="error"
-              size="small"
-              sx={{
-                fontWeight: 900,
-                animation: 'pulse 2s infinite',
-                '@keyframes pulse': {
-                  '0%, 100%': { opacity: 1 },
-                  '50%': { opacity: 0.6 },
-                },
-              }}
-            />
-          </Box>
-          <TournamentCardGrid tournaments={live} />
-        </Box>
-      )}
-
-      {/* Upcoming Tournaments */}
-      {upcoming.length > 0 && (
-        <Box sx={{ mb: 8 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 4 }}>
-            <EventIcon sx={{ color: 'primary.main' }} />
-            <Typography
-              variant="h5"
-              fontWeight="900"
-              sx={{ letterSpacing: -0.5 }}
-            >
-              Prochains <span style={{ color: '#dc2626' }}>Tournois</span>
-            </Typography>
-          </Box>
-          <TournamentCardGrid tournaments={upcoming} />
-        </Box>
-      )}
-
-      {/* No upcoming tournaments message */}
-      {upcoming.length === 0 && live.length === 0 && (
+    <Box
+      sx={{
+        minHeight: '100vh',
+        position: 'relative',
+        bgcolor: 'background.default',
+        pb: 8,
+        '&::before': {
+          content: '""',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          height: { xs: '50vh', md: '60vh' },
+          background: `radial-gradient(ellipse 80% 50% at 50% -10%, ${alpha('#dc2626', 0.12)} 0%, transparent 70%)`,
+          pointerEvents: 'none',
+        },
+      }}
+    >
+      <Container
+        maxWidth="lg"
+        sx={{ position: 'relative', px: { xs: 2, sm: 3 } }}
+      >
+        {/* Hero Header */}
         <Box
           sx={{
+            pt: { xs: 5, md: 8 },
+            pb: { xs: 4, md: 6 },
             textAlign: 'center',
-            py: 6,
-            mb: 8,
-            bgcolor: 'rgba(255,255,255,0.02)',
-            borderRadius: 4,
-            border: '1px dashed rgba(255,255,255,0.1)',
           }}
         >
-          <EventIcon sx={{ fontSize: 48, color: 'text.disabled', mb: 1 }} />
-          <Typography variant="h6" color="text.secondary">
-            Aucun tournoi à venir pour le moment
-          </Typography>
-          <Typography variant="body2" color="text.disabled" sx={{ mt: 0.5 }}>
-            Rejoignez notre Discord pour être informé des prochains événements.
-          </Typography>
-        </Box>
-      )}
-
-      {/* Completed Tournaments */}
-      <Box sx={{ mb: 10 }}>
-        <Typography
-          variant="h5"
-          fontWeight="900"
-          sx={{ mb: 4, letterSpacing: -0.5 }}
-        >
-          Tournois <span style={{ color: '#dc2626' }}>Terminés</span>
-        </Typography>
-
-        {completed.length > 0 ? (
-          <TournamentCardGrid tournaments={completed} />
-        ) : (
-          <Box
+          <Typography
+            variant="h2"
+            component="h1"
             sx={{
-              textAlign: 'center',
-              py: 6,
-              bgcolor: 'rgba(255,255,255,0.02)',
-              borderRadius: 4,
-              border: '1px dashed rgba(255,255,255,0.1)',
+              fontWeight: 900,
+              letterSpacing: '-0.03em',
+              fontSize: { xs: '2.5rem', md: '3.5rem' },
+              mb: 2,
             }}
           >
-            <Typography variant="h6" color="text.secondary">
-              Aucun tournoi terminé.
+            Nos{' '}
+            <Box
+              component="span"
+              sx={{
+                background: 'linear-gradient(135deg, #dc2626 0%, #fbbf24 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                filter: 'drop-shadow(0 4px 12px rgba(220, 38, 38, 0.3))',
+              }}
+            >
+              Tournois
+            </Box>
+          </Typography>
+          <Typography
+            variant="h6"
+            color="text.secondary"
+            sx={{
+              maxWidth: 600,
+              mx: 'auto',
+              fontWeight: 400,
+              fontSize: { xs: '0.95rem', md: '1.1rem' },
+              lineHeight: 1.6,
+              opacity: 0.7,
+            }}
+          >
+            Participez aux tournois Beyblade X organisés par la communauté RPB.
+            Classements, résultats et inscriptions.
+          </Typography>
+        </Box>
+
+        {/* Stats Bar */}
+        <Stack
+          direction="row"
+          spacing={{ xs: 1.5, md: 3 }}
+          justifyContent="center"
+          sx={{ mb: { xs: 5, md: 7 } }}
+        >
+          {stats.map((stat) => (
+            <Paper
+              key={stat.label}
+              elevation={0}
+              sx={{
+                px: { xs: 2, md: 3.5 },
+                py: { xs: 1.5, md: 2 },
+                borderRadius: 3,
+                bgcolor: 'rgba(255,255,255,0.03)',
+                border: '1px solid rgba(255,255,255,0.06)',
+                textAlign: 'center',
+                minWidth: { xs: 90, md: 130 },
+                transition: 'all 0.2s ease',
+                '&:hover': {
+                  bgcolor: 'rgba(255,255,255,0.05)',
+                  borderColor: alpha(stat.color, 0.2),
+                  transform: 'translateY(-2px)',
+                },
+              }}
+            >
+              <stat.icon
+                sx={{
+                  fontSize: { xs: 20, md: 24 },
+                  color: stat.color,
+                  mb: 0.5,
+                  opacity: 0.8,
+                }}
+              />
+              <Typography
+                variant="h5"
+                fontWeight="900"
+                sx={{
+                  color: stat.color,
+                  fontSize: { xs: '1.3rem', md: '1.6rem' },
+                  lineHeight: 1,
+                }}
+              >
+                {stat.value}
+              </Typography>
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                sx={{
+                  fontSize: { xs: '0.6rem', md: '0.7rem' },
+                  textTransform: 'uppercase',
+                  letterSpacing: 1,
+                  fontWeight: 600,
+                }}
+              >
+                {stat.label}
+              </Typography>
+            </Paper>
+          ))}
+        </Stack>
+
+        {/* Community Tournament Series */}
+        <Box sx={{ mb: { xs: 6, md: 8 } }}>
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1.5,
+              mb: 3,
+            }}
+          >
+            <Box
+              sx={{
+                width: 4,
+                height: 28,
+                borderRadius: 2,
+                background: 'linear-gradient(180deg, #dc2626 0%, #fbbf24 100%)',
+              }}
+            />
+            <Typography
+              variant="h5"
+              fontWeight="900"
+              sx={{ letterSpacing: -0.5 }}
+            >
+              Séries{' '}
+              <Box component="span" sx={{ color: '#dc2626' }}>
+                Communautaires
+              </Box>
             </Typography>
           </Box>
+
+          <Grid container spacing={{ xs: 2, md: 3 }}>
+            {SERIES.map((series) => (
+              <Grid key={series.id} size={{ xs: 12, md: 6 }}>
+                <Paper
+                  component={Link}
+                  href={series.href}
+                  elevation={0}
+                  sx={{
+                    p: { xs: 2.5, md: 3 },
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: { xs: 2, md: 2.5 },
+                    borderRadius: 4,
+                    bgcolor: alpha(series.color, 0.04),
+                    border: `1px solid ${alpha(series.color, 0.12)}`,
+                    textDecoration: 'none',
+                    color: 'inherit',
+                    position: 'relative',
+                    overflow: 'hidden',
+                    transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                    '&::before': {
+                      content: '""',
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      background: `radial-gradient(circle at 0% 50%, ${alpha(series.color, 0.08)} 0%, transparent 60%)`,
+                      opacity: 0,
+                      transition: 'opacity 0.3s ease',
+                    },
+                    '&:hover': {
+                      bgcolor: alpha(series.color, 0.08),
+                      borderColor: alpha(series.color, 0.3),
+                      transform: 'translateY(-3px)',
+                      boxShadow: `0 8px 24px ${alpha(series.color, 0.15)}`,
+                      '&::before': { opacity: 1 },
+                    },
+                  }}
+                >
+                  <Box
+                    sx={{
+                      position: 'relative',
+                      width: series.logoWidth,
+                      height: series.logoHeight,
+                      flexShrink: 0,
+                      zIndex: 1,
+                    }}
+                  >
+                    <Image
+                      src={series.logo}
+                      alt={series.name}
+                      fill
+                      style={{
+                        objectFit: 'contain',
+                        borderRadius: series.logoRounded ? '50%' : 0,
+                      }}
+                    />
+                  </Box>
+                  <Box sx={{ flex: 1, minWidth: 0, zIndex: 1 }}>
+                    <Typography
+                      variant="subtitle1"
+                      fontWeight="900"
+                      sx={{ color: series.color, lineHeight: 1.3 }}
+                    >
+                      {series.name}
+                    </Typography>
+                    <Typography
+                      variant="caption"
+                      color="text.secondary"
+                      sx={{ fontSize: { xs: '0.7rem', md: '0.75rem' } }}
+                    >
+                      {series.subtitle} • Classement & Historique
+                    </Typography>
+                  </Box>
+                  <NavigateNextIcon
+                    sx={{
+                      color: alpha(series.color, 0.4),
+                      fontSize: 28,
+                      zIndex: 1,
+                      transition: 'transform 0.2s ease',
+                      '.MuiPaper-root:hover &': {
+                        transform: 'translateX(4px)',
+                      },
+                    }}
+                  />
+                </Paper>
+              </Grid>
+            ))}
+          </Grid>
+        </Box>
+
+        {/* Live Tournaments */}
+        {live.length > 0 && (
+          <Box sx={{ mb: { xs: 6, md: 8 } }}>
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1.5,
+                mb: 3,
+              }}
+            >
+              <Box
+                sx={{
+                  width: 4,
+                  height: 28,
+                  borderRadius: 2,
+                  bgcolor: '#ef4444',
+                }}
+              />
+              <Typography
+                variant="h5"
+                fontWeight="900"
+                sx={{ letterSpacing: -0.5 }}
+              >
+                En{' '}
+                <Box component="span" sx={{ color: '#ef4444' }}>
+                  Direct
+                </Box>
+              </Typography>
+              <Chip
+                label="LIVE"
+                size="small"
+                sx={{
+                  fontWeight: 900,
+                  fontSize: '0.65rem',
+                  height: 22,
+                  bgcolor: '#ef4444',
+                  color: '#fff',
+                  animation: 'pulse 2s infinite',
+                  '@keyframes pulse': {
+                    '0%, 100%': { opacity: 1 },
+                    '50%': { opacity: 0.5 },
+                  },
+                }}
+              />
+            </Box>
+            <TournamentCardGrid tournaments={live} />
+          </Box>
         )}
-      </Box>
-    </Container>
+
+        {/* Upcoming Tournaments */}
+        {upcoming.length > 0 && (
+          <Box sx={{ mb: { xs: 6, md: 8 } }}>
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1.5,
+                mb: 3,
+              }}
+            >
+              <Box
+                sx={{
+                  width: 4,
+                  height: 28,
+                  borderRadius: 2,
+                  bgcolor: '#60a5fa',
+                }}
+              />
+              <EventIcon sx={{ color: '#60a5fa', fontSize: 22 }} />
+              <Typography
+                variant="h5"
+                fontWeight="900"
+                sx={{ letterSpacing: -0.5 }}
+              >
+                Prochains{' '}
+                <Box component="span" sx={{ color: '#60a5fa' }}>
+                  Tournois
+                </Box>
+              </Typography>
+              <Chip
+                label={upcoming.length}
+                size="small"
+                sx={{
+                  fontWeight: 800,
+                  fontSize: '0.7rem',
+                  height: 22,
+                  bgcolor: alpha('#60a5fa', 0.15),
+                  color: '#60a5fa',
+                }}
+              />
+            </Box>
+            <TournamentCardGrid tournaments={upcoming} />
+          </Box>
+        )}
+
+        {/* No upcoming tournaments message */}
+        {upcoming.length === 0 && live.length === 0 && (
+          <Paper
+            elevation={0}
+            sx={{
+              textAlign: 'center',
+              py: { xs: 5, md: 7 },
+              px: 3,
+              mb: { xs: 6, md: 8 },
+              borderRadius: 4,
+              bgcolor: 'rgba(255,255,255,0.02)',
+              border: '1px dashed rgba(255,255,255,0.08)',
+              position: 'relative',
+              overflow: 'hidden',
+              '&::before': {
+                content: '""',
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                width: 200,
+                height: 200,
+                borderRadius: '50%',
+                background: `radial-gradient(circle, ${alpha('#60a5fa', 0.06)} 0%, transparent 70%)`,
+              },
+            }}
+          >
+            <EventIcon
+              sx={{
+                fontSize: { xs: 44, md: 56 },
+                color: alpha('#60a5fa', 0.3),
+                mb: 2,
+              }}
+            />
+            <Typography
+              variant="h6"
+              fontWeight="700"
+              color="text.secondary"
+              sx={{ mb: 0.5 }}
+            >
+              Aucun tournoi à venir
+            </Typography>
+            <Typography
+              variant="body2"
+              sx={{
+                color: 'rgba(255,255,255,0.35)',
+                maxWidth: 360,
+                mx: 'auto',
+              }}
+            >
+              Rejoignez notre Discord pour être informé des prochains événements
+              et inscriptions.
+            </Typography>
+          </Paper>
+        )}
+
+        {/* Completed Tournaments */}
+        <Box sx={{ mb: 6 }}>
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1.5,
+              mb: 3,
+            }}
+          >
+            <Box
+              sx={{
+                width: 4,
+                height: 28,
+                borderRadius: 2,
+                bgcolor: 'rgba(255,255,255,0.2)',
+              }}
+            />
+            <Typography
+              variant="h5"
+              fontWeight="900"
+              sx={{ letterSpacing: -0.5 }}
+            >
+              Tournois{' '}
+              <Box component="span" sx={{ color: '#dc2626' }}>
+                Terminés
+              </Box>
+            </Typography>
+            {completed.length > 0 && (
+              <Chip
+                label={completed.length}
+                size="small"
+                sx={{
+                  fontWeight: 800,
+                  fontSize: '0.7rem',
+                  height: 22,
+                  bgcolor: 'rgba(255,255,255,0.06)',
+                  color: 'text.secondary',
+                }}
+              />
+            )}
+          </Box>
+
+          {completed.length > 0 ? (
+            <TournamentCardGrid tournaments={completed} />
+          ) : (
+            <Paper
+              elevation={0}
+              sx={{
+                textAlign: 'center',
+                py: 6,
+                borderRadius: 4,
+                bgcolor: 'rgba(255,255,255,0.02)',
+                border: '1px dashed rgba(255,255,255,0.08)',
+              }}
+            >
+              <Typography variant="h6" color="text.secondary" fontWeight="600">
+                Aucun tournoi terminé.
+              </Typography>
+            </Paper>
+          )}
+        </Box>
+
+        {/* Footer watermark */}
+        <Typography
+          variant="caption"
+          color="text.secondary"
+          sx={{
+            display: 'block',
+            textAlign: 'center',
+            mt: 6,
+            opacity: 0.15,
+            letterSpacing: 2,
+            fontWeight: 900,
+            fontSize: { xs: '0.55rem', md: '0.7rem' },
+          }}
+        >
+          RÉPUBLIQUE POPULAIRE DU BEYBLADE • TOURNOIS OFFICIELS
+        </Typography>
+      </Container>
+    </Box>
   );
 }
