@@ -2,27 +2,12 @@ import pg from 'pg';
 import { readdir, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import 'dotenv/config';
+import { normalizeWbName } from './wb-name-aliases.js';
 
 const { Pool } = pg;
 const connectionString = process.env.DATABASE_URL || 'postgresql://postgres:rpb_password@localhost:5432/rpb_dashboard';
 const pool = new Pool({ connectionString });
 const SEASON = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
-
-// Manual name overrides for known aliases/staff accounts
-const NAME_OVERRIDES: Record<string, string> = {
-  'staff wb azure': 'Azure',
-  'wb fulguris': 'Fulguris',
-};
-
-/**
- * Normalize a player name: split on "/", trim, apply overrides.
- */
-function normalizeName(rawName: string): string {
-  let name = rawName.split('/')[0]!.trim();
-  const key = name.toLowerCase();
-  if (NAME_OVERRIDES[key]) name = NAME_OVERRIDES[key]!;
-  return name;
-}
 
 /**
  * Parse loser score from a score string.
@@ -62,7 +47,7 @@ async function run() {
     // Build normalized ID->name map for this tournament
     const idToName = new Map<number, string>();
     for (const p of t.participants) {
-      const normalized = normalizeName(p.name);
+      const normalized = normalizeWbName(p.name);
       const key = normalized.toLowerCase();
       if (!canonicalNames.has(key)) canonicalNames.set(key, normalized);
       idToName.set(p.id, canonicalNames.get(key)!);
@@ -92,7 +77,7 @@ async function run() {
 
     const slug = t.metadata.url.split('/').pop() || '';
     for (const p of t.participants) {
-      const key = normalizeName(p.name).toLowerCase();
+      const key = normalizeWbName(p.name).toLowerCase();
       const s = playerStats.get(key);
       if (s && !s.tournaments.includes(slug)) {
         s.tournaments.push(slug);

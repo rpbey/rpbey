@@ -1,19 +1,6 @@
 import { readFile, readdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
-
-const NAME_OVERRIDES: Record<string, string> = {
-  'staff wb azure': 'Azure',
-  'wb fulguris': 'Fulguris',
-};
-
-function normalizeName(rawName: string): string {
-  const [beforeSlash] = rawName.split('/');
-  let name = (beforeSlash ?? rawName).trim();
-  const key = name.toLowerCase();
-  const override = NAME_OVERRIDES[key];
-  if (override) name = override;
-  return name;
-}
+import { normalizeWbName } from './wb-name-aliases.js';
 
 interface ScrapedParticipant {
   id: number;
@@ -69,7 +56,7 @@ async function run() {
     const tournamentName = data.metadata.url.split('/').pop() || file;
 
     for (const p of data.participants) {
-      const normalized = normalizeName(p.name);
+      const normalized = normalizeWbName(p.name);
       const key = normalized.toLowerCase();
 
       if (!canonicalNames.has(key)) canonicalNames.set(key, normalized);
