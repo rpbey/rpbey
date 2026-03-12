@@ -10,12 +10,17 @@ interface UserWithRole extends User {
 const authRoutes = ['/sign-in', '/sign-up'];
 const passwordRoutes = ['/reset-password', '/forgot-password'];
 const privateRoutes = ['/dashboard'];
+// Admin routes that should be publicly accessible (no auth required)
+const publicAdminRoutes = ['/admin-login'];
 
 export default async function proxy(request: NextRequest) {
   const pathName = request.nextUrl.pathname;
   const isAuthRoute = authRoutes.includes(pathName);
   const isPasswordRoute = passwordRoutes.includes(pathName);
-  const isAdminRoute = pathName.startsWith('/admin');
+  const isPublicAdminRoute = publicAdminRoutes.some((route) =>
+    pathName.startsWith(route),
+  );
+  const isAdminRoute = pathName.startsWith('/admin') && !isPublicAdminRoute;
   const isPrivateRoute = privateRoutes.some((route) =>
     pathName.startsWith(route),
   );
