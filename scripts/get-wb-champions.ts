@@ -10,22 +10,32 @@ async function run() {
   for (const file of files) {
     const content = await readFile(join(dataDir, file), 'utf-8');
     const data = JSON.parse(content);
-    const tournamentName = data.metadata.url.split('/').pop()?.toUpperCase() || file;
+
+    // Extract UB number from file name (wb_ub{N}.json)
+    const ubMatch = file.match(/wb_ub(\d+)\.json/);
+    const ubNumber = ubMatch ? parseInt(ubMatch[1]) : 0;
+    const slug = file.replace('.json', '');
 
     const winner = data.participants.find((p: any) => p.finalRank === 1);
 
     if (winner) {
+      // Clean winner name: take only the part before "/" if it contains combos
+      const cleanName = winner.name.includes('/')
+        ? winner.name.split('/')[0].trim()
+        : winner.name.trim();
+
       champions.push({
-        tournament: tournamentName,
-        winner: winner.name,
-        date: tournamentName.match(/\d+/) ? `UB #${tournamentName.match(/\d+/)[0]}` : tournamentName,
+        tournament: slug,
+        winner: cleanName,
+        date: `UB #${ubNumber}`,
       });
     }
   }
 
+  // Sort by UB number descending
   champions.sort((a, b) => {
-    const numA = parseInt(a.tournament.match(/\d+/)?.[0] || '0');
-    const numB = parseInt(b.tournament.match(/\d+/)?.[0] || '0');
+    const numA = parseInt(a.date.match(/\d+/)?.[0] || '0');
+    const numB = parseInt(b.date.match(/\d+/)?.[0] || '0');
     return numB - numA;
   });
 

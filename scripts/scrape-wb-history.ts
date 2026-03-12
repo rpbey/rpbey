@@ -3,51 +3,49 @@ import { join } from 'node:path';
 import { ChallongeScraper } from '../bot/src/lib/scrapers/challonge-scraper.js';
 
 /**
- * Script pour scraper l'historique des tournois Wild Breakers (Ultim Batailles)
+ * Script pour scraper l'historique des tournois Wild Breakers (Ultime Batailles)
  *
  * Usage: pnpm tsx scripts/scrape-wb-history.ts
  *
- * Les slugs des tournois doivent être ajoutés manuellement ci-dessous
- * après avoir vérifié la page Challonge :
- * https://challonge.com/fr/users/wild_breakers/tournaments
+ * Source: https://challonge.com/fr/users/wild_breakers/tournaments
  */
+
+// Mapping: Challonge slug → UB number (for consistent file naming)
+const TOURNAMENT_MAP: Record<string, number> = {
+  WildBreakersUltimeBataille3: 3,
+  WildBreakersUltimeBataille4: 4,
+  WildBreakersUltimeBataille5: 5,
+  fbzzxt43: 6,
+  WildBreakersUltimeBataille7: 7,
+  WildBreakersUltimeBataille8: 8,
+  i2ltr3yr: 9,
+  go8qg261: 10,
+  WildBreakersUltimeBataille11: 11,
+  UB12: 12,
+  UB13: 13,
+};
 
 async function run() {
   const scraper = new ChallongeScraper();
   await scraper.init();
 
-  // Liste des slugs de tournois Wild Breakers (Ultim Batailles)
-  // À compléter avec les vrais slugs depuis Challonge
-  const uniqueSlugs = [
-    // Exemples - remplacer par les vrais slugs :
-    // 'wb_ub1',
-    // 'wb_ub2',
-    // etc.
-  ];
-
-  if (uniqueSlugs.length === 0) {
-    console.log('⚠️  Aucun slug de tournoi configuré.');
-    console.log('   Éditez scripts/scrape-wb-history.ts pour ajouter les slugs.');
-    console.log('   Consultez : https://challonge.com/fr/users/wild_breakers/tournaments');
-    await scraper.close();
-    return;
-  }
-
-  console.log(`🎯 Tournois ciblés (${uniqueSlugs.length}) :`, uniqueSlugs);
+  const slugs = Object.keys(TOURNAMENT_MAP);
+  console.log(`🎯 Tournois ciblés (${slugs.length}) :`, slugs);
 
   const resultsDir = join(process.cwd(), 'data', 'wb_history');
   await mkdir(resultsDir, { recursive: true });
 
-  for (const slug of uniqueSlugs) {
+  for (const slug of slugs) {
+    const ubNumber = TOURNAMENT_MAP[slug]!;
     try {
-      console.log(`\n--- 🏆 Scraping: ${slug} ---`);
+      console.log(`\n--- 🏆 Scraping: UB #${ubNumber} (${slug}) ---`);
       const data = await scraper.scrape(slug);
 
-      const fileName = `${slug}.json`;
+      const fileName = `wb_ub${ubNumber}.json`;
       await writeFile(join(resultsDir, fileName), JSON.stringify(data, null, 2));
-      console.log(`✅ ${data.participants.length} joueurs, ${data.matches.length} matchs sauvegardés dans data/wb_history/${fileName}`);
+      console.log(`✅ ${data.participants.length} joueurs, ${data.matches.length} matchs → data/wb_history/${fileName}`);
     } catch (error) {
-      console.error(`❌ Erreur pour ${slug}:`, error);
+      console.error(`❌ Erreur pour UB #${ubNumber} (${slug}):`, error);
     }
   }
 
