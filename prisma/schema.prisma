@@ -585,6 +585,40 @@ model SatrBlader {
   @@map("satr_bladers")
 }
 
+model WbRanking {
+  id            String   @id @default(cuid())
+  rank          Int
+  playerName    String
+  score         Int
+  wins          Int
+  losses        Int      @default(0)
+  participation Int
+  winRate       String
+  pointsAverage String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([playerName])
+  @@index([score])
+  @@map("wb_rankings")
+}
+
+model WbBlader {
+  id               String   @id @default(cuid())
+  name             String   @unique
+  totalWins        Int      @default(0)
+  totalLosses      Int      @default(0)
+  tournamentWins   Int      @default(0)
+  tournamentsCount Int      @default(0)
+  history          Json
+  linkedUserId     String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([name])
+  @@map("wb_bladers")
+}
+
 enum BeyType {
   ATTACK
   DEFENSE
