@@ -345,90 +345,91 @@ export default async function TournamentsPage() {
           <Grid container spacing={{ xs: 2, md: 3 }}>
             {SERIES.map((series) => (
               <Grid key={series.id} size={{ xs: 12, md: 6 }}>
-                <Paper
-                  component={Link}
+                <Link
                   href={series.href}
-                  elevation={0}
-                  sx={{
-                    p: { xs: 2.5, md: 3 },
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: { xs: 2, md: 2.5 },
-                    borderRadius: 4,
-                    bgcolor: alpha(series.color, 0.04),
-                    border: `1px solid ${alpha(series.color, 0.12)}`,
-                    textDecoration: 'none',
-                    color: 'inherit',
-                    position: 'relative',
-                    overflow: 'hidden',
-                    transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
-                    '&::before': {
-                      content: '""',
-                      position: 'absolute',
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
-                      background: `radial-gradient(circle at 0% 50%, ${alpha(series.color, 0.08)} 0%, transparent 60%)`,
-                      opacity: 0,
-                      transition: 'opacity 0.3s ease',
-                    },
-                    '&:hover': {
-                      bgcolor: alpha(series.color, 0.08),
-                      borderColor: alpha(series.color, 0.3),
-                      transform: 'translateY(-3px)',
-                      boxShadow: `0 8px 24px ${alpha(series.color, 0.15)}`,
-                      '&::before': { opacity: 1 },
-                    },
-                  }}
+                  style={{ textDecoration: 'none', color: 'inherit' }}
                 >
-                  <Box
+                  <Paper
+                    elevation={0}
                     sx={{
+                      p: { xs: 2.5, md: 3 },
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: { xs: 2, md: 2.5 },
+                      borderRadius: 4,
+                      bgcolor: alpha(series.color, 0.04),
+                      border: `1px solid ${alpha(series.color, 0.12)}`,
                       position: 'relative',
-                      width: series.logoWidth,
-                      height: series.logoHeight,
-                      flexShrink: 0,
-                      zIndex: 1,
-                    }}
-                  >
-                    <Image
-                      src={series.logo}
-                      alt={series.name}
-                      fill
-                      style={{
-                        objectFit: 'contain',
-                        borderRadius: series.logoRounded ? '50%' : 0,
-                      }}
-                    />
-                  </Box>
-                  <Box sx={{ flex: 1, minWidth: 0, zIndex: 1 }}>
-                    <Typography
-                      variant="subtitle1"
-                      fontWeight="900"
-                      sx={{ color: series.color, lineHeight: 1.3 }}
-                    >
-                      {series.name}
-                    </Typography>
-                    <Typography
-                      variant="caption"
-                      color="text.secondary"
-                      sx={{ fontSize: { xs: '0.7rem', md: '0.75rem' } }}
-                    >
-                      {series.subtitle} • Classement & Historique
-                    </Typography>
-                  </Box>
-                  <NavigateNextIcon
-                    sx={{
-                      color: alpha(series.color, 0.4),
-                      fontSize: 28,
-                      zIndex: 1,
-                      transition: 'transform 0.2s ease',
-                      '.MuiPaper-root:hover &': {
-                        transform: 'translateX(4px)',
+                      overflow: 'hidden',
+                      transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                      '&::before': {
+                        content: '""',
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        background: `radial-gradient(circle at 0% 50%, ${alpha(series.color, 0.08)} 0%, transparent 60%)`,
+                        opacity: 0,
+                        transition: 'opacity 0.3s ease',
+                      },
+                      '&:hover': {
+                        bgcolor: alpha(series.color, 0.08),
+                        borderColor: alpha(series.color, 0.3),
+                        transform: 'translateY(-3px)',
+                        boxShadow: `0 8px 24px ${alpha(series.color, 0.15)}`,
+                        '&::before': { opacity: 1 },
                       },
                     }}
-                  />
-                </Paper>
+                  >
+                    <Box
+                      sx={{
+                        position: 'relative',
+                        width: series.logoWidth,
+                        height: series.logoHeight,
+                        flexShrink: 0,
+                        zIndex: 1,
+                      }}
+                    >
+                      <Image
+                        src={series.logo}
+                        alt={series.name}
+                        fill
+                        style={{
+                          objectFit: 'contain',
+                          borderRadius: series.logoRounded ? '50%' : 0,
+                        }}
+                      />
+                    </Box>
+                    <Box sx={{ flex: 1, minWidth: 0, zIndex: 1 }}>
+                      <Typography
+                        variant="subtitle1"
+                        fontWeight="900"
+                        sx={{ color: series.color, lineHeight: 1.3 }}
+                      >
+                        {series.name}
+                      </Typography>
+                      <Typography
+                        variant="caption"
+                        color="text.secondary"
+                        sx={{ fontSize: { xs: '0.7rem', md: '0.75rem' } }}
+                      >
+                        {series.subtitle} • Classement & Historique
+                      </Typography>
+                    </Box>
+                    <NavigateNextIcon
+                      sx={{
+                        color: alpha(series.color, 0.4),
+                        fontSize: 28,
+                        zIndex: 1,
+                        transition: 'transform 0.2s ease',
+                        '.MuiPaper-root:hover &': {
+                          transform: 'translateX(4px)',
+                        },
+                      }}
+                    />
+                  </Paper>
+                </Link>
               </Grid>
             ))}
           </Grid>
