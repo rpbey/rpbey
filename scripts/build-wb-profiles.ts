@@ -1,12 +1,25 @@
 import { readFile, readdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
+const NAME_OVERRIDES: Record<string, string> = {
+  'staff wb azure': 'Azure',
+  'wb fulguris': 'Fulguris',
+};
+
+function normalizeName(rawName: string): string {
+  const [beforeSlash] = rawName.split('/');
+  let name = (beforeSlash ?? rawName).trim();
+  const key = name.toLowerCase();
+  const override = NAME_OVERRIDES[key];
+  if (override) name = override;
+  return name;
+}
+
 interface ScrapedParticipant {
   id: number;
   name: string;
   seed: number;
   finalRank?: number;
-  challongeUsername?: string;
 }
 
 interface ScrapedMatch {
@@ -43,6 +56,9 @@ async function run() {
   const dataDir = join(process.cwd(), 'data', 'wb_history');
   const files = (await readdir(dataDir)).filter(f => f.endsWith('.json'));
 
+  // Canonical name map: lowercase -> display name (first occurrence wins)
+  const canonicalNames = new Map<string, string>();
+  // Blader profiles keyed by lowercase normalized name
   const bladerMap = new Map<string, BladerProfile>();
 
   console.log(`📊 Traitement de ${files.length} fichiers de tournois WB...`);
@@ -53,10 +69,15 @@ async function run() {
     const tournamentName = data.metadata.url.split('/').pop() || file;
 
     for (const p of data.participants) {
-      const name = p.name.trim();
-      if (!bladerMap.has(name)) {
-        bladerMap.set(name, {
-          name,
+      const normalized = normalizeName(p.name);
+      const key = normalized.toLowerCase();
+
+      if (!canonicalNames.has(key)) canonicalNames.set(key, normalized);
+      const displayName = canonicalNames.get(key)!;
+
+      if (!bladerMap.has(key)) {
+        bladerMap.set(key, {
+          name: displayName,
           totalWins: 0,
           totalLosses: 0,
           tournamentWins: 0,
@@ -65,7 +86,7 @@ async function run() {
         });
       }
 
-      const profile = bladerMap.get(name)!;
+      const profile = bladerMap.get(key)!;
 
       let tWins = 0;
       let tLosses = 0;

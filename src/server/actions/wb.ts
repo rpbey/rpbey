@@ -7,7 +7,13 @@ import { prisma } from '@/lib/prisma';
 
 // Season config: which UB numbers belong to each season
 const SEASON_CONFIG: Record<number, number[]> = {
-  1: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+  1: [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
+};
+
+// Manual name overrides for known aliases/staff accounts
+const NAME_OVERRIDES: Record<string, string> = {
+  'staff wb azure': 'Azure',
+  'wb fulguris': 'Fulguris',
 };
 
 interface TournamentMatch {
@@ -56,6 +62,45 @@ interface PlayerStats {
   points: number;
   participations: number;
   tournaments: string[];
+  displayName: string;
+}
+
+/**
+ * Normalize a player name:
+ * - Split on "/" and take the first part (removes deck info)
+ * - Trim whitespace
+ * - Apply manual overrides for staff/alias accounts
+ * - Preserve original casing for display
+ */
+function normalizeName(rawName: string): string {
+  const [beforeSlash] = rawName.split('/');
+  let name = (beforeSlash ?? rawName).trim();
+  const overrideKey = name.toLowerCase();
+  const override = NAME_OVERRIDES[overrideKey];
+  if (override) name = override;
+  return name;
+}
+
+/**
+ * Parse loser score from a score string.
+ * Handles formats: "4-2", "0-5", "5-2,0-0" (multi-set: take first set)
+ * Returns the loser's game wins (the minimum of the two scores).
+ */
+function getLoserScore(scores: string): number | null {
+  if (!scores || scores === '0-0') return null;
+
+  // Handle multi-set scores like "5-2,0-0" — take the first set
+  const [firstSet] = scores.split(',');
+  if (!firstSet) return null;
+
+  const parts = firstSet.trim().split('-').map(Number);
+  if (parts.length !== 2) return null;
+  const a = parts[0];
+  const b = parts[1];
+  if (a === undefined || b === undefined || Number.isNaN(a) || Number.isNaN(b))
+    return null;
+  if (a === 0 && b === 0) return null;
+  return Math.min(a, b);
 }
 
 /**
@@ -96,35 +141,38 @@ async function loadTournamentData(season: number) {
 }
 
 /**
- * Parse loser score from a score string like "4-2" → 2.
+ * Build a normalized name lookup for a tournament.
+ * Maps participant Challonge IDs to their normalized, deduplicated names.
+ * Uses case-insensitive merging: the first occurrence's casing wins.
  */
-function getLoserScore(scores: string): number | null {
-  if (scores.length !== 3 || scores === '0-0') return null;
-  const parts = scores.split('-').map(Number);
-  const a = parts[0];
-  const b = parts[1];
-  if (
-    parts.length !== 2 ||
-    a === undefined ||
-    b === undefined ||
-    Number.isNaN(a) ||
-    Number.isNaN(b)
-  )
-    return null;
-  return Math.min(a, b);
+function buildNameMap(
+  participants: TournamentParticipant[],
+  canonicalNames: Map<string, string>,
+): Map<number, string> {
+  const idToName = new Map<number, string>();
+  for (const p of participants) {
+    const normalized = normalizeName(p.name);
+    const key = normalized.toLowerCase();
+
+    // Register canonical display name (first occurrence wins)
+    if (!canonicalNames.has(key)) {
+      canonicalNames.set(key, normalized);
+    }
+
+    idToName.set(p.id, canonicalNames.get(key)!);
+  }
+  return idToName;
 }
 
 /**
- * Compute WB ranking using the Ichigo algorithm (same as SATR).
+ * Compute WB ranking using the Ichigo algorithm with name normalization.
  */
 function computeRanking(tournaments: TournamentData[]) {
   const playerStats = new Map<string, PlayerStats>();
+  const canonicalNames = new Map<string, string>();
 
   for (const tournament of tournaments) {
-    const idToName = new Map<number, string>();
-    for (const p of tournament.participants) {
-      idToName.set(p.id, p.name);
-    }
+    const idToName = buildNameMap(tournament.participants, canonicalNames);
 
     for (const match of tournament.matches || []) {
       if (match.state !== 'complete' || !match.winnerId || !match.loserId)
@@ -134,29 +182,35 @@ function computeRanking(tournaments: TournamentData[]) {
       const loserName = idToName.get(match.loserId);
       if (!winnerName || !loserName) continue;
 
-      if (!playerStats.has(winnerName)) {
-        playerStats.set(winnerName, {
+      // Use lowercase key for stat merging
+      const wKey = winnerName.toLowerCase();
+      const lKey = loserName.toLowerCase();
+
+      if (!playerStats.has(wKey)) {
+        playerStats.set(wKey, {
           wins: 0,
           losses: 0,
           points: 0,
           participations: 0,
           tournaments: [],
+          displayName: winnerName,
         });
       }
-      const winner = playerStats.get(winnerName)!;
+      const winner = playerStats.get(wKey)!;
       winner.wins += 1;
       winner.points += 4;
 
-      if (!playerStats.has(loserName)) {
-        playerStats.set(loserName, {
+      if (!playerStats.has(lKey)) {
+        playerStats.set(lKey, {
           wins: 0,
           losses: 0,
           points: 0,
           participations: 0,
           tournaments: [],
+          displayName: loserName,
         });
       }
-      const loser = playerStats.get(loserName)!;
+      const loser = playerStats.get(lKey)!;
       loser.losses += 1;
       const loserScore = getLoserScore(match.scores);
       if (loserScore !== null) loser.points += loserScore;
@@ -164,7 +218,9 @@ function computeRanking(tournaments: TournamentData[]) {
 
     const slug = tournament.metadata.url.split('/').pop() || '';
     for (const p of tournament.participants) {
-      const stats = playerStats.get(p.name);
+      const normalized = normalizeName(p.name);
+      const key = normalized.toLowerCase();
+      const stats = playerStats.get(key);
       if (stats && !stats.tournaments.includes(slug)) {
         stats.tournaments.push(slug);
         stats.participations += 1;
@@ -184,7 +240,7 @@ function computeRanking(tournaments: TournamentData[]) {
     pointsAverage: string;
   }> = [];
 
-  for (const [name, stats] of playerStats) {
+  for (const [, stats] of playerStats) {
     const totalMatches = stats.wins + stats.losses;
     if (totalMatches === 0) continue;
 
@@ -207,7 +263,7 @@ function computeRanking(tournaments: TournamentData[]) {
 
     rankings.push({
       rank: 0,
-      playerName: name,
+      playerName: stats.displayName,
       score,
       wins: stats.wins,
       losses: stats.losses,
@@ -259,6 +315,7 @@ export async function syncWbRanking(season = 1) {
 
 /**
  * Get season stats: tournament count, unique participants, tournament metadata.
+ * Uses normalized names for accurate unique participant count.
  */
 export async function getWbSeasonStats(season = 1) {
   try {
@@ -266,7 +323,7 @@ export async function getWbSeasonStats(season = 1) {
     const uniqueNames = new Set<string>();
     for (const t of tournaments) {
       for (const p of t.participants) {
-        uniqueNames.add(p.name);
+        uniqueNames.add(normalizeName(p.name).toLowerCase());
       }
     }
 
@@ -285,6 +342,7 @@ export async function getWbSeasonStats(season = 1) {
 
 /**
  * Get match details for a specific player in a specific tournament.
+ * Uses normalized name matching to find the player across name variants.
  */
 export async function getWbPlayerTournamentMatches(
   tournamentSlug: string,
@@ -300,14 +358,15 @@ export async function getWbPlayerTournamentMatches(
     const content = await readFile(path, 'utf-8');
     const data: TournamentData = JSON.parse(content);
 
-    const idToName = new Map<number, string>();
-    for (const p of data.participants) {
-      idToName.set(p.id, p.name);
-    }
+    const canonicalNames = new Map<string, string>();
+    const idToName = buildNameMap(data.participants, canonicalNames);
 
-    const playerId = data.participants.find(
-      (p) => p.name.toLowerCase() === playerName.toLowerCase(),
-    )?.id;
+    // Find player by normalized name match
+    const searchKey = normalizeName(playerName).toLowerCase();
+    const playerId = data.participants.find((p) => {
+      const normalized = normalizeName(p.name).toLowerCase();
+      return normalized === searchKey;
+    })?.id;
 
     if (!playerId) return { success: true, data: [] };
 
@@ -327,10 +386,9 @@ export async function getWbPlayerTournamentMatches(
         };
       })
       .sort((a, b) => {
-        const aAbs = Math.abs(a.round);
-        const bAbs = Math.abs(b.round);
         if (a.round > 0 && b.round > 0) return a.round - b.round;
-        if (a.round < 0 && b.round < 0) return bAbs - aAbs;
+        if (a.round < 0 && b.round < 0)
+          return Math.abs(b.round) - Math.abs(a.round);
         return a.round > 0 ? -1 : 1;
       });
 
@@ -389,7 +447,7 @@ export async function getWbTournamentTop10(slug: string) {
       .slice(0, 10)
       .map((p) => ({
         rank: p.finalRank,
-        name: p.name,
+        name: normalizeName(p.name),
       }));
 
     return { success: true, data: top10 };

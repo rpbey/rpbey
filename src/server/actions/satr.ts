@@ -7,8 +7,8 @@ import { prisma } from '@/lib/prisma';
 
 // Season config: which BBT numbers belong to each season
 const SEASON_CONFIG: Record<number, number[]> = {
-  1: [12, 13, 14, 15, 16, 17, 18, 19, 20, 21],
-  2: [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22],
+  1: [13, 14, 15, 16, 17, 18, 19, 20, 21],
+  2: [13, 14, 15, 16, 17, 18, 19, 20, 21, 22],
 };
 
 interface TournamentMatch {
@@ -92,20 +92,24 @@ async function loadTournamentData(season: number) {
 }
 
 /**
- * Parse loser score from a score string like "4-2" → 2.
+ * Parse loser score from a score string.
+ * Handles formats: "4-2", "0-5", "5-2,0-0" (multi-set: take first set)
+ * Returns the loser's game wins (the minimum of the two scores).
  */
-function getLoserScore(scores: string): number {
-  const parts = scores.split('-').map(Number);
+function getLoserScore(scores: string): number | null {
+  if (!scores || scores === '0-0') return null;
+
+  // Handle multi-set scores like "5-2,0-0" — take the first set
+  const [firstSet] = scores.split(',');
+  if (!firstSet) return null;
+
+  const parts = firstSet.trim().split('-').map(Number);
+  if (parts.length !== 2) return null;
   const a = parts[0];
   const b = parts[1];
-  if (
-    parts.length !== 2 ||
-    a === undefined ||
-    b === undefined ||
-    Number.isNaN(a) ||
-    Number.isNaN(b)
-  )
-    return 0;
+  if (a === undefined || b === undefined || Number.isNaN(a) || Number.isNaN(b))
+    return null;
+  if (a === 0 && b === 0) return null;
   return Math.min(a, b);
 }
 
@@ -121,12 +125,16 @@ function getLoserScore(scores: string): number {
  *   score = floor(punish × winscore × 100000)
  */
 function computeRanking(tournaments: TournamentData[]) {
-  const playerStats = new Map<string, PlayerStats>();
+  const playerStats = new Map<string, PlayerStats & { displayName: string }>();
+  // Canonical name map: lowercase key -> display name (first occurrence wins)
+  const canonicalNames = new Map<string, string>();
 
   for (const tournament of tournaments) {
     const idToName = new Map<number, string>();
     for (const p of tournament.participants) {
-      idToName.set(p.id, p.name);
+      const key = p.name.toLowerCase().trim();
+      if (!canonicalNames.has(key)) canonicalNames.set(key, p.name.trim());
+      idToName.set(p.id, canonicalNames.get(key)!);
     }
 
     for (const match of tournament.matches || []) {
@@ -137,40 +145,43 @@ function computeRanking(tournaments: TournamentData[]) {
       const loserName = idToName.get(match.loserId);
       if (!winnerName || !loserName) continue;
 
-      const loserScore = getLoserScore(match.scores);
+      const wKey = winnerName.toLowerCase();
+      const lKey = loserName.toLowerCase();
 
-      // Winner
-      if (!playerStats.has(winnerName)) {
-        playerStats.set(winnerName, {
+      if (!playerStats.has(wKey)) {
+        playerStats.set(wKey, {
           wins: 0,
           losses: 0,
           points: 0,
           participations: 0,
           tournaments: [],
+          displayName: winnerName,
         });
       }
-      const winner = playerStats.get(winnerName)!;
+      const winner = playerStats.get(wKey)!;
       winner.wins += 1;
       winner.points += 4;
 
-      // Loser
-      if (!playerStats.has(loserName)) {
-        playerStats.set(loserName, {
+      if (!playerStats.has(lKey)) {
+        playerStats.set(lKey, {
           wins: 0,
           losses: 0,
           points: 0,
           participations: 0,
           tournaments: [],
+          displayName: loserName,
         });
       }
-      const loser = playerStats.get(loserName)!;
+      const loser = playerStats.get(lKey)!;
       loser.losses += 1;
-      loser.points += loserScore;
+      const loserScore = getLoserScore(match.scores);
+      if (loserScore !== null) loser.points += loserScore;
     }
 
     const slug = tournament.metadata.url.split('/').pop() || '';
     for (const p of tournament.participants) {
-      const stats = playerStats.get(p.name);
+      const key = p.name.toLowerCase().trim();
+      const stats = playerStats.get(key);
       if (stats && !stats.tournaments.includes(slug)) {
         stats.tournaments.push(slug);
         stats.participations += 1;
@@ -190,7 +201,7 @@ function computeRanking(tournaments: TournamentData[]) {
     pointsAverage: string;
   }> = [];
 
-  for (const [name, stats] of playerStats) {
+  for (const [, stats] of playerStats) {
     const totalMatches = stats.wins + stats.losses;
     if (totalMatches === 0) continue;
 
@@ -209,11 +220,11 @@ function computeRanking(tournaments: TournamentData[]) {
       punish = 0;
     }
 
-    const score = Math.floor(punish * winscore * 100000);
+    const score = Math.round(punish * winscore * 100000);
 
     rankings.push({
       rank: 0,
-      playerName: name,
+      playerName: stats.displayName,
       score,
       wins: stats.wins,
       losses: stats.losses,
@@ -273,7 +284,7 @@ export async function getSatrSeasonStats(season = 2) {
     const uniqueNames = new Set<string>();
     for (const t of tournaments) {
       for (const p of t.participants) {
-        uniqueNames.add(p.name);
+        uniqueNames.add(p.name.toLowerCase().trim());
       }
     }
 
