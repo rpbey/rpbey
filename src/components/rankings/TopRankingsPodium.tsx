@@ -49,8 +49,8 @@ export default function TopRankingsPodium({
         alignItems: { xs: 'stretch', md: 'flex-end' },
         justifyContent: 'center',
         gap: { xs: 1, sm: 1.5, md: 2 },
-        mb: { xs: 3, md: 8 },
-        mt: { xs: 1, md: 4 },
+        mb: { xs: 2, md: 4 },
+        mt: { xs: 1, md: 2 },
         perspective: '1000px',
         px: { xs: 1, sm: 0 },
       }}
@@ -81,7 +81,7 @@ export default function TopRankingsPodium({
                 textDecoration: 'none',
                 height: {
                   xs: 'auto',
-                  md: isFirst ? 280 : 240,
+                  md: isFirst ? 210 : 180,
                 },
                 minHeight: { xs: isFirst ? 80 : 68 },
                 display: 'flex',
@@ -133,22 +133,22 @@ export default function TopRankingsPodium({
 
               <CardContent
                 sx={{
-                  p: { xs: 0, md: 3 },
-                  pt: { xs: 0, md: 3 },
+                  p: { xs: 0, md: 2 },
+                  pt: { xs: 0, md: 2 },
                   display: 'flex',
                   flexDirection: { xs: 'row', md: 'column' },
                   alignItems: 'center',
                   gap: { xs: 1.5, md: 0 },
                   textAlign: { xs: 'left', md: 'center' },
                   width: '100%',
-                  '&:last-child': { pb: { xs: 0, md: 3 } },
+                  '&:last-child': { pb: { xs: 0, md: 2 } },
                 }}
               >
                 <Avatar
                   src={profile.user?.image || undefined}
                   sx={{
-                    width: { xs: 40, sm: 48, md: isFirst ? 90 : 72 },
-                    height: { xs: 40, sm: 48, md: isFirst ? 90 : 72 },
+                    width: { xs: 40, sm: 48, md: isFirst ? 68 : 56 },
+                    height: { xs: 40, sm: 48, md: isFirst ? 68 : 56 },
                     mx: { md: 'auto' },
                     mb: { xs: 0, md: 1.5 },
                     border: `2px solid ${rankColor}`,

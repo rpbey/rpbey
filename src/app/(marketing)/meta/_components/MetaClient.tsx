@@ -19,7 +19,7 @@ function sortCategories(categories: CategoryData[]): CategoryData[] {
 }
 
 export function MetaClient({ data }: { data: BbxWeeklyData }) {
-  const [period, setPeriod] = useState<PeriodKey>('2weeks');
+  const [period, setPeriod] = useState<PeriodKey>('4weeks');
   const periodData = data.periods[period];
   const sortedCategories = sortCategories(periodData.categories);
 

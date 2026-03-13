@@ -366,7 +366,7 @@ export default async function RankingsPage({
             fallback={
               <Box
                 sx={{
-                  height: { xs: 280, md: 350 },
+                  height: { xs: 200, md: 260 },
                   width: '100%',
                   bgcolor: 'rgba(255,255,255,0.02)',
                   borderRadius: 4,
