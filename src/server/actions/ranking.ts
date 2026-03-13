@@ -345,8 +345,9 @@ export async function recalculateRankings() {
           m.state === 'complete',
       );
       let winPts = 0;
-      for (const m of matchWins) {
-        winPts += m.round < 0 ? config.matchWinLoser : config.matchWinWinner;
+      // RPB tournaments: all wins count equally (no WB/LB distinction)
+      for (const _m of matchWins) {
+        winPts += config.matchWinWinner;
       }
       points += winPts;
 
