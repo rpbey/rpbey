@@ -204,7 +204,7 @@ export class DeckCommand {
   @Slash({ name: 'liste', description: 'Afficher tes decks' })
   @SlashGroup('deck')
   async list(interaction: CommandInteraction) {
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply();
     try {
       const user = await this.prisma.user.findFirst({
         where: { discordId: interaction.user.id },
@@ -298,7 +298,7 @@ export class DeckCommand {
     if (count >= 10)
       return interaction.reply({
         content: '❌ Max 10 decks.',
-        ephemeral: true,
+        ephemeral: false,
       });
 
     await this.prisma.deck.create({
@@ -502,7 +502,7 @@ export class DeckCommand {
     assistBladeId: string | undefined,
     interaction: CommandInteraction,
   ) {
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply();
 
     const user = await this.prisma.user.findUnique({
       where: { discordId: interaction.user.id },
@@ -615,7 +615,7 @@ export class DeckCommand {
     assistBladeId: string | undefined,
     interaction: CommandInteraction,
   ) {
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply();
     const user = await this.prisma.user.findUnique({
       where: { discordId: interaction.user.id },
       include: {
@@ -661,7 +661,7 @@ export class DeckCommand {
     deckId: string,
     interaction: CommandInteraction,
   ) {
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply();
     const user = await this.prisma.user.findUnique({
       where: { discordId: interaction.user.id },
       include: { decks: true },
@@ -700,7 +700,7 @@ export class DeckCommand {
     deckId: string,
     interaction: CommandInteraction,
   ) {
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply();
     const user = await this.prisma.user.findUnique({
       where: { discordId: interaction.user.id },
       include: { decks: true },

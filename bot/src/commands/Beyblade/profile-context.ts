@@ -17,7 +17,7 @@ import prisma from '../../lib/prisma.js';
 export class ProfileContextMenuCommand {
   @ContextMenu({ name: 'Profil Beyblade', type: ApplicationCommandType.User })
   async userHandler(interaction: UserContextMenuCommandInteraction) {
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply();
 
     const targetUser: User = interaction.targetUser;
 
