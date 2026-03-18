@@ -216,7 +216,10 @@ export class DeckCommand {
         },
       });
 
-      if (!user) return interaction.editReply("❌ Tu n'es pas inscrit.");
+      if (!user)
+        return interaction.editReply(
+          "❌ Tu n'as pas encore de compte. Crée-le ici : https://rpbey.fr/dashboard",
+        );
       if (user.decks.length === 0)
         return interaction.editReply(
           "📦 Tu n'as pas de deck. Utilise `/deck creer` ou `/deck rapide`.",
@@ -666,7 +669,10 @@ export class DeckCommand {
       where: { discordId: interaction.user.id },
       include: { decks: true },
     });
-    if (!user) return interaction.editReply("❌ Tu n'es pas inscrit.");
+    if (!user)
+      return interaction.editReply(
+        "❌ Tu n'as pas encore de compte. Crée-le ici : https://rpbey.fr/dashboard",
+      );
     const deck = user.decks.find((d) => d.id === deckId);
     if (!deck) return interaction.editReply('❌ Deck introuvable.');
 
@@ -705,7 +711,10 @@ export class DeckCommand {
       where: { discordId: interaction.user.id },
       include: { decks: true },
     });
-    if (!user) return interaction.editReply("❌ Tu n'es pas inscrit.");
+    if (!user)
+      return interaction.editReply(
+        "❌ Tu n'as pas encore de compte. Crée-le ici : https://rpbey.fr/dashboard",
+      );
     const deck = user.decks.find((d) => d.id === deckId);
     if (!deck) return interaction.editReply('❌ Deck introuvable.');
 
