@@ -58,45 +58,109 @@ export class WikiGroup {
   @SlashGroup('wiki')
   async meta(interaction: CommandInteraction) {
     await interaction.deferReply();
-    try {
-      const dataPath = path.resolve(process.cwd(), '..', 'data/meta.json');
-      if (fs.existsSync(dataPath)) {
-        const meta = JSON.parse(fs.readFileSync(dataPath, 'utf-8')) as {
-          updatedAt?: string;
-          categories?: { name: string; emoji: string; combos: string[] }[];
-        };
-        const date = meta.updatedAt
-          ? new Date(meta.updatedAt).toLocaleDateString('fr-FR', {
-              month: 'long',
-              year: 'numeric',
-            })
-          : new Date().toLocaleDateString('fr-FR', {
-              month: 'long',
-              year: 'numeric',
-            });
-        const embed = new EmbedBuilder()
-          .setTitle(`📊 Méta Beyblade X (${date})`)
-          .setColor(0xfbbf24)
-          .setFooter({
-            text: 'Consultez rpbey.fr/meta pour plus de détails.',
-          });
 
-        if (meta.categories) {
-          for (const cat of meta.categories.slice(0, 6)) {
-            embed.addFields({
-              name: `${cat.emoji} ${cat.name}`,
-              value: cat.combos.map((c) => `• ${c}`).join('\n') || 'N/A',
-              inline: true,
-            });
-          }
-        }
-        return interaction.editReply({ embeds: [embed] });
+    const CATEGORY_EMOJIS: Record<string, string> = {
+      Blade: '⚔️',
+      Ratchet: '⚙️',
+      Bit: '🔩',
+      'Lock Chip': '🔒',
+      'Assist Blade': '🛡️',
+    };
+
+    try {
+      const dataPath = path.resolve(
+        process.cwd(),
+        '..',
+        'data/bbx-weekly.json',
+      );
+      if (!fs.existsSync(dataPath)) {
+        return interaction.editReply({
+          embeds: [this.metaFallbackEmbed()],
+        });
       }
+
+      const data = JSON.parse(fs.readFileSync(dataPath, 'utf-8')) as {
+        scrapedAt: string;
+        periods: {
+          '2weeks': {
+            metadata: {
+              startDate: string;
+              endDate: string;
+              eventsScanned: number;
+            };
+            categories: {
+              category: string;
+              components: {
+                name: string;
+                score: number;
+                position_change: number | 'NEW';
+              }[];
+            }[];
+          };
+        };
+      };
+
+      const period = data.periods['2weeks'];
+      if (!period?.categories?.length) {
+        return interaction.editReply({
+          embeds: [this.metaFallbackEmbed()],
+        });
+      }
+
+      const { metadata } = period;
+      const startDate = new Date(metadata.startDate).toLocaleDateString(
+        'fr-FR',
+        { day: 'numeric', month: 'short' },
+      );
+      const endDate = new Date(metadata.endDate).toLocaleDateString('fr-FR', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+      });
+
+      const embed = new EmbedBuilder()
+        .setTitle('📊 Méta Beyblade X')
+        .setDescription(
+          `Période : **${startDate} — ${endDate}**\n` +
+            `${metadata.eventsScanned} tournois analysés · Source : [bbxweekly.com](https://bbxweekly.com)`,
+        )
+        .setColor(0xfbbf24)
+        .setFooter({
+          text: 'Détails complets sur rpbey.fr/meta',
+        })
+        .setTimestamp(new Date(data.scrapedAt));
+
+      for (const cat of period.categories) {
+        const emoji = CATEGORY_EMOJIS[cat.category] || '📦';
+        const top = cat.components.slice(0, 5);
+        const lines = top.map((c, i) => {
+          const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '▪️';
+          const trend =
+            c.position_change === 'NEW'
+              ? ' 🆕'
+              : c.position_change > 0
+                ? ` ↑${c.position_change}`
+                : c.position_change < 0
+                  ? ` ↓${Math.abs(c.position_change)}`
+                  : '';
+          return `${medal} **${c.name}** — ${c.score}pts${trend}`;
+        });
+        embed.addFields({
+          name: `${emoji} ${cat.category}`,
+          value: lines.join('\n'),
+          inline: true,
+        });
+      }
+
+      return interaction.editReply({ embeds: [embed] });
     } catch (err) {
       logger.error('Failed to load meta data:', err);
+      return interaction.editReply({ embeds: [this.metaFallbackEmbed()] });
     }
+  }
 
-    const embed = new EmbedBuilder()
+  private metaFallbackEmbed() {
+    return new EmbedBuilder()
       .setTitle('📊 Méta Beyblade X')
       .setColor(0xfbbf24)
       .setDescription(
@@ -105,7 +169,6 @@ export class WikiGroup {
           '[rpbey.fr/meta](https://rpbey.fr/meta)',
       )
       .setFooter({ text: 'Données mises à jour régulièrement sur le site.' });
-    return interaction.editReply({ embeds: [embed] });
   }
 
   @Slash({ name: 'formats', description: 'Formats de tournoi officiels' })
