@@ -22,6 +22,39 @@ const parseStat = (val: string | number | null | undefined): number => {
   return Number.isNaN(parsed) ? 0 : parsed;
 };
 
+// Map from option name patterns to part types for autocomplete
+const _PART_TYPE_MAP: Record<string, string> = {
+  blade: 'BLADE',
+  ratchet: 'RATCHET',
+  bit: 'BIT',
+  over: 'OVER_BLADE',
+  chip: 'LOCK_CHIP',
+  assist: 'ASSIST_BLADE',
+};
+
+function detectPartType(optionName: string): string {
+  // Check most specific first
+  if (optionName.includes('over')) return 'OVER_BLADE';
+  if (optionName.includes('chip')) return 'LOCK_CHIP';
+  if (optionName.includes('assist')) return 'ASSIST_BLADE';
+  if (optionName.includes('ratchet')) return 'RATCHET';
+  if (optionName.includes('bit')) return 'BIT';
+  return 'BLADE';
+}
+
+// Full include for deck items with all part relations
+const DECK_ITEMS_INCLUDE = {
+  orderBy: { position: 'asc' as const },
+  include: {
+    blade: true,
+    overBlade: true,
+    ratchet: true,
+    bit: true,
+    lockChip: true,
+    assistBlade: true,
+  },
+};
+
 @Discord()
 @SlashGroup({ name: 'deck', description: 'Gestion des équipements et decks' })
 @SlashGroup('deck')
@@ -29,7 +62,6 @@ const parseStat = (val: string | number | null | undefined): number => {
 export class DeckCommand {
   constructor(@inject(PrismaService) private prisma: PrismaService) {}
 
-  // --- Shared: get or create user ---
   private async getOrCreateUser(discordId: string, displayName: string) {
     let user = await this.prisma.user.findUnique({ where: { discordId } });
     if (!user) {
@@ -42,6 +74,84 @@ export class DeckCommand {
       });
     }
     return user;
+  }
+
+  // Check if a part is a CX blade
+  private async isCXBlade(partId: string): Promise<boolean> {
+    const part = await this.prisma.part.findUnique({
+      where: { id: partId },
+      select: { system: true },
+    });
+    return part?.system === 'CX';
+  }
+
+  // Build deck card data from items
+  private buildDeckCardData(
+    deckName: string,
+    ownerName: string,
+    isActive: boolean,
+    items: Array<{
+      blade?: {
+        name: string;
+        imageUrl?: string | null;
+        beyType?: string | null;
+        attack?: string | null;
+        defense?: string | null;
+        stamina?: string | null;
+        system?: string | null;
+      } | null;
+      overBlade?: { name: string } | null;
+      ratchet?: {
+        name: string;
+        attack?: string | null;
+        defense?: string | null;
+        stamina?: string | null;
+      } | null;
+      bit?: {
+        name: string;
+        attack?: string | null;
+        defense?: string | null;
+        stamina?: string | null;
+      } | null;
+      lockChip?: { name: string } | null;
+      assistBlade?: { name: string } | null;
+    }>,
+  ) {
+    return {
+      name: deckName,
+      ownerName,
+      isActive,
+      beys: items.map((item) => {
+        // Build combo name including CX parts
+        const parts: string[] = [];
+        if (item.lockChip) parts.push(item.lockChip.name);
+        parts.push(item.blade?.name || '?');
+        if (item.overBlade) parts.push(item.overBlade.name);
+        if (item.assistBlade) parts.push(item.assistBlade.name);
+
+        const isCX = item.blade?.system === 'CX';
+
+        return {
+          bladeName: isCX ? parts.join(' ') : item.blade?.name || '?',
+          ratchetName: item.ratchet?.name || '?',
+          bitName: item.bit?.name || '?',
+          bladeImageUrl: item.blade?.imageUrl || null,
+          beyType: item.blade?.beyType || null,
+          atk:
+            parseStat(item.blade?.attack) +
+            parseStat(item.ratchet?.attack) +
+            parseStat(item.bit?.attack),
+          def:
+            parseStat(item.blade?.defense) +
+            parseStat(item.ratchet?.defense) +
+            parseStat(item.bit?.defense),
+          sta:
+            parseStat(item.blade?.stamina) +
+            parseStat(item.ratchet?.stamina) +
+            parseStat(item.bit?.stamina),
+        };
+      }),
+    };
   }
 
   // --- Autocomplete handler ---
@@ -69,25 +179,27 @@ export class DeckCommand {
       );
     }
 
-    // Part autocomplete — detect type from option name
-    let type: 'BLADE' | 'RATCHET' | 'BIT' = 'BLADE';
-    if (focusedOption.name.includes('ratchet')) type = 'RATCHET';
-    else if (focusedOption.name.includes('bit')) type = 'BIT';
-    else if (focusedOption.name.includes('blade')) type = 'BLADE';
+    const type = detectPartType(focusedOption.name);
 
     const parts = await prisma.part.findMany({
-      where: { type, name: { contains: query, mode: 'insensitive' } },
+      where: {
+        type: type as never,
+        name: { contains: query, mode: 'insensitive' },
+      },
       take: 25,
       orderBy: { name: 'asc' },
     });
 
     return interaction.respond(
-      parts.map((p) => ({ name: p.name, value: p.id })),
+      parts.map((p) => ({
+        name: `${p.system ? `[${p.system}] ` : ''}${p.name}`,
+        value: p.id,
+      })),
     );
   }
 
   // =============================================
-  // /deck liste — View all decks
+  // /deck liste
   // =============================================
   @Slash({ name: 'liste', description: 'Afficher tes decks' })
   @SlashGroup('deck')
@@ -99,12 +211,7 @@ export class DeckCommand {
         include: {
           decks: {
             orderBy: { isActive: 'desc' },
-            include: {
-              items: {
-                orderBy: { position: 'asc' },
-                include: { blade: true, ratchet: true, bit: true },
-              },
-            },
+            include: { items: DECK_ITEMS_INCLUDE },
           },
         },
       });
@@ -119,33 +226,19 @@ export class DeckCommand {
       const files: AttachmentBuilder[] = [];
 
       for (const deck of user.decks.slice(0, 5)) {
-        const hasItems = deck.items.some((i) => i.blade);
+        const hasItems = deck.items.some(
+          (i: { bladeId?: string | null }) => i.bladeId,
+        );
 
         if (hasItems) {
-          const buffer = await generateDeckCard({
-            name: deck.name,
-            ownerName: interaction.user.displayName,
-            isActive: deck.isActive,
-            beys: deck.items.map((item) => ({
-              bladeName: item.blade?.name || '?',
-              ratchetName: item.ratchet?.name || '?',
-              bitName: item.bit?.name || '?',
-              bladeImageUrl: item.blade?.imageUrl || null,
-              beyType: item.blade?.beyType || null,
-              atk:
-                parseStat(item.blade?.attack) +
-                parseStat(item.ratchet?.attack) +
-                parseStat(item.bit?.attack),
-              def:
-                parseStat(item.blade?.defense) +
-                parseStat(item.ratchet?.defense) +
-                parseStat(item.bit?.defense),
-              sta:
-                parseStat(item.blade?.stamina) +
-                parseStat(item.ratchet?.stamina) +
-                parseStat(item.bit?.stamina),
-            })),
-          });
+          const buffer = await generateDeckCard(
+            this.buildDeckCardData(
+              deck.name,
+              interaction.user.displayName,
+              deck.isActive,
+              deck.items,
+            ),
+          );
           const filename = `deck-${deck.id}.png`;
           files.push(new AttachmentBuilder(buffer, { name: filename }));
           embeds.push(
@@ -183,7 +276,7 @@ export class DeckCommand {
   }
 
   // =============================================
-  // /deck creer — Create empty deck
+  // /deck creer
   // =============================================
   @Slash({ name: 'creer', description: 'Créer un nouveau deck vide' })
   @SlashGroup('deck')
@@ -217,16 +310,16 @@ export class DeckCommand {
       },
     });
     return interaction.reply(
-      `✅ Deck **${name}** créé ! Ajoute des beys avec \`/deck ajouter\` ou \`/deck rapide\`.`,
+      `✅ Deck **${name}** créé ! Ajoute des beys avec \`/deck ajouter\`.`,
     );
   }
 
   // =============================================
-  // /deck rapide — Create + fill all 3 slots at once
+  // /deck rapide — Create + fill 1 bey (CX-aware)
   // =============================================
   @Slash({
     name: 'rapide',
-    description: 'Créer un deck complet en une commande (3 beys)',
+    description: 'Créer un deck et remplir le 1er bey (supporte CX)',
   })
   @SlashGroup('deck')
   async quick(
@@ -238,77 +331,53 @@ export class DeckCommand {
     })
     name: string,
     @SlashOption({
-      name: 'blade1',
-      description: 'Blade du bey 1',
+      name: 'blade',
+      description: 'Blade',
       required: true,
       type: ApplicationCommandOptionType.String,
       autocomplete: true,
     })
-    blade1: string,
+    bladeId: string,
     @SlashOption({
-      name: 'ratchet1',
-      description: 'Ratchet du bey 1',
+      name: 'ratchet',
+      description: 'Ratchet',
       required: true,
       type: ApplicationCommandOptionType.String,
       autocomplete: true,
     })
-    ratchet1: string,
+    ratchetId: string,
     @SlashOption({
-      name: 'bit1',
-      description: 'Bit du bey 1',
+      name: 'bit',
+      description: 'Bit',
       required: true,
       type: ApplicationCommandOptionType.String,
       autocomplete: true,
     })
-    bit1: string,
+    bitId: string,
     @SlashOption({
-      name: 'blade2',
-      description: 'Blade du bey 2',
+      name: 'over_blade',
+      description: 'Over Blade (CX)',
       required: false,
       type: ApplicationCommandOptionType.String,
       autocomplete: true,
     })
-    blade2: string | undefined,
+    overBladeId: string | undefined,
     @SlashOption({
-      name: 'ratchet2',
-      description: 'Ratchet du bey 2',
+      name: 'lock_chip',
+      description: 'Lock Chip (CX)',
       required: false,
       type: ApplicationCommandOptionType.String,
       autocomplete: true,
     })
-    ratchet2: string | undefined,
+    lockChipId: string | undefined,
     @SlashOption({
-      name: 'bit2',
-      description: 'Bit du bey 2',
+      name: 'assist_blade',
+      description: 'Assist Blade (CX)',
       required: false,
       type: ApplicationCommandOptionType.String,
       autocomplete: true,
     })
-    bit2: string | undefined,
-    @SlashOption({
-      name: 'blade3',
-      description: 'Blade du bey 3',
-      required: false,
-      type: ApplicationCommandOptionType.String,
-      autocomplete: true,
-    })
-    blade3: string | undefined,
-    @SlashOption({
-      name: 'ratchet3',
-      description: 'Ratchet du bey 3',
-      required: false,
-      type: ApplicationCommandOptionType.String,
-      autocomplete: true,
-    })
-    ratchet3: string | undefined,
-    @SlashOption({
-      name: 'bit3',
-      description: 'Bit du bey 3',
-      required: false,
-      type: ApplicationCommandOptionType.String,
-      autocomplete: true,
-    })
-    bit3: string | undefined,
+    assistBladeId: string | undefined,
     interaction: CommandInteraction,
   ) {
     await interaction.deferReply();
@@ -320,14 +389,18 @@ export class DeckCommand {
     const count = await this.prisma.deck.count({ where: { userId: user.id } });
     if (count >= 10) return interaction.editReply('❌ Max 10 decks.');
 
-    // Build slot data
-    const slots: { bladeId: string; ratchetId: string; bitId: string }[] = [
-      { bladeId: blade1, ratchetId: ratchet1, bitId: bit1 },
-    ];
-    if (blade2 && ratchet2 && bit2)
-      slots.push({ bladeId: blade2, ratchetId: ratchet2, bitId: bit2 });
-    if (blade3 && ratchet3 && bit3)
-      slots.push({ bladeId: blade3, ratchetId: ratchet3, bitId: bit3 });
+    const isCX = await this.isCXBlade(bladeId);
+
+    const slot1Data: Record<string, string> = {
+      bladeId,
+      ratchetId,
+      bitId,
+    };
+    if (isCX) {
+      if (overBladeId) slot1Data.overBladeId = overBladeId;
+      if (lockChipId) slot1Data.lockChipId = lockChipId;
+      if (assistBladeId) slot1Data.assistBladeId = assistBladeId;
+    }
 
     const deck = await this.prisma.deck.create({
       data: {
@@ -336,58 +409,32 @@ export class DeckCommand {
         isActive: count === 0,
         items: {
           create: [
-            { position: 1, ...slots[0] },
-            {
-              position: 2,
-              ...(slots[1] || {}),
-            },
-            {
-              position: 3,
-              ...(slots[2] || {}),
-            },
+            { position: 1, ...slot1Data },
+            { position: 2 },
+            { position: 3 },
           ],
         },
       },
-      include: {
-        items: {
-          orderBy: { position: 'asc' },
-          include: { blade: true, ratchet: true, bit: true },
-        },
-      },
+      include: { items: DECK_ITEMS_INCLUDE },
     });
 
-    // Generate deck card
-    const buffer = await generateDeckCard({
-      name: deck.name,
-      ownerName: interaction.user.displayName,
-      isActive: deck.isActive,
-      beys: deck.items.map((item) => ({
-        bladeName: item.blade?.name || '?',
-        ratchetName: item.ratchet?.name || '?',
-        bitName: item.bit?.name || '?',
-        bladeImageUrl: item.blade?.imageUrl || null,
-        beyType: item.blade?.beyType || null,
-        atk:
-          parseStat(item.blade?.attack) +
-          parseStat(item.ratchet?.attack) +
-          parseStat(item.bit?.attack),
-        def:
-          parseStat(item.blade?.defense) +
-          parseStat(item.ratchet?.defense) +
-          parseStat(item.bit?.defense),
-        sta:
-          parseStat(item.blade?.stamina) +
-          parseStat(item.ratchet?.stamina) +
-          parseStat(item.bit?.stamina),
-      })),
-    });
-
+    const buffer = await generateDeckCard(
+      this.buildDeckCardData(
+        deck.name,
+        interaction.user.displayName,
+        deck.isActive,
+        deck.items,
+      ),
+    );
     const filename = `deck-${deck.id}.png`;
-    const attachment = new AttachmentBuilder(buffer, { name: filename });
+
+    const cxNote = isCX
+      ? '\n*Blade CX détecté — pièces Over/Chip/Assist enregistrées.*'
+      : '';
 
     return interaction.editReply({
-      content: `✅ Deck **${name}** créé avec ${slots.length} bey${slots.length > 1 ? 's' : ''} !`,
-      files: [attachment],
+      content: `✅ Deck **${name}** créé !${cxNote}\nAjoute les beys 2 et 3 avec \`/deck ajouter\`.`,
+      files: [new AttachmentBuilder(buffer, { name: filename })],
       embeds: [
         new EmbedBuilder()
           .setColor(Colors.Primary)
@@ -397,11 +444,11 @@ export class DeckCommand {
   }
 
   // =============================================
-  // /deck ajouter — Add a bey to the next empty slot
+  // /deck ajouter — Add bey to next empty slot (CX-aware)
   // =============================================
   @Slash({
     name: 'ajouter',
-    description: 'Ajouter un bey au prochain slot libre du deck actif',
+    description: 'Ajouter un bey au prochain slot libre (supporte CX)',
   })
   @SlashGroup('deck')
   async add(
@@ -429,6 +476,30 @@ export class DeckCommand {
       autocomplete: true,
     })
     bitId: string,
+    @SlashOption({
+      name: 'over_blade',
+      description: 'Over Blade (CX)',
+      required: false,
+      type: ApplicationCommandOptionType.String,
+      autocomplete: true,
+    })
+    overBladeId: string | undefined,
+    @SlashOption({
+      name: 'lock_chip',
+      description: 'Lock Chip (CX)',
+      required: false,
+      type: ApplicationCommandOptionType.String,
+      autocomplete: true,
+    })
+    lockChipId: string | undefined,
+    @SlashOption({
+      name: 'assist_blade',
+      description: 'Assist Blade (CX)',
+      required: false,
+      type: ApplicationCommandOptionType.String,
+      autocomplete: true,
+    })
+    assistBladeId: string | undefined,
     interaction: CommandInteraction,
   ) {
     await interaction.deferReply({ ephemeral: true });
@@ -444,7 +515,7 @@ export class DeckCommand {
     });
     if (!user || !user.decks[0])
       return interaction.editReply(
-        '❌ Pas de deck actif. Crée-en un avec `/deck creer` ou `/deck rapide`.',
+        '❌ Pas de deck actif. Crée-en un avec `/deck creer`.',
       );
 
     const deck = user.decks[0];
@@ -454,23 +525,33 @@ export class DeckCommand {
         '❌ Deck plein ! Utilise `/deck modifier` pour remplacer un slot.',
       );
 
+    const isCX = await this.isCXBlade(bladeId);
+
+    const updateData: Record<string, string> = { bladeId, ratchetId, bitId };
+    if (isCX) {
+      if (overBladeId) updateData.overBladeId = overBladeId;
+      if (lockChipId) updateData.lockChipId = lockChipId;
+      if (assistBladeId) updateData.assistBladeId = assistBladeId;
+    }
+
     await this.prisma.deckItem.update({
       where: { id: emptySlot.id },
-      data: { bladeId, ratchetId, bitId },
+      data: updateData,
     });
 
     const blade = await this.prisma.part.findUnique({
       where: { id: bladeId },
-      select: { name: true },
+      select: { name: true, system: true },
     });
 
+    const cxNote = isCX ? ' (CX)' : '';
     return interaction.editReply(
-      `✅ **${blade?.name || 'Bey'}** ajouté au slot ${emptySlot.position} de **${deck.name}** !`,
+      `✅ **${blade?.name || 'Bey'}**${cxNote} ajouté au slot ${emptySlot.position} de **${deck.name}** !`,
     );
   }
 
   // =============================================
-  // /deck modifier — Edit a specific slot
+  // /deck modifier — Edit a specific slot (CX-aware)
   // =============================================
   @Slash({ name: 'modifier', description: 'Modifier un slot du deck actif' })
   @SlashGroup('deck')
@@ -508,6 +589,30 @@ export class DeckCommand {
       autocomplete: true,
     })
     bitId: string,
+    @SlashOption({
+      name: 'over_blade',
+      description: 'Over Blade (CX)',
+      required: false,
+      type: ApplicationCommandOptionType.String,
+      autocomplete: true,
+    })
+    overBladeId: string | undefined,
+    @SlashOption({
+      name: 'lock_chip',
+      description: 'Lock Chip (CX)',
+      required: false,
+      type: ApplicationCommandOptionType.String,
+      autocomplete: true,
+    })
+    lockChipId: string | undefined,
+    @SlashOption({
+      name: 'assist_blade',
+      description: 'Assist Blade (CX)',
+      required: false,
+      type: ApplicationCommandOptionType.String,
+      autocomplete: true,
+    })
+    assistBladeId: string | undefined,
     interaction: CommandInteraction,
   ) {
     await interaction.deferReply({ ephemeral: true });
@@ -520,16 +625,28 @@ export class DeckCommand {
     if (!user || !user.decks[0])
       return interaction.editReply('❌ Pas de deck actif.');
 
+    const isCX = await this.isCXBlade(bladeId);
+
+    const updateData: Record<string, string | null> = {
+      bladeId,
+      ratchetId,
+      bitId,
+      // Clear CX fields when switching to non-CX
+      overBladeId: isCX && overBladeId ? overBladeId : null,
+      lockChipId: isCX && lockChipId ? lockChipId : null,
+      assistBladeId: isCX && assistBladeId ? assistBladeId : null,
+    };
+
     await this.prisma.deckItem.updateMany({
       where: { deckId: user.decks[0].id, position: slot },
-      data: { bladeId, ratchetId, bitId },
+      data: updateData,
     });
 
     return interaction.editReply(`✅ Slot ${slot} mis à jour !`);
   }
 
   // =============================================
-  // /deck activer — Switch active deck
+  // /deck activer
   // =============================================
   @Slash({ name: 'activer', description: 'Changer de deck actif' })
   @SlashGroup('deck')
@@ -545,17 +662,14 @@ export class DeckCommand {
     interaction: CommandInteraction,
   ) {
     await interaction.deferReply({ ephemeral: true });
-
     const user = await this.prisma.user.findUnique({
       where: { discordId: interaction.user.id },
       include: { decks: true },
     });
     if (!user) return interaction.editReply("❌ Tu n'es pas inscrit.");
-
     const deck = user.decks.find((d) => d.id === deckId);
     if (!deck) return interaction.editReply('❌ Deck introuvable.');
 
-    // Deactivate all, activate selected
     await this.prisma.deck.updateMany({
       where: { userId: user.id },
       data: { isActive: false },
@@ -571,7 +685,7 @@ export class DeckCommand {
   }
 
   // =============================================
-  // /deck supprimer — Delete a deck
+  // /deck supprimer
   // =============================================
   @Slash({ name: 'supprimer', description: 'Supprimer un deck' })
   @SlashGroup('deck')
@@ -587,21 +701,17 @@ export class DeckCommand {
     interaction: CommandInteraction,
   ) {
     await interaction.deferReply({ ephemeral: true });
-
     const user = await this.prisma.user.findUnique({
       where: { discordId: interaction.user.id },
       include: { decks: true },
     });
     if (!user) return interaction.editReply("❌ Tu n'es pas inscrit.");
-
     const deck = user.decks.find((d) => d.id === deckId);
     if (!deck) return interaction.editReply('❌ Deck introuvable.');
 
-    // Delete items first, then deck
     await this.prisma.deckItem.deleteMany({ where: { deckId } });
     await this.prisma.deck.delete({ where: { id: deckId } });
 
-    // If deleted deck was active, activate the first remaining one
     if (deck.isActive) {
       const remaining = await this.prisma.deck.findFirst({
         where: { userId: user.id },
@@ -619,7 +729,7 @@ export class DeckCommand {
   }
 
   // =============================================
-  // /deck piece — View part stats
+  // /deck piece
   // =============================================
   @Slash({ name: 'piece', description: "Statistiques d'une pièce" })
   @SlashGroup('deck')
@@ -627,6 +737,7 @@ export class DeckCommand {
     @SlashChoice({ name: 'Blade', value: 'BLADE' })
     @SlashChoice({ name: 'Ratchet', value: 'RATCHET' })
     @SlashChoice({ name: 'Bit', value: 'BIT' })
+    @SlashChoice({ name: 'Over Blade', value: 'OVER_BLADE' })
     @SlashChoice({ name: 'Lock Chip', value: 'LOCK_CHIP' })
     @SlashChoice({ name: 'Assist Blade', value: 'ASSIST_BLADE' })
     @SlashOption({
@@ -654,6 +765,7 @@ export class DeckCommand {
       BLADE: 0xdc2626,
       RATCHET: 0xfbbf24,
       BIT: 0x22c55e,
+      OVER_BLADE: 0xec4899,
       LOCK_CHIP: 0x60a5fa,
       ASSIST_BLADE: 0xa855f7,
     };
@@ -661,6 +773,7 @@ export class DeckCommand {
       BLADE: '⚔️',
       RATCHET: '⚙️',
       BIT: '🔩',
+      OVER_BLADE: '🔮',
       LOCK_CHIP: '🔒',
       ASSIST_BLADE: '🛡️',
     };
@@ -709,13 +822,12 @@ export class DeckCommand {
     }
     if (dash) statLines.push(`DSH \`${bar(dash)}\` **${dash}**`);
     if (burst) statLines.push(`BRS \`${bar(burst)}\` **${burst}**`);
-    if (statLines.length) {
+    if (statLines.length)
       embed.addFields({
         name: '📊 Statistiques',
         value: statLines.join('\n'),
         inline: false,
       });
-    }
 
     const infoFields: { name: string; value: string }[] = [];
     if (p.weight) infoFields.push({ name: '⚖️ Poids', value: `${p.weight}g` });
@@ -723,15 +835,12 @@ export class DeckCommand {
       infoFields.push({ name: '📏 Hauteur', value: `${p.height}mm` });
     if (p.tipType) infoFields.push({ name: '💎 Type', value: p.tipType });
     if (p.gearRatio) infoFields.push({ name: '⚙️ Ratio', value: p.gearRatio });
-    if (p.releaseDate) {
+    if (p.releaseDate)
       infoFields.push({
         name: '📅 Sortie',
         value: new Date(p.releaseDate).toLocaleDateString('fr-FR'),
       });
-    }
-    for (const f of infoFields) {
-      embed.addFields({ ...f, inline: true });
-    }
+    for (const f of infoFields) embed.addFields({ ...f, inline: true });
 
     if (p.imageUrl) embed.setImage(`https://rpbey.fr${p.imageUrl}`);
     embed.setFooter({ text: 'rpbey.fr/db · Données Beyblade X' });

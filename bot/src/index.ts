@@ -139,33 +139,57 @@ async function run() {
     }
   });
 
-  bot.on('interactionCreate', async (interaction) => {
+  // Cache bot settings to avoid DB query on every interaction
+  let cachedSettings: {
+    maintenanceMode?: boolean;
+    disabledCommands?: string[];
+  } | null = null;
+  let settingsCacheTime = 0;
+  const SETTINGS_CACHE_TTL = 30_000; // 30 seconds
+
+  async function getBotSettings() {
+    const now = Date.now();
+    if (cachedSettings && now - settingsCacheTime < SETTINGS_CACHE_TTL) {
+      return cachedSettings;
+    }
     try {
-      const settingsBlock = await prisma.contentBlock.findUnique({
+      const block = await prisma.contentBlock.findUnique({
         where: { slug: 'bot-settings' },
       });
+      cachedSettings = block?.content ? JSON.parse(block.content) : null;
+    } catch {
+      cachedSettings = null;
+    }
+    settingsCacheTime = now;
+    return cachedSettings;
+  }
 
-      if (settingsBlock?.content) {
-        const settings = JSON.parse(settingsBlock.content);
+  bot.on('interactionCreate', async (interaction) => {
+    try {
+      // Skip settings check for autocomplete (must respond in < 3s)
+      if (interaction.isAutocomplete()) {
+        return void bot.executeInteraction(interaction);
+      }
 
-        // 1. Check Global Maintenance Mode
-        if (settings.maintenanceMode && interaction.isCommand()) {
-          const perms = interaction.member?.permissions;
-          const isAdmin =
-            perms instanceof PermissionsBitField
-              ? perms.has('Administrator')
-              : false;
-          if (!isAdmin) {
-            return interaction.reply({
-              content:
-                "🛠️ **Le bot est actuellement en maintenance.**\nNous revenons très vite ! Suivez les annonces pour plus d'infos.",
-              ephemeral: true,
-            });
+      // Only check settings for commands
+      if (interaction.isCommand()) {
+        const settings = await getBotSettings();
+        if (settings) {
+          if (settings.maintenanceMode) {
+            const perms = interaction.member?.permissions;
+            const isAdmin =
+              perms instanceof PermissionsBitField
+                ? perms.has('Administrator')
+                : false;
+            if (!isAdmin) {
+              return interaction.reply({
+                content:
+                  "🛠️ **Le bot est actuellement en maintenance.**\nNous revenons très vite ! Suivez les annonces pour plus d'infos.",
+                ephemeral: true,
+              });
+            }
           }
-        }
 
-        // 2. Check Specific Disabled Commands
-        if (interaction.isCommand()) {
           const { disabledCommands = [] } = settings;
           if (disabledCommands.includes(interaction.commandName)) {
             return interaction.reply({
@@ -176,6 +200,7 @@ async function run() {
           }
         }
       }
+
       void bot.executeInteraction(interaction);
     } catch (e) {
       logger.error('[Bot] Interaction error:', e);
