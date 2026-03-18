@@ -112,7 +112,7 @@ async function run() {
 
   await bot.login(process.env.DISCORD_TOKEN);
 
-  bot.once('ready', async () => {
+  bot.once('clientReady', async () => {
     try {
       const guildId = process.env.GUILD_ID || process.env.DISCORD_GUILD_ID;
 
