@@ -81,7 +81,12 @@ export function DeckComposition() {
 
   const handleSave = useCallback(async () => {
     if (!session?.user) {
-      toast.error('Connectez-vous pour sauvegarder vos decks');
+      toast.error('Connectez-vous pour sauvegarder vos decks', {
+        action: {
+          label: 'Se connecter',
+          onClick: () => window.location.assign('/dashboard'),
+        },
+      });
       return;
     }
 
@@ -395,14 +400,23 @@ export function DeckComposition() {
       </Dialog>
 
       {!session?.user && (
-        <Typography
-          variant="caption"
-          color="text.secondary"
-          textAlign="center"
-          sx={{ fontWeight: 'bold', opacity: 0.7 }}
+        <Button
+          variant="outlined"
+          size="small"
+          href="/dashboard"
+          sx={{
+            fontWeight: 'bold',
+            fontSize: '0.75rem',
+            letterSpacing: 1,
+            borderColor: 'primary.main',
+            color: 'primary.main',
+            '&:hover': {
+              bgcolor: alpha('#dc2626', 0.1),
+            },
+          }}
         >
           CONNECTEZ-VOUS POUR SAUVEGARDER VOS DECKS
-        </Typography>
+        </Button>
       )}
     </Box>
   );
