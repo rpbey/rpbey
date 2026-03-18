@@ -102,42 +102,53 @@ export class DeckCommand {
       const files: AttachmentBuilder[] = [];
 
       for (const deck of user.decks.slice(0, 5)) {
-        const embed = new EmbedBuilder()
-          .setTitle(deck.isActive ? `⭐ ${deck.name}` : deck.name)
-          .setColor(deck.isActive ? Colors.Primary : Colors.Secondary);
+        const hasItems = deck.items.some((i) => i.blade);
 
-        const beyLines = deck.items.map((item) => {
-          if (!item.blade || !item.ratchet || !item.bit)
-            return `**${item.position}**. ⚠️ Bey incomplet`;
-          const atk =
-            parseStat(item.blade.attack) +
-            parseStat(item.ratchet.attack) +
-            parseStat(item.bit.attack);
-          const def =
-            parseStat(item.blade.defense) +
-            parseStat(item.ratchet.defense) +
-            parseStat(item.bit.defense);
-          return `**${item.position}**. ${item.blade.name} ${item.ratchet.name} ${item.bit.name}\n└ ⚔️${atk} 🛡️${def}`;
-        });
-
-        embed.setDescription(
-          beyLines.length > 0 ? beyLines.join('\n\n') : '*Deck vide*',
-        );
-        if (deck.isActive && deck.items.every((i) => i.blade)) {
+        if (hasItems) {
+          // Generate rich deck card image
           const buffer = await generateDeckCard({
             name: deck.name,
-            beys: deck.items.map((i) => ({
-              name: i.blade?.name || '?',
-              imageUrl: i.blade?.imageUrl || null,
+            ownerName: interaction.user.displayName,
+            isActive: deck.isActive,
+            beys: deck.items.map((item) => ({
+              bladeName: item.blade?.name || '?',
+              ratchetName: item.ratchet?.name || '?',
+              bitName: item.bit?.name || '?',
+              bladeImageUrl: item.blade?.imageUrl || null,
+              beyType: item.blade?.beyType || null,
+              atk:
+                parseStat(item.blade?.attack) +
+                parseStat(item.ratchet?.attack) +
+                parseStat(item.bit?.attack),
+              def:
+                parseStat(item.blade?.defense) +
+                parseStat(item.ratchet?.defense) +
+                parseStat(item.bit?.defense),
+              sta:
+                parseStat(item.blade?.stamina) +
+                parseStat(item.ratchet?.stamina) +
+                parseStat(item.bit?.stamina),
             })),
           });
+          const filename = `deck-${deck.id}.png`;
           const attachment = new AttachmentBuilder(buffer, {
-            name: `deck-${deck.id}.png`,
+            name: filename,
           });
           files.push(attachment);
-          embed.setImage(`attachment://deck-${deck.id}.png`);
+
+          const embed = new EmbedBuilder()
+            .setColor(deck.isActive ? Colors.Primary : Colors.Secondary)
+            .setImage(`attachment://${filename}`);
+          embeds.push(embed);
+        } else {
+          const embed = new EmbedBuilder()
+            .setTitle(deck.isActive ? `⭐ ${deck.name}` : deck.name)
+            .setColor(Colors.Secondary)
+            .setDescription(
+              '*Deck vide — utilise `/deck modifier` pour ajouter des beys*',
+            );
+          embeds.push(embed);
         }
-        embeds.push(embed);
       }
 
       return interaction.editReply({

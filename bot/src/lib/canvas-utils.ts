@@ -477,82 +477,303 @@ export async function generateBattleCard(data: BattleCardData) {
   return canvas.toBuffer('image/png');
 }
 
-export interface DeckCardData {
-  name: string;
-  beys: {
-    name: string;
-    imageUrl: string | null;
-    type?: string;
-  }[];
+export interface DeckBeyData {
+  bladeName: string;
+  ratchetName: string;
+  bitName: string;
+  bladeImageUrl: string | null;
+  beyType?: string | null;
+  atk: number;
+  def: number;
+  sta: number;
 }
 
-export async function generateDeckCard(data: DeckCardData) {
+export interface DeckCardData {
+  name: string;
+  ownerName: string;
+  isActive: boolean;
+  beys: DeckBeyData[];
+}
+
+// Keep backward compat for old callers
+export interface DeckCardDataLegacy {
+  name: string;
+  beys: { name: string; imageUrl: string | null; type?: string }[];
+}
+
+function isDeckLegacy(
+  data: DeckCardData | DeckCardDataLegacy,
+): data is DeckCardDataLegacy {
+  return (
+    'beys' in data &&
+    data.beys.length > 0 &&
+    'name' in data.beys[0] &&
+    !('bladeName' in data.beys[0])
+  );
+}
+
+const TYPE_COLORS: Record<string, string> = {
+  ATTACK: '#ef4444',
+  DEFENSE: '#3b82f6',
+  STAMINA: '#22c55e',
+  BALANCE: '#a855f7',
+};
+
+export async function generateDeckCard(
+  data: DeckCardData | DeckCardDataLegacy,
+) {
+  // Handle legacy format
+  if (isDeckLegacy(data)) {
+    return generateDeckCardLegacy(data);
+  }
+
+  const width = 900;
+  const boxH = 500;
+  const infoH = 180;
+  const height = boxH + infoH;
+  const canvas = createCanvas(width, height);
+  const ctx = canvas.getContext('2d');
+
+  // Load images
+  const [background, logo, ...beyImages] = await Promise.all([
+    safeLoadImage('/deckbox.png'),
+    safeLoadImage('/logo.png'),
+    ...data.beys.map((b) => safeLoadImage(b.bladeImageUrl)),
+  ]);
+
+  // === Deckbox section ===
+  if (background) {
+    ctx.drawImage(background, 0, 0, width, boxH);
+  } else {
+    ctx.fillStyle = '#1a0a0a';
+    ctx.fillRect(0, 0, width, boxH);
+  }
+
+  // Red inner glow
+  const glowGrad = ctx.createRadialGradient(
+    width / 2,
+    boxH / 2,
+    0,
+    width / 2,
+    boxH / 2,
+    width * 0.6,
+  );
+  glowGrad.addColorStop(0, 'rgba(220, 38, 38, 0.08)');
+  glowGrad.addColorStop(1, 'transparent');
+  ctx.fillStyle = glowGrad;
+  ctx.fillRect(0, 0, width, boxH);
+
+  // Draw Beys in slots (3D perspective)
+  const positions = [
+    { x: width * 0.21, y: boxH * 0.65 },
+    { x: width * 0.5, y: boxH * 0.65 },
+    { x: width * 0.79, y: boxH * 0.65 },
+  ];
+  const beySize = width * 0.2;
+
+  for (let i = 0; i < 3; i++) {
+    const bey = data.beys[i];
+    const img = beyImages[i];
+    const pos = positions[i];
+    if (!pos) continue;
+
+    // Slot shadow (ellipse at bottom)
+    ctx.save();
+    ctx.beginPath();
+    ctx.ellipse(
+      pos.x,
+      pos.y + beySize * 0.35,
+      beySize * 0.4,
+      beySize * 0.12,
+      0,
+      0,
+      Math.PI * 2,
+    );
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+    ctx.filter = 'blur(8px)';
+    ctx.fill();
+    ctx.filter = 'none';
+    ctx.restore();
+
+    if (img) {
+      ctx.save();
+      ctx.translate(pos.x, pos.y);
+      // 3D tilt perspective (like the website's rotateX(45deg) scaleY(0.85))
+      ctx.transform(1, 0, 0, 0.82, 0, 0);
+
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
+      ctx.shadowBlur = 18;
+      ctx.shadowOffsetY = 12;
+
+      ctx.drawImage(img, -beySize / 2, -beySize / 2, beySize, beySize);
+      ctx.restore();
+    } else if (bey) {
+      // Empty slot indicator
+      ctx.save();
+      ctx.translate(pos.x, pos.y);
+      ctx.transform(1, 0, 0, 0.82, 0, 0);
+      ctx.beginPath();
+      ctx.arc(0, 0, beySize * 0.35, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([8, 6]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.restore();
+    }
+  }
+
+  // === Info section (below deckbox) ===
+  ctx.fillStyle = '#0a0a0a';
+  ctx.fillRect(0, boxH, width, infoH);
+
+  // Gradient separator
+  const sepGrad = ctx.createLinearGradient(0, boxH, width, boxH);
+  sepGrad.addColorStop(0, '#dc2626');
+  sepGrad.addColorStop(0.5, '#fbbf24');
+  sepGrad.addColorStop(1, '#dc2626');
+  ctx.fillStyle = sepGrad;
+  ctx.fillRect(0, boxH, width, 3);
+
+  // Deck name + owner
+  if (logo) ctx.drawImage(logo, 20, boxH + 15, 40, 40);
+  ctx.font = 'bold 26px GoogleSans';
+  ctx.fillStyle = '#fbbf24';
+  ctx.textAlign = 'left';
+  ctx.fillText(data.name.toUpperCase(), 70, boxH + 40);
+
+  ctx.font = '14px GoogleSans';
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+  ctx.fillText(
+    `${data.ownerName}${data.isActive ? ' · DECK ACTIF' : ''}`,
+    70,
+    boxH + 58,
+  );
+
+  // Bey info columns
+  const colW = (width - 40) / 3;
+
+  for (let i = 0; i < Math.min(data.beys.length, 3); i++) {
+    const bey = data.beys[i];
+    const cx = 20 + i * colW + colW / 2;
+    const baseY = boxH + 80;
+    const typeColor = TYPE_COLORS[bey.beyType || ''] || '#888';
+
+    // Type indicator dot
+    ctx.beginPath();
+    ctx.arc(cx - colW / 2 + 10, baseY + 8, 4, 0, Math.PI * 2);
+    ctx.fillStyle = typeColor;
+    ctx.fill();
+
+    // Combo name
+    ctx.font = 'bold 15px GoogleSans';
+    ctx.fillStyle = '#ffffff';
+    ctx.textAlign = 'left';
+    const combo = `${bey.bladeName} ${bey.ratchetName} ${bey.bitName}`;
+    // Truncate if needed
+    let displayCombo = combo;
+    while (
+      ctx.measureText(displayCombo).width > colW - 30 &&
+      displayCombo.length > 10
+    ) {
+      displayCombo = `${displayCombo.slice(0, -2)}…`;
+    }
+    ctx.fillText(displayCombo, cx - colW / 2 + 22, baseY + 13);
+
+    // Stats mini bars
+    const stats = [
+      { label: 'ATK', value: bey.atk, color: '#ef4444' },
+      { label: 'DEF', value: bey.def, color: '#3b82f6' },
+      { label: 'STA', value: bey.sta, color: '#22c55e' },
+    ];
+    const barW = colW - 80;
+
+    for (let si = 0; si < stats.length; si++) {
+      const stat = stats[si];
+      const sy = baseY + 28 + si * 20;
+
+      ctx.font = '11px GoogleSans';
+      ctx.fillStyle = 'rgba(255,255,255,0.4)';
+      ctx.textAlign = 'left';
+      ctx.fillText(stat.label, cx - colW / 2 + 22, sy + 4);
+
+      // Bar background
+      const barX = cx - colW / 2 + 55;
+      ctx.beginPath();
+      ctx.roundRect(barX, sy - 3, barW, 8, 4);
+      ctx.fillStyle = 'rgba(255,255,255,0.06)';
+      ctx.fill();
+
+      // Bar fill
+      const fillW = Math.max(4, (stat.value / 100) * barW);
+      ctx.beginPath();
+      ctx.roundRect(barX, sy - 3, fillW, 8, 4);
+      ctx.fillStyle = stat.color;
+      ctx.fill();
+
+      // Value
+      ctx.font = 'bold 11px GoogleSans';
+      ctx.fillStyle = 'rgba(255,255,255,0.6)';
+      ctx.textAlign = 'right';
+      ctx.fillText(`${stat.value}`, cx + colW / 2 - 10, sy + 4);
+    }
+  }
+
+  ctx.textAlign = 'left';
+  return canvas.toBuffer('image/png');
+}
+
+// Legacy version for backward compat (old callers)
+async function generateDeckCardLegacy(data: DeckCardDataLegacy) {
   const width = 800;
   const height = 550;
   const canvas = createCanvas(width, height);
   const ctx = canvas.getContext('2d');
 
-  // Load images
   const [background, ...beyImages] = await Promise.all([
     safeLoadImage('/deckbox.png'),
     ...data.beys.map((b) => safeLoadImage(b.imageUrl)),
   ]);
 
-  // Background
   if (background) {
-    ctx.drawImage(background, 0, 0, width, 500); // Box image is 1.6 aspect, 800/500 = 1.6
+    ctx.drawImage(background, 0, 0, width, 500);
   } else {
     ctx.fillStyle = '#dc2626';
     ctx.fillRect(0, 0, width, 500);
   }
 
-  // Draw Beys in slots
   const positions = [
-    { x: width * 0.21, y: 500 * 0.65 }, // Left
-    { x: width * 0.5, y: 500 * 0.65 }, // Center
-    { x: width * 0.79, y: 500 * 0.65 }, // Right
+    { x: width * 0.21, y: 500 * 0.65 },
+    { x: width * 0.5, y: 500 * 0.65 },
+    { x: width * 0.79, y: 500 * 0.65 },
   ];
-
   const beySize = width * 0.22;
 
   for (let i = 0; i < 3; i++) {
-    const _bey = data.beys[i];
     const img = beyImages[i];
     const pos = positions[i];
-
     if (img) {
       ctx.save();
       ctx.translate(pos.x, pos.y);
-
-      // Simulate 3D tilt
-      ctx.transform(1, 0, 0, 0.85, 0, 0); // Scale Y
-
-      // Shadow
+      ctx.transform(1, 0, 0, 0.85, 0, 0);
       ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
       ctx.shadowBlur = 15;
       ctx.shadowOffsetY = 10;
-
       ctx.drawImage(img, -beySize / 2, -beySize / 2, beySize, beySize);
       ctx.restore();
     }
   }
 
-  // Bottom Area for Text
   ctx.fillStyle = '#0a0a0a';
   ctx.fillRect(0, 500, width, 50);
-
-  // Deck Name
   ctx.font = 'bold 28px GoogleSans';
   ctx.fillStyle = '#fbbf24';
   ctx.textAlign = 'left';
   ctx.fillText(data.name.toUpperCase(), 30, 535);
-
-  // Bey Names (Compact)
   ctx.textAlign = 'right';
   ctx.font = 'italic 18px GoogleSans';
   ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
-  const names = data.beys.map((b) => b.name).join('  |  ');
-  ctx.fillText(names, width - 30, 535);
+  ctx.fillText(data.beys.map((b) => b.name).join('  |  '), width - 30, 535);
 
   return canvas.toBuffer('image/png');
 }
