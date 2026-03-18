@@ -1,5 +1,4 @@
-# RPB Dashboard & Bot - Dockerfile for Production
-# Build: 2026-02-16 - Fixed Bot Dependencies
+# RPB Dashboard - Dockerfile for Production
 
 FROM node:24-slim AS base
 
@@ -62,9 +61,6 @@ ENV DATABASE_URL="postgresql://postgres:postgres@db:5432/rpb_dashboard"
 ENV PRISMA_CLIENT_ENGINE_TYPE=library
 RUN pnpm run build
 
-# Build Bot
-RUN pnpm run bot:build
-
 # Prepare a clean production node_modules
 # We do this in the builder because we have the build tools for native modules
 RUN rm -rf node_modules && pnpm install --prod --frozen-lockfile
@@ -95,11 +91,6 @@ COPY --from=builder --chown=nextjs:nodejs /app/node_modules ./node_modules
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=builder --chown=nextjs:nodejs /app/public ./public
-
-# Copy Bot artifacts
-COPY --from=builder --chown=nextjs:nodejs /app/bot/dist ./bot/dist
-COPY --from=builder --chown=nextjs:nodejs /app/bot/package.json ./bot/package.json
-COPY --from=builder --chown=nextjs:nodejs /app/bot/data ./bot/data
 
 # Copy Data directory (for champions, profiles, etc)
 COPY --from=builder --chown=nextjs:nodejs /app/data ./data

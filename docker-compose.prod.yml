@@ -42,22 +42,23 @@ services:
     networks:
       - rpb-network
 
-  # Discord Bot
+  # Discord Bot (separate image)
   bot:
-    image: rpb-dashboard-dashboard
+    build:
+      context: .
+      dockerfile: bot/Dockerfile
     container_name: rpb-bot
     restart: unless-stopped
     env_file: .env
     environment:
       DATABASE_URL: postgresql://postgres:rpb_password@db:5432/rpb_dashboard
-      RUN_BOT: "true"
       BOT_API_PORT: "3001"
       NODE_ENV: production
     volumes:
       - ./data:/app/data
       - ./public/uploads:/app/public/uploads
     healthcheck:
-      test: ["CMD", "node", "-e", "process.exit(0)"]
+      test: ["CMD", "node", "-e", "fetch('http://localhost:' + (process.env.BOT_API_PORT || 3001) + '/api/status').then(r => { if (!r.ok) throw new Error() }).catch(() => process.exit(1))"]
       interval: 30s
       timeout: 5s
       start_period: 30s
@@ -67,12 +68,6 @@ services:
         condition: service_healthy
     networks:
       - rpb-network
-    deploy:
-      restart_policy:
-        condition: on-failure
-        delay: 30s
-        max_attempts: 3
-        window: 120s
 
   # Nginx Reverse Proxy
   nginx:

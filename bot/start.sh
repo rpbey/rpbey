@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-echo ">>> RPB Dashboard starting..."
+echo ">>> RPB Bot starting..."
 
 # Handle Google Credentials from Env Var
 if [ -n "$GOOGLE_SERVICE_ACCOUNT_JSON" ]; then
@@ -13,12 +13,5 @@ fi
 echo ">>> Running database migrations..."
 ./node_modules/.bin/prisma migrate deploy || echo ">>> WARNING: Migrations failed or not needed."
 
-echo ">>> Starting Next.js dashboard..."
-if [ -f "server.js" ]; then
-  exec node server.js
-elif [ -f ".next/standalone/server.js" ]; then
-  exec node .next/standalone/server.js
-else
-  echo "ERROR: server.js not found!"
-  exit 1
-fi
+echo ">>> Starting Discord bot..."
+exec node bot/dist/index.js
