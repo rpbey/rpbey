@@ -1,10 +1,10 @@
-import path from 'node:path';
 import type { ApiClient } from '@twurple/api';
 import type { ChatClient } from '@twurple/chat';
 
 import { logger } from './logger.js';
+import { resolveDataPath } from './paths.js';
 
-const _TOKEN_PATH = path.join(process.cwd(), 'data', 'twitch-tokens.json');
+const _TOKEN_PATH = resolveDataPath('twitch-tokens.json');
 
 const log = (
   level: 'info' | 'warn' | 'error',

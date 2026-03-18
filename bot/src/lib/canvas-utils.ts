@@ -1,14 +1,8 @@
-import path from 'node:path';
-
 import { createCanvas, GlobalFonts, loadImage } from '@napi-rs/canvas';
 
-// Helper to get root path
-const getAssetPath = (relative: string) => {
-  if (process.cwd().endsWith('bot')) {
-    return path.resolve(process.cwd(), '..', relative);
-  }
-  return path.resolve(process.cwd(), relative);
-};
+import { resolveRootPath } from './paths.js';
+
+const getAssetPath = (relative: string) => resolveRootPath(relative);
 
 // Register fonts
 const fontPath = getAssetPath(

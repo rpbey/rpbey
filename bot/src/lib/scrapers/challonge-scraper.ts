@@ -1,16 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
 
 import type { Browser, CookieParam } from 'puppeteer';
 import puppeteerExtra from 'puppeteer-extra';
 import StealthPlugin from 'puppeteer-extra-plugin-stealth';
 
+import { resolveRootPath } from '../paths.js';
+
 // Activation du plugin Stealth
 (puppeteerExtra as any).use(StealthPlugin());
 
 // Chemin par défaut du fichier de cookies
-const DEFAULT_COOKIE_PATH = resolve(process.cwd(), 'challonge_cookie.json');
+const DEFAULT_COOKIE_PATH = resolveRootPath('challonge_cookie.json');
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 

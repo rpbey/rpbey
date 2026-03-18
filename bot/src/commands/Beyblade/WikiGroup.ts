@@ -1,5 +1,4 @@
 import fs from 'node:fs';
-import path from 'node:path';
 import {
   ApplicationCommandOptionType,
   type CommandInteraction,
@@ -10,6 +9,7 @@ import { injectable } from 'tsyringe';
 
 import { Colors } from '../../lib/constants.js';
 import { logger } from '../../lib/logger.js';
+import { resolveDataPath } from '../../lib/paths.js';
 
 // --- Meta data types ---
 interface MetaSynergy {
@@ -84,7 +84,7 @@ export class WikiGroup {
   ) {
     await interaction.deferReply();
     try {
-      const dataPath = path.resolve(process.cwd(), '..', 'data/wbo_rules.json');
+      const dataPath = resolveDataPath('wbo_rules.json');
       if (!fs.existsSync(dataPath))
         return interaction.editReply('❌ Base de données indisponible.');
       const data = JSON.parse(fs.readFileSync(dataPath, 'utf-8'));
@@ -156,11 +156,7 @@ export class WikiGroup {
     await interaction.deferReply();
 
     try {
-      const dataPath = path.resolve(
-        process.cwd(),
-        '..',
-        'data/bbx-weekly.json',
-      );
+      const dataPath = resolveDataPath('bbx-weekly.json');
       if (!fs.existsSync(dataPath)) {
         return interaction.editReply({
           embeds: [this.metaFallbackEmbed()],

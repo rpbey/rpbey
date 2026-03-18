@@ -5,6 +5,7 @@ import { ChannelType } from 'discord.js';
 import { type ArgsOf, Discord, On } from 'discordx';
 
 import { logger } from '../lib/logger.js';
+import { resolveRootPath } from '../lib/paths.js';
 
 @Discord()
 export class MessageLogger {
@@ -28,7 +29,7 @@ export class MessageLogger {
         timestamp: new Date().toISOString(),
       };
 
-      const dataPath = path.join(process.cwd(), 'data', 'training_data.jsonl');
+      const dataPath = resolveRootPath('bot', 'data', 'training_data.jsonl');
 
       try {
         const dir = path.dirname(dataPath);
