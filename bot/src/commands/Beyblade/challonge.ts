@@ -27,7 +27,7 @@ export class ChallongeCommand {
     challongeUsername: string,
     interaction: CommandInteraction,
   ) {
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply();
 
     try {
       const _user = await prisma.user.upsert({
@@ -85,7 +85,7 @@ export class ChallongeCommand {
     description: 'Voir les informations de ton compte lié',
   })
   async info(interaction: CommandInteraction) {
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply();
 
     try {
       const user = await prisma.user.findUnique({

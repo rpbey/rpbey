@@ -14,7 +14,11 @@ import {
   generateProfileCard,
 } from '../../lib/canvas-utils.js';
 import { Colors } from '../../lib/constants.js';
+import { logger } from '../../lib/logger.js';
 import { PrismaService } from '../../lib/prisma.js';
+
+// Ensure logger is retained by Biome
+void logger;
 
 @Discord()
 @SlashGroup({
@@ -146,7 +150,8 @@ export class RankingGroup {
         ],
         files: [new AttachmentBuilder(cardBuffer, { name: 'profile.png' })],
       });
-    } catch (_error) {
+    } catch (error) {
+      logger.error('[Ranking] Profile error:', error);
       return interaction.editReply('❌ Erreur profil.');
     }
   }
@@ -211,7 +216,8 @@ export class RankingGroup {
       return interaction.editReply({
         files: [new AttachmentBuilder(buffer, { name: 'top10.png' })],
       });
-    } catch (_error) {
+    } catch (error) {
+      logger.error('[Ranking] Leaderboard error:', error);
       return interaction.editReply(
         '❌ Erreur lors du chargement du classement.',
       );

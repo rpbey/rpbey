@@ -5,6 +5,7 @@ import {
 } from 'discord.js';
 import { Discord, Slash } from 'discordx';
 
+import { logger } from '../../lib/logger.js';
 import prisma from '../../lib/prisma.js';
 
 @Discord()
@@ -150,7 +151,10 @@ export class SyncCommand {
                 membersUpdated++;
               }
             } catch (e) {
-              console.error(`Error syncing member ${member.user.tag}:`, e);
+              logger.error(
+                `[Sync] Error syncing member ${member.user.tag}:`,
+                e,
+              );
               errors++;
             }
           }),
@@ -173,7 +177,7 @@ export class SyncCommand {
           `*Les données sont maintenant à jour dans la base de données.*`,
       });
     } catch (error) {
-      console.error('Sync command error:', error);
+      logger.error('[Sync] Command error:', error);
       return interaction.editReply({
         content: `❌ Une erreur majeure est survenue : ${error}`,
       });

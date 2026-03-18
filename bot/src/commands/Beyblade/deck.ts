@@ -12,6 +12,7 @@ import { inject, injectable } from 'tsyringe';
 
 import { generateDeckCard } from '../../lib/canvas-utils.js';
 import { Colors } from '../../lib/constants.js';
+import { logger } from '../../lib/logger.js';
 import { PrismaService } from '../../lib/prisma.js';
 
 const parseStat = (val: string | number | null | undefined): number => {
@@ -280,7 +281,8 @@ export class DeckCommand {
           ),
         ],
       });
-    } catch (_e) {
+    } catch (error) {
+      logger.error('[Deck] List error:', error);
       return interaction.editReply('❌ Erreur récupération.');
     }
   }

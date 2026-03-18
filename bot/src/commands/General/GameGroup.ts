@@ -18,6 +18,7 @@ import {
   generateComboCard,
 } from '../../lib/canvas-utils.js';
 import { Colors, RPB } from '../../lib/constants.js';
+import { logger } from '../../lib/logger.js';
 import { resolveDataPath } from '../../lib/paths.js';
 import { PrismaService } from '../../lib/prisma.js';
 
@@ -369,7 +370,7 @@ export class GameGroup {
         create: { userId: dbLoser.id, losses: 1 },
       });
     } catch (e) {
-      console.error('[Battle] DB update error:', e);
+      logger.error('[Battle] DB update error:', e);
     }
 
     return interaction.editReply({

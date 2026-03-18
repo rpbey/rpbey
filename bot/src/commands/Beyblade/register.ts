@@ -65,7 +65,7 @@ export class RegisterCommand {
   ) {
     const playerName = customName ?? interaction.user.displayName;
 
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply();
 
     try {
       const challonge = getChallongeClient();
@@ -211,7 +211,7 @@ export class RegisterCommand {
     tournamentId: string,
     interaction: CommandInteraction,
   ) {
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply();
 
     try {
       const challonge = getChallongeClient();
@@ -318,7 +318,7 @@ export class RegisterCommand {
     tournamentId: string,
     interaction: CommandInteraction,
   ) {
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply();
 
     try {
       const challonge = getChallongeClient();
