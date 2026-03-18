@@ -245,13 +245,15 @@ export class DeckCommand {
     @SlashChoice({ name: 'Blade', value: 'BLADE' })
     @SlashChoice({ name: 'Ratchet', value: 'RATCHET' })
     @SlashChoice({ name: 'Bit', value: 'BIT' })
+    @SlashChoice({ name: 'Lock Chip', value: 'LOCK_CHIP' })
+    @SlashChoice({ name: 'Assist Blade', value: 'ASSIST_BLADE' })
     @SlashOption({
       name: 'type',
       description: 'Type de pièce',
       required: true,
       type: ApplicationCommandOptionType.String,
     })
-    type: 'BLADE' | 'RATCHET' | 'BIT',
+    type: string,
     @SlashOption({
       name: 'nom',
       description: 'Nom de la pièce',
@@ -266,18 +268,101 @@ export class DeckCommand {
     const part = await this.prisma.part.findUnique({ where: { id: partId } });
     if (!part) return interaction.editReply('❌ Pièce introuvable.');
 
-    const embed = new EmbedBuilder()
-      .setTitle(`${part.system || 'BX'} | ${part.name}`)
-      .setColor(
-        type === 'BLADE' ? 0xdc2626 : type === 'RATCHET' ? 0x3b82f6 : 0x22c55e,
-      )
-      .addFields(
-        { name: 'Poids', value: `${part.weight || '?'}g`, inline: true },
-        { name: 'Attaque', value: String(part.attack || '?'), inline: true },
-        { name: 'Défense', value: String(part.defense || '?'), inline: true },
-        { name: 'Endurance', value: String(part.stamina || '?'), inline: true },
+    const TYPE_COLORS: Record<string, number> = {
+      BLADE: 0xdc2626,
+      RATCHET: 0xfbbf24,
+      BIT: 0x22c55e,
+      LOCK_CHIP: 0x60a5fa,
+      ASSIST_BLADE: 0xa855f7,
+    };
+    const TYPE_EMOJIS: Record<string, string> = {
+      BLADE: '⚔️',
+      RATCHET: '⚙️',
+      BIT: '🔩',
+      LOCK_CHIP: '🔒',
+      ASSIST_BLADE: '🛡️',
+    };
+
+    const color = TYPE_COLORS[type] || Colors.Beyblade;
+    const emoji = TYPE_EMOJIS[type] || '🌀';
+    const atk = parseStat(part.attack);
+    const def = parseStat(part.defense);
+    const sta = parseStat(part.stamina);
+    const dash = parseStat(part.dash);
+    const burst = parseStat(part.burst);
+
+    const bar = (v: number, max = 100) => {
+      const filled = Math.round((v / max) * 10);
+      return (
+        '█'.repeat(Math.min(filled, 10)) + '░'.repeat(10 - Math.min(filled, 10))
       );
-    if (part.imageUrl) embed.setThumbnail(`https://rpbey.fr${part.imageUrl}`);
+    };
+
+    const embed = new EmbedBuilder()
+      .setTitle(`${emoji} ${part.name}`)
+      .setColor(color);
+
+    // System + type badge
+    const badges: string[] = [];
+    if (part.system) badges.push(`\`${part.system}\``);
+    if (part.beyType) {
+      const btEmoji =
+        part.beyType === 'ATTACK'
+          ? '⚔️'
+          : part.beyType === 'DEFENSE'
+            ? '🛡️'
+            : part.beyType === 'STAMINA'
+              ? '🌀'
+              : '⚖️';
+      badges.push(`${btEmoji} ${part.beyType}`);
+    }
+    if (part.spinDirection)
+      badges.push(part.spinDirection === 'L' ? '↺ Left' : '↻ Right');
+    if (badges.length) embed.setDescription(badges.join(' · '));
+
+    // Stats section
+    const statLines: string[] = [];
+    if (atk || def || sta) {
+      statLines.push(`ATK \`${bar(atk)}\` **${atk}**`);
+      statLines.push(`DEF \`${bar(def)}\` **${def}**`);
+      statLines.push(`STA \`${bar(sta)}\` **${sta}**`);
+    }
+    if (dash) statLines.push(`DSH \`${bar(dash)}\` **${dash}**`);
+    if (burst) statLines.push(`BRS \`${bar(burst)}\` **${burst}**`);
+    if (statLines.length) {
+      embed.addFields({
+        name: '📊 Statistiques',
+        value: statLines.join('\n'),
+        inline: false,
+      });
+    }
+
+    // Info row
+    const infoFields: { name: string; value: string }[] = [];
+    if (part.weight)
+      infoFields.push({ name: '⚖️ Poids', value: `${part.weight}g` });
+    if (part.height)
+      infoFields.push({ name: '📏 Hauteur', value: `${part.height}mm` });
+    if (part.tipType) infoFields.push({ name: '💎 Type', value: part.tipType });
+    if (part.gearRatio)
+      infoFields.push({ name: '⚙️ Ratio', value: part.gearRatio });
+    if (part.releaseDate) {
+      infoFields.push({
+        name: '📅 Sortie',
+        value: new Date(part.releaseDate).toLocaleDateString('fr-FR'),
+      });
+    }
+    for (const f of infoFields) {
+      embed.addFields({ ...f, inline: true });
+    }
+
+    // Image
+    if (part.imageUrl) {
+      embed.setImage(`https://rpbey.fr${part.imageUrl}`);
+    }
+
+    embed.setFooter({ text: 'rpbey.fr/db · Données Beyblade X' });
+
     return interaction.editReply({ embeds: [embed] });
   }
 }

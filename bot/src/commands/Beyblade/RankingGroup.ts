@@ -51,7 +51,20 @@ export class RankingGroup {
     await interaction.deferReply();
     try {
       const user = await this.prisma.user.findFirst({
-        include: { _count: { select: { tournaments: true } }, profile: true },
+        include: {
+          _count: { select: { tournaments: true } },
+          profile: true,
+          decks: {
+            where: { isActive: true },
+            take: 1,
+            include: {
+              items: {
+                orderBy: { position: 'asc' },
+                include: { blade: true },
+              },
+            },
+          },
+        },
         where: { discordId: target.id },
       });
       if (!user || !user.profile)
@@ -80,17 +93,43 @@ export class RankingGroup {
         });
       }
 
+      // Compute rank title based on points
+      const rankTitle =
+        rank === 1
+          ? 'Champion'
+          : rankingPoints >= 500
+            ? 'Expert'
+            : rankingPoints >= 200
+              ? 'Vétéran'
+              : rankingPoints >= 50
+                ? 'Combattant'
+                : 'Blader';
+
+      // Get active deck if available
+      const activeDeck = user.decks[0];
+      const deckData = activeDeck?.items.some((i) => i.blade)
+        ? {
+            name: activeDeck.name,
+            blades: activeDeck.items.map((i) => ({
+              name: i.blade?.name || '?',
+              imageUrl: i.blade?.imageUrl
+                ? `https://rpbey.fr${i.blade.imageUrl}`
+                : '',
+            })),
+          }
+        : null;
+
       const cardBuffer = await generateProfileCard({
-        activeDeck: null,
-        avatarUrl: target.displayAvatarURL({ extension: 'png' }),
+        activeDeck: deckData,
+        avatarUrl: target.displayAvatarURL({ extension: 'png', size: 512 }),
         bestStreak: 0,
         bladerName: user.profile.bladerName || target.displayName,
         currentStreak: 0,
-        joinedAt: user.createdAt.toLocaleDateString(),
+        joinedAt: user.createdAt.toLocaleDateString('fr-FR'),
         losses: user.profile.losses,
         rank,
         rankingPoints,
-        rankTitle: 'Blader',
+        rankTitle,
         tournamentWins: user.profile.tournamentWins,
         tournamentsPlayed: user._count.tournaments,
         winRate: this.computeWinRate(user.profile.wins, user.profile.losses),
@@ -100,7 +139,7 @@ export class RankingGroup {
         embeds: [
           new EmbedBuilder()
             .setColor(Colors.Primary)
-            .setImage(`attachment://profile.png`),
+            .setImage('attachment://profile.png'),
         ],
         files: [new AttachmentBuilder(cardBuffer, { name: 'profile.png' })],
       });
