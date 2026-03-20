@@ -516,6 +516,190 @@ export class GameGroup {
     });
   }
 
+  @Slash({
+    name: 'interaction',
+    description: "Calculer le score d'interaction entre deux membres",
+  })
+  @SlashGroup('jeu')
+  async interaction(
+    @SlashOption({
+      name: 'membre',
+      description: "Le membre avec qui calculer l'interaction",
+      required: true,
+      type: ApplicationCommandOptionType.User,
+    })
+    target: User,
+    interaction: CommandInteraction,
+  ) {
+    if (target.id === interaction.user.id)
+      return interaction.reply({
+        content: '❌ Choisis un autre membre que toi-même !',
+        ephemeral: true,
+      });
+    if (target.bot)
+      return interaction.reply({
+        content: '❌ Impossible de calculer avec un bot.',
+        ephemeral: true,
+      });
+
+    await interaction.deferReply();
+
+    const [userA, userB] = await Promise.all([
+      this.prisma.user.findFirst({
+        where: { discordId: interaction.user.id },
+        include: { profile: true },
+      }),
+      this.prisma.user.findFirst({
+        where: { discordId: target.id },
+        include: { profile: true },
+      }),
+    ]);
+
+    let directMatches = 0;
+    let coTournaments = 0;
+    let h2hA = 0;
+    let h2hB = 0;
+
+    if (userA && userB) {
+      // Direct tournament matches (faced each other)
+      directMatches = await this.prisma.tournamentMatch.count({
+        where: {
+          OR: [
+            { player1Id: userA.id, player2Id: userB.id },
+            { player1Id: userB.id, player2Id: userA.id },
+          ],
+        },
+      });
+
+      // Wins for each side
+      [h2hA, h2hB] = await Promise.all([
+        this.prisma.tournamentMatch.count({
+          where: {
+            OR: [
+              { player1Id: userA.id, player2Id: userB.id },
+              { player1Id: userB.id, player2Id: userA.id },
+            ],
+            winnerId: userA.id,
+          },
+        }),
+        this.prisma.tournamentMatch.count({
+          where: {
+            OR: [
+              { player1Id: userA.id, player2Id: userB.id },
+              { player1Id: userB.id, player2Id: userA.id },
+            ],
+            winnerId: userB.id,
+          },
+        }),
+      ]);
+
+      // Co-participation in same tournaments
+      const tournamentsA = await this.prisma.tournamentParticipant.findMany({
+        where: { userId: userA.id },
+        select: { tournamentId: true },
+      });
+      const tournamentIdsA = new Set(tournamentsA.map((t) => t.tournamentId));
+
+      if (tournamentIdsA.size > 0) {
+        coTournaments = await this.prisma.tournamentParticipant.count({
+          where: {
+            userId: userB.id,
+            tournamentId: { in: [...tournamentIdsA] },
+          },
+        });
+      }
+    }
+
+    // Shared roles on the server
+    let sharedRoles = 0;
+    const guild = interaction.guild;
+    if (guild) {
+      const [memberA, memberB] = await Promise.all([
+        guild.members.fetch(interaction.user.id).catch(() => null),
+        guild.members.fetch(target.id).catch(() => null),
+      ]);
+      if (memberA && memberB) {
+        const rolesA = memberA.roles.cache.filter((r) => r.id !== guild.id);
+        const rolesB = new Set(memberB.roles.cache.map((r) => r.id));
+        sharedRoles = rolesA.filter((r) => rolesB.has(r.id)).size;
+      }
+    }
+
+    // Account age proximity (closer = more affinity)
+    const ageA = interaction.user.createdTimestamp;
+    const ageB = target.createdTimestamp;
+    const ageDiffDays = Math.abs(ageA - ageB) / (1000 * 60 * 60 * 24);
+    const ageBonus =
+      ageDiffDays < 30 ? 15 : ageDiffDays < 180 ? 8 : ageDiffDays < 365 ? 3 : 0;
+
+    // Calculate score
+    const matchPoints = directMatches * 12;
+    const coTournamentPoints = coTournaments * 8;
+    const rolePoints = sharedRoles * 3;
+    // Deterministic seed from both user IDs for consistent "random" bonus
+    const seed =
+      ([...interaction.user.id].reduce((a, c) => a + c.charCodeAt(0), 0) +
+        [...target.id].reduce((a, c) => a + c.charCodeAt(0), 0)) %
+      20;
+
+    const rawScore =
+      matchPoints + coTournamentPoints + rolePoints + ageBonus + seed;
+    const score = Math.min(rawScore, 100);
+
+    // Score label & color
+    const { label, emoji, color } =
+      score >= 80
+        ? { label: 'Rivaux légendaires', emoji: '🔥', color: 0xef4444 }
+        : score >= 60
+          ? { label: 'Bons compagnons', emoji: '⚡', color: 0xfbbf24 }
+          : score >= 40
+            ? { label: 'Camarades', emoji: '🤝', color: 0x3b82f6 }
+            : score >= 20
+              ? { label: 'Connaissances', emoji: '👋', color: 0x8b5cf6 }
+              : { label: 'Inconnus', emoji: '❓', color: 0x6b7280 };
+
+    const bar =
+      '█'.repeat(Math.round(score / 10)) +
+      '░'.repeat(10 - Math.round(score / 10));
+
+    const embed = new EmbedBuilder()
+      .setTitle(
+        `${emoji} ${interaction.user.displayName} & ${target.displayName}`,
+      )
+      .setDescription(
+        `**${label}** — Score d'interaction : **${score}/100**\n\`${bar}\``,
+      )
+      .setColor(color)
+      .addFields(
+        {
+          name: '⚔️ Matchs directs',
+          value:
+            directMatches > 0
+              ? `**${directMatches}** confrontation${directMatches > 1 ? 's' : ''} (${h2hA}V - ${h2hB}D)`
+              : 'Aucune confrontation',
+          inline: true,
+        },
+        {
+          name: '🏆 Tournois communs',
+          value: `**${coTournaments}** tournoi${coTournaments > 1 ? 's' : ''} ensemble`,
+          inline: true,
+        },
+        {
+          name: '🎭 Rôles partagés',
+          value: `**${sharedRoles}** rôle${sharedRoles > 1 ? 's' : ''} en commun`,
+          inline: true,
+        },
+      )
+      .setThumbnail(target.displayAvatarURL({ size: 256 }))
+      .setFooter({
+        text: `${RPB.FullName} | /jeu interaction`,
+        iconURL: interaction.user.displayAvatarURL({ size: 64 }),
+      })
+      .setTimestamp();
+
+    return interaction.editReply({ embeds: [embed] });
+  }
+
   @Slash({ name: 'fun-wanted', description: 'Générer une affiche WANTED' })
   @SlashGroup('jeu')
   async wanted(
