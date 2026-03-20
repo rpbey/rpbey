@@ -42,16 +42,6 @@ const COMMAND_CATEGORIES = [
     ],
   },
   {
-    name: '💰 Économie',
-    commands: [
-      { name: '/economie quotidien', desc: 'Récompense journalière' },
-      { name: '/economie solde', desc: 'Consulter votre solde' },
-      { name: '/economie parier', desc: 'Quitte ou double' },
-      { name: '/economie transfert', desc: 'Transférer des pièces' },
-      { name: '/economie classement', desc: 'Top des plus riches' },
-    ],
-  },
-  {
     name: '🔧 Utilitaires',
     commands: [
       { name: '/utilitaire membre', desc: "Infos détaillées d'un membre" },
