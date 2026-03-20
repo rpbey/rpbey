@@ -924,15 +924,14 @@ export async function generateWantedImage(
   const frameW = Math.round((3220 - 280) * sx);
   const frameH = Math.round((3340 - 820) * sy);
 
-  // Fill the black rectangle with parchment color
-  ctx.fillStyle = '#e2d1a5';
+  // Fill the black rectangle with matching parchment color
+  ctx.fillStyle = '#bfb196';
   ctx.fillRect(frameX, frameY, frameW, frameH);
 
-  // Draw avatar centered and smaller inside the frame (with padding)
+  // Draw avatar centered at 60% of frame size
   const avatar = await safeLoadImage(avatarUrl);
   if (avatar) {
-    const padding = Math.round(frameW * 0.12);
-    const avatarSize = Math.min(frameW, frameH) - padding * 2;
+    const avatarSize = Math.round(Math.min(frameW, frameH) * 0.6);
     const avatarX = frameX + Math.round((frameW - avatarSize) / 2);
     const avatarY = frameY + Math.round((frameH - avatarSize) / 2);
     ctx.drawImage(avatar, avatarX, avatarY, avatarSize, avatarSize);
