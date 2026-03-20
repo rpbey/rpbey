@@ -44,7 +44,7 @@ export async function mentionsScanTask() {
         try {
           let lastId: string | undefined;
           let fetched = 0;
-          const MAX_MESSAGES = 500;
+          const MAX_MESSAGES = 5000;
 
           // Paginate through messages
           while (fetched < MAX_MESSAGES) {
