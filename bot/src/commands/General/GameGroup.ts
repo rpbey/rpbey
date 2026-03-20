@@ -88,6 +88,250 @@ interface ComboStats {
   weight: number;
 }
 
+// ─── Beyblade X Battle Simulation Engine ────────────────────────────────────
+//
+// Simulates a real Beyblade X battle with:
+// - Type matchups (Attack > Stamina > Defense > Attack, Balance = neutral)
+// - Multi-phase combat (launch → collisions → endgame)
+// - Stamina drain over time based on bit type
+// - Burst chance based on attack vs burst resistance
+// - Xtreme dash line mechanics (dash stat = xtreme finish potential)
+// - Weight advantage in collisions
+// - Critical hits based on attack spikes
+//
+
+/** Type advantage multiplier: 1.25 = advantage, 0.8 = disadvantage, 1.0 = neutral */
+function typeMatchup(attacker: string | null, defender: string | null): number {
+  const a = attacker || 'BALANCE';
+  const d = defender || 'BALANCE';
+  if (a === d) return 1.0;
+  if (a === 'BALANCE' || d === 'BALANCE') return 1.0;
+  // Attack beats Stamina, Stamina beats Defense, Defense beats Attack
+  if (a === 'ATTACK' && d === 'STAMINA') return 1.25;
+  if (a === 'STAMINA' && d === 'DEFENSE') return 1.25;
+  if (a === 'DEFENSE' && d === 'ATTACK') return 1.25;
+  return 0.8; // disadvantage
+}
+
+interface BattleLog {
+  phase: string;
+  text: string;
+}
+
+interface BattleResult {
+  winner: 'A' | 'B';
+  finishType: (typeof FINISH_TYPES)[number];
+  hpA: number;
+  hpB: number;
+  maxHp: number;
+  log: BattleLog[];
+  rounds: number;
+}
+
+function simulateBattle(
+  sA: ComboStats,
+  typeA: string | null,
+  sB: ComboStats,
+  typeB: string | null,
+  nameA: string,
+  nameB: string,
+): BattleResult {
+  const log: BattleLog[] = [];
+  const MAX_ROUNDS = 12;
+
+  // ── PHASE 1: HP Pool (stamina + defense + weight bonus) ──
+  const maxHp = 200;
+  let hpA = maxHp;
+  let hpB = maxHp;
+
+  // Stamina determines base endurance
+  const enduranceA =
+    50 + sA.stamina * 1.2 + sA.defense * 0.3 + sA.weight * 0.15;
+  const enduranceB =
+    50 + sB.stamina * 1.2 + sB.defense * 0.3 + sB.weight * 0.15;
+
+  // Burst resistance (defense + weight vs attack)
+  const burstResA = sA.burst + sA.defense * 0.5 + sA.weight * 0.2;
+  const burstResB = sB.burst + sB.defense * 0.5 + sB.weight * 0.2;
+
+  // ── PHASE 2: Launch (dash stat = first contact advantage) ──
+  const launchA = sA.dash * 0.8 + Math.random() * 15;
+  const launchB = sB.dash * 0.8 + Math.random() * 15;
+
+  if (launchA > launchB * 1.3) {
+    const dmg = 15 + Math.random() * 10;
+    hpB -= dmg;
+    log.push({
+      phase: 'Lancement',
+      text: `${nameA} prend l'avantage au lancement ! (-${Math.round(dmg)} PV)`,
+    });
+  } else if (launchB > launchA * 1.3) {
+    const dmg = 15 + Math.random() * 10;
+    hpA -= dmg;
+    log.push({
+      phase: 'Lancement',
+      text: `${nameB} domine le lancement ! (-${Math.round(dmg)} PV)`,
+    });
+  } else {
+    log.push({
+      phase: 'Lancement',
+      text: 'Lancement équilibré, les deux toupies entrent en collision !',
+    });
+  }
+
+  // ── PHASE 3: Combat rounds ──
+  let round = 0;
+  let xtremeChanceA = 0;
+  let xtremeChanceB = 0;
+
+  while (hpA > 0 && hpB > 0 && round < MAX_ROUNDS) {
+    round++;
+
+    // Type matchup multipliers
+    const matchA = typeMatchup(typeA, typeB);
+    const matchB = typeMatchup(typeB, typeA);
+
+    // ── Attack phase: each combo attacks the other ──
+    const rawAtkA = sA.attack * matchA * (0.8 + Math.random() * 0.4);
+    const rawAtkB = sB.attack * matchB * (0.8 + Math.random() * 0.4);
+
+    // Defense reduces incoming damage
+    const dmgToB = Math.max(
+      2,
+      rawAtkA - sB.defense * 0.3 * (0.7 + Math.random() * 0.6),
+    );
+    const dmgToA = Math.max(
+      2,
+      rawAtkB - sA.defense * 0.3 * (0.7 + Math.random() * 0.6),
+    );
+
+    // Weight advantage: heavier bey deals extra knockback
+    const weightDiff = sA.weight - sB.weight;
+    const knockbackA = weightDiff > 3 ? weightDiff * 0.5 : 0;
+    const knockbackB = weightDiff < -3 ? Math.abs(weightDiff) * 0.5 : 0;
+
+    hpB -= dmgToB + knockbackA;
+    hpA -= dmgToA + knockbackB;
+
+    // ── Critical hit (10% chance, high attack combos get bonus) ──
+    if (Math.random() < 0.1 + sA.attack * 0.001) {
+      const critDmg = 12 + Math.random() * 8;
+      hpB -= critDmg;
+      log.push({
+        phase: `Tour ${round}`,
+        text: `💥 ${nameA} place un coup critique ! (-${Math.round(critDmg)} PV supplémentaires)`,
+      });
+    }
+    if (Math.random() < 0.1 + sB.attack * 0.001) {
+      const critDmg = 12 + Math.random() * 8;
+      hpA -= critDmg;
+      log.push({
+        phase: `Tour ${round}`,
+        text: `💥 ${nameB} contre-attaque avec un coup critique !`,
+      });
+    }
+
+    // ── Stamina drain (passive — low stamina beys lose HP faster) ──
+    const drainA = Math.max(1, 8 - sA.stamina * 0.08);
+    const drainB = Math.max(1, 8 - sB.stamina * 0.08);
+    hpA -= drainA;
+    hpB -= drainB;
+
+    // ── Burst check: if HP is low and attack is high enough ──
+    if (
+      hpB < maxHp * 0.35 &&
+      Math.random() < rawAtkA * 0.01 - burstResB * 0.005 + 0.05
+    ) {
+      hpB = -10;
+      log.push({
+        phase: `Tour ${round}`,
+        text: `💥 ${nameA} fait BURST ${nameB} !`,
+      });
+      break;
+    }
+    if (
+      hpA < maxHp * 0.35 &&
+      Math.random() < rawAtkB * 0.01 - burstResA * 0.005 + 0.05
+    ) {
+      hpA = -10;
+      log.push({
+        phase: `Tour ${round}`,
+        text: `💥 ${nameB} fait BURST ${nameA} !`,
+      });
+      break;
+    }
+
+    // ── Xtreme dash line: accumulate chance based on dash stat ──
+    xtremeChanceA += sA.dash * 0.003;
+    xtremeChanceB += sB.dash * 0.003;
+
+    if (Math.random() < xtremeChanceA && hpB > 0) {
+      const xtDmg = 30 + sA.dash * 0.5;
+      hpB -= xtDmg;
+      log.push({
+        phase: `Tour ${round}`,
+        text: `⚡ ${nameA} active la X-LINE ! Dash dévastateur ! (-${Math.round(xtDmg)} PV)`,
+      });
+      xtremeChanceA = 0;
+    }
+    if (Math.random() < xtremeChanceB && hpA > 0) {
+      const xtDmg = 30 + sB.dash * 0.5;
+      hpA -= xtDmg;
+      log.push({
+        phase: `Tour ${round}`,
+        text: `⚡ ${nameB} active la X-LINE ! Dash dévastateur ! (-${Math.round(xtDmg)} PV)`,
+      });
+      xtremeChanceB = 0;
+    }
+  }
+
+  // ── PHASE 4: Determine result ──
+  hpA = Math.max(hpA, -10);
+  hpB = Math.max(hpB, -10);
+
+  // Endurance tiebreaker if both still alive
+  if (hpA > 0 && hpB > 0) {
+    // Better endurance wins spin finish
+    const finalA = hpA + enduranceA * 0.2;
+    const finalB = hpB + enduranceB * 0.2;
+    if (finalA >= finalB) {
+      hpB = 0;
+    } else {
+      hpA = 0;
+    }
+  }
+
+  const winner: 'A' | 'B' = hpA > hpB ? 'A' : 'B';
+
+  // Determine finish type based on how the battle ended
+  const loserHp = winner === 'A' ? hpB : hpA;
+  const winnerStats = winner === 'A' ? sA : sB;
+  let finishType: (typeof FINISH_TYPES)[number];
+
+  if (loserHp <= -5) {
+    // Burst or Xtreme
+    if (winnerStats.dash > 30 && Math.random() < 0.5) {
+      finishType = FINISH_TYPES[0]!; // X-TREME
+    } else {
+      finishType = FINISH_TYPES[1]!; // BURST
+    }
+  } else if (round >= MAX_ROUNDS - 2) {
+    finishType = FINISH_TYPES[3]!; // SPIN (endurance win)
+  } else {
+    finishType = FINISH_TYPES[2]!; // OVER
+  }
+
+  return {
+    winner,
+    finishType,
+    hpA: Math.max(hpA, 0),
+    hpB: Math.max(hpB, 0),
+    maxHp,
+    log,
+    rounds: round,
+  };
+}
+
 function computeComboStats(
   blade: BladeJson | undefined,
   ratchet: RatchetJson | undefined,
@@ -234,19 +478,6 @@ export class GameGroup {
     };
   }
 
-  private computeFinishType(winnerStats: ComboStats) {
-    const total =
-      winnerStats.attack + winnerStats.defense + winnerStats.stamina;
-    const atkRatio = total > 0 ? winnerStats.attack / total : 0.33;
-    const staRatio = total > 0 ? winnerStats.stamina / total : 0.33;
-    const dashBonus = winnerStats.dash > 30 ? 0.15 : 0;
-    const roll = Math.random();
-    if (roll < atkRatio * 0.4 + dashBonus) return FINISH_TYPES[0]!;
-    if (roll < atkRatio * 0.7 + dashBonus) return FINISH_TYPES[1]!;
-    if (roll < atkRatio * 0.7 + staRatio * 0.5) return FINISH_TYPES[3]!;
-    return FINISH_TYPES[2]!;
-  }
-
   // ═══ /jeu combat ═══
   @Slash({
     name: 'combat',
@@ -300,20 +531,22 @@ export class GameGroup {
       findBitStats(comboB.bit.name),
     );
 
-    // Power + luck
-    const scoreA =
-      (statsA.attack + statsA.defense + statsA.stamina + statsA.dash * 0.5) *
-      (0.75 + Math.random() * 0.5);
-    const scoreB =
-      (statsB.attack + statsB.defense + statsB.stamina + statsB.dash * 0.5) *
-      (0.75 + Math.random() * 0.5);
+    // Simulate real battle
+    const _comboNameA = `${comboA.blade.name} ${comboA.ratchet.name} ${comboA.bit.name}`;
+    const _comboNameB = `${comboB.blade.name} ${comboB.ratchet.name} ${comboB.bit.name}`;
+    const battle = simulateBattle(
+      statsA,
+      comboA.blade.beyType,
+      statsB,
+      comboB.blade.beyType,
+      interaction.user.displayName,
+      target.displayName,
+    );
 
-    const challengerWins = scoreA >= scoreB;
-    const winner = challengerWins ? interaction.user : target;
-    const loser = challengerWins ? target : interaction.user;
-    const winnerStats = challengerWins ? statsA : statsB;
-    const winnerCombo = challengerWins ? comboA : comboB;
-    const finishType = this.computeFinishType(winnerStats);
+    const winner = battle.winner === 'A' ? interaction.user : target;
+    const loser = battle.winner === 'A' ? target : interaction.user;
+    const winnerCombo = battle.winner === 'A' ? comboA : comboB;
+    const finishType = battle.finishType;
 
     // Canvas battle card
     const cardBuffer = await generateBattleCard({
@@ -329,54 +562,74 @@ export class GameGroup {
     const filename = `battle-${Date.now()}.png`;
     const attachment = new AttachmentBuilder(cardBuffer, { name: filename });
 
-    const comboNameA = `${comboA.blade.name} ${comboA.ratchet.name} ${comboA.bit.name}`;
-    const comboNameB = `${comboB.blade.name} ${comboB.ratchet.name} ${comboB.bit.name}`;
-    const deckTagA = comboA.fromDeck
-      ? `\n📦 Deck: *${comboA.deckName}*`
-      : '\n🎲 *Aléatoire*';
-    const deckTagB = comboB.fromDeck
-      ? `\n📦 Deck: *${comboB.deckName}*`
-      : '\n🎲 *Aléatoire*';
+    const cnA = `${comboA.blade.name} ${comboA.ratchet.name} ${comboA.bit.name}`;
+    const cnB = `${comboB.blade.name} ${comboB.ratchet.name} ${comboB.bit.name}`;
+    const tagA = comboA.fromDeck ? `📦 *${comboA.deckName}*` : '🎲 *Aléatoire*';
+    const tagB = comboB.fromDeck ? `📦 *${comboB.deckName}*` : '🎲 *Aléatoire*';
+    const winnerComboName = battle.winner === 'A' ? cnA : cnB;
+
+    // HP bars
+    const hpBar = (hp: number, max: number) => {
+      const pct = Math.round((hp / max) * 10);
+      return (
+        '🟩'.repeat(Math.min(pct, 10)) + '🟥'.repeat(10 - Math.min(pct, 10))
+      );
+    };
+
+    // Battle log summary (last 3 events)
+    const logSummary = battle.log
+      .slice(-3)
+      .map((l: BattleLog) => `> ${l.text}`)
+      .join('\n');
+
+    // Type matchup display
+    const matchAvsB = typeMatchup(comboA.blade.beyType, comboB.blade.beyType);
+    const matchupText =
+      matchAvsB > 1
+        ? `${getTypeEmoji(comboA.blade.beyType)} > ${getTypeEmoji(comboB.blade.beyType)} Avantage type !`
+        : matchAvsB < 1
+          ? `${getTypeEmoji(comboB.blade.beyType)} > ${getTypeEmoji(comboA.blade.beyType)} Avantage type !`
+          : 'Types neutres';
 
     const embed = new EmbedBuilder()
       .setTitle(`${finishType.emoji} ${finishType.message}`)
       .setDescription(
-        `**${interaction.user.displayName}** ${getTypeEmoji(comboA.blade.beyType)} vs ${getTypeEmoji(comboB.blade.beyType)} **${target.displayName}**`,
+        `**${interaction.user.displayName}** ${getTypeEmoji(comboA.blade.beyType)} vs ${getTypeEmoji(comboB.blade.beyType)} **${target.displayName}**\n${matchupText}`,
       )
       .addFields(
         {
-          name: interaction.user.displayName,
+          name: `${interaction.user.displayName} ${battle.winner === 'A' ? '👑' : ''}`,
           value: [
-            `**${comboNameA}**${deckTagA}`,
-            `ATK \`${statBar(statsA.attack)}\` **${statsA.attack}**`,
-            `DEF \`${statBar(statsA.defense)}\` **${statsA.defense}**`,
-            `STA \`${statBar(statsA.stamina)}\` **${statsA.stamina}**`,
-            `DSH \`${statBar(statsA.dash)}\` **${statsA.dash}**`,
-            `⚖️ **${statsA.weight.toFixed(1)}g**`,
+            `**${cnA}**\n${tagA}`,
+            `HP ${hpBar(battle.hpA, battle.maxHp)} ${Math.round(battle.hpA)}/${battle.maxHp}`,
+            `ATK \`${statBar(statsA.attack)}\` **${statsA.attack}** | DEF **${statsA.defense}**`,
+            `STA **${statsA.stamina}** | DSH **${statsA.dash}** | ⚖️ **${statsA.weight.toFixed(1)}g**`,
           ].join('\n'),
           inline: true,
         },
         {
-          name: target.displayName,
+          name: `${target.displayName} ${battle.winner === 'B' ? '👑' : ''}`,
           value: [
-            `**${comboNameB}**${deckTagB}`,
-            `ATK \`${statBar(statsB.attack)}\` **${statsB.attack}**`,
-            `DEF \`${statBar(statsB.defense)}\` **${statsB.defense}**`,
-            `STA \`${statBar(statsB.stamina)}\` **${statsB.stamina}**`,
-            `DSH \`${statBar(statsB.dash)}\` **${statsB.dash}**`,
-            `⚖️ **${statsB.weight.toFixed(1)}g**`,
+            `**${cnB}**\n${tagB}`,
+            `HP ${hpBar(battle.hpB, battle.maxHp)} ${Math.round(battle.hpB)}/${battle.maxHp}`,
+            `ATK \`${statBar(statsB.attack)}\` **${statsB.attack}** | DEF **${statsB.defense}**`,
+            `STA **${statsB.stamina}** | DSH **${statsB.dash}** | ⚖️ **${statsB.weight.toFixed(1)}g**`,
           ].join('\n'),
           inline: true,
+        },
+        {
+          name: `📜 Combat (${battle.rounds} tours)`,
+          value: logSummary || '> Combat rapide !',
         },
         {
           name: '🏆 Vainqueur',
-          value: `**${winner.displayName}** avec **${challengerWins ? comboNameA : comboNameB}**\n${finishType.emoji} ${finishType.message} (+${finishType.points} pts)`,
+          value: `**${winner.displayName}** avec **${winnerComboName}**\n${finishType.emoji} ${finishType.message} (+${finishType.points} pts)`,
         },
       )
       .setColor(getTypeColor(winnerCombo.blade.beyType))
       .setImage(`attachment://${filename}`)
       .setFooter({
-        text: `${RPB.FullName} | ${comboA.fromDeck || comboB.fromDeck ? 'Deck actif utilisé' : 'Combo aléatoire'}`,
+        text: `${RPB.FullName} | Simulation Beyblade X · ${comboA.fromDeck || comboB.fromDeck ? 'Deck actif' : 'Aléatoire'}`,
       })
       .setTimestamp();
 
