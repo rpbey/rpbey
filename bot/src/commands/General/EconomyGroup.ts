@@ -542,7 +542,20 @@ export class EconomyGroup {
     await interaction.deferReply();
     const { userId, profile } = await this.resolve(interaction);
 
-    // Deduct cost (can go negative)
+    // Block if overdraft would exceed -1000
+    if (profile.currency - GACHA_COST < -1000) {
+      return interaction.editReply({
+        embeds: [
+          new EmbedBuilder()
+            .setColor(Colors.Error)
+            .setTitle('🚫 Découvert maximum atteint')
+            .setDescription(
+              `Ton solde est à **${profile.currency}** 🪙 — le découvert maximum est de **-1 000** 🪙.\n\nUtilise \`/gacha daily\` ou \`/gacha vendre\` pour remonter !`,
+            ),
+        ],
+      });
+    }
+
     await this.prisma.profile.update({
       where: { id: profile.id },
       data: { currency: { decrement: GACHA_COST } },
@@ -603,7 +616,19 @@ export class EconomyGroup {
     await interaction.deferReply();
     const { userId, profile } = await this.resolve(interaction);
 
-    // Deduct cost (can go negative)
+    if (profile.currency - MULTI_PULL_COST < -1000) {
+      return interaction.editReply({
+        embeds: [
+          new EmbedBuilder()
+            .setColor(Colors.Error)
+            .setTitle('🚫 Découvert maximum atteint')
+            .setDescription(
+              `Ton solde est à **${profile.currency}** 🪙 — le découvert maximum est de **-1 000** 🪙.\n\nUtilise \`/gacha daily\` ou \`/gacha vendre\` pour remonter !`,
+            ),
+        ],
+      });
+    }
+
     await this.prisma.profile.update({
       where: { id: profile.id },
       data: { currency: { decrement: MULTI_PULL_COST } },
