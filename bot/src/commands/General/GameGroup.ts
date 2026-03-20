@@ -544,45 +544,13 @@ export class GameGroup {
 
     await interaction.deferReply();
 
-    const guild = interaction.guild;
-    if (!guild)
-      return interaction.editReply(
-        '❌ Commande disponible uniquement sur un serveur.',
-      );
+    const { getMentions, getScanMeta } = await import('../../lib/redis.js');
 
-    // Scan text channels for mutual mentions (parallel, capped)
-    let mentionsAtoB = 0;
-    let mentionsBtoA = 0;
-
-    const textChannels = [...guild.channels.cache.values()].filter(
-      (c) => c.isTextBased() && !c.isThread() && 'messages' in c,
-    );
-
-    const results = await Promise.allSettled(
-      textChannels.map(async (channel) => {
-        if (!('messages' in channel)) return { a: 0, b: 0 };
-        const messages = await channel.messages.fetch({ limit: 50 });
-        let a = 0;
-        let b = 0;
-        for (const msg of messages.values()) {
-          if (msg.author.bot) continue;
-          const mentions = (id: string) =>
-            msg.mentions.users.has(id) || msg.content.includes(`<@${id}>`);
-          if (msg.author.id === interaction.user.id && mentions(target.id)) a++;
-          if (msg.author.id === target.id && mentions(interaction.user.id)) b++;
-        }
-        return { a, b };
-      }),
-    );
-
-    let channelsScanned = 0;
-    for (const r of results) {
-      if (r.status === 'fulfilled') {
-        mentionsAtoB += r.value.a;
-        mentionsBtoA += r.value.b;
-        channelsScanned++;
-      }
-    }
+    const [mentionsAtoB, mentionsBtoA, scanMeta] = await Promise.all([
+      getMentions(interaction.user.id, target.id),
+      getMentions(target.id, interaction.user.id),
+      getScanMeta(),
+    ]);
 
     const total = mentionsAtoB + mentionsBtoA;
 
@@ -625,7 +593,7 @@ export class GameGroup {
       )
       .setThumbnail(target.displayAvatarURL({ size: 256 }))
       .setFooter({
-        text: `${RPB.FullName} | ${channelsScanned} salons analysés (100 derniers messages chacun)`,
+        text: `${RPB.FullName} | ${scanMeta.channelsScanned} salons · ${scanMeta.messagesScanned.toLocaleString('fr-FR')} messages analysés`,
         iconURL: interaction.user.displayAvatarURL({ size: 64 }),
       })
       .setTimestamp();

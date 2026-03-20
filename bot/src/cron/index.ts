@@ -4,6 +4,7 @@ import { logger } from '../lib/logger.js';
 import { bbxWeeklySyncTask } from './tasks/BbxWeeklySync.js';
 import { dailyStatsTask } from './tasks/DailyStats.js';
 import { liveTournamentSyncTask } from './tasks/LiveTournamentSync.js';
+import { mentionsScanTask } from './tasks/MentionsScan.js';
 import { preTournamentSyncTask } from './tasks/PreTournamentSync.js';
 import { satrSyncTask } from './tasks/SatrSync.js';
 import { sessionCleanupTask } from './tasks/SessionCleanup.js';
@@ -13,6 +14,16 @@ import { tournamentReminderTask } from './tasks/TournamentReminder.js';
 
 export function setupCronJobs() {
   logger.info('[Cron] Initializing scheduled tasks...');
+
+  // Mentions Scan: Every 6 hours + run once at startup after 30s
+  cron.schedule(
+    '0 */6 * * *',
+    () => {
+      mentionsScanTask();
+    },
+    { timezone: 'Europe/Paris' },
+  );
+  setTimeout(() => mentionsScanTask(), 30_000);
 
   // Ranking Roles Sync: Every 30 minutes
   cron.schedule(
