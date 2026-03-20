@@ -21,7 +21,7 @@ import { logger } from '../../lib/logger.js';
 import { resolveDataPath } from '../../lib/paths.js';
 import { PrismaService } from '../../lib/prisma.js';
 
-// ─── Static JSON Stats (cleaned data) ───
+// ─── Static JSON Stats ─────────────────────────────────────────────────────
 interface BladeJson {
   name: string;
   spin: string;
@@ -57,11 +57,9 @@ const BLADE_DATA = loadJsonData<BladeJson>('blades.json');
 const RATCHET_DATA = loadJsonData<RatchetJson>('ratchets.json');
 const BIT_DATA = loadJsonData<BitJson>('bits.json');
 
-// Normalize name for matching: remove spaces, lowercase
 function normalize(name: string) {
   return name.replace(/[\s-]/g, '').toLowerCase();
 }
-
 function findBladeStats(name: string) {
   return BLADE_DATA.find((b) => normalize(b.name) === normalize(name));
 }
@@ -74,14 +72,8 @@ function findBitStats(name: string) {
   );
 }
 
-// Battle finish types
 const FINISH_TYPES = [
-  {
-    result: 'xtreme',
-    message: '⚡ X-TREME FINISH !',
-    points: 3,
-    emoji: '⚡',
-  },
+  { result: 'xtreme', message: '⚡ X-TREME FINISH !', points: 3, emoji: '⚡' },
   { result: 'burst', message: '💥 BURST FINISH !', points: 2, emoji: '💥' },
   { result: 'over', message: '🔄 OVER FINISH !', points: 2, emoji: '🔄' },
   { result: 'spin', message: '🌀 SPIN FINISH !', points: 1, emoji: '🌀' },
@@ -137,7 +129,6 @@ function getTypeColor(beyType: string | null): number {
       return Colors.Beyblade;
   }
 }
-
 function getTypeEmoji(beyType: string | null): string {
   switch (beyType) {
     case 'ATTACK':
@@ -164,6 +155,15 @@ function pick<T>(arr: T[]): T {
   return arr[Math.floor(Math.random() * arr.length)]!;
 }
 
+// ─── Combo type from deck or random ─────────────────────────────────────────
+interface PlayerCombo {
+  blade: { name: string; beyType: string | null; imageUrl: string | null };
+  ratchet: { name: string };
+  bit: { name: string };
+  fromDeck: boolean;
+  deckName?: string;
+}
+
 @Discord()
 @SlashGroup({ name: 'jeu', description: 'Activités ludiques et Beyblade' })
 @SlashGroup('jeu')
@@ -171,9 +171,86 @@ function pick<T>(arr: T[]): T {
 export class GameGroup {
   constructor(@inject(PrismaService) private prisma: PrismaService) {}
 
+  /** Get active deck combo for a discord user, or null */
+  private async getPlayerCombo(discordId: string): Promise<PlayerCombo | null> {
+    const user = await this.prisma.user.findUnique({ where: { discordId } });
+    if (!user) return null;
+
+    const deck = await this.prisma.deck.findFirst({
+      where: { userId: user.id, isActive: true },
+      include: {
+        items: {
+          orderBy: { position: 'asc' },
+          take: 1, // Use first item from deck
+          include: {
+            blade: { select: { name: true, beyType: true, imageUrl: true } },
+            ratchet: { select: { name: true } },
+            bit: { select: { name: true } },
+          },
+        },
+      },
+    });
+
+    if (!deck || deck.items.length === 0) return null;
+
+    const item = deck.items[0]!;
+    if (!item.blade || !item.ratchet || !item.bit) return null;
+
+    return {
+      blade: item.blade,
+      ratchet: item.ratchet,
+      bit: item.bit,
+      fromDeck: true,
+      deckName: deck.name,
+    };
+  }
+
+  /** Get a random combo from DB parts */
+  private async getRandomCombo(): Promise<PlayerCombo | null> {
+    const blades = await this.prisma.part.findMany({
+      where: { type: 'BLADE' },
+    });
+    const ratchets = await this.prisma.part.findMany({
+      where: { type: 'RATCHET' },
+    });
+    const bits = await this.prisma.part.findMany({ where: { type: 'BIT' } });
+
+    if (blades.length === 0 || ratchets.length === 0 || bits.length === 0)
+      return null;
+
+    const blade = pick(blades);
+    const ratchet = pick(ratchets);
+    const bit = pick(bits);
+
+    return {
+      blade: {
+        name: blade.name,
+        beyType: blade.beyType,
+        imageUrl: blade.imageUrl,
+      },
+      ratchet: { name: ratchet.name },
+      bit: { name: bit.name },
+      fromDeck: false,
+    };
+  }
+
+  private computeFinishType(winnerStats: ComboStats) {
+    const total =
+      winnerStats.attack + winnerStats.defense + winnerStats.stamina;
+    const atkRatio = total > 0 ? winnerStats.attack / total : 0.33;
+    const staRatio = total > 0 ? winnerStats.stamina / total : 0.33;
+    const dashBonus = winnerStats.dash > 30 ? 0.15 : 0;
+    const roll = Math.random();
+    if (roll < atkRatio * 0.4 + dashBonus) return FINISH_TYPES[0]!;
+    if (roll < atkRatio * 0.7 + dashBonus) return FINISH_TYPES[1]!;
+    if (roll < atkRatio * 0.7 + staRatio * 0.5) return FINISH_TYPES[3]!;
+    return FINISH_TYPES[2]!;
+  }
+
+  // ═══ /jeu combat ═══
   @Slash({
     name: 'combat',
-    description: 'Lancer un combat amical contre un autre blader',
+    description: 'Lancer un combat contre un autre blader',
   })
   @SlashGroup('jeu')
   async battle(
@@ -199,88 +276,46 @@ export class GameGroup {
 
     await interaction.deferReply();
 
-    // Generate random combos for both players
-    const blades = await this.prisma.part.findMany({
-      where: { type: 'BLADE' },
-    });
-    const ratchets = await this.prisma.part.findMany({
-      where: { type: 'RATCHET' },
-    });
-    const bits = await this.prisma.part.findMany({ where: { type: 'BIT' } });
+    // Get combos: deck if available, random otherwise
+    const [comboA, comboB] = await Promise.all([
+      this.getPlayerCombo(interaction.user.id).then(
+        (c) => c || this.getRandomCombo(),
+      ),
+      this.getPlayerCombo(target.id).then((c) => c || this.getRandomCombo()),
+    ]);
 
-    if (blades.length === 0 || ratchets.length === 0 || bits.length === 0) {
+    if (!comboA || !comboB)
       return interaction.editReply(
-        '❌ La base de données ne contient pas assez de pièces. Un admin doit lancer la synchronisation.',
+        '❌ Pas assez de pièces en base de données.',
       );
-    }
 
-    const comboA = {
-      blade: pick(blades),
-      ratchet: pick(ratchets),
-      bit: pick(bits),
-    };
-    const comboB = {
-      blade: pick(blades),
-      ratchet: pick(ratchets),
-      bit: pick(bits),
-    };
-
-    const statsJsonA = {
-      blade: findBladeStats(comboA.blade.name),
-      ratchet: findRatchetStats(comboA.ratchet.name),
-      bit: findBitStats(comboA.bit.name),
-    };
-    const statsJsonB = {
-      blade: findBladeStats(comboB.blade.name),
-      ratchet: findRatchetStats(comboB.ratchet.name),
-      bit: findBitStats(comboB.bit.name),
-    };
-
-    const sA = computeComboStats(
-      statsJsonA.blade,
-      statsJsonA.ratchet,
-      statsJsonA.bit,
+    const statsA = computeComboStats(
+      findBladeStats(comboA.blade.name),
+      findRatchetStats(comboA.ratchet.name),
+      findBitStats(comboA.bit.name),
     );
-    const sB = computeComboStats(
-      statsJsonB.blade,
-      statsJsonB.ratchet,
-      statsJsonB.bit,
+    const statsB = computeComboStats(
+      findBladeStats(comboB.blade.name),
+      findRatchetStats(comboB.ratchet.name),
+      findBitStats(comboB.bit.name),
     );
 
-    // Power calculation with luck factor
-    const powerA = sA.attack + sA.defense + sA.stamina + sA.dash * 0.5;
-    const powerB = sB.attack + sB.defense + sB.stamina + sB.dash * 0.5;
-    const luckA = 0.75 + Math.random() * 0.5;
-    const luckB = 0.75 + Math.random() * 0.5;
-    const scoreA = powerA * luckA;
-    const scoreB = powerB * luckB;
+    // Power + luck
+    const scoreA =
+      (statsA.attack + statsA.defense + statsA.stamina + statsA.dash * 0.5) *
+      (0.75 + Math.random() * 0.5);
+    const scoreB =
+      (statsB.attack + statsB.defense + statsB.stamina + statsB.dash * 0.5) *
+      (0.75 + Math.random() * 0.5);
 
     const challengerWins = scoreA >= scoreB;
     const winner = challengerWins ? interaction.user : target;
     const loser = challengerWins ? target : interaction.user;
-    const winnerStats = challengerWins ? sA : sB;
+    const winnerStats = challengerWins ? statsA : statsB;
     const winnerCombo = challengerWins ? comboA : comboB;
+    const finishType = this.computeFinishType(winnerStats);
 
-    // Determine finish type based on winner's stats
-    const total =
-      winnerStats.attack + winnerStats.defense + winnerStats.stamina;
-    const atkRatio = total > 0 ? winnerStats.attack / total : 0.33;
-    const staRatio = total > 0 ? winnerStats.stamina / total : 0.33;
-    const dashBonus = winnerStats.dash > 30 ? 0.15 : 0;
-
-    let finishType: (typeof FINISH_TYPES)[number];
-    const roll = Math.random();
-    if (roll < atkRatio * 0.4 + dashBonus) {
-      finishType = FINISH_TYPES[0]!; // xtreme
-    } else if (roll < atkRatio * 0.7 + dashBonus) {
-      finishType = FINISH_TYPES[1]!; // burst
-    } else if (roll < atkRatio * 0.7 + staRatio * 0.5) {
-      finishType = FINISH_TYPES[3]!; // spin
-    } else {
-      finishType = FINISH_TYPES[2]!; // over
-    }
-
-    // Generate battle card
+    // Canvas battle card
     const cardBuffer = await generateBattleCard({
       winnerName: winner.displayName,
       winnerAvatarUrl: winner.displayAvatarURL({ extension: 'png', size: 512 }),
@@ -296,6 +331,12 @@ export class GameGroup {
 
     const comboNameA = `${comboA.blade.name} ${comboA.ratchet.name} ${comboA.bit.name}`;
     const comboNameB = `${comboB.blade.name} ${comboB.ratchet.name} ${comboB.bit.name}`;
+    const deckTagA = comboA.fromDeck
+      ? `\n📦 Deck: *${comboA.deckName}*`
+      : '\n🎲 *Aléatoire*';
+    const deckTagB = comboB.fromDeck
+      ? `\n📦 Deck: *${comboB.deckName}*`
+      : '\n🎲 *Aléatoire*';
 
     const embed = new EmbedBuilder()
       .setTitle(`${finishType.emoji} ${finishType.message}`)
@@ -304,38 +345,39 @@ export class GameGroup {
       )
       .addFields(
         {
-          name: `${interaction.user.displayName}`,
+          name: interaction.user.displayName,
           value: [
-            `**${comboNameA}**`,
-            `ATK \`${statBar(sA.attack)}\` **${sA.attack}**`,
-            `DEF \`${statBar(sA.defense)}\` **${sA.defense}**`,
-            `STA \`${statBar(sA.stamina)}\` **${sA.stamina}**`,
-            `DSH \`${statBar(sA.dash)}\` **${sA.dash}**`,
-            `⚖️ **${sA.weight.toFixed(1)}g**`,
+            `**${comboNameA}**${deckTagA}`,
+            `ATK \`${statBar(statsA.attack)}\` **${statsA.attack}**`,
+            `DEF \`${statBar(statsA.defense)}\` **${statsA.defense}**`,
+            `STA \`${statBar(statsA.stamina)}\` **${statsA.stamina}**`,
+            `DSH \`${statBar(statsA.dash)}\` **${statsA.dash}**`,
+            `⚖️ **${statsA.weight.toFixed(1)}g**`,
           ].join('\n'),
           inline: true,
         },
         {
-          name: `${target.displayName}`,
+          name: target.displayName,
           value: [
-            `**${comboNameB}**`,
-            `ATK \`${statBar(sB.attack)}\` **${sB.attack}**`,
-            `DEF \`${statBar(sB.defense)}\` **${sB.defense}**`,
-            `STA \`${statBar(sB.stamina)}\` **${sB.stamina}**`,
-            `DSH \`${statBar(sB.dash)}\` **${sB.dash}**`,
-            `⚖️ **${sB.weight.toFixed(1)}g**`,
+            `**${comboNameB}**${deckTagB}`,
+            `ATK \`${statBar(statsB.attack)}\` **${statsB.attack}**`,
+            `DEF \`${statBar(statsB.defense)}\` **${statsB.defense}**`,
+            `STA \`${statBar(statsB.stamina)}\` **${statsB.stamina}**`,
+            `DSH \`${statBar(statsB.dash)}\` **${statsB.dash}**`,
+            `⚖️ **${statsB.weight.toFixed(1)}g**`,
           ].join('\n'),
           inline: true,
         },
         {
           name: '🏆 Vainqueur',
           value: `**${winner.displayName}** avec **${challengerWins ? comboNameA : comboNameB}**\n${finishType.emoji} ${finishType.message} (+${finishType.points} pts)`,
-          inline: false,
         },
       )
       .setColor(getTypeColor(winnerCombo.blade.beyType))
       .setImage(`attachment://${filename}`)
-      .setFooter({ text: `${RPB.FullName} | Combo aléatoire` })
+      .setFooter({
+        text: `${RPB.FullName} | ${comboA.fromDeck || comboB.fromDeck ? 'Deck actif utilisé' : 'Combo aléatoire'}`,
+      })
       .setTimestamp();
 
     // Update DB stats
@@ -372,56 +414,42 @@ export class GameGroup {
       logger.error('[Battle] DB update error:', e);
     }
 
-    return interaction.editReply({
-      embeds: [embed],
-      files: [attachment],
-    });
+    return interaction.editReply({ embeds: [embed], files: [attachment] });
   }
 
+  // ═══ /jeu aleatoire ═══
   @Slash({
     name: 'aleatoire',
-    description: 'Générer un combo Beyblade X aléatoire',
+    description: 'Générer un combo Beyblade X (ou afficher ton deck)',
   })
   @SlashGroup('jeu')
   async random(interaction: CommandInteraction) {
     await interaction.deferReply();
 
-    const blades = await this.prisma.part.findMany({
-      where: { type: 'BLADE' },
-    });
-    const ratchets = await this.prisma.part.findMany({
-      where: { type: 'RATCHET' },
-    });
-    const bits = await this.prisma.part.findMany({ where: { type: 'BIT' } });
+    // Try to use active deck first
+    const deckCombo = await this.getPlayerCombo(interaction.user.id);
+    const combo = deckCombo || (await this.getRandomCombo());
 
-    if (blades.length === 0 || ratchets.length === 0 || bits.length === 0) {
+    if (!combo)
       return interaction.editReply(
-        '❌ La base de données ne contient pas assez de pièces. Un admin doit lancer la synchronisation.',
+        '❌ Pas assez de pièces en base de données.',
       );
-    }
 
-    const blade = pick(blades);
-    const ratchet = pick(ratchets);
-    const bit = pick(bits);
-
-    // Lookup stats from cleaned JSON
-    const bladeJson = findBladeStats(blade.name);
-    const ratchetJson = findRatchetStats(ratchet.name);
-    const bitJson = findBitStats(bit.name);
-
+    const bladeJson = findBladeStats(combo.blade.name);
+    const ratchetJson = findRatchetStats(combo.ratchet.name);
+    const bitJson = findBitStats(combo.bit.name);
     const stats = computeComboStats(bladeJson, ratchetJson, bitJson);
-    const comboName = `${blade.name} ${ratchet.name} ${bit.name}`;
-    const color = getTypeColor(blade.beyType);
+    const comboName = `${combo.blade.name} ${combo.ratchet.name} ${combo.bit.name}`;
+    const color = getTypeColor(combo.blade.beyType);
 
-    // Generate combo card image
     const cardData: ComboCardData = {
       color,
       name: comboName,
-      type: blade.beyType || 'BALANCE',
-      blade: blade.name,
-      ratchet: ratchet.name,
-      bit: bit.name,
-      bladeImageUrl: blade.imageUrl,
+      type: combo.blade.beyType || 'BALANCE',
+      blade: combo.blade.name,
+      ratchet: combo.ratchet.name,
+      bit: combo.bit.name,
+      bladeImageUrl: combo.blade.imageUrl,
       attack: stats.attack,
       defense: stats.defense,
       stamina: stats.stamina,
@@ -435,17 +463,20 @@ export class GameGroup {
 
     const bitType = bitJson?.stats.type || 'Inconnu';
     const spinDir = bladeJson?.spin === 'L' ? '↺ Gauche' : '↻ Droite';
+    const source = combo.fromDeck
+      ? `📦 **Deck : ${combo.deckName}**`
+      : '🎲 **Combo aléatoire**';
 
     const embed = new EmbedBuilder()
-      .setTitle(`🎲 ${comboName}`)
+      .setTitle(`${combo.fromDeck ? '📦' : '🎲'} ${comboName}`)
       .setDescription(
-        `${getTypeEmoji(blade.beyType)} **${blade.beyType || 'BALANCE'}** | ${spinDir}`,
+        `${getTypeEmoji(combo.blade.beyType)} **${combo.blade.beyType || 'BALANCE'}** | ${spinDir}\n${source}`,
       )
       .addFields(
         {
           name: '⚔️ Blade',
           value: [
-            `**${blade.name}**`,
+            `**${combo.blade.name}**`,
             bladeJson
               ? `ATK ${parseNum(bladeJson.stats.attack)} | DEF ${parseNum(bladeJson.stats.defense)} | STA ${parseNum(bladeJson.stats.stamina)}`
               : '_Stats indisponibles_',
@@ -458,7 +489,7 @@ export class GameGroup {
         {
           name: '🔩 Ratchet',
           value: [
-            `**${ratchet.name}**`,
+            `**${combo.ratchet.name}**`,
             ratchetJson
               ? `ATK ${parseNum(ratchetJson.stats.attack)} | DEF ${parseNum(ratchetJson.stats.defense)} | STA ${parseNum(ratchetJson.stats.stamina)}`
               : '_Stats indisponibles_',
@@ -471,7 +502,7 @@ export class GameGroup {
         {
           name: '💎 Bit',
           value: [
-            `**${bit.name}** (${bitType})`,
+            `**${combo.bit.name}** (${bitType})`,
             bitJson
               ? `ATK ${parseNum(bitJson.stats.attack)} | DEF ${parseNum(bitJson.stats.defense)} | STA ${parseNum(bitJson.stats.stamina)}`
               : '_Stats indisponibles_',
@@ -494,27 +525,22 @@ export class GameGroup {
             `BRS \`${statBar(stats.burst)}\` **${stats.burst}**`,
             `⚖️ **${stats.weight.toFixed(1)}g**`,
           ].join('\n'),
-          inline: false,
         },
       )
       .setColor(color)
       .setImage(`attachment://${filename}`)
       .setFooter({
-        text: `${RPB.FullName} | /jeu aleatoire pour un autre combo`,
+        text: `${RPB.FullName} | ${combo.fromDeck ? 'Ton deck actif' : '/jeu aleatoire pour un autre combo'}`,
       })
       .setTimestamp();
 
-    // If blade has an image in DB, show it as thumbnail
-    if (blade.imageUrl) {
-      embed.setThumbnail(`https://rpbey.fr${blade.imageUrl}`);
-    }
+    if (combo.blade.imageUrl)
+      embed.setThumbnail(`https://rpbey.fr${combo.blade.imageUrl}`);
 
-    return interaction.editReply({
-      embeds: [embed],
-      files: [attachment],
-    });
+    return interaction.editReply({ embeds: [embed], files: [attachment] });
   }
 
+  // ═══ /jeu interaction ═══
   @Slash({
     name: 'interaction',
     description: 'Compter les mentions mutuelles entre deux membres',
@@ -523,7 +549,7 @@ export class GameGroup {
   async interaction(
     @SlashOption({
       name: 'membre',
-      description: 'Le membre avec qui mesurer les interactions',
+      description: 'Le membre',
       required: true,
       type: ApplicationCommandOptionType.User,
     })
@@ -544,16 +570,12 @@ export class GameGroup {
     await interaction.deferReply();
 
     const { getMentions, getScanMeta } = await import('../../lib/redis.js');
-
     const [mentionsAtoB, mentionsBtoA, scanMeta] = await Promise.all([
       getMentions(interaction.user.id, target.id),
       getMentions(target.id, interaction.user.id),
       getScanMeta(),
     ]);
-
     const total = mentionsAtoB + mentionsBtoA;
-
-    // Score & label
     const score = Math.min(total, 100);
     const { label, color } =
       score >= 50
@@ -576,10 +598,7 @@ export class GameGroup {
         size: 256,
       }),
       userBName: target.displayName,
-      userBAvatarUrl: target.displayAvatarURL({
-        extension: 'png',
-        size: 256,
-      }),
+      userBAvatarUrl: target.displayAvatarURL({ extension: 'png', size: 256 }),
       mentionsAtoB,
       mentionsBtoA,
       total,
@@ -589,19 +608,20 @@ export class GameGroup {
     });
 
     const filename = `interaction-${Date.now()}.png`;
-    const embed = new EmbedBuilder()
-      .setColor(color)
-      .setImage(`attachment://${filename}`)
-      .setFooter({
-        text: `${scanMeta.channelsScanned} salons · ${scanMeta.messagesScanned.toLocaleString('fr-FR')} messages analysés`,
-      });
-
     return interaction.editReply({
-      embeds: [embed],
+      embeds: [
+        new EmbedBuilder()
+          .setColor(color)
+          .setImage(`attachment://${filename}`)
+          .setFooter({
+            text: `${scanMeta.channelsScanned} salons · ${scanMeta.messagesScanned.toLocaleString('fr-FR')} messages analysés`,
+          }),
+      ],
       files: [new AttachmentBuilder(cardBuffer, { name: filename })],
     });
   }
 
+  // ═══ /jeu wanted ═══
   @Slash({ name: 'wanted', description: 'Générer une affiche WANTED' })
   @SlashGroup('jeu')
   async wanted(
@@ -614,14 +634,14 @@ export class GameGroup {
     targetUser: User | undefined,
     @SlashOption({
       name: 'crime',
-      description: 'Le crime commis (optionnel)',
+      description: 'Le crime commis',
       required: false,
       type: ApplicationCommandOptionType.String,
     })
     customCrime: string | undefined,
     @SlashOption({
       name: 'prime',
-      description: 'Montant de la prime (optionnel)',
+      description: 'Montant de la prime',
       required: false,
       type: ApplicationCommandOptionType.String,
     })
@@ -643,7 +663,6 @@ export class GameGroup {
       'Collectionne les Beyblades sans jouer',
       'A mis du WD-40 sur son Bit',
     ];
-
     const bounties = [
       '500 000 B₿',
       '1 000 000 B₿',
@@ -667,17 +686,18 @@ export class GameGroup {
       crime,
     );
 
-    const embed = new EmbedBuilder()
-      .setColor(0x8b0000)
-      .setImage('attachment://wanted.png')
-      .setFooter({ text: `Demandé par ${interaction.user.displayName}` });
-
     return interaction.editReply({
-      embeds: [embed],
+      embeds: [
+        new EmbedBuilder()
+          .setColor(0x8b0000)
+          .setImage('attachment://wanted.png')
+          .setFooter({ text: `Demandé par ${interaction.user.displayName}` }),
+      ],
       files: [new AttachmentBuilder(buffer, { name: 'wanted.png' })],
     });
   }
 
+  // ═══ /jeu fun-agrandir ═══
   @Slash({ name: 'fun-agrandir', description: 'Agrandir un émoji' })
   @SlashGroup('jeu')
   async emote(
