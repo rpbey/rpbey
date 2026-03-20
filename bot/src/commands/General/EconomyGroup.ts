@@ -306,64 +306,124 @@ export class EconomyGroup {
   }
 
   // ═══ /gacha aide ═══
-  @Slash({ name: 'aide', description: 'Guide complet du système gacha' })
+  @Slash({ name: 'aide', description: 'Guide complet du système gacha TCG' })
   async help(interaction: CommandInteraction) {
+    const totalCards = await this.prisma.gachaCard.count({
+      where: { isActive: true },
+    });
+
     const embed1 = new EmbedBuilder()
       .setColor(RPB.Color)
-      .setTitle('🎰 Guide du Gacha RPB')
+      .setTitle('🎰 Guide du Gacha TCG — RPB')
       .setDescription(
-        'Collectionne les **31 cartes** de personnages Beyblade Metal Masters & Metal Fury !\nGagne des pièces, tire des cartes, complète ta collection.',
+        `Collectionne **${totalCards} cartes** de bladers légendaires de toutes les générations Beyblade !\nChaque carte a des **stats de combat** (ATK/DEF/SPD/HP) et un **élément**.`,
       )
       .addFields(
         {
           name: '🪙 Gagner des pièces',
-          value:
-            '`/gacha daily` — Réclame tes pièces (toutes les **20h**)\n> 60% : 80-120🪙 · 25% : 150-200🪙 · 10% : 250-350🪙\n> 4% : 500-700🪙 ⭐ · **1% : 1000-1500🪙** 💎\n\n`/gacha vendre` — Vends un doublon (⚪5 · 🔵15 · 🟣50 · 🟡150 · 🔴500 🪙)',
+          value: [
+            '`/gacha daily` — Récompense toutes les **20h** (5 tiers)',
+            '> 60%: 80-120🪙 · 25%: 150-200🪙 · 10%: 250-350🪙',
+            '> 4%: 500-700🪙 ⭐ · **1%: 1000-1500🪙 💎**',
+            '`/gacha vendre` — Vends 1 doublon (⚪5 · 🔵15 · 🟣50 · 🟡150 · 🔴500)',
+            "`/gacha vendre-tout` — Vends **tous** tes doublons d'un coup",
+            '`/jeu combat @user` — Gagne 10-30🪙 par victoire',
+          ].join('\n'),
         },
         {
-          name: '🔥 Streak',
+          name: '🔥 Streak quotidien',
           value:
-            'Bonus : **3j** +50🪙 · **7j** +150🪙 · **14j** +300🪙 · **30j** +750🪙\n⚠️ >48h sans daily = streak reset',
+            '**3j** +50🪙 · **7j** +150🪙 · **14j** +300🪙 · **30j** +750🪙\n⚠️ >48h sans daily = streak reset · Découvert max : **-1 000🪙**',
         },
       );
+
     const embed2 = new EmbedBuilder().setColor(RPB.GoldColor).addFields(
       {
         name: '🃏 Tirer des cartes',
-        value:
-          '`/gacha gacha` — x1 (**50🪙**) · `/gacha multi` — x10 (**450🪙**, -10%)\n\n> 💨 Raté **35%** · ⚪ **30%** · 🔵 **20%** · 🟣 **10%** · 🟡 **4%** · 🔴 **1%**',
+        value: [
+          '`/gacha gacha` — Tirage unique (**50🪙**)',
+          '`/gacha multi` — Tirage x10 (**450🪙**, économie 10%)',
+          '',
+          '**Taux :**  💨 Raté **35%** · ⚪ **30%** · 🔵 **20%** · 🟣 **10%** · 🟡 **4%** · 🔴 **1%**',
+        ].join('\n'),
       },
       {
-        name: '⭐ Wishlist',
-        value:
-          '`/gacha wish <nom>` — Ajoute à ta wishlist\n`/gacha wishlist` — Affiche · Embed doré quand tu drop une carte souhaitée !',
+        name: '⚔️ Combat de cartes',
+        value: [
+          "`/gacha duel @user` — Tes cartes s'affrontent !",
+          '> Pioche aléatoire depuis ta collection',
+          '> Puissance = stats (ATK/DEF/SPD/HP) + rareté + aléatoire',
+          '> Avantages élémentaires (🔥>🌪️>🌍>💧>🔥)',
+          '> Le gagnant remporte des 🪙',
+        ].join('\n'),
       },
       {
-        name: '📖 Consulter',
-        value:
-          '`/gacha solde` · `/gacha collection` · `/gacha catalogue` · `/gacha classement` · `/gacha taux`',
+        name: '⭐ Wishlist & Gestion',
+        value: [
+          '`/gacha wish <nom>` — Ajoute/retire de ta wishlist',
+          '`/gacha wishlist` — Tes cartes souhaitées (✅ = obtenues)',
+          '> Embed **doré** spécial quand tu drop une carte souhaitée !',
+        ].join('\n'),
       },
     );
-    const embed3 = new EmbedBuilder()
+
+    const embed3 = new EmbedBuilder().setColor(0x3b82f6).addFields(
+      {
+        name: '🌀 Éléments & Avantages (×1.25 dégâts)',
+        value: [
+          '🔥 **Feu** > 🌪️ **Vent** > 🌍 **Terre** > 💧 **Eau** > 🔥 **Feu**',
+          '🌑 **Ombre** ⟷ ✨ **Lumière** (mutuellement forts)',
+          "⚪ **Neutre** = pas d'avantage",
+        ].join('\n'),
+      },
+      {
+        name: '📊 Stats des cartes',
+        value: [
+          '**ATK** — Dégâts infligés en combat',
+          '**DEF** — Réduction des dégâts reçus',
+          '**SPD** — Qui frappe en premier + esquive',
+          '**HP** — Points de vie en duel',
+          '',
+          '> Stats basées sur la rareté + archétype du personnage',
+          "> Secret cards : jusqu'à 142 ATK / 900 HP",
+        ].join('\n'),
+      },
+    );
+
+    const embed4 = new EmbedBuilder()
       .setColor(0x8b5cf6)
       .addFields(
         {
-          name: '🏅 Badges',
-          value:
-            '🥉 5 cartes +200🪙 · 🥈 10 +500🪙 · 🥇 15 +750🪙\n🏆 20 +1000🪙 · 👑 25 +1500🪙 · ⭐ 31/31 +3000🪙',
+          name: '📖 Commandes',
+          value: [
+            '`/gacha solde` — Profil complet (pièces, streak, collection, badge)',
+            '`/gacha collection` — Tes cartes en image canvas',
+            '`/gacha catalogue [série]` — Toutes les cartes (✅/⬛ possédées)',
+            '`/gacha classement` — Top collectionneurs + top fortunes',
+            '`/gacha taux` — Tableau des mécaniques',
+            '`/gacha admin-give @user <montant>` — [ADMIN] Donner/retirer des 🪙',
+          ].join('\n'),
         },
         {
-          name: '💡 Astuces',
+          name: '🏅 Badges de collection',
           value:
-            '• `/gacha daily` chaque jour · `/gacha multi` pour -10%\n• Wishlist tes cartes préférées · Vends les doublons\n• **Ryuga L-Drago Destructor** 🔴 = 1% de chance !',
+            '🥉 5 cartes +200🪙 · 🥈 10 +500🪙 · 🥇 15 +750🪙\n🏆 20 +1000🪙 · 👑 25 +1500🪙 · ⭐ Légende (tout) +3000🪙',
         },
         {
-          name: '📦 Cartes',
-          value:
-            '**Metal Masters** 17 cartes · **Metal Fury** 14 cartes\n🔴1 Secrète · 🟡3 Légendaires · 🟣8 Épiques · 🔵7 Rares · ⚪12 Communes',
+          name: `📦 ${totalCards} cartes · 7 séries`,
+          value: [
+            '**Bakuten** (Original) · **Metal Fusion** · **Metal Masters**',
+            '**Metal Fury** · **Shogun Steel** · **Burst** · **Beyblade X**',
+            '',
+            '🔴 4 Secrètes · 🟡 12 Légendaires · 🟣 21 Épiques · 🔵 17 Rares · ⚪ 28 Communes',
+          ].join('\n'),
         },
       )
-      .setFooter({ text: 'RPB Gacha — Collectionne-les tous ! 🌀' });
-    return interaction.reply({ embeds: [embed1, embed2, embed3] });
+      .setFooter({
+        text: 'RPB Gacha TCG — Collectionne, combats, domine ! 🌀',
+      });
+
+    return interaction.reply({ embeds: [embed1, embed2, embed3, embed4] });
   }
 
   // ═══ /gacha daily ═══
