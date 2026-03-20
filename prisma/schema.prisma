@@ -708,6 +708,12 @@ model GachaCard {
   description String?
   dropRate    Float         @default(0) // 0-1, managed by rarity tier
   isActive    Boolean       @default(true)
+  // TCG Stats
+  atk         Int           @default(0)
+  def         Int           @default(0)
+  spd         Int           @default(0)
+  hp          Int           @default(0)
+  element     String        @default("NEUTRAL") // FEU, EAU, TERRE, VENT, OMBRE, LUMIERE, NEUTRAL
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
   inventory   CardInventory[]
