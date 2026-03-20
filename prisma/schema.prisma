@@ -63,6 +63,8 @@ model User {
   tournaments      TournamentParticipant[]
   twoFactors       TwoFactor[]
   animeProgress    AnimeWatchProgress[]
+  cardInventory    CardInventory[]
+  transactions     CurrencyTransaction[]
 
   @@map("users")
 }
@@ -669,6 +671,73 @@ enum ProductLine {
   BX
   UX
   CX
+}
+
+// Economy & Gacha System
+enum CardRarity {
+  COMMON
+  RARE
+  EPIC
+  LEGENDARY
+  SECRET
+}
+
+enum TransactionType {
+  DAILY_CLAIM
+  GACHA_PULL
+  ADMIN_GIVE
+  ADMIN_TAKE
+  TOURNAMENT_REWARD
+  SELL_CARD
+}
+
+model GachaCard {
+  id          String        @id @default(cuid())
+  slug        String        @unique
+  name        String
+  nameJp      String?
+  series      String        // "METAL_MASTERS", "METAL_FURY", etc.
+  rarity      CardRarity    @default(COMMON)
+  imageUrl    String?
+  beyblade    String?       // Associated beyblade name
+  description String?
+  dropRate    Float         @default(0) // 0-1, managed by rarity tier
+  isActive    Boolean       @default(true)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  inventory   CardInventory[]
+
+  @@index([series])
+  @@index([rarity])
+  @@map("gacha_cards")
+}
+
+model CardInventory {
+  id        String    @id @default(cuid())
+  userId    String
+  cardId    String
+  count     Int       @default(1)
+  obtainedAt DateTime @default(now())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  card      GachaCard @relation(fields: [cardId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, cardId])
+  @@index([userId])
+  @@map("card_inventory")
+}
+
+model CurrencyTransaction {
+  id        String          @id @default(cuid())
+  userId    String
+  amount    Int             // positive = gain, negative = spend
+  type      TransactionType
+  note      String?
+  createdAt DateTime        @default(now())
+  user      User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([createdAt])
+  @@map("currency_transactions")
 }
 
 // Anime Streaming
