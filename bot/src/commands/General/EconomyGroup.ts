@@ -379,14 +379,30 @@ export class EconomyGroup {
       if (hoursLeft > 0) {
         const h = Math.floor(hoursLeft);
         const m = Math.floor((hoursLeft - h) * 60);
+        const nextTimestamp = Math.floor(
+          (profile.lastDaily.getTime() + 20 * 3_600_000) / 1000,
+        );
         return interaction.editReply({
           embeds: [
             new EmbedBuilder()
               .setColor(Colors.Warning)
               .setTitle('⏳ Trop tôt !')
               .setDescription(
-                `Reviens dans **${h}h ${m}min**.\n🔥 Streak : **${profile.dailyStreak} jours**`,
-              ),
+                `Reviens dans **${h}h ${m}min** (<t:${nextTimestamp}:R>)`,
+              )
+              .addFields(
+                {
+                  name: '🔥 Streak actuel',
+                  value: `**${profile.dailyStreak}** jour${profile.dailyStreak > 1 ? 's' : ''}`,
+                  inline: true,
+                },
+                {
+                  name: '💰 Solde',
+                  value: `**${profile.currency.toLocaleString('fr-FR')}** 🪙`,
+                  inline: true,
+                },
+              )
+              .setFooter({ text: 'Ne casse pas ton streak !' }),
           ],
         });
       }
@@ -399,14 +415,16 @@ export class EconomyGroup {
     ) {
       newStreak = profile.dailyStreak + 1;
     }
+    const streakBroken =
+      profile.lastDaily && profile.dailyStreak > 0 && newStreak === 1;
 
     const { amount, msg, tier } = rollDaily();
     let streakBonus = 0;
-    let streakMsg = '';
+    let streakBonusLabel = '';
     for (const sb of STREAK_BONUSES) {
       if (newStreak === sb.days) {
         streakBonus = sb.bonus;
-        streakMsg = `\n\n🔥 **Bonus streak ${sb.label} !** +${sb.bonus} 🪙`;
+        streakBonusLabel = sb.label;
         break;
       }
     }
@@ -438,6 +456,7 @@ export class EconomyGroup {
         },
       });
 
+    const tierEmojis = ['🪙', '✨', '💫', '🌟', '💎'];
     const tierColors = [
       Colors.Info,
       Colors.Success,
@@ -445,45 +464,90 @@ export class EconomyGroup {
       0xfbbf24,
       0xef4444,
     ];
+    const tierLabels = ['Tier 1', 'Tier 2', 'Tier 3', 'Tier 4 ⭐', 'Tier 5 💎'];
+    const newBalance = profile.currency + totalGain;
     const streakBar =
-      '🔥'.repeat(Math.min(newStreak, 7)) +
-      (newStreak > 7 ? ` x${newStreak}` : '');
-    return interaction.editReply({
-      embeds: [
-        new EmbedBuilder()
-          .setColor(tierColors[tier] ?? Colors.Info)
-          .setTitle(
-            tier >= 3 ? '💎 DAILY EXCEPTIONNEL !' : '🪙 Récompense quotidienne',
-          )
-          .setDescription(
-            `${msg}${streakMsg}\n\n💰 Solde : **${(profile.currency + totalGain).toLocaleString('fr-FR')} pièces**\n${streakBar}`,
-          )
-          .setFooter({
-            text: `Streak : ${newStreak} jour${newStreak > 1 ? 's' : ''} · Prochain dans 20h`,
-          }),
-      ],
-    });
+      '🔥'.repeat(Math.min(newStreak, 10)) +
+      (newStreak > 10 ? ` ×${newStreak}` : '');
+    const nextStreakBonus = STREAK_BONUSES.find((s) => s.days > newStreak);
+
+    const embed = new EmbedBuilder()
+      .setColor(tierColors[tier] ?? Colors.Info)
+      .setTitle(
+        `${tierEmojis[tier]} ${tier >= 3 ? 'DAILY EXCEPTIONNEL !' : 'Récompense quotidienne'}`,
+      )
+      .setDescription(msg)
+      .setThumbnail(interaction.user.displayAvatarURL())
+      .addFields(
+        {
+          name: '💰 Solde',
+          value: `**${newBalance.toLocaleString('fr-FR')}** 🪙`,
+          inline: true,
+        },
+        { name: '🎲 Tier', value: tierLabels[tier] || 'Tier 1', inline: true },
+        {
+          name: '🔥 Streak',
+          value: `${streakBar}\n**${newStreak}** jour${newStreak > 1 ? 's' : ''}`,
+          inline: false,
+        },
+      );
+
+    if (streakBonus > 0) {
+      embed.addFields({
+        name: `🎁 Bonus streak ${streakBonusLabel} !`,
+        value: `+**${streakBonus}** 🪙 bonus`,
+        inline: true,
+      });
+    }
+    if (streakBroken) {
+      embed.addFields({
+        name: '💔 Streak perdu',
+        value: `Ton streak de **${profile.dailyStreak}** jours a été réinitialisé.`,
+        inline: false,
+      });
+    }
+    if (nextStreakBonus) {
+      embed.setFooter({
+        text: `Prochain bonus streak : ${nextStreakBonus.label} (dans ${nextStreakBonus.days - newStreak}j) · Prochain daily : 20h`,
+      });
+    } else {
+      embed.setFooter({ text: 'Streak max atteint ! · Prochain daily : 20h' });
+    }
+
+    return interaction.editReply({ embeds: [embed] });
   }
 
   // ═══ /gacha solde ═══
   @Slash({ name: 'solde', description: 'Affiche ton profil économie' })
   async balance(interaction: CommandInteraction) {
     const { userId, profile } = await this.resolve(interaction);
-    const [uniqueCards, totalCopies, totalCards, wishCount] = await Promise.all(
-      [
-        this.prisma.cardInventory.count({ where: { userId } }),
-        this.prisma.cardInventory.aggregate({
-          where: { userId },
-          _sum: { count: true },
-        }),
-        this.prisma.gachaCard.count({ where: { isActive: true } }),
-        this.prisma.cardWishlist.count({ where: { profileId: profile.id } }),
-      ],
-    );
+    const [
+      uniqueCards,
+      totalCopies,
+      totalCards,
+      wishCount,
+      dupeCount,
+      totalSpent,
+    ] = await Promise.all([
+      this.prisma.cardInventory.count({ where: { userId } }),
+      this.prisma.cardInventory.aggregate({
+        where: { userId },
+        _sum: { count: true },
+      }),
+      this.prisma.gachaCard.count({ where: { isActive: true } }),
+      this.prisma.cardWishlist.count({ where: { profileId: profile.id } }),
+      this.prisma.cardInventory.count({ where: { userId, count: { gt: 1 } } }),
+      this.prisma.currencyTransaction.aggregate({
+        where: { userId, amount: { lt: 0 } },
+        _sum: { amount: true },
+      }),
+    ]);
+
     const pct =
       totalCards > 0 ? Math.round((uniqueCards / totalCards) * 100) : 0;
-    const progressBar =
-      '█'.repeat(Math.floor(pct / 10)) + '░'.repeat(10 - Math.floor(pct / 10));
+    const bar =
+      '▓'.repeat(Math.floor(pct / 5)) + '░'.repeat(20 - Math.floor(pct / 5));
+
     let currentBadge = '';
     for (const b of [...BADGES].reverse()) {
       if (uniqueCards >= b.count) {
@@ -493,47 +557,72 @@ export class EconomyGroup {
     }
     const nextBadge = BADGES.find((b) => b.count > uniqueCards);
 
-    return interaction.reply({
-      embeds: [
-        new EmbedBuilder()
-          .setColor(RPB.GoldColor)
-          .setTitle(`💰 ${interaction.user.displayName}`)
-          .setThumbnail(interaction.user.displayAvatarURL())
-          .addFields(
-            {
-              name: '🪙 Pièces',
-              value: `**${profile.currency.toLocaleString('fr-FR')}**`,
-              inline: true,
-            },
-            {
-              name: '🔥 Streak',
-              value: `**${profile.dailyStreak}** jour${profile.dailyStreak !== 1 ? 's' : ''}`,
-              inline: true,
-            },
-            { name: '⭐ Wishlist', value: `**${wishCount}**`, inline: true },
-            {
-              name: `🃏 Collection (${pct}%)`,
-              value: `${progressBar}\n**${uniqueCards}** / ${totalCards} cartes · ${totalCopies._sum.count || 0} copies`,
-            },
-            ...(currentBadge
-              ? [
-                  {
-                    name: '🏅 Badge',
-                    value:
-                      currentBadge +
-                      (nextBadge
-                        ? ` → ${nextBadge.emoji} ${nextBadge.name} (${nextBadge.count})`
-                        : ' ✨ MAX'),
-                    inline: false,
-                  },
-                ]
-              : []),
-          )
-          .setFooter({
-            text: `Tirage : ${GACHA_COST}🪙 · Multi x10 : ${MULTI_PULL_COST}🪙`,
-          }),
-      ],
+    // Rarity breakdown
+    const byRarity = await this.prisma.cardInventory.findMany({
+      where: { userId },
+      include: { card: { select: { rarity: true } } },
     });
+    const rarityCount: Record<string, number> = {};
+    for (const inv of byRarity) {
+      rarityCount[inv.card.rarity] = (rarityCount[inv.card.rarity] || 0) + 1;
+    }
+    const rarityLine = ['SECRET', 'LEGENDARY', 'EPIC', 'RARE', 'COMMON']
+      .filter((r) => rarityCount[r])
+      .map((r) => `${RARITY_CONFIG[r]?.emoji}${rarityCount[r]}`)
+      .join(' · ');
+
+    const embed = new EmbedBuilder()
+      .setColor(pct === 100 ? 0xfbbf24 : RPB.Color)
+      .setAuthor({
+        name: interaction.user.displayName,
+        iconURL: interaction.user.displayAvatarURL(),
+      })
+      .setTitle('📊 Profil Gacha')
+      .addFields(
+        {
+          name: '🪙 Pièces',
+          value: `**${profile.currency.toLocaleString('fr-FR')}**`,
+          inline: true,
+        },
+        {
+          name: '🔥 Streak',
+          value: `**${profile.dailyStreak}** jour${profile.dailyStreak !== 1 ? 's' : ''}`,
+          inline: true,
+        },
+        {
+          name: '⭐ Wishlist',
+          value: `**${wishCount}** carte${wishCount !== 1 ? 's' : ''}`,
+          inline: true,
+        },
+        {
+          name: `🃏 Collection — ${pct}%`,
+          value: `\`${bar}\`\n**${uniqueCards}** / ${totalCards} uniques · **${totalCopies._sum.count || 0}** total · **${dupeCount}** doublons\n${rarityLine}`,
+        },
+      );
+
+    if (currentBadge) {
+      const badgeProgress = nextBadge
+        ? ` → prochain : ${nextBadge.emoji} **${nextBadge.name}** (${nextBadge.count - uniqueCards} cartes restantes)`
+        : ' — **Collection complète !** 🎉';
+      embed.addFields({
+        name: '🏅 Badge',
+        value: currentBadge + badgeProgress,
+      });
+    }
+
+    const spent = Math.abs(totalSpent._sum.amount || 0);
+    if (spent > 0)
+      embed.addFields({
+        name: '📈 Stats',
+        value: `Total dépensé : **${spent.toLocaleString('fr-FR')}** 🪙`,
+        inline: true,
+      });
+
+    embed.setFooter({
+      text: `x1 : ${GACHA_COST}🪙 · x10 : ${MULTI_PULL_COST}🪙 · Découvert max : -1 000🪙`,
+    });
+
+    return interaction.reply({ embeds: [embed] });
   }
 
   // ═══ /gacha gacha ═══
@@ -783,7 +872,10 @@ export class EconomyGroup {
         embeds: [
           new EmbedBuilder()
             .setColor(Colors.Info)
-            .setDescription('Wishlist vide. `/gacha wish <carte>`'),
+            .setTitle('⭐ Wishlist vide')
+            .setDescription(
+              'Ajoute des cartes avec `/gacha wish <nom>`\nTu seras notifié par un embed doré quand tu les obtiendras !',
+            ),
         ],
       });
 
@@ -791,16 +883,25 @@ export class EconomyGroup {
       where: { userId, cardId: { in: wishes.map((w) => w.cardId) } },
     });
     const ownedIds = new Set(owned.map((o) => o.cardId));
-    const lines = wishes.map(
-      (w) =>
-        `${RARITY_CONFIG[w.card.rarity]?.emoji} **${w.card.name}**${ownedIds.has(w.cardId) ? ' ✅' : ''}`,
-    );
+    const ownedCount = wishes.filter((w) => ownedIds.has(w.cardId)).length;
+
+    const lines = wishes.map((w) => {
+      const cfg = RARITY_CONFIG[w.card.rarity]!;
+      const status = ownedIds.has(w.cardId) ? '✅' : '❌';
+      return `${status} ${cfg.emoji} **${w.card.name}**${w.card.beyblade ? ` — *${w.card.beyblade}*` : ''}`;
+    });
+
     return interaction.reply({
       embeds: [
         new EmbedBuilder()
           .setColor(RPB.GoldColor)
-          .setTitle(`⭐ Wishlist de ${interaction.user.displayName}`)
-          .setDescription(lines.join('\n')),
+          .setAuthor({
+            name: interaction.user.displayName,
+            iconURL: interaction.user.displayAvatarURL(),
+          })
+          .setTitle(`⭐ Wishlist — ${ownedCount}/${wishes.length} obtenues`)
+          .setDescription(lines.join('\n'))
+          .setFooter({ text: '`/gacha wish <nom>` pour ajouter/retirer' }),
       ],
     });
   }
@@ -810,18 +911,20 @@ export class EconomyGroup {
   async catalogue(
     @SlashOption({
       name: 'série',
-      description: 'Filtrer',
+      description: 'Filtrer par série (ex: BURST, METAL_FUSION)',
       required: false,
       type: ApplicationCommandOptionType.String,
     })
     series: string | undefined,
     interaction: CommandInteraction,
   ) {
+    const { userId } = await this.resolve(interaction);
     const where: {
       isActive: boolean;
       series?: { contains: string; mode: 'insensitive' };
     } = { isActive: true };
     if (series) where.series = { contains: series, mode: 'insensitive' };
+
     const cards = await this.prisma.gachaCard.findMany({
       where,
       orderBy: [{ rarity: 'desc' }, { name: 'asc' }],
@@ -836,25 +939,54 @@ export class EconomyGroup {
         ephemeral: true,
       });
 
-    const byRarity: Record<string, string[]> = {};
+    // Check which ones user owns
+    const owned = await this.prisma.cardInventory.findMany({
+      where: { userId, cardId: { in: cards.map((c) => c.id) } },
+    });
+    const ownedIds = new Set(owned.map((o) => o.cardId));
+
+    // Group by series then rarity
+    const bySeries: Record<string, typeof cards> = {};
     for (const c of cards) {
-      if (!byRarity[c.rarity]) byRarity[c.rarity] = [];
-      byRarity[c.rarity]?.push(
-        `${RARITY_CONFIG[c.rarity]?.emoji} **${c.name}** — ${c.beyblade || 'N/A'}`,
-      );
+      const s = c.series.replace(/_/g, ' ');
+      if (!bySeries[s]) bySeries[s] = [];
+      bySeries[s]?.push(c);
     }
-    const embed = new EmbedBuilder()
+
+    const embeds: EmbedBuilder[] = [];
+    const totalOwned = cards.filter((c) => ownedIds.has(c.id)).length;
+
+    const mainEmbed = new EmbedBuilder()
       .setColor(RPB.Color)
-      .setTitle('📖 Catalogue')
-      .setDescription(`**${cards.length}** cartes`);
-    for (const r of ['SECRET', 'LEGENDARY', 'EPIC', 'RARE', 'COMMON']) {
-      if (byRarity[r]?.length)
-        embed.addFields({
-          name: `${RARITY_CONFIG[r]?.emoji} ${RARITY_CONFIG[r]?.label} (${byRarity[r]?.length})`,
-          value: byRarity[r]?.join('\n'),
+      .setTitle(`📖 Catalogue — ${cards.length} cartes`)
+      .setDescription(
+        `Tu possèdes **${totalOwned}** / ${cards.length} (${Math.round((totalOwned / cards.length) * 100)}%)\nSéries : ${Object.keys(bySeries).join(' · ')}`,
+      )
+      .setFooter({ text: 'Filtre : /gacha catalogue série:BURST' });
+
+    for (const [seriesName, seriesCards] of Object.entries(bySeries)) {
+      const lines = seriesCards.map((c) => {
+        const cfg = RARITY_CONFIG[c.rarity]!;
+        const own = ownedIds.has(c.id) ? '✅' : '⬛';
+        return `${own} ${cfg.emoji} **${c.name}**${c.beyblade ? ` — ${c.beyblade}` : ''}`;
+      });
+      // Split if too long for one field
+      const value = lines.join('\n');
+      if (value.length <= 1024) {
+        mainEmbed.addFields({
+          name: `📦 ${seriesName} (${seriesCards.length})`,
+          value,
         });
+      } else {
+        mainEmbed.addFields({
+          name: `📦 ${seriesName} (${seriesCards.length})`,
+          value: `${lines.slice(0, 15).join('\n')}\n*... +${lines.length - 15} cartes*`,
+        });
+      }
     }
-    return interaction.reply({ embeds: [embed] });
+
+    embeds.push(mainEmbed);
+    return interaction.reply({ embeds });
   }
 
   // ═══ /gacha collection ═══
@@ -1054,16 +1186,33 @@ export class EconomyGroup {
   }
 
   // ═══ /gacha classement ═══
-  @Slash({ name: 'classement', description: 'Top collectionneurs' })
+  @Slash({
+    name: 'classement',
+    description: 'Top collectionneurs et plus riches',
+  })
   async leaderboard(interaction: CommandInteraction) {
     await interaction.deferReply();
-    const top = await this.prisma.cardInventory.groupBy({
+    const { userId: callerId } = await this.resolve(interaction);
+    const totalCards = await this.prisma.gachaCard.count({
+      where: { isActive: true },
+    });
+
+    // Top collectors
+    const topCollectors = await this.prisma.cardInventory.groupBy({
       by: ['userId'],
       _count: { cardId: true },
       orderBy: { _count: { cardId: 'desc' } },
       take: 10,
     });
-    if (top.length === 0)
+
+    // Top richest
+    const topRich = await this.prisma.profile.findMany({
+      orderBy: { currency: 'desc' },
+      take: 5,
+      include: { user: { select: { name: true, globalName: true, id: true } } },
+    });
+
+    if (topCollectors.length === 0)
       return interaction.editReply({
         embeds: [
           new EmbedBuilder()
@@ -1071,25 +1220,52 @@ export class EconomyGroup {
             .setDescription("Personne n'a de cartes !"),
         ],
       });
+
     const medals = ['🥇', '🥈', '🥉'];
-    const lines: string[] = [];
-    for (let i = 0; i < top.length; i++) {
+    const collectorLines: string[] = [];
+    let callerRank = -1;
+    for (let i = 0; i < topCollectors.length; i++) {
+      const tc = topCollectors[i]!;
       const u = await this.prisma.user.findUnique({
-        where: { id: top[i]?.userId },
+        where: { id: tc.userId },
         select: { name: true, globalName: true },
       });
-      lines.push(
-        `${medals[i] || `**${i + 1}.**`} ${u?.globalName || u?.name || '?'} — **${top[i]?._count.cardId}** cartes`,
+      const name = u?.globalName || u?.name || '?';
+      const pct = Math.round((tc._count.cardId / totalCards) * 100);
+      const medal = medals[i] || `\`${String(i + 1).padStart(2, ' ')}.\``;
+      const bar =
+        '▓'.repeat(Math.floor(pct / 10)) +
+        '░'.repeat(10 - Math.floor(pct / 10));
+      const isMe = tc.userId === callerId ? ' ◀' : '';
+      collectorLines.push(
+        `${medal} **${name}** — ${tc._count.cardId}/${totalCards} \`${bar}\` ${pct}%${isMe}`,
       );
+      if (tc.userId === callerId) callerRank = i + 1;
     }
-    return interaction.editReply({
-      embeds: [
-        new EmbedBuilder()
-          .setColor(RPB.GoldColor)
-          .setTitle('🏆 Classement')
-          .setDescription(lines.join('\n')),
-      ],
+
+    const richLines = topRich.map((p, i) => {
+      const name = p.user?.globalName || p.user?.name || '?';
+      const isMe = p.user?.id === callerId ? ' ◀' : '';
+      return `${medals[i] || `\`${i + 1}.\``} **${name}** — ${p.currency.toLocaleString('fr-FR')} 🪙${isMe}`;
     });
+
+    const embed = new EmbedBuilder()
+      .setColor(RPB.GoldColor)
+      .setTitle('🏆 Classement Gacha RPB')
+      .addFields(
+        { name: '🃏 Top Collectionneurs', value: collectorLines.join('\n') },
+        { name: '💰 Top Fortunes', value: richLines.join('\n') || 'Aucun' },
+      );
+
+    if (callerRank > 0) {
+      embed.setFooter({
+        text: `Tu es #${callerRank} au classement des collectionneurs`,
+      });
+    } else {
+      embed.setFooter({ text: 'Commence ta collection avec /gacha gacha !' });
+    }
+
+    return interaction.editReply({ embeds: [embed] });
   }
 
   // ═══ /gacha taux ═══
