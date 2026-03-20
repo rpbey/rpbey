@@ -1,12 +1,68 @@
-import { type CommandInteraction, EmbedBuilder } from 'discord.js';
-import { Discord, Slash, SlashGroup } from 'discordx';
+import {
+  ApplicationCommandOptionType,
+  type CommandInteraction,
+  EmbedBuilder,
+} from 'discord.js';
+import { Discord, Slash, SlashGroup, SlashOption } from 'discordx';
 import { inject, injectable } from 'tsyringe';
 
 import { Colors, RPB } from '../../lib/constants.js';
 import { PrismaService } from '../../lib/prisma.js';
 
-// ─── Drop Rates ─────────────────────────────────────────────────────────────
-// MISS = 35%, COMMON = 30%, RARE = 20%, EPIC = 10%, LEGENDARY = 4%, SECRET = 1%
+// ─── Config ─────────────────────────────────────────────────────────────────
+
+const GACHA_COST = 50;
+const MULTI_PULL_COUNT = 10;
+const MULTI_PULL_COST = GACHA_COST * MULTI_PULL_COUNT - 50; // 450 (10% discount)
+
+// Daily tiers (Mudae-inspired)
+const DAILY_TIERS = [
+  {
+    weight: 60,
+    min: 80,
+    max: 120,
+    msg: '+**{n}** pièces ajoutées à ta collection !',
+  },
+  { weight: 25, min: 150, max: 200, msg: 'Beau tirage ! +**{n}** pièces !' },
+  {
+    weight: 10,
+    min: 250,
+    max: 350,
+    msg: 'Excellent ! Une vraie pépite ! +**{n}** pièces !',
+  },
+  {
+    weight: 4,
+    min: 500,
+    max: 700,
+    msg: '🌟 Incroyable ! Un trésor ultra-rare ! +**{n}** pièces !',
+  },
+  {
+    weight: 1,
+    min: 1000,
+    max: 1500,
+    msg: '💎✨ JACKPOT LÉGENDAIRE !!! +**{n}** pièces !!!',
+  },
+] as const;
+
+// Streak bonuses
+const STREAK_BONUSES = [
+  { days: 3, bonus: 50, label: '3 jours' },
+  { days: 7, bonus: 150, label: '1 semaine' },
+  { days: 14, bonus: 300, label: '2 semaines' },
+  { days: 30, bonus: 750, label: '1 mois' },
+] as const;
+
+// Collection badges (milestones)
+const BADGES = [
+  { count: 5, reward: 200, name: 'Débutant', emoji: '🥉' },
+  { count: 10, reward: 500, name: 'Collectionneur', emoji: '🥈' },
+  { count: 15, reward: 750, name: 'Expert', emoji: '🥇' },
+  { count: 20, reward: 1000, name: 'Maître', emoji: '🏆' },
+  { count: 25, reward: 1500, name: 'Champion', emoji: '👑' },
+  { count: 31, reward: 3000, name: 'Légende (100%)', emoji: '⭐' },
+] as const;
+
+// Drop rates: MISS=35%, COMMON=30%, RARE=20%, EPIC=10%, LEGENDARY=4%, SECRET=1%
 const RARITY_RATES = {
   MISS: 0.35,
   COMMON: 0.3,
@@ -32,30 +88,61 @@ const RARITY_CONFIG: Record<
   SECRET: { emoji: '🔴', color: 0xef4444, label: 'Secrète', sellPrice: 500 },
 };
 
-const GACHA_COST = 50;
-const DAILY_AMOUNT = 100;
+const MISS_MESSAGES = [
+  "La toupie s'est éjectée du stadium... Tu n'as rien obtenu !",
+  'Burst ! Ta toupie a explosé avant le tirage... Raté !',
+  "Le Bey Spirit n'était pas avec toi cette fois...",
+  "Tu as lancé trop faible... La toupie s'est arrêtée.",
+  "Un Ring Out ! Tu n'as attrapé aucune carte.",
+  'Doji a volé ta carte avant que tu ne la voies...',
+  'La Dark Nebula a intercepté ton tirage !',
+  "Storm Pegasus t'a repoussé hors du stadium...",
+  'L-Drago a absorbé toute ton énergie de tirage...',
+];
 
-function rollRarity(): string | null {
+type CardRarityType = 'COMMON' | 'RARE' | 'EPIC' | 'LEGENDARY' | 'SECRET';
+
+// ─── Helpers ────────────────────────────────────────────────────────────────
+
+function rollRarity(): CardRarityType | null {
   const roll = Math.random();
-  let cumulative = 0;
-
-  cumulative += RARITY_RATES.MISS;
-  if (roll < cumulative) return null; // RATÉ
-
-  cumulative += RARITY_RATES.COMMON;
-  if (roll < cumulative) return 'COMMON';
-
-  cumulative += RARITY_RATES.RARE;
-  if (roll < cumulative) return 'RARE';
-
-  cumulative += RARITY_RATES.EPIC;
-  if (roll < cumulative) return 'EPIC';
-
-  cumulative += RARITY_RATES.LEGENDARY;
-  if (roll < cumulative) return 'LEGENDARY';
-
+  let cum = 0;
+  cum += RARITY_RATES.MISS;
+  if (roll < cum) return null;
+  cum += RARITY_RATES.COMMON;
+  if (roll < cum) return 'COMMON';
+  cum += RARITY_RATES.RARE;
+  if (roll < cum) return 'RARE';
+  cum += RARITY_RATES.EPIC;
+  if (roll < cum) return 'EPIC';
+  cum += RARITY_RATES.LEGENDARY;
+  if (roll < cum) return 'LEGENDARY';
   return 'SECRET';
 }
+
+function rollDaily(): { amount: number; msg: string; tier: number } {
+  const totalWeight = DAILY_TIERS.reduce((s, t) => s + t.weight, 0);
+  let roll = Math.random() * totalWeight;
+  for (let i = 0; i < DAILY_TIERS.length; i++) {
+    const t = DAILY_TIERS[i]!;
+    roll -= t.weight;
+    if (roll <= 0) {
+      const amount = Math.floor(Math.random() * (t.max - t.min + 1)) + t.min;
+      return {
+        amount,
+        msg: t.msg.replace('{n}', amount.toLocaleString('fr-FR')),
+        tier: i,
+      };
+    }
+  }
+  return { amount: 100, msg: '+**100** pièces !', tier: 0 };
+}
+
+function randomMiss(): string {
+  return MISS_MESSAGES[Math.floor(Math.random() * MISS_MESSAGES.length)]!;
+}
+
+// ─── Command Group ──────────────────────────────────────────────────────────
 
 @Discord()
 @SlashGroup({ name: 'eco', description: "Système d'économie et gacha RPB" })
@@ -74,22 +161,54 @@ export class EconomyGroup {
     return profile;
   }
 
-  // ─── /eco daily ───
-  @Slash({
-    name: 'daily',
-    description: 'Réclame tes pièces quotidiennes (100 🪙)',
-  })
+  // Check and award badge milestones
+  private async checkBadges(
+    userId: string,
+    profileId: string,
+  ): Promise<string | null> {
+    const uniqueCount = await this.prisma.cardInventory.count({
+      where: { userId },
+    });
+
+    for (const badge of BADGES) {
+      if (uniqueCount >= badge.count) {
+        // Check if already awarded
+        const existing = await this.prisma.currencyTransaction.findFirst({
+          where: { userId, type: 'BADGE_REWARD', note: `Badge: ${badge.name}` },
+        });
+        if (!existing) {
+          await this.prisma.profile.update({
+            where: { id: profileId },
+            data: { currency: { increment: badge.reward } },
+          });
+          await this.prisma.currencyTransaction.create({
+            data: {
+              userId,
+              amount: badge.reward,
+              type: 'BADGE_REWARD',
+              note: `Badge: ${badge.name}`,
+            },
+          });
+          return `${badge.emoji} **Badge "${badge.name}" débloqué !** +${badge.reward} 🪙`;
+        }
+      }
+    }
+    return null;
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // /eco daily — Récompense quotidienne avec tiers + streak
+  // ═══════════════════════════════════════════════════════════════════════════
+  @Slash({ name: 'daily', description: 'Réclame tes pièces quotidiennes' })
   async daily(interaction: CommandInteraction) {
     await interaction.deferReply();
-
     const profile = await this.getOrCreateProfile(interaction.user.id);
     const now = new Date();
-    const lastDaily = profile.lastDaily;
 
-    // Check 24h cooldown
-    if (lastDaily) {
-      const diff = now.getTime() - lastDaily.getTime();
-      const hoursLeft = 24 - diff / (1000 * 60 * 60);
+    // Cooldown check (20h like Mudae)
+    if (profile.lastDaily) {
+      const diff = now.getTime() - profile.lastDaily.getTime();
+      const hoursLeft = 20 - diff / 3_600_000;
       if (hoursLeft > 0) {
         const h = Math.floor(hoursLeft);
         const m = Math.floor((hoursLeft - h) * 60);
@@ -99,71 +218,140 @@ export class EconomyGroup {
               .setColor(Colors.Warning)
               .setTitle('⏳ Trop tôt !')
               .setDescription(
-                `Tu as déjà réclamé tes pièces aujourd'hui.\nReviens dans **${h}h ${m}min**.`,
-              )
-              .setFooter({ text: RPB.Name }),
+                `Reviens dans **${h}h ${m}min**.\n\n🔥 Streak actuel : **${profile.dailyStreak} jours**`,
+              ),
           ],
         });
       }
     }
 
-    // Give daily
+    // Streak: consecutive if last daily was < 48h ago
+    let newStreak = 1;
+    if (profile.lastDaily) {
+      const hoursSince =
+        (now.getTime() - profile.lastDaily.getTime()) / 3_600_000;
+      if (hoursSince < 48) {
+        newStreak = profile.dailyStreak + 1;
+      }
+      // else streak resets to 1
+    }
+
+    // Roll tier
+    const { amount, msg, tier } = rollDaily();
+    const tierColors = [
+      Colors.Info,
+      Colors.Success,
+      Colors.Warning,
+      0xfbbf24,
+      0xef4444,
+    ];
+
+    // Streak bonus
+    let streakBonus = 0;
+    let streakMsg = '';
+    for (const sb of STREAK_BONUSES) {
+      if (newStreak === sb.days) {
+        streakBonus = sb.bonus;
+        streakMsg = `\n\n🔥 **Bonus streak ${sb.label} !** +${sb.bonus} 🪙`;
+        break;
+      }
+    }
+
+    const totalGain = amount + streakBonus;
+
     await this.prisma.profile.update({
       where: { userId: interaction.user.id },
       data: {
-        currency: { increment: DAILY_AMOUNT },
+        currency: { increment: totalGain },
         lastDaily: now,
+        dailyStreak: newStreak,
       },
     });
 
-    // Log transaction
     await this.prisma.currencyTransaction.create({
       data: {
         userId: interaction.user.id,
-        amount: DAILY_AMOUNT,
+        amount: totalGain,
         type: 'DAILY_CLAIM',
-        note: 'Récompense quotidienne',
+        note: `Tier ${tier + 1} — Streak ${newStreak}`,
       },
     });
 
-    const newBalance = profile.currency + DAILY_AMOUNT;
+    if (streakBonus > 0) {
+      await this.prisma.currencyTransaction.create({
+        data: {
+          userId: interaction.user.id,
+          amount: streakBonus,
+          type: 'STREAK_BONUS',
+          note: `Streak ${newStreak} jours`,
+        },
+      });
+    }
+
+    const newBalance = profile.currency + totalGain;
+    const streakBar =
+      '🔥'.repeat(Math.min(newStreak, 7)) +
+      (newStreak > 7 ? ` x${newStreak}` : '');
 
     return interaction.editReply({
       embeds: [
         new EmbedBuilder()
-          .setColor(Colors.Success)
-          .setTitle('🪙 Récompense quotidienne !')
-          .setDescription(
-            `Tu as reçu **${DAILY_AMOUNT} pièces** !\n\n💰 Solde : **${newBalance.toLocaleString('fr-FR')} pièces**`,
+          .setColor(tierColors[tier] ?? Colors.Info)
+          .setTitle(
+            tier >= 3 ? '💎 DAILY EXCEPTIONNEL !' : '🪙 Récompense quotidienne',
           )
-          .setFooter({ text: 'Reviens demain pour une nouvelle récompense !' }),
+          .setDescription(
+            `${msg}${streakMsg}\n\n💰 Solde : **${newBalance.toLocaleString('fr-FR')} pièces**\n${streakBar}`,
+          )
+          .setFooter({
+            text: `Streak : ${newStreak} jour${newStreak > 1 ? 's' : ''} · Prochain dans 20h`,
+          }),
       ],
     });
   }
 
-  // ─── /eco balance ───
-  @Slash({ name: 'solde', description: 'Affiche ton solde de pièces' })
+  // ═══════════════════════════════════════════════════════════════════════════
+  // /eco solde — Profil enrichi
+  // ═══════════════════════════════════════════════════════════════════════════
+  @Slash({ name: 'solde', description: 'Affiche ton profil économie' })
   async balance(interaction: CommandInteraction) {
     const profile = await this.getOrCreateProfile(interaction.user.id);
+    const [uniqueCards, totalCopies, totalCards, wishCount] = await Promise.all(
+      [
+        this.prisma.cardInventory.count({
+          where: { userId: interaction.user.id },
+        }),
+        this.prisma.cardInventory.aggregate({
+          where: { userId: interaction.user.id },
+          _sum: { count: true },
+        }),
+        this.prisma.gachaCard.count({ where: { isActive: true } }),
+        this.prisma.cardWishlist.count({ where: { profileId: profile.id } }),
+      ],
+    );
 
-    // Count cards
-    const cardCount = await this.prisma.cardInventory.count({
-      where: { userId: interaction.user.id },
-    });
+    // Calculate collection percentage
+    const pct =
+      totalCards > 0 ? Math.round((uniqueCards / totalCards) * 100) : 0;
+    const progressBar =
+      '█'.repeat(Math.floor(pct / 10)) + '░'.repeat(10 - Math.floor(pct / 10));
 
-    const uniqueCards = await this.prisma.cardInventory.count({
-      where: { userId: interaction.user.id },
-    });
-
-    const totalCards = await this.prisma.gachaCard.count({
-      where: { isActive: true },
-    });
+    // Current badge
+    let currentBadge = '';
+    for (const badge of [...BADGES].reverse()) {
+      if (uniqueCards >= badge.count) {
+        currentBadge = `${badge.emoji} ${badge.name}`;
+        break;
+      }
+    }
+    const nextBadge = BADGES.find((b) => b.count > uniqueCards);
 
     return interaction.reply({
       embeds: [
         new EmbedBuilder()
-          .setColor(RPB.Color)
-          .setTitle(`💰 Solde de ${interaction.user.displayName}`)
+          .setColor(RPB.GoldColor)
+          .setTitle(`💰 ${interaction.user.displayName}`)
+          .setThumbnail(interaction.user.displayAvatarURL())
           .addFields(
             {
               name: '🪙 Pièces',
@@ -171,33 +359,48 @@ export class EconomyGroup {
               inline: true,
             },
             {
-              name: '🃏 Cartes',
-              value: `**${uniqueCards}** / ${totalCards}`,
+              name: '🔥 Streak',
+              value: `**${profile.dailyStreak}** jour${profile.dailyStreak !== 1 ? 's' : ''}`,
               inline: true,
             },
             {
-              name: '📦 Total copies',
-              value: `**${cardCount}**`,
+              name: '⭐ Wishlist',
+              value: `**${wishCount}** carte${wishCount !== 1 ? 's' : ''}`,
               inline: true,
             },
+            {
+              name: `🃏 Collection (${pct}%)`,
+              value: `${progressBar}\n**${uniqueCards}** / ${totalCards} cartes · ${totalCopies._sum.count || 0} copies`,
+            },
+            ...(currentBadge
+              ? [
+                  {
+                    name: '🏅 Badge',
+                    value:
+                      currentBadge +
+                      (nextBadge
+                        ? ` → ${nextBadge.emoji} ${nextBadge.name} (${nextBadge.count} cartes)`
+                        : ' ✨ MAX'),
+                    inline: false,
+                  },
+                ]
+              : []),
           )
-          .setThumbnail(interaction.user.displayAvatarURL())
-          .setFooter({ text: `Coût d'un tirage : ${GACHA_COST} pièces` }),
+          .setFooter({
+            text: `Tirage : ${GACHA_COST}🪙 · Multi x10 : ${MULTI_PULL_COST}🪙`,
+          }),
       ],
     });
   }
 
-  // ─── /eco gacha ───
-  @Slash({
-    name: 'gacha',
-    description: `Tire une carte aléatoire (${GACHA_COST} 🪙)`,
-  })
+  // ═══════════════════════════════════════════════════════════════════════════
+  // /eco gacha — Tirage unique
+  // ═══════════════════════════════════════════════════════════════════════════
+  @Slash({ name: 'gacha', description: `Tire une carte (${GACHA_COST} 🪙)` })
   async gacha(interaction: CommandInteraction) {
     await interaction.deferReply();
-
     const profile = await this.getOrCreateProfile(interaction.user.id);
 
-    // Check balance
     if (profile.currency < GACHA_COST) {
       return interaction.editReply({
         embeds: [
@@ -205,151 +408,341 @@ export class EconomyGroup {
             .setColor(Colors.Error)
             .setTitle('❌ Pièces insuffisantes')
             .setDescription(
-              `Il te faut **${GACHA_COST} pièces** pour tirer.\nTon solde : **${profile.currency} pièces**\n\nUtilise \`/eco daily\` pour gagner des pièces !`,
+              `Il te faut **${GACHA_COST}** 🪙 · Ton solde : **${profile.currency}** 🪙\n\nUtilise \`/eco daily\` !`,
             ),
         ],
       });
     }
 
-    // Deduct cost
     await this.prisma.profile.update({
       where: { userId: interaction.user.id },
       data: { currency: { decrement: GACHA_COST } },
     });
-
     await this.prisma.currencyTransaction.create({
       data: {
         userId: interaction.user.id,
         amount: -GACHA_COST,
         type: 'GACHA_PULL',
-        note: 'Tirage gacha',
+        note: 'Tirage x1',
       },
     });
 
-    // Roll rarity
-    const rarity = rollRarity();
+    const result = await this.pullCard(interaction.user.id, profile.id);
+    const embed = this.buildPullEmbed(result, profile.currency - GACHA_COST);
 
-    // ── RATÉ ──
-    if (rarity === null) {
-      const missMessages = [
-        "La toupie s'est éjectée du stadium... Tu n'as rien obtenu !",
-        'Burst ! Ta toupie a explosé avant le tirage... Raté !',
-        "Le Bey Spirit n'était pas avec toi cette fois... Rien du tout !",
-        "Tu as lancé trop faible... La toupie s'est arrêtée. Raté !",
-        "Un Ring Out ! Tu n'as attrapé aucune carte.",
-        'Doji a volé ta carte avant que tu ne la voies... Raté !',
-        'La Dark Nebula a intercepté ton tirage ! Rien cette fois.',
-      ];
-      const msg = missMessages[Math.floor(Math.random() * missMessages.length)];
+    const reply = await interaction.editReply({ embeds: [embed] });
 
-      return interaction.editReply({
-        embeds: [
-          new EmbedBuilder()
-            .setColor(0x4b5563)
-            .setTitle('💨 Raté !')
-            .setDescription(
-              `${msg}\n\n💰 Solde restant : **${(profile.currency - GACHA_COST).toLocaleString('fr-FR')} pièces**`,
-            )
-            .setFooter({
-              text: `Taux de raté : ${RARITY_RATES.MISS * 100}% — Retente ta chance !`,
-            }),
-        ],
-      });
+    // Check badges after pull
+    if (result.card) {
+      const badgeMsg = await this.checkBadges(interaction.user.id, profile.id);
+      if (badgeMsg) {
+        await reply.reply({ content: badgeMsg });
+      }
     }
+  }
 
-    // ── DROP ──
-    // Get random card of this rarity
-    const cards = await this.prisma.gachaCard.findMany({
-      where: {
-        rarity: rarity as 'COMMON' | 'RARE' | 'EPIC' | 'LEGENDARY' | 'SECRET',
-        isActive: true,
-      },
-    });
+  // ═══════════════════════════════════════════════════════════════════════════
+  // /eco multi — Multi-pull x10 (discount)
+  // ═══════════════════════════════════════════════════════════════════════════
+  @Slash({
+    name: 'multi',
+    description: `Tire 10 cartes d'un coup (${MULTI_PULL_COST} 🪙, -10%)`,
+  })
+  async multi(interaction: CommandInteraction) {
+    await interaction.deferReply();
+    const profile = await this.getOrCreateProfile(interaction.user.id);
 
-    if (cards.length === 0) {
-      // Refund if no cards of this rarity exist
-      await this.prisma.profile.update({
-        where: { userId: interaction.user.id },
-        data: { currency: { increment: GACHA_COST } },
-      });
+    if (profile.currency < MULTI_PULL_COST) {
       return interaction.editReply({
         embeds: [
           new EmbedBuilder()
-            .setColor(Colors.Warning)
+            .setColor(Colors.Error)
+            .setTitle('❌ Pièces insuffisantes')
             .setDescription(
-              'Aucune carte disponible pour cette rareté. Remboursé !',
+              `Multi x10 coûte **${MULTI_PULL_COST}** 🪙 · Ton solde : **${profile.currency}** 🪙`,
             ),
         ],
       });
     }
 
-    const card = cards[Math.floor(Math.random() * cards.length)]!;
-    const config = RARITY_CONFIG[rarity]!;
-
-    // Add to inventory (increment if already owned)
-    await this.prisma.cardInventory.upsert({
-      where: {
-        userId_cardId: {
-          userId: interaction.user.id,
-          cardId: card.id,
-        },
-      },
-      create: {
+    await this.prisma.profile.update({
+      where: { userId: interaction.user.id },
+      data: { currency: { decrement: MULTI_PULL_COST } },
+    });
+    await this.prisma.currencyTransaction.create({
+      data: {
         userId: interaction.user.id,
-        cardId: card.id,
-        count: 1,
-      },
-      update: {
-        count: { increment: 1 },
+        amount: -MULTI_PULL_COST,
+        type: 'MULTI_PULL',
+        note: 'Tirage x10',
       },
     });
 
-    // Check if duplicate
-    const inv = await this.prisma.cardInventory.findUnique({
-      where: {
-        userId_cardId: {
-          userId: interaction.user.id,
-          cardId: card.id,
-        },
-      },
-    });
-    const isDuplicate = inv && inv.count > 1;
+    // Pull 10
+    const results: PullResult[] = [];
+    for (let i = 0; i < MULTI_PULL_COUNT; i++) {
+      results.push(await this.pullCard(interaction.user.id, profile.id));
+    }
+
+    // Build summary
+    const hits = results.filter((r) => r.card);
+    const misses = results.filter((r) => !r.card);
+    const lines: string[] = [];
+
+    for (const r of results) {
+      if (r.card) {
+        const cfg = RARITY_CONFIG[r.rarity!]!;
+        const dupe = r.isDuplicate ? ' *(doublon)*' : ' ✨';
+        lines.push(`${cfg.emoji} **${r.card.name}** — ${cfg.label}${dupe}`);
+      } else {
+        lines.push('💨 *Raté*');
+      }
+    }
+
+    const bestRarity = hits.reduce((best, r) => {
+      const order: CardRarityType[] = [
+        'COMMON',
+        'RARE',
+        'EPIC',
+        'LEGENDARY',
+        'SECRET',
+      ];
+      const rIdx = order.indexOf(r.rarity!);
+      const bIdx = order.indexOf(best);
+      return rIdx > bIdx ? r.rarity! : best;
+    }, 'COMMON' as CardRarityType);
+
+    const color =
+      hits.length > 0
+        ? (RARITY_CONFIG[bestRarity]?.color ?? Colors.Info)
+        : 0x4b5563;
 
     const embed = new EmbedBuilder()
-      .setColor(config.color)
-      .setTitle(`${config.emoji} Carte ${config.label} obtenue !`)
-      .setDescription(
-        `**${card.name}**${card.nameJp ? ` (${card.nameJp})` : ''}\n` +
-          `${card.series.replace('_', ' ')}\n\n` +
-          `${card.description || ''}` +
-          (card.beyblade ? `\n\n🌀 **Toupie :** ${card.beyblade}` : '') +
-          (isDuplicate
-            ? `\n\n📋 *Doublon (x${inv?.count})* — Revends avec \`/eco vendre\``
-            : ''),
+      .setColor(color)
+      .setTitle(`🎰 Multi-Pull x${MULTI_PULL_COUNT}`)
+      .setDescription(lines.join('\n'))
+      .addFields(
+        {
+          name: 'Résultat',
+          value: `✅ **${hits.length}** cartes · 💨 **${misses.length}** ratés`,
+          inline: true,
+        },
+        {
+          name: '💰 Solde',
+          value: `**${(profile.currency - MULTI_PULL_COST).toLocaleString('fr-FR')}** 🪙`,
+          inline: true,
+        },
       )
       .setFooter({
-        text: `💰 Solde : ${(profile.currency - GACHA_COST).toLocaleString('fr-FR')} pièces`,
+        text: `Économie : ${GACHA_COST * MULTI_PULL_COUNT - MULTI_PULL_COST}🪙 par rapport à ${MULTI_PULL_COUNT} tirages individuels`,
       });
 
-    if (card.imageUrl) {
-      embed.setThumbnail(card.imageUrl);
-    }
+    const reply = await interaction.editReply({ embeds: [embed] });
 
-    // Special effects for high rarity
-    if (rarity === 'SECRET') {
-      embed.setTitle('✨🔴 CARTE SECRÈTE !!! 🔴✨');
-    } else if (rarity === 'LEGENDARY') {
-      embed.setTitle('⭐🟡 Carte LÉGENDAIRE ! 🟡⭐');
+    // Check badges
+    if (hits.length > 0) {
+      const badgeMsg = await this.checkBadges(interaction.user.id, profile.id);
+      if (badgeMsg) await reply.reply({ content: badgeMsg });
     }
-
-    return interaction.editReply({ embeds: [embed] });
   }
 
-  // ─── /eco collection ───
-  @Slash({ name: 'collection', description: 'Affiche ta collection de cartes' })
+  // ═══════════════════════════════════════════════════════════════════════════
+  // /eco wish — Wishlist
+  // ═══════════════════════════════════════════════════════════════════════════
+  @Slash({
+    name: 'wish',
+    description: 'Ajoute/retire une carte de ta wishlist',
+  })
+  async wish(
+    @SlashOption({
+      name: 'carte',
+      description: 'Nom de la carte',
+      required: true,
+      type: ApplicationCommandOptionType.String,
+    })
+    cardName: string,
+    interaction: CommandInteraction,
+  ) {
+    const profile = await this.getOrCreateProfile(interaction.user.id);
+
+    // Find card
+    const card = await this.prisma.gachaCard.findFirst({
+      where: {
+        OR: [
+          { name: { contains: cardName, mode: 'insensitive' } },
+          { slug: { contains: cardName.toLowerCase().replace(/\s+/g, '-') } },
+        ],
+        isActive: true,
+      },
+    });
+
+    if (!card) {
+      return interaction.reply({
+        embeds: [
+          new EmbedBuilder()
+            .setColor(Colors.Error)
+            .setDescription(
+              `Carte "${cardName}" introuvable. Utilise \`/eco catalogue\` pour voir les cartes.`,
+            ),
+        ],
+        ephemeral: true,
+      });
+    }
+
+    // Toggle wishlist
+    const existing = await this.prisma.cardWishlist.findUnique({
+      where: { profileId_cardId: { profileId: profile.id, cardId: card.id } },
+    });
+
+    if (existing) {
+      await this.prisma.cardWishlist.delete({ where: { id: existing.id } });
+      return interaction.reply({
+        embeds: [
+          new EmbedBuilder()
+            .setColor(Colors.Warning)
+            .setDescription(`❌ **${card.name}** retirée de ta wishlist.`),
+        ],
+      });
+    }
+
+    await this.prisma.cardWishlist.create({
+      data: { profileId: profile.id, cardId: card.id },
+    });
+    const cfg = RARITY_CONFIG[card.rarity]!;
+    return interaction.reply({
+      embeds: [
+        new EmbedBuilder()
+          .setColor(cfg.color)
+          .setTitle('⭐ Wishlist')
+          .setDescription(
+            `${cfg.emoji} **${card.name}** ajoutée à ta wishlist !\n\nQuand tu la drop, tu auras un message spécial.`,
+          )
+          .setThumbnail(card.imageUrl || ''),
+      ],
+    });
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // /eco wishlist — Voir sa wishlist
+  // ═══════════════════════════════════════════════════════════════════════════
+  @Slash({ name: 'wishlist', description: 'Affiche ta wishlist' })
+  async wishlist(interaction: CommandInteraction) {
+    const profile = await this.getOrCreateProfile(interaction.user.id);
+    const wishes = await this.prisma.cardWishlist.findMany({
+      where: { profileId: profile.id },
+      include: { card: true },
+    });
+
+    if (wishes.length === 0) {
+      return interaction.reply({
+        embeds: [
+          new EmbedBuilder()
+            .setColor(Colors.Info)
+            .setDescription(
+              'Ta wishlist est vide. Utilise `/eco wish <carte>` pour en ajouter !',
+            ),
+        ],
+      });
+    }
+
+    // Check which ones are owned
+    const owned = await this.prisma.cardInventory.findMany({
+      where: {
+        userId: interaction.user.id,
+        cardId: { in: wishes.map((w) => w.cardId) },
+      },
+    });
+    const ownedIds = new Set(owned.map((o) => o.cardId));
+
+    const lines = wishes.map((w) => {
+      const cfg = RARITY_CONFIG[w.card.rarity]!;
+      const status = ownedIds.has(w.cardId) ? ' ✅' : '';
+      return `${cfg.emoji} **${w.card.name}**${status}`;
+    });
+
+    return interaction.reply({
+      embeds: [
+        new EmbedBuilder()
+          .setColor(RPB.GoldColor)
+          .setTitle(`⭐ Wishlist de ${interaction.user.displayName}`)
+          .setDescription(lines.join('\n'))
+          .setFooter({
+            text: `${wishes.length} carte${wishes.length > 1 ? 's' : ''} souhaitée${wishes.length > 1 ? 's' : ''}`,
+          }),
+      ],
+    });
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // /eco catalogue — Voir toutes les cartes
+  // ═══════════════════════════════════════════════════════════════════════════
+  @Slash({
+    name: 'catalogue',
+    description: 'Affiche toutes les cartes disponibles',
+  })
+  async catalogue(
+    @SlashOption({
+      name: 'série',
+      description: 'Filtrer par série',
+      required: false,
+      type: ApplicationCommandOptionType.String,
+    })
+    series: string | undefined,
+    interaction: CommandInteraction,
+  ) {
+    const where: {
+      isActive: boolean;
+      series?: { contains: string; mode: 'insensitive' };
+    } = { isActive: true };
+    if (series) where.series = { contains: series, mode: 'insensitive' };
+
+    const cards = await this.prisma.gachaCard.findMany({
+      where,
+      orderBy: [{ rarity: 'desc' }, { name: 'asc' }],
+    });
+
+    if (cards.length === 0) {
+      return interaction.reply({
+        embeds: [
+          new EmbedBuilder()
+            .setColor(Colors.Warning)
+            .setDescription('Aucune carte trouvée.'),
+        ],
+        ephemeral: true,
+      });
+    }
+
+    const byRarity: Record<string, string[]> = {};
+    for (const c of cards) {
+      const r = c.rarity;
+      if (!byRarity[r]) byRarity[r] = [];
+      const cfg = RARITY_CONFIG[r]!;
+      byRarity[r]?.push(`${cfg.emoji} **${c.name}** — ${c.beyblade || 'N/A'}`);
+    }
+
+    const embed = new EmbedBuilder()
+      .setColor(RPB.Color)
+      .setTitle('📖 Catalogue des cartes')
+      .setDescription(`**${cards.length}** cartes disponibles`);
+
+    for (const r of ['SECRET', 'LEGENDARY', 'EPIC', 'RARE', 'COMMON']) {
+      if (byRarity[r]?.length) {
+        embed.addFields({
+          name: `${RARITY_CONFIG[r]?.emoji} ${RARITY_CONFIG[r]?.label} (${byRarity[r]?.length})`,
+          value: byRarity[r]?.join('\n'),
+        });
+      }
+    }
+
+    return interaction.reply({ embeds: [embed] });
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // /eco collection — Collection avec badges
+  // ═══════════════════════════════════════════════════════════════════════════
+  @Slash({ name: 'collection', description: 'Affiche ta collection' })
   async collection(interaction: CommandInteraction) {
     await interaction.deferReply();
-
     const inventory = await this.prisma.cardInventory.findMany({
       where: { userId: interaction.user.id },
       include: { card: true },
@@ -363,7 +756,7 @@ export class EconomyGroup {
             .setColor(Colors.Info)
             .setTitle('🃏 Collection vide')
             .setDescription(
-              "Tu n'as encore aucune carte. Utilise `/eco gacha` pour en obtenir !",
+              'Utilise `/eco gacha` pour commencer ta collection !',
             ),
         ],
       });
@@ -372,54 +765,55 @@ export class EconomyGroup {
     const totalCards = await this.prisma.gachaCard.count({
       where: { isActive: true },
     });
+    const pct = Math.round((inventory.length / totalCards) * 100);
 
-    // Group by rarity
     const byRarity: Record<string, string[]> = {};
     for (const inv of inventory) {
       const r = inv.card.rarity;
       if (!byRarity[r]) byRarity[r] = [];
-      const config = RARITY_CONFIG[r]!;
+      const cfg = RARITY_CONFIG[r]!;
       const dupe = inv.count > 1 ? ` (x${inv.count})` : '';
-      byRarity[r]?.push(`${config.emoji} ${inv.card.name}${dupe}`);
+      byRarity[r]?.push(`${cfg.emoji} ${inv.card.name}${dupe}`);
     }
 
     const embed = new EmbedBuilder()
       .setColor(RPB.GoldColor)
       .setTitle(`🃏 Collection de ${interaction.user.displayName}`)
-      .setDescription(`**${inventory.length}** / ${totalCards} cartes`)
+      .setDescription(
+        `**${inventory.length}** / ${totalCards} cartes (${pct}%)`,
+      )
       .setThumbnail(interaction.user.displayAvatarURL());
 
-    const order = ['SECRET', 'LEGENDARY', 'EPIC', 'RARE', 'COMMON'];
-    for (const rarity of order) {
-      const cards = byRarity[rarity];
-      if (cards && cards.length > 0) {
-        const label = RARITY_CONFIG[rarity]?.label;
+    for (const r of ['SECRET', 'LEGENDARY', 'EPIC', 'RARE', 'COMMON']) {
+      if (byRarity[r]?.length) {
         embed.addFields({
-          name: `${RARITY_CONFIG[rarity]?.emoji} ${label} (${cards.length})`,
-          value: cards.join('\n'),
+          name: `${RARITY_CONFIG[r]?.emoji} ${RARITY_CONFIG[r]?.label} (${byRarity[r]?.length})`,
+          value: byRarity[r]?.join('\n'),
         });
       }
+    }
+
+    // Show earned badges
+    const badgesList = BADGES.filter((b) => inventory.length >= b.count).map(
+      (b) => `${b.emoji} ${b.name}`,
+    );
+    if (badgesList.length > 0) {
+      embed.addFields({ name: '🏅 Badges', value: badgesList.join(' · ') });
     }
 
     return interaction.editReply({ embeds: [embed] });
   }
 
-  // ─── /eco vendre ───
-  @Slash({
-    name: 'vendre',
-    description: 'Vends un doublon de carte pour des pièces',
-  })
+  // ═══════════════════════════════════════════════════════════════════════════
+  // /eco vendre — Vendre doublons
+  // ═══════════════════════════════════════════════════════════════════════════
+  @Slash({ name: 'vendre', description: 'Vends un doublon' })
   async sell(interaction: CommandInteraction) {
     await interaction.deferReply();
-
-    // Find first duplicate
     const duplicate = await this.prisma.cardInventory.findFirst({
-      where: {
-        userId: interaction.user.id,
-        count: { gt: 1 },
-      },
+      where: { userId: interaction.user.id, count: { gt: 1 } },
       include: { card: true },
-      orderBy: { card: { rarity: 'asc' } }, // Sell cheapest first
+      orderBy: { card: { rarity: 'asc' } },
     });
 
     if (!duplicate) {
@@ -427,33 +821,26 @@ export class EconomyGroup {
         embeds: [
           new EmbedBuilder()
             .setColor(Colors.Warning)
-            .setTitle('📦 Aucun doublon')
-            .setDescription("Tu n'as pas de doublons à vendre."),
+            .setDescription('Aucun doublon à vendre.'),
         ],
       });
     }
 
-    const config = RARITY_CONFIG[duplicate.card.rarity]!;
-    const sellPrice = config.sellPrice;
-
-    // Remove one copy
+    const cfg = RARITY_CONFIG[duplicate.card.rarity]!;
     await this.prisma.cardInventory.update({
       where: { id: duplicate.id },
       data: { count: { decrement: 1 } },
     });
-
-    // Add currency
     await this.prisma.profile.update({
       where: { userId: interaction.user.id },
-      data: { currency: { increment: sellPrice } },
+      data: { currency: { increment: cfg.sellPrice } },
     });
-
     await this.prisma.currencyTransaction.create({
       data: {
         userId: interaction.user.id,
-        amount: sellPrice,
+        amount: cfg.sellPrice,
         type: 'SELL_CARD',
-        note: `Vente de ${duplicate.card.name}`,
+        note: `Vente: ${duplicate.card.name}`,
       },
     });
 
@@ -461,73 +848,212 @@ export class EconomyGroup {
       embeds: [
         new EmbedBuilder()
           .setColor(Colors.Success)
-          .setTitle('💸 Carte vendue !')
           .setDescription(
-            `${config.emoji} **${duplicate.card.name}** vendue pour **${sellPrice} pièces** !\n` +
-              `Copies restantes : ${duplicate.count - 1}`,
+            `${cfg.emoji} **${duplicate.card.name}** vendue pour **${cfg.sellPrice}** 🪙\nCopies restantes : ${duplicate.count - 1}`,
           ),
       ],
     });
   }
 
-  // ─── /eco rates ───
-  @Slash({ name: 'taux', description: 'Affiche les taux de drop du gacha' })
+  // ═══════════════════════════════════════════════════════════════════════════
+  // /eco classement — Leaderboard
+  // ═══════════════════════════════════════════════════════════════════════════
+  @Slash({ name: 'classement', description: 'Classement des collectionneurs' })
+  async leaderboard(interaction: CommandInteraction) {
+    await interaction.deferReply();
+
+    // Top by unique cards
+    const topCollectors = await this.prisma.cardInventory.groupBy({
+      by: ['userId'],
+      _count: { cardId: true },
+      orderBy: { _count: { cardId: 'desc' } },
+      take: 10,
+    });
+
+    if (topCollectors.length === 0) {
+      return interaction.editReply({
+        embeds: [
+          new EmbedBuilder()
+            .setColor(Colors.Info)
+            .setDescription("Personne n'a encore de cartes !"),
+        ],
+      });
+    }
+
+    const lines: string[] = [];
+    const medals = ['🥇', '🥈', '🥉'];
+    for (let i = 0; i < topCollectors.length; i++) {
+      const tc = topCollectors[i]!;
+      const user = await this.prisma.user.findUnique({
+        where: { id: tc.userId },
+        select: { name: true, globalName: true },
+      });
+      const name = user?.globalName || user?.name || 'Inconnu';
+      const medal = medals[i] || `**${i + 1}.**`;
+      lines.push(`${medal} ${name} — **${tc._count.cardId}** cartes`);
+    }
+
+    return interaction.editReply({
+      embeds: [
+        new EmbedBuilder()
+          .setColor(RPB.GoldColor)
+          .setTitle('🏆 Classement des collectionneurs')
+          .setDescription(lines.join('\n')),
+      ],
+    });
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // /eco taux — Taux de drop
+  // ═══════════════════════════════════════════════════════════════════════════
+  @Slash({ name: 'taux', description: 'Affiche les taux et mécaniques' })
   async rates(interaction: CommandInteraction) {
     const totalCards = await this.prisma.gachaCard.count({
       where: { isActive: true },
     });
-    const bySeries: Record<string, number> = {};
-    const byRarity: Record<string, number> = {};
-
-    const cards = await this.prisma.gachaCard.findMany({
-      where: { isActive: true },
-    });
-    for (const c of cards) {
-      bySeries[c.series] = (bySeries[c.series] || 0) + 1;
-      byRarity[c.rarity] = (byRarity[c.rarity] || 0) + 1;
-    }
 
     return interaction.reply({
       embeds: [
         new EmbedBuilder()
           .setColor(RPB.Color)
-          .setTitle('🎰 Taux de drop du Gacha')
+          .setTitle('🎰 Mécaniques du Gacha')
           .setDescription(
-            `**${totalCards} cartes** disponibles · Coût : **${GACHA_COST} 🪙** par tirage`,
+            `**${totalCards} cartes** · Tirage : **${GACHA_COST}** 🪙 · Multi x10 : **${MULTI_PULL_COST}** 🪙`,
           )
           .addFields(
             {
-              name: '📊 Probabilités',
+              name: '📊 Taux de drop',
               value: [
-                `💨 **Raté** — ${RARITY_RATES.MISS * 100}%`,
-                `⚪ **Commune** — ${RARITY_RATES.COMMON * 100}% (vente : 5🪙)`,
-                `🔵 **Rare** — ${RARITY_RATES.RARE * 100}% (vente : 15🪙)`,
-                `🟣 **Épique** — ${RARITY_RATES.EPIC * 100}% (vente : 50🪙)`,
-                `🟡 **Légendaire** — ${RARITY_RATES.LEGENDARY * 100}% (vente : 150🪙)`,
-                `🔴 **Secrète** — ${RARITY_RATES.SECRET * 100}% (vente : 500🪙)`,
+                `💨 **Raté** — 35%`,
+                `⚪ **Commune** — 30% (vente : 5🪙)`,
+                `🔵 **Rare** — 20% (vente : 15🪙)`,
+                `🟣 **Épique** — 10% (vente : 50🪙)`,
+                `🟡 **Légendaire** — 4% (vente : 150🪙)`,
+                `🔴 **Secrète** — 1% (vente : 500🪙)`,
               ].join('\n'),
             },
             {
-              name: '📦 Cartes par série',
-              value:
-                Object.entries(bySeries)
-                  .map(([s, c]) => `${s.replace('_', ' ')} : **${c}** cartes`)
-                  .join('\n') || 'Aucune',
+              name: '🪙 Daily (toutes les 20h)',
+              value: [
+                `60% : 80-120🪙`,
+                `25% : 150-200🪙`,
+                `10% : 250-350🪙`,
+                `4% : 500-700🪙 ⭐`,
+                `1% : 1000-1500🪙 💎`,
+              ].join('\n'),
               inline: true,
             },
             {
-              name: '🏷️ Cartes par rareté',
-              value: ['SECRET', 'LEGENDARY', 'EPIC', 'RARE', 'COMMON']
-                .map(
-                  (r) =>
-                    `${RARITY_CONFIG[r]?.emoji} ${RARITY_CONFIG[r]?.label} : **${byRarity[r] || 0}**`,
-                )
-                .join('\n'),
+              name: '🔥 Bonus Streak',
+              value: STREAK_BONUSES.map(
+                (s) => `${s.label} : +${s.bonus}🪙`,
+              ).join('\n'),
               inline: true,
             },
-          )
-          .setFooter({ text: 'Utilise /eco daily pour 100🪙 par jour' }),
+            {
+              name: '🏅 Badges Collection',
+              value: BADGES.map(
+                (b) => `${b.emoji} ${b.count} cartes : +${b.reward}🪙`,
+              ).join('\n'),
+            },
+          ),
       ],
     });
   }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Internal: Pull a single card
+  // ═══════════════════════════════════════════════════════════════════════════
+  private async pullCard(
+    userId: string,
+    profileId: string,
+  ): Promise<PullResult> {
+    const rarity = rollRarity();
+    if (!rarity)
+      return { rarity: null, card: null, isDuplicate: false, isWished: false };
+
+    const cards = await this.prisma.gachaCard.findMany({
+      where: { rarity, isActive: true },
+    });
+    if (cards.length === 0)
+      return { rarity, card: null, isDuplicate: false, isWished: false };
+
+    const card = cards[Math.floor(Math.random() * cards.length)]!;
+
+    await this.prisma.cardInventory.upsert({
+      where: { userId_cardId: { userId, cardId: card.id } },
+      create: { userId, cardId: card.id, count: 1 },
+      update: { count: { increment: 1 } },
+    });
+
+    const inv = await this.prisma.cardInventory.findUnique({
+      where: { userId_cardId: { userId, cardId: card.id } },
+    });
+    const isDuplicate = inv ? inv.count > 1 : false;
+
+    // Check wishlist
+    const isWished = await this.prisma.cardWishlist.findUnique({
+      where: { profileId_cardId: { profileId, cardId: card.id } },
+    });
+
+    return { rarity, card, isDuplicate, isWished: !!isWished };
+  }
+
+  private buildPullEmbed(result: PullResult, balance: number): EmbedBuilder {
+    if (!result.card || !result.rarity) {
+      return new EmbedBuilder()
+        .setColor(0x4b5563)
+        .setTitle('💨 Raté !')
+        .setDescription(
+          `${randomMiss()}\n\n💰 Solde : **${balance.toLocaleString('fr-FR')}** 🪙`,
+        )
+        .setFooter({ text: 'Retente ta chance !' });
+    }
+
+    const cfg = RARITY_CONFIG[result.rarity]!;
+    let title = `${cfg.emoji} Carte ${cfg.label} obtenue !`;
+    if (result.rarity === 'SECRET') title = '✨🔴 CARTE SECRÈTE !!! 🔴✨';
+    else if (result.rarity === 'LEGENDARY')
+      title = '⭐🟡 Carte LÉGENDAIRE ! 🟡⭐';
+
+    const wishText = result.isWished
+      ? '\n\n⭐ **CARTE SOUHAITÉE !** Cette carte était dans ta wishlist !'
+      : '';
+    const dupeText = result.isDuplicate
+      ? `\n📋 *Doublon — Revends avec \`/eco vendre\`*`
+      : '';
+
+    const embed = new EmbedBuilder()
+      .setColor(result.isWished ? 0xfbbf24 : cfg.color)
+      .setTitle(result.isWished ? `⭐ ${title}` : title)
+      .setDescription(
+        `**${result.card.name}**${result.card.nameJp ? ` (${result.card.nameJp})` : ''}\n` +
+          `${result.card.series.replace(/_/g, ' ')}\n\n` +
+          `${result.card.description || ''}` +
+          (result.card.beyblade
+            ? `\n\n🌀 **Toupie :** ${result.card.beyblade}`
+            : '') +
+          wishText +
+          dupeText,
+      )
+      .setFooter({ text: `💰 Solde : ${balance.toLocaleString('fr-FR')} 🪙` });
+
+    if (result.card.imageUrl) embed.setThumbnail(result.card.imageUrl);
+    return embed;
+  }
+}
+
+interface PullResult {
+  rarity: CardRarityType | null;
+  card: {
+    name: string;
+    nameJp: string | null;
+    series: string;
+    description: string | null;
+    beyblade: string | null;
+    imageUrl: string | null;
+    id: string;
+  } | null;
+  isDuplicate: boolean;
+  isWished: boolean;
 }

@@ -196,7 +196,9 @@ model Profile {
   deckBoxImage      String?
   currency          Int             @default(0)
   lastDaily         DateTime?
+  dailyStreak       Int             @default(0)
   user              User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  wishlist          CardWishlist[]
 
   @@index([rankingPoints])
   @@map("profiles")
@@ -689,6 +691,9 @@ enum TransactionType {
   ADMIN_TAKE
   TOURNAMENT_REWARD
   SELL_CARD
+  STREAK_BONUS
+  MULTI_PULL
+  BADGE_REWARD
 }
 
 model GachaCard {
@@ -706,6 +711,7 @@ model GachaCard {
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
   inventory   CardInventory[]
+  wishedBy    CardWishlist[]
 
   @@index([series])
   @@index([rarity])
@@ -724,6 +730,19 @@ model CardInventory {
   @@unique([userId, cardId])
   @@index([userId])
   @@map("card_inventory")
+}
+
+model CardWishlist {
+  id        String    @id @default(cuid())
+  profileId String
+  cardId    String
+  createdAt DateTime  @default(now())
+  profile   Profile   @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  card      GachaCard @relation(fields: [cardId], references: [id], onDelete: Cascade)
+
+  @@unique([profileId, cardId])
+  @@index([profileId])
+  @@map("card_wishlists")
 }
 
 model CurrencyTransaction {
