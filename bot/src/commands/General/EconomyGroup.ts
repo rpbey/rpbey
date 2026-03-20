@@ -145,8 +145,11 @@ function randomMiss(): string {
 // ─── Command Group ──────────────────────────────────────────────────────────
 
 @Discord()
-@SlashGroup({ name: 'eco', description: "Système d'économie et gacha RPB" })
-@SlashGroup('eco')
+@SlashGroup({
+  name: 'gacha',
+  description: 'Système de cartes à collectionner RPB',
+})
+@SlashGroup('gacha')
 @injectable()
 export class EconomyGroup {
   constructor(@inject(PrismaService) private prisma: PrismaService) {}
