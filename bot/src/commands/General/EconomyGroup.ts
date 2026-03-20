@@ -1026,4 +1026,115 @@ export class EconomyGroup {
       ],
     });
   }
+
+  // ═══ /gacha admin-give — Admin only ═══
+  @Slash({
+    name: 'admin-give',
+    description: '[ADMIN] Donner des pièces à un membre',
+  })
+  async adminGive(
+    @SlashOption({
+      name: 'membre',
+      description: 'Le membre',
+      required: true,
+      type: ApplicationCommandOptionType.User,
+    })
+    target: { id: string; displayName: string },
+    @SlashOption({
+      name: 'montant',
+      description: 'Nombre de pièces',
+      required: true,
+      type: ApplicationCommandOptionType.Integer,
+    })
+    amount: number,
+    @SlashOption({
+      name: 'raison',
+      description: 'Raison',
+      required: false,
+      type: ApplicationCommandOptionType.String,
+    })
+    reason: string | undefined,
+    interaction: CommandInteraction,
+  ) {
+    // Admin check
+    const caller = await this.prisma.user.findUnique({
+      where: { discordId: interaction.user.id },
+    });
+    if (!caller || (caller.role !== 'admin' && caller.role !== 'superadmin')) {
+      return interaction.reply({
+        content: '❌ Réservé aux administrateurs.',
+        ephemeral: true,
+      });
+    }
+
+    if (amount === 0)
+      return interaction.reply({
+        content: '❌ Montant invalide.',
+        ephemeral: true,
+      });
+
+    // Resolve target
+    let targetUser = await this.prisma.user.findUnique({
+      where: { discordId: target.id },
+    });
+    if (!targetUser) {
+      targetUser = await this.prisma.user.create({
+        data: {
+          discordId: target.id,
+          name: target.displayName,
+          email: `${target.id}@discord.rpbey.fr`,
+        },
+      });
+    }
+    let profile = await this.prisma.profile.findUnique({
+      where: { userId: targetUser.id },
+    });
+    if (!profile) {
+      profile = await this.prisma.profile.create({
+        data: { userId: targetUser.id, currency: 0 },
+      });
+    }
+
+    const isGive = amount > 0;
+    const absAmount = Math.abs(amount);
+
+    // Prevent negative balance
+    if (!isGive && profile.currency < absAmount) {
+      return interaction.reply({
+        content: `❌ ${target.displayName} n'a que **${profile.currency}** 🪙.`,
+        ephemeral: true,
+      });
+    }
+
+    await this.prisma.profile.update({
+      where: { id: profile.id },
+      data: {
+        currency: isGive ? { increment: absAmount } : { decrement: absAmount },
+      },
+    });
+    await this.prisma.currencyTransaction.create({
+      data: {
+        userId: targetUser.id,
+        amount,
+        type: isGive ? 'ADMIN_GIVE' : 'ADMIN_TAKE',
+        note: reason || `Par ${interaction.user.displayName}`,
+      },
+    });
+
+    const newBalance = profile.currency + amount;
+
+    return interaction.reply({
+      embeds: [
+        new EmbedBuilder()
+          .setColor(isGive ? Colors.Success : Colors.Warning)
+          .setTitle(isGive ? '🪙 Pièces ajoutées' : '🪙 Pièces retirées')
+          .setDescription(
+            `${isGive ? '+' : ''}**${amount.toLocaleString('fr-FR')}** 🪙 ${isGive ? 'donnés à' : 'retirés de'} **${target.displayName}**` +
+              (reason ? `\n📝 *${reason}*` : '') +
+              `\n\n💰 Nouveau solde : **${newBalance.toLocaleString('fr-FR')}** 🪙`,
+          )
+          .setFooter({ text: `Par ${interaction.user.displayName}` }),
+      ],
+    });
+  }
 }
