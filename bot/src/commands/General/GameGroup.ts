@@ -518,13 +518,13 @@ export class GameGroup {
 
   @Slash({
     name: 'interaction',
-    description: "Calculer le score d'interaction entre deux membres",
+    description: 'Compter les mentions mutuelles entre deux membres',
   })
   @SlashGroup('jeu')
   async interaction(
     @SlashOption({
       name: 'membre',
-      description: "Le membre avec qui calculer l'interaction",
+      description: 'Le membre avec qui mesurer les interactions',
       required: true,
       type: ApplicationCommandOptionType.User,
     })
@@ -544,155 +544,93 @@ export class GameGroup {
 
     await interaction.deferReply();
 
-    const [userA, userB] = await Promise.all([
-      this.prisma.user.findFirst({
-        where: { discordId: interaction.user.id },
-        include: { profile: true },
-      }),
-      this.prisma.user.findFirst({
-        where: { discordId: target.id },
-        include: { profile: true },
-      }),
-    ]);
-
-    let directMatches = 0;
-    let coTournaments = 0;
-    let h2hA = 0;
-    let h2hB = 0;
-
-    if (userA && userB) {
-      // Direct tournament matches (faced each other)
-      directMatches = await this.prisma.tournamentMatch.count({
-        where: {
-          OR: [
-            { player1Id: userA.id, player2Id: userB.id },
-            { player1Id: userB.id, player2Id: userA.id },
-          ],
-        },
-      });
-
-      // Wins for each side
-      [h2hA, h2hB] = await Promise.all([
-        this.prisma.tournamentMatch.count({
-          where: {
-            OR: [
-              { player1Id: userA.id, player2Id: userB.id },
-              { player1Id: userB.id, player2Id: userA.id },
-            ],
-            winnerId: userA.id,
-          },
-        }),
-        this.prisma.tournamentMatch.count({
-          where: {
-            OR: [
-              { player1Id: userA.id, player2Id: userB.id },
-              { player1Id: userB.id, player2Id: userA.id },
-            ],
-            winnerId: userB.id,
-          },
-        }),
-      ]);
-
-      // Co-participation in same tournaments
-      const tournamentsA = await this.prisma.tournamentParticipant.findMany({
-        where: { userId: userA.id },
-        select: { tournamentId: true },
-      });
-      const tournamentIdsA = new Set(tournamentsA.map((t) => t.tournamentId));
-
-      if (tournamentIdsA.size > 0) {
-        coTournaments = await this.prisma.tournamentParticipant.count({
-          where: {
-            userId: userB.id,
-            tournamentId: { in: [...tournamentIdsA] },
-          },
-        });
-      }
-    }
-
-    // Shared roles on the server
-    let sharedRoles = 0;
     const guild = interaction.guild;
-    if (guild) {
-      const [memberA, memberB] = await Promise.all([
-        guild.members.fetch(interaction.user.id).catch(() => null),
-        guild.members.fetch(target.id).catch(() => null),
-      ]);
-      if (memberA && memberB) {
-        const rolesA = memberA.roles.cache.filter((r) => r.id !== guild.id);
-        const rolesB = new Set(memberB.roles.cache.map((r) => r.id));
-        sharedRoles = rolesA.filter((r) => rolesB.has(r.id)).size;
+    if (!guild)
+      return interaction.editReply(
+        '❌ Commande disponible uniquement sur un serveur.',
+      );
+
+    // Scan text channels for mutual mentions
+    let mentionsAtoB = 0; // user A mentioning user B
+    let mentionsBtoA = 0; // user B mentioning user A
+    let channelsScanned = 0;
+
+    const channels = guild.channels.cache.filter(
+      (c) => c.isTextBased() && !c.isThread() && 'messages' in c,
+    );
+
+    for (const channel of channels.values()) {
+      if (!('messages' in channel)) continue;
+      try {
+        const messages = await channel.messages.fetch({ limit: 100 });
+        for (const msg of messages.values()) {
+          if (msg.author.bot) continue;
+          const mentionsUser = (id: string) =>
+            msg.mentions.users.has(id) ||
+            msg.content.includes(`<@${id}>`) ||
+            msg.content.includes(`<@!${id}>`);
+
+          if (
+            msg.author.id === interaction.user.id &&
+            mentionsUser(target.id)
+          ) {
+            mentionsAtoB++;
+          }
+          if (
+            msg.author.id === target.id &&
+            mentionsUser(interaction.user.id)
+          ) {
+            mentionsBtoA++;
+          }
+        }
+        channelsScanned++;
+      } catch {
+        // No permission to read channel, skip
       }
     }
 
-    // Account age proximity (closer = more affinity)
-    const ageA = interaction.user.createdTimestamp;
-    const ageB = target.createdTimestamp;
-    const ageDiffDays = Math.abs(ageA - ageB) / (1000 * 60 * 60 * 24);
-    const ageBonus =
-      ageDiffDays < 30 ? 15 : ageDiffDays < 180 ? 8 : ageDiffDays < 365 ? 3 : 0;
+    const total = mentionsAtoB + mentionsBtoA;
 
-    // Calculate score
-    const matchPoints = directMatches * 12;
-    const coTournamentPoints = coTournaments * 8;
-    const rolePoints = sharedRoles * 3;
-    // Deterministic seed from both user IDs for consistent "random" bonus
-    const seed =
-      ([...interaction.user.id].reduce((a, c) => a + c.charCodeAt(0), 0) +
-        [...target.id].reduce((a, c) => a + c.charCodeAt(0), 0)) %
-      20;
-
-    const rawScore =
-      matchPoints + coTournamentPoints + rolePoints + ageBonus + seed;
-    const score = Math.min(rawScore, 100);
-
-    // Score label & color
+    // Score & label
+    const score = Math.min(total, 100);
     const { label, emoji, color } =
-      score >= 80
-        ? { label: 'Rivaux légendaires', emoji: '🔥', color: 0xef4444 }
-        : score >= 60
-          ? { label: 'Bons compagnons', emoji: '⚡', color: 0xfbbf24 }
-          : score >= 40
-            ? { label: 'Camarades', emoji: '🤝', color: 0x3b82f6 }
-            : score >= 20
+      score >= 50
+        ? { label: 'Inséparables', emoji: '🔥', color: 0xef4444 }
+        : score >= 30
+          ? { label: 'Meilleurs potes', emoji: '⚡', color: 0xfbbf24 }
+          : score >= 15
+            ? { label: 'Bons amis', emoji: '🤝', color: 0x3b82f6 }
+            : score >= 5
               ? { label: 'Connaissances', emoji: '👋', color: 0x8b5cf6 }
               : { label: 'Inconnus', emoji: '❓', color: 0x6b7280 };
 
     const bar =
-      '█'.repeat(Math.round(score / 10)) +
-      '░'.repeat(10 - Math.round(score / 10));
+      '█'.repeat(Math.min(Math.round(score / 10), 10)) +
+      '░'.repeat(10 - Math.min(Math.round(score / 10), 10));
 
     const embed = new EmbedBuilder()
       .setTitle(
         `${emoji} ${interaction.user.displayName} & ${target.displayName}`,
       )
       .setDescription(
-        `**${label}** — Score d'interaction : **${score}/100**\n\`${bar}\``,
+        `**${label}** — **${total}** mentions mutuelles\n\`${bar}\``,
       )
       .setColor(color)
       .addFields(
         {
-          name: '⚔️ Matchs directs',
-          value:
-            directMatches > 0
-              ? `**${directMatches}** confrontation${directMatches > 1 ? 's' : ''} (${h2hA}V - ${h2hB}D)`
-              : 'Aucune confrontation',
+          name: `💬 ${interaction.user.displayName} → ${target.displayName}`,
+          value: `**${mentionsAtoB}** mention${mentionsAtoB > 1 ? 's' : ''}`,
           inline: true,
         },
         {
-          name: '🏆 Tournois communs',
-          value: `**${coTournaments}** tournoi${coTournaments > 1 ? 's' : ''} ensemble`,
-          inline: true,
-        },
-        {
-          name: '🎭 Rôles partagés',
-          value: `**${sharedRoles}** rôle${sharedRoles > 1 ? 's' : ''} en commun`,
+          name: `💬 ${target.displayName} → ${interaction.user.displayName}`,
+          value: `**${mentionsBtoA}** mention${mentionsBtoA > 1 ? 's' : ''}`,
           inline: true,
         },
       )
       .setThumbnail(target.displayAvatarURL({ size: 256 }))
       .setFooter({
-        text: `${RPB.FullName} | /jeu interaction`,
+        text: `${RPB.FullName} | ${channelsScanned} salons analysés (100 derniers messages chacun)`,
         iconURL: interaction.user.displayAvatarURL({ size: 64 }),
       })
       .setTimestamp();
