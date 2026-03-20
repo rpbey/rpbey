@@ -917,16 +917,25 @@ export async function generateWantedImage(
   const sx = width / 3508;
   const sy = height / 4961;
 
-  // ── Avatar photo ──
-  // The black rectangle in the template: approx (280, 820) to (3220, 3340)
-  const photoX = Math.round(280 * sx);
-  const photoY = Math.round(820 * sy);
-  const photoW = Math.round((3220 - 280) * sx);
-  const photoH = Math.round((3340 - 820) * sy);
+  // ── Photo area ──
+  // The black rectangle in template: approx (280, 820) to (3220, 3340)
+  const frameX = Math.round(280 * sx);
+  const frameY = Math.round(820 * sy);
+  const frameW = Math.round((3220 - 280) * sx);
+  const frameH = Math.round((3340 - 820) * sy);
 
+  // Fill the black rectangle with parchment color
+  ctx.fillStyle = '#e2d1a5';
+  ctx.fillRect(frameX, frameY, frameW, frameH);
+
+  // Draw avatar centered and smaller inside the frame (with padding)
   const avatar = await safeLoadImage(avatarUrl);
   if (avatar) {
-    ctx.drawImage(avatar, photoX, photoY, photoW, photoH);
+    const padding = Math.round(frameW * 0.12);
+    const avatarSize = Math.min(frameW, frameH) - padding * 2;
+    const avatarX = frameX + Math.round((frameW - avatarSize) / 2);
+    const avatarY = frameY + Math.round((frameH - avatarSize) / 2);
+    ctx.drawImage(avatar, avatarX, avatarY, avatarSize, avatarSize);
   }
 
   // ── Name (below DEAD OR ALIVE, above the small text) ──
