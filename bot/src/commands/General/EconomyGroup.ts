@@ -507,12 +507,35 @@ export class EconomyGroup {
       }
     }
 
-    // Debt interest: 5% of debt deducted from daily reward
+    // Debt interest: 5% of debt deducted from daily reward → sent to banker
+    const BANKER_DISCORD_ID = '239380696886411265'; // Yoyo / Tategami
     let interestPaid = 0;
     let totalGain = amount + streakBonus;
     if (profile.currency < 0) {
       interestPaid = Math.round(Math.abs(profile.currency) * 0.05);
-      totalGain = Math.max(1, totalGain - interestPaid); // Always gain at least 1
+      totalGain = Math.max(1, totalGain - interestPaid);
+
+      // Transfer interest to banker
+      if (interestPaid > 0) {
+        const banker = await this.prisma.user.findUnique({
+          where: { discordId: BANKER_DISCORD_ID },
+        });
+        if (banker) {
+          await this.prisma.profile.upsert({
+            where: { userId: banker.id },
+            update: { currency: { increment: interestPaid } },
+            create: { userId: banker.id, currency: interestPaid },
+          });
+          await this.prisma.currencyTransaction.create({
+            data: {
+              userId: banker.id,
+              amount: interestPaid,
+              type: 'ADMIN_GIVE',
+              note: `Intérêts dette de ${interaction.user.displayName}`,
+            },
+          });
+        }
+      }
     }
 
     await this.prisma.profile.update({
@@ -528,7 +551,7 @@ export class EconomyGroup {
         userId,
         amount: totalGain,
         type: 'DAILY_CLAIM',
-        note: `Tier ${tier + 1} — Streak ${newStreak}${interestPaid > 0 ? ` — Intérêts: -${interestPaid}` : ''}`,
+        note: `Tier ${tier + 1} — Streak ${newStreak}${interestPaid > 0 ? ` — Intérêts: -${interestPaid} → Banquier` : ''}`,
       },
     });
     if (streakBonus > 0)
