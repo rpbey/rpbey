@@ -13,7 +13,7 @@ import { inject, injectable } from 'tsyringe';
 import { p as parseNum } from '../../lib/battle-utils.js';
 import {
   type ComboCardData,
-  generateBattleCard,
+  generateBattleResultCard,
   generateComboCard,
 } from '../../lib/canvas-utils.js';
 import { Colors, RPB } from '../../lib/constants.js';
@@ -548,93 +548,33 @@ export class GameGroup {
     const winnerCombo = battle.winner === 'A' ? comboA : comboB;
     const finishType = battle.finishType;
 
-    // Canvas battle card
-    const cardBuffer = await generateBattleCard({
+    // Canvas battle result card
+    const cnA = `${comboA.blade.name} ${comboA.ratchet.name} ${comboA.bit.name}`;
+    const cnB = `${comboB.blade.name} ${comboB.ratchet.name} ${comboB.bit.name}`;
+    const coinReward = finishType.points * 10;
+
+    const cardBuffer = await generateBattleResultCard({
       winnerName: winner.displayName,
-      winnerAvatarUrl: winner.displayAvatarURL({ extension: 'png', size: 512 }),
+      winnerAvatarUrl: winner.displayAvatarURL({ extension: 'png', size: 256 }),
+      winnerCombo: battle.winner === 'A' ? cnA : cnB,
+      winnerType: winnerCombo.blade.beyType,
       loserName: loser.displayName,
-      loserAvatarUrl: loser.displayAvatarURL({ extension: 'png', size: 512 }),
-      finishType: finishType.result,
+      loserAvatarUrl: loser.displayAvatarURL({ extension: 'png', size: 256 }),
+      loserCombo: battle.winner === 'A' ? cnB : cnA,
+      loserType: (battle.winner === 'A' ? comboB : comboA).blade.beyType,
       finishMessage: finishType.message,
-      finishEmoji: finishType.emoji,
+      hpWinner: battle.winner === 'A' ? battle.hpA : battle.hpB,
+      hpLoser: battle.winner === 'A' ? battle.hpB : battle.hpA,
+      maxHp: battle.maxHp,
+      rounds: battle.rounds,
+      coinReward,
+      log: battle.log.map((l: BattleLog) => l.text),
     });
 
     const filename = `battle-${Date.now()}.png`;
     const attachment = new AttachmentBuilder(cardBuffer, { name: filename });
 
-    const cnA = `${comboA.blade.name} ${comboA.ratchet.name} ${comboA.bit.name}`;
-    const cnB = `${comboB.blade.name} ${comboB.ratchet.name} ${comboB.bit.name}`;
-    const tagA = comboA.fromDeck ? `📦 *${comboA.deckName}*` : '🎲 *Aléatoire*';
-    const tagB = comboB.fromDeck ? `📦 *${comboB.deckName}*` : '🎲 *Aléatoire*';
-    const winnerComboName = battle.winner === 'A' ? cnA : cnB;
-
-    // HP bars
-    const hpBar = (hp: number, max: number) => {
-      const pct = Math.round((hp / max) * 10);
-      return (
-        '🟩'.repeat(Math.min(pct, 10)) + '🟥'.repeat(10 - Math.min(pct, 10))
-      );
-    };
-
-    // Battle log summary (last 3 events)
-    const logSummary = battle.log
-      .slice(-3)
-      .map((l: BattleLog) => `> ${l.text}`)
-      .join('\n');
-
-    // Type matchup display
-    const matchAvsB = typeMatchup(comboA.blade.beyType, comboB.blade.beyType);
-    const matchupText =
-      matchAvsB > 1
-        ? `${getTypeEmoji(comboA.blade.beyType)} > ${getTypeEmoji(comboB.blade.beyType)} Avantage type !`
-        : matchAvsB < 1
-          ? `${getTypeEmoji(comboB.blade.beyType)} > ${getTypeEmoji(comboA.blade.beyType)} Avantage type !`
-          : 'Types neutres';
-
-    const embed = new EmbedBuilder()
-      .setTitle(`${finishType.emoji} ${finishType.message}`)
-      .setDescription(
-        `**${interaction.user.displayName}** ${getTypeEmoji(comboA.blade.beyType)} vs ${getTypeEmoji(comboB.blade.beyType)} **${target.displayName}**\n${matchupText}`,
-      )
-      .addFields(
-        {
-          name: `${interaction.user.displayName} ${battle.winner === 'A' ? '👑' : ''}`,
-          value: [
-            `**${cnA}**\n${tagA}`,
-            `HP ${hpBar(battle.hpA, battle.maxHp)} ${Math.round(battle.hpA)}/${battle.maxHp}`,
-            `ATK \`${statBar(statsA.attack)}\` **${statsA.attack}** | DEF **${statsA.defense}**`,
-            `STA **${statsA.stamina}** | DSH **${statsA.dash}** | ⚖️ **${statsA.weight.toFixed(1)}g**`,
-          ].join('\n'),
-          inline: true,
-        },
-        {
-          name: `${target.displayName} ${battle.winner === 'B' ? '👑' : ''}`,
-          value: [
-            `**${cnB}**\n${tagB}`,
-            `HP ${hpBar(battle.hpB, battle.maxHp)} ${Math.round(battle.hpB)}/${battle.maxHp}`,
-            `ATK \`${statBar(statsB.attack)}\` **${statsB.attack}** | DEF **${statsB.defense}**`,
-            `STA **${statsB.stamina}** | DSH **${statsB.dash}** | ⚖️ **${statsB.weight.toFixed(1)}g**`,
-          ].join('\n'),
-          inline: true,
-        },
-        {
-          name: `📜 Combat (${battle.rounds} tours)`,
-          value: logSummary || '> Combat rapide !',
-        },
-        {
-          name: '🏆 Vainqueur',
-          value: `**${winner.displayName}** avec **${winnerComboName}**\n${finishType.emoji} ${finishType.message} (+${finishType.points} pts)`,
-        },
-      )
-      .setColor(getTypeColor(winnerCombo.blade.beyType))
-      .setImage(`attachment://${filename}`)
-      .setFooter({
-        text: `${RPB.FullName} | Simulation Beyblade X · ${comboA.fromDeck || comboB.fromDeck ? 'Deck actif' : 'Aléatoire'}`,
-      })
-      .setTimestamp();
-
     // Update DB stats + currency rewards
-    const coinReward = finishType.points * 10; // 10/20/30 coins based on finish type
     try {
       const dbWinner = await this.prisma.user.upsert({
         where: { discordId: winner.id },
@@ -685,13 +625,7 @@ export class GameGroup {
       logger.error('[Battle] DB update error:', e);
     }
 
-    // Add reward info to embed
-    embed.addFields({
-      name: '🪙 Récompenses',
-      value: `${winner.displayName}: **+${coinReward}** 🪙 (victoire)\n${loser.displayName}: **+5** 🪙 (participation)`,
-    });
-
-    return interaction.editReply({ embeds: [embed], files: [attachment] });
+    return interaction.editReply({ files: [attachment] });
   }
 
   // ═══ /jeu aleatoire ═══

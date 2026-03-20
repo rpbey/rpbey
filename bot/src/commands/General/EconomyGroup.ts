@@ -8,6 +8,7 @@ import { Discord, Slash, SlashGroup, SlashOption } from 'discordx';
 import { inject, injectable } from 'tsyringe';
 
 import {
+  generateCollectionCard,
   generateGachaCard,
   generateGachaMissCard,
 } from '../../lib/canvas-utils.js';
@@ -849,7 +850,7 @@ export class EconomyGroup {
   @Slash({ name: 'collection', description: 'Affiche ta collection' })
   async collection(interaction: CommandInteraction) {
     await interaction.deferReply();
-    const { userId } = await this.resolve(interaction);
+    const { userId, profile } = await this.resolve(interaction);
     const inventory = await this.prisma.cardInventory.findMany({
       where: { userId },
       include: { card: true },
@@ -868,33 +869,59 @@ export class EconomyGroup {
     const totalCards = await this.prisma.gachaCard.count({
       where: { isActive: true },
     });
-    const pct = Math.round((inventory.length / totalCards) * 100);
-    const byRarity: Record<string, string[]> = {};
-    for (const inv of inventory) {
-      const r = inv.card.rarity;
-      if (!byRarity[r]) byRarity[r] = [];
-      byRarity[r]?.push(
-        `${RARITY_CONFIG[r]?.emoji} ${inv.card.name}${inv.count > 1 ? ` (x${inv.count})` : ''}`,
-      );
-    }
-    const embed = new EmbedBuilder()
-      .setColor(RPB.GoldColor)
-      .setTitle(`🃏 Collection de ${interaction.user.displayName}`)
-      .setDescription(`**${inventory.length}** / ${totalCards} (${pct}%)`)
-      .setThumbnail(interaction.user.displayAvatarURL());
-    for (const r of ['SECRET', 'LEGENDARY', 'EPIC', 'RARE', 'COMMON']) {
-      if (byRarity[r]?.length)
-        embed.addFields({
-          name: `${RARITY_CONFIG[r]?.emoji} ${RARITY_CONFIG[r]?.label} (${byRarity[r]?.length})`,
-          value: byRarity[r]?.join('\n'),
-        });
-    }
     const badgesList = BADGES.filter((b) => inventory.length >= b.count).map(
       (b) => `${b.emoji} ${b.name}`,
     );
-    if (badgesList.length > 0)
-      embed.addFields({ name: '🏅 Badges', value: badgesList.join(' · ') });
-    return interaction.editReply({ embeds: [embed] });
+
+    try {
+      const cardBuffer = await generateCollectionCard({
+        username: interaction.user.displayName,
+        avatarUrl: interaction.user.displayAvatarURL({
+          extension: 'png',
+          size: 128,
+        }),
+        currency: profile.currency,
+        streak: profile.dailyStreak,
+        cards: inventory.map((inv) => ({
+          name: inv.card.name,
+          rarity: inv.card.rarity,
+          count: inv.count,
+          imageUrl: inv.card.imageUrl,
+        })),
+        totalCards,
+        badges: badgesList,
+      });
+      const attachment = new AttachmentBuilder(cardBuffer, {
+        name: 'collection.png',
+      });
+      return interaction.editReply({ files: [attachment] });
+    } catch {
+      // Fallback to embed
+      const pct = Math.round((inventory.length / totalCards) * 100);
+      const byRarity: Record<string, string[]> = {};
+      for (const inv of inventory) {
+        const r = inv.card.rarity;
+        if (!byRarity[r]) byRarity[r] = [];
+        byRarity[r]?.push(
+          `${RARITY_CONFIG[r]?.emoji} ${inv.card.name}${inv.count > 1 ? ` (x${inv.count})` : ''}`,
+        );
+      }
+      const embed = new EmbedBuilder()
+        .setColor(RPB.GoldColor)
+        .setTitle(`🃏 Collection de ${interaction.user.displayName}`)
+        .setDescription(`**${inventory.length}** / ${totalCards} (${pct}%)`)
+        .setThumbnail(interaction.user.displayAvatarURL());
+      for (const r of ['SECRET', 'LEGENDARY', 'EPIC', 'RARE', 'COMMON']) {
+        if (byRarity[r]?.length)
+          embed.addFields({
+            name: `${RARITY_CONFIG[r]?.emoji} ${RARITY_CONFIG[r]?.label} (${byRarity[r]?.length})`,
+            value: byRarity[r]?.join('\n'),
+          });
+      }
+      if (badgesList.length > 0)
+        embed.addFields({ name: '🏅 Badges', value: badgesList.join(' · ') });
+      return interaction.editReply({ embeds: [embed] });
+    }
   }
 
   // ═══ /gacha vendre ═══
