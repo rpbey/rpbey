@@ -892,7 +892,7 @@ export async function generateLeaderboardCard(entries: LeaderboardEntry[]) {
   return canvas.toBuffer('image/png');
 }
 
-// ─── WANTED Poster ───
+// ─── WANTED Poster (One Piece style) ───
 
 export async function generateWantedImage(
   displayName: string,
@@ -901,120 +901,162 @@ export async function generateWantedImage(
   crime: string,
 ) {
   const width = 600;
-  const height = 800;
+  const height = 860;
   const canvas = createCanvas(width, height);
   const ctx = canvas.getContext('2d');
+  ctx.textAlign = 'center';
 
-  // Parchment background
-  ctx.fillStyle = '#f5e6c8';
+  // ── Parchment base ──
+  const gradient = ctx.createLinearGradient(0, 0, 0, height);
+  gradient.addColorStop(0, '#e8d5a3');
+  gradient.addColorStop(0.3, '#f2e4c1');
+  gradient.addColorStop(0.7, '#eddcb1');
+  gradient.addColorStop(1, '#d9c48e');
+  ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, width, height);
 
-  // Aged paper texture effect
-  ctx.fillStyle = 'rgba(139, 90, 43, 0.06)';
-  for (let i = 0; i < 200; i++) {
-    const x = Math.random() * width;
-    const y = Math.random() * height;
-    const size = Math.random() * 4 + 1;
-    ctx.fillRect(x, y, size, size);
+  // Paper grain noise
+  ctx.fillStyle = 'rgba(120, 80, 30, 0.04)';
+  for (let i = 0; i < 600; i++) {
+    ctx.fillRect(
+      Math.random() * width,
+      Math.random() * height,
+      Math.random() * 3 + 1,
+      Math.random() * 3 + 1,
+    );
+  }
+  // Coffee stain spots
+  ctx.fillStyle = 'rgba(101, 67, 33, 0.05)';
+  for (let i = 0; i < 8; i++) {
+    const cx = Math.random() * width;
+    const cy = Math.random() * height;
+    const r = Math.random() * 40 + 10;
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, Math.PI * 2);
+    ctx.fill();
   }
 
-  // Torn edges (top & bottom)
-  ctx.fillStyle = 'rgba(101, 67, 33, 0.15)';
-  for (let x = 0; x < width; x += 3) {
-    const h = Math.random() * 8 + 2;
-    ctx.fillRect(x, 0, 3, h);
-    ctx.fillRect(x, height - h, 3, h);
+  // Burnt/torn edges
+  ctx.fillStyle = 'rgba(80, 50, 20, 0.12)';
+  for (let x = 0; x < width; x += 2) {
+    const hTop = Math.random() * 12 + 3;
+    const hBot = Math.random() * 12 + 3;
+    ctx.fillRect(x, 0, 2, hTop);
+    ctx.fillRect(x, height - hBot, 2, hBot);
+  }
+  for (let y = 0; y < height; y += 2) {
+    const wL = Math.random() * 8 + 2;
+    const wR = Math.random() * 8 + 2;
+    ctx.fillRect(0, y, wL, 2);
+    ctx.fillRect(width - wR, y, wR, 2);
   }
 
-  // Dark border
-  ctx.strokeStyle = 'rgba(101, 67, 33, 0.4)';
-  ctx.lineWidth = 6;
-  ctx.strokeRect(20, 20, width - 40, height - 40);
-  ctx.strokeStyle = 'rgba(101, 67, 33, 0.2)';
-  ctx.lineWidth = 2;
-  ctx.strokeRect(28, 28, width - 56, height - 56);
-
-  // "WANTED" title
-  ctx.textAlign = 'center';
-  ctx.font = 'bold 80px GoogleSans';
+  // ── Red band top: WANTED ──
+  const bandH = 90;
   ctx.fillStyle = '#8b0000';
-  ctx.fillText('WANTED', width / 2, 100);
+  ctx.fillRect(0, 25, width, bandH);
+  // Band texture
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.08)';
+  ctx.fillRect(0, 25, width, 3);
+  ctx.fillRect(0, 25 + bandH - 3, width, 3);
 
-  // Decorative line under title
-  ctx.strokeStyle = '#8b0000';
-  ctx.lineWidth = 3;
-  ctx.beginPath();
-  ctx.moveTo(80, 115);
-  ctx.lineTo(width - 80, 115);
-  ctx.stroke();
+  ctx.font = 'bold 72px GoogleSans';
+  ctx.fillStyle = '#f5e6c8';
+  ctx.fillText('WANTED', width / 2, 92);
 
-  // "DEAD OR ALIVE" subtitle
-  ctx.font = 'bold 22px GoogleSans';
-  ctx.fillStyle = '#654321';
-  ctx.fillText('DEAD OR ALIVE', width / 2, 145);
+  // ── DEAD OR ALIVE ──
+  ctx.font = 'bold 20px GoogleSans';
+  ctx.fillStyle = '#5c3a1e';
+  ctx.fillText('- DEAD OR ALIVE -', width / 2, 140);
 
-  // Avatar frame
-  const avatarSize = 280;
-  const avatarX = (width - avatarSize) / 2;
-  const avatarY = 170;
+  // ── Photo section ──
+  const photoW = 340;
+  const photoH = 340;
+  const photoX = (width - photoW) / 2;
+  const photoY = 160;
 
-  // Shadow behind frame
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
-  ctx.fillRect(avatarX + 6, avatarY + 6, avatarSize, avatarSize);
+  // Photo shadow
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
+  ctx.fillRect(photoX + 5, photoY + 5, photoW, photoH);
 
-  // Frame border
-  ctx.fillStyle = '#654321';
-  ctx.fillRect(avatarX - 8, avatarY - 8, avatarSize + 16, avatarSize + 16);
-  ctx.fillStyle = '#8b6914';
-  ctx.fillRect(avatarX - 4, avatarY - 4, avatarSize + 8, avatarSize + 8);
+  // Photo border (dark wood frame)
+  ctx.fillStyle = '#3b2010';
+  ctx.fillRect(photoX - 6, photoY - 6, photoW + 12, photoH + 12);
+  ctx.fillStyle = '#5c3a1e';
+  ctx.fillRect(photoX - 3, photoY - 3, photoW + 6, photoH + 6);
 
   // Avatar
   const avatar = await safeLoadImage(avatarUrl);
   if (avatar) {
-    ctx.drawImage(avatar, avatarX, avatarY, avatarSize, avatarSize);
+    ctx.drawImage(avatar, photoX, photoY, photoW, photoH);
   } else {
-    ctx.fillStyle = '#d4a76a';
-    ctx.fillRect(avatarX, avatarSize, avatarSize, avatarSize);
+    ctx.fillStyle = '#c4a675';
+    ctx.fillRect(photoX, photoY, photoW, photoH);
   }
 
-  // Name
-  const nameY = avatarY + avatarSize + 50;
-  ctx.font = 'bold 42px GoogleSans';
-  ctx.fillStyle = '#3b1a00';
+  // Photo wear overlay
+  ctx.fillStyle = 'rgba(200, 180, 140, 0.08)';
+  ctx.fillRect(photoX, photoY, photoW, photoH);
+
+  // ── Name ──
+  const nameY = photoY + photoH + 45;
+  ctx.font = 'bold 44px GoogleSans';
+  ctx.fillStyle = '#1a0a00';
   const nameText = displayName.toUpperCase();
-  if (ctx.measureText(nameText).width > width - 80) {
-    ctx.font = 'bold 32px GoogleSans';
+  if (ctx.measureText(nameText).width > width - 60) {
+    ctx.font = 'bold 34px GoogleSans';
   }
   ctx.fillText(nameText, width / 2, nameY);
 
-  // Crime line
-  ctx.font = '20px GoogleSans';
-  ctx.fillStyle = '#654321';
-  ctx.fillText(`« ${crime} »`, width / 2, nameY + 40);
-
-  // Decorative line
-  ctx.strokeStyle = '#654321';
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(100, nameY + 60);
-  ctx.lineTo(width - 100, nameY + 60);
-  ctx.stroke();
-
-  // Bounty
-  ctx.font = 'bold 26px GoogleSans';
-  ctx.fillStyle = '#654321';
-  ctx.fillText('RÉCOMPENSE', width / 2, nameY + 95);
-  ctx.font = 'bold 72px GoogleSans';
-  ctx.fillStyle = '#8b0000';
-  if (ctx.measureText(bounty).width > width - 80) {
-    ctx.font = 'bold 56px GoogleSans';
+  // ── Crime ──
+  ctx.font = '18px GoogleSans';
+  ctx.fillStyle = '#5c3a1e';
+  const crimeText = `« ${crime} »`;
+  if (ctx.measureText(crimeText).width > width - 60) {
+    ctx.font = '15px GoogleSans';
   }
-  ctx.fillText(bounty, width / 2, nameY + 160);
+  ctx.fillText(crimeText, width / 2, nameY + 35);
 
-  // Footer
-  ctx.font = '16px GoogleSans';
-  ctx.fillStyle = 'rgba(101, 67, 33, 0.6)';
-  ctx.fillText('République Populaire du Beyblade', width / 2, height - 35);
+  // ── Separator ──
+  ctx.strokeStyle = '#5c3a1e';
+  ctx.lineWidth = 2;
+  ctx.setLineDash([8, 4]);
+  ctx.beginPath();
+  ctx.moveTo(60, nameY + 55);
+  ctx.lineTo(width - 60, nameY + 55);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // ── Bounty section ──
+  const bountyY = nameY + 85;
+  ctx.font = 'bold 20px GoogleSans';
+  ctx.fillStyle = '#5c3a1e';
+  ctx.fillText('PRIME', width / 2, bountyY);
+
+  // Red band bottom for bounty
+  const bountyBandY = bountyY + 10;
+  const bountyBandH = 70;
+  ctx.fillStyle = '#8b0000';
+  ctx.fillRect(30, bountyBandY, width - 60, bountyBandH);
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.08)';
+  ctx.fillRect(30, bountyBandY, width - 60, 3);
+  ctx.fillRect(30, bountyBandY + bountyBandH - 3, width - 60, 3);
+
+  ctx.font = 'bold 48px GoogleSans';
+  ctx.fillStyle = '#f5e6c8';
+  if (ctx.measureText(bounty).width > width - 100) {
+    ctx.font = 'bold 36px GoogleSans';
+  }
+  ctx.fillText(bounty, width / 2, bountyBandY + 50);
+
+  // ── Footer: Marine / RPB ──
+  ctx.font = 'bold 14px GoogleSans';
+  ctx.fillStyle = 'rgba(60, 30, 10, 0.5)';
+  ctx.fillText(
+    'MARINE — RÉPUBLIQUE POPULAIRE DU BEYBLADE',
+    width / 2,
+    height - 28,
+  );
 
   return canvas.toBuffer('image/png');
 }
