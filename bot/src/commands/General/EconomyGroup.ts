@@ -982,6 +982,77 @@ export class EconomyGroup {
     });
   }
 
+  // ═══ /gacha vendre-tout ═══
+  @Slash({
+    name: 'vendre-tout',
+    description: "Vends TOUS tes doublons d'un coup",
+  })
+  async sellAll(interaction: CommandInteraction) {
+    await interaction.deferReply();
+    const { userId } = await this.resolve(interaction);
+
+    const duplicates = await this.prisma.cardInventory.findMany({
+      where: { userId, count: { gt: 1 } },
+      include: { card: true },
+    });
+
+    if (duplicates.length === 0) {
+      return interaction.editReply({
+        embeds: [
+          new EmbedBuilder()
+            .setColor(Colors.Warning)
+            .setDescription('Aucun doublon à vendre.'),
+        ],
+      });
+    }
+
+    let totalCoins = 0;
+    let totalSold = 0;
+    const lines: string[] = [];
+
+    for (const dup of duplicates) {
+      const cfg = RARITY_CONFIG[dup.card.rarity]!;
+      const extraCopies = dup.count - 1; // Keep 1, sell the rest
+      const earned = cfg.sellPrice * extraCopies;
+
+      await this.prisma.cardInventory.update({
+        where: { id: dup.id },
+        data: { count: 1 },
+      });
+
+      totalCoins += earned;
+      totalSold += extraCopies;
+      lines.push(
+        `${cfg.emoji} ${dup.card.name} x${extraCopies} → **${earned}** 🪙`,
+      );
+    }
+
+    await this.prisma.profile.update({
+      where: { userId },
+      data: { currency: { increment: totalCoins } },
+    });
+
+    await this.prisma.currencyTransaction.create({
+      data: {
+        userId,
+        amount: totalCoins,
+        type: 'SELL_CARD',
+        note: `Vente en masse: ${totalSold} doublons`,
+      },
+    });
+
+    return interaction.editReply({
+      embeds: [
+        new EmbedBuilder()
+          .setColor(Colors.Success)
+          .setTitle(`💸 ${totalSold} doublons vendus !`)
+          .setDescription(
+            `${lines.join('\n')}\n\n🪙 **Total : +${totalCoins.toLocaleString('fr-FR')} pièces**`,
+          ),
+      ],
+    });
+  }
+
   // ═══ /gacha classement ═══
   @Slash({ name: 'classement', description: 'Top collectionneurs' })
   async leaderboard(interaction: CommandInteraction) {
