@@ -18,8 +18,8 @@ import type {
 @Discord()
 @SlashGroup({
   name: 'tournoi',
-  description: 'Commandes de gestion des tournois',
-  defaultMemberPermissions: PermissionFlagsBits.ManageEvents,
+  description: 'Commandes de gestion des tournois (admin)',
+  defaultMemberPermissions: PermissionFlagsBits.Administrator,
 })
 @SlashGroup('tournoi')
 export class TournamentCommand {
@@ -69,7 +69,10 @@ export class TournamentCommand {
       );
     }
   }
+}
 
+@Discord()
+export class TournamentLiveCommand {
   @Slash({
     name: 'live',
     description: "Affiche le statut live d'un tournoi en cours",
@@ -85,10 +88,9 @@ export class TournamentCommand {
     search: string | undefined,
     interaction: CommandInteraction,
   ) {
-    await interaction.deferReply({ ephemeral: false });
+    await interaction.deferReply();
 
     try {
-      // Chercher le tournoi en cours
       const tournament = search
         ? await prisma.tournament.findFirst({
             where: {
@@ -106,7 +108,7 @@ export class TournamentCommand {
 
       if (!tournament) {
         return interaction.editReply(
-          `❌ Aucun tournoi en cours trouvé${search ? ` pour "${search}"` : ''}.`,
+          `❌ Aucun tournoi en cours trouvé${search ? ` pour « ${search} »` : ''}.`,
         );
       }
 
@@ -124,7 +126,6 @@ export class TournamentCommand {
         where: { tournamentId: tournament.id, state: 'complete' },
       });
 
-      // Top 5 standings
       const top5 = standings.slice(0, 5);
       const standingsText =
         top5.length > 0
@@ -133,9 +134,8 @@ export class TournamentCommand {
                 (s) => `**${s.rank}.** ${s.name} (${s.wins}V - ${s.losses}D)`,
               )
               .join('\n')
-          : '*Standings non disponibles*';
+          : '*Classement non disponible*';
 
-      // Stations actives
       const activeStations = stations.filter((s) => s.status === 'active');
       const stationsText =
         activeStations.length > 0

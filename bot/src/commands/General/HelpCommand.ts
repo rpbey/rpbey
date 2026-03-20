@@ -30,6 +30,7 @@ const COMMAND_CATEGORIES = [
         desc: "Vérifier son statut d'inscription",
       },
       { name: '/challonge lier', desc: 'Lier votre compte Challonge' },
+      { name: '/live', desc: "Statut live d'un tournoi en cours" },
     ],
   },
   {
