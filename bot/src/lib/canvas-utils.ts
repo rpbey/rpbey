@@ -1130,11 +1130,11 @@ export async function generateWantedImage(
   const sy = height / 4961;
 
   // ── Photo area ──
-  // The black rectangle in template: approx (280, 820) to (3220, 3340)
-  const frameX = Math.round(280 * sx);
-  const frameY = Math.round(820 * sy);
-  const frameW = Math.round((3220 - 280) * sx);
-  const frameH = Math.round((3340 - 820) * sy);
+  // The black rectangle in template: (330, 1070) to (3180, 3120)
+  const frameX = Math.round(330 * sx);
+  const frameY = Math.round(1070 * sy);
+  const frameW = Math.round((3180 - 330) * sx);
+  const frameH = Math.round((3120 - 1070) * sy);
 
   // Fill the black rectangle with matching parchment color
   ctx.fillStyle = '#bfb196';
