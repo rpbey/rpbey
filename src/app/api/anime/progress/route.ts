@@ -1,0 +1,54 @@
+import { headers } from 'next/headers';
+import { NextResponse } from 'next/server';
+import { auth } from '@/lib/auth';
+import { prisma } from '@/lib/prisma';
+
+export async function POST(request: Request) {
+  try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session?.user) {
+      return NextResponse.json({ error: 'Non authentifié' }, { status: 401 });
+    }
+
+    const body = await request.json();
+    const { episodeId, progressTime, duration } = body;
+
+    if (!episodeId || progressTime == null) {
+      return NextResponse.json(
+        { error: 'episodeId et progressTime requis' },
+        { status: 400 },
+      );
+    }
+
+    const isCompleted = duration > 0 && progressTime / duration > 0.9;
+
+    const progress = await prisma.animeWatchProgress.upsert({
+      where: {
+        userId_episodeId: {
+          userId: session.user.id,
+          episodeId,
+        },
+      },
+      create: {
+        userId: session.user.id,
+        episodeId,
+        progressTime: Math.floor(progressTime),
+        status: isCompleted ? 'COMPLETED' : 'IN_PROGRESS',
+        completedAt: isCompleted ? new Date() : null,
+      },
+      update: {
+        progressTime: Math.floor(progressTime),
+        status: isCompleted ? 'COMPLETED' : 'IN_PROGRESS',
+        completedAt: isCompleted ? new Date() : null,
+      },
+    });
+
+    return NextResponse.json(progress);
+  } catch (error) {
+    console.error('Error updating watch progress:', error);
+    return NextResponse.json({ error: 'Erreur serveur' }, { status: 500 });
+  }
+}

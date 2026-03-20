@@ -11,6 +11,8 @@ import {
   Menu as MenuIcon,
   People,
   Terminal,
+  Theaters,
+  Videocam,
   WorkspacePremium,
 } from '@mui/icons-material';
 import {
@@ -49,6 +51,8 @@ const ADMIN_NAV_ITEMS = [
   { label: 'Contenu', path: '/admin/content', icon: Article },
   { label: 'Gestion SATR', path: '/admin/satr', icon: WorkspacePremium },
   { label: 'Gestion WB', path: '/admin/wb', icon: WorkspacePremium },
+  { label: 'Stream', path: '/admin/stream', icon: Videocam },
+  { label: 'Anime', path: '/admin/anime', icon: Theaters },
   { label: 'Tournois', path: '/admin/tournaments', icon: TrophyIcon },
   { label: 'Classements', path: '/admin/rankings', icon: Leaderboard },
   { label: 'Équipe', path: '/admin/staff', icon: People },

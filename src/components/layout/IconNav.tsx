@@ -12,6 +12,7 @@ import {
   Logout,
   PersonAdd,
   Settings,
+  Theaters,
 } from '@mui/icons-material';
 import {
   alpha,
@@ -45,6 +46,7 @@ const navItems = [
   { icon: BarChart, label: 'Classements', href: '/rankings' },
   { icon: AutoGraph, label: 'Meta', href: '/meta' },
   { icon: LiveTv, label: 'TV', href: '/tv' },
+  { icon: Theaters, label: 'Anime', href: '/anime' },
   { icon: Build, label: 'Builder', href: '/builder' },
 ];
 
@@ -333,6 +335,7 @@ export function MobileNav() {
     if (pathname.startsWith('/tv')) return '/tv';
     if (pathname.startsWith('/rankings')) return '/rankings';
     if (pathname.startsWith('/meta')) return '/meta';
+    if (pathname.startsWith('/anime')) return '/anime';
     if (pathname.startsWith('/admin')) return '/admin';
     if (
       pathname.startsWith('/dashboard') ||
@@ -424,9 +427,9 @@ export function MobileNav() {
             icon={<TrophyIcon />}
           />
           <BottomNavigationAction
-            label="Meta"
-            value="/meta"
-            icon={<AutoGraph />}
+            label="Anime"
+            value="/anime"
+            icon={<Theaters />}
           />
           <BottomNavigationAction label="TV" value="/tv" icon={<LiveTv />} />
           <BottomNavigationAction

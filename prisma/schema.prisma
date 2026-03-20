@@ -62,6 +62,7 @@ model User {
   winnerMatches    TournamentMatch[]       @relation("WinnerMatches")
   tournaments      TournamentParticipant[]
   twoFactors       TwoFactor[]
+  animeProgress    AnimeWatchProgress[]
 
   @@map("users")
 }
@@ -668,4 +669,106 @@ enum ProductLine {
   BX
   UX
   CX
+}
+
+// Anime Streaming
+enum AnimeGeneration {
+  ORIGINAL
+  METAL
+  BURST
+  X
+}
+
+enum EpisodeSourceType {
+  YOUTUBE
+  DAILYMOTION
+  MP4
+  HLS
+  IFRAME
+}
+
+enum WatchStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+}
+
+model AnimeSeries {
+  id           String          @id @default(cuid())
+  slug         String          @unique
+  title        String
+  titleJp      String?
+  titleFr      String?
+  generation   AnimeGeneration
+  synopsis     String?
+  posterUrl    String?
+  bannerUrl    String?
+  year         Int
+  episodeCount Int             @default(0)
+  sortOrder    Int             @default(0)
+  isPublished  Boolean         @default(true)
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  episodes     AnimeEpisode[]
+
+  @@index([generation])
+  @@index([isPublished])
+  @@map("anime_series")
+}
+
+model AnimeEpisode {
+  id           String               @id @default(cuid())
+  seriesId     String
+  number       Int
+  title        String
+  titleFr      String?
+  titleJp      String?
+  synopsis     String?
+  thumbnailUrl String?
+  duration     Int                  @default(0)
+  isPublished  Boolean              @default(true)
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
+  series       AnimeSeries          @relation(fields: [seriesId], references: [id], onDelete: Cascade)
+  sources      AnimeEpisodeSource[]
+  progress     AnimeWatchProgress[]
+
+  @@unique([seriesId, number])
+  @@index([seriesId])
+  @@map("anime_episodes")
+}
+
+model AnimeEpisodeSource {
+  id        String            @id @default(cuid())
+  episodeId String
+  type      EpisodeSourceType
+  url       String
+  quality   String            @default("720p")
+  language  String            @default("VOSTFR")
+  priority  Int               @default(0)
+  isActive  Boolean           @default(true)
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+  episode   AnimeEpisode      @relation(fields: [episodeId], references: [id], onDelete: Cascade)
+
+  @@index([episodeId])
+  @@map("anime_episode_sources")
+}
+
+model AnimeWatchProgress {
+  id           String       @id @default(cuid())
+  userId       String
+  episodeId    String
+  status       WatchStatus  @default(NOT_STARTED)
+  progressTime Int          @default(0)
+  completedAt  DateTime?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  episode      AnimeEpisode @relation(fields: [episodeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, episodeId])
+  @@index([userId])
+  @@index([episodeId])
+  @@map("anime_watch_progress")
 }
