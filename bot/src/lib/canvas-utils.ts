@@ -1173,3 +1173,372 @@ export async function generateWantedImage(
 
   return canvas.toBuffer('image/png');
 }
+
+// ─── Gacha Card Generator ───────────────────────────────────────────────────
+
+export interface GachaCardData {
+  name: string;
+  nameJp?: string | null;
+  series: string;
+  rarity: string;
+  beyblade?: string | null;
+  description?: string | null;
+  imageUrl?: string | null;
+  isDuplicate: boolean;
+  isWished: boolean;
+  balance: number;
+}
+
+const RARITY_THEMES: Record<
+  string,
+  {
+    borderColor: string;
+    glowColor: string;
+    bgGradient: [string, string];
+    accentColor: string;
+    label: string;
+    stars: number;
+  }
+> = {
+  COMMON: {
+    borderColor: '#6b7280',
+    glowColor: 'rgba(107,114,128,0.3)',
+    bgGradient: ['#1f2937', '#111827'],
+    accentColor: '#9ca3af',
+    label: 'COMMUNE',
+    stars: 1,
+  },
+  RARE: {
+    borderColor: '#3b82f6',
+    glowColor: 'rgba(59,130,246,0.4)',
+    bgGradient: ['#1e3a5f', '#0c1f3d'],
+    accentColor: '#60a5fa',
+    label: 'RARE',
+    stars: 2,
+  },
+  EPIC: {
+    borderColor: '#8b5cf6',
+    glowColor: 'rgba(139,92,246,0.4)',
+    bgGradient: ['#2e1065', '#1a0533'],
+    accentColor: '#a78bfa',
+    label: 'ÉPIQUE',
+    stars: 3,
+  },
+  LEGENDARY: {
+    borderColor: '#fbbf24',
+    glowColor: 'rgba(251,191,36,0.5)',
+    bgGradient: ['#422006', '#1c0a00'],
+    accentColor: '#fcd34d',
+    label: 'LÉGENDAIRE',
+    stars: 4,
+  },
+  SECRET: {
+    borderColor: '#ef4444',
+    glowColor: 'rgba(239,68,68,0.6)',
+    bgGradient: ['#450a0a', '#1f0000'],
+    accentColor: '#f87171',
+    label: '✦ SECRÈTE ✦',
+    stars: 5,
+  },
+};
+
+export async function generateGachaCard(data: GachaCardData): Promise<Buffer> {
+  const W = 480;
+  const H = 720;
+  const canvas = createCanvas(W, H);
+  const ctx = canvas.getContext('2d');
+  const theme = RARITY_THEMES[data.rarity] || RARITY_THEMES.COMMON!;
+
+  // Background
+  const bgGrad = ctx.createLinearGradient(0, 0, 0, H);
+  bgGrad.addColorStop(0, theme.bgGradient[0]);
+  bgGrad.addColorStop(1, theme.bgGradient[1]);
+  ctx.fillStyle = bgGrad;
+  ctx.fillRect(0, 0, W, H);
+
+  // Subtle grid
+  ctx.strokeStyle = 'rgba(255,255,255,0.02)';
+  ctx.lineWidth = 1;
+  for (let y = 0; y < H; y += 20) {
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(W, y);
+    ctx.stroke();
+  }
+  for (let x = 0; x < W; x += 20) {
+    ctx.beginPath();
+    ctx.moveTo(x, 0);
+    ctx.lineTo(x, H);
+    ctx.stroke();
+  }
+
+  // Outer glow border
+  ctx.shadowColor = theme.glowColor;
+  ctx.shadowBlur = 25;
+  ctx.strokeStyle = theme.borderColor;
+  ctx.lineWidth = 4;
+  ctx.beginPath();
+  ctx.roundRect(10, 10, W - 20, H - 20, 16);
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  // Inner border
+  ctx.strokeStyle = `${theme.borderColor}40`;
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.roundRect(16, 16, W - 32, H - 32, 12);
+  ctx.stroke();
+
+  // Top rarity band
+  const bandGrad = ctx.createLinearGradient(20, 20, W - 20, 20);
+  bandGrad.addColorStop(0, `${theme.borderColor}CC`);
+  bandGrad.addColorStop(0.5, theme.borderColor);
+  bandGrad.addColorStop(1, `${theme.borderColor}CC`);
+  ctx.fillStyle = bandGrad;
+  ctx.beginPath();
+  ctx.roundRect(20, 20, W - 40, 36, [10, 10, 0, 0]);
+  ctx.fill();
+
+  ctx.font = 'bold 14px GoogleSans';
+  ctx.fillStyle = '#ffffff';
+  ctx.textAlign = 'center';
+  ctx.fillText(theme.label, W / 2, 44);
+
+  ctx.font = '12px GoogleSans';
+  ctx.fillStyle = theme.accentColor;
+  ctx.fillText(
+    '★'.repeat(theme.stars) + '☆'.repeat(5 - theme.stars),
+    W / 2,
+    55,
+  );
+
+  // Character image
+  const imgY = 68;
+  const imgH = 300;
+  const imgW = W - 56;
+
+  ctx.fillStyle = 'rgba(0,0,0,0.4)';
+  ctx.beginPath();
+  ctx.roundRect(28, imgY, imgW, imgH, 8);
+  ctx.fill();
+
+  const charImg = await safeLoadImage(data.imageUrl || null);
+  if (charImg) {
+    ctx.save();
+    ctx.beginPath();
+    ctx.roundRect(28, imgY, imgW, imgH, 8);
+    ctx.clip();
+    const aspect = charImg.width / charImg.height;
+    let dW = imgW,
+      dH = imgH,
+      dX = 28,
+      dY = imgY;
+    if (aspect > imgW / imgH) {
+      dH = imgW / aspect;
+      dY = imgY + (imgH - dH) / 2;
+    } else {
+      dW = imgH * aspect;
+      dX = 28 + (imgW - dW) / 2;
+    }
+    ctx.drawImage(charImg, dX, dY, dW, dH);
+    const vigGrad = ctx.createLinearGradient(0, imgY, 0, imgY + imgH);
+    vigGrad.addColorStop(0, 'rgba(0,0,0,0)');
+    vigGrad.addColorStop(0.7, 'rgba(0,0,0,0)');
+    vigGrad.addColorStop(1, 'rgba(0,0,0,0.7)');
+    ctx.fillStyle = vigGrad;
+    ctx.fillRect(28, imgY, imgW, imgH);
+    ctx.restore();
+  } else {
+    ctx.font = 'bold 80px GoogleSans';
+    ctx.fillStyle = 'rgba(255,255,255,0.05)';
+    ctx.textAlign = 'center';
+    ctx.fillText('?', W / 2, imgY + imgH / 2 + 30);
+  }
+
+  ctx.strokeStyle = `${theme.borderColor}80`;
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.roundRect(28, imgY, imgW, imgH, 8);
+  ctx.stroke();
+
+  // Name
+  const nameY = imgY + imgH + 32;
+  ctx.textAlign = 'center';
+  ctx.font = 'bold 26px GoogleSans';
+  ctx.fillStyle = '#ffffff';
+  let dn = data.name;
+  while (ctx.measureText(dn).width > W - 60 && dn.length > 10)
+    dn = `${dn.substring(0, dn.length - 2)}…`;
+  ctx.fillText(dn, W / 2, nameY);
+
+  if (data.nameJp) {
+    ctx.font = '14px GoogleSans';
+    ctx.fillStyle = 'rgba(255,255,255,0.4)';
+    ctx.fillText(data.nameJp, W / 2, nameY + 22);
+  }
+
+  // Series badge
+  const seriesY = nameY + (data.nameJp ? 42 : 26);
+  const seriesText = data.series.replace(/_/g, ' ');
+  ctx.font = '12px GoogleSans';
+  const sW = ctx.measureText(seriesText).width + 20;
+  ctx.fillStyle = `${theme.borderColor}30`;
+  ctx.beginPath();
+  ctx.roundRect(W / 2 - sW / 2, seriesY - 12, sW, 20, 10);
+  ctx.fill();
+  ctx.fillStyle = theme.accentColor;
+  ctx.fillText(seriesText, W / 2, seriesY + 2);
+
+  // Beyblade
+  if (data.beyblade) {
+    ctx.font = '14px GoogleSans';
+    ctx.fillStyle = 'rgba(255,255,255,0.7)';
+    ctx.fillText(`🌀 ${data.beyblade}`, W / 2, seriesY + 28);
+  }
+
+  // Description (word-wrapped)
+  if (data.description) {
+    const descY = seriesY + (data.beyblade ? 50 : 28);
+    ctx.font = '11px GoogleSans';
+    ctx.fillStyle = 'rgba(255,255,255,0.5)';
+    const words = data.description.split(' ');
+    let line = '',
+      ly = descY,
+      lc = 0;
+    for (const word of words) {
+      if (lc >= 3) break;
+      const test = line ? `${line} ${word}` : word;
+      if (ctx.measureText(test).width > W - 80) {
+        ctx.fillText(line, W / 2, ly);
+        line = word;
+        ly += 15;
+        lc++;
+      } else line = test;
+    }
+    if (line && lc < 3) ctx.fillText(lc === 2 ? `${line}…` : line, W / 2, ly);
+  }
+
+  // Bottom bar
+  ctx.fillStyle = 'rgba(0,0,0,0.3)';
+  ctx.beginPath();
+  ctx.roundRect(20, H - 60, W - 40, 40, [0, 0, 10, 10]);
+  ctx.fill();
+  ctx.font = '13px GoogleSans';
+  ctx.textAlign = 'left';
+  ctx.fillStyle = 'rgba(255,255,255,0.6)';
+  ctx.fillText(`💰 ${data.balance.toLocaleString('fr-FR')} 🪙`, 35, H - 35);
+  ctx.textAlign = 'right';
+  if (data.isWished) {
+    ctx.fillStyle = '#fbbf24';
+    ctx.fillText('⭐ WISHED', W - 35, H - 35);
+  } else if (data.isDuplicate) {
+    ctx.fillStyle = 'rgba(255,255,255,0.4)';
+    ctx.fillText('📋 DOUBLON', W - 35, H - 35);
+  }
+
+  // Corner decorations (Epic+)
+  if (['EPIC', 'LEGENDARY', 'SECRET'].includes(data.rarity)) {
+    ctx.strokeStyle = `${theme.borderColor}40`;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(20, 65);
+    ctx.lineTo(20, 20);
+    ctx.lineTo(65, 20);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(W - 65, 20);
+    ctx.lineTo(W - 20, 20);
+    ctx.lineTo(W - 20, 65);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(20, H - 65);
+    ctx.lineTo(20, H - 20);
+    ctx.lineTo(65, H - 20);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(W - 65, H - 20);
+    ctx.lineTo(W - 20, H - 20);
+    ctx.lineTo(W - 20, H - 65);
+    ctx.stroke();
+  }
+
+  // Sparkles (Legendary/Secret)
+  if (data.rarity === 'LEGENDARY' || data.rarity === 'SECRET') {
+    ctx.fillStyle = `${theme.accentColor}60`;
+    for (const [sx, sy] of [
+      [60, 80],
+      [W - 70, 90],
+      [80, H - 80],
+      [W - 60, H - 90],
+      [W / 2 - 50, 65],
+      [W / 2 + 50, 65],
+    ]) {
+      const sz = 4 + Math.random() * 3;
+      ctx.beginPath();
+      ctx.moveTo(sx!, sy! - sz);
+      ctx.lineTo(sx! + sz * 0.3, sy! - sz * 0.3);
+      ctx.lineTo(sx! + sz, sy!);
+      ctx.lineTo(sx! + sz * 0.3, sy! + sz * 0.3);
+      ctx.lineTo(sx!, sy! + sz);
+      ctx.lineTo(sx! - sz * 0.3, sy! + sz * 0.3);
+      ctx.lineTo(sx! - sz, sy!);
+      ctx.lineTo(sx! - sz * 0.3, sy! - sz * 0.3);
+      ctx.closePath();
+      ctx.fill();
+    }
+  }
+
+  return canvas.toBuffer('image/png');
+}
+
+export async function generateGachaMissCard(
+  message: string,
+  balance: number,
+): Promise<Buffer> {
+  const W = 480,
+    H = 280;
+  const canvas = createCanvas(W, H);
+  const ctx = canvas.getContext('2d');
+
+  const bg = ctx.createLinearGradient(0, 0, 0, H);
+  bg.addColorStop(0, '#1a1a2e');
+  bg.addColorStop(1, '#16213e');
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, W, H);
+
+  ctx.strokeStyle = 'rgba(107,114,128,0.4)';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.roundRect(8, 8, W - 16, H - 16, 12);
+  ctx.stroke();
+
+  ctx.font = 'bold 32px GoogleSans';
+  ctx.fillStyle = '#6b7280';
+  ctx.textAlign = 'center';
+  ctx.fillText('💨 RATÉ !', W / 2, 80);
+
+  ctx.font = '13px GoogleSans';
+  ctx.fillStyle = 'rgba(255,255,255,0.5)';
+  const words = message.split(' ');
+  let line = '',
+    y = 120;
+  for (const word of words) {
+    const test = line ? `${line} ${word}` : word;
+    if (ctx.measureText(test).width > W - 60) {
+      ctx.fillText(line, W / 2, y);
+      line = word;
+      y += 18;
+    } else line = test;
+  }
+  if (line) ctx.fillText(line, W / 2, y);
+
+  ctx.font = '14px GoogleSans';
+  ctx.fillStyle = 'rgba(255,255,255,0.4)';
+  ctx.fillText(
+    `💰 ${balance.toLocaleString('fr-FR')} 🪙 restants`,
+    W / 2,
+    H - 25,
+  );
+
+  return canvas.toBuffer('image/png');
+}

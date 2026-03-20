@@ -1,11 +1,16 @@
 import {
   ApplicationCommandOptionType,
+  AttachmentBuilder,
   type CommandInteraction,
   EmbedBuilder,
 } from 'discord.js';
 import { Discord, Slash, SlashGroup, SlashOption } from 'discordx';
 import { inject, injectable } from 'tsyringe';
 
+import {
+  generateGachaCard,
+  generateGachaMissCard,
+} from '../../lib/canvas-utils.js';
 import { Colors, RPB } from '../../lib/constants.js';
 import { PrismaService } from '../../lib/prisma.js';
 
@@ -320,25 +325,23 @@ export class EconomyGroup {
             'Bonus : **3j** +50🪙 · **7j** +150🪙 · **14j** +300🪙 · **30j** +750🪙\n⚠️ >48h sans daily = streak reset',
         },
       );
-    const embed2 = new EmbedBuilder()
-      .setColor(RPB.GoldColor)
-      .addFields(
-        {
-          name: '🃏 Tirer des cartes',
-          value:
-            '`/gacha gacha` — x1 (**50🪙**) · `/gacha multi` — x10 (**450🪙**, -10%)\n\n> 💨 Raté **35%** · ⚪ **30%** · 🔵 **20%** · 🟣 **10%** · 🟡 **4%** · 🔴 **1%**',
-        },
-        {
-          name: '⭐ Wishlist',
-          value:
-            '`/gacha wish <nom>` — Ajoute à ta wishlist\n`/gacha wishlist` — Affiche · Embed doré quand tu drop une carte souhaitée !',
-        },
-        {
-          name: '📖 Consulter',
-          value:
-            '`/gacha solde` · `/gacha collection` · `/gacha catalogue` · `/gacha classement` · `/gacha taux`',
-        },
-      );
+    const embed2 = new EmbedBuilder().setColor(RPB.GoldColor).addFields(
+      {
+        name: '🃏 Tirer des cartes',
+        value:
+          '`/gacha gacha` — x1 (**50🪙**) · `/gacha multi` — x10 (**450🪙**, -10%)\n\n> 💨 Raté **35%** · ⚪ **30%** · 🔵 **20%** · 🟣 **10%** · 🟡 **4%** · 🔴 **1%**',
+      },
+      {
+        name: '⭐ Wishlist',
+        value:
+          '`/gacha wish <nom>` — Ajoute à ta wishlist\n`/gacha wishlist` — Affiche · Embed doré quand tu drop une carte souhaitée !',
+      },
+      {
+        name: '📖 Consulter',
+        value:
+          '`/gacha solde` · `/gacha collection` · `/gacha catalogue` · `/gacha classement` · `/gacha taux`',
+      },
+    );
     const embed3 = new EmbedBuilder()
       .setColor(0x8b5cf6)
       .addFields(
@@ -563,12 +566,40 @@ export class EconomyGroup {
     });
 
     const result = await this.pullCard(userId, profile.id);
-    const reply = await interaction.editReply({
-      embeds: [this.buildPullEmbed(result, profile.currency - GACHA_COST)],
-    });
-    if (result.card) {
-      const bm = await this.checkBadges(userId, profile.id);
-      if (bm) await reply.reply({ content: bm });
+    const bal = profile.currency - GACHA_COST;
+
+    try {
+      if (result.card && result.rarity) {
+        const cardBuffer = await generateGachaCard({
+          name: result.card.name,
+          nameJp: result.card.nameJp,
+          series: result.card.series,
+          rarity: result.rarity,
+          beyblade: result.card.beyblade,
+          description: result.card.description,
+          imageUrl: result.card.imageUrl,
+          isDuplicate: result.isDuplicate,
+          isWished: result.isWished,
+          balance: bal,
+        });
+        const attachment = new AttachmentBuilder(cardBuffer, {
+          name: 'gacha-card.png',
+        });
+        const reply = await interaction.editReply({ files: [attachment] });
+        const bm = await this.checkBadges(userId, profile.id);
+        if (bm) await reply.reply({ content: bm });
+      } else {
+        const missBuffer = await generateGachaMissCard(randomMiss(), bal);
+        const attachment = new AttachmentBuilder(missBuffer, {
+          name: 'gacha-miss.png',
+        });
+        await interaction.editReply({ files: [attachment] });
+      }
+    } catch {
+      // Fallback to embed if canvas fails
+      await interaction.editReply({
+        embeds: [this.buildPullEmbed(result, bal)],
+      });
     }
   }
 
