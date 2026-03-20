@@ -541,18 +541,8 @@ export class EconomyGroup {
   async gacha(interaction: CommandInteraction) {
     await interaction.deferReply();
     const { userId, profile } = await this.resolve(interaction);
-    if (profile.currency < GACHA_COST)
-      return interaction.editReply({
-        embeds: [
-          new EmbedBuilder()
-            .setColor(Colors.Error)
-            .setTitle('❌ Pièces insuffisantes')
-            .setDescription(
-              `Il te faut **${GACHA_COST}** 🪙 · Solde : **${profile.currency}** 🪙\n\n\`/gacha daily\` !`,
-            ),
-        ],
-      });
 
+    // Deduct cost (can go negative)
     await this.prisma.profile.update({
       where: { id: profile.id },
       data: { currency: { decrement: GACHA_COST } },
@@ -612,18 +602,8 @@ export class EconomyGroup {
   async multi(interaction: CommandInteraction) {
     await interaction.deferReply();
     const { userId, profile } = await this.resolve(interaction);
-    if (profile.currency < MULTI_PULL_COST)
-      return interaction.editReply({
-        embeds: [
-          new EmbedBuilder()
-            .setColor(Colors.Error)
-            .setTitle('❌ Pièces insuffisantes')
-            .setDescription(
-              `Multi x10 : **${MULTI_PULL_COST}** 🪙 · Solde : **${profile.currency}** 🪙`,
-            ),
-        ],
-      });
 
+    // Deduct cost (can go negative)
     await this.prisma.profile.update({
       where: { id: profile.id },
       data: { currency: { decrement: MULTI_PULL_COST } },
@@ -1125,13 +1105,7 @@ export class EconomyGroup {
     const isGive = amount > 0;
     const absAmount = Math.abs(amount);
 
-    // Prevent negative balance
-    if (!isGive && profile.currency < absAmount) {
-      return interaction.reply({
-        content: `❌ ${target.displayName} n'a que **${profile.currency}** 🪙.`,
-        ephemeral: true,
-      });
-    }
+    // No balance limit — can go negative
 
     await this.prisma.profile.update({
       where: { id: profile.id },
