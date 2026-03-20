@@ -8,8 +8,21 @@ import { logger } from '../../lib/logger.js';
 
 @Discord()
 export class MemberJoinListener {
+  // Dedup: prevent sending multiple welcome messages for the same member
+  private static recentJoins = new Set<string>();
+
   @On({ event: 'guildMemberAdd' })
   async onMemberJoin([member]: ArgsOf<'guildMemberAdd'>) {
+    // Skip if we already processed this member recently (dedup against rapid re-fires)
+    if (MemberJoinListener.recentJoins.has(member.id)) {
+      logger.warn(
+        `[Welcome] Duplicate guildMemberAdd for ${member.user.tag}, skipping`,
+      );
+      return;
+    }
+    MemberJoinListener.recentJoins.add(member.id);
+    setTimeout(() => MemberJoinListener.recentJoins.delete(member.id), 30_000);
+
     logger.info(`Nouveau membre: ${member.user.tag} sur ${member.guild.name}`);
 
     // Auto-assign Blader role

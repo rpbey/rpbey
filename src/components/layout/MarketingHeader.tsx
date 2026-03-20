@@ -1,6 +1,6 @@
 'use client';
 
-import { AccountCircle } from '@mui/icons-material';
+import { AccountCircle, Palette, SportsEsports } from '@mui/icons-material';
 import {
   Avatar,
   alpha,
@@ -8,14 +8,17 @@ import {
   Container,
   IconButton,
   Stack,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import Link from 'next/link';
+import { useThemeMode } from '@/components/theme/ThemeRegistry';
 import { RpbLogo } from '@/components/ui/RpbLogo';
 import { useSession } from '@/lib/auth-client';
 
 export function MarketingHeader() {
   const { data: session } = useSession();
+  const { mode, toggleTheme } = useThemeMode();
 
   return (
     <Box
@@ -26,7 +29,7 @@ export function MarketingHeader() {
         alignItems: 'center',
         bgcolor: alpha('#000', 0.7),
         borderBottom: '1px solid',
-        borderColor: alpha('#fbbf24', 0.2),
+        borderColor: (t) => alpha(t.palette.secondary.main, 0.2),
         position: 'fixed',
         left: { xs: 0, md: 'auto' },
         right: 0,
@@ -56,7 +59,8 @@ export function MarketingHeader() {
               variant="h6"
               fontWeight="900"
               sx={{
-                background: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)',
+                background: (t) =>
+                  `linear-gradient(135deg, ${t.palette.secondary.main} 0%, ${t.palette.primary.main} 100%)`,
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 letterSpacing: '-0.02em',
@@ -68,33 +72,60 @@ export function MarketingHeader() {
             </Typography>
           </Link>
 
-          <Stack direction="row" spacing={1} alignItems="center">
-            <IconButton
-              component={Link}
-              href={session ? '/dashboard' : '/sign-in'}
-              aria-label={session ? 'Mon compte' : 'Se connecter'}
-              sx={{
-                p: 0.5,
-                border: '1px solid',
-                borderColor: alpha('#fbbf24', 0.3),
-                color: '#fbbf24',
-                bgcolor: alpha('#fbbf24', 0.1),
-                '&:hover': {
-                  bgcolor: alpha('#fbbf24', 0.2),
-                  borderColor: '#fbbf24',
-                },
-              }}
-            >
-              {session?.user?.image ? (
-                <Avatar
-                  src={session.user.image}
-                  alt={session.user.name || 'Avatar'}
-                  sx={{ width: 28, height: 28, border: '1px solid #fbbf24' }}
-                />
-              ) : (
-                <AccountCircle sx={{ fontSize: 24 }} />
-              )}
-            </IconButton>
+          <Stack direction="row" spacing={0.5} alignItems="center">
+            <Tooltip title={mode === 'dark' ? 'Mode Tournoi' : 'Mode RPB'}>
+              <IconButton
+                onClick={toggleTheme}
+                aria-label="Changer de thème"
+                sx={{
+                  p: 0.5,
+                  color: 'secondary.main',
+                  '&:hover': {
+                    bgcolor: (t) => alpha(t.palette.secondary.main, 0.15),
+                  },
+                }}
+              >
+                {mode === 'dark' ? (
+                  <Palette sx={{ fontSize: 22 }} />
+                ) : (
+                  <SportsEsports sx={{ fontSize: 22 }} />
+                )}
+              </IconButton>
+            </Tooltip>
+
+            {session?.user && (
+              <IconButton
+                component={Link}
+                href="/dashboard"
+                aria-label="Mon compte"
+                sx={{
+                  p: 0.5,
+                  border: '1px solid',
+                  borderColor: (t) => alpha(t.palette.secondary.main, 0.3),
+                  color: 'secondary.main',
+                  bgcolor: (t) => alpha(t.palette.secondary.main, 0.1),
+                  '&:hover': {
+                    bgcolor: (t) => alpha(t.palette.secondary.main, 0.2),
+                    borderColor: 'secondary.main',
+                  },
+                }}
+              >
+                {session.user.image ? (
+                  <Avatar
+                    src={session.user.image}
+                    alt={session.user.name || 'Avatar'}
+                    sx={{
+                      width: 28,
+                      height: 28,
+                      border: '1px solid',
+                      borderColor: 'secondary.main',
+                    }}
+                  />
+                ) : (
+                  <AccountCircle sx={{ fontSize: 24 }} />
+                )}
+              </IconButton>
+            )}
           </Stack>
         </Stack>
       </Container>

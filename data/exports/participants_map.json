@@ -156,7 +156,8 @@
     "avatarUrl": "none",
     "aliases": [
       "SAtR_Younsi",
-      "SAtR_Younsi✅"
+      "SAtR_Younsi✅",
+      "Younsi"
     ],
     "tournaments": [
       "bts2",
@@ -170,7 +171,8 @@
     "avatarUrl": "none",
     "aliases": [
       "IlouDP",
-      "Ilou✅"
+      "Ilou✅",
+      "Ilou"
     ],
     "tournaments": [
       "bts2",
@@ -240,7 +242,8 @@
     "avatarUrl": "none",
     "aliases": [
       "Hisunublbl",
-      "RNSX_Hisunu✅"
+      "RNSX_Hisunu✅",
+      "Hisunu"
     ],
     "tournaments": [
       "bts2",
@@ -279,7 +282,8 @@
     "challongeUsername": "sabo0451",
     "avatarUrl": "none",
     "aliases": [
-      "Sabo0451"
+      "Sabo0451",
+      "Sabo"
     ],
     "tournaments": [
       "bts2"
@@ -314,7 +318,8 @@
     "primaryName": "Baldm4n",
     "challongeUsername": "baldm4n",
     "aliases": [
-      "Baldm4n"
+      "Baldm4n",
+      "Baldman"
     ],
     "tournaments": [
       "bts2"
@@ -395,7 +400,8 @@
     "challongeUsername": "shio3",
     "avatarUrl": "none",
     "aliases": [
-      "Shio3"
+      "Shio3",
+      "Shio"
     ],
     "tournaments": [
       "bts2"
@@ -421,7 +427,8 @@
     "challongeUsername": "blaze__",
     "avatarUrl": "none",
     "aliases": [
-      "Blaze__"
+      "Blaze__",
+      "Blaze"
     ],
     "tournaments": [
       "bts2"
@@ -499,7 +506,8 @@
     "challongeUsername": "orotchi",
     "avatarUrl": "none",
     "aliases": [
-      "Orotchi"
+      "Orotchi",
+      "Oro"
     ],
     "tournaments": [
       "bts2"
@@ -644,7 +652,8 @@
     "avatarUrl": "none",
     "aliases": [
       "Kiiroh",
-      "RNSX_Kiiro✅"
+      "RNSX_Kiiro✅",
+      "Kiiro"
     ],
     "tournaments": [
       "bts2",
@@ -658,7 +667,8 @@
     "avatarUrl": "none",
     "aliases": [
       "Nahil12",
-      "Nahil12✅"
+      "Nahil12✅",
+      "Nahil"
     ],
     "tournaments": [
       "bts2",
@@ -710,7 +720,8 @@
     "avatarUrl": "none",
     "aliases": [
       "RNSX_Yumetoo",
-      "RNSX_Yumetoo✅"
+      "RNSX_Yumetoo✅",
+      "Yumetoo"
     ],
     "tournaments": [
       "bts2",
@@ -723,6 +734,7 @@
     "challongeUsername": "kreepy95",
     "aliases": [
       "Team Arc | Kreepy✅",
+      "Team_Arc Kreepy",
       "Kreepy95",
       "Kreepy✅",
       "Kreepy",
@@ -782,7 +794,8 @@
     "primaryName": "Flower",
     "challongeUsername": null,
     "aliases": [
-      "Flower✅"
+      "Flower✅",
+      "Flower"
     ],
     "tournaments": [
       "bts3"
@@ -940,7 +953,8 @@
     "primaryName": "Upolemno",
     "challongeUsername": null,
     "aliases": [
-      "Upolemmo✅"
+      "Upolemmo✅",
+      "Upolemno"
     ],
     "tournaments": [
       "bts3"
@@ -1131,7 +1145,8 @@
     "primaryName": "Philou",
     "challongeUsername": null,
     "aliases": [
-      "Philou✅"
+      "Philou✅",
+      "Philou"
     ],
     "tournaments": [
       "bts3"
@@ -1158,6 +1173,42 @@
     ],
     "tournaments": [
       "bts3"
+    ]
+  },
+  "marina": {
+    "key": "marina",
+    "primaryName": "Marina",
+    "challongeUsername": null,
+    "avatarUrl": "none",
+    "aliases": [
+      "Marina"
+    ],
+    "tournaments": [
+      "bts2"
+    ]
+  },
+  "kinan": {
+    "key": "kinan",
+    "primaryName": "Kinan",
+    "challongeUsername": null,
+    "avatarUrl": "none",
+    "aliases": [
+      "Kinan"
+    ],
+    "tournaments": [
+      "bts2"
+    ]
+  },
+  "tigress": {
+    "key": "tigress",
+    "primaryName": "Tigre SS",
+    "challongeUsername": null,
+    "avatarUrl": "none",
+    "aliases": [
+      "Tigre SS"
+    ],
+    "tournaments": [
+      "bts2"
     ]
   }
 }

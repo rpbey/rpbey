@@ -58,6 +58,23 @@ export default function ThemeRegistry({
 
   const activeTheme = mode === 'tournament' ? tournamentTheme : darkTheme;
 
+  // Apply theme colors to body + CSS variables for global reach
+  React.useEffect(() => {
+    const p = activeTheme.palette;
+    const root = document.documentElement;
+    document.body.style.backgroundColor = p.background.default;
+    document.body.style.color = p.text.primary;
+    document.body.style.transition =
+      'background-color 0.3s ease, color 0.3s ease';
+    // CSS custom properties so hardcoded colors can reference the theme
+    root.style.setProperty('--rpb-primary', p.primary.main);
+    root.style.setProperty('--rpb-secondary', p.secondary.main);
+    root.style.setProperty('--rpb-bg', p.background.default);
+    root.style.setProperty('--rpb-paper', p.background.paper);
+    root.style.setProperty('--rpb-text', p.text.primary);
+    root.style.setProperty('--rpb-text-secondary', p.text.secondary);
+  }, [activeTheme]);
+
   const value = React.useMemo(
     () => ({
       mode,

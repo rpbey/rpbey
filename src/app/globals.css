@@ -13,11 +13,10 @@ body {
   overflow-x: hidden; /* Prevent horizontal scroll globally */
   position: relative;
   font-family: var(--font-google-sans-flex), system-ui, sans-serif;
-  background-color: #000;
-  color: #fff;
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
   touch-action: manipulation;
+  /* background-color and color are handled by MUI CssBaseline via ThemeRegistry */
 }
 
 body {

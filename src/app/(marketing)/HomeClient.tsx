@@ -111,7 +111,7 @@ export default function HomeClient({
               background:
                 mode === 'tournament'
                   ? 'linear-gradient(to bottom, rgba(15,23,42,0.4) 0%, rgba(15,23,42,0.9) 50%, #020617 100%)'
-                  : 'linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.7) 50%, #0F0F0F 100%)',
+                  : `linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.7) 50%, var(--rpb-bg, #0F0F0F) 100%)`,
               zIndex: 2,
             },
           }}
@@ -232,11 +232,12 @@ export default function HomeClient({
                   <Box
                     component="span"
                     sx={{
-                      background:
-                        'linear-gradient(135deg, #dc2626 0%, #fbbf24 100%)',
+                      background: (t) =>
+                        `linear-gradient(135deg, ${t.palette.primary.main} 0%, ${t.palette.secondary.main} 100%)`,
                       WebkitBackgroundClip: 'text',
                       WebkitTextFillColor: 'transparent',
-                      filter: 'drop-shadow(0 10px 20px rgba(220,38,38,0.3))',
+                      filter: (t) =>
+                        `drop-shadow(0 10px 20px ${t.palette.primary.main}4D)`,
                     }}
                   >
                     Beyblade
@@ -247,7 +248,8 @@ export default function HomeClient({
                   sx={{
                     mb: { xs: 3, md: 5 },
                     pl: 0.5,
-                    borderLeft: { xs: 'none', md: '4px solid #dc2626' },
+                    borderLeft: { xs: 'none', md: '4px solid' },
+                    borderColor: 'primary.main',
                     textAlign: { xs: 'center', md: 'left' },
                   }}
                 >
@@ -276,11 +278,12 @@ export default function HomeClient({
                       borderRadius: '32px', // MD3 Full Round
                       fontSize: { xs: '0.95rem', sm: '1.1rem' },
                       fontWeight: 800,
-                      background: '#dc2626',
+                      bgcolor: 'primary.main',
                       color: 'white',
-                      boxShadow: '0 15px 30px rgba(220,38,38,0.4)',
+                      boxShadow: (t) =>
+                        `0 15px 30px ${t.palette.primary.main}66`,
                       '&:hover': {
-                        background: '#b91c1c',
+                        bgcolor: 'primary.dark',
                         transform: 'scale(1.05)',
                       },
                       transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',

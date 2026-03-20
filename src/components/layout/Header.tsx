@@ -1,5 +1,6 @@
 'use client';
 
+import { Palette, SportsEsports } from '@mui/icons-material';
 import MenuIcon from '@mui/icons-material/Menu';
 import {
   AppBar,
@@ -11,10 +12,12 @@ import {
   Menu,
   MenuItem,
   Toolbar,
+  Tooltip,
 } from '@mui/material';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
+import { useThemeMode } from '@/components/theme/ThemeRegistry';
 import { signOut, useSession } from '@/lib/auth-client';
 import { LOGO_VARIANTS } from '@/lib/role-colors';
 
@@ -26,6 +29,7 @@ const pages = [
 
 export function Header() {
   const { data: session } = useSession();
+  const { mode, toggleTheme } = useThemeMode();
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
 
@@ -136,8 +140,31 @@ export function Header() {
             ))}
           </Box>
 
-          {/* User menu */}
-          <Box sx={{ flexGrow: 0 }}>
+          {/* Theme switcher + User menu */}
+          <Box
+            sx={{
+              flexGrow: 0,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 0.5,
+            }}
+          >
+            <Tooltip title={mode === 'dark' ? 'Mode Tournoi' : 'Mode RPB'}>
+              <IconButton
+                onClick={toggleTheme}
+                aria-label="Changer de thème"
+                sx={{
+                  color: mode === 'dark' ? 'primary.main' : 'secondary.main',
+                }}
+              >
+                {mode === 'dark' ? (
+                  <Palette sx={{ fontSize: 22 }} />
+                ) : (
+                  <SportsEsports sx={{ fontSize: 22 }} />
+                )}
+              </IconButton>
+            </Tooltip>
+
             {session?.user ? (
               <>
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
@@ -173,16 +200,7 @@ export function Header() {
                   <MenuItem onClick={handleSignOut}>Déconnexion</MenuItem>
                 </Menu>
               </>
-            ) : (
-              <Button
-                component={Link}
-                href="/sign-in"
-                variant="contained"
-                color="primary"
-              >
-                Connexion
-              </Button>
-            )}
+            ) : null}
           </Box>
         </Toolbar>
       </Container>
