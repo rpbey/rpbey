@@ -1004,9 +1004,12 @@ export async function generateWantedImage(
   ctx.font = 'bold 26px GoogleSans';
   ctx.fillStyle = '#654321';
   ctx.fillText('RÉCOMPENSE', width / 2, nameY + 95);
-  ctx.font = 'bold 52px GoogleSans';
+  ctx.font = 'bold 72px GoogleSans';
   ctx.fillStyle = '#8b0000';
-  ctx.fillText(bounty, width / 2, nameY + 150);
+  if (ctx.measureText(bounty).width > width - 80) {
+    ctx.font = 'bold 56px GoogleSans';
+  }
+  ctx.fillText(bounty, width / 2, nameY + 160);
 
   // Footer
   ctx.font = '16px GoogleSans';
