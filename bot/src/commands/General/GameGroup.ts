@@ -555,49 +555,51 @@ export class GameGroup {
 
     // Score & label
     const score = Math.min(total, 100);
-    const { label, emoji, color } =
+    const { label, color } =
       score >= 50
-        ? { label: 'Inséparables', emoji: '🔥', color: 0xef4444 }
+        ? { label: 'Inséparables', color: 0xef4444 }
         : score >= 30
-          ? { label: 'Meilleurs potes', emoji: '⚡', color: 0xfbbf24 }
+          ? { label: 'Meilleurs potes', color: 0xfbbf24 }
           : score >= 15
-            ? { label: 'Bons amis', emoji: '🤝', color: 0x3b82f6 }
+            ? { label: 'Bons amis', color: 0x3b82f6 }
             : score >= 5
-              ? { label: 'Connaissances', emoji: '👋', color: 0x8b5cf6 }
-              : { label: 'Inconnus', emoji: '❓', color: 0x6b7280 };
+              ? { label: 'Connaissances', color: 0x8b5cf6 }
+              : { label: 'Inconnus', color: 0x6b7280 };
 
-    const bar =
-      '█'.repeat(Math.min(Math.round(score / 10), 10)) +
-      '░'.repeat(10 - Math.min(Math.round(score / 10), 10));
+    const { generateInteractionCard } = await import(
+      '../../lib/canvas-utils.js'
+    );
+    const cardBuffer = await generateInteractionCard({
+      userAName: interaction.user.displayName,
+      userAAvatarUrl: interaction.user.displayAvatarURL({
+        extension: 'png',
+        size: 256,
+      }),
+      userBName: target.displayName,
+      userBAvatarUrl: target.displayAvatarURL({
+        extension: 'png',
+        size: 256,
+      }),
+      mentionsAtoB,
+      mentionsBtoA,
+      total,
+      score,
+      label,
+      color,
+    });
 
+    const filename = `interaction-${Date.now()}.png`;
     const embed = new EmbedBuilder()
-      .setTitle(
-        `${emoji} ${interaction.user.displayName} & ${target.displayName}`,
-      )
-      .setDescription(
-        `**${label}** — **${total}** mentions mutuelles\n\`${bar}\``,
-      )
       .setColor(color)
-      .addFields(
-        {
-          name: `💬 ${interaction.user.displayName} → ${target.displayName}`,
-          value: `**${mentionsAtoB}** mention${mentionsAtoB > 1 ? 's' : ''}`,
-          inline: true,
-        },
-        {
-          name: `💬 ${target.displayName} → ${interaction.user.displayName}`,
-          value: `**${mentionsBtoA}** mention${mentionsBtoA > 1 ? 's' : ''}`,
-          inline: true,
-        },
-      )
-      .setThumbnail(target.displayAvatarURL({ size: 256 }))
+      .setImage(`attachment://${filename}`)
       .setFooter({
-        text: `${RPB.FullName} | ${scanMeta.channelsScanned} salons · ${scanMeta.messagesScanned.toLocaleString('fr-FR')} messages analysés`,
-        iconURL: interaction.user.displayAvatarURL({ size: 64 }),
-      })
-      .setTimestamp();
+        text: `${scanMeta.channelsScanned} salons · ${scanMeta.messagesScanned.toLocaleString('fr-FR')} messages analysés`,
+      });
 
-    return interaction.editReply({ embeds: [embed] });
+    return interaction.editReply({
+      embeds: [embed],
+      files: [new AttachmentBuilder(cardBuffer, { name: filename })],
+    });
   }
 
   @Slash({ name: 'wanted', description: 'Générer une affiche WANTED' })

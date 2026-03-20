@@ -892,6 +892,218 @@ export async function generateLeaderboardCard(entries: LeaderboardEntry[]) {
   return canvas.toBuffer('image/png');
 }
 
+// ─── Interaction Card ───
+
+export interface InteractionCardData {
+  userAName: string;
+  userAAvatarUrl: string;
+  userBName: string;
+  userBAvatarUrl: string;
+  mentionsAtoB: number;
+  mentionsBtoA: number;
+  total: number;
+  score: number;
+  label: string;
+  color: number;
+}
+
+function drawCircularAvatar(
+  ctx: ReturnType<ReturnType<typeof createCanvas>['getContext']>,
+  img: CanvasImage | null,
+  cx: number,
+  cy: number,
+  radius: number,
+  borderColor: string,
+) {
+  // Border
+  ctx.beginPath();
+  ctx.arc(cx, cy, radius + 5, 0, Math.PI * 2);
+  ctx.fillStyle = borderColor;
+  ctx.fill();
+
+  // Clip & draw
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+  ctx.closePath();
+  ctx.clip();
+  if (img) {
+    ctx.drawImage(img, cx - radius, cy - radius, radius * 2, radius * 2);
+  } else {
+    ctx.fillStyle = '#374151';
+    ctx.fill();
+  }
+  ctx.restore();
+}
+
+export async function generateInteractionCard(
+  data: InteractionCardData,
+): Promise<Buffer> {
+  const width = 800;
+  const height = 400;
+  const canvas = createCanvas(width, height);
+  const ctx = canvas.getContext('2d');
+
+  // ── Background gradient ──
+  const hexColor = `#${data.color.toString(16).padStart(6, '0')}`;
+  const bg = ctx.createLinearGradient(0, 0, width, height);
+  bg.addColorStop(0, '#1a1a2e');
+  bg.addColorStop(0.5, '#16213e');
+  bg.addColorStop(1, '#1a1a2e');
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, width, height);
+
+  // Subtle pattern overlay
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.02)';
+  for (let y = 0; y < height; y += 4) {
+    ctx.fillRect(0, y, width, 1);
+  }
+
+  // ── Top accent line ──
+  ctx.fillStyle = hexColor;
+  ctx.fillRect(0, 0, width, 4);
+
+  // ── Load avatars ──
+  const [avatarA, avatarB] = await Promise.all([
+    safeLoadImage(data.userAAvatarUrl),
+    safeLoadImage(data.userBAvatarUrl),
+  ]);
+
+  // ── Avatars ──
+  const avatarRadius = 65;
+  const avatarY = 110;
+  const avatarAX = 160;
+  const avatarBX = width - 160;
+
+  drawCircularAvatar(ctx, avatarA, avatarAX, avatarY, avatarRadius, hexColor);
+  drawCircularAvatar(ctx, avatarB, avatarBX, avatarY, avatarRadius, hexColor);
+
+  // ── Connection line between avatars ──
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+  ctx.lineWidth = 2;
+  ctx.setLineDash([6, 4]);
+  ctx.beginPath();
+  ctx.moveTo(avatarAX + avatarRadius + 10, avatarY);
+  ctx.lineTo(avatarBX - avatarRadius - 10, avatarY);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // ── Center score circle ──
+  const centerX = width / 2;
+  const scoreRadius = 42;
+
+  // Glow
+  ctx.beginPath();
+  ctx.arc(centerX, avatarY, scoreRadius + 8, 0, Math.PI * 2);
+  ctx.fillStyle = `${hexColor}33`;
+  ctx.fill();
+
+  // Circle bg
+  ctx.beginPath();
+  ctx.arc(centerX, avatarY, scoreRadius, 0, Math.PI * 2);
+  ctx.fillStyle = '#0f0f23';
+  ctx.fill();
+
+  // Circle border
+  ctx.beginPath();
+  ctx.arc(centerX, avatarY, scoreRadius, 0, Math.PI * 2);
+  ctx.strokeStyle = hexColor;
+  ctx.lineWidth = 3;
+  ctx.stroke();
+
+  // Score text
+  ctx.textAlign = 'center';
+  ctx.font = 'bold 36px GoogleSans';
+  ctx.fillStyle = '#ffffff';
+  ctx.fillText(String(data.score), centerX, avatarY + 12);
+
+  // ── Names under avatars ──
+  ctx.font = 'bold 18px GoogleSans';
+  ctx.fillStyle = '#ffffff';
+  const nameA =
+    data.userAName.length > 14
+      ? `${data.userAName.slice(0, 13)}…`
+      : data.userAName;
+  const nameB =
+    data.userBName.length > 14
+      ? `${data.userBName.slice(0, 13)}…`
+      : data.userBName;
+  ctx.fillText(nameA, avatarAX, avatarY + avatarRadius + 25);
+  ctx.fillText(nameB, avatarBX, avatarY + avatarRadius + 25);
+
+  // ── Label ──
+  ctx.font = 'bold 28px GoogleSans';
+  ctx.fillStyle = hexColor;
+  ctx.fillText(data.label, centerX, 245);
+
+  // ── Progress bar ──
+  const barX = 100;
+  const barY = 265;
+  const barW = width - 200;
+  const barH = 16;
+  const barRadius = barH / 2;
+  const fill = Math.min(data.score / 100, 1);
+
+  // Bar background
+  ctx.beginPath();
+  ctx.roundRect(barX, barY, barW, barH, barRadius);
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+  ctx.fill();
+
+  // Bar fill
+  if (fill > 0) {
+    const fillW = Math.max(barH, barW * fill);
+    ctx.beginPath();
+    ctx.roundRect(barX, barY, fillW, barH, barRadius);
+    const barGrad = ctx.createLinearGradient(barX, 0, barX + fillW, 0);
+    barGrad.addColorStop(0, hexColor);
+    barGrad.addColorStop(1, '#ffffff');
+    ctx.fillStyle = barGrad;
+    ctx.fill();
+  }
+
+  // ── Mention stats ──
+  const statsY = 320;
+  ctx.font = '16px GoogleSans';
+
+  // Left: A → B
+  ctx.textAlign = 'left';
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+  ctx.fillText(`💬 ${data.userAName} → ${data.userBName}`, barX, statsY);
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'bold 16px GoogleSans';
+  ctx.fillText(
+    `${data.mentionsAtoB} mention${data.mentionsAtoB > 1 ? 's' : ''}`,
+    barX,
+    statsY + 22,
+  );
+
+  // Right: B → A
+  ctx.textAlign = 'right';
+  ctx.font = '16px GoogleSans';
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+  ctx.fillText(`💬 ${data.userBName} → ${data.userAName}`, barX + barW, statsY);
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'bold 16px GoogleSans';
+  ctx.fillText(
+    `${data.mentionsBtoA} mention${data.mentionsBtoA > 1 ? 's' : ''}`,
+    barX + barW,
+    statsY + 22,
+  );
+
+  // ── Footer ──
+  ctx.textAlign = 'center';
+  ctx.font = '12px GoogleSans';
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+  ctx.fillText(
+    `${data.total} mentions mutuelles · rpbey.fr`,
+    centerX,
+    height - 15,
+  );
+
+  return canvas.toBuffer('image/png');
+}
+
 // ─── WANTED Poster (One Piece template) ───
 
 export async function generateWantedImage(
