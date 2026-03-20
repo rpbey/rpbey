@@ -1543,6 +1543,295 @@ export async function generateGachaMissCard(
   return canvas.toBuffer('image/png');
 }
 
+// ─── Multi-Pull Canvas ──────────────────────────────────────────────────────
+
+export interface MultiPullSlot {
+  rarity: string | null; // null = miss
+  name?: string;
+  imageUrl?: string | null;
+  isDuplicate?: boolean;
+  isWished?: boolean;
+}
+
+export interface MultiPullData {
+  slots: MultiPullSlot[];
+  balance: number;
+  hitsCount: number;
+  missCount: number;
+}
+
+export async function generateMultiPullCard(
+  data: MultiPullData,
+): Promise<Buffer> {
+  const COLS = 5;
+  const ROWS = 2;
+  const CARD_W = 160;
+  const CARD_H = 220;
+  const GAP = 12;
+  const PAD = 24;
+  const HEADER = 70;
+  const FOOTER = 50;
+  const W = PAD * 2 + COLS * CARD_W + (COLS - 1) * GAP;
+  const H = HEADER + ROWS * CARD_H + (ROWS - 1) * GAP + FOOTER + PAD;
+  const canvas = createCanvas(W, H);
+  const ctx = canvas.getContext('2d');
+
+  // Background — dark with radial glow
+  ctx.fillStyle = '#080810';
+  ctx.fillRect(0, 0, W, H);
+
+  // Radial glow center
+  const radGrad = ctx.createRadialGradient(
+    W / 2,
+    H / 2,
+    50,
+    W / 2,
+    H / 2,
+    W * 0.6,
+  );
+  radGrad.addColorStop(0, 'rgba(139,92,246,0.08)');
+  radGrad.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = radGrad;
+  ctx.fillRect(0, 0, W, H);
+
+  // Scan lines effect
+  ctx.fillStyle = 'rgba(255,255,255,0.008)';
+  for (let y = 0; y < H; y += 3) {
+    ctx.fillRect(0, y, W, 1);
+  }
+
+  // Border
+  ctx.strokeStyle = 'rgba(139,92,246,0.3)';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.roundRect(6, 6, W - 12, H - 12, 16);
+  ctx.stroke();
+
+  // Header
+  ctx.font = 'bold 28px GoogleSans';
+  ctx.fillStyle = '#ffffff';
+  ctx.textAlign = 'center';
+  ctx.fillText('🎰  MULTI-PULL  ×10', W / 2, 46);
+
+  // Decorative line under header
+  const lineGrad = ctx.createLinearGradient(PAD, 58, W - PAD, 58);
+  lineGrad.addColorStop(0, 'rgba(139,92,246,0)');
+  lineGrad.addColorStop(0.3, 'rgba(139,92,246,0.5)');
+  lineGrad.addColorStop(0.5, 'rgba(251,191,36,0.6)');
+  lineGrad.addColorStop(0.7, 'rgba(139,92,246,0.5)');
+  lineGrad.addColorStop(1, 'rgba(139,92,246,0)');
+  ctx.strokeStyle = lineGrad;
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(PAD + 40, 58);
+  ctx.lineTo(W - PAD - 40, 58);
+  ctx.stroke();
+
+  // Draw 10 mini-cards
+  for (let i = 0; i < data.slots.length; i++) {
+    const slot = data.slots[i]!;
+    const col = i % COLS;
+    const row = Math.floor(i / COLS);
+    const x = PAD + col * (CARD_W + GAP);
+    const y = HEADER + row * (CARD_H + GAP);
+
+    if (!slot.rarity) {
+      // ── MISS card ──
+      ctx.fillStyle = 'rgba(255,255,255,0.02)';
+      ctx.beginPath();
+      ctx.roundRect(x, y, CARD_W, CARD_H, 10);
+      ctx.fill();
+
+      ctx.strokeStyle = 'rgba(107,114,128,0.3)';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.roundRect(x, y, CARD_W, CARD_H, 10);
+      ctx.stroke();
+
+      // X mark
+      ctx.font = 'bold 40px GoogleSans';
+      ctx.fillStyle = 'rgba(107,114,128,0.15)';
+      ctx.textAlign = 'center';
+      ctx.fillText('✕', x + CARD_W / 2, y + CARD_H / 2 - 10);
+
+      ctx.font = 'bold 14px GoogleSans';
+      ctx.fillStyle = 'rgba(107,114,128,0.4)';
+      ctx.fillText('RATÉ', x + CARD_W / 2, y + CARD_H / 2 + 25);
+
+      // Diagonal strikethrough
+      ctx.strokeStyle = 'rgba(107,114,128,0.1)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(x + 10, y + 10);
+      ctx.lineTo(x + CARD_W - 10, y + CARD_H - 10);
+      ctx.stroke();
+    } else {
+      // ── Card drop ──
+      const theme = RARITY_THEMES[slot.rarity] || RARITY_THEMES.COMMON!;
+
+      // Card background gradient
+      const cardGrad = ctx.createLinearGradient(x, y, x, y + CARD_H);
+      cardGrad.addColorStop(0, theme.bgGradient[0]);
+      cardGrad.addColorStop(1, theme.bgGradient[1]);
+      ctx.fillStyle = cardGrad;
+      ctx.beginPath();
+      ctx.roundRect(x, y, CARD_W, CARD_H, 10);
+      ctx.fill();
+
+      // Glow border
+      ctx.shadowColor = theme.glowColor;
+      ctx.shadowBlur =
+        slot.rarity === 'SECRET' || slot.rarity === 'LEGENDARY' ? 15 : 8;
+      ctx.strokeStyle = theme.borderColor;
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.roundRect(x, y, CARD_W, CARD_H, 10);
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+
+      // Rarity band
+      ctx.fillStyle = `${theme.borderColor}CC`;
+      ctx.beginPath();
+      ctx.roundRect(x + 4, y + 4, CARD_W - 8, 22, [8, 8, 0, 0]);
+      ctx.fill();
+      ctx.font = 'bold 10px GoogleSans';
+      ctx.fillStyle = '#ffffff';
+      ctx.textAlign = 'center';
+      ctx.fillText(theme.label, x + CARD_W / 2, y + 18);
+
+      // Stars
+      ctx.font = '9px GoogleSans';
+      ctx.fillStyle = theme.accentColor;
+      ctx.fillText(
+        '★'.repeat(theme.stars) + '☆'.repeat(5 - theme.stars),
+        x + CARD_W / 2,
+        y + 32,
+      );
+
+      // Character image
+      const imgY = y + 36;
+      const imgH = 110;
+      ctx.fillStyle = 'rgba(0,0,0,0.3)';
+      ctx.beginPath();
+      ctx.roundRect(x + 6, imgY, CARD_W - 12, imgH, 6);
+      ctx.fill();
+
+      if (slot.imageUrl) {
+        const img = await safeLoadImage(slot.imageUrl);
+        if (img) {
+          ctx.save();
+          ctx.beginPath();
+          ctx.roundRect(x + 6, imgY, CARD_W - 12, imgH, 6);
+          ctx.clip();
+          const aspect = img.width / img.height;
+          let dw = CARD_W - 12,
+            dh = imgH;
+          if (aspect > dw / dh) {
+            dh = dw / aspect;
+          } else {
+            dw = dh * aspect;
+          }
+          ctx.drawImage(
+            img,
+            x + 6 + (CARD_W - 12 - dw) / 2,
+            imgY + (imgH - dh) / 2,
+            dw,
+            dh,
+          );
+
+          // Vignette
+          const vig = ctx.createLinearGradient(0, imgY, 0, imgY + imgH);
+          vig.addColorStop(0, 'rgba(0,0,0,0)');
+          vig.addColorStop(0.8, 'rgba(0,0,0,0)');
+          vig.addColorStop(1, 'rgba(0,0,0,0.6)');
+          ctx.fillStyle = vig;
+          ctx.fillRect(x + 6, imgY, CARD_W - 12, imgH);
+          ctx.restore();
+        }
+      }
+
+      // Name
+      ctx.font = 'bold 13px GoogleSans';
+      ctx.fillStyle = '#ffffff';
+      ctx.textAlign = 'center';
+      let name = slot.name || '???';
+      if (ctx.measureText(name).width > CARD_W - 16)
+        name = `${name.substring(0, 12)}…`;
+      ctx.fillText(name, x + CARD_W / 2, y + CARD_H - 36);
+
+      // Duplicate / Wished badge
+      if (slot.isWished) {
+        ctx.font = '10px GoogleSans';
+        ctx.fillStyle = '#fbbf24';
+        ctx.fillText('⭐ WISHED', x + CARD_W / 2, y + CARD_H - 18);
+      } else if (slot.isDuplicate) {
+        ctx.font = '10px GoogleSans';
+        ctx.fillStyle = 'rgba(255,255,255,0.3)';
+        ctx.fillText('DOUBLON', x + CARD_W / 2, y + CARD_H - 18);
+      }
+
+      // Bottom accent
+      ctx.fillStyle = theme.borderColor;
+      ctx.beginPath();
+      ctx.roundRect(x + 4, y + CARD_H - 6, CARD_W - 8, 3, [0, 0, 4, 4]);
+      ctx.fill();
+
+      // Sparkles for legendary/secret
+      if (slot.rarity === 'LEGENDARY' || slot.rarity === 'SECRET') {
+        ctx.fillStyle = `${theme.accentColor}50`;
+        for (let s = 0; s < 4; s++) {
+          const sx = x + 15 + Math.random() * (CARD_W - 30);
+          const sy = y + 30 + Math.random() * (CARD_H - 60);
+          const sz = 2 + Math.random() * 2;
+          ctx.beginPath();
+          ctx.moveTo(sx, sy - sz);
+          ctx.lineTo(sx + sz * 0.3, sy - sz * 0.3);
+          ctx.lineTo(sx + sz, sy);
+          ctx.lineTo(sx + sz * 0.3, sy + sz * 0.3);
+          ctx.lineTo(sx, sy + sz);
+          ctx.lineTo(sx - sz * 0.3, sy + sz * 0.3);
+          ctx.lineTo(sx - sz, sy);
+          ctx.lineTo(sx - sz * 0.3, sy - sz * 0.3);
+          ctx.closePath();
+          ctx.fill();
+        }
+      }
+    }
+  }
+
+  // ── Footer bar ──
+  const footY = H - FOOTER - 6;
+  ctx.fillStyle = 'rgba(0,0,0,0.4)';
+  ctx.beginPath();
+  ctx.roundRect(PAD, footY, W - PAD * 2, FOOTER - 4, [0, 0, 10, 10]);
+  ctx.fill();
+
+  ctx.font = 'bold 14px GoogleSans';
+  ctx.textAlign = 'left';
+  ctx.fillStyle = '#22c55e';
+  ctx.fillText(`✅ ${data.hitsCount} cartes`, PAD + 16, footY + 22);
+
+  ctx.fillStyle = '#6b7280';
+  ctx.fillText(`💨 ${data.missCount} ratés`, PAD + 130, footY + 22);
+
+  ctx.textAlign = 'right';
+  ctx.fillStyle = 'rgba(255,255,255,0.6)';
+  ctx.font = '13px GoogleSans';
+  ctx.fillText(
+    `💰 ${data.balance.toLocaleString('fr-FR')} 🪙`,
+    W - PAD - 16,
+    footY + 22,
+  );
+
+  // Savings badge
+  ctx.textAlign = 'center';
+  ctx.font = '10px GoogleSans';
+  ctx.fillStyle = 'rgba(251,191,36,0.5)';
+  ctx.fillText('Économie : 50🪙 vs tirages individuels', W / 2, footY + 40);
+
+  return canvas.toBuffer('image/png');
+}
+
 // ─── Collection Canvas ──────────────────────────────────────────────────────
 
 export interface CollectionCardData {

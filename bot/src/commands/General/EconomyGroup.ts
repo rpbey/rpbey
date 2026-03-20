@@ -623,53 +623,59 @@ export class EconomyGroup {
 
     const hits = results.filter((r) => r.card);
     const misses = results.filter((r) => !r.card);
-    const lines = results.map((r) =>
-      r.card
-        ? `${RARITY_CONFIG[r.rarity!]?.emoji} **${r.card.name}** — ${RARITY_CONFIG[r.rarity!]?.label}${r.isDuplicate ? ' *(dbl)*' : ' ✨'}`
-        : '💨 *Raté*',
-    );
+    const bal = profile.currency - MULTI_PULL_COST;
 
-    const bestRarity = hits.reduce((best, r) => {
-      const o: CardRarityType[] = [
-        'COMMON',
-        'RARE',
-        'EPIC',
-        'LEGENDARY',
-        'SECRET',
-      ];
-      return o.indexOf(r.rarity!) > o.indexOf(best) ? r.rarity! : best;
-    }, 'COMMON' as CardRarityType);
-    const color =
-      hits.length > 0
-        ? (RARITY_CONFIG[bestRarity]?.color ?? Colors.Info)
-        : 0x4b5563;
-
-    const reply = await interaction.editReply({
-      embeds: [
-        new EmbedBuilder()
-          .setColor(color)
-          .setTitle(`🎰 Multi-Pull x${MULTI_PULL_COUNT}`)
-          .setDescription(lines.join('\n'))
-          .addFields(
-            {
-              name: 'Résultat',
-              value: `✅ **${hits.length}** cartes · 💨 **${misses.length}** ratés`,
-              inline: true,
-            },
-            {
-              name: '💰 Solde',
-              value: `**${(profile.currency - MULTI_PULL_COST).toLocaleString('fr-FR')}** 🪙`,
-              inline: true,
-            },
-          )
-          .setFooter({
-            text: `Économie : ${GACHA_COST * MULTI_PULL_COUNT - MULTI_PULL_COST}🪙 vs tirages individuels`,
-          }),
-      ],
-    });
-    if (hits.length > 0) {
-      const bm = await this.checkBadges(userId, profile.id);
-      if (bm) await reply.reply({ content: bm });
+    try {
+      const { generateMultiPullCard } = await import(
+        '../../lib/canvas-utils.js'
+      );
+      const cardBuffer = await generateMultiPullCard({
+        slots: results.map((r) => ({
+          rarity: r.rarity,
+          name: r.card?.name,
+          imageUrl: r.card?.imageUrl,
+          isDuplicate: r.isDuplicate,
+          isWished: r.isWished,
+        })),
+        balance: bal,
+        hitsCount: hits.length,
+        missCount: misses.length,
+      });
+      const attachment = new AttachmentBuilder(cardBuffer, {
+        name: 'multi-pull.png',
+      });
+      const reply = await interaction.editReply({ files: [attachment] });
+      if (hits.length > 0) {
+        const bm = await this.checkBadges(userId, profile.id);
+        if (bm) await reply.reply({ content: bm });
+      }
+    } catch {
+      // Fallback embed
+      const lines = results.map((r) =>
+        r.card
+          ? `${RARITY_CONFIG[r.rarity!]?.emoji} **${r.card.name}** — ${RARITY_CONFIG[r.rarity!]?.label}${r.isDuplicate ? ' *(dbl)*' : ' ✨'}`
+          : '💨 *Raté*',
+      );
+      await interaction.editReply({
+        embeds: [
+          new EmbedBuilder()
+            .setColor(Colors.Info)
+            .setTitle(`🎰 Multi x${MULTI_PULL_COUNT}`)
+            .setDescription(lines.join('\n'))
+            .addFields(
+              {
+                name: 'Résultat',
+                value: `✅ **${hits.length}** cartes · 💨 **${misses.length}** ratés`,
+                inline: true,
+              },
+              {
+                name: '💰',
+                value: `**${bal.toLocaleString('fr-FR')}** 🪙`,
+                inline: true,
+              },
+            ),
+        ],
+      });
     }
   }
 
