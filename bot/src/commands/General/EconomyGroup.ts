@@ -209,6 +209,24 @@ export class EconomyGroup {
     return { userId: user.id, profile };
   }
 
+  // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: debt check helper
+  private debtEmbed(profile: { currency: number }): EmbedBuilder | null {
+    if (profile.currency >= 0) return null;
+    const debt = Math.abs(profile.currency);
+    const interest = Math.round(debt * 0.05);
+    return new EmbedBuilder()
+      .setColor(0x991b1b)
+      .setTitle('🏦 Recouvrement de dette')
+      .setDescription(
+        `Tu as une dette de **${debt.toLocaleString('fr-FR')}** 🪙 !\nIntérêts quotidiens : **${interest.toLocaleString('fr-FR')}** 🪙 (5%)\n\n` +
+          '**Commandes bloquées** : gacha, multi, parier\n\n' +
+          '💡 Pour rembourser :\n> `/gacha daily` · `/gacha vendre-tout` · `/jeu combat` · `/gacha duel`',
+      )
+      .setFooter({
+        text: "Rembourse pour débloquer les tirages ! · /gacha dette pour plus d'infos",
+      });
+  }
+
   private async checkBadges(
     userId: string,
     profileId: string,
@@ -488,7 +506,14 @@ export class EconomyGroup {
         break;
       }
     }
-    const totalGain = amount + streakBonus;
+
+    // Debt interest: 5% of debt deducted from daily reward
+    let interestPaid = 0;
+    let totalGain = amount + streakBonus;
+    if (profile.currency < 0) {
+      interestPaid = Math.round(Math.abs(profile.currency) * 0.05);
+      totalGain = Math.max(1, totalGain - interestPaid); // Always gain at least 1
+    }
 
     await this.prisma.profile.update({
       where: { id: profile.id },
@@ -503,7 +528,7 @@ export class EconomyGroup {
         userId,
         amount: totalGain,
         type: 'DAILY_CLAIM',
-        note: `Tier ${tier + 1} — Streak ${newStreak}`,
+        note: `Tier ${tier + 1} — Streak ${newStreak}${interestPaid > 0 ? ` — Intérêts: -${interestPaid}` : ''}`,
       },
     });
     if (streakBonus > 0)
@@ -556,6 +581,13 @@ export class EconomyGroup {
       embed.addFields({
         name: `🎁 Bonus streak ${streakBonusLabel} !`,
         value: `+**${streakBonus}** 🪙 bonus`,
+        inline: true,
+      });
+    }
+    if (interestPaid > 0) {
+      embed.addFields({
+        name: '🏦 Intérêts dette (5%)',
+        value: `**-${interestPaid}** 🪙 prélevés sur ta récompense`,
         inline: true,
       });
     }
@@ -691,15 +723,18 @@ export class EconomyGroup {
     await interaction.deferReply();
     const { userId, profile } = await this.resolve(interaction);
 
-    // Block if overdraft would exceed -1000
-    if (profile.currency - GACHA_COST < -1000) {
+    // Debt block
+    const debtBlock = this.debtEmbed(profile);
+    if (debtBlock) return interaction.editReply({ embeds: [debtBlock] });
+
+    if (profile.currency < GACHA_COST) {
       return interaction.editReply({
         embeds: [
           new EmbedBuilder()
             .setColor(Colors.Error)
-            .setTitle('🚫 Découvert maximum atteint')
+            .setTitle('❌ Pièces insuffisantes')
             .setDescription(
-              `Ton solde est à **${profile.currency}** 🪙 — le découvert maximum est de **-1 000** 🪙.\n\nUtilise \`/gacha daily\` ou \`/gacha vendre\` pour remonter !`,
+              `Il te faut **${GACHA_COST}** 🪙 · Solde : **${profile.currency}** 🪙`,
             ),
         ],
       });
@@ -765,14 +800,17 @@ export class EconomyGroup {
     await interaction.deferReply();
     const { userId, profile } = await this.resolve(interaction);
 
-    if (profile.currency - MULTI_PULL_COST < -1000) {
+    const debtBlock = this.debtEmbed(profile);
+    if (debtBlock) return interaction.editReply({ embeds: [debtBlock] });
+
+    if (profile.currency < MULTI_PULL_COST) {
       return interaction.editReply({
         embeds: [
           new EmbedBuilder()
             .setColor(Colors.Error)
-            .setTitle('🚫 Découvert maximum atteint')
+            .setTitle('❌ Pièces insuffisantes')
             .setDescription(
-              `Ton solde est à **${profile.currency}** 🪙 — le découvert maximum est de **-1 000** 🪙.\n\nUtilise \`/gacha daily\` ou \`/gacha vendre\` pour remonter !`,
+              `Il te faut **${MULTI_PULL_COST}** 🪙 · Solde : **${profile.currency}** 🪙`,
             ),
         ],
       });
@@ -1636,6 +1674,75 @@ export class EconomyGroup {
     }
   }
 
+  // ═══ /gacha dette ═══
+  @Slash({ name: 'dette', description: 'Consulte ta dette et les intérêts' })
+  async debt(interaction: CommandInteraction) {
+    const { profile } = await this.resolve(interaction);
+
+    if (profile.currency >= 0) {
+      return interaction.reply({
+        embeds: [
+          new EmbedBuilder()
+            .setColor(Colors.Success)
+            .setTitle('✅ Aucune dette !')
+            .setDescription(
+              `Ton solde est de **${profile.currency.toLocaleString('fr-FR')}** 🪙\nTu n'as aucune dette. Continue comme ça !`,
+            ),
+        ],
+      });
+    }
+
+    const debt = Math.abs(profile.currency);
+    const dailyInterest = Math.round(debt * 0.05);
+    const daysToRepay = Math.ceil(debt / 80); // Rough estimate with min daily
+
+    return interaction.reply({
+      embeds: [
+        new EmbedBuilder()
+          .setColor(0x991b1b)
+          .setTitle('🏦 Rapport de dette')
+          .setThumbnail(interaction.user.displayAvatarURL())
+          .addFields(
+            {
+              name: '💀 Dette totale',
+              value: `**${debt.toLocaleString('fr-FR')}** 🪙`,
+              inline: true,
+            },
+            {
+              name: '📈 Intérêts / daily',
+              value: `**${dailyInterest.toLocaleString('fr-FR')}** 🪙 (5%)`,
+              inline: true,
+            },
+            {
+              name: '📅 Jours estimés',
+              value: `~**${daysToRepay}** jours`,
+              inline: true,
+            },
+            {
+              name: '⛔ Restrictions',
+              value: [
+                '> `/gacha gacha` — ❌ Bloqué',
+                '> `/gacha multi` — ❌ Bloqué',
+                '> `/gacha parier` — ❌ Bloqué',
+                '> `/gacha daily` — ✅ Autorisé (intérêts prélevés)',
+                '> `/gacha duel` — ✅ Autorisé',
+                '> `/gacha vendre` — ✅ Autorisé',
+                '> `/jeu combat` — ✅ Autorisé',
+              ].join('\n'),
+            },
+            {
+              name: '💡 Comment rembourser',
+              value:
+                '• **Daily** chaque jour (récompense - 5% intérêts)\n• **Vendre** tes doublons de cartes\n• **Combats** et **duels** pour gagner des pièces\n• Demander un **admin-give** (si gentil admin)',
+            },
+          )
+          .setFooter({
+            text: 'Les intérêts sont prélevés sur chaque /gacha daily',
+          }),
+      ],
+    });
+  }
+
   // ═══ /gacha parier ═══
   @Slash({
     name: 'parier',
@@ -1659,6 +1766,10 @@ export class EconomyGroup {
 
     await interaction.deferReply();
     const { userId, profile } = await this.resolve(interaction);
+
+    // Debt block
+    const debtBlock = this.debtEmbed(profile);
+    if (debtBlock) return interaction.editReply({ embeds: [debtBlock] });
 
     if (mise > profile.currency) {
       return interaction.editReply({
