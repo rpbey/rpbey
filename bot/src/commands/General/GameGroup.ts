@@ -633,7 +633,8 @@ export class GameGroup {
       })
       .setTimestamp();
 
-    // Update DB stats
+    // Update DB stats + currency rewards
+    const coinReward = finishType.points * 10; // 10/20/30 coins based on finish type
     try {
       const dbWinner = await this.prisma.user.upsert({
         where: { discordId: winner.id },
@@ -646,9 +647,18 @@ export class GameGroup {
       });
       await this.prisma.profile.upsert({
         where: { userId: dbWinner.id },
-        update: { wins: { increment: 1 } },
-        create: { userId: dbWinner.id, wins: 1 },
+        update: { wins: { increment: 1 }, currency: { increment: coinReward } },
+        create: { userId: dbWinner.id, wins: 1, currency: coinReward },
       });
+      await this.prisma.currencyTransaction.create({
+        data: {
+          userId: dbWinner.id,
+          amount: coinReward,
+          type: 'TOURNAMENT_REWARD',
+          note: `Victoire combat: ${finishType.message}`,
+        },
+      });
+
       const dbLoser = await this.prisma.user.upsert({
         where: { discordId: loser.id },
         update: {},
@@ -660,12 +670,26 @@ export class GameGroup {
       });
       await this.prisma.profile.upsert({
         where: { userId: dbLoser.id },
-        update: { losses: { increment: 1 } },
-        create: { userId: dbLoser.id, losses: 1 },
+        update: { losses: { increment: 1 }, currency: { increment: 5 } },
+        create: { userId: dbLoser.id, losses: 1, currency: 5 },
+      });
+      await this.prisma.currencyTransaction.create({
+        data: {
+          userId: dbLoser.id,
+          amount: 5,
+          type: 'TOURNAMENT_REWARD',
+          note: 'Participation combat',
+        },
       });
     } catch (e) {
       logger.error('[Battle] DB update error:', e);
     }
+
+    // Add reward info to embed
+    embed.addFields({
+      name: '🪙 Récompenses',
+      value: `${winner.displayName}: **+${coinReward}** 🪙 (victoire)\n${loser.displayName}: **+5** 🪙 (participation)`,
+    });
 
     return interaction.editReply({ embeds: [embed], files: [attachment] });
   }

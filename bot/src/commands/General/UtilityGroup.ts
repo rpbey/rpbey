@@ -121,8 +121,6 @@ export class UtilityGroup {
       if (p.bladerName) stats.push(`**Blader :** ${p.bladerName}`);
       if (p.wins || p.losses) stats.push(`**W/L :** ${p.wins}V / ${p.losses}D`);
       if (p.rankingPoints) stats.push(`**Points :** ${p.rankingPoints}`);
-      if (p.currency)
-        stats.push(`**Pièces :** ${p.currency.toLocaleString('fr-FR')}`);
       if (stats.length > 0) {
         embed.addFields({
           name: '🌀 Profil Beyblade',
@@ -130,6 +128,30 @@ export class UtilityGroup {
           inline: false,
         });
       }
+
+      // Gacha stats
+      const [cardCount, totalCards] = await Promise.all([
+        this.prisma.cardInventory.count({ where: { userId: dbUser.id } }),
+        this.prisma.gachaCard.count({ where: { isActive: true } }),
+      ]);
+      const gachaLines = [];
+      gachaLines.push(`**🪙 Pièces :** ${p.currency.toLocaleString('fr-FR')}`);
+      if (p.dailyStreak > 0)
+        gachaLines.push(
+          `**🔥 Streak :** ${p.dailyStreak} jour${p.dailyStreak > 1 ? 's' : ''}`,
+        );
+      if (cardCount > 0) {
+        const pct =
+          totalCards > 0 ? Math.round((cardCount / totalCards) * 100) : 0;
+        gachaLines.push(
+          `**🃏 Collection :** ${cardCount}/${totalCards} (${pct}%)`,
+        );
+      }
+      embed.addFields({
+        name: '🎰 Gacha',
+        value: gachaLines.join('\n'),
+        inline: false,
+      });
     }
 
     embed.setFooter({ text: RPB.Name }).setTimestamp();
