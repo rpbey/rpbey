@@ -550,42 +550,37 @@ export class GameGroup {
         '❌ Commande disponible uniquement sur un serveur.',
       );
 
-    // Scan text channels for mutual mentions
-    let mentionsAtoB = 0; // user A mentioning user B
-    let mentionsBtoA = 0; // user B mentioning user A
-    let channelsScanned = 0;
+    // Scan text channels for mutual mentions (parallel, capped)
+    let mentionsAtoB = 0;
+    let mentionsBtoA = 0;
 
-    const channels = guild.channels.cache.filter(
+    const textChannels = [...guild.channels.cache.values()].filter(
       (c) => c.isTextBased() && !c.isThread() && 'messages' in c,
     );
 
-    for (const channel of channels.values()) {
-      if (!('messages' in channel)) continue;
-      try {
-        const messages = await channel.messages.fetch({ limit: 100 });
+    const results = await Promise.allSettled(
+      textChannels.map(async (channel) => {
+        if (!('messages' in channel)) return { a: 0, b: 0 };
+        const messages = await channel.messages.fetch({ limit: 50 });
+        let a = 0;
+        let b = 0;
         for (const msg of messages.values()) {
           if (msg.author.bot) continue;
-          const mentionsUser = (id: string) =>
-            msg.mentions.users.has(id) ||
-            msg.content.includes(`<@${id}>`) ||
-            msg.content.includes(`<@!${id}>`);
-
-          if (
-            msg.author.id === interaction.user.id &&
-            mentionsUser(target.id)
-          ) {
-            mentionsAtoB++;
-          }
-          if (
-            msg.author.id === target.id &&
-            mentionsUser(interaction.user.id)
-          ) {
-            mentionsBtoA++;
-          }
+          const mentions = (id: string) =>
+            msg.mentions.users.has(id) || msg.content.includes(`<@${id}>`);
+          if (msg.author.id === interaction.user.id && mentions(target.id)) a++;
+          if (msg.author.id === target.id && mentions(interaction.user.id)) b++;
         }
+        return { a, b };
+      }),
+    );
+
+    let channelsScanned = 0;
+    for (const r of results) {
+      if (r.status === 'fulfilled') {
+        mentionsAtoB += r.value.a;
+        mentionsBtoA += r.value.b;
         channelsScanned++;
-      } catch {
-        // No permission to read channel, skip
       }
     }
 
