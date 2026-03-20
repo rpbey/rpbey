@@ -111,7 +111,8 @@ export class ChallongeCommand {
         .setDescription(
           `Lien profil : [Voir sur Challonge](https://challonge.com/users/${user.profile.challongeUsername})`,
         )
-        .setFooter({ text: RPB.FullName });
+        .setFooter({ text: RPB.FullName })
+        .setTimestamp();
 
       return interaction.editReply({ embeds: [embed] });
     } catch (error) {

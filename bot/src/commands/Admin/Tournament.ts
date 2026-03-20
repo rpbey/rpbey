@@ -130,7 +130,7 @@ export class TournamentCommand {
         top5.length > 0
           ? top5
               .map(
-                (s) => `**${s.rank}.** ${s.name} (${s.wins}W - ${s.losses}L)`,
+                (s) => `**${s.rank}.** ${s.name} (${s.wins}V - ${s.losses}D)`,
               )
               .join('\n')
           : '*Standings non disponibles*';

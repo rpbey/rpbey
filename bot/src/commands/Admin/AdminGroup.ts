@@ -29,7 +29,9 @@ export class AdminGroup {
       );
     } catch (error) {
       logger.error(error);
-      return interaction.editReply('❌ Erreur lors de la synchronisation.');
+      return interaction.editReply(
+        `❌ Erreur lors de la synchronisation des rôles : \`${error instanceof Error ? error.message : 'Erreur inconnue'}\``,
+      );
     }
   }
 
@@ -44,11 +46,13 @@ export class AdminGroup {
         data: { rankingPoints: 0 },
       });
       return interaction.editReply(
-        `✅ Classement réinitialisé (${result.count} profils).`,
+        `✅ Classement réinitialisé — **${result.count}** profils remis à 0.`,
       );
     } catch (error) {
       logger.error(error);
-      return interaction.editReply('❌ Erreur.');
+      return interaction.editReply(
+        `❌ Erreur lors de la réinitialisation : \`${error instanceof Error ? error.message : 'Erreur inconnue'}\``,
+      );
     }
   }
 }

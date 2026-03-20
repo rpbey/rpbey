@@ -176,7 +176,8 @@ export class ProfileContextMenuCommand {
     } catch (error) {
       logger.error('Profile context menu error:', error);
       return interaction.editReply({
-        content: '❌ Erreur lors de la récupération du profil.',
+        content:
+          '❌ Erreur lors de la récupération du profil. Réessaie dans quelques instants.',
       });
     }
   }

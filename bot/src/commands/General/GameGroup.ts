@@ -211,7 +211,7 @@ export class GameGroup {
 
     if (blades.length === 0 || ratchets.length === 0 || bits.length === 0) {
       return interaction.editReply(
-        '❌ Pas assez de pièces en BDD pour simuler un combat.',
+        '❌ La base de données ne contient pas assez de pièces. Un admin doit lancer la synchronisation.',
       );
     }
 
@@ -397,7 +397,7 @@ export class GameGroup {
 
     if (blades.length === 0 || ratchets.length === 0 || bits.length === 0) {
       return interaction.editReply(
-        '❌ Pas assez de pièces en base de données pour générer un combo.',
+        '❌ La base de données ne contient pas assez de pièces. Un admin doit lancer la synchronisation.',
       );
     }
 
@@ -434,8 +434,8 @@ export class GameGroup {
     const filename = `combo-${Date.now()}.png`;
     const attachment = new AttachmentBuilder(cardBuffer, { name: filename });
 
-    const bitType = bitJson?.stats.type || 'Unknown';
-    const spinDir = bladeJson?.spin === 'L' ? '↺ Left' : '↻ Right';
+    const bitType = bitJson?.stats.type || 'Inconnu';
+    const spinDir = bladeJson?.spin === 'L' ? '↺ Gauche' : '↻ Droite';
 
     const embed = new EmbedBuilder()
       .setTitle(`🎲 ${comboName}`)

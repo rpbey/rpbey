@@ -46,10 +46,13 @@ export class WikiGroup {
           match.length > 1000 ? `${match.substring(0, 1000)}...` : match,
         )
         .setColor(Colors.Info)
-        .setFooter({ text: 'Source: worldbeyblade.org' });
+        .setFooter({ text: 'Source: worldbeyblade.org' })
+        .setTimestamp();
       return interaction.editReply({ embeds: [embed] });
     } catch {
-      return interaction.editReply('❌ Erreur wiki.');
+      return interaction.editReply(
+        '❌ Erreur lors de la lecture de la base de règles. Le fichier est peut-être corrompu.',
+      );
     }
   }
 
@@ -98,7 +101,8 @@ export class WikiGroup {
       )
       .setFooter({
         text: 'Règlement complet sur rpbey.fr/reglement',
-      });
+      })
+      .setTimestamp();
     return interaction.reply({ embeds: [embed] });
   }
 }

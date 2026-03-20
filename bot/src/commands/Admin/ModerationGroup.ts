@@ -78,10 +78,23 @@ export class ModerationCommands {
     reason: string = 'Aucune raison spécifiée',
     interaction: CommandInteraction,
   ) {
-    const member = interaction.guild?.members.cache.get(target.id);
+    if (target.id === interaction.user.id)
+      return interaction.reply({
+        content: '❌ Tu ne peux pas te bannir toi-même.',
+        ephemeral: true,
+      });
+    if (target.bot)
+      return interaction.reply({
+        content: '❌ Impossible de bannir un bot via cette commande.',
+        ephemeral: true,
+      });
+    const member = await interaction.guild?.members
+      .fetch(target.id)
+      .catch(() => null);
     if (member && !member.bannable)
       return interaction.reply({
-        content: '❌ Impossible de bannir ce membre.',
+        content:
+          '❌ Impossible de bannir ce membre (rôle trop élevé ou permissions insuffisantes).',
         ephemeral: true,
       });
     await interaction.guild?.members.ban(target, { reason });
@@ -112,7 +125,14 @@ export class ModerationCommands {
     reason: string = 'Aucune raison spécifiée',
     interaction: CommandInteraction,
   ) {
-    const member = interaction.guild?.members.cache.get(target.id);
+    if (target.id === interaction.user.id)
+      return interaction.reply({
+        content: "❌ Tu ne peux pas t'expulser toi-même.",
+        ephemeral: true,
+      });
+    const member = await interaction.guild?.members
+      .fetch(target.id)
+      .catch(() => null);
     if (!member || !member.kickable)
       return interaction.reply({
         content: "❌ Impossible d'expulser ce membre.",
@@ -158,15 +178,29 @@ export class ModerationCommands {
     reason: string = 'Aucune raison spécifiée',
     interaction: CommandInteraction,
   ) {
-    const member = interaction.guild?.members.cache.get(target.id);
+    if (target.id === interaction.user.id)
+      return interaction.reply({
+        content: '❌ Tu ne peux pas te mute toi-même.',
+        ephemeral: true,
+      });
+    const member = await interaction.guild?.members
+      .fetch(target.id)
+      .catch(() => null);
     if (!member || !member.moderatable)
       return interaction.reply({
-        content: "❌ Impossible d'agir sur ce membre.",
+        content:
+          "❌ Impossible d'agir sur ce membre (rôle trop élevé ou introuvable).",
         ephemeral: true,
       });
     await member.timeout(duration, reason);
+    const durationLabel =
+      duration >= 86400000
+        ? `${duration / 86400000} jour(s)`
+        : duration >= 3600000
+          ? `${duration / 3600000} heure(s)`
+          : `${duration / 60000} minute(s)`;
     return interaction.reply(
-      `🔇 **${target.tag}** muet pendant ${duration / 60000} min. Raison : ${reason}`,
+      `🔇 **${target.tag}** muet pendant ${durationLabel}. Raison : ${reason}`,
     );
   }
 

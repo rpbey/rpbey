@@ -17,9 +17,6 @@ import { Colors } from '../../lib/constants.js';
 import { logger } from '../../lib/logger.js';
 import { PrismaService } from '../../lib/prisma.js';
 
-// Ensure logger is retained by Biome
-void logger;
-
 @Discord()
 @SlashGroup({
   description: 'Commandes de classement et profils',
@@ -152,7 +149,9 @@ export class RankingGroup {
       });
     } catch (error) {
       logger.error('[Ranking] Profile error:', error);
-      return interaction.editReply('❌ Erreur profil.');
+      return interaction.editReply(
+        '❌ Erreur lors du chargement du profil. Vérifie que ton compte existe sur rpbey.fr/dashboard.',
+      );
     }
   }
 
