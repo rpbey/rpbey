@@ -200,7 +200,122 @@ export class EconomyGroup {
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // /eco daily — Récompense quotidienne avec tiers + streak
+  // /gacha aide — Guide complet
+  // ═══════════════════════════════════════════════════════════════════════════
+  @Slash({ name: 'aide', description: 'Guide complet du système gacha' })
+  async help(interaction: CommandInteraction) {
+    const embed1 = new EmbedBuilder()
+      .setColor(RPB.Color)
+      .setTitle('🎰 Guide du Gacha RPB')
+      .setDescription(
+        'Collectionne les **31 cartes** de personnages Beyblade Metal Masters & Metal Fury !\n' +
+          'Gagne des pièces, tire des cartes, complète ta collection.',
+      )
+      .addFields(
+        {
+          name: '🪙 Gagner des pièces',
+          value: [
+            '`/gacha daily` — Réclame tes pièces (toutes les **20h**)',
+            '> 5 tiers de récompense aléatoires :',
+            '> 60% : 80-120🪙 · 25% : 150-200🪙 · 10% : 250-350🪙',
+            '> 4% : 500-700🪙 ⭐ · **1% : 1000-1500🪙** 💎',
+            '',
+            '`/gacha vendre` — Vends un doublon pour des pièces',
+            '> ⚪5 · 🔵15 · 🟣50 · 🟡150 · 🔴500 🪙',
+          ].join('\n'),
+        },
+        {
+          name: '🔥 Streak (série de jours)',
+          value: [
+            'Connecte-toi chaque jour pour maintenir ton streak !',
+            'Bonus débloqués automatiquement :',
+            '> **3 jours** → +50🪙 · **7 jours** → +150🪙',
+            '> **14 jours** → +300🪙 · **30 jours** → +750🪙',
+            '⚠️ Si tu sautes un jour (>48h), le streak repart à 0.',
+          ].join('\n'),
+        },
+      );
+
+    const embed2 = new EmbedBuilder().setColor(RPB.GoldColor).addFields(
+      {
+        name: '🃏 Tirer des cartes',
+        value: [
+          '`/gacha gacha` — Tirage unique (**50🪙**)',
+          '`/gacha multi` — Tirage x10 (**450🪙**, -10%)',
+          '',
+          '**Taux de drop :**',
+          '> 💨 Raté — **35%** (tu perds tes pièces !)',
+          '> ⚪ Commune — **30%** · 🔵 Rare — **20%**',
+          '> 🟣 Épique — **10%** · 🟡 Légendaire — **4%**',
+          '> 🔴 Secrète — **1%** (Ryuga L-Drago Destructor)',
+        ].join('\n'),
+      },
+      {
+        name: '⭐ Wishlist',
+        value: [
+          '`/gacha wish <nom>` — Ajoute une carte à ta wishlist',
+          '`/gacha wishlist` — Affiche ta wishlist',
+          '',
+          'Quand une carte souhaitée tombe, tu reçois un **embed doré** spécial !',
+          'Réutilise `/gacha wish <nom>` pour retirer une carte.',
+        ].join('\n'),
+      },
+      {
+        name: '📖 Consulter',
+        value: [
+          '`/gacha solde` — Ton profil : pièces, streak, progression, badge',
+          '`/gacha collection` — Tes cartes obtenues par rareté',
+          '`/gacha catalogue [série]` — Toutes les cartes du jeu',
+          '`/gacha classement` — Top 10 des collectionneurs',
+          '`/gacha taux` — Tableau récapitulatif des mécaniques',
+        ].join('\n'),
+      },
+    );
+
+    const embed3 = new EmbedBuilder()
+      .setColor(0x8b5cf6)
+      .addFields(
+        {
+          name: '🏅 Badges de collection',
+          value: [
+            'Des badges sont débloqués automatiquement quand tu atteins un palier :',
+            '',
+            '> 🥉 **Débutant** (5 cartes) → +200🪙',
+            '> 🥈 **Collectionneur** (10 cartes) → +500🪙',
+            '> 🥇 **Expert** (15 cartes) → +750🪙',
+            '> 🏆 **Maître** (20 cartes) → +1 000🪙',
+            '> 👑 **Champion** (25 cartes) → +1 500🪙',
+            '> ⭐ **Légende** (31/31 cartes) → +3 000🪙',
+          ].join('\n'),
+        },
+        {
+          name: '💡 Astuces',
+          value: [
+            '• Commence par `/gacha daily` chaque jour pour accumuler des pièces',
+            '• Utilise `/gacha multi` pour optimiser tes tirages (-10%)',
+            '• Mets en wishlist les cartes que tu veux le plus',
+            '• Vends tes doublons pour financer de nouveaux tirages',
+            '• Le streak est crucial : 30 jours = +750🪙 bonus !',
+            '• La carte **Ryuga L-Drago Destructor** 🔴 a 1% de chance — bonne chance !',
+          ].join('\n'),
+        },
+        {
+          name: '📦 Cartes disponibles',
+          value: [
+            '**Metal Masters** — 17 cartes (Gingka, Kyoya, Masamune, Julian, Damian...)',
+            '**Metal Fury** — 14 cartes (Cosmic Gingka, Ryuga, Chris, Aguma, King...)',
+            '',
+            '🔴 1 carte Secrète · 🟡 3 Légendaires · 🟣 8 Épiques · 🔵 7 Rares · ⚪ 12 Communes',
+          ].join('\n'),
+        },
+      )
+      .setFooter({ text: 'RPB Gacha — Collectionne-les tous ! 🌀' });
+
+    return interaction.reply({ embeds: [embed1, embed2, embed3] });
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // /gacha daily — Récompense quotidienne avec tiers + streak
   // ═══════════════════════════════════════════════════════════════════════════
   @Slash({ name: 'daily', description: 'Réclame tes pièces quotidiennes' })
   async daily(interaction: CommandInteraction) {
