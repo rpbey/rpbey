@@ -200,4 +200,162 @@ export class EconomyCommand {
 
     return interaction.editReply({ embeds: [embed] });
   }
+
+  @Slash({
+    name: 'transfert',
+    description: 'Transférer des pièces à un autre membre',
+  })
+  async transfer(
+    @SlashOption({
+      name: 'destinataire',
+      description: 'Le membre à qui envoyer les pièces',
+      required: true,
+      type: ApplicationCommandOptionType.User,
+    })
+    target: { id: string; username: string; bot?: boolean },
+    @SlashOption({
+      name: 'montant',
+      description: 'Le montant à transférer (minimum 1)',
+      required: true,
+      type: ApplicationCommandOptionType.Integer,
+      minValue: 1,
+    })
+    amount: number,
+    interaction: CommandInteraction,
+  ) {
+    await interaction.deferReply();
+
+    if (target.id === interaction.user.id) {
+      return interaction.editReply(
+        '❌ Tu ne peux pas te transférer des pièces à toi-même.',
+      );
+    }
+    if (target.bot) {
+      return interaction.editReply(
+        '❌ Tu ne peux pas envoyer des pièces à un bot.',
+      );
+    }
+
+    const sender = await this.prisma.user.findFirst({
+      where: { discordId: interaction.user.id },
+      include: { profile: true },
+    });
+
+    const senderBalance = sender?.profile?.currency ?? 0;
+    if (senderBalance < amount) {
+      const embed = new EmbedBuilder()
+        .setTitle('❌ Fonds insuffisants')
+        .setDescription(
+          `Tu n'as que **${senderBalance.toLocaleString('fr-FR')} pièces** mais tu veux en envoyer **${amount.toLocaleString('fr-FR')}**.`,
+        )
+        .setColor(Colors.Error);
+      return interaction.editReply({ embeds: [embed] });
+    }
+
+    let receiver = await this.prisma.user.findFirst({
+      where: { discordId: target.id },
+      include: { profile: true },
+    });
+
+    if (!receiver) {
+      receiver = await this.prisma.user.create({
+        data: {
+          discordId: target.id,
+          discordTag: target.username,
+          name: target.username,
+          email: `${target.id}@discord.placeholder`,
+          profile: { create: {} },
+        },
+        include: { profile: true },
+      });
+    }
+    if (!receiver.profile) {
+      await this.prisma.profile.create({ data: { userId: receiver.id } });
+    }
+
+    await this.prisma.$transaction([
+      this.prisma.profile.update({
+        where: { userId: sender?.id },
+        data: { currency: { decrement: amount } },
+      }),
+      this.prisma.profile.update({
+        where: { userId: receiver.id },
+        data: { currency: { increment: amount } },
+      }),
+    ]);
+
+    const embed = new EmbedBuilder()
+      .setTitle('💸 Transfert effectué')
+      .setDescription(
+        `**${interaction.user.displayName}** a envoyé **${amount.toLocaleString('fr-FR')} pièces** à **${target.username}** !`,
+      )
+      .addFields(
+        {
+          name: '📤 Expéditeur',
+          value: `${(senderBalance - amount).toLocaleString('fr-FR')} pièces restantes`,
+          inline: true,
+        },
+        {
+          name: '📥 Destinataire',
+          value: `+${amount.toLocaleString('fr-FR')} pièces`,
+          inline: true,
+        },
+      )
+      .setColor(Colors.Success)
+      .setTimestamp();
+
+    return interaction.editReply({ embeds: [embed] });
+  }
+
+  @Slash({
+    name: 'classement',
+    description: 'Top 10 des membres les plus riches',
+  })
+  async leaderboard(interaction: CommandInteraction) {
+    await interaction.deferReply();
+
+    const topProfiles = await this.prisma.profile.findMany({
+      where: { currency: { gt: 0 } },
+      orderBy: { currency: 'desc' },
+      take: 10,
+      include: { user: true },
+    });
+
+    if (topProfiles.length === 0) {
+      return interaction.editReply(
+        '❌ Personne ne possède de pièces pour le moment.',
+      );
+    }
+
+    const medals = ['🥇', '🥈', '🥉'];
+    const lines = topProfiles.map((p, i) => {
+      const prefix = medals[i] ?? `**${i + 1}.**`;
+      const name =
+        p.user.globalName || p.user.name || p.user.discordTag || 'Inconnu';
+      return `${prefix} ${name} — **${p.currency.toLocaleString('fr-FR')}** pièces`;
+    });
+
+    const userProfile = await this.prisma.profile.findFirst({
+      where: { user: { discordId: interaction.user.id } },
+    });
+    const userRank = userProfile
+      ? (await this.prisma.profile.count({
+          where: { currency: { gt: userProfile.currency } },
+        })) + 1
+      : null;
+
+    const embed = new EmbedBuilder()
+      .setTitle('💰 Classement Économie')
+      .setDescription(lines.join('\n'))
+      .setColor(Colors.Secondary)
+      .setTimestamp();
+
+    if (userRank && userProfile) {
+      embed.setFooter({
+        text: `Votre rang : #${userRank} (${userProfile.currency.toLocaleString('fr-FR')} pièces)`,
+      });
+    }
+
+    return interaction.editReply({ embeds: [embed] });
+  }
 }
