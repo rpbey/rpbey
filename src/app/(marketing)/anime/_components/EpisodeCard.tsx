@@ -1,6 +1,6 @@
 'use client';
 
-import { PlayArrow } from '@mui/icons-material';
+import { CheckCircle, PlayArrow } from '@mui/icons-material';
 import { Box, Typography } from '@mui/material';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -21,6 +21,12 @@ function formatDuration(seconds: number): string {
   return `${m}:${s.toString().padStart(2, '0')}`;
 }
 
+// Generate a deterministic gradient based on episode number
+function episodeGradient(num: number): string {
+  const hue = (num * 37 + 200) % 360;
+  return `linear-gradient(135deg, hsl(${hue}, 30%, 12%) 0%, hsl(${(hue + 40) % 360}, 25%, 8%) 100%)`;
+}
+
 export function EpisodeCard({
   seriesSlug,
   number,
@@ -30,6 +36,8 @@ export function EpisodeCard({
   duration,
   progress,
 }: EpisodeCardProps) {
+  const isCompleted = progress != null && progress >= 0.9;
+
   return (
     <Link
       href={`/anime/${seriesSlug}/${number}`}
@@ -43,17 +51,23 @@ export function EpisodeCard({
           '&:hover': {
             transform: { md: 'scale(1.03)' },
             '& .play-overlay': { opacity: 1 },
+            '& .ep-thumb': {
+              borderColor: 'rgba(255,255,255,0.15)',
+            },
           },
         }}
       >
         {/* Thumbnail */}
         <Box
+          className="ep-thumb"
           sx={{
             position: 'relative',
             aspectRatio: '16/9',
             borderRadius: 2,
             overflow: 'hidden',
-            bgcolor: 'rgba(255,255,255,0.05)',
+            bgcolor: 'rgba(255,255,255,0.03)',
+            border: '1px solid rgba(255,255,255,0.06)',
+            transition: 'border-color 0.2s',
           }}
         >
           {thumbnailUrl ? (
@@ -72,11 +86,20 @@ export function EpisodeCard({
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                background: 'linear-gradient(135deg, #1a1a2e, #16213e)',
+                background: episodeGradient(number),
+                position: 'relative',
               }}
             >
-              <Typography variant="h5" sx={{ opacity: 0.3 }}>
-                EP {number}
+              <Typography
+                sx={{
+                  fontSize: { xs: '2rem', md: '2.5rem' },
+                  fontWeight: 900,
+                  color: 'rgba(255,255,255,0.06)',
+                  letterSpacing: '-0.02em',
+                  userSelect: 'none',
+                }}
+              >
+                {number}
               </Typography>
             </Box>
           )}
@@ -87,17 +110,38 @@ export function EpisodeCard({
               position: 'absolute',
               top: 8,
               left: 8,
-              px: 1,
-              py: 0.25,
+              px: 0.8,
+              py: 0.3,
               borderRadius: 1,
-              bgcolor: 'rgba(0,0,0,0.7)',
+              bgcolor: 'rgba(0,0,0,0.75)',
+              backdropFilter: 'blur(4px)',
               color: 'white',
-              fontSize: '0.7rem',
+              fontSize: '0.65rem',
               fontWeight: 700,
+              border: '1px solid rgba(255,255,255,0.1)',
             }}
           >
             EP {number}
           </Box>
+
+          {/* Completed badge */}
+          {isCompleted && (
+            <Box
+              sx={{
+                position: 'absolute',
+                top: 8,
+                right: 8,
+              }}
+            >
+              <CheckCircle
+                sx={{
+                  fontSize: 20,
+                  color: '#22c55e',
+                  filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.5))',
+                }}
+              />
+            </Box>
+          )}
 
           {/* Duration badge */}
           {duration > 0 && (
@@ -106,12 +150,13 @@ export function EpisodeCard({
                 position: 'absolute',
                 bottom: 8,
                 right: 8,
-                px: 1,
-                py: 0.25,
+                px: 0.8,
+                py: 0.3,
                 borderRadius: 1,
-                bgcolor: 'rgba(0,0,0,0.7)',
-                color: 'white',
-                fontSize: '0.7rem',
+                bgcolor: 'rgba(0,0,0,0.75)',
+                backdropFilter: 'blur(4px)',
+                color: 'rgba(255,255,255,0.8)',
+                fontSize: '0.65rem',
                 fontWeight: 600,
               }}
             >
@@ -128,23 +173,24 @@ export function EpisodeCard({
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              bgcolor: 'rgba(0,0,0,0.4)',
+              bgcolor: 'rgba(0,0,0,0.45)',
               opacity: 0,
               transition: 'opacity 0.2s',
             }}
           >
             <Box
               sx={{
-                width: 48,
-                height: 48,
+                width: 44,
+                height: 44,
                 borderRadius: '50%',
-                bgcolor: 'rgba(255,255,255,0.9)',
+                bgcolor: 'rgba(255,255,255,0.95)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
+                boxShadow: '0 4px 15px rgba(0,0,0,0.3)',
               }}
             >
-              <PlayArrow sx={{ color: '#0a0a0a', fontSize: 28 }} />
+              <PlayArrow sx={{ color: '#0a0a0a', fontSize: 24 }} />
             </Box>
           </Box>
 
@@ -157,14 +203,14 @@ export function EpisodeCard({
                 left: 0,
                 right: 0,
                 height: 3,
-                bgcolor: 'rgba(255,255,255,0.2)',
+                bgcolor: 'rgba(255,255,255,0.15)',
               }}
             >
               <Box
                 sx={{
                   height: '100%',
                   width: `${Math.min(progress * 100, 100)}%`,
-                  bgcolor: '#dc2626',
+                  bgcolor: isCompleted ? '#22c55e' : '#dc2626',
                   borderRadius: '0 1px 0 0',
                 }}
               />
@@ -177,11 +223,12 @@ export function EpisodeCard({
           variant="body2"
           fontWeight={600}
           sx={{
-            mt: 1,
-            color: 'text.primary',
+            mt: 0.8,
+            color: isCompleted ? 'rgba(255,255,255,0.5)' : 'text.primary',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
+            fontSize: '0.8rem',
           }}
         >
           {titleFr || title}

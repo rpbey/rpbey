@@ -22,14 +22,6 @@ interface EpisodeViewerProps {
   duration: number;
 }
 
-const SOURCE_LABELS: Record<string, string> = {
-  YOUTUBE: 'YouTube',
-  DAILYMOTION: 'Dailymotion',
-  MP4: 'MP4',
-  HLS: 'HLS',
-  IFRAME: 'Lecteur',
-};
-
 function getSourceLabel(source: Source): string {
   const url = source.url;
   if (url.includes('sibnet.ru')) return 'Sibnet';
@@ -40,7 +32,7 @@ function getSourceLabel(source: Source): string {
     return 'YouTube';
   if (url.includes('drive.google.com')) return 'Google Drive';
   if (url.includes('sendvid.com')) return 'SendVid';
-  return SOURCE_LABELS[source.type] || 'Lecteur';
+  return source.type === 'MP4' ? 'MP4' : 'Lecteur';
 }
 
 function isDownloadSource(source: Source): boolean {
@@ -61,24 +53,25 @@ export function EpisodeViewer({
   episodeId,
   duration,
 }: EpisodeViewerProps) {
-  // Separate streaming sources from download links
   const streamingSources = sources.filter((s) => !isDownloadSource(s));
   const downloadSources = sources.filter(isDownloadSource);
 
-  // Available languages
   const languages = [...new Set(streamingSources.map((s) => s.language))];
   const [selectedLang, setSelectedLang] = useState(
     languages.includes('VOSTFR') ? 'VOSTFR' : languages[0] || 'VOSTFR',
   );
 
-  // Filter by language
   const langSources = streamingSources.filter(
     (s) => s.language === selectedLang,
   );
 
-  // Active source index
   const [activeIdx, setActiveIdx] = useState(0);
   const activeSource = langSources[activeIdx] || langSources[0];
+
+  const hasControls =
+    languages.length > 1 ||
+    langSources.length > 1 ||
+    downloadSources.length > 0;
 
   if (!activeSource) {
     return (
@@ -90,6 +83,7 @@ export function EpisodeViewer({
           justifyContent: 'center',
           bgcolor: '#111',
           borderRadius: { xs: 0, md: 3 },
+          border: '1px solid rgba(255,255,255,0.05)',
         }}
       >
         <Typography color="text.secondary">
@@ -111,123 +105,147 @@ export function EpisodeViewer({
         duration={duration}
       />
 
-      {/* Controls bar */}
-      <Box
-        sx={{
-          mt: 1.5,
-          display: 'flex',
-          flexWrap: 'wrap',
-          alignItems: 'center',
-          gap: 1.5,
-        }}
-      >
-        {/* Language selector */}
-        {languages.length > 1 && (
-          <Stack direction="row" spacing={0.5} alignItems="center">
-            <Language sx={{ color: 'text.secondary', fontSize: 18 }} />
-            {languages.map((lang) => (
-              <Chip
-                key={lang}
-                label={lang}
-                size="small"
-                onClick={() => {
-                  setSelectedLang(lang);
-                  setActiveIdx(0);
-                }}
-                sx={{
-                  fontWeight: 700,
-                  fontSize: '0.7rem',
-                  bgcolor:
-                    selectedLang === lang
-                      ? '#dc2626'
-                      : 'rgba(255,255,255,0.08)',
-                  color: selectedLang === lang ? 'white' : 'text.secondary',
-                  '&:hover': {
+      {/* Controls bar — glassmorphism */}
+      {hasControls && (
+        <Box
+          sx={{
+            mt: 1,
+            mx: { xs: 1, md: 0 },
+            px: 2,
+            py: 1,
+            display: 'flex',
+            flexWrap: 'wrap',
+            alignItems: 'center',
+            gap: 1.5,
+            borderRadius: 2.5,
+            bgcolor: 'rgba(255,255,255,0.03)',
+            backdropFilter: 'blur(12px)',
+            border: '1px solid rgba(255,255,255,0.06)',
+          }}
+        >
+          {/* Language selector */}
+          {languages.length > 1 && (
+            <Stack direction="row" spacing={0.5} alignItems="center">
+              <Language sx={{ color: 'rgba(255,255,255,0.3)', fontSize: 16 }} />
+              {languages.map((lang) => (
+                <Chip
+                  key={lang}
+                  label={lang}
+                  size="small"
+                  onClick={() => {
+                    setSelectedLang(lang);
+                    setActiveIdx(0);
+                  }}
+                  sx={{
+                    height: 26,
+                    fontWeight: 700,
+                    fontSize: '0.7rem',
                     bgcolor:
                       selectedLang === lang
                         ? '#dc2626'
-                        : 'rgba(255,255,255,0.15)',
-                  },
-                }}
-              />
-            ))}
-          </Stack>
-        )}
+                        : 'rgba(255,255,255,0.06)',
+                    color:
+                      selectedLang === lang ? 'white' : 'rgba(255,255,255,0.5)',
+                    border:
+                      selectedLang === lang
+                        ? '1px solid #dc2626'
+                        : '1px solid rgba(255,255,255,0.08)',
+                    '&:hover': {
+                      bgcolor:
+                        selectedLang === lang
+                          ? '#dc2626'
+                          : 'rgba(255,255,255,0.1)',
+                    },
+                  }}
+                />
+              ))}
+            </Stack>
+          )}
 
-        {/* Source selector */}
-        {langSources.length > 1 && (
-          <Stack direction="row" spacing={0.5} alignItems="center">
-            <OndemandVideo sx={{ color: 'text.secondary', fontSize: 18 }} />
-            {langSources.map((src, i) => (
-              <Chip
-                key={src.id}
-                label={getSourceLabel(src)}
-                size="small"
-                onClick={() => setActiveIdx(i)}
-                sx={{
-                  fontWeight: 600,
-                  fontSize: '0.7rem',
-                  bgcolor:
-                    activeIdx === i
-                      ? 'rgba(255,255,255,0.15)'
-                      : 'rgba(255,255,255,0.05)',
-                  color: activeIdx === i ? 'white' : 'text.secondary',
-                  border:
-                    activeIdx === i
-                      ? '1px solid rgba(255,255,255,0.3)'
-                      : '1px solid transparent',
-                  '&:hover': {
-                    bgcolor: 'rgba(255,255,255,0.12)',
-                  },
-                }}
-              />
-            ))}
-          </Stack>
-        )}
-
-        {/* Quality badge */}
-        {activeSource.quality && activeSource.quality !== '720p' && (
-          <Chip
-            label={activeSource.quality}
-            size="small"
-            sx={{
-              fontWeight: 700,
-              fontSize: '0.65rem',
-              bgcolor: 'rgba(255,255,255,0.05)',
-              color: 'text.secondary',
-            }}
-          />
-        )}
-
-        {/* Spacer */}
-        <Box sx={{ flexGrow: 1 }} />
-
-        {/* Download button */}
-        {downloadSources.length > 0 && (
-          <Tooltip title="Télécharger (Google Drive)">
-            <Button
-              component="a"
-              href={downloadSources[0]?.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              size="small"
-              startIcon={<Download />}
+          {/* Divider */}
+          {languages.length > 1 && langSources.length > 1 && (
+            <Box
               sx={{
-                color: 'text.secondary',
-                fontSize: '0.75rem',
-                textTransform: 'none',
-                borderRadius: 2,
-                '&:hover': {
-                  bgcolor: 'rgba(255,255,255,0.08)',
-                  color: 'white',
-                },
+                width: 1,
+                height: 20,
+                bgcolor: 'rgba(255,255,255,0.08)',
+                display: { xs: 'none', md: 'block' },
               }}
-            >
-              Télécharger
-            </Button>
-          </Tooltip>
-        )}
-      </Box>
+            />
+          )}
+
+          {/* Source selector */}
+          {langSources.length > 1 && (
+            <Stack direction="row" spacing={0.5} alignItems="center">
+              <OndemandVideo
+                sx={{ color: 'rgba(255,255,255,0.3)', fontSize: 16 }}
+              />
+              {langSources.map((src, i) => (
+                <Chip
+                  key={src.id}
+                  label={getSourceLabel(src)}
+                  size="small"
+                  onClick={() => setActiveIdx(i)}
+                  sx={{
+                    height: 26,
+                    fontWeight: 600,
+                    fontSize: '0.7rem',
+                    bgcolor:
+                      activeIdx === i
+                        ? 'rgba(255,255,255,0.12)'
+                        : 'transparent',
+                    color: activeIdx === i ? 'white' : 'rgba(255,255,255,0.4)',
+                    border:
+                      activeIdx === i
+                        ? '1px solid rgba(255,255,255,0.25)'
+                        : '1px solid rgba(255,255,255,0.06)',
+                    '&:hover': {
+                      bgcolor: 'rgba(255,255,255,0.08)',
+                      color: 'white',
+                    },
+                    transition: 'all 0.15s ease',
+                  }}
+                />
+              ))}
+            </Stack>
+          )}
+
+          {/* Spacer */}
+          <Box sx={{ flexGrow: 1 }} />
+
+          {/* Download */}
+          {downloadSources.length > 0 && (
+            <Tooltip title="Télécharger (Google Drive)" arrow>
+              <Button
+                component="a"
+                href={downloadSources[0]?.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                size="small"
+                startIcon={<Download sx={{ fontSize: '16px !important' }} />}
+                sx={{
+                  color: 'rgba(255,255,255,0.4)',
+                  fontSize: '0.72rem',
+                  textTransform: 'none',
+                  borderRadius: 2,
+                  px: 1.5,
+                  minWidth: 'auto',
+                  border: '1px solid rgba(255,255,255,0.06)',
+                  '&:hover': {
+                    bgcolor: 'rgba(255,255,255,0.06)',
+                    color: 'white',
+                    borderColor: 'rgba(255,255,255,0.15)',
+                  },
+                }}
+              >
+                <Box sx={{ display: { xs: 'none', sm: 'inline' } }}>
+                  Télécharger
+                </Box>
+              </Button>
+            </Tooltip>
+          )}
+        </Box>
+      )}
     </Box>
   );
 }

@@ -5,7 +5,7 @@ import { Box, Button, Typography } from '@mui/material';
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 interface FeaturedSeries {
   id: string;
@@ -27,16 +27,35 @@ const GENERATION_COLORS: Record<string, string> = {
   X: '#7B1FA2',
 };
 
+const GENERATION_NAMES: Record<string, string> = {
+  ORIGINAL: 'Série Originale',
+  METAL: 'Metal Saga',
+  BURST: 'Burst',
+  X: 'Beyblade X',
+};
+
+const ROTATION_MS = 8000;
+
 export function AnimeHero({ featured }: { featured: FeaturedSeries[] }) {
   const [current, setCurrent] = useState(0);
+  const [progress, setProgress] = useState(0);
+  const startRef = useRef(Date.now());
 
   const next = useCallback(() => {
     setCurrent((prev) => (prev + 1) % featured.length);
+    startRef.current = Date.now();
+    setProgress(0);
   }, [featured.length]);
 
+  // Auto-rotation with progress
   useEffect(() => {
     if (featured.length <= 1) return;
-    const interval = setInterval(next, 8000);
+    const interval = setInterval(() => {
+      const elapsed = Date.now() - startRef.current;
+      const pct = Math.min(elapsed / ROTATION_MS, 1);
+      setProgress(pct);
+      if (pct >= 1) next();
+    }, 50);
     return () => clearInterval(interval);
   }, [featured.length, next]);
 
@@ -52,7 +71,7 @@ export function AnimeHero({ featured }: { featured: FeaturedSeries[] }) {
       sx={{
         position: 'relative',
         width: '100%',
-        height: { xs: 400, sm: 500, md: 600 },
+        height: { xs: 420, sm: 500, md: 620 },
         overflow: 'hidden',
         mb: 4,
       }}
@@ -62,10 +81,10 @@ export function AnimeHero({ featured }: { featured: FeaturedSeries[] }) {
         <Box
           key={series.id}
           component={motion.div}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+          initial={{ opacity: 0, scale: 1.05 }}
+          animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 1 }}
           sx={{ position: 'absolute', inset: 0 }}
         >
           {imageUrl && (
@@ -81,19 +100,30 @@ export function AnimeHero({ featured }: { featured: FeaturedSeries[] }) {
         </Box>
       </AnimatePresence>
 
-      {/* Gradient overlays */}
+      {/* Gradient overlays — deeper Netflix-style */}
       <Box
         sx={{
           position: 'absolute',
           inset: 0,
-          background: `linear-gradient(to top, #0a0a0a 0%, transparent 60%)`,
+          background:
+            'linear-gradient(to top, #0a0a0a 0%, rgba(10,10,10,0.7) 30%, transparent 60%)',
         }}
       />
       <Box
         sx={{
           position: 'absolute',
           inset: 0,
-          background: `linear-gradient(to right, #0a0a0a 0%, transparent 50%)`,
+          background:
+            'linear-gradient(to right, rgba(10,10,10,0.9) 0%, rgba(10,10,10,0.4) 40%, transparent 70%)',
+        }}
+      />
+      {/* Vignette top */}
+      <Box
+        sx={{
+          position: 'absolute',
+          inset: 0,
+          background:
+            'linear-gradient(to bottom, rgba(10,10,10,0.4) 0%, transparent 20%)',
         }}
       />
 
@@ -102,34 +132,47 @@ export function AnimeHero({ featured }: { featured: FeaturedSeries[] }) {
         <Box
           key={`content-${series.id}`}
           component={motion.div}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
+          initial={{ opacity: 0, x: -30 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: 30 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
           sx={{
             position: 'absolute',
-            bottom: { xs: 40, md: 60 },
-            left: { xs: 16, md: 48 },
-            right: { xs: 16, md: '50%' },
+            bottom: { xs: 60, md: 80 },
+            left: { xs: 20, md: 56 },
+            right: { xs: 20, md: '50%' },
             zIndex: 2,
           }}
         >
           {/* Generation badge */}
           <Box
             sx={{
-              display: 'inline-block',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 1,
               px: 1.5,
               py: 0.5,
               mb: 2,
               borderRadius: 1,
-              bgcolor: accentColor,
+              bgcolor: `${accentColor}CC`,
+              backdropFilter: 'blur(8px)',
               color: 'white',
-              fontSize: '0.75rem',
+              fontSize: '0.7rem',
               fontWeight: 700,
-              letterSpacing: '0.05em',
+              letterSpacing: '0.08em',
+              textTransform: 'uppercase',
             }}
           >
-            {series.generation} · {series.year}
+            <Box
+              sx={{
+                width: 6,
+                height: 6,
+                borderRadius: '50%',
+                bgcolor: 'white',
+              }}
+            />
+            {GENERATION_NAMES[series.generation] || series.generation} ·{' '}
+            {series.year} · {series.episodeCount} épisodes
           </Box>
 
           <Typography
@@ -138,10 +181,11 @@ export function AnimeHero({ featured }: { featured: FeaturedSeries[] }) {
             fontWeight={900}
             sx={{
               color: 'white',
-              mb: 1,
-              fontSize: { xs: '1.75rem', sm: '2.25rem', md: '3rem' },
-              lineHeight: 1.1,
-              textShadow: '0 2px 12px rgba(0,0,0,0.5)',
+              mb: 1.5,
+              fontSize: { xs: '1.75rem', sm: '2.5rem', md: '3.25rem' },
+              lineHeight: 1.05,
+              letterSpacing: '-0.02em',
+              textShadow: '0 4px 20px rgba(0,0,0,0.6)',
             }}
           >
             {series.titleFr || series.title}
@@ -151,33 +195,42 @@ export function AnimeHero({ featured }: { featured: FeaturedSeries[] }) {
             <Typography
               variant="body1"
               sx={{
-                color: 'rgba(255,255,255,0.8)',
+                color: 'rgba(255,255,255,0.75)',
                 mb: 3,
-                maxWidth: 500,
+                maxWidth: 480,
+                lineHeight: 1.6,
                 display: '-webkit-box',
-                WebkitLineClamp: 2,
+                WebkitLineClamp: 3,
                 WebkitBoxOrient: 'vertical',
                 overflow: 'hidden',
+                fontSize: { xs: '0.85rem', md: '0.95rem' },
               }}
             >
               {series.synopsis}
             </Typography>
           )}
 
-          <Box sx={{ display: 'flex', gap: 2 }}>
+          <Box sx={{ display: 'flex', gap: 1.5 }}>
             <Button
               component={Link}
-              href={`/anime/${series.slug}`}
+              href={`/anime/${series.slug}/1`}
               variant="contained"
               size="large"
               startIcon={<PlayArrow />}
               sx={{
                 bgcolor: 'white',
                 color: '#0a0a0a',
-                fontWeight: 700,
+                fontWeight: 800,
                 borderRadius: 2,
-                px: 3,
-                '&:hover': { bgcolor: 'rgba(255,255,255,0.85)' },
+                px: { xs: 2.5, md: 3.5 },
+                py: 1.2,
+                fontSize: '0.9rem',
+                textTransform: 'none',
+                '&:hover': {
+                  bgcolor: 'rgba(255,255,255,0.85)',
+                  transform: 'scale(1.02)',
+                },
+                transition: 'all 0.2s ease',
               }}
             >
               Regarder
@@ -189,14 +242,19 @@ export function AnimeHero({ featured }: { featured: FeaturedSeries[] }) {
               size="large"
               startIcon={<InfoOutlined />}
               sx={{
-                borderColor: 'rgba(255,255,255,0.5)',
+                borderColor: 'rgba(255,255,255,0.4)',
                 color: 'white',
                 fontWeight: 700,
                 borderRadius: 2,
-                px: 3,
+                px: { xs: 2.5, md: 3.5 },
+                py: 1.2,
+                fontSize: '0.9rem',
+                textTransform: 'none',
+                backdropFilter: 'blur(8px)',
+                bgcolor: 'rgba(255,255,255,0.06)',
                 '&:hover': {
                   borderColor: 'white',
-                  bgcolor: 'rgba(255,255,255,0.1)',
+                  bgcolor: 'rgba(255,255,255,0.12)',
                 },
               }}
             >
@@ -206,31 +264,59 @@ export function AnimeHero({ featured }: { featured: FeaturedSeries[] }) {
         </Box>
       </AnimatePresence>
 
-      {/* Dots indicator */}
+      {/* Bottom dots + progress bar */}
       {featured.length > 1 && (
         <Box
           sx={{
             position: 'absolute',
-            bottom: 16,
-            right: { xs: 16, md: 48 },
+            bottom: 20,
+            right: { xs: 20, md: 56 },
             display: 'flex',
-            gap: 1,
+            alignItems: 'center',
+            gap: 0.75,
             zIndex: 2,
           }}
         >
           {featured.map((item, i) => (
             <Box
               key={item.id}
-              onClick={() => setCurrent(i)}
-              sx={{
-                width: i === current ? 24 : 8,
-                height: 8,
-                borderRadius: 4,
-                bgcolor: i === current ? 'white' : 'rgba(255,255,255,0.4)',
-                cursor: 'pointer',
-                transition: 'all 0.3s ease',
+              onClick={() => {
+                setCurrent(i);
+                startRef.current = Date.now();
+                setProgress(0);
               }}
-            />
+              sx={{
+                position: 'relative',
+                width: i === current ? 32 : 10,
+                height: 4,
+                borderRadius: 2,
+                bgcolor:
+                  i === current
+                    ? 'rgba(255,255,255,0.3)'
+                    : 'rgba(255,255,255,0.25)',
+                cursor: 'pointer',
+                transition: 'all 0.4s cubic-bezier(0.4,0,0.2,1)',
+                overflow: 'hidden',
+                '&:hover': {
+                  bgcolor: 'rgba(255,255,255,0.5)',
+                },
+              }}
+            >
+              {i === current && (
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    height: '100%',
+                    width: `${progress * 100}%`,
+                    bgcolor: 'white',
+                    borderRadius: 2,
+                    transition: 'width 0.05s linear',
+                  }}
+                />
+              )}
+            </Box>
           ))}
         </Box>
       )}

@@ -79,14 +79,16 @@ export function AnimeCarousel({ generation, series }: AnimeCarouselProps) {
             color: 'text.primary',
             display: 'flex',
             alignItems: 'center',
-            gap: 1,
+            gap: 1.5,
+            fontSize: { xs: '0.95rem', md: '1.15rem' },
             '&::before': {
               content: '""',
               width: 4,
-              height: 24,
+              height: 28,
               bgcolor: accentColor,
               borderRadius: 1,
               display: 'inline-block',
+              boxShadow: `0 0 12px ${accentColor}60`,
             },
           }}
         >
@@ -100,7 +102,9 @@ export function AnimeCarousel({ generation, series }: AnimeCarouselProps) {
             color: accentColor,
             fontWeight: 600,
             textDecoration: 'none',
-            '&:hover': { textDecoration: 'underline' },
+            fontSize: '0.8rem',
+            transition: 'opacity 0.2s',
+            '&:hover': { opacity: 0.8 },
           }}
         >
           Voir tout →
@@ -108,7 +112,46 @@ export function AnimeCarousel({ generation, series }: AnimeCarouselProps) {
       </Box>
 
       {/* Carousel */}
-      <Box sx={{ position: 'relative', '&:hover .scroll-btn': { opacity: 1 } }}>
+      <Box
+        sx={{
+          position: 'relative',
+          '&:hover .scroll-btn': { opacity: 1 },
+        }}
+      >
+        {/* Left fade */}
+        {canScrollLeft && (
+          <Box
+            sx={{
+              position: 'absolute',
+              left: 0,
+              top: 0,
+              bottom: 40,
+              width: 60,
+              background: 'linear-gradient(to right, #0a0a0a, transparent)',
+              zIndex: 5,
+              pointerEvents: 'none',
+              display: { xs: 'none', md: 'block' },
+            }}
+          />
+        )}
+
+        {/* Right fade */}
+        {canScrollRight && (
+          <Box
+            sx={{
+              position: 'absolute',
+              right: 0,
+              top: 0,
+              bottom: 40,
+              width: 60,
+              background: 'linear-gradient(to left, #0a0a0a, transparent)',
+              zIndex: 5,
+              pointerEvents: 'none',
+              display: { xs: 'none', md: 'block' },
+            }}
+          />
+        )}
+
         {/* Left arrow */}
         {canScrollLeft && (
           <IconButton
@@ -117,17 +160,24 @@ export function AnimeCarousel({ generation, series }: AnimeCarouselProps) {
             sx={{
               position: 'absolute',
               left: 8,
-              top: '40%',
+              top: '35%',
               transform: 'translateY(-50%)',
               zIndex: 10,
-              bgcolor: 'rgba(0,0,0,0.7)',
+              width: 40,
+              height: 40,
+              bgcolor: 'rgba(20,20,20,0.85)',
+              backdropFilter: 'blur(8px)',
               color: 'white',
-              opacity: { xs: 1, md: 0 },
-              transition: 'opacity 0.2s',
-              '&:hover': { bgcolor: 'rgba(0,0,0,0.9)' },
+              border: '1px solid rgba(255,255,255,0.1)',
+              opacity: { xs: 0.8, md: 0 },
+              transition: 'all 0.2s',
+              '&:hover': {
+                bgcolor: 'rgba(40,40,40,0.95)',
+                transform: 'translateY(-50%) scale(1.1)',
+              },
             }}
           >
-            <ChevronLeft />
+            <ChevronLeft fontSize="small" />
           </IconButton>
         )}
 
@@ -139,17 +189,24 @@ export function AnimeCarousel({ generation, series }: AnimeCarouselProps) {
             sx={{
               position: 'absolute',
               right: 8,
-              top: '40%',
+              top: '35%',
               transform: 'translateY(-50%)',
               zIndex: 10,
-              bgcolor: 'rgba(0,0,0,0.7)',
+              width: 40,
+              height: 40,
+              bgcolor: 'rgba(20,20,20,0.85)',
+              backdropFilter: 'blur(8px)',
               color: 'white',
-              opacity: { xs: 1, md: 0 },
-              transition: 'opacity 0.2s',
-              '&:hover': { bgcolor: 'rgba(0,0,0,0.9)' },
+              border: '1px solid rgba(255,255,255,0.1)',
+              opacity: { xs: 0.8, md: 0 },
+              transition: 'all 0.2s',
+              '&:hover': {
+                bgcolor: 'rgba(40,40,40,0.95)',
+                transform: 'translateY(-50%) scale(1.1)',
+              },
             }}
           >
-            <ChevronRight />
+            <ChevronRight fontSize="small" />
           </IconButton>
         )}
 
@@ -158,12 +215,13 @@ export function AnimeCarousel({ generation, series }: AnimeCarouselProps) {
           onScroll={handleScroll}
           sx={{
             display: 'flex',
-            gap: 2,
+            gap: { xs: 1.5, md: 2 },
             px: { xs: 2, md: 4 },
             overflowX: 'auto',
             scrollSnapType: 'x mandatory',
             scrollbarWidth: 'none',
             '&::-webkit-scrollbar': { display: 'none' },
+            py: 1,
           }}
         >
           {series.map((s) => (
