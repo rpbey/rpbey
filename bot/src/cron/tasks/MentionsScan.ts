@@ -81,7 +81,6 @@ export async function mentionsScanTask() {
 
   // Write to Redis
   try {
-    await redis.connect().catch(() => {});
     await clearMentions();
 
     // Pipeline for performance
