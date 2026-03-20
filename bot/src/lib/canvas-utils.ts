@@ -1389,16 +1389,44 @@ export async function generateGachaCard(data: GachaCardData): Promise<Buffer> {
   ctx.fillStyle = theme.accentColor;
   ctx.fillText(seriesText, W / 2, seriesY + 2);
 
-  // Beyblade
+  // Beyblade section with box
   if (data.beyblade) {
-    ctx.font = '14px GoogleSans';
-    ctx.fillStyle = 'rgba(255,255,255,0.7)';
-    ctx.fillText(`🌀 ${data.beyblade}`, W / 2, seriesY + 28);
+    const beyY = seriesY + 16;
+    const beyBoxW = W - 56;
+    ctx.fillStyle = 'rgba(255,255,255,0.03)';
+    ctx.strokeStyle = `${theme.borderColor}30`;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.roundRect(28, beyY, beyBoxW, 28, 6);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.roundRect(28, beyY, beyBoxW, 28, 6);
+    ctx.stroke();
+
+    // Beyblade icon circle
+    ctx.fillStyle = `${theme.borderColor}40`;
+    ctx.beginPath();
+    ctx.arc(46, beyY + 14, 10, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.font = '10px GoogleSans';
+    ctx.fillStyle = '#ffffff';
+    ctx.textAlign = 'center';
+    ctx.fillText('🌀', 46, beyY + 18);
+
+    // Beyblade name
+    ctx.font = 'bold 11px GoogleSans';
+    ctx.fillStyle = theme.accentColor;
+    ctx.textAlign = 'left';
+    let beyName = data.beyblade;
+    if (ctx.measureText(beyName).width > beyBoxW - 40)
+      beyName = `${beyName.substring(0, 25)}…`;
+    ctx.fillText(beyName, 62, beyY + 18);
+    ctx.textAlign = 'center';
   }
 
   // Description (word-wrapped)
   if (data.description) {
-    const descY = seriesY + (data.beyblade ? 50 : 28);
+    const descY = seriesY + (data.beyblade ? 58 : 28);
     ctx.font = '11px GoogleSans';
     ctx.fillStyle = 'rgba(255,255,255,0.5)';
     const words = data.description.split(' ');
@@ -2258,6 +2286,241 @@ export async function generateBattleResultCard(
     W / 2,
     H - 25,
   );
+
+  return canvas.toBuffer('image/png');
+}
+
+// ─── Gacha Duel Canvas ──────────────────────────────────────────────────────
+
+export interface GachaDuelData {
+  cardA: {
+    name: string;
+    rarity: string;
+    beyblade: string;
+    imageUrl: string | null;
+    series: string;
+  };
+  cardB: {
+    name: string;
+    rarity: string;
+    beyblade: string;
+    imageUrl: string | null;
+    series: string;
+  };
+  playerA: string;
+  playerB: string;
+  winner: 'A' | 'B';
+  finishMessage: string;
+  scoreA: number;
+  scoreB: number;
+  coinReward: number;
+}
+
+export async function generateGachaDuelCard(
+  data: GachaDuelData,
+): Promise<Buffer> {
+  const W = 900,
+    H = 440;
+  const canvas = createCanvas(W, H);
+  const ctx = canvas.getContext('2d');
+
+  // Background
+  const bg = ctx.createLinearGradient(0, 0, W, H);
+  bg.addColorStop(0, '#0a0014');
+  bg.addColorStop(0.5, '#140a0a');
+  bg.addColorStop(1, '#000a14');
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, W, H);
+
+  // Center glow
+  const vsGlow = ctx.createRadialGradient(W / 2, H / 2, 10, W / 2, H / 2, 200);
+  vsGlow.addColorStop(0, 'rgba(220,38,38,0.15)');
+  vsGlow.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = vsGlow;
+  ctx.fillRect(0, 0, W, H);
+
+  ctx.strokeStyle = 'rgba(220,38,38,0.25)';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.roundRect(6, 6, W - 12, H - 12, 14);
+  ctx.stroke();
+
+  const drawSide = async (
+    card: typeof data.cardA,
+    player: string,
+    x: number,
+    isWinner: boolean,
+    score: number,
+  ) => {
+    const theme = RARITY_THEMES[card.rarity] || RARITY_THEMES.COMMON!;
+    const cW = 340,
+      cH = 360,
+      cy = 30;
+
+    const cg = ctx.createLinearGradient(x, cy, x, cy + cH);
+    cg.addColorStop(0, theme.bgGradient[0]);
+    cg.addColorStop(1, theme.bgGradient[1]);
+    ctx.fillStyle = cg;
+    ctx.beginPath();
+    ctx.roundRect(x, cy, cW, cH, 12);
+    ctx.fill();
+
+    if (isWinner) {
+      ctx.shadowColor = theme.glowColor;
+      ctx.shadowBlur = 20;
+    }
+    ctx.strokeStyle = isWinner ? theme.borderColor : `${theme.borderColor}60`;
+    ctx.lineWidth = isWinner ? 3 : 1.5;
+    ctx.beginPath();
+    ctx.roundRect(x, cy, cW, cH, 12);
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+
+    if (isWinner) {
+      ctx.font = '24px GoogleSans';
+      ctx.textAlign = 'center';
+      ctx.fillText('👑', x + cW / 2, cy - 2);
+    }
+
+    // Rarity band
+    ctx.fillStyle = `${theme.borderColor}CC`;
+    ctx.beginPath();
+    ctx.roundRect(x + 4, cy + 4, cW - 8, 24, [10, 10, 0, 0]);
+    ctx.fill();
+    ctx.font = 'bold 11px GoogleSans';
+    ctx.fillStyle = '#fff';
+    ctx.textAlign = 'center';
+    ctx.fillText(
+      `${theme.label} · ${'★'.repeat(theme.stars)}${'☆'.repeat(5 - theme.stars)}`,
+      x + cW / 2,
+      cy + 20,
+    );
+
+    // Image
+    const imgY = cy + 32,
+      imgH = 155;
+    ctx.fillStyle = 'rgba(0,0,0,0.3)';
+    ctx.beginPath();
+    ctx.roundRect(x + 8, imgY, cW - 16, imgH, 8);
+    ctx.fill();
+    const img = await safeLoadImage(card.imageUrl);
+    if (img) {
+      ctx.save();
+      ctx.beginPath();
+      ctx.roundRect(x + 8, imgY, cW - 16, imgH, 8);
+      ctx.clip();
+      const a = img.width / img.height;
+      let dw = cW - 16,
+        dh = imgH;
+      if (a > dw / dh) dh = dw / a;
+      else dw = dh * a;
+      ctx.drawImage(
+        img,
+        x + 8 + (cW - 16 - dw) / 2,
+        imgY + (imgH - dh) / 2,
+        dw,
+        dh,
+      );
+      const vig = ctx.createLinearGradient(0, imgY, 0, imgY + imgH);
+      vig.addColorStop(0, 'rgba(0,0,0,0)');
+      vig.addColorStop(0.7, 'rgba(0,0,0,0)');
+      vig.addColorStop(1, 'rgba(0,0,0,0.6)');
+      ctx.fillStyle = vig;
+      ctx.fillRect(x + 8, imgY, cW - 16, imgH);
+      ctx.restore();
+    }
+    if (!isWinner) {
+      ctx.fillStyle = 'rgba(0,0,0,0.4)';
+      ctx.beginPath();
+      ctx.roundRect(x + 8, imgY, cW - 16, imgH, 8);
+      ctx.fill();
+      ctx.font = 'bold 36px GoogleSans';
+      ctx.fillStyle = 'rgba(239,68,68,0.4)';
+      ctx.textAlign = 'center';
+      ctx.fillText('✕', x + cW / 2, imgY + imgH / 2 + 14);
+    }
+
+    // Name + player
+    ctx.font = 'bold 18px GoogleSans';
+    ctx.fillStyle = isWinner ? '#ffffff' : 'rgba(255,255,255,0.5)';
+    ctx.textAlign = 'center';
+    let nm = card.name;
+    if (ctx.measureText(nm).width > cW - 24) nm = `${nm.substring(0, 18)}…`;
+    ctx.fillText(nm, x + cW / 2, imgY + imgH + 24);
+    ctx.font = '12px GoogleSans';
+    ctx.fillStyle = 'rgba(255,255,255,0.4)';
+    ctx.fillText(player, x + cW / 2, imgY + imgH + 42);
+
+    // Beyblade box
+    const beyY = imgY + imgH + 52;
+    ctx.fillStyle = 'rgba(255,255,255,0.03)';
+    ctx.strokeStyle = `${theme.borderColor}25`;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.roundRect(x + 12, beyY, cW - 24, 28, 6);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.roundRect(x + 12, beyY, cW - 24, 28, 6);
+    ctx.stroke();
+    ctx.font = 'bold 11px GoogleSans';
+    ctx.fillStyle = theme.accentColor;
+    ctx.textAlign = 'left';
+    let bey = card.beyblade;
+    if (ctx.measureText(`🌀 ${bey}`).width > cW - 40)
+      bey = `${bey.substring(0, 22)}…`;
+    ctx.fillText(`🌀 ${bey}`, x + 20, beyY + 18);
+
+    // Power bar
+    const barY = beyY + 36;
+    const barW = cW - 24;
+    const pct = Math.min(score / 100, 1);
+    ctx.fillStyle = 'rgba(255,255,255,0.06)';
+    ctx.beginPath();
+    ctx.roundRect(x + 12, barY, barW, 8, 4);
+    ctx.fill();
+    ctx.fillStyle = isWinner ? '#22c55e' : '#ef4444';
+    ctx.beginPath();
+    ctx.roundRect(x + 12, barY, barW * pct, 8, 4);
+    ctx.fill();
+    ctx.font = '10px GoogleSans';
+    ctx.fillStyle = 'rgba(255,255,255,0.4)';
+    ctx.textAlign = 'center';
+    ctx.fillText(`${Math.round(score)} PWR`, x + cW / 2, barY + 20);
+  };
+
+  await drawSide(
+    data.cardA,
+    data.playerA,
+    24,
+    data.winner === 'A',
+    data.scoreA,
+  );
+  await drawSide(
+    data.cardB,
+    data.playerB,
+    W - 364,
+    data.winner === 'B',
+    data.scoreB,
+  );
+
+  // Center VS
+  ctx.font = 'italic bold 48px GoogleSans';
+  ctx.fillStyle = 'rgba(255,255,255,0.06)';
+  ctx.textAlign = 'center';
+  ctx.fillText('VS', W / 2, H / 2 - 20);
+
+  // Finish banner
+  ctx.fillStyle = 'rgba(220,38,38,0.9)';
+  ctx.beginPath();
+  ctx.roundRect(W / 2 - 120, H / 2 - 5, 240, 32, 16);
+  ctx.fill();
+  ctx.font = 'bold 14px GoogleSans';
+  ctx.fillStyle = '#ffffff';
+  ctx.fillText(data.finishMessage, W / 2, H / 2 + 16);
+
+  ctx.font = '12px GoogleSans';
+  ctx.fillStyle = '#fbbf24';
+  ctx.fillText(`🪙 +${data.coinReward} au gagnant`, W / 2, H / 2 + 42);
 
   return canvas.toBuffer('image/png');
 }

@@ -1144,4 +1144,163 @@ export class EconomyGroup {
       ],
     });
   }
+
+  // ═══ /gacha duel — Card battle ═══
+  @Slash({
+    name: 'duel',
+    description: 'Fais combattre une carte contre un adversaire !',
+  })
+  async duel(
+    @SlashOption({
+      name: 'adversaire',
+      description: 'Ton adversaire',
+      required: true,
+      type: ApplicationCommandOptionType.User,
+    })
+    target: { id: string; displayName: string; bot?: boolean },
+    interaction: CommandInteraction,
+  ) {
+    if (target.id === interaction.user.id)
+      return interaction.reply({
+        content: '❌ Tu ne peux pas te combattre !',
+        ephemeral: true,
+      });
+    if (target.bot)
+      return interaction.reply({
+        content: '❌ Pas de duel contre un bot !',
+        ephemeral: true,
+      });
+
+    await interaction.deferReply();
+    const { userId: userIdA } = await this.resolve(interaction);
+
+    // Get random card from each player's collection
+    const invA = await this.prisma.cardInventory.findMany({
+      where: { userId: userIdA },
+      include: { card: true },
+    });
+    if (invA.length === 0)
+      return interaction.editReply({
+        embeds: [
+          new EmbedBuilder()
+            .setColor(Colors.Error)
+            .setDescription("Tu n'as aucune carte ! `/gacha gacha`"),
+        ],
+      });
+
+    // Resolve target user
+    let targetUser = await this.prisma.user.findUnique({
+      where: { discordId: target.id },
+    });
+    if (!targetUser)
+      targetUser = await this.prisma.user.create({
+        data: {
+          discordId: target.id,
+          name: target.displayName,
+          email: `${target.id}@discord.rpbey.fr`,
+        },
+      });
+
+    const invB = await this.prisma.cardInventory.findMany({
+      where: { userId: targetUser.id },
+      include: { card: true },
+    });
+    if (invB.length === 0)
+      return interaction.editReply({
+        embeds: [
+          new EmbedBuilder()
+            .setColor(Colors.Error)
+            .setDescription(`**${target.displayName}** n'a aucune carte !`),
+        ],
+      });
+
+    // Pick random card from each
+    const pickA = invA[Math.floor(Math.random() * invA.length)]?.card;
+    const pickB = invB[Math.floor(Math.random() * invB.length)]?.card;
+
+    // Calculate power based on rarity + random
+    const rarityPower: Record<string, number> = {
+      COMMON: 20,
+      RARE: 40,
+      EPIC: 60,
+      LEGENDARY: 80,
+      SECRET: 95,
+    };
+    const baseA = rarityPower[pickA.rarity] || 30;
+    const baseB = rarityPower[pickB.rarity] || 30;
+    const scoreA = baseA + Math.random() * 30;
+    const scoreB = baseB + Math.random() * 30;
+
+    const winner: 'A' | 'B' = scoreA >= scoreB ? 'A' : 'B';
+    const finishMessages = [
+      '⚡ X-TREME FINISH !',
+      '💥 BURST FINISH !',
+      '🔄 OVER FINISH !',
+      '🌀 SPIN FINISH !',
+    ];
+    const finishMsg =
+      finishMessages[Math.floor(Math.random() * finishMessages.length)]!;
+    const coinReward =
+      winner === 'A' ? Math.round(scoreA / 3) : Math.round(scoreB / 3);
+
+    // Reward winner
+    const winnerId = winner === 'A' ? userIdA : targetUser.id;
+    await this.prisma.profile.update({
+      where: { userId: winnerId },
+      data: { currency: { increment: coinReward } },
+    });
+    await this.prisma.currencyTransaction.create({
+      data: {
+        userId: winnerId,
+        amount: coinReward,
+        type: 'TOURNAMENT_REWARD',
+        note: `Duel gacha: ${pickA.name} vs ${pickB.name}`,
+      },
+    });
+
+    try {
+      const { generateGachaDuelCard } = await import(
+        '../../lib/canvas-utils.js'
+      );
+      const buffer = await generateGachaDuelCard({
+        cardA: {
+          name: pickA.name,
+          rarity: pickA.rarity,
+          beyblade: pickA.beyblade || '???',
+          imageUrl: pickA.imageUrl,
+          series: pickA.series,
+        },
+        cardB: {
+          name: pickB.name,
+          rarity: pickB.rarity,
+          beyblade: pickB.beyblade || '???',
+          imageUrl: pickB.imageUrl,
+          series: pickB.series,
+        },
+        playerA: interaction.user.displayName,
+        playerB: target.displayName,
+        winner,
+        finishMessage: finishMsg,
+        scoreA: Math.round(scoreA),
+        scoreB: Math.round(scoreB),
+        coinReward,
+      });
+      await interaction.editReply({
+        files: [new AttachmentBuilder(buffer, { name: 'gacha-duel.png' })],
+      });
+    } catch {
+      const winnerName =
+        winner === 'A' ? interaction.user.displayName : target.displayName;
+      await interaction.editReply({
+        embeds: [
+          new EmbedBuilder()
+            .setColor(Colors.Warning)
+            .setTitle(finishMsg)
+            .setDescription(
+              `**${pickA.name}** vs **${pickB.name}**\n\n🏆 **${winnerName}** gagne ! +${coinReward} 🪙`,
+            ),
+        ],
+      });
+    }
+  }
 }
