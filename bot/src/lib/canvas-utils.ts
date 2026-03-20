@@ -892,171 +892,64 @@ export async function generateLeaderboardCard(entries: LeaderboardEntry[]) {
   return canvas.toBuffer('image/png');
 }
 
-// ─── WANTED Poster (One Piece style) ───
+// ─── WANTED Poster (One Piece template) ───
 
 export async function generateWantedImage(
   displayName: string,
   avatarUrl: string,
   bounty: string,
-  crime: string,
+  _crime: string,
 ) {
-  const width = 600;
-  const height = 860;
+  // Load the One Piece wanted template
+  const templatePath = getAssetPath('bot/assets/wanted-template.png');
+  const template = await loadImage(templatePath);
+
+  // Output at a readable size (scale down from 3508x4961)
+  const width = 700;
+  const height = Math.round((width / template.width) * template.height);
   const canvas = createCanvas(width, height);
   const ctx = canvas.getContext('2d');
-  ctx.textAlign = 'center';
 
-  // ── Parchment base ──
-  const gradient = ctx.createLinearGradient(0, 0, 0, height);
-  gradient.addColorStop(0, '#e8d5a3');
-  gradient.addColorStop(0.3, '#f2e4c1');
-  gradient.addColorStop(0.7, '#eddcb1');
-  gradient.addColorStop(1, '#d9c48e');
-  ctx.fillStyle = gradient;
-  ctx.fillRect(0, 0, width, height);
+  // Draw template as background
+  ctx.drawImage(template, 0, 0, width, height);
 
-  // Paper grain noise
-  ctx.fillStyle = 'rgba(120, 80, 30, 0.04)';
-  for (let i = 0; i < 600; i++) {
-    ctx.fillRect(
-      Math.random() * width,
-      Math.random() * height,
-      Math.random() * 3 + 1,
-      Math.random() * 3 + 1,
-    );
-  }
-  // Coffee stain spots
-  ctx.fillStyle = 'rgba(101, 67, 33, 0.05)';
-  for (let i = 0; i < 8; i++) {
-    const cx = Math.random() * width;
-    const cy = Math.random() * height;
-    const r = Math.random() * 40 + 10;
-    ctx.beginPath();
-    ctx.arc(cx, cy, r, 0, Math.PI * 2);
-    ctx.fill();
-  }
+  // Scale factor from original template coordinates
+  const sx = width / 3508;
+  const sy = height / 4961;
 
-  // Burnt/torn edges
-  ctx.fillStyle = 'rgba(80, 50, 20, 0.12)';
-  for (let x = 0; x < width; x += 2) {
-    const hTop = Math.random() * 12 + 3;
-    const hBot = Math.random() * 12 + 3;
-    ctx.fillRect(x, 0, 2, hTop);
-    ctx.fillRect(x, height - hBot, 2, hBot);
-  }
-  for (let y = 0; y < height; y += 2) {
-    const wL = Math.random() * 8 + 2;
-    const wR = Math.random() * 8 + 2;
-    ctx.fillRect(0, y, wL, 2);
-    ctx.fillRect(width - wR, y, wR, 2);
-  }
+  // ── Avatar photo ──
+  // The black rectangle in the template: approx (280, 820) to (3220, 3340)
+  const photoX = Math.round(280 * sx);
+  const photoY = Math.round(820 * sy);
+  const photoW = Math.round((3220 - 280) * sx);
+  const photoH = Math.round((3340 - 820) * sy);
 
-  // ── Red band top: WANTED ──
-  const bandH = 90;
-  ctx.fillStyle = '#8b0000';
-  ctx.fillRect(0, 25, width, bandH);
-  // Band texture
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.08)';
-  ctx.fillRect(0, 25, width, 3);
-  ctx.fillRect(0, 25 + bandH - 3, width, 3);
-
-  ctx.font = 'bold 72px GoogleSans';
-  ctx.fillStyle = '#f5e6c8';
-  ctx.fillText('WANTED', width / 2, 92);
-
-  // ── DEAD OR ALIVE ──
-  ctx.font = 'bold 20px GoogleSans';
-  ctx.fillStyle = '#5c3a1e';
-  ctx.fillText('- DEAD OR ALIVE -', width / 2, 140);
-
-  // ── Photo section ──
-  const photoW = 340;
-  const photoH = 340;
-  const photoX = (width - photoW) / 2;
-  const photoY = 160;
-
-  // Photo shadow
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
-  ctx.fillRect(photoX + 5, photoY + 5, photoW, photoH);
-
-  // Photo border (dark wood frame)
-  ctx.fillStyle = '#3b2010';
-  ctx.fillRect(photoX - 6, photoY - 6, photoW + 12, photoH + 12);
-  ctx.fillStyle = '#5c3a1e';
-  ctx.fillRect(photoX - 3, photoY - 3, photoW + 6, photoH + 6);
-
-  // Avatar
   const avatar = await safeLoadImage(avatarUrl);
   if (avatar) {
     ctx.drawImage(avatar, photoX, photoY, photoW, photoH);
-  } else {
-    ctx.fillStyle = '#c4a675';
-    ctx.fillRect(photoX, photoY, photoW, photoH);
   }
 
-  // Photo wear overlay
-  ctx.fillStyle = 'rgba(200, 180, 140, 0.08)';
-  ctx.fillRect(photoX, photoY, photoW, photoH);
+  // ── Name (below DEAD OR ALIVE, above the small text) ──
+  // Position: centered, approx y=4050 in original
+  const nameY = Math.round(4100 * sy);
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#3b2a14';
 
-  // ── Name ──
-  const nameY = photoY + photoH + 45;
-  ctx.font = 'bold 44px GoogleSans';
-  ctx.fillStyle = '#1a0a00';
   const nameText = displayName.toUpperCase();
-  if (ctx.measureText(nameText).width > width - 60) {
-    ctx.font = 'bold 34px GoogleSans';
+  ctx.font = `bold ${Math.round(200 * sx)}px GoogleSans`;
+  if (ctx.measureText(nameText).width > width * 0.85) {
+    ctx.font = `bold ${Math.round(150 * sx)}px GoogleSans`;
   }
   ctx.fillText(nameText, width / 2, nameY);
 
-  // ── Crime ──
-  ctx.font = '18px GoogleSans';
-  ctx.fillStyle = '#5c3a1e';
-  const crimeText = `« ${crime} »`;
-  if (ctx.measureText(crimeText).width > width - 60) {
-    ctx.font = '15px GoogleSans';
+  // ── Bounty (below the name) ──
+  const bountyY = Math.round(4450 * sy);
+  ctx.font = `bold ${Math.round(230 * sx)}px GoogleSans`;
+  ctx.fillStyle = '#3b2a14';
+  if (ctx.measureText(bounty).width > width * 0.85) {
+    ctx.font = `bold ${Math.round(170 * sx)}px GoogleSans`;
   }
-  ctx.fillText(crimeText, width / 2, nameY + 35);
-
-  // ── Separator ──
-  ctx.strokeStyle = '#5c3a1e';
-  ctx.lineWidth = 2;
-  ctx.setLineDash([8, 4]);
-  ctx.beginPath();
-  ctx.moveTo(60, nameY + 55);
-  ctx.lineTo(width - 60, nameY + 55);
-  ctx.stroke();
-  ctx.setLineDash([]);
-
-  // ── Bounty section ──
-  const bountyY = nameY + 85;
-  ctx.font = 'bold 20px GoogleSans';
-  ctx.fillStyle = '#5c3a1e';
-  ctx.fillText('PRIME', width / 2, bountyY);
-
-  // Red band bottom for bounty
-  const bountyBandY = bountyY + 10;
-  const bountyBandH = 70;
-  ctx.fillStyle = '#8b0000';
-  ctx.fillRect(30, bountyBandY, width - 60, bountyBandH);
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.08)';
-  ctx.fillRect(30, bountyBandY, width - 60, 3);
-  ctx.fillRect(30, bountyBandY + bountyBandH - 3, width - 60, 3);
-
-  ctx.font = 'bold 48px GoogleSans';
-  ctx.fillStyle = '#f5e6c8';
-  if (ctx.measureText(bounty).width > width - 100) {
-    ctx.font = 'bold 36px GoogleSans';
-  }
-  ctx.fillText(bounty, width / 2, bountyBandY + 50);
-
-  // ── Footer: Marine / RPB ──
-  ctx.font = 'bold 14px GoogleSans';
-  ctx.fillStyle = 'rgba(60, 30, 10, 0.5)';
-  ctx.fillText(
-    'MARINE — RÉPUBLIQUE POPULAIRE DU BEYBLADE',
-    width / 2,
-    height - 28,
-  );
+  ctx.fillText(bounty, width / 2, bountyY);
 
   return canvas.toBuffer('image/png');
 }
