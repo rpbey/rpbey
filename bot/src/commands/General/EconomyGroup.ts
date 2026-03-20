@@ -1635,4 +1635,150 @@ export class EconomyGroup {
       });
     }
   }
+
+  // ═══ /gacha parier ═══
+  @Slash({
+    name: 'parier',
+    description: 'Parie des pièces — quitte ou double !',
+  })
+  async bet(
+    @SlashOption({
+      name: 'mise',
+      description: 'Montant à parier',
+      required: true,
+      type: ApplicationCommandOptionType.Integer,
+    })
+    mise: number,
+    interaction: CommandInteraction,
+  ) {
+    if (mise <= 0)
+      return interaction.reply({
+        content: '❌ Mise invalide.',
+        ephemeral: true,
+      });
+
+    await interaction.deferReply();
+    const { userId, profile } = await this.resolve(interaction);
+
+    // No limit — can bet any amount, even into overdraft
+    await this.prisma.profile.update({
+      where: { id: profile.id },
+      data: { currency: { decrement: mise } },
+    });
+
+    // 45% win (×2), 35% lose, 15% jackpot (×3), 5% super jackpot (×5)
+    const roll = Math.random();
+    let multiplier: number;
+    let result: string;
+    let color: number;
+    let emoji: string;
+
+    if (roll < 0.05) {
+      // 5% — SUPER JACKPOT ×5
+      multiplier = 5;
+      result = '💎 SUPER JACKPOT !!!';
+      color = 0xef4444;
+      emoji = '💎';
+    } else if (roll < 0.2) {
+      // 15% — JACKPOT ×3
+      multiplier = 3;
+      result = '🎰 JACKPOT !';
+      color = 0xfbbf24;
+      emoji = '🎰';
+    } else if (roll < 0.55) {
+      // 35% — WIN ×2
+      multiplier = 2;
+      result = '✅ Gagné !';
+      color = Colors.Success;
+      emoji = '✅';
+    } else {
+      // 45% — LOSE ×0
+      multiplier = 0;
+      result = '💀 Perdu...';
+      color = 0x4b5563;
+      emoji = '💀';
+    }
+
+    const gain = mise * multiplier;
+    const net = gain - mise; // Already deducted mise, so add back gain
+
+    if (gain > 0) {
+      await this.prisma.profile.update({
+        where: { id: profile.id },
+        data: { currency: { increment: gain } },
+      });
+    }
+
+    const newBalance = profile.currency - mise + gain;
+
+    await this.prisma.currencyTransaction.create({
+      data: {
+        userId,
+        amount: net,
+        type: 'GACHA_PULL',
+        note: `Pari: mise ${mise} → x${multiplier} (${net >= 0 ? '+' : ''}${net})`,
+      },
+    });
+
+    const beyMessages: Record<number, string[]> = {
+      0: [
+        'Ta toupie a été éjectée du stadium... tout est perdu !',
+        'Burst ! Ta mise est partie en fumée !',
+        'Ring Out ! Les pièces tombent dans le vide...',
+        'L-Drago a absorbé toute ta mise !',
+      ],
+      2: [
+        'Ta toupie tient bon ! Tu doubles la mise !',
+        'Spin Finish en ta faveur !',
+        'Over Finish ! Tu remportes le pot !',
+      ],
+      3: [
+        'Burst Finish critique ! Triple mise !',
+        'Combo dévastateur ! Le jackpot est à toi !',
+        'X-treme Finish ! Triple récompense !',
+      ],
+      5: [
+        'XTREME FINISH LÉGENDAIRE !!! ×5 !!!',
+        'TON BEY SPIRIT EXPLOSE ! QUINTUPLE MISE !!!',
+        'PEGASUS COSMIQUE ! GAIN ASTRONOMIQUE !!!',
+      ],
+    };
+
+    const messages = beyMessages[multiplier] || beyMessages[0]!;
+    const flavorText = messages[Math.floor(Math.random() * messages.length)]!;
+
+    const embed = new EmbedBuilder()
+      .setColor(color)
+      .setTitle(`${emoji} ${result}`)
+      .setDescription(flavorText)
+      .addFields(
+        {
+          name: '🎲 Mise',
+          value: `**${mise.toLocaleString('fr-FR')}** 🪙`,
+          inline: true,
+        },
+        {
+          name: `${multiplier > 0 ? '💰' : '💀'} Résultat`,
+          value:
+            multiplier > 0
+              ? `**×${multiplier}** → **+${(gain - mise).toLocaleString('fr-FR')}** 🪙`
+              : `**-${mise.toLocaleString('fr-FR')}** 🪙`,
+          inline: true,
+        },
+        {
+          name: '🏦 Solde',
+          value: `**${newBalance.toLocaleString('fr-FR')}** 🪙`,
+          inline: true,
+        },
+      )
+      .setFooter({
+        text: `Probabilités : 45% ×2 · 15% ×3 · 5% ×5 · 35% perdu`,
+      });
+
+    if (multiplier >= 3) {
+      embed.setThumbnail(interaction.user.displayAvatarURL());
+    }
+
+    return interaction.editReply({ embeds: [embed] });
+  }
 }
