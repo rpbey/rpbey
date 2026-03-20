@@ -7,7 +7,6 @@ import {
   EmbedBuilder,
   type User,
 } from 'discord.js';
-import DIG from 'discord-image-generation';
 import { Discord, Slash, SlashGroup, SlashOption } from 'discordx';
 import { inject, injectable } from 'tsyringe';
 
@@ -601,7 +600,7 @@ export class GameGroup {
     return interaction.editReply({ embeds: [embed] });
   }
 
-  @Slash({ name: 'fun-wanted', description: 'Générer une affiche WANTED' })
+  @Slash({ name: 'wanted', description: 'Générer une affiche WANTED' })
   @SlashGroup('jeu')
   async wanted(
     @SlashOption({
@@ -611,18 +610,69 @@ export class GameGroup {
       type: ApplicationCommandOptionType.User,
     })
     targetUser: User | undefined,
+    @SlashOption({
+      name: 'crime',
+      description: 'Le crime commis (optionnel)',
+      required: false,
+      type: ApplicationCommandOptionType.String,
+    })
+    customCrime: string | undefined,
+    @SlashOption({
+      name: 'prime',
+      description: 'Montant de la prime (optionnel)',
+      required: false,
+      type: ApplicationCommandOptionType.String,
+    })
+    customBounty: string | undefined,
     interaction: CommandInteraction,
   ) {
     const target = targetUser ?? interaction.user;
     await interaction.deferReply();
-    const avatar = target.displayAvatarURL({ extension: 'png', size: 512 });
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- DIG lacks proper type exports
-    const image = await new (DIG as Record<string, any>).Wanted().getImage(
-      avatar,
-      '€',
+
+    const crimes = [
+      'A volé toutes les Cobalt Drake du tournoi',
+      'Combo trop puissant, interdit de compétition',
+      "A lancé sans autorisation de l'arbitre",
+      'Refuse de jouer autre chose que Shark Edge',
+      'A caché un aimant dans son launcher',
+      'Burst au premier tour, 12 fois de suite',
+      'Dealer clandestin de Random Boosters',
+      'A spoilé les prochaines sorties UX',
+      'Collectionne les Beyblades sans jouer',
+      'A mis du WD-40 sur son Bit',
+    ];
+
+    const bounties = [
+      '500 000 B₿',
+      '1 000 000 B₿',
+      '2 500 000 B₿',
+      '10 000 000 B₿',
+      '50 000 B₿',
+      '999 999 B₿',
+      '7 777 777 B₿',
+    ];
+
+    const crime =
+      customCrime || crimes[Math.floor(Math.random() * crimes.length)]!;
+    const bounty =
+      customBounty || bounties[Math.floor(Math.random() * bounties.length)]!;
+
+    const { generateWantedImage } = await import('../../lib/canvas-utils.js');
+    const buffer = await generateWantedImage(
+      target.displayName,
+      target.displayAvatarURL({ extension: 'png', size: 512 }),
+      bounty,
+      crime,
     );
+
+    const embed = new EmbedBuilder()
+      .setColor(0x8b0000)
+      .setImage('attachment://wanted.png')
+      .setFooter({ text: `Demandé par ${interaction.user.displayName}` });
+
     return interaction.editReply({
-      files: [new AttachmentBuilder(image, { name: 'wanted.png' })],
+      embeds: [embed],
+      files: [new AttachmentBuilder(buffer, { name: 'wanted.png' })],
     });
   }
 

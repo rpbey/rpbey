@@ -891,3 +891,127 @@ export async function generateLeaderboardCard(entries: LeaderboardEntry[]) {
 
   return canvas.toBuffer('image/png');
 }
+
+// ─── WANTED Poster ───
+
+export async function generateWantedImage(
+  displayName: string,
+  avatarUrl: string,
+  bounty: string,
+  crime: string,
+) {
+  const width = 600;
+  const height = 800;
+  const canvas = createCanvas(width, height);
+  const ctx = canvas.getContext('2d');
+
+  // Parchment background
+  ctx.fillStyle = '#f5e6c8';
+  ctx.fillRect(0, 0, width, height);
+
+  // Aged paper texture effect
+  ctx.fillStyle = 'rgba(139, 90, 43, 0.06)';
+  for (let i = 0; i < 200; i++) {
+    const x = Math.random() * width;
+    const y = Math.random() * height;
+    const size = Math.random() * 4 + 1;
+    ctx.fillRect(x, y, size, size);
+  }
+
+  // Torn edges (top & bottom)
+  ctx.fillStyle = 'rgba(101, 67, 33, 0.15)';
+  for (let x = 0; x < width; x += 3) {
+    const h = Math.random() * 8 + 2;
+    ctx.fillRect(x, 0, 3, h);
+    ctx.fillRect(x, height - h, 3, h);
+  }
+
+  // Dark border
+  ctx.strokeStyle = 'rgba(101, 67, 33, 0.4)';
+  ctx.lineWidth = 6;
+  ctx.strokeRect(20, 20, width - 40, height - 40);
+  ctx.strokeStyle = 'rgba(101, 67, 33, 0.2)';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(28, 28, width - 56, height - 56);
+
+  // "WANTED" title
+  ctx.textAlign = 'center';
+  ctx.font = 'bold 80px GoogleSans';
+  ctx.fillStyle = '#8b0000';
+  ctx.fillText('WANTED', width / 2, 100);
+
+  // Decorative line under title
+  ctx.strokeStyle = '#8b0000';
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(80, 115);
+  ctx.lineTo(width - 80, 115);
+  ctx.stroke();
+
+  // "DEAD OR ALIVE" subtitle
+  ctx.font = 'bold 22px GoogleSans';
+  ctx.fillStyle = '#654321';
+  ctx.fillText('DEAD OR ALIVE', width / 2, 145);
+
+  // Avatar frame
+  const avatarSize = 280;
+  const avatarX = (width - avatarSize) / 2;
+  const avatarY = 170;
+
+  // Shadow behind frame
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+  ctx.fillRect(avatarX + 6, avatarY + 6, avatarSize, avatarSize);
+
+  // Frame border
+  ctx.fillStyle = '#654321';
+  ctx.fillRect(avatarX - 8, avatarY - 8, avatarSize + 16, avatarSize + 16);
+  ctx.fillStyle = '#8b6914';
+  ctx.fillRect(avatarX - 4, avatarY - 4, avatarSize + 8, avatarSize + 8);
+
+  // Avatar
+  const avatar = await safeLoadImage(avatarUrl);
+  if (avatar) {
+    ctx.drawImage(avatar, avatarX, avatarY, avatarSize, avatarSize);
+  } else {
+    ctx.fillStyle = '#d4a76a';
+    ctx.fillRect(avatarX, avatarSize, avatarSize, avatarSize);
+  }
+
+  // Name
+  const nameY = avatarY + avatarSize + 50;
+  ctx.font = 'bold 42px GoogleSans';
+  ctx.fillStyle = '#3b1a00';
+  const nameText = displayName.toUpperCase();
+  if (ctx.measureText(nameText).width > width - 80) {
+    ctx.font = 'bold 32px GoogleSans';
+  }
+  ctx.fillText(nameText, width / 2, nameY);
+
+  // Crime line
+  ctx.font = '20px GoogleSans';
+  ctx.fillStyle = '#654321';
+  ctx.fillText(`« ${crime} »`, width / 2, nameY + 40);
+
+  // Decorative line
+  ctx.strokeStyle = '#654321';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(100, nameY + 60);
+  ctx.lineTo(width - 100, nameY + 60);
+  ctx.stroke();
+
+  // Bounty
+  ctx.font = 'bold 26px GoogleSans';
+  ctx.fillStyle = '#654321';
+  ctx.fillText('RÉCOMPENSE', width / 2, nameY + 95);
+  ctx.font = 'bold 52px GoogleSans';
+  ctx.fillStyle = '#8b0000';
+  ctx.fillText(bounty, width / 2, nameY + 150);
+
+  // Footer
+  ctx.font = '16px GoogleSans';
+  ctx.fillStyle = 'rgba(101, 67, 33, 0.6)';
+  ctx.fillText('République Populaire du Beyblade', width / 2, height - 35);
+
+  return canvas.toBuffer('image/png');
+}
