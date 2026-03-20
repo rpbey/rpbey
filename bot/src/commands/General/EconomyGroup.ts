@@ -213,12 +213,12 @@ export class EconomyGroup {
   private debtEmbed(profile: { currency: number }): EmbedBuilder | null {
     if (profile.currency >= 0) return null;
     const debt = Math.abs(profile.currency);
-    const interest = Math.round(debt * 0.05);
+    const interest = Math.round(debt * 0.15);
     return new EmbedBuilder()
       .setColor(0x991b1b)
       .setTitle('🏦 Recouvrement de dette')
       .setDescription(
-        `Tu as une dette de **${debt.toLocaleString('fr-FR')}** 🪙 !\nIntérêts quotidiens : **${interest.toLocaleString('fr-FR')}** 🪙 (5%)\n\n` +
+        `Tu as une dette de **${debt.toLocaleString('fr-FR')}** 🪙 !\nIntérêts quotidiens : **${interest.toLocaleString('fr-FR')}** 🪙 (15%)\n\n` +
           '**Commandes bloquées** : gacha, multi, parier\n\n' +
           '💡 Pour rembourser :\n> `/gacha daily` · `/gacha vendre-tout` · `/jeu combat` · `/gacha duel`',
       )
@@ -507,12 +507,13 @@ export class EconomyGroup {
       }
     }
 
-    // Debt interest: 5% of debt deducted from daily reward → sent to banker
+    // Debt interest: 15% of debt deducted from daily reward → sent to banker Yoyo
     const BANKER_DISCORD_ID = '281114294152724491'; // Yoyo (Yoyo__goat)
+    const INTEREST_RATE = 0.15; // 15%
     let interestPaid = 0;
     let totalGain = amount + streakBonus;
     if (profile.currency < 0) {
-      interestPaid = Math.round(Math.abs(profile.currency) * 0.05);
+      interestPaid = Math.round(Math.abs(profile.currency) * INTEREST_RATE);
       totalGain = Math.max(1, totalGain - interestPaid);
 
       // Transfer interest to banker
@@ -609,7 +610,7 @@ export class EconomyGroup {
     }
     if (interestPaid > 0) {
       embed.addFields({
-        name: '🏦 Intérêts dette (5%)',
+        name: '🏦 Intérêts dette (15%)',
         value: `**-${interestPaid}** 🪙 prélevés sur ta récompense`,
         inline: true,
       });
@@ -1716,7 +1717,7 @@ export class EconomyGroup {
     }
 
     const debt = Math.abs(profile.currency);
-    const dailyInterest = Math.round(debt * 0.05);
+    const dailyInterest = Math.round(debt * 0.15);
     const daysToRepay = Math.ceil(debt / 80); // Rough estimate with min daily
 
     return interaction.reply({
@@ -1733,7 +1734,7 @@ export class EconomyGroup {
             },
             {
               name: '📈 Intérêts / daily',
-              value: `**${dailyInterest.toLocaleString('fr-FR')}** 🪙 (5%)`,
+              value: `**${dailyInterest.toLocaleString('fr-FR')}** 🪙 (15%)`,
               inline: true,
             },
             {
