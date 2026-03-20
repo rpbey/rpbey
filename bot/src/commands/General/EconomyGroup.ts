@@ -1660,7 +1660,19 @@ export class EconomyGroup {
     await interaction.deferReply();
     const { userId, profile } = await this.resolve(interaction);
 
-    // No limit — can bet any amount, even into overdraft
+    if (mise > profile.currency) {
+      return interaction.editReply({
+        embeds: [
+          new EmbedBuilder()
+            .setColor(Colors.Error)
+            .setTitle('❌ Fonds insuffisants')
+            .setDescription(
+              `Tu n'as que **${profile.currency.toLocaleString('fr-FR')}** 🪙\nMise demandée : **${mise.toLocaleString('fr-FR')}** 🪙`,
+            ),
+        ],
+      });
+    }
+
     await this.prisma.profile.update({
       where: { id: profile.id },
       data: { currency: { decrement: mise } },
