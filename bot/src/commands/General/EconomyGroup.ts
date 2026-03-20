@@ -508,7 +508,7 @@ export class EconomyGroup {
     }
 
     // Debt interest: 5% of debt deducted from daily reward → sent to banker
-    const BANKER_DISCORD_ID = '239380696886411265'; // Yoyo / Tategami
+    const BANKER_DISCORD_ID = '281114294152724491'; // Yoyo (Yoyo__goat)
     let interestPaid = 0;
     let totalGain = amount + streakBonus;
     if (profile.currency < 0) {
