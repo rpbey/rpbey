@@ -111,17 +111,22 @@ export function GachaLanding({ cards, stats, leaderboard }: GachaLandingProps) {
               px: 3,
               py: 2,
               cursor: 'pointer',
-              color: activeTab === tab.id ? '#a78bfa' : 'rgba(255,255,255,0.4)',
+              color:
+                activeTab === tab.id
+                  ? 'rgba(255,255,255,0.85)'
+                  : 'rgba(255,255,255,0.4)',
               borderBottom:
                 activeTab === tab.id
-                  ? '2px solid #8b5cf6'
+                  ? '2px solid #dc2626'
                   : '2px solid transparent',
               fontWeight: 700,
               fontSize: '0.85rem',
               transition: 'all 0.2s',
               '&:hover': {
                 color:
-                  activeTab === tab.id ? '#a78bfa' : 'rgba(255,255,255,0.6)',
+                  activeTab === tab.id
+                    ? 'rgba(255,255,255,0.85)'
+                    : 'rgba(255,255,255,0.6)',
               },
             }}
           >
@@ -259,7 +264,9 @@ export function GachaLanding({ cards, stats, leaderboard }: GachaLandingProps) {
                 cursor: 'pointer',
                 borderRadius: 2,
                 minWidth: 56,
-                color: isActive ? '#a78bfa' : 'rgba(255,255,255,0.35)',
+                color: isActive
+                  ? 'rgba(255,255,255,0.85)'
+                  : 'rgba(255,255,255,0.35)',
                 transition: 'all 0.15s',
                 position: 'relative',
                 '&:active': { transform: 'scale(0.92)' },
@@ -276,7 +283,7 @@ export function GachaLanding({ cards, stats, leaderboard }: GachaLandingProps) {
                     width: 20,
                     height: 3,
                     borderRadius: 2,
-                    bgcolor: '#8b5cf6',
+                    bgcolor: '#dc2626',
                   }}
                 />
               )}

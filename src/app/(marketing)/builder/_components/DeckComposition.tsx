@@ -1,6 +1,6 @@
 'use client';
 
-import { Add, Close, Save, Visibility } from '@mui/icons-material';
+import { Add, Close, Download, Save, Visibility } from '@mui/icons-material';
 import {
   Alert,
   Box,
@@ -359,6 +359,25 @@ export function DeckComposition() {
               ? 'Mettre à jour le deck'
               : 'Enregistrer le deck'}
         </Button>
+
+        {state.deckId && state.deckId !== 'preview' && (
+          <Button
+            component="a"
+            href={`/api/decks/${state.deckId}/card`}
+            download={`${state.deckName || 'deck'}.png`}
+            variant="outlined"
+            startIcon={<Download />}
+            fullWidth
+            sx={{
+              borderRadius: 4,
+              fontWeight: 700,
+              py: 1.5,
+              textTransform: 'none',
+            }}
+          >
+            Télécharger en image
+          </Button>
+        )}
       </Box>
 
       <Dialog

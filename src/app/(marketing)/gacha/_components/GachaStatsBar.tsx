@@ -1,18 +1,13 @@
 'use client';
 
-import { AutoAwesome, Groups, Style, TrendingUp } from '@mui/icons-material';
 import { Box, Typography } from '@mui/material';
-import { motion } from 'framer-motion';
 
-const RARITY_CONFIG: Record<
-  string,
-  { label: string; color: string; emoji: string }
-> = {
-  COMMON: { label: 'Commune', color: '#9ca3af', emoji: '⚪' },
-  RARE: { label: 'Rare', color: '#3b82f6', emoji: '🔵' },
-  EPIC: { label: 'Épique', color: '#8b5cf6', emoji: '🟣' },
-  LEGENDARY: { label: 'Légendaire', color: '#fbbf24', emoji: '🟡' },
-  SECRET: { label: 'Secrète', color: '#ef4444', emoji: '🔴' },
+const RARITY_CONFIG: Record<string, { label: string; color: string }> = {
+  COMMON: { label: 'Commune', color: '#6b7280' },
+  RARE: { label: 'Rare', color: '#3b82f6' },
+  EPIC: { label: 'Épique', color: '#8b5cf6' },
+  LEGENDARY: { label: 'Légendaire', color: '#eab308' },
+  SECRET: { label: 'Secrète', color: '#dc2626' },
 };
 
 interface GachaStatsBarProps {
@@ -27,165 +22,113 @@ interface GachaStatsBarProps {
 
 export function GachaStatsBar({ stats }: GachaStatsBarProps) {
   const statItems = [
-    {
-      icon: <Style sx={{ fontSize: 28, color: '#8b5cf6' }} />,
-      label: 'Cartes uniques',
-      value: stats.totalCards,
-      color: '#8b5cf6',
-    },
-    {
-      icon: <TrendingUp sx={{ fontSize: 28, color: '#22c55e' }} />,
-      label: 'Cartes obtenues',
-      value: stats.totalOwned.toLocaleString('fr-FR'),
-      color: '#22c55e',
-    },
-    {
-      icon: <Groups sx={{ fontSize: 28, color: '#3b82f6' }} />,
-      label: 'Collectionneurs',
-      value: stats.totalCollectors,
-      color: '#3b82f6',
-    },
-    {
-      icon: <AutoAwesome sx={{ fontSize: 28, color: '#fbbf24' }} />,
-      label: 'Séries',
-      value: Object.keys(stats.bySeries).length,
-      color: '#fbbf24',
-    },
+    { label: 'Cartes', value: stats.totalCards },
+    { label: 'Obtenues', value: stats.totalOwned.toLocaleString('fr-FR') },
+    { label: 'Joueurs', value: stats.totalCollectors },
+    { label: 'Séries', value: Object.keys(stats.bySeries).length },
   ];
 
   return (
-    <Box sx={{ px: { xs: 2, md: 6 }, mb: 5 }}>
-      {/* Stats cards */}
+    <Box sx={{ px: { xs: 2, md: 6 }, mb: 4 }}>
+      {/* Stats row — compact */}
       <Box
         sx={{
-          display: 'grid',
-          gridTemplateColumns: { xs: 'repeat(2, 1fr)', md: 'repeat(4, 1fr)' },
-          gap: 2,
-          mb: 4,
+          display: 'flex',
+          gap: { xs: 0, md: 3 },
+          mb: 3,
+          borderRadius: 2.5,
+          bgcolor: 'rgba(255,255,255,0.025)',
+          border: '1px solid rgba(255,255,255,0.05)',
+          overflow: 'hidden',
         }}
       >
         {statItems.map((item, i) => (
           <Box
             key={item.label}
-            component={motion.div}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.1 }}
             sx={{
-              p: 2.5,
-              borderRadius: 3,
-              bgcolor: 'rgba(255,255,255,0.03)',
-              border: '1px solid rgba(255,255,255,0.06)',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 2,
-              transition: 'all 0.2s ease',
-              '&:hover': {
-                bgcolor: 'rgba(255,255,255,0.05)',
-                borderColor: `${item.color}40`,
-              },
+              flex: 1,
+              py: 2,
+              px: { xs: 1.5, md: 3 },
+              textAlign: 'center',
+              borderRight:
+                i < statItems.length - 1
+                  ? '1px solid rgba(255,255,255,0.04)'
+                  : 'none',
             }}
           >
-            <Box
+            <Typography
+              fontWeight={800}
               sx={{
-                width: 48,
-                height: 48,
-                borderRadius: 2,
-                bgcolor: `${item.color}15`,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
+                color: 'white',
+                fontSize: { xs: '1.1rem', md: '1.4rem' },
+                lineHeight: 1.2,
               }}
             >
-              {item.icon}
-            </Box>
-            <Box>
-              <Typography
-                variant="h5"
-                fontWeight={800}
-                sx={{ color: 'white', lineHeight: 1.2 }}
-              >
-                {item.value}
-              </Typography>
-              <Typography
-                variant="caption"
-                sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.7rem' }}
-              >
-                {item.label}
-              </Typography>
-            </Box>
+              {item.value}
+            </Typography>
+            <Typography
+              sx={{
+                color: 'rgba(255,255,255,0.35)',
+                fontSize: { xs: '0.6rem', md: '0.7rem' },
+                fontWeight: 500,
+              }}
+            >
+              {item.label}
+            </Typography>
           </Box>
         ))}
       </Box>
 
-      {/* Rarity distribution bar */}
+      {/* Rarity distribution — inline */}
       <Box
         sx={{
-          p: 2.5,
+          display: 'flex',
+          height: 6,
           borderRadius: 3,
-          bgcolor: 'rgba(255,255,255,0.03)',
-          border: '1px solid rgba(255,255,255,0.06)',
+          overflow: 'hidden',
+          mb: 1.5,
         }}
       >
-        <Typography
-          variant="body2"
-          fontWeight={700}
-          sx={{ color: 'rgba(255,255,255,0.7)', mb: 2 }}
-        >
-          Distribution par rareté
-        </Typography>
-        <Box
-          sx={{
-            display: 'flex',
-            height: 8,
-            borderRadius: 4,
-            overflow: 'hidden',
-            mb: 2,
-          }}
-        >
-          {['COMMON', 'RARE', 'EPIC', 'LEGENDARY', 'SECRET'].map((rarity) => {
-            const count = stats.byRarity[rarity] || 0;
-            const pct = (count / stats.totalCards) * 100;
-            const config = RARITY_CONFIG[rarity];
-            return (
+        {['COMMON', 'RARE', 'EPIC', 'LEGENDARY', 'SECRET'].map((rarity) => {
+          const count = stats.byRarity[rarity] || 0;
+          const pct = (count / stats.totalCards) * 100;
+          const config = RARITY_CONFIG[rarity];
+          return (
+            <Box
+              key={rarity}
+              sx={{
+                width: `${pct}%`,
+                bgcolor: config?.color || '#444',
+              }}
+            />
+          );
+        })}
+      </Box>
+      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: { xs: 1.5, md: 3 } }}>
+        {['COMMON', 'RARE', 'EPIC', 'LEGENDARY', 'SECRET'].map((rarity) => {
+          const count = stats.byRarity[rarity] || 0;
+          const config = RARITY_CONFIG[rarity];
+          return (
+            <Box
+              key={rarity}
+              sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}
+            >
               <Box
-                key={rarity}
                 sx={{
-                  width: `${pct}%`,
-                  bgcolor: config?.color || '#666',
-                  transition: 'width 0.5s ease',
+                  width: 8,
+                  height: 8,
+                  borderRadius: '50%',
+                  bgcolor: config?.color,
                 }}
               />
-            );
-          })}
-        </Box>
-        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: { xs: 1, md: 3 } }}>
-          {['COMMON', 'RARE', 'EPIC', 'LEGENDARY', 'SECRET'].map((rarity) => {
-            const count = stats.byRarity[rarity] || 0;
-            const config = RARITY_CONFIG[rarity];
-            return (
-              <Box
-                key={rarity}
-                sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}
+              <Typography
+                sx={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.68rem' }}
               >
-                <Box
-                  sx={{
-                    width: 8,
-                    height: 8,
-                    borderRadius: '50%',
-                    bgcolor: config?.color,
-                  }}
-                />
-                <Typography
-                  variant="caption"
-                  sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.7rem' }}
-                >
-                  {config?.emoji} {config?.label} ({count})
-                </Typography>
-              </Box>
-            );
-          })}
-        </Box>
+                {config?.label} ({count})
+              </Typography>
+            </Box>
+          );
+        })}
       </Box>
     </Box>
   );

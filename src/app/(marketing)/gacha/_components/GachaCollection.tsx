@@ -38,7 +38,7 @@ export function GachaCollection() {
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
-        <CircularProgress size={32} sx={{ color: '#8b5cf6' }} />
+        <CircularProgress size={32} sx={{ color: '#dc2626' }} />
       </Box>
     );
   }
@@ -67,8 +67,8 @@ export function GachaCollection() {
         sx={{
           p: 3,
           borderRadius: 3,
-          bgcolor: 'rgba(139,92,246,0.08)',
-          border: '1px solid rgba(139,92,246,0.2)',
+          bgcolor: 'rgba(255,255,255,0.03)',
+          border: '1px solid rgba(255,255,255,0.06)',
           mb: 3,
         }}
       >
@@ -92,7 +92,7 @@ export function GachaCollection() {
                 gap: 1,
               }}
             >
-              🎴 Ma collection
+              Ma collection
               {currentBadge && (
                 <Box
                   component="span"
@@ -191,7 +191,7 @@ export function GachaCollection() {
               bgcolor: 'rgba(255,255,255,0.08)',
               '& .MuiLinearProgress-bar': {
                 borderRadius: 3,
-                background: 'linear-gradient(90deg, #8b5cf6, #fbbf24)',
+                background: 'linear-gradient(90deg, #dc2626, #ef4444)',
               },
             }}
           />

@@ -1,6 +1,5 @@
 'use client';
 
-import { Casino, Help } from '@mui/icons-material';
 import { Box, Typography } from '@mui/material';
 import { motion } from 'framer-motion';
 
@@ -9,59 +8,53 @@ const DROP_RATES = [
     label: 'RATÉ',
     rate: 35,
     color: '#4b5563',
-    emoji: '💨',
-    desc: 'Pas de carte — mieux vaut réessayer !',
+    desc: 'Pas de carte',
   },
   {
     label: 'Commune',
     rate: 30,
-    color: '#9ca3af',
-    emoji: '⚪',
-    desc: '1 étoile · Revente : 5 🪙',
+    color: '#6b7280',
+    desc: 'Revente : 5 coins',
   },
   {
     label: 'Rare',
     rate: 20,
     color: '#3b82f6',
-    emoji: '🔵',
-    desc: '2 étoiles · Revente : 15 🪙',
+    desc: 'Revente : 15 coins',
   },
   {
     label: 'Épique',
     rate: 10,
     color: '#8b5cf6',
-    emoji: '🟣',
-    desc: '3 étoiles · Revente : 50 🪙',
+    desc: 'Revente : 50 coins',
   },
   {
     label: 'Légendaire',
     rate: 4,
-    color: '#fbbf24',
-    emoji: '🟡',
-    desc: '4 étoiles · Revente : 150 🪙',
+    color: '#eab308',
+    desc: 'Revente : 150 coins',
   },
   {
     label: 'Secrète',
     rate: 1,
-    color: '#ef4444',
-    emoji: '🔴',
-    desc: '5 étoiles · Revente : 500 🪙',
+    color: '#dc2626',
+    desc: 'Revente : 500 coins',
   },
 ];
 
 const DAILY_TIERS = [
-  { weight: '60%', range: '80 — 120 🪙', color: '#9ca3af' },
-  { weight: '25%', range: '150 — 200 🪙', color: '#3b82f6' },
-  { weight: '10%', range: '250 — 350 🪙', color: '#8b5cf6' },
-  { weight: '4%', range: '500 — 700 🪙 ⭐', color: '#fbbf24' },
-  { weight: '1%', range: '1 000 — 1 500 🪙 💎', color: '#ef4444' },
+  { weight: '60%', range: '80 — 120 coins', color: '#6b7280' },
+  { weight: '25%', range: '150 — 200 coins', color: '#3b82f6' },
+  { weight: '10%', range: '250 — 350 coins', color: '#8b5cf6' },
+  { weight: '4%', range: '500 — 700 coins', color: '#eab308' },
+  { weight: '1%', range: '1 000 — 1 500 coins', color: '#dc2626' },
 ];
 
 const STREAK_BONUSES = [
-  { days: 3, bonus: '+50 🪙' },
-  { days: 7, bonus: '+150 🪙' },
-  { days: 14, bonus: '+300 🪙' },
-  { days: 30, bonus: '+750 🪙' },
+  { days: 3, bonus: '+50' },
+  { days: 7, bonus: '+150' },
+  { days: 14, bonus: '+300' },
+  { days: 30, bonus: '+750' },
 ];
 
 export function GachaDropRates() {
@@ -78,7 +71,6 @@ export function GachaDropRates() {
           gap: 1,
         }}
       >
-        <Help sx={{ color: '#8b5cf6' }} />
         Guide & Taux de drop
       </Typography>
 
@@ -111,14 +103,13 @@ export function GachaDropRates() {
               gap: 1,
             }}
           >
-            <Casino sx={{ fontSize: 20, color: '#8b5cf6' }} />
             Taux de drop
           </Typography>
           <Typography
             variant="caption"
             sx={{ color: 'rgba(255,255,255,0.4)', mb: 2, display: 'block' }}
           >
-            Coût : 50 🪙 / pull · Multi ×10 : 450 🪙 (-10%)
+            Coût : 50 coins / pull · Multi x10 : 450 coins (-10%)
           </Typography>
 
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
@@ -128,10 +119,14 @@ export function GachaDropRates() {
                 sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}
               >
                 <Box
-                  sx={{ width: 28, textAlign: 'center', fontSize: '0.9rem' }}
-                >
-                  {rate.emoji}
-                </Box>
+                  sx={{
+                    width: 10,
+                    height: 10,
+                    borderRadius: '50%',
+                    bgcolor: rate.color,
+                    flexShrink: 0,
+                  }}
+                />
                 <Box sx={{ flex: 1 }}>
                   <Box
                     sx={{
@@ -214,7 +209,7 @@ export function GachaDropRates() {
             }}
           >
             <Typography fontWeight={700} sx={{ color: 'white', mb: 2 }}>
-              💰 Récompenses quotidiennes
+              Récompenses quotidiennes
             </Typography>
             <Typography
               variant="caption"
@@ -265,7 +260,7 @@ export function GachaDropRates() {
             }}
           >
             <Typography fontWeight={700} sx={{ color: 'white', mb: 2 }}>
-              🔥 Bonus de série
+              Bonus de série
             </Typography>
             <Typography
               variant="caption"
@@ -319,7 +314,7 @@ export function GachaDropRates() {
             }}
           >
             <Typography fontWeight={700} sx={{ color: 'white', mb: 1.5 }}>
-              ⌨️ Commandes Discord
+              Commandes Discord
             </Typography>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
               {[
@@ -338,10 +333,10 @@ export function GachaDropRates() {
                   <Typography
                     component="code"
                     sx={{
-                      color: '#a78bfa',
+                      color: '#dc2626',
                       fontSize: '0.7rem',
                       fontFamily: 'monospace',
-                      bgcolor: 'rgba(139,92,246,0.1)',
+                      bgcolor: 'rgba(220,38,38,0.1)',
                       px: 0.75,
                       py: 0.25,
                       borderRadius: 1,

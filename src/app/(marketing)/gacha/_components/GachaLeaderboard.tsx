@@ -1,6 +1,5 @@
 'use client';
 
-import { EmojiEvents } from '@mui/icons-material';
 import { Avatar, Box, LinearProgress, Typography } from '@mui/material';
 import { motion } from 'framer-motion';
 
@@ -56,8 +55,7 @@ export function GachaLeaderboard({ entries }: GachaLeaderboardProps) {
           gap: 1,
         }}
       >
-        <EmojiEvents sx={{ color: '#fbbf24' }} />
-        Classement des collectionneurs
+        Classement
       </Typography>
 
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>

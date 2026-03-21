@@ -1,3 +1,4 @@
+import { Download } from '@mui/icons-material';
 import InstagramIcon from '@mui/icons-material/Instagram';
 import YouTubeIcon from '@mui/icons-material/YouTube';
 import Alert from '@mui/material/Alert';
@@ -357,6 +358,28 @@ export default async function RankingsPage({
             >
               <SeasonSelector seasons={seasons} />
             </Suspense>
+
+            <Box sx={{ flexGrow: 1 }} />
+
+            <Tooltip title="Télécharger le classement en image">
+              <IconButton
+                component="a"
+                href="/api/leaderboard/card"
+                download="classement-rpb.png"
+                size="small"
+                sx={{
+                  color: 'rgba(255,255,255,0.4)',
+                  bgcolor: 'rgba(255,255,255,0.03)',
+                  border: '1px solid rgba(255,255,255,0.05)',
+                  '&:hover': {
+                    color: '#fbbf24',
+                    bgcolor: 'rgba(255,255,255,0.08)',
+                  },
+                }}
+              >
+                <Download sx={{ fontSize: 20 }} />
+              </IconButton>
+            </Tooltip>
           </Box>
         </Box>
 

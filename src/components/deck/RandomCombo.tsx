@@ -1,6 +1,7 @@
 'use client';
 
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+import DownloadIcon from '@mui/icons-material/Download';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
@@ -208,6 +209,23 @@ export function RandomCombo() {
                 />
               )}
             </Box>
+
+            <Button
+              component="a"
+              href={`/api/combo/card?blade=${combo.blade.id}&ratchet=${combo.ratchet.id}&bit=${combo.bit.id}`}
+              download={`${combo.blade.name}-${combo.ratchet.name}-${combo.bit.name}.png`}
+              variant="outlined"
+              size="small"
+              startIcon={<DownloadIcon />}
+              sx={{
+                alignSelf: 'center',
+                borderRadius: 3,
+                fontWeight: 700,
+                textTransform: 'none',
+              }}
+            >
+              Télécharger en image
+            </Button>
           </Stack>
         )}
 

@@ -1,52 +1,7 @@
 'use client';
 
-import { AutoAwesome, Casino, CollectionsBookmark } from '@mui/icons-material';
 import { Box, Button, Typography } from '@mui/material';
 import { motion } from 'framer-motion';
-import Link from 'next/link';
-
-const FLOATING_CARDS = [
-  {
-    rarity: 'LEGENDARY',
-    color: '#fbbf24',
-    x: '15%',
-    y: '20%',
-    delay: 0,
-    rotate: -12,
-  },
-  {
-    rarity: 'SECRET',
-    color: '#ef4444',
-    x: '75%',
-    y: '15%',
-    delay: 0.3,
-    rotate: 8,
-  },
-  {
-    rarity: 'EPIC',
-    color: '#8b5cf6',
-    x: '85%',
-    y: '55%',
-    delay: 0.6,
-    rotate: 15,
-  },
-  {
-    rarity: 'RARE',
-    color: '#3b82f6',
-    x: '10%',
-    y: '65%',
-    delay: 0.9,
-    rotate: -8,
-  },
-  {
-    rarity: 'COMMON',
-    color: '#6b7280',
-    x: '60%',
-    y: '70%',
-    delay: 1.2,
-    rotate: 5,
-  },
-];
 
 interface GachaHeroProps {
   totalCards: number;
@@ -59,116 +14,85 @@ export function GachaHero({ totalCards, totalCollectors }: GachaHeroProps) {
       sx={{
         position: 'relative',
         width: '100%',
-        height: { xs: 320, sm: 400, md: 520 },
+        height: { xs: 300, sm: 360, md: 440 },
         overflow: 'hidden',
         mb: 0,
       }}
     >
-      {/* Animated background gradient */}
+      {/* Background — dark with subtle red accent */}
       <Box
         sx={{
           position: 'absolute',
           inset: 0,
           background:
-            'radial-gradient(ellipse at 30% 50%, rgba(139,92,246,0.15) 0%, transparent 50%), radial-gradient(ellipse at 70% 30%, rgba(251,191,36,0.1) 0%, transparent 50%), radial-gradient(ellipse at 50% 80%, rgba(239,68,68,0.08) 0%, transparent 50%), #0a0a0a',
+            'radial-gradient(ellipse at 20% 80%, rgba(220,38,38,0.12) 0%, transparent 50%), radial-gradient(ellipse at 80% 20%, rgba(220,38,38,0.06) 0%, transparent 50%), #0a0a0a',
         }}
       />
 
-      {/* Grid pattern overlay */}
+      {/* Diagonal stripes — subtle texture */}
       <Box
         sx={{
           position: 'absolute',
           inset: 0,
+          opacity: 0.03,
           backgroundImage:
-            'linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px)',
-          backgroundSize: '60px 60px',
+            'repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(255,255,255,1) 40px, rgba(255,255,255,1) 41px)',
         }}
       />
 
-      {/* Floating card silhouettes */}
-      {FLOATING_CARDS.map((card) => (
-        <Box
-          key={card.rarity}
-          component={motion.div}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{
-            opacity: [0.08, 0.15, 0.08],
-            y: [0, -15, 0],
-          }}
-          transition={{
-            duration: 4,
-            delay: card.delay,
-            repeat: Number.POSITIVE_INFINITY,
-            ease: 'easeInOut',
-          }}
-          sx={{
-            position: 'absolute',
-            left: card.x,
-            top: card.y,
-            width: { xs: 50, md: 70 },
-            height: { xs: 75, md: 105 },
-            borderRadius: 2,
-            border: `2px solid ${card.color}`,
-            bgcolor: `${card.color}10`,
-            transform: `rotate(${card.rotate}deg)`,
-            display: { xs: 'none', sm: 'block' },
-          }}
-        />
-      ))}
-
-      {/* Gradient overlays */}
+      {/* Gradient to content */}
       <Box
         sx={{
           position: 'absolute',
           inset: 0,
-          background: 'linear-gradient(to top, #0a0a0a 0%, transparent 40%)',
+          background: 'linear-gradient(to top, #0a0a0a 0%, transparent 50%)',
         }}
       />
 
       {/* Content */}
       <Box
         component={motion.div}
-        initial={{ opacity: 0, y: 30 }}
+        initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, ease: 'easeOut' }}
+        transition={{ duration: 0.6 }}
         sx={{
           position: 'absolute',
-          bottom: { xs: 40, md: 60 },
-          left: { xs: 20, md: 56 },
+          bottom: { xs: 32, md: 50 },
+          left: { xs: 20, md: 48 },
           right: { xs: 20, md: '40%' },
           zIndex: 2,
         }}
       >
-        {/* Badge */}
+        {/* Stats badge */}
         <Box
-          component={motion.div}
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.2 }}
           sx={{
             display: 'inline-flex',
             alignItems: 'center',
-            gap: 1,
-            px: 2,
-            py: 0.75,
-            mb: 2,
-            borderRadius: 2,
-            bgcolor: 'rgba(139,92,246,0.2)',
-            border: '1px solid rgba(139,92,246,0.3)',
-            backdropFilter: 'blur(8px)',
+            gap: 0.75,
+            px: 1.5,
+            py: 0.5,
+            mb: 1.5,
+            borderRadius: 1.5,
+            bgcolor: 'rgba(220,38,38,0.15)',
+            border: '1px solid rgba(220,38,38,0.25)',
           }}
         >
-          <AutoAwesome sx={{ fontSize: 14, color: '#a78bfa' }} />
+          <Box
+            sx={{
+              width: 6,
+              height: 6,
+              borderRadius: '50%',
+              bgcolor: '#dc2626',
+            }}
+          />
           <Typography
             sx={{
-              color: '#a78bfa',
-              fontSize: '0.75rem',
-              fontWeight: 700,
-              letterSpacing: '0.08em',
-              textTransform: 'uppercase',
+              color: 'rgba(255,255,255,0.7)',
+              fontSize: '0.72rem',
+              fontWeight: 600,
             }}
           >
-            {totalCards} cartes · {totalCollectors} collectionneurs
+            {totalCards} cartes &middot; {totalCollectors} joueurs
           </Typography>
         </Box>
 
@@ -178,128 +102,71 @@ export function GachaHero({ totalCards, totalCollectors }: GachaHeroProps) {
           fontWeight={900}
           sx={{
             color: 'white',
-            mb: 1.5,
-            fontSize: { xs: '2rem', sm: '2.75rem', md: '3.5rem' },
+            mb: 1,
+            fontSize: { xs: '1.8rem', sm: '2.5rem', md: '3rem' },
             lineHeight: 1.05,
             letterSpacing: '-0.03em',
-            background:
-              'linear-gradient(135deg, #ffffff 0%, #a78bfa 50%, #fbbf24 100%)',
-            backgroundClip: 'text',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
           }}
         >
-          RPB Gacha TCG
+          RPB Gacha
         </Typography>
 
         <Typography
           variant="body1"
           sx={{
-            color: 'rgba(255,255,255,0.6)',
-            mb: 3,
-            maxWidth: 520,
-            lineHeight: 1.7,
-            fontSize: { xs: '0.85rem', md: '0.95rem' },
+            color: 'rgba(255,255,255,0.5)',
+            mb: 2.5,
+            maxWidth: 460,
+            lineHeight: 1.6,
+            fontSize: { xs: '0.82rem', md: '0.9rem' },
           }}
         >
-          Collectionnez les cartes de tous les bladers légendaires ! De Tyson à
-          Valt, en passant par Gingka et X. Chaque carte possède des stats TCG
-          uniques pour les duels.
+          Collectionnez les cartes de tous les bladers, de Tyson à X. Affrontez
+          d&apos;autres joueurs en duel 5v5.
         </Typography>
 
-        <Box sx={{ display: 'flex', gap: 1.5, flexWrap: 'wrap' }}>
+        <Box sx={{ display: 'flex', gap: 1.5 }}>
           <Button
-            component={Link}
-            href="#catalogue"
             variant="contained"
             size="large"
-            startIcon={<CollectionsBookmark />}
             sx={{
-              bgcolor: '#8b5cf6',
-              color: 'white',
-              fontWeight: 800,
-              borderRadius: 2,
-              px: { xs: 2.5, md: 3.5 },
-              py: 1.2,
-              fontSize: '0.9rem',
-              textTransform: 'none',
-              '&:hover': {
-                bgcolor: '#7c3aed',
-                transform: 'scale(1.02)',
-              },
-              transition: 'all 0.2s ease',
-            }}
-          >
-            Catalogue
-          </Button>
-          <Button
-            component={Link}
-            href="#classement"
-            variant="outlined"
-            size="large"
-            startIcon={<Casino />}
-            sx={{
-              borderColor: 'rgba(255,255,255,0.3)',
+              bgcolor: '#dc2626',
               color: 'white',
               fontWeight: 700,
               borderRadius: 2,
-              px: { xs: 2.5, md: 3.5 },
-              py: 1.2,
-              fontSize: '0.9rem',
+              px: { xs: 2.5, md: 3 },
+              py: 1,
+              fontSize: '0.85rem',
               textTransform: 'none',
-              backdropFilter: 'blur(8px)',
-              bgcolor: 'rgba(255,255,255,0.05)',
-              '&:hover': {
-                borderColor: 'white',
-                bgcolor: 'rgba(255,255,255,0.1)',
-              },
+              '&:hover': { bgcolor: '#b91c1c' },
             }}
           >
-            Classement
+            Jouer sur Discord
           </Button>
         </Box>
       </Box>
 
-      {/* Right side: animated card stack (desktop only) */}
+      {/* Right side accent — large muted number */}
       <Box
         sx={{
           position: 'absolute',
-          right: { md: '8%' },
-          top: '50%',
-          transform: 'translateY(-50%)',
-          display: { xs: 'none', lg: 'block' },
+          right: { xs: -20, md: '5%' },
+          bottom: { xs: -30, md: -20 },
+          display: { xs: 'none', sm: 'block' },
           zIndex: 1,
         }}
       >
-        {['#ef4444', '#fbbf24', '#8b5cf6'].map((color, i) => (
-          <Box
-            key={color}
-            component={motion.div}
-            initial={{ opacity: 0, rotate: 0, y: 50 }}
-            animate={{
-              opacity: 1,
-              rotate: (i - 1) * 12,
-              y: 0,
-            }}
-            transition={{
-              delay: 0.5 + i * 0.15,
-              duration: 0.6,
-              ease: 'easeOut',
-            }}
-            sx={{
-              position: 'absolute',
-              top: -120,
-              left: i * 10 - 10,
-              width: 180,
-              height: 260,
-              borderRadius: 3,
-              border: `2px solid ${color}`,
-              bgcolor: `${color}15`,
-              boxShadow: `0 0 40px ${color}30`,
-              transformOrigin: 'center bottom',
-            }}
-          />
-        ))}
+        <Typography
+          sx={{
+            fontSize: { sm: '12rem', md: '16rem' },
+            fontWeight: 900,
+            color: 'rgba(255,255,255,0.015)',
+            lineHeight: 1,
+            userSelect: 'none',
+          }}
+        >
+          TCG
+        </Typography>
       </Box>
     </Box>
   );
