@@ -35,14 +35,15 @@ export function ContinueWatching() {
   if (items.length === 0) return null;
 
   return (
-    <Box sx={{ mb: 5 }}>
+    <Box sx={{ mb: { xs: 3.5, md: 5 } }}>
       <Typography
         variant="h6"
         fontWeight={800}
         sx={{
-          px: { xs: 2, md: 4 },
-          mb: 2,
+          px: { xs: 1.5, md: 4 },
+          mb: { xs: 1.5, md: 2 },
           color: 'text.primary',
+          fontSize: { xs: '0.95rem', md: '1.15rem' },
           display: 'flex',
           alignItems: 'center',
           gap: 1,
@@ -62,19 +63,21 @@ export function ContinueWatching() {
       <Box
         sx={{
           display: 'flex',
-          gap: 2,
-          px: { xs: 2, md: 4 },
+          gap: { xs: 1.5, md: 2 },
+          px: { xs: 1.5, md: 4 },
           overflowX: 'auto',
           scrollSnapType: 'x mandatory',
           scrollbarWidth: 'none',
           '&::-webkit-scrollbar': { display: 'none' },
+          WebkitOverflowScrolling: 'touch',
+          py: 0.5,
         }}
       >
         {items.map((item) => (
           <Box
             key={item.id}
             sx={{
-              minWidth: { xs: 250, md: 300 },
+              minWidth: { xs: 220, sm: 250, md: 300 },
               flexShrink: 0,
               scrollSnapAlign: 'start',
             }}

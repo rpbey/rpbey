@@ -65,7 +65,13 @@ export function AnimeSearch() {
   };
 
   return (
-    <Box sx={{ position: 'relative', px: { xs: 2, md: 4 }, mb: 3 }}>
+    <Box
+      sx={{
+        position: 'relative',
+        px: { xs: 1.5, md: 4 },
+        mb: { xs: 2, md: 3 },
+      }}
+    >
       <TextField
         fullWidth
         size="small"
@@ -84,10 +90,11 @@ export function AnimeSearch() {
           },
         }}
         sx={{
-          maxWidth: 500,
+          maxWidth: { xs: '100%', md: 500 },
           '& .MuiOutlinedInput-root': {
-            borderRadius: 3,
+            borderRadius: { xs: 2, md: 3 },
             bgcolor: 'rgba(255,255,255,0.05)',
+            minHeight: { xs: 44, md: 'auto' },
           },
         }}
       />

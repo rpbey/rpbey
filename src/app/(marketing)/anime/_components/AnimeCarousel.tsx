@@ -61,15 +61,15 @@ export function AnimeCarousel({ generation, series }: AnimeCarouselProps) {
   const label = GENERATION_LABELS[generation] || generation;
 
   return (
-    <Box sx={{ mb: 5 }}>
+    <Box sx={{ mb: { xs: 3.5, md: 5 } }}>
       {/* Section header */}
       <Box
         sx={{
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          px: { xs: 2, md: 4 },
-          mb: 2,
+          px: { xs: 1.5, md: 4 },
+          mb: { xs: 1.5, md: 2 },
         }}
       >
         <Typography
@@ -215,13 +215,14 @@ export function AnimeCarousel({ generation, series }: AnimeCarouselProps) {
           onScroll={handleScroll}
           sx={{
             display: 'flex',
-            gap: { xs: 1.5, md: 2 },
-            px: { xs: 2, md: 4 },
+            gap: { xs: 1, md: 2 },
+            px: { xs: 1.5, md: 4 },
             overflowX: 'auto',
             scrollSnapType: 'x mandatory',
             scrollbarWidth: 'none',
             '&::-webkit-scrollbar': { display: 'none' },
             py: 1,
+            WebkitOverflowScrolling: 'touch',
           }}
         >
           {series.map((s) => (

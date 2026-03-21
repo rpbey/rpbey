@@ -125,13 +125,15 @@ export function SeriesDetail({ series }: { series: SeriesData }) {
   }, [search, series.episodes]);
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: '#0a0a0a', pb: 8 }}>
+    <Box sx={{ minHeight: '100vh', bgcolor: '#0a0a0a', pb: { xs: 4, md: 8 } }}>
       {/* Hero banner */}
       <Box
         sx={{
           position: 'relative',
           width: '100%',
-          height: { xs: 300, md: 450 },
+          height: { xs: '55svh', sm: 350, md: 450 },
+          minHeight: { xs: 320, md: 450 },
+          maxHeight: { xs: 500, md: 450 },
           overflow: 'hidden',
         }}
       >
@@ -153,13 +155,15 @@ export function SeriesDetail({ series }: { series: SeriesData }) {
             }}
           />
         )}
-        {/* Gradient bottom */}
+        {/* Gradient bottom — stronger for mobile */}
         <Box
           sx={{
             position: 'absolute',
             inset: 0,
-            background:
-              'linear-gradient(to top, #0a0a0a 0%, rgba(10,10,10,0.6) 40%, transparent 70%)',
+            background: {
+              xs: 'linear-gradient(to top, #0a0a0a 0%, rgba(10,10,10,0.85) 30%, rgba(10,10,10,0.3) 60%, transparent 80%)',
+              md: 'linear-gradient(to top, #0a0a0a 0%, rgba(10,10,10,0.6) 40%, transparent 70%)',
+            },
           }}
         />
         {/* Gradient left */}
@@ -167,8 +171,10 @@ export function SeriesDetail({ series }: { series: SeriesData }) {
           sx={{
             position: 'absolute',
             inset: 0,
-            background:
-              'linear-gradient(to right, rgba(10,10,10,0.8) 0%, transparent 50%)',
+            background: {
+              xs: 'none',
+              md: 'linear-gradient(to right, rgba(10,10,10,0.8) 0%, transparent 50%)',
+            },
           }}
         />
       </Box>
@@ -179,17 +185,276 @@ export function SeriesDetail({ series }: { series: SeriesData }) {
           maxWidth: 1400,
           mx: 'auto',
           px: { xs: 2, md: 4 },
-          mt: { xs: -12, md: -16 },
+          mt: { xs: -16, md: -16 },
           position: 'relative',
           zIndex: 1,
         }}
       >
-        <Box sx={{ display: 'flex', gap: { xs: 2, md: 4 }, mb: 4 }}>
+        {/* Mobile layout: centered poster + info */}
+        <Box
+          sx={{
+            display: { xs: 'flex', md: 'none' },
+            flexDirection: 'column',
+            alignItems: 'center',
+            textAlign: 'center',
+            mb: 3,
+          }}
+        >
+          {/* Mobile poster */}
+          {series.posterUrl && (
+            <Box
+              sx={{
+                width: 140,
+                mb: 2,
+                flexShrink: 0,
+              }}
+            >
+              <Box
+                sx={{
+                  position: 'relative',
+                  aspectRatio: '2/3',
+                  borderRadius: 2.5,
+                  overflow: 'hidden',
+                  boxShadow: `0 12px 40px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.1)`,
+                }}
+              >
+                <Image
+                  src={series.posterUrl}
+                  alt={series.titleFr || series.title}
+                  fill
+                  sizes="140px"
+                  style={{ objectFit: 'cover' }}
+                />
+              </Box>
+            </Box>
+          )}
+
+          {/* Generation badge */}
+          <Chip
+            label={GENERATION_NAMES[series.generation] || series.generation}
+            size="small"
+            sx={{
+              bgcolor: accentColor,
+              color: 'white',
+              fontWeight: 700,
+              fontSize: '0.7rem',
+              height: 24,
+              mb: 1,
+            }}
+          />
+
+          <Typography
+            variant="h3"
+            component="h1"
+            fontWeight={900}
+            sx={{
+              color: 'white',
+              mb: 0.5,
+              fontSize: '1.5rem',
+              lineHeight: 1.1,
+              letterSpacing: '-0.02em',
+            }}
+          >
+            {series.titleFr || series.title}
+          </Typography>
+
+          {series.titleJp && (
+            <Typography
+              variant="body2"
+              sx={{
+                color: 'rgba(255,255,255,0.4)',
+                mb: 1,
+                fontSize: '0.8rem',
+              }}
+            >
+              {series.titleJp}
+            </Typography>
+          )}
+
+          {/* Meta chips — horizontal row */}
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 1.5,
+              mb: 2,
+              flexWrap: 'wrap',
+            }}
+          >
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 0.5,
+                color: 'rgba(255,255,255,0.5)',
+                fontSize: '0.75rem',
+              }}
+            >
+              <CalendarMonth sx={{ fontSize: 14 }} />
+              {series.year}
+            </Box>
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 0.5,
+                color: 'rgba(255,255,255,0.5)',
+                fontSize: '0.75rem',
+              }}
+            >
+              <Theaters sx={{ fontSize: 14 }} />
+              {series.episodeCount} épisodes
+            </Box>
+            {languages.length > 0 && (
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 0.5,
+                }}
+              >
+                <Translate
+                  sx={{ fontSize: 14, color: 'rgba(255,255,255,0.5)' }}
+                />
+                {languages.map((lang) => (
+                  <Chip
+                    key={lang}
+                    label={lang}
+                    size="small"
+                    sx={{
+                      height: 20,
+                      fontSize: '0.6rem',
+                      fontWeight: 700,
+                      bgcolor:
+                        lang === 'VF'
+                          ? 'rgba(59,130,246,0.25)'
+                          : lang === 'VOSTFR'
+                            ? 'rgba(220,38,38,0.25)'
+                            : 'rgba(255,255,255,0.08)',
+                      color: 'rgba(255,255,255,0.8)',
+                      border: '1px solid rgba(255,255,255,0.08)',
+                    }}
+                  />
+                ))}
+              </Box>
+            )}
+            {completedCount > 0 && (
+              <Chip
+                label={`${completedCount}/${series.episodeCount} vus`}
+                size="small"
+                sx={{
+                  height: 22,
+                  fontSize: '0.65rem',
+                  fontWeight: 700,
+                  bgcolor: 'rgba(34,197,94,0.15)',
+                  color: '#22c55e',
+                  border: '1px solid rgba(34,197,94,0.2)',
+                }}
+              />
+            )}
+          </Box>
+
+          {series.synopsis && (
+            <Typography
+              variant="body2"
+              sx={{
+                color: 'rgba(255,255,255,0.6)',
+                mb: 2.5,
+                lineHeight: 1.6,
+                fontSize: '0.82rem',
+                display: '-webkit-box',
+                WebkitLineClamp: 3,
+                WebkitBoxOrient: 'vertical',
+                overflow: 'hidden',
+              }}
+            >
+              {series.synopsis}
+            </Typography>
+          )}
+
+          {/* Mobile action buttons — full width Netflix style */}
+          <Box sx={{ display: 'flex', gap: 1, width: '100%' }}>
+            {resumeEpisode ? (
+              <>
+                <Button
+                  component={Link}
+                  href={`/anime/${series.slug}/${resumeEpisode.number}`}
+                  variant="contained"
+                  fullWidth
+                  startIcon={<Replay />}
+                  sx={{
+                    bgcolor: 'white',
+                    color: '#0a0a0a',
+                    fontWeight: 800,
+                    borderRadius: 1.5,
+                    py: 1.4,
+                    textTransform: 'none',
+                    fontSize: '0.9rem',
+                    minHeight: 48,
+                    '&:hover': { bgcolor: 'rgba(255,255,255,0.9)' },
+                  }}
+                >
+                  Reprendre EP {resumeEpisode.number}
+                </Button>
+                <Button
+                  component={Link}
+                  href={`/anime/${series.slug}/1`}
+                  variant="outlined"
+                  startIcon={<PlayArrow />}
+                  sx={{
+                    borderColor: 'rgba(255,255,255,0.3)',
+                    color: 'white',
+                    fontWeight: 600,
+                    borderRadius: 1.5,
+                    py: 1.4,
+                    px: 2,
+                    textTransform: 'none',
+                    fontSize: '0.8rem',
+                    minHeight: 48,
+                    flexShrink: 0,
+                    '&:hover': {
+                      borderColor: 'rgba(255,255,255,0.5)',
+                      bgcolor: 'rgba(255,255,255,0.05)',
+                    },
+                  }}
+                >
+                  EP 1
+                </Button>
+              </>
+            ) : (
+              series.episodes.length > 0 && (
+                <Button
+                  component={Link}
+                  href={`/anime/${series.slug}/1`}
+                  variant="contained"
+                  fullWidth
+                  startIcon={<PlayArrow />}
+                  sx={{
+                    bgcolor: 'white',
+                    color: '#0a0a0a',
+                    fontWeight: 800,
+                    borderRadius: 1.5,
+                    py: 1.4,
+                    textTransform: 'none',
+                    fontSize: '0.9rem',
+                    minHeight: 48,
+                    '&:hover': { bgcolor: 'rgba(255,255,255,0.9)' },
+                  }}
+                >
+                  Regarder l&apos;épisode 1
+                </Button>
+              )
+            )}
+          </Box>
+        </Box>
+
+        {/* Desktop layout: poster + info side by side */}
+        <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 4, mb: 4 }}>
           {/* Poster */}
           {series.posterUrl && (
             <Box
               sx={{
-                display: { xs: 'none', md: 'block' },
                 width: 200,
                 flexShrink: 0,
               }}
@@ -214,7 +479,7 @@ export function SeriesDetail({ series }: { series: SeriesData }) {
             </Box>
           )}
 
-          <Box sx={{ flex: 1, pt: { xs: 2, md: 4 } }}>
+          <Box sx={{ flex: 1, pt: 4 }}>
             {/* Generation badge */}
             <Chip
               label={GENERATION_NAMES[series.generation] || series.generation}
@@ -236,7 +501,7 @@ export function SeriesDetail({ series }: { series: SeriesData }) {
               sx={{
                 color: 'white',
                 mb: 0.5,
-                fontSize: { xs: '1.6rem', sm: '2rem', md: '2.5rem' },
+                fontSize: '2.5rem',
                 lineHeight: 1.1,
                 letterSpacing: '-0.02em',
               }}
@@ -438,7 +703,8 @@ export function SeriesDetail({ series }: { series: SeriesData }) {
             alignItems: 'center',
             justifyContent: 'space-between',
             gap: 2,
-            mb: 3,
+            mb: { xs: 2, md: 3 },
+            mt: { xs: 1, md: 0 },
             flexWrap: 'wrap',
           }}
         >
@@ -447,7 +713,7 @@ export function SeriesDetail({ series }: { series: SeriesData }) {
             fontWeight={800}
             sx={{
               color: 'text.primary',
-              fontSize: { xs: '1.1rem', md: '1.3rem' },
+              fontSize: { xs: '1rem', md: '1.3rem' },
             }}
           >
             Épisodes

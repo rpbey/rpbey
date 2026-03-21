@@ -33,13 +33,16 @@ export function AnimeLanding({ featured, children }: AnimeLandingProps) {
       sx={{
         minHeight: '100vh',
         bgcolor: '#0a0a0a',
-        pb: 8,
+        pb: { xs: 4, md: 8 },
+        overflowX: 'hidden',
       }}
     >
       <AnimeHero featured={featured} />
-      <AnimeSearch />
-      {session?.user && <ContinueWatching />}
-      {children}
+      <Box sx={{ pt: { xs: 4, md: 0 } }}>
+        <AnimeSearch />
+        {session?.user && <ContinueWatching />}
+        {children}
+      </Box>
     </Box>
   );
 }

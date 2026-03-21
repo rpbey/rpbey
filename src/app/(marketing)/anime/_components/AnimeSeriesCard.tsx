@@ -38,7 +38,7 @@ export function AnimeSeriesCard({
       <Box
         sx={{
           position: 'relative',
-          width: { xs: 130, sm: 150, md: 180 },
+          width: { xs: 115, sm: 140, md: 180 },
           flexShrink: 0,
           cursor: 'pointer',
           scrollSnapAlign: 'start',
@@ -71,7 +71,7 @@ export function AnimeSeriesCard({
               src={posterUrl}
               alt={titleFr || title}
               fill
-              sizes="(max-width: 600px) 130px, (max-width: 900px) 150px, 180px"
+              sizes="(max-width: 600px) 115px, (max-width: 900px) 140px, 180px"
               style={{ objectFit: 'cover' }}
             />
           ) : (

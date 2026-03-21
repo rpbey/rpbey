@@ -76,9 +76,11 @@ export function AnimeHero({ featured }: { featured: FeaturedSeries[] }) {
       sx={{
         position: 'relative',
         width: '100%',
-        height: { xs: 420, sm: 500, md: 620 },
+        height: { xs: '85svh', sm: '75svh', md: 620 },
+        minHeight: { xs: 480, sm: 500, md: 620 },
+        maxHeight: { xs: 700, md: 620 },
         overflow: 'hidden',
-        mb: 4,
+        mb: { xs: -2, md: 4 },
       }}
     >
       {/* Background image */}
@@ -143,9 +145,9 @@ export function AnimeHero({ featured }: { featured: FeaturedSeries[] }) {
           transition={{ duration: 0.5, delay: 0.3 }}
           sx={{
             position: 'absolute',
-            bottom: { xs: 60, md: 80 },
-            left: { xs: 20, md: 56 },
-            right: { xs: 20, md: '50%' },
+            bottom: { xs: 80, md: 80 },
+            left: { xs: 16, md: 56 },
+            right: { xs: 16, md: '50%' },
             zIndex: 2,
           }}
         >
@@ -226,10 +228,11 @@ export function AnimeHero({ featured }: { featured: FeaturedSeries[] }) {
                 bgcolor: 'white',
                 color: '#0a0a0a',
                 fontWeight: 800,
-                borderRadius: 2,
-                px: { xs: 2.5, md: 3.5 },
-                py: 1.2,
-                fontSize: '0.9rem',
+                borderRadius: 1.5,
+                px: { xs: 3, md: 3.5 },
+                py: { xs: 1.4, md: 1.2 },
+                fontSize: { xs: '0.95rem', md: '0.9rem' },
+                minHeight: 48,
                 textTransform: 'none',
                 '&:hover': {
                   bgcolor: 'rgba(255,255,255,0.85)',
@@ -250,10 +253,11 @@ export function AnimeHero({ featured }: { featured: FeaturedSeries[] }) {
                 borderColor: 'rgba(255,255,255,0.4)',
                 color: 'white',
                 fontWeight: 700,
-                borderRadius: 2,
-                px: { xs: 2.5, md: 3.5 },
-                py: 1.2,
-                fontSize: '0.9rem',
+                borderRadius: 1.5,
+                px: { xs: 3, md: 3.5 },
+                py: { xs: 1.4, md: 1.2 },
+                fontSize: { xs: '0.95rem', md: '0.9rem' },
+                minHeight: 48,
                 textTransform: 'none',
                 backdropFilter: 'blur(8px)',
                 bgcolor: 'rgba(255,255,255,0.06)',

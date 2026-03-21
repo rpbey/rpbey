@@ -27,9 +27,7 @@ import {
   Menu,
   MenuItem,
   Paper,
-  Slide,
   Tooltip,
-  useScrollTrigger,
 } from '@mui/material';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
@@ -321,24 +319,19 @@ export function IconNav() {
   );
 }
 
-// Mobile bottom navigation with M3 Expressive look
+// Mobile bottom navigation — docked to bottom like a real mobile app
 export function MobileNav() {
   const pathname = usePathname();
   const router = useRouter();
   const { data: session } = useSession();
-  const trigger = useScrollTrigger();
-
-  const isAdmin =
-    session?.user?.role === 'admin' ||
-    (session?.user as { role: string } | undefined)?.role === 'superadmin';
 
   const getActiveValue = () => {
     if (pathname === '/') return '/';
     if (pathname.startsWith('/tournaments')) return '/tournaments';
-    if (pathname.startsWith('/tv')) return '/tv';
     if (pathname.startsWith('/rankings')) return '/rankings';
-    if (pathname.startsWith('/meta')) return '/meta';
     if (pathname.startsWith('/anime')) return '/anime';
+    if (pathname.startsWith('/tv')) return '/tv';
+    if (pathname.startsWith('/meta')) return '/meta';
     if (pathname.startsWith('/gacha')) return '/gacha';
     if (pathname.startsWith('/produits')) return '/produits';
     if (pathname.startsWith('/admin')) return '/admin';
@@ -347,7 +340,7 @@ export function MobileNav() {
       pathname.startsWith('/sign-in') ||
       pathname.startsWith('/sign-up')
     ) {
-      return isAdmin ? '/admin' : '/account';
+      return '/account';
     }
     return '/';
   };
@@ -355,90 +348,106 @@ export function MobileNav() {
   const activeValue = getActiveValue();
 
   return (
-    <Slide appear={false} direction="up" in={!trigger}>
-      <Paper
-        elevation={0}
-        sx={{
-          position: 'fixed',
-          bottom: 'calc(16px + env(safe-area-inset-bottom))',
-          left: 'calc(16px + env(safe-area-inset-left))',
-          right: 'calc(16px + env(safe-area-inset-right))',
-          zIndex: 1200,
-          display: { xs: 'block', md: 'none' },
-          borderRadius: 8, // Pill/Rounded container
-          bgcolor: (theme) => alpha(theme.palette.background.paper, 0.85),
-          backdropFilter: 'blur(24px)',
-          border: '1px solid',
-          borderColor: 'divider',
-          boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
-          overflow: 'hidden',
-          transition: 'all 0.3s ease',
-        }}
-      >
-        <BottomNavigation
-          showLabels
-          value={activeValue}
-          onChange={(_, newValue) => {
-            if (newValue === '/account') {
-              if (session?.user) {
-                router.push(`/dashboard/profile/${session.user.id}`);
-              } else {
-                router.push('/sign-in');
-              }
+    <Paper
+      elevation={0}
+      sx={{
+        position: 'fixed',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        zIndex: 1200,
+        display: { xs: 'block', md: 'none' },
+        borderRadius: 0,
+        bgcolor: (theme) => alpha(theme.palette.background.paper, 0.95),
+        backdropFilter: 'blur(20px)',
+        borderTop: '1px solid',
+        borderColor: (theme) => alpha(theme.palette.divider, 0.3),
+        boxShadow: '0 -2px 20px rgba(0,0,0,0.3)',
+        pb: 'env(safe-area-inset-bottom)',
+      }}
+    >
+      <BottomNavigation
+        showLabels
+        value={activeValue}
+        onChange={(_, newValue) => {
+          if (newValue === '/account') {
+            if (session?.user) {
+              router.push(`/dashboard/profile/${session.user.id}`);
             } else {
-              router.push(newValue);
+              router.push('/sign-in');
             }
-          }}
-          sx={{
-            height: 80, // M3 Navigation Bar Height
-            bgcolor: 'transparent',
-            '& .MuiBottomNavigationAction-root': {
-              minWidth: 0,
-              color: 'text.secondary',
-              position: 'relative',
-              '&.Mui-selected': {
-                color: 'primary.main',
-                '& .MuiSvgIcon-root': {
-                  zIndex: 2,
-                },
-                '&::after': {
-                  content: '""',
-                  position: 'absolute',
-                  top: '50%',
-                  left: '50%',
-                  transform: 'translate(-50%, -50%)',
-                  width: 64,
-                  height: 32,
-                  bgcolor: (theme) => alpha(theme.palette.primary.main, 0.2),
-                  borderRadius: 16,
-                  zIndex: 1,
-                },
+          } else {
+            router.push(newValue);
+          }
+        }}
+        sx={{
+          height: 56,
+          bgcolor: 'transparent',
+          '& .MuiBottomNavigationAction-root': {
+            minWidth: 0,
+            maxWidth: 'none',
+            px: 0,
+            py: 0.5,
+            gap: 0,
+            color: 'text.secondary',
+            position: 'relative',
+            transition: 'color 0.2s ease',
+            '&.Mui-selected': {
+              color: 'primary.main',
+              '& .MuiSvgIcon-root': {
+                zIndex: 2,
               },
-              '& .MuiBottomNavigationAction-label': {
-                mt: 0.5,
-                fontWeight: 600,
-                fontSize: '0.65rem',
-                '&.Mui-selected': {
-                  fontSize: '0.7rem',
-                },
+              '&::before': {
+                content: '""',
+                position: 'absolute',
+                top: 4,
+                left: '50%',
+                transform: 'translateX(-50%)',
+                width: 48,
+                height: 28,
+                bgcolor: (theme) => alpha(theme.palette.primary.main, 0.15),
+                borderRadius: 14,
+                zIndex: 1,
               },
             },
-          }}
-        >
-          <BottomNavigationAction label="Accueil" value="/" icon={<Home />} />
-          <BottomNavigationAction
-            label="Tournois"
-            value="/tournaments"
-            icon={<TrophyIcon />}
-          />
-          <BottomNavigationAction
-            label="Anime"
-            value="/anime"
-            icon={<Theaters />}
-          />
-          <BottomNavigationAction label="TV" value="/tv" icon={<LiveTv />} />
-        </BottomNavigation>
-      </Paper>
-    </Slide>
+            '& .MuiSvgIcon-root': {
+              fontSize: 22,
+            },
+            '& .MuiBottomNavigationAction-label': {
+              mt: 0.25,
+              fontWeight: 600,
+              fontSize: '0.6rem',
+              letterSpacing: '0.01em',
+              '&.Mui-selected': {
+                fontSize: '0.6rem',
+                fontWeight: 700,
+              },
+            },
+          },
+        }}
+      >
+        <BottomNavigationAction label="Accueil" value="/" icon={<Home />} />
+        <BottomNavigationAction
+          label="Tournois"
+          value="/tournaments"
+          icon={<TrophyIcon />}
+        />
+        <BottomNavigationAction
+          label="Classements"
+          value="/rankings"
+          icon={<BarChart />}
+        />
+        <BottomNavigationAction
+          label="Anime"
+          value="/anime"
+          icon={<Theaters />}
+        />
+        <BottomNavigationAction
+          label={session?.user ? 'Profil' : 'Connexion'}
+          value="/account"
+          icon={<AccountCircle />}
+        />
+      </BottomNavigation>
+    </Paper>
   );
 }

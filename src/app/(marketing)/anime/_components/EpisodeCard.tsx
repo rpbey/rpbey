@@ -13,6 +13,7 @@ interface EpisodeCardProps {
   thumbnailUrl?: string | null;
   duration: number;
   progress?: number; // 0-1
+  variant?: 'card' | 'list';
 }
 
 function formatDuration(seconds: number): string {
@@ -35,9 +36,208 @@ export function EpisodeCard({
   thumbnailUrl,
   duration,
   progress,
+  variant = 'card',
 }: EpisodeCardProps) {
   const isCompleted = progress != null && progress >= 0.9;
 
+  // Netflix-style horizontal list item for mobile
+  if (variant === 'list') {
+    return (
+      <Link
+        href={`/anime/${seriesSlug}/${number}`}
+        style={{ textDecoration: 'none' }}
+      >
+        <Box
+          sx={{
+            display: 'flex',
+            gap: 1.5,
+            alignItems: 'center',
+            cursor: 'pointer',
+            borderRadius: 2,
+            px: 0.5,
+            py: 0.5,
+            transition: 'background 0.15s',
+            '&:active': {
+              bgcolor: 'rgba(255,255,255,0.04)',
+            },
+          }}
+        >
+          {/* Thumbnail */}
+          <Box
+            sx={{
+              position: 'relative',
+              width: 130,
+              minWidth: 130,
+              aspectRatio: '16/9',
+              borderRadius: 1.5,
+              overflow: 'hidden',
+              bgcolor: 'rgba(255,255,255,0.03)',
+              border: '1px solid rgba(255,255,255,0.06)',
+              flexShrink: 0,
+            }}
+          >
+            {thumbnailUrl ? (
+              <Image
+                src={thumbnailUrl}
+                alt={titleFr || title}
+                fill
+                sizes="130px"
+                style={{ objectFit: 'cover' }}
+              />
+            ) : (
+              <Box
+                sx={{
+                  width: '100%',
+                  height: '100%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  background: episodeGradient(number),
+                }}
+              >
+                <Typography
+                  sx={{
+                    fontSize: '1.4rem',
+                    fontWeight: 900,
+                    color: 'rgba(255,255,255,0.06)',
+                    userSelect: 'none',
+                  }}
+                >
+                  {number}
+                </Typography>
+              </Box>
+            )}
+
+            {/* Play overlay — always visible on list */}
+            <Box
+              sx={{
+                position: 'absolute',
+                inset: 0,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                bgcolor: 'rgba(0,0,0,0.3)',
+              }}
+            >
+              <Box
+                sx={{
+                  width: 36,
+                  height: 36,
+                  borderRadius: '50%',
+                  bgcolor: 'rgba(0,0,0,0.6)',
+                  border: '2px solid white',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <PlayArrow sx={{ color: 'white', fontSize: 20 }} />
+              </Box>
+            </Box>
+
+            {/* Duration badge */}
+            {duration > 0 && (
+              <Box
+                sx={{
+                  position: 'absolute',
+                  bottom: 4,
+                  right: 4,
+                  px: 0.5,
+                  py: 0.1,
+                  borderRadius: 0.5,
+                  bgcolor: 'rgba(0,0,0,0.8)',
+                  fontSize: '0.6rem',
+                  fontWeight: 600,
+                  color: 'rgba(255,255,255,0.8)',
+                }}
+              >
+                {formatDuration(duration)}
+              </Box>
+            )}
+
+            {/* Progress bar */}
+            {progress != null && progress > 0 && (
+              <Box
+                sx={{
+                  position: 'absolute',
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  height: 3,
+                  bgcolor: 'rgba(255,255,255,0.15)',
+                }}
+              >
+                <Box
+                  sx={{
+                    height: '100%',
+                    width: `${Math.min(progress * 100, 100)}%`,
+                    bgcolor: isCompleted ? '#22c55e' : '#dc2626',
+                  }}
+                />
+              </Box>
+            )}
+          </Box>
+
+          {/* Info */}
+          <Box sx={{ flex: 1, minWidth: 0, py: 0.5 }}>
+            <Typography
+              variant="caption"
+              sx={{
+                color: 'rgba(255,255,255,0.4)',
+                fontWeight: 700,
+                fontSize: '0.65rem',
+              }}
+            >
+              Épisode {number}
+            </Typography>
+            <Typography
+              variant="body2"
+              sx={{
+                color: isCompleted ? 'rgba(255,255,255,0.5)' : 'white',
+                fontWeight: 600,
+                fontSize: '0.82rem',
+                lineHeight: 1.3,
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                display: '-webkit-box',
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: 'vertical',
+              }}
+            >
+              {titleFr || title}
+            </Typography>
+            {duration > 0 && (
+              <Typography
+                variant="caption"
+                sx={{
+                  color: 'rgba(255,255,255,0.3)',
+                  fontSize: '0.65rem',
+                  mt: 0.3,
+                  display: 'block',
+                }}
+              >
+                {formatDuration(duration)}
+              </Typography>
+            )}
+          </Box>
+
+          {/* Completed indicator */}
+          {isCompleted && (
+            <CheckCircle
+              sx={{
+                fontSize: 20,
+                color: '#22c55e',
+                flexShrink: 0,
+                mr: 0.5,
+              }}
+            />
+          )}
+        </Box>
+      </Link>
+    );
+  }
+
+  // Default card variant (tablet+)
   return (
     <Link
       href={`/anime/${seriesSlug}/${number}`}
