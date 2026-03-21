@@ -10,8 +10,8 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getAnimeEpisode } from '@/server/actions/anime';
 import { getEpisodeProgress } from '@/server/actions/anime-progress';
+import { EpisodePlayerSection } from '../../_components/EpisodePlayerSection';
 import { EpisodeSidebar } from '../../_components/EpisodeSidebar';
-import { EpisodeViewer } from '../../_components/EpisodeViewer';
 
 interface Props {
   params: Promise<{ slug: string; episode: string }>;
@@ -117,12 +117,14 @@ export default async function EpisodePage({ params }: Props) {
       >
         {/* Player column */}
         <Box sx={{ flex: 1, minWidth: 0 }}>
-          <EpisodeViewer
+          <EpisodePlayerSection
             title={`${seriesTitle} - EP ${ep.number}`}
             sources={ep.sources}
             savedProgress={savedTime}
             episodeId={ep.id}
             duration={ep.duration}
+            seriesSlug={slug}
+            nextEpisode={next}
           />
 
           {/* Episode info + navigation */}

@@ -18,6 +18,7 @@ interface EpisodePlayerProps {
   savedProgress?: number;
   episodeId: string;
   duration?: number;
+  onEnded?: () => void;
 }
 
 /** Sources that must be rendered as an iframe (not via Vidstack) */
@@ -64,6 +65,7 @@ export function EpisodePlayer({
   savedProgress = 0,
   episodeId,
   duration: episodeDuration,
+  onEnded: onEndedProp,
 }: EpisodePlayerProps) {
   const lastReportRef = useRef(0);
   const episodeIdRef = useRef(episodeId);
@@ -103,7 +105,8 @@ export function EpisodePlayer({
 
   const handleEnded = useCallback(() => {
     reportProgress(episodeDuration || 9999, episodeDuration || 9999);
-  }, [reportProgress, episodeDuration]);
+    onEndedProp?.();
+  }, [reportProgress, episodeDuration, onEndedProp]);
 
   // ── Iframe player (Sibnet, VidMoly, VK, Dailymotion, etc.) ──
   if (isIframeSource(src, sourceType)) {

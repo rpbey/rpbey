@@ -20,6 +20,7 @@ interface EpisodeViewerProps {
   savedProgress: number;
   episodeId: string;
   duration: number;
+  onEnded?: () => void;
 }
 
 function getSourceLabel(source: Source): string {
@@ -52,6 +53,7 @@ export function EpisodeViewer({
   savedProgress,
   episodeId,
   duration,
+  onEnded,
 }: EpisodeViewerProps) {
   const streamingSources = sources.filter((s) => !isDownloadSource(s));
   const downloadSources = sources.filter(isDownloadSource);
@@ -103,6 +105,7 @@ export function EpisodeViewer({
         savedProgress={savedProgress}
         episodeId={episodeId}
         duration={duration}
+        onEnded={onEnded}
       />
 
       {/* Controls bar — glassmorphism */}

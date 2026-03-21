@@ -1,10 +1,24 @@
 'use client';
 
-import { PlayArrow } from '@mui/icons-material';
-import { Box, Button, Chip, Typography } from '@mui/material';
+import {
+  CalendarMonth,
+  PlayArrow,
+  Replay,
+  Search,
+  Theaters,
+  Translate,
+} from '@mui/icons-material';
+import {
+  Box,
+  Button,
+  Chip,
+  InputAdornment,
+  TextField,
+  Typography,
+} from '@mui/material';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { getSeriesProgress } from '@/server/actions/anime-progress';
 import { EpisodeGrid } from './EpisodeGrid';
 
@@ -13,6 +27,13 @@ const GENERATION_COLORS: Record<string, string> = {
   METAL: '#E65100',
   BURST: '#C62828',
   X: '#7B1FA2',
+};
+
+const GENERATION_NAMES: Record<string, string> = {
+  ORIGINAL: 'Série Originale',
+  METAL: 'Metal Saga',
+  BURST: 'Burst',
+  X: 'Beyblade X',
 };
 
 interface Episode {
@@ -44,6 +65,7 @@ export function SeriesDetail({ series }: { series: SeriesData }) {
   const [progressMap, setProgressMap] = useState<
     Record<string, { progressTime: number; status: string }>
   >({});
+  const [search, setSearch] = useState('');
   const accentColor = GENERATION_COLORS[series.generation] || '#7B1FA2';
 
   useEffect(() => {
@@ -54,14 +76,62 @@ export function SeriesDetail({ series }: { series: SeriesData }) {
     });
   }, [series.id]);
 
+  // Find resume episode
+  const resumeEpisode = useMemo(() => {
+    let latest: { number: number; progressTime: number } | null = null;
+    for (const ep of series.episodes) {
+      const prog = progressMap[ep.id];
+      if (prog && prog.status === 'IN_PROGRESS') {
+        if (!latest || ep.number > latest.number) {
+          latest = { number: ep.number, progressTime: prog.progressTime };
+        }
+      }
+    }
+    return latest;
+  }, [progressMap, series.episodes]);
+
+  // Available languages
+  const languages = useMemo(() => {
+    const langs = new Set<string>();
+    for (const ep of series.episodes) {
+      for (const src of ep.sources) {
+        langs.add(src.language);
+      }
+    }
+    return [...langs].sort();
+  }, [series.episodes]);
+
+  // Completed count
+  const completedCount = useMemo(() => {
+    let count = 0;
+    for (const ep of series.episodes) {
+      const prog = progressMap[ep.id];
+      if (prog && prog.status === 'COMPLETED') count++;
+    }
+    return count;
+  }, [progressMap, series.episodes]);
+
+  // Filtered episodes
+  const filteredEpisodes = useMemo(() => {
+    if (!search.trim()) return series.episodes;
+    const q = search.toLowerCase();
+    return series.episodes.filter(
+      (ep) =>
+        ep.title.toLowerCase().includes(q) ||
+        ep.titleFr?.toLowerCase().includes(q) ||
+        `ep ${ep.number}` === q ||
+        `${ep.number}` === q,
+    );
+  }, [search, series.episodes]);
+
   return (
-    <Box>
+    <Box sx={{ minHeight: '100vh', bgcolor: '#0a0a0a', pb: 8 }}>
       {/* Hero banner */}
       <Box
         sx={{
           position: 'relative',
           width: '100%',
-          height: { xs: 250, md: 400 },
+          height: { xs: 300, md: 450 },
           overflow: 'hidden',
         }}
       >
@@ -83,26 +153,44 @@ export function SeriesDetail({ series }: { series: SeriesData }) {
             }}
           />
         )}
+        {/* Gradient bottom */}
         <Box
           sx={{
             position: 'absolute',
             inset: 0,
-            background: 'linear-gradient(to top, #0a0a0a 0%, transparent 60%)',
+            background:
+              'linear-gradient(to top, #0a0a0a 0%, rgba(10,10,10,0.6) 40%, transparent 70%)',
+          }}
+        />
+        {/* Gradient left */}
+        <Box
+          sx={{
+            position: 'absolute',
+            inset: 0,
+            background:
+              'linear-gradient(to right, rgba(10,10,10,0.8) 0%, transparent 50%)',
           }}
         />
       </Box>
 
       {/* Series info */}
       <Box
-        sx={{ px: { xs: 2, md: 4 }, mt: -8, position: 'relative', zIndex: 1 }}
+        sx={{
+          maxWidth: 1400,
+          mx: 'auto',
+          px: { xs: 2, md: 4 },
+          mt: { xs: -12, md: -16 },
+          position: 'relative',
+          zIndex: 1,
+        }}
       >
-        <Box sx={{ display: 'flex', gap: 3, mb: 4 }}>
+        <Box sx={{ display: 'flex', gap: { xs: 2, md: 4 }, mb: 4 }}>
           {/* Poster */}
           {series.posterUrl && (
             <Box
               sx={{
                 display: { xs: 'none', md: 'block' },
-                width: 180,
+                width: 200,
                 flexShrink: 0,
               }}
             >
@@ -110,129 +198,336 @@ export function SeriesDetail({ series }: { series: SeriesData }) {
                 sx={{
                   position: 'relative',
                   aspectRatio: '2/3',
-                  borderRadius: 2,
+                  borderRadius: 3,
                   overflow: 'hidden',
-                  boxShadow: `0 8px 30px ${accentColor}40`,
+                  boxShadow: `0 8px 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.08)`,
                 }}
               >
                 <Image
                   src={series.posterUrl}
                   alt={series.titleFr || series.title}
                   fill
-                  sizes="180px"
+                  sizes="200px"
                   style={{ objectFit: 'cover' }}
                 />
               </Box>
             </Box>
           )}
 
-          <Box sx={{ flex: 1 }}>
+          <Box sx={{ flex: 1, pt: { xs: 2, md: 4 } }}>
+            {/* Generation badge */}
             <Chip
-              label={series.generation}
+              label={GENERATION_NAMES[series.generation] || series.generation}
               size="small"
               sx={{
                 bgcolor: accentColor,
                 color: 'white',
                 fontWeight: 700,
-                mb: 1,
+                fontSize: '0.7rem',
+                height: 24,
+                mb: 1.5,
               }}
             />
+
             <Typography
-              variant="h4"
+              variant="h3"
               component="h1"
               fontWeight={900}
               sx={{
                 color: 'white',
-                mb: 1,
-                fontSize: { xs: '1.5rem', md: '2.25rem' },
+                mb: 0.5,
+                fontSize: { xs: '1.6rem', sm: '2rem', md: '2.5rem' },
+                lineHeight: 1.1,
+                letterSpacing: '-0.02em',
               }}
             >
               {series.titleFr || series.title}
             </Typography>
+
             {series.titleJp && (
               <Typography
                 variant="body2"
-                sx={{ color: 'rgba(255,255,255,0.5)', mb: 1 }}
+                sx={{
+                  color: 'rgba(255,255,255,0.4)',
+                  mb: 1.5,
+                  fontSize: '0.85rem',
+                }}
               >
                 {series.titleJp}
               </Typography>
             )}
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-              <Typography
-                variant="body2"
-                sx={{ color: 'rgba(255,255,255,0.6)' }}
+
+            {/* Meta info chips */}
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1.5,
+                mb: 2.5,
+                flexWrap: 'wrap',
+              }}
+            >
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 0.5,
+                  color: 'rgba(255,255,255,0.5)',
+                  fontSize: '0.8rem',
+                }}
               >
-                {series.year} · {series.episodeCount} épisodes
-              </Typography>
-              {(() => {
-                const langs = new Set<string>();
-                for (const ep of series.episodes) {
-                  for (const src of ep.sources) {
-                    langs.add(src.language);
-                  }
-                }
-                return [...langs].map((lang) => (
-                  <Chip
-                    key={lang}
-                    label={lang}
-                    size="small"
-                    sx={{
-                      height: 20,
-                      fontSize: '0.6rem',
-                      fontWeight: 700,
-                      bgcolor:
-                        lang === 'VOSTFR'
-                          ? 'rgba(220,38,38,0.3)'
-                          : 'rgba(59,130,246,0.3)',
-                      color: 'white',
-                    }}
+                <CalendarMonth sx={{ fontSize: 16 }} />
+                {series.year}
+              </Box>
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 0.5,
+                  color: 'rgba(255,255,255,0.5)',
+                  fontSize: '0.8rem',
+                }}
+              >
+                <Theaters sx={{ fontSize: 16 }} />
+                {series.episodeCount} épisodes
+              </Box>
+              {languages.length > 0 && (
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 0.5,
+                  }}
+                >
+                  <Translate
+                    sx={{ fontSize: 16, color: 'rgba(255,255,255,0.5)' }}
                   />
-                ));
-              })()}
+                  {languages.map((lang) => (
+                    <Chip
+                      key={lang}
+                      label={lang}
+                      size="small"
+                      sx={{
+                        height: 20,
+                        fontSize: '0.6rem',
+                        fontWeight: 700,
+                        bgcolor:
+                          lang === 'VF'
+                            ? 'rgba(59,130,246,0.25)'
+                            : lang === 'VOSTFR'
+                              ? 'rgba(220,38,38,0.25)'
+                              : 'rgba(255,255,255,0.08)',
+                        color: 'rgba(255,255,255,0.8)',
+                        border: '1px solid rgba(255,255,255,0.08)',
+                      }}
+                    />
+                  ))}
+                </Box>
+              )}
+              {completedCount > 0 && (
+                <Chip
+                  label={`${completedCount}/${series.episodeCount} vus`}
+                  size="small"
+                  sx={{
+                    height: 22,
+                    fontSize: '0.65rem',
+                    fontWeight: 700,
+                    bgcolor: 'rgba(34,197,94,0.15)',
+                    color: '#22c55e',
+                    border: '1px solid rgba(34,197,94,0.2)',
+                  }}
+                />
+              )}
             </Box>
+
             {series.synopsis && (
               <Typography
                 variant="body1"
-                sx={{ color: 'rgba(255,255,255,0.8)', maxWidth: 700, mb: 3 }}
+                sx={{
+                  color: 'rgba(255,255,255,0.7)',
+                  maxWidth: 650,
+                  mb: 3,
+                  lineHeight: 1.7,
+                  fontSize: '0.9rem',
+                }}
               >
                 {series.synopsis}
               </Typography>
             )}
-            {series.episodes.length > 0 && (
-              <Button
-                component={Link}
-                href={`/anime/${series.slug}/1`}
-                variant="contained"
-                size="large"
-                startIcon={<PlayArrow />}
-                sx={{
-                  bgcolor: accentColor,
-                  color: 'white',
-                  fontWeight: 700,
-                  borderRadius: 2,
-                  px: 4,
-                  '&:hover': { bgcolor: `${accentColor}DD` },
-                }}
-              >
-                Regarder l&apos;épisode 1
-              </Button>
-            )}
+
+            {/* Action buttons */}
+            <Box sx={{ display: 'flex', gap: 1.5, flexWrap: 'wrap' }}>
+              {resumeEpisode ? (
+                <Button
+                  component={Link}
+                  href={`/anime/${series.slug}/${resumeEpisode.number}`}
+                  variant="contained"
+                  size="large"
+                  startIcon={<Replay />}
+                  sx={{
+                    bgcolor: accentColor,
+                    color: 'white',
+                    fontWeight: 700,
+                    borderRadius: 2,
+                    px: 3.5,
+                    py: 1.2,
+                    textTransform: 'none',
+                    fontSize: '0.9rem',
+                    '&:hover': { bgcolor: `${accentColor}DD` },
+                  }}
+                >
+                  Reprendre EP {resumeEpisode.number}
+                </Button>
+              ) : (
+                series.episodes.length > 0 && (
+                  <Button
+                    component={Link}
+                    href={`/anime/${series.slug}/1`}
+                    variant="contained"
+                    size="large"
+                    startIcon={<PlayArrow />}
+                    sx={{
+                      bgcolor: 'white',
+                      color: '#0a0a0a',
+                      fontWeight: 800,
+                      borderRadius: 2,
+                      px: 3.5,
+                      py: 1.2,
+                      textTransform: 'none',
+                      fontSize: '0.9rem',
+                      '&:hover': { bgcolor: 'rgba(255,255,255,0.85)' },
+                    }}
+                  >
+                    Regarder l&apos;épisode 1
+                  </Button>
+                )
+              )}
+              {resumeEpisode && (
+                <Button
+                  component={Link}
+                  href={`/anime/${series.slug}/1`}
+                  variant="outlined"
+                  size="large"
+                  startIcon={<PlayArrow />}
+                  sx={{
+                    borderColor: 'rgba(255,255,255,0.2)',
+                    color: 'rgba(255,255,255,0.7)',
+                    fontWeight: 600,
+                    borderRadius: 2,
+                    px: 3,
+                    py: 1.2,
+                    textTransform: 'none',
+                    fontSize: '0.85rem',
+                    '&:hover': {
+                      borderColor: 'rgba(255,255,255,0.4)',
+                      bgcolor: 'rgba(255,255,255,0.05)',
+                    },
+                  }}
+                >
+                  Depuis le début
+                </Button>
+              )}
+            </Box>
           </Box>
         </Box>
 
-        {/* Episode list */}
-        <Typography
-          variant="h5"
-          fontWeight={800}
-          sx={{ color: 'text.primary', mb: 3 }}
+        {/* Episode list header */}
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: 2,
+            mb: 3,
+            flexWrap: 'wrap',
+          }}
         >
-          Épisodes ({series.episodes.length})
-        </Typography>
+          <Typography
+            variant="h5"
+            fontWeight={800}
+            sx={{
+              color: 'text.primary',
+              fontSize: { xs: '1.1rem', md: '1.3rem' },
+            }}
+          >
+            Épisodes
+            <Box
+              component="span"
+              sx={{ color: 'rgba(255,255,255,0.3)', fontWeight: 500, ml: 1 }}
+            >
+              {filteredEpisodes.length !== series.episodes.length
+                ? `${filteredEpisodes.length} / ${series.episodes.length}`
+                : series.episodes.length}
+            </Box>
+          </Typography>
+
+          {/* Search bar */}
+          {series.episodes.length > 12 && (
+            <TextField
+              placeholder="Rechercher un épisode..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              size="small"
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Search
+                        sx={{ color: 'rgba(255,255,255,0.3)', fontSize: 18 }}
+                      />
+                    </InputAdornment>
+                  ),
+                },
+              }}
+              sx={{
+                width: { xs: '100%', sm: 260 },
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: 2,
+                  bgcolor: 'rgba(255,255,255,0.04)',
+                  fontSize: '0.8rem',
+                  '& fieldset': {
+                    borderColor: 'rgba(255,255,255,0.08)',
+                  },
+                  '&:hover fieldset': {
+                    borderColor: 'rgba(255,255,255,0.15)',
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: accentColor,
+                    borderWidth: 1,
+                  },
+                },
+                '& .MuiInputBase-input': {
+                  color: 'white',
+                  '&::placeholder': {
+                    color: 'rgba(255,255,255,0.3)',
+                    opacity: 1,
+                  },
+                },
+              }}
+            />
+          )}
+        </Box>
+
         <EpisodeGrid
           seriesSlug={series.slug}
-          episodes={series.episodes}
+          episodes={filteredEpisodes}
           progressMap={progressMap}
         />
+
+        {/* Empty search state */}
+        {search && filteredEpisodes.length === 0 && (
+          <Box
+            sx={{
+              textAlign: 'center',
+              py: 8,
+              color: 'rgba(255,255,255,0.3)',
+            }}
+          >
+            <Typography variant="body1">
+              Aucun épisode trouvé pour &quot;{search}&quot;
+            </Typography>
+          </Box>
+        )}
       </Box>
     </Box>
   );
