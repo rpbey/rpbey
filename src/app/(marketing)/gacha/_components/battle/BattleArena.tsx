@@ -101,6 +101,8 @@ export function BattleArena({ result, onFinish }: BattleArenaProps) {
     return Math.max(Math.round(c.hp * (rm[c.rarity] ?? 1) * 3), 30);
   });
 
+  const processEventRef = useRef<(idx: number) => void>();
+
   const processEvent = useCallback(
     (idx: number) => {
       if (idx >= result.events.length) {
@@ -112,7 +114,6 @@ export function BattleArena({ result, onFinish }: BattleArenaProps) {
       const event = result.events[idx]!;
       setCurrentEvent(event);
 
-      // Find which team the defender belongs to
       const isTeam1Defender = result.team1.cards.some(
         (c) => c.name === event.defender,
       );
@@ -188,17 +189,25 @@ export function BattleArena({ result, onFinish }: BattleArenaProps) {
       }
 
       setCurrentEventIdx(idx);
-      timerRef.current = setTimeout(() => processEvent(idx + 1), 800 / speed);
+      timerRef.current = setTimeout(
+        () => processEventRef.current?.(idx + 1),
+        800 / speed,
+      );
     },
     [result, speed],
   );
 
+  // Keep ref in sync
   useEffect(() => {
-    timerRef.current = setTimeout(() => processEvent(0), 1000);
+    processEventRef.current = processEvent;
+  }, [processEvent]);
+
+  useEffect(() => {
+    timerRef.current = setTimeout(() => processEventRef.current?.(0), 1000);
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current);
     };
-  }, [processEvent]);
+  }, []);
 
   const skipToEnd = () => {
     if (timerRef.current) clearTimeout(timerRef.current);

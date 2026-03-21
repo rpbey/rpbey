@@ -39,7 +39,12 @@ const ROTATION_MS = 8000;
 export function AnimeHero({ featured }: { featured: FeaturedSeries[] }) {
   const [current, setCurrent] = useState(0);
   const [progress, setProgress] = useState(0);
-  const startRef = useRef(Date.now());
+  const startRef = useRef(0);
+
+  // Initialize on mount
+  useEffect(() => {
+    startRef.current = Date.now();
+  }, []);
 
   const next = useCallback(() => {
     setCurrent((prev) => (prev + 1) % featured.length);

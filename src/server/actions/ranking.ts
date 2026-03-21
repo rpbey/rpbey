@@ -114,7 +114,7 @@ export async function recalculateRankings() {
     );
     bts2 = JSON.parse(readFileSync(join(exportsDir, 'B_TS2.json'), 'utf-8'));
     bts3 = JSON.parse(readFileSync(join(exportsDir, 'B_TS3.json'), 'utf-8'));
-  } catch (_e) {
+  } catch {
     // JSON data files not available, skip BTS ranking data
   }
 
@@ -344,11 +344,8 @@ export async function recalculateRankings() {
             m.winnerName === participant.playerName) &&
           m.state === 'complete',
       );
-      let winPts = 0;
       // RPB tournaments: all wins count equally (no WB/LB distinction)
-      for (const _m of matchWins) {
-        winPts += config.matchWinWinner;
-      }
+      const winPts = matchWins.length * config.matchWinWinner;
       points += winPts;
 
       if (!stats.userId && participant.userId)

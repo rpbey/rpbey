@@ -28,7 +28,9 @@ const COLOR_GOLD = '#fbbf24';
 // Name cleanup: strip emojis, deck notation, penalties
 function cleanName(raw: string): string {
   let name = (raw.split('/')[0] ?? raw).trim();
-  name = name.replace(/[✅✔️☑️🔰⭐🏆💎🎖️✨]+/g, '').trim();
+  name = name
+    .replace(/\p{Emoji_Presentation}|\p{Extended_Pictographic}|\uFE0F/gu, '')
+    .trim();
   name = name.replace(/^\(-?\d+\)\s*/, '').trim();
   return name.replace(/^[_\s]+|[_\s]+$/g, '');
 }
