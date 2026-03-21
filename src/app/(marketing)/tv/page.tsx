@@ -87,7 +87,7 @@ export default async function TVPage() {
       >
         <YouTubeEmbed
           videoid={FEATURED_VIDEO_ID}
-          params="rel=0&modestbranding=1"
+          params="rel=0"
           style="border-radius: inherit;"
         />
       </Paper>

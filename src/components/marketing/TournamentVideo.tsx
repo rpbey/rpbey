@@ -99,7 +99,7 @@ export function TournamentVideo({
         >
           <YouTubeEmbed
             videoid={videoId}
-            params="rel=0&modestbranding=1"
+            params="rel=0"
             style="border-radius: inherit;"
           />
         </Paper>
