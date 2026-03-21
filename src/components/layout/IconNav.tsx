@@ -12,7 +12,6 @@ import {
   Logout,
   PersonAdd,
   Settings,
-  Style,
   Theaters,
 } from '@mui/icons-material';
 import {
@@ -48,7 +47,7 @@ const navItems = [
   { icon: AutoGraph, label: 'Meta', href: '/meta' },
   { icon: LiveTv, label: 'TV', href: '/tv' },
   { icon: Theaters, label: 'Anime', href: '/anime' },
-  { icon: Style, label: 'Gacha', href: '/gacha' },
+  // { icon: Style, label: 'Gacha', href: '/gacha' },
   { icon: Build, label: 'Builder', href: '/builder' },
 ];
 
@@ -433,11 +432,6 @@ export function MobileNav() {
             label="Anime"
             value="/anime"
             icon={<Theaters />}
-          />
-          <BottomNavigationAction
-            label="Gacha"
-            value="/gacha"
-            icon={<Style />}
           />
           <BottomNavigationAction label="TV" value="/tv" icon={<LiveTv />} />
         </BottomNavigation>
