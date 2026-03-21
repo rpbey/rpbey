@@ -36,6 +36,31 @@ function isIframeSource(src: string, sourceType: string): boolean {
   return IFRAME_HOSTS.some((host) => src.includes(host));
 }
 
+function isYouTubeSource(src: string, sourceType: string): boolean {
+  if (sourceType === 'YOUTUBE') return true;
+  return (
+    src.includes('youtube.com') ||
+    src.includes('youtu.be') ||
+    src.startsWith('youtube/')
+  );
+}
+
+/** Convert any YouTube src format to a nocookie embed URL */
+function getYouTubeEmbedUrl(src: string): string {
+  let videoId = '';
+
+  if (src.startsWith('youtube/')) {
+    videoId = src.replace('youtube/', '');
+  } else {
+    const match = src.match(
+      /(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]+)/,
+    );
+    videoId = match?.[1] ?? src;
+  }
+
+  return `https://www.youtube-nocookie.com/embed/${videoId}?rel=0&modestbranding=1`;
+}
+
 export function EpisodePlayer({
   title,
   src,
@@ -124,7 +149,46 @@ export function EpisodePlayer({
     );
   }
 
-  // ── Vidstack player (YouTube, MP4, HLS) ──
+  // ── YouTube player (direct iframe to avoid bot detection) ──
+  if (isYouTubeSource(src, sourceType)) {
+    return (
+      <Box
+        sx={{
+          width: '100%',
+          borderRadius: 3,
+          overflow: 'hidden',
+          bgcolor: '#000',
+        }}
+      >
+        <Box
+          sx={{
+            position: 'relative',
+            width: '100%',
+            paddingTop: '56.25%', // 16:9
+          }}
+        >
+          <Box
+            component="iframe"
+            src={getYouTubeEmbedUrl(src)}
+            title={title}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowFullScreen
+            referrerPolicy="strict-origin-when-cross-origin"
+            sx={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              border: 'none',
+            }}
+          />
+        </Box>
+      </Box>
+    );
+  }
+
+  // ── Vidstack player (MP4, HLS) ──
   return (
     <Box
       sx={{
