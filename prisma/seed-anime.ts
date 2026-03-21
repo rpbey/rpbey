@@ -165,6 +165,18 @@ const SERIES = [
     sortOrder: 13,
   },
   {
+    slug: 'beyblade-burst-quadstrike',
+    title: 'Beyblade Burst QuadStrike',
+    titleFr: 'Beyblade Burst QuadStrike',
+    titleJp: 'ベイブレードバースト クアッドストライク',
+    generation: 'BURST' as const,
+    synopsis:
+      "La septième et dernière saison de Beyblade Burst. De nouveaux bladers apparaissent avec le système QuadDrive, permettant de basculer entre quatre modes de combat.",
+    year: 2023,
+    episodeCount: 26,
+    sortOrder: 14,
+  },
+  {
     slug: 'beyblade-x',
     title: 'Beyblade X',
     titleFr: 'Beyblade X',
@@ -174,7 +186,7 @@ const SERIES = [
       "Multi Nanairo entre dans le monde du Beyblade X avec le système Xtreme et le Xtreme Stadium.",
     year: 2023,
     episodeCount: 52,
-    sortOrder: 14,
+    sortOrder: 15,
   },
 ];
 
