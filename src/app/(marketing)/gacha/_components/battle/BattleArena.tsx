@@ -11,6 +11,11 @@ import { Box, LinearProgress, Typography } from '@mui/material';
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import {
+  fireCriticalConfetti,
+  fireKOConfetti,
+  fireVictoryConfetti,
+} from './confetti';
 import type { BattleCard, BattleEvent, BattleResult } from './engine';
 
 const RARITY_COLORS: Record<string, string> = {
@@ -100,6 +105,7 @@ export function BattleArena({ result, onFinish }: BattleArenaProps) {
     (idx: number) => {
       if (idx >= result.events.length) {
         setIsFinished(true);
+        fireVictoryConfetti();
         return;
       }
 
@@ -148,7 +154,12 @@ export function BattleArena({ result, onFinish }: BattleArenaProps) {
         }
       }
 
+      if (event.type === 'critical') {
+        fireCriticalConfetti();
+      }
+
       if (event.type === 'defeated') {
+        fireKOConfetti();
         if (isTeam1Defender) {
           const cardIdx = result.team1.cards.findIndex(
             (c) => c.name === event.defender,
@@ -210,6 +221,7 @@ export function BattleArena({ result, onFinish }: BattleArenaProps) {
     });
     setCurrentEventIdx(result.events.length - 1);
     setIsFinished(true);
+    fireVictoryConfetti();
   };
 
   const renderTeamSlots = (
