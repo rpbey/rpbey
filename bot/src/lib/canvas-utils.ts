@@ -1,4 +1,5 @@
 import { createCanvas, GlobalFonts, loadImage } from '@napi-rs/canvas';
+import sharp from 'sharp';
 
 import { resolveRootPath } from './paths.js';
 
@@ -12,13 +13,35 @@ GlobalFonts.registerFromPath(fontPath, 'GoogleSans');
 
 type CanvasImage = Awaited<ReturnType<typeof loadImage>>;
 
+const NON_TRANSPARENT_EXTS = /\.(jpe?g|webp|bmp|tiff?)(\?.*)?$/i;
+
+/** Remove white background from non-PNG images using sharp unflatten */
+async function removeWhiteBackground(input: string | Buffer): Promise<Buffer> {
+  return sharp(input).unflatten().png().toBuffer();
+}
+
 async function safeLoadImage(url: string | null): Promise<CanvasImage | null> {
   if (!url) return null;
   try {
-    let imageToLoad = url;
+    let imageToLoad: string | Buffer = url;
     if (url.startsWith('/')) {
       imageToLoad = getAssetPath(`public${url}`);
     }
+
+    // Remove white background for non-transparent formats
+    if (
+      typeof imageToLoad === 'string' &&
+      NON_TRANSPARENT_EXTS.test(imageToLoad)
+    ) {
+      if (imageToLoad.startsWith('http')) {
+        const res = await fetch(imageToLoad);
+        const buf = Buffer.from(await res.arrayBuffer());
+        imageToLoad = await removeWhiteBackground(buf);
+      } else {
+        imageToLoad = await removeWhiteBackground(imageToLoad);
+      }
+    }
+
     return await loadImage(imageToLoad);
   } catch (_e) {
     return null;
