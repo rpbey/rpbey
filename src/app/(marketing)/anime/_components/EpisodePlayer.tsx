@@ -9,6 +9,7 @@ import {
 import '@vidstack/react/player/styles/default/theme.css';
 import '@vidstack/react/player/styles/default/layouts/video.css';
 import { useCallback, useEffect, useRef } from 'react';
+import { YouTubePlayer } from './YouTubePlayer';
 
 interface EpisodePlayerProps {
   title: string;
@@ -45,20 +46,15 @@ function isYouTubeSource(src: string, sourceType: string): boolean {
   );
 }
 
-/** Convert any YouTube src format to a nocookie embed URL */
-function getYouTubeEmbedUrl(src: string): string {
-  let videoId = '';
-
+/** Extract YouTube video ID from any src format */
+function extractYouTubeId(src: string): string {
   if (src.startsWith('youtube/')) {
-    videoId = src.replace('youtube/', '');
-  } else {
-    const match = src.match(
-      /(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]+)/,
-    );
-    videoId = match?.[1] ?? src;
+    return src.replace('youtube/', '');
   }
-
-  return `https://www.youtube-nocookie.com/embed/${videoId}?rel=0&modestbranding=1`;
+  const match = src.match(
+    /(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]+)/,
+  );
+  return match?.[1] ?? src;
 }
 
 export function EpisodePlayer({
@@ -149,43 +145,9 @@ export function EpisodePlayer({
     );
   }
 
-  // ── YouTube player (direct iframe to avoid bot detection) ──
+  // ── YouTube native player (thumbnail + click to play) ──
   if (isYouTubeSource(src, sourceType)) {
-    return (
-      <Box
-        sx={{
-          width: '100%',
-          borderRadius: 3,
-          overflow: 'hidden',
-          bgcolor: '#000',
-        }}
-      >
-        <Box
-          sx={{
-            position: 'relative',
-            width: '100%',
-            paddingTop: '56.25%', // 16:9
-          }}
-        >
-          <Box
-            component="iframe"
-            src={getYouTubeEmbedUrl(src)}
-            title={title}
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            allowFullScreen
-            referrerPolicy="strict-origin-when-cross-origin"
-            sx={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              width: '100%',
-              height: '100%',
-              border: 'none',
-            }}
-          />
-        </Box>
-      </Box>
-    );
+    return <YouTubePlayer videoId={extractYouTubeId(src)} title={title} />;
   }
 
   // ── Vidstack player (MP4, HLS) ──
