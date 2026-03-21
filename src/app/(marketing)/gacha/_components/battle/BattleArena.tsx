@@ -36,6 +36,18 @@ const ELEMENT_EMOJI: Record<string, string> = {
   NEUTRAL: '⚡',
 };
 
+const EVENT_COLORS: Record<string, string> = {
+  critical: '#fbbf24',
+  special_move: '#ef4444',
+  defeated: '#ef4444',
+  switch: '#3b82f6',
+  dodge: '#22c55e',
+  element_bonus: '#a78bfa',
+  element_weak: '#f97316',
+  combo: '#06b6d4',
+  attack: 'rgba(255,255,255,0.5)',
+};
+
 interface BattleArenaProps {
   result: BattleResult;
   onFinish: () => void;
@@ -47,31 +59,16 @@ export function BattleArena({ result, onFinish }: BattleArenaProps) {
   const [speed, setSpeed] = useState<1 | 2 | 4>(1);
   const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
-  // Track HP state over time
+  // Use maxHp directly from cards
   const [team1Hp, setTeam1Hp] = useState(
-    result.team1.cards.map((c) => {
-      const rarityMul: Record<string, number> = {
-        COMMON: 0.85,
-        RARE: 1.0,
-        EPIC: 1.15,
-        LEGENDARY: 1.35,
-        SECRET: 1.55,
-      };
-      return Math.max(Math.round(c.hp * (rarityMul[c.rarity] ?? 1) * 3), 30);
-    }),
+    result.team1.cards.map((c) => c.maxHp),
   );
   const [team2Hp, setTeam2Hp] = useState(
-    result.team2.cards.map((c) => {
-      const rarityMul: Record<string, number> = {
-        COMMON: 0.85,
-        RARE: 1.0,
-        EPIC: 1.15,
-        LEGENDARY: 1.35,
-        SECRET: 1.55,
-      };
-      return Math.max(Math.round(c.hp * (rarityMul[c.rarity] ?? 1) * 3), 30);
-    }),
+    result.team2.cards.map((c) => c.maxHp),
   );
+  const maxHp1 = result.team1.cards.map((c) => c.maxHp);
+  const maxHp2 = result.team2.cards.map((c) => c.maxHp);
+
   const [active1, setActive1] = useState(0);
   const [active2, setActive2] = useState(0);
   const [defeated1, setDefeated1] = useState<Set<number>>(new Set());
@@ -80,28 +77,7 @@ export function BattleArena({ result, onFinish }: BattleArenaProps) {
   const [shakeLeft, setShakeLeft] = useState(false);
   const [shakeRight, setShakeRight] = useState(false);
 
-  const maxHp1 = result.team1.cards.map((c) => {
-    const rm: Record<string, number> = {
-      COMMON: 0.85,
-      RARE: 1.0,
-      EPIC: 1.15,
-      LEGENDARY: 1.35,
-      SECRET: 1.55,
-    };
-    return Math.max(Math.round(c.hp * (rm[c.rarity] ?? 1) * 3), 30);
-  });
-  const maxHp2 = result.team2.cards.map((c) => {
-    const rm: Record<string, number> = {
-      COMMON: 0.85,
-      RARE: 1.0,
-      EPIC: 1.15,
-      LEGENDARY: 1.35,
-      SECRET: 1.55,
-    };
-    return Math.max(Math.round(c.hp * (rm[c.rarity] ?? 1) * 3), 30);
-  });
-
-  const processEventRef = useRef<(idx: number) => void>();
+  const processEventRef = useRef<(idx: number) => void>(undefined);
 
   const processEvent = useCallback(
     (idx: number) => {
@@ -121,11 +97,12 @@ export function BattleArena({ result, onFinish }: BattleArenaProps) {
         (c) => c.name === event.defender,
       );
 
-      if (
+      const isDamageEvent =
         event.type === 'attack' ||
         event.type === 'critical' ||
-        event.type === 'element_bonus'
-      ) {
+        event.type === 'special_move';
+
+      if (isDamageEvent) {
         if (isTeam1Defender) {
           const cardIdx = result.team1.cards.findIndex(
             (c) => c.name === event.defender,
@@ -155,7 +132,7 @@ export function BattleArena({ result, onFinish }: BattleArenaProps) {
         }
       }
 
-      if (event.type === 'critical') {
+      if (event.type === 'critical' || event.type === 'special_move') {
         fireCriticalConfetti();
       }
 
@@ -191,13 +168,12 @@ export function BattleArena({ result, onFinish }: BattleArenaProps) {
       setCurrentEventIdx(idx);
       timerRef.current = setTimeout(
         () => processEventRef.current?.(idx + 1),
-        800 / speed,
+        isDamageEvent ? 800 / speed : 400 / speed,
       );
     },
     [result, speed],
   );
 
-  // Keep ref in sync
   useEffect(() => {
     processEventRef.current = processEvent;
   }, [processEvent]);
@@ -211,7 +187,6 @@ export function BattleArena({ result, onFinish }: BattleArenaProps) {
 
   const skipToEnd = () => {
     if (timerRef.current) clearTimeout(timerRef.current);
-    // Apply final state
     result.team1.cards.forEach((c, i) => {
       setTeam1Hp((prev) => {
         const n = [...prev];
@@ -398,15 +373,9 @@ export function BattleArena({ result, onFinish }: BattleArenaProps) {
                   },
                 }}
               />
-              {/* Mini stats */}
+              {/* Mini stats for active card */}
               {isActive && !isDead && (
-                <Box
-                  sx={{
-                    display: 'flex',
-                    gap: 0.75,
-                    mt: 0.5,
-                  }}
-                >
+                <Box sx={{ display: 'flex', gap: 0.75, mt: 0.5 }}>
                   {[
                     {
                       icon: (
@@ -521,7 +490,6 @@ export function BattleArena({ result, onFinish }: BattleArenaProps) {
           mb: 3,
         }}
       >
-        {/* Team 1 */}
         <Box sx={{ flex: 1, maxWidth: { xs: '45%', md: 380 } }}>
           <Typography
             sx={{
@@ -549,7 +517,6 @@ export function BattleArena({ result, onFinish }: BattleArenaProps) {
           )}
         </Box>
 
-        {/* VS */}
         <Box
           sx={{
             display: 'flex',
@@ -587,7 +554,6 @@ export function BattleArena({ result, onFinish }: BattleArenaProps) {
           )}
         </Box>
 
-        {/* Team 2 */}
         <Box sx={{ flex: 1, maxWidth: { xs: '45%', md: 380 } }}>
           <Typography
             sx={{
@@ -623,7 +589,7 @@ export function BattleArena({ result, onFinish }: BattleArenaProps) {
           borderRadius: 2,
           bgcolor: 'rgba(255,255,255,0.02)',
           border: '1px solid rgba(255,255,255,0.06)',
-          maxHeight: 200,
+          maxHeight: 220,
           overflowY: 'auto',
           mb: 3,
           '&::-webkit-scrollbar': { width: 4 },
@@ -637,7 +603,7 @@ export function BattleArena({ result, onFinish }: BattleArenaProps) {
           {result.events
             .slice(0, currentEventIdx + 1)
             .reverse()
-            .slice(0, 15)
+            .slice(0, 20)
             .map((event, i) => (
               <Box
                 key={`${event.round}-${event.type}-${event.attacker}-${i}`}
@@ -648,18 +614,7 @@ export function BattleArena({ result, onFinish }: BattleArenaProps) {
               >
                 <Typography
                   sx={{
-                    color:
-                      event.type === 'critical'
-                        ? '#fbbf24'
-                        : event.type === 'defeated'
-                          ? '#ef4444'
-                          : event.type === 'switch'
-                            ? '#3b82f6'
-                            : event.type === 'dodge'
-                              ? '#22c55e'
-                              : event.type === 'element_bonus'
-                                ? '#a78bfa'
-                                : 'rgba(255,255,255,0.5)',
+                    color: EVENT_COLORS[event.type] || 'rgba(255,255,255,0.5)',
                     fontSize: '0.65rem',
                   }}
                 >
@@ -736,7 +691,7 @@ export function BattleArena({ result, onFinish }: BattleArenaProps) {
                 }}
               >
                 {result.totalRounds} rounds · MVP : {result.mvp.name} (
-                {ELEMENT_EMOJI[result.mvp.element]} {result.mvp.rarity})
+                {result.mvp.kills} K.O., {result.mvp.totalDamage} dégâts)
               </Typography>
             </Box>
 
