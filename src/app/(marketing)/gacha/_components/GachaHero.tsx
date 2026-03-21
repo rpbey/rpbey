@@ -59,7 +59,7 @@ export function GachaHero({ totalCards, totalCollectors }: GachaHeroProps) {
       sx={{
         position: 'relative',
         width: '100%',
-        height: { xs: 400, sm: 460, md: 520 },
+        height: { xs: 320, sm: 400, md: 520 },
         overflow: 'hidden',
         mb: 0,
       }}
