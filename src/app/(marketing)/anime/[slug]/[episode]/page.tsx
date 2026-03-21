@@ -178,45 +178,51 @@ export default async function EpisodePage({ params }: Props) {
             }}
           >
             {prev && (
-              <Button
-                component={Link}
+              <Link
                 href={`/anime/${slug}/${prev.number}`}
-                startIcon={<ArrowBack />}
-                size="small"
-                sx={{
-                  borderRadius: 2,
-                  px: 2,
-                  color: 'text.secondary',
-                  border: '1px solid rgba(255,255,255,0.1)',
-                  textTransform: 'none',
-                  '&:hover': {
-                    bgcolor: 'rgba(255,255,255,0.05)',
-                    borderColor: 'rgba(255,255,255,0.2)',
-                  },
-                }}
+                style={{ textDecoration: 'none' }}
               >
-                EP {prev.number}
-              </Button>
+                <Button
+                  startIcon={<ArrowBack />}
+                  size="small"
+                  sx={{
+                    borderRadius: 2,
+                    px: 2,
+                    color: 'text.secondary',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    textTransform: 'none',
+                    '&:hover': {
+                      bgcolor: 'rgba(255,255,255,0.05)',
+                      borderColor: 'rgba(255,255,255,0.2)',
+                    },
+                  }}
+                >
+                  EP {prev.number}
+                </Button>
+              </Link>
             )}
             {next && (
-              <Button
-                component={Link}
+              <Link
                 href={`/anime/${slug}/${next.number}`}
-                endIcon={<ArrowForward />}
-                variant="contained"
-                size="small"
-                sx={{
-                  bgcolor: '#dc2626',
-                  color: 'white',
-                  borderRadius: 2,
-                  px: 2,
-                  textTransform: 'none',
-                  fontWeight: 700,
-                  '&:hover': { bgcolor: '#b91c1c' },
-                }}
+                style={{ textDecoration: 'none' }}
               >
-                Épisode suivant
-              </Button>
+                <Button
+                  endIcon={<ArrowForward />}
+                  variant="contained"
+                  size="small"
+                  sx={{
+                    bgcolor: '#dc2626',
+                    color: 'white',
+                    borderRadius: 2,
+                    px: 2,
+                    textTransform: 'none',
+                    fontWeight: 700,
+                    '&:hover': { bgcolor: '#b91c1c' },
+                  }}
+                >
+                  Épisode suivant
+                </Button>
+              </Link>
             )}
           </Box>
         </Box>
@@ -245,30 +251,34 @@ export default async function EpisodePage({ params }: Props) {
           >
             {Array.from({ length: series.episodeCount }, (_, i) => i + 1).map(
               (n) => (
-                <Chip
+                <Link
                   key={n}
-                  component={Link}
                   href={`/anime/${slug}/${n}`}
-                  label={n}
-                  size="small"
-                  clickable
-                  sx={{
-                    minWidth: 36,
-                    fontWeight: n === ep.number ? 800 : 500,
-                    fontSize: '0.7rem',
-                    bgcolor:
-                      n === ep.number ? '#dc2626' : 'rgba(255,255,255,0.04)',
-                    color: n === ep.number ? 'white' : 'rgba(255,255,255,0.5)',
-                    border:
-                      n === ep.number
-                        ? 'none'
-                        : '1px solid rgba(255,255,255,0.06)',
-                    '&:hover': {
+                  style={{ textDecoration: 'none' }}
+                >
+                  <Chip
+                    label={n}
+                    size="small"
+                    sx={{
+                      minWidth: 36,
+                      fontWeight: n === ep.number ? 800 : 500,
+                      fontSize: '0.7rem',
                       bgcolor:
-                        n === ep.number ? '#dc2626' : 'rgba(255,255,255,0.1)',
-                    },
-                  }}
-                />
+                        n === ep.number ? '#dc2626' : 'rgba(255,255,255,0.04)',
+                      color:
+                        n === ep.number ? 'white' : 'rgba(255,255,255,0.5)',
+                      border:
+                        n === ep.number
+                          ? 'none'
+                          : '1px solid rgba(255,255,255,0.06)',
+                      cursor: 'pointer',
+                      '&:hover': {
+                        bgcolor:
+                          n === ep.number ? '#dc2626' : 'rgba(255,255,255,0.1)',
+                      },
+                    }}
+                  />
+                </Link>
               ),
             )}
           </Box>
