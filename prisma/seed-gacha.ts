@@ -162,6 +162,61 @@ const CARDS: CardData[] = [
   { slug: 'doji-fury', name: 'Doji', series: 'METAL_FURY', rarity: 'COMMON',
     beyblade: 'Dark Wolf DF145FS', description: "Ancien leader de la Dark Nebula, revenu sous une forme robotique au service de Pluto.",
     imageUrl: 'https://static.wikia.nocookie.net/beyblade/images/8/8d/DojiAnimeUpdated.jpg/revision/latest/scale-to-width-down/248?cb=20230623010712' },
+
+  // ── METAL FURY — personnages ajoutés ──
+
+  // SECRET
+  { slug: 'rago', name: 'Rago (Diablo Nemesis)', series: 'METAL_FURY', rarity: 'SECRET',
+    beyblade: 'Diablo Nemesis X:D', description: "L'enfant de Nemesis, le Blader le plus puissant de l'histoire. Son Diablo Nemesis possède le pouvoir du dieu de la destruction.",
+    imageUrl: 'https://static.wikia.nocookie.net/beyblade/images/5/5f/Rago.png/revision/latest/scale-to-width-down/300?cb=20120820193506' },
+
+  // LEGENDARY
+  { slug: 'kenta-fury', name: 'Kenta Yumiya (Flash Sagittario)', series: 'METAL_FURY', rarity: 'LEGENDARY',
+    beyblade: 'Flash Sagittario 230WD', description: "Ami fidèle de Gingka devenu Blader légendaire. Il hérite du pouvoir de Ryuga et du Fragment d'Étoile pour combattre Nemesis.",
+    imageUrl: 'https://static.wikia.nocookie.net/beyblade/images/5/54/Kenta1.png/revision/latest/scale-to-width-down/263?cb=20120820192912' },
+
+  // EPIC
+  { slug: 'masamune-fury', name: 'Masamune Kadoya', series: 'METAL_FURY', rarity: 'EPIC',
+    beyblade: 'Blitz Striker 100RSF', description: "Le Blader numéro un autoproclamé. Toujours prêt à se battre, il accompagne Gingka dans sa quête contre Nemesis.",
+    imageUrl: 'https://static.wikia.nocookie.net/beyblade/images/d/d1/Masamune4D.png/revision/latest/scale-to-width-down/275?cb=20120821125845' },
+
+  { slug: 'tsubasa-fury', name: 'Tsubasa Otori', series: 'METAL_FURY', rarity: 'EPIC',
+    beyblade: 'Earth Eagle 145WD', description: "Agent de la WBBA, stratège brillant. Son Earth Eagle excelle en endurance et en analyse de combat.",
+    imageUrl: 'https://static.wikia.nocookie.net/beyblade/images/e/ed/Tsubasa4D.png/revision/latest/scale-to-width-down/270?cb=20120821130340' },
+
+  // RARE
+  { slug: 'yu-fury', name: 'Yu Tendo', series: 'METAL_FURY', rarity: 'RARE',
+    beyblade: 'Flame Libra T125ES', description: "Petit prodige espiègle, ancien membre de la Dark Nebula devenu allié de Gingka. Expert en endurance.",
+    imageUrl: 'https://static.wikia.nocookie.net/beyblade/images/0/05/Yu4D.png/revision/latest/scale-to-width-down/200?cb=20120821130640' },
+
+  { slug: 'nile-fury', name: 'Nile', series: 'METAL_FURY', rarity: 'RARE',
+    beyblade: 'Vulcan Horuseus 145D', description: "Blader égyptien, membre de l'équipe Wild Fang. Combattant honorable et loyal envers ses amis.",
+    imageUrl: 'https://static.wikia.nocookie.net/beyblade/images/a/a0/Nile4D.png/revision/latest/scale-to-width-down/240?cb=20120821131157' },
+
+  { slug: 'demure-fury', name: 'Demure', series: 'METAL_FURY', rarity: 'RARE',
+    beyblade: 'Counter Scorpio 145D', description: "Membre de l'équipe Wild Fang aux côtés de Nile et Kyoya. Calme et réservé.",
+    imageUrl: 'https://static.wikia.nocookie.net/beyblade/images/f/f5/Demure4D.png/revision/latest/scale-to-width-down/225?cb=20120821131430' },
+
+  { slug: 'toby-fury', name: 'Toby', series: 'METAL_FURY', rarity: 'RARE',
+    beyblade: 'Lyra ED145BS', description: "Ami de Masamune et Zeo. Autrefois gravement malade, il est désormais un Blader déterminé.",
+    imageUrl: 'https://static.wikia.nocookie.net/beyblade/images/c/c7/Toby.png/revision/latest/scale-to-width-down/250?cb=20120820194730' },
+
+  { slug: 'zeo-fury', name: 'Zeo Abyss', series: 'METAL_FURY', rarity: 'RARE',
+    beyblade: 'Flame Byxis 230WD', description: "Ami de Masamune et Toby. Ancien rival devenu allié, il combat pour protéger ceux qu'il aime.",
+    imageUrl: 'https://static.wikia.nocookie.net/beyblade/images/1/13/Zeo.png/revision/latest/scale-to-width-down/250?cb=20120820195005' },
+
+  // COMMON
+  { slug: 'madoka-fury', name: 'Madoka Amano', series: 'METAL_FURY', rarity: 'COMMON',
+    beyblade: '', description: "Mécanicienne de génie et meilleure amie de Gingka. Elle analyse et répare les toupies de l'équipe.",
+    imageUrl: 'https://static.wikia.nocookie.net/beyblade/images/b/bc/Madoka4D.png/revision/latest/scale-to-width-down/240?cb=20120821125500' },
+
+  { slug: 'jigsaw', name: 'Jigsaw', series: 'METAL_FURY', rarity: 'COMMON',
+    beyblade: 'Forbidden Ionis ED145FB', description: "Sbire masqué de Pluto. Étrange et imprévisible, il exécute les ordres sans poser de questions.",
+    imageUrl: 'https://static.wikia.nocookie.net/beyblade/images/5/5c/Jigsaw4D.png/revision/latest/scale-to-width-down/230?cb=20120821132225' },
+
+  { slug: 'dunamis-proto', name: 'Proto Nemesis', series: 'METAL_FURY', rarity: 'COMMON',
+    beyblade: 'Proto Nemesis 195RD', description: "La forme incomplète de Nemesis, utilisée par Rago avant son éveil total. Déjà redoutablement puissante.",
+    imageUrl: '' },
 ];
 
 async function main() {
