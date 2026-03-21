@@ -39,7 +39,7 @@ const CARDS: CardData[] = [
 
   // EPIC
   { slug: 'kyoya-masters', name: 'Kyoya Tategami', nameJp: '盾神キョウヤ', series: 'METAL_MASTERS', rarity: 'EPIC',
-    beyblade: 'Fang Leone 130W2D', description: "Blader féroce et rival de Gingka. Son Fang Leone est une toupie d'endurance avec une puissance dévastatrice.",
+    beyblade: 'Rock Leone 145WB', description: "Blader féroce et rival de Gingka, capitaine de l'équipe Wild Fang. Son Rock Leone est une toupie de défense avec une puissance dévastatrice.",
     imageUrl: 'https://static.wikia.nocookie.net/beyblade/images/3/3b/Kyoya_Tategami_Trans.png/revision/latest/scale-to-width-down/265?cb=20111103202601' },
 
   { slug: 'masamune', name: 'Masamune Kadoya', nameJp: '角谷正宗', series: 'METAL_MASTERS', rarity: 'EPIC',
@@ -93,12 +93,12 @@ const CARDS: CardData[] = [
     imageUrl: 'https://static.wikia.nocookie.net/beyblade/images/1/13/HikaruUpdated2.png/revision/latest/scale-to-width-down/208?cb=20251203130111' },
 
   { slug: 'mei-mei', name: 'Mei-Mei', series: 'METAL_MASTERS', rarity: 'COMMON',
-    beyblade: 'Aquario 105F', description: "Membre de l'équipe Wang Hu Zhong. Spécialiste du combat acrobatique.",
-    imageUrl: '' },
+    beyblade: 'Aquario 105F', description: "Membre de l'équipe Wang Hu Zhong. Spécialiste du combat acrobatique avec des techniques de kung-fu.",
+    imageUrl: 'https://static.wikia.nocookie.net/beyblade/images/0/0c/Mei-Mei2.png/revision/latest/scale-to-width-down/270?cb=20120906182151' },
 
   { slug: 'chiyun', name: 'Chiyun Li', series: 'METAL_MASTERS', rarity: 'COMMON',
     beyblade: 'Thermal Lacerta WA130HF', description: "Membre de Wang Hu Zhong, sage et réfléchi dans ses combats.",
-    imageUrl: '' },
+    imageUrl: 'https://static.wikia.nocookie.net/beyblade/images/9/93/Chi-yun_Li.png/revision/latest/scale-to-width-down/244?cb=20120813161202' },
 
   // ══════════════ METAL FURY ══════════════
 
@@ -152,15 +152,15 @@ const CARDS: CardData[] = [
     imageUrl: 'https://static.wikia.nocookie.net/beyblade/images/e/ef/Johannes4D.jpg/revision/latest/scale-to-width-down/278?cb=20230713082331' },
 
   { slug: 'pluto', name: 'Pluto', series: 'METAL_FURY', rarity: 'COMMON',
-    beyblade: 'Firefuse Darkhelm', description: "Antagoniste principal de Metal Fury. Cherche à ressusciter le dieu de la destruction Nemesis.",
+    beyblade: 'Fusion Hades AD145SWD', description: "Antagoniste principal de Metal Fury. Cherche à ressusciter le dieu de la destruction Nemesis.",
     imageUrl: 'https://static.wikia.nocookie.net/beyblade/images/f/f7/Pluto4D.jpg/revision/latest/scale-to-width-down/282?cb=20230713081856' },
 
   { slug: 'hyoma-fury', name: 'Hyoma', series: 'METAL_FURY', rarity: 'COMMON',
     beyblade: 'Rock Aries ED145B', description: "Ami d'enfance de Gingka, originaire du village de Koma. Calme et sage.",
     imageUrl: 'https://static.wikia.nocookie.net/beyblade/images/7/76/HyomaUpdated.png/revision/latest/scale-to-width-down/256?cb=20251203130105' },
 
-  { slug: 'doji-fury', name: 'Doji', series: 'METAL_FURY', rarity: 'COMMON',
-    beyblade: 'Dark Wolf DF145FS', description: "Ancien leader de la Dark Nebula, revenu sous une forme robotique au service de Pluto.",
+  { slug: 'doji-fury', name: 'Doji (Robo)', series: 'METAL_FURY', rarity: 'COMMON',
+    beyblade: '', description: "Ancien leader de la Dark Nebula, converti en énergie et placé dans un corps robotique au service de Pluto. N'utilise pas de toupie sous cette forme.",
     imageUrl: 'https://static.wikia.nocookie.net/beyblade/images/8/8d/DojiAnimeUpdated.jpg/revision/latest/scale-to-width-down/248?cb=20230623010712' },
 
   // ── METAL FURY — personnages ajoutés ──
@@ -198,7 +198,7 @@ const CARDS: CardData[] = [
     imageUrl: 'https://static.wikia.nocookie.net/beyblade/images/f/f5/Demure4D.png/revision/latest/scale-to-width-down/225?cb=20120821131430' },
 
   { slug: 'toby-fury', name: 'Toby', series: 'METAL_FURY', rarity: 'RARE',
-    beyblade: 'Lyra ED145BS', description: "Ami de Masamune et Zeo. Autrefois gravement malade, il est désormais un Blader déterminé.",
+    beyblade: 'Spiral Lyre ED145MF', description: "Ami de Masamune et Zeo. Autrefois gravement malade, il est désormais un Blader déterminé. Son Spiral Lyre a été fabriqué au Dungeon Gym.",
     imageUrl: 'https://static.wikia.nocookie.net/beyblade/images/c/c7/Toby.png/revision/latest/scale-to-width-down/250?cb=20120820194730' },
 
   { slug: 'zeo-fury', name: 'Zeo Abyss', series: 'METAL_FURY', rarity: 'RARE',
@@ -214,7 +214,7 @@ const CARDS: CardData[] = [
     beyblade: 'Forbidden Ionis ED145FB', description: "Sbire masqué de Pluto. Étrange et imprévisible, il exécute les ordres sans poser de questions.",
     imageUrl: 'https://static.wikia.nocookie.net/beyblade/images/5/5c/Jigsaw4D.png/revision/latest/scale-to-width-down/230?cb=20120821132225' },
 
-  { slug: 'dunamis-proto', name: 'Proto Nemesis', series: 'METAL_FURY', rarity: 'COMMON',
+  { slug: 'proto-nemesis', name: 'Proto Nemesis', series: 'METAL_FURY', rarity: 'COMMON',
     beyblade: 'Proto Nemesis 195RD', description: "La forme incomplète de Nemesis, utilisée par Rago avant son éveil total. Déjà redoutablement puissante.",
     imageUrl: '' },
 ];
