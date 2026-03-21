@@ -316,6 +316,24 @@ export function GachaCardDisplay({
               </Typography>
             )}
 
+            {/* Special Move */}
+            {card.specialMove && (
+              <Typography
+                sx={{
+                  color: '#fbbf24',
+                  fontSize: '0.5rem',
+                  fontWeight: 600,
+                  fontStyle: 'italic',
+                  mb: 0.5,
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                ⚡ {card.specialMove}
+              </Typography>
+            )}
+
             {/* TCG Stats mini bar */}
             {totalPower > 0 && (
               <Box sx={{ display: 'flex', gap: 0.5 }}>
@@ -418,10 +436,24 @@ export function GachaCardDisplay({
                 color: theme.accentColor,
                 fontSize: '0.7rem',
                 fontWeight: 600,
-                mb: 1,
+                mb: 0.25,
               }}
             >
               🌀 {card.beyblade}
+            </Typography>
+          )}
+
+          {card.specialMove && (
+            <Typography
+              sx={{
+                color: '#fbbf24',
+                fontSize: '0.6rem',
+                fontWeight: 700,
+                fontStyle: 'italic',
+                mb: 0.75,
+              }}
+            >
+              ⚡ {card.specialMove}
             </Typography>
           )}
 

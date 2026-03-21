@@ -9,6 +9,7 @@ export interface BattleCard {
   rarity: string;
   beyblade?: string | null;
   imageUrl?: string | null;
+  specialMove?: string | null;
   atk: number;
   def: number;
   spd: number;
@@ -218,7 +219,7 @@ export function simulateBattle(
         damage: result1.damage,
         remainingHp: second.card.currentHp,
         message: result1.isCritical
-          ? `💥 ${first.card.name} inflige un COUP CRITIQUE de ${result1.damage} dégâts à ${second.card.name} !`
+          ? `💥 ${first.card.name} utilise ${first.card.specialMove || 'COUP CRITIQUE'} ! ${result1.damage} dégâts à ${second.card.name} !`
           : `⚔️ ${first.card.name} attaque ${second.card.name} pour ${result1.damage} dégâts`,
       });
 
@@ -304,7 +305,7 @@ export function simulateBattle(
           damage: result2.damage,
           remainingHp: first.card.currentHp,
           message: result2.isCritical
-            ? `💥 ${second.card.name} inflige un COUP CRITIQUE de ${result2.damage} dégâts à ${first.card.name} !`
+            ? `💥 ${second.card.name} utilise ${second.card.specialMove || 'COUP CRITIQUE'} ! ${result2.damage} dégâts à ${first.card.name} !`
             : `⚔️ ${second.card.name} attaque ${first.card.name} pour ${result2.damage} dégâts`,
         });
 

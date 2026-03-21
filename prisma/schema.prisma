@@ -714,6 +714,7 @@ model GachaCard {
   spd         Int           @default(0)
   hp          Int           @default(0)
   element     String        @default("NEUTRAL") // FEU, EAU, TERRE, VENT, OMBRE, LUMIERE, NEUTRAL
+  specialMove String?       // Signature attack name
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
   inventory   CardInventory[]
