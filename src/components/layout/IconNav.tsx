@@ -7,7 +7,6 @@ import {
   BarChart,
   Build,
   Home,
-  Inventory2,
   LiveTv,
   Login,
   Logout,
@@ -47,7 +46,6 @@ const navItems = [
   { icon: LiveTv, label: 'TV', href: '/tv' },
   { icon: Theaters, label: 'Anime', href: '/anime' },
   // { icon: Style, label: 'Gacha', href: '/gacha' },
-  { icon: Inventory2, label: 'Produits', href: '/produits' },
   { icon: Build, label: 'Builder', href: '/builder' },
 ];
 
@@ -333,7 +331,6 @@ export function MobileNav() {
     if (pathname.startsWith('/tv')) return '/tv';
     if (pathname.startsWith('/meta')) return '/meta';
     if (pathname.startsWith('/gacha')) return '/gacha';
-    if (pathname.startsWith('/produits')) return '/produits';
     if (pathname.startsWith('/admin')) return '/admin';
     if (
       pathname.startsWith('/dashboard') ||
