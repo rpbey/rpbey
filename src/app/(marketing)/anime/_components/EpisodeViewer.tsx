@@ -58,7 +58,7 @@ export function EpisodeViewer({
 
   const languages = [...new Set(streamingSources.map((s) => s.language))];
   const [selectedLang, setSelectedLang] = useState(
-    languages.includes('VOSTFR') ? 'VOSTFR' : languages[0] || 'VOSTFR',
+    languages.includes('VF') ? 'VF' : languages[0] || 'VF',
   );
 
   const langSources = streamingSources.filter(
