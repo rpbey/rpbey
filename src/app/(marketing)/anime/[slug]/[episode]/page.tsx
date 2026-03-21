@@ -10,6 +10,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getAnimeEpisode } from '@/server/actions/anime';
 import { getEpisodeProgress } from '@/server/actions/anime-progress';
+import { EpisodeSidebar } from '../../_components/EpisodeSidebar';
 import { EpisodeViewer } from '../../_components/EpisodeViewer';
 
 interface Props {
@@ -40,21 +41,23 @@ export default async function EpisodePage({ params }: Props) {
   const data = await getAnimeEpisode(slug, num);
   if (!data) notFound();
 
-  const { episode: ep, series, prev, next } = data;
+  const { episode: ep, series, prev, next, allEpisodes } = data;
 
   const progress = await getEpisodeProgress(ep.id);
   const savedTime =
     progress && progress.status !== 'COMPLETED' ? progress.progressTime : 0;
+
+  const seriesTitle = series.titleFr || series.title;
 
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: '#0a0a0a', pb: 8 }}>
       {/* Breadcrumb */}
       <Box
         sx={{
-          maxWidth: 1200,
+          maxWidth: 1400,
           mx: 'auto',
-          px: { xs: 2, md: 4 },
-          pt: { xs: 1, md: 2 },
+          px: { xs: 2, md: 3 },
+          pt: { xs: 1, md: 1.5 },
           pb: 1,
           display: 'flex',
           alignItems: 'center',
@@ -85,7 +88,7 @@ export default async function EpisodePage({ params }: Props) {
           }}
         >
           <Typography variant="caption" sx={{ fontSize: '0.75rem' }}>
-            {series.titleFr || series.title}
+            {seriesTitle}
           </Typography>
         </Link>
         <ChevronRight sx={{ fontSize: 14, color: 'rgba(255,255,255,0.2)' }} />
@@ -101,66 +104,144 @@ export default async function EpisodePage({ params }: Props) {
         </Typography>
       </Box>
 
-      {/* Player */}
+      {/* Main content: Player + Sidebar */}
       <Box
         sx={{
-          maxWidth: 1200,
+          maxWidth: 1400,
           mx: 'auto',
-          px: { xs: 0, md: 4 },
+          px: { xs: 0, md: 3 },
+          display: 'flex',
+          gap: 2,
+          alignItems: 'flex-start',
         }}
       >
-        <EpisodeViewer
-          title={`${series.titleFr || series.title} - EP ${ep.number}`}
-          sources={ep.sources}
-          savedProgress={savedTime}
-          episodeId={ep.id}
-          duration={ep.duration}
-        />
-      </Box>
+        {/* Player column */}
+        <Box sx={{ flex: 1, minWidth: 0 }}>
+          <EpisodeViewer
+            title={`${seriesTitle} - EP ${ep.number}`}
+            sources={ep.sources}
+            savedProgress={savedTime}
+            episodeId={ep.id}
+            duration={ep.duration}
+          />
 
-      {/* Episode info + navigation */}
-      <Box sx={{ maxWidth: 1200, mx: 'auto', px: { xs: 2, md: 4 }, mt: 3 }}>
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'flex-start',
-            justifyContent: 'space-between',
-            flexWrap: 'wrap',
-            gap: 2,
-          }}
-        >
-          {/* Left: info */}
-          <Box sx={{ flex: 1, minWidth: 0 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-              <Chip
-                label={`EP ${ep.number}`}
-                size="small"
-                sx={{
-                  fontWeight: 800,
-                  fontSize: '0.7rem',
-                  bgcolor: '#dc2626',
-                  color: 'white',
-                  height: 24,
-                }}
-              />
-              <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                {series.titleFr || series.title}
-              </Typography>
-            </Box>
-            <Typography
-              variant="h5"
-              fontWeight={800}
-              sx={{ color: 'text.primary', mb: 1 }}
+          {/* Episode info + navigation */}
+          <Box sx={{ px: { xs: 2, md: 0 }, mt: 2 }}>
+            {/* Title row */}
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'flex-start',
+                justifyContent: 'space-between',
+                gap: 2,
+                flexWrap: 'wrap',
+              }}
             >
-              {ep.titleFr || ep.title}
-            </Typography>
+              <Box sx={{ flex: 1, minWidth: 0 }}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1,
+                    mb: 0.5,
+                  }}
+                >
+                  <Chip
+                    label={`EP ${ep.number}`}
+                    size="small"
+                    sx={{
+                      fontWeight: 800,
+                      fontSize: '0.65rem',
+                      bgcolor: '#dc2626',
+                      color: 'white',
+                      height: 22,
+                    }}
+                  />
+                  <Typography
+                    variant="caption"
+                    sx={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.75rem' }}
+                  >
+                    {seriesTitle}
+                  </Typography>
+                </Box>
+                <Typography
+                  variant="h6"
+                  fontWeight={800}
+                  sx={{ color: 'text.primary', lineHeight: 1.3 }}
+                >
+                  {ep.titleFr || ep.title}
+                </Typography>
+              </Box>
+
+              {/* Prev/Next */}
+              <Box
+                sx={{
+                  display: 'flex',
+                  gap: 1,
+                  flexShrink: 0,
+                  alignSelf: { xs: 'stretch', md: 'center' },
+                }}
+              >
+                {prev && (
+                  <Link
+                    href={`/anime/${slug}/${prev.number}`}
+                    style={{ textDecoration: 'none' }}
+                  >
+                    <Button
+                      startIcon={<ArrowBack />}
+                      size="small"
+                      sx={{
+                        borderRadius: 2,
+                        px: 2,
+                        color: 'text.secondary',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        textTransform: 'none',
+                        '&:hover': {
+                          bgcolor: 'rgba(255,255,255,0.05)',
+                          borderColor: 'rgba(255,255,255,0.2)',
+                        },
+                      }}
+                    >
+                      EP {prev.number}
+                    </Button>
+                  </Link>
+                )}
+                {next && (
+                  <Link
+                    href={`/anime/${slug}/${next.number}`}
+                    style={{ textDecoration: 'none' }}
+                  >
+                    <Button
+                      endIcon={<ArrowForward />}
+                      variant="contained"
+                      size="small"
+                      sx={{
+                        bgcolor: '#dc2626',
+                        color: 'white',
+                        borderRadius: 2,
+                        px: 2,
+                        textTransform: 'none',
+                        fontWeight: 700,
+                        '&:hover': { bgcolor: '#b91c1c' },
+                      }}
+                    >
+                      Épisode suivant
+                    </Button>
+                  </Link>
+                )}
+              </Box>
+            </Box>
+
+            {/* Synopsis */}
             {ep.synopsis && (
               <Typography
                 variant="body2"
                 sx={{
-                  color: 'rgba(255,255,255,0.6)',
+                  mt: 1.5,
+                  color: 'rgba(255,255,255,0.55)',
+                  lineHeight: 1.7,
                   maxWidth: 700,
-                  lineHeight: 1.6,
+                  fontSize: '0.85rem',
                 }}
               >
                 {ep.synopsis}
@@ -168,120 +249,79 @@ export default async function EpisodePage({ params }: Props) {
             )}
           </Box>
 
-          {/* Right: prev/next buttons */}
+          {/* Episode strip (mobile only — desktop uses sidebar) */}
           <Box
             sx={{
-              display: 'flex',
-              gap: 1,
-              flexShrink: 0,
-              alignSelf: { xs: 'stretch', md: 'center' },
+              display: { xs: 'block', lg: 'none' },
+              mt: 4,
+              px: { xs: 2, md: 0 },
+              pt: 3,
+              borderTop: '1px solid rgba(255,255,255,0.06)',
             }}
           >
-            {prev && (
-              <Link
-                href={`/anime/${slug}/${prev.number}`}
-                style={{ textDecoration: 'none' }}
-              >
-                <Button
-                  startIcon={<ArrowBack />}
-                  size="small"
-                  sx={{
-                    borderRadius: 2,
-                    px: 2,
-                    color: 'text.secondary',
-                    border: '1px solid rgba(255,255,255,0.1)',
-                    textTransform: 'none',
-                    '&:hover': {
-                      bgcolor: 'rgba(255,255,255,0.05)',
-                      borderColor: 'rgba(255,255,255,0.2)',
-                    },
-                  }}
-                >
-                  EP {prev.number}
-                </Button>
-              </Link>
-            )}
-            {next && (
-              <Link
-                href={`/anime/${slug}/${next.number}`}
-                style={{ textDecoration: 'none' }}
-              >
-                <Button
-                  endIcon={<ArrowForward />}
-                  variant="contained"
-                  size="small"
-                  sx={{
-                    bgcolor: '#dc2626',
-                    color: 'white',
-                    borderRadius: 2,
-                    px: 2,
-                    textTransform: 'none',
-                    fontWeight: 700,
-                    '&:hover': { bgcolor: '#b91c1c' },
-                  }}
-                >
-                  Épisode suivant
-                </Button>
-              </Link>
-            )}
+            <Typography
+              variant="body2"
+              fontWeight={700}
+              sx={{ color: 'text.secondary', mb: 1.5, fontSize: '0.8rem' }}
+            >
+              Tous les épisodes · {seriesTitle}
+            </Typography>
+            <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
+              {Array.from({ length: series.episodeCount }, (_, i) => i + 1).map(
+                (n) => (
+                  <Link
+                    key={n}
+                    href={`/anime/${slug}/${n}`}
+                    style={{ textDecoration: 'none' }}
+                  >
+                    <Chip
+                      label={n}
+                      size="small"
+                      sx={{
+                        minWidth: 36,
+                        fontWeight: n === ep.number ? 800 : 500,
+                        fontSize: '0.7rem',
+                        bgcolor:
+                          n === ep.number
+                            ? '#dc2626'
+                            : 'rgba(255,255,255,0.04)',
+                        color:
+                          n === ep.number ? 'white' : 'rgba(255,255,255,0.5)',
+                        border:
+                          n === ep.number
+                            ? 'none'
+                            : '1px solid rgba(255,255,255,0.06)',
+                        cursor: 'pointer',
+                        '&:hover': {
+                          bgcolor:
+                            n === ep.number
+                              ? '#dc2626'
+                              : 'rgba(255,255,255,0.1)',
+                        },
+                      }}
+                    />
+                  </Link>
+                ),
+              )}
+            </Box>
           </Box>
         </Box>
 
-        {/* Episode strip — quick jump */}
+        {/* Sidebar (desktop only) */}
         <Box
           sx={{
-            mt: 4,
-            pt: 3,
-            borderTop: '1px solid rgba(255,255,255,0.06)',
+            display: { xs: 'none', lg: 'block' },
+            width: 360,
+            flexShrink: 0,
           }}
         >
-          <Typography
-            variant="body2"
-            fontWeight={700}
-            sx={{ color: 'text.secondary', mb: 1.5, fontSize: '0.8rem' }}
-          >
-            Tous les épisodes · {series.titleFr || series.title}
-          </Typography>
-          <Box
-            sx={{
-              display: 'flex',
-              gap: 0.5,
-              flexWrap: 'wrap',
-            }}
-          >
-            {Array.from({ length: series.episodeCount }, (_, i) => i + 1).map(
-              (n) => (
-                <Link
-                  key={n}
-                  href={`/anime/${slug}/${n}`}
-                  style={{ textDecoration: 'none' }}
-                >
-                  <Chip
-                    label={n}
-                    size="small"
-                    sx={{
-                      minWidth: 36,
-                      fontWeight: n === ep.number ? 800 : 500,
-                      fontSize: '0.7rem',
-                      bgcolor:
-                        n === ep.number ? '#dc2626' : 'rgba(255,255,255,0.04)',
-                      color:
-                        n === ep.number ? 'white' : 'rgba(255,255,255,0.5)',
-                      border:
-                        n === ep.number
-                          ? 'none'
-                          : '1px solid rgba(255,255,255,0.06)',
-                      cursor: 'pointer',
-                      '&:hover': {
-                        bgcolor:
-                          n === ep.number ? '#dc2626' : 'rgba(255,255,255,0.1)',
-                      },
-                    }}
-                  />
-                </Link>
-              ),
-            )}
-          </Box>
+          <EpisodeSidebar
+            seriesSlug={slug}
+            seriesTitle={seriesTitle}
+            episodes={allEpisodes}
+            currentEpisode={ep.number}
+            episodeCount={series.episodeCount}
+          />
         </Box>
       </Box>
     </Box>

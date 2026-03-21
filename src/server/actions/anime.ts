@@ -66,8 +66,8 @@ export async function getAnimeEpisode(slug: string, episodeNumber: number) {
 
   if (!episode) return null;
 
-  // Get prev/next episodes
-  const [prev, next] = await Promise.all([
+  // Get prev/next episodes + all episodes for sidebar
+  const [prev, next, allEpisodes] = await Promise.all([
     prisma.animeEpisode.findFirst({
       where: {
         seriesId: series.id,
@@ -86,9 +86,24 @@ export async function getAnimeEpisode(slug: string, episodeNumber: number) {
       orderBy: { number: 'asc' },
       select: { number: true, title: true, titleFr: true },
     }),
+    prisma.animeEpisode.findMany({
+      where: {
+        seriesId: series.id,
+        isPublished: true,
+      },
+      orderBy: { number: 'asc' },
+      select: {
+        id: true,
+        number: true,
+        title: true,
+        titleFr: true,
+        thumbnailUrl: true,
+        duration: true,
+      },
+    }),
   ]);
 
-  return { episode, series, prev, next };
+  return { episode, series, prev, next, allEpisodes };
 }
 
 export async function getFeaturedAnimeSeries() {
