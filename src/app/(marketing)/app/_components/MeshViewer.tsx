@@ -118,11 +118,13 @@ function ThreeCanvas({
   meshName,
   width,
   height,
+  premium = false,
 }: {
   meshPath: string;
   meshName: string;
   width: number;
   height: number;
+  premium?: boolean;
 }) {
   const mountRef = useRef<HTMLDivElement>(null);
 
@@ -130,56 +132,148 @@ function ThreeCanvas({
     const container = mountRef.current;
     if (!container) return;
 
+    // --- Scene ---
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
+
+    // Gradient background — dark studio look
+    const bgCanvas = document.createElement('canvas');
+    bgCanvas.width = 2;
+    bgCanvas.height = 256;
+    const bgCtx = bgCanvas.getContext('2d');
+    if (bgCtx) {
+      const grad = bgCtx.createLinearGradient(0, 0, 0, 256);
+      grad.addColorStop(0, '#141418');
+      grad.addColorStop(0.5, '#0c0c10');
+      grad.addColorStop(1, '#080810');
+      bgCtx.fillStyle = grad;
+      bgCtx.fillRect(0, 0, 2, 256);
+    }
+    const bgTexture = new THREE.CanvasTexture(bgCanvas);
+    scene.background = bgTexture;
+
+    // --- Camera ---
+    const camera = new THREE.PerspectiveCamera(
+      premium ? 35 : 45,
+      width / height,
+      0.1,
+      1000,
+    );
+
+    // --- Renderer ---
     const renderer = new THREE.WebGLRenderer({
       antialias: true,
-      alpha: true,
+      alpha: false,
     });
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.setClearColor(0x000000, 0);
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.2;
+    renderer.toneMappingExposure = 1.4;
+    renderer.shadowMap.enabled = premium;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     container.appendChild(renderer.domElement);
 
-    // Lighting — mimic BBX app style
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-    scene.add(ambientLight);
-
-    const keyLight = new THREE.DirectionalLight(0xffffff, 1.2);
-    keyLight.position.set(5, 10, 7);
+    // --- 3-Point Lighting (Studio) ---
+    // Key light — warm white from top-right
+    const keyLight = new THREE.DirectionalLight(0xfff5e6, 1.5);
+    keyLight.position.set(4, 8, 6);
+    if (premium) {
+      keyLight.castShadow = true;
+      keyLight.shadow.mapSize.setScalar(1024);
+      keyLight.shadow.radius = 4;
+    }
     scene.add(keyLight);
 
-    const fillLight = new THREE.DirectionalLight(0x6688cc, 0.4);
-    fillLight.position.set(-5, 3, -5);
+    // Fill light — cool blue from left
+    const fillLight = new THREE.DirectionalLight(0x88aaee, 0.6);
+    fillLight.position.set(-6, 2, -3);
     scene.add(fillLight);
 
-    // Red accent light (BBX brand)
-    const accentLight = new THREE.PointLight(0xdc2626, 0.6, 20);
-    accentLight.position.set(0, -3, 3);
-    scene.add(accentLight);
+    // Rim light — red BBX accent from behind
+    const rimLight = new THREE.DirectionalLight(0xdc2626, 0.8);
+    rimLight.position.set(0, 3, -6);
+    scene.add(rimLight);
 
-    // Controls
+    // Ambient — very subtle, let directional do the work
+    const ambient = new THREE.AmbientLight(0xffffff, 0.25);
+    scene.add(ambient);
+
+    // Under-glow — subtle red point from below
+    const underGlow = new THREE.PointLight(0xdc2626, 0.3, 12);
+    underGlow.position.set(0, -2, 0);
+    scene.add(underGlow);
+
+    // --- Ground Plane (reflective pedestal) ---
+    if (premium) {
+      const groundGeo = new THREE.CircleGeometry(4, 64);
+      const groundMat = new THREE.MeshStandardMaterial({
+        color: 0x111115,
+        metalness: 0.9,
+        roughness: 0.15,
+      });
+      const ground = new THREE.Mesh(groundGeo, groundMat);
+      ground.rotation.x = -Math.PI / 2;
+      ground.position.y = -1.6;
+      ground.receiveShadow = true;
+      scene.add(ground);
+
+      // Glowing ring around pedestal
+      const ringGeo = new THREE.RingGeometry(3.8, 4, 64);
+      const ringMat = new THREE.MeshBasicMaterial({
+        color: 0xdc2626,
+        transparent: true,
+        opacity: 0.15,
+        side: THREE.DoubleSide,
+      });
+      const ring = new THREE.Mesh(ringGeo, ringMat);
+      ring.rotation.x = -Math.PI / 2;
+      ring.position.y = -1.59;
+      scene.add(ring);
+    }
+
+    // --- Controls ---
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
-    controls.dampingFactor = 0.05;
+    controls.dampingFactor = 0.08;
     controls.autoRotate = true;
-    controls.autoRotateSpeed = 2;
+    controls.autoRotateSpeed = premium ? 1.5 : 2.5;
+    controls.minDistance = 2;
+    controls.maxDistance = 15;
+    controls.enablePan = false;
+    controls.target.set(0, 0, 0);
 
-    // Load textures — try multiple paths, use first that works
+    // --- Textures ---
     const textureLoader = new THREE.TextureLoader();
     const texPaths = findTextures(meshName);
 
-    // Build PBR material
+    // Build PBR material — chrome-like metallic
     const material = new THREE.MeshStandardMaterial({
-      color: 0xcccccc,
-      metalness: 0.75,
-      roughness: 0.25,
+      color: 0xd4d4d8,
+      metalness: 0.85,
+      roughness: 0.18,
       side: THREE.DoubleSide,
+      envMapIntensity: 1.5,
     });
 
-    // Try loading AO map — cascade through paths
+    // Fake environment reflection using gradient
+    const envCanvas = document.createElement('canvas');
+    envCanvas.width = 256;
+    envCanvas.height = 256;
+    const envCtx = envCanvas.getContext('2d');
+    if (envCtx) {
+      const g = envCtx.createLinearGradient(0, 0, 0, 256);
+      g.addColorStop(0, '#334');
+      g.addColorStop(0.3, '#556');
+      g.addColorStop(0.5, '#889');
+      g.addColorStop(0.7, '#334');
+      g.addColorStop(1, '#112');
+      envCtx.fillStyle = g;
+      envCtx.fillRect(0, 0, 256, 256);
+    }
+    const envTex = new THREE.CanvasTexture(envCanvas);
+    envTex.mapping = THREE.EquirectangularReflectionMapping;
+    scene.environment = envTex;
+
+    // Try loading AO + Edge maps
     function tryLoadTexture(
       paths: string[],
       onSuccess: (tex: THREE.Texture) => void,
@@ -197,18 +291,17 @@ function ThreeCanvas({
 
     tryLoadTexture(texPaths.ao, (tex) => {
       material.aoMap = tex;
-      material.aoMapIntensity = 1.0;
+      material.aoMapIntensity = 1.2;
       material.needsUpdate = true;
     });
 
     tryLoadTexture(texPaths.edge, (tex) => {
-      // Use edge mask as bump map for extra detail
       material.bumpMap = tex;
-      material.bumpScale = 0.3;
+      material.bumpScale = 0.4;
       material.needsUpdate = true;
     });
 
-    // Load OBJ
+    // --- Load OBJ ---
     const loader = new OBJLoader();
     loader.load(
       meshPath,
@@ -216,10 +309,13 @@ function ThreeCanvas({
         obj.traverse((child) => {
           if (child instanceof THREE.Mesh) {
             child.material = material;
-            // Generate UV2 for AO map
+            child.castShadow = premium;
+            child.receiveShadow = premium;
             if (child.geometry.attributes.uv) {
               child.geometry.setAttribute('uv2', child.geometry.attributes.uv);
             }
+            // Compute smooth normals for better shading
+            child.geometry.computeVertexNormals();
           }
         });
 
@@ -233,20 +329,28 @@ function ThreeCanvas({
         obj.position.sub(center.multiplyScalar(scale));
 
         scene.add(obj);
-        camera.position.set(0, 2, 5);
+
+        // Camera positioning — slightly above and to the side
+        camera.position.set(2, 2.5, 5);
+        camera.lookAt(0, 0, 0);
         controls.update();
       },
       undefined,
-      () => {
-        // Error — silently fail
-      },
+      () => {},
     );
 
-    // Animate
+    // --- Animate ---
     let animId: number;
+    const clock = new THREE.Clock();
     const animate = () => {
       animId = requestAnimationFrame(animate);
+      const t = clock.getElapsedTime();
       controls.update();
+
+      // Subtle pulsing rim light
+      rimLight.intensity = 0.6 + Math.sin(t * 2) * 0.2;
+      underGlow.intensity = 0.2 + Math.sin(t * 1.5 + 1) * 0.1;
+
       renderer.render(scene, camera);
     };
     animate();
@@ -256,14 +360,21 @@ function ThreeCanvas({
       controls.dispose();
       renderer.dispose();
       material.dispose();
+      bgTexture.dispose();
+      envTex.dispose();
       if (container.contains(renderer.domElement)) {
         container.removeChild(renderer.domElement);
       }
       scene.clear();
     };
-  }, [meshPath, meshName, width, height]);
+  }, [meshPath, meshName, width, height, premium]);
 
-  return <div ref={mountRef} style={{ width, height }} />;
+  return (
+    <div
+      ref={mountRef}
+      style={{ width, height, borderRadius: 8, overflow: 'hidden' }}
+    />
+  );
 }
 
 function MeshCard({ mesh }: { mesh: MeshAsset }) {
@@ -275,24 +386,36 @@ function MeshCard({ mesh }: { mesh: MeshAsset }) {
   return (
     <>
       <Card
-        variant="outlined"
+        elevation={0}
         sx={{
-          borderRadius: 3,
-          borderColor: alpha(catColor, 0.15),
-          transition: 'all 0.3s',
+          borderRadius: 4,
+          border: '1px solid',
+          borderColor: alpha(catColor, 0.12),
+          bgcolor: '#0e0e12',
+          transition: 'all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)',
+          overflow: 'hidden',
           '&:hover': {
-            borderColor: catColor,
-            transform: 'translateY(-4px)',
-            boxShadow: `0 8px 24px ${alpha(catColor, 0.2)}`,
+            borderColor: alpha(catColor, 0.5),
+            transform: 'translateY(-6px) scale(1.02)',
+            boxShadow: `0 16px 40px ${alpha(catColor, 0.25)}, 0 0 0 1px ${alpha(catColor, 0.15)}`,
+            '& .mesh-glow': {
+              opacity: 1,
+            },
           },
         }}
       >
-        <CardActionArea onClick={() => setDialogOpen(true)}>
+        <CardActionArea
+          onClick={() => setDialogOpen(true)}
+          sx={{ borderRadius: 4 }}
+        >
+          {/* Static thumbnail — no WebGL, zero perf cost */}
           <Box
             sx={{
               width: '100%',
               aspectRatio: '1',
-              bgcolor: '#0a0a0a',
+              bgcolor: '#0c0c10',
+              background:
+                'radial-gradient(circle at 50% 40%, #1a1a22 0%, #0c0c10 70%)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -300,31 +423,78 @@ function MeshCard({ mesh }: { mesh: MeshAsset }) {
               overflow: 'hidden',
             }}
           >
-            <ThreeCanvas
-              meshPath={mesh.path}
-              meshName={mesh.name}
-              width={160}
-              height={160}
-            />
             <Box
+              className="mesh-icon"
               sx={{
-                position: 'absolute',
-                top: 6,
-                right: 6,
-                bgcolor: alpha('#000', 0.5),
-                borderRadius: 1,
-                p: 0.3,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: 0.5,
+                transition: 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                '&:hover': {
+                  transform: 'rotateY(20deg) scale(1.1)',
+                },
               }}
             >
-              <ThreeDRotation sx={{ fontSize: 14, color: '#888' }} />
+              <ThreeDRotation
+                sx={{ fontSize: 36, color: alpha(catColor, 0.5) }}
+              />
+              <Typography
+                sx={{
+                  fontSize: '0.55rem',
+                  fontWeight: 900,
+                  color: alpha(catColor, 0.35),
+                  letterSpacing: 1,
+                  textTransform: 'uppercase',
+                }}
+              >
+                Ouvrir en 3D
+              </Typography>
             </Box>
+            <Box
+              className="mesh-glow"
+              sx={{
+                position: 'absolute',
+                bottom: 0,
+                left: 0,
+                right: 0,
+                height: '50%',
+                background: `linear-gradient(0deg, ${alpha(catColor, 0.1)} 0%, transparent 100%)`,
+                opacity: 0,
+                transition: 'opacity 0.3s',
+                pointerEvents: 'none',
+              }}
+            />
+            <Chip
+              label="3D"
+              size="small"
+              sx={{
+                position: 'absolute',
+                top: 8,
+                right: 8,
+                height: 20,
+                fontSize: '0.55rem',
+                fontWeight: 900,
+                bgcolor: alpha(catColor, 0.12),
+                color: catColor,
+                border: '1px solid',
+                borderColor: alpha(catColor, 0.25),
+              }}
+            />
           </Box>
-          <CardContent sx={{ p: 1.5, '&:last-child': { pb: 1.5 } }}>
+          <CardContent
+            sx={{
+              p: 1.5,
+              '&:last-child': { pb: 1.5 },
+              borderTop: '1px solid',
+              borderColor: alpha('#fff', 0.04),
+            }}
+          >
             <Typography
               variant="body2"
               fontWeight="900"
               noWrap
-              sx={{ fontSize: '0.75rem' }}
+              sx={{ fontSize: '0.75rem', color: '#e4e4e7' }}
             >
               {displayName}
             </Typography>
@@ -332,13 +502,15 @@ function MeshCard({ mesh }: { mesh: MeshAsset }) {
               label={mesh.category}
               size="small"
               sx={{
-                height: 16,
+                height: 18,
                 fontSize: '0.55rem',
                 fontWeight: 900,
                 mt: 0.5,
-                bgcolor: alpha(catColor, 0.15),
+                bgcolor: alpha(catColor, 0.12),
                 color: catColor,
                 textTransform: 'uppercase',
+                border: '1px solid',
+                borderColor: alpha(catColor, 0.2),
               }}
             />
           </CardContent>
@@ -354,9 +526,12 @@ function MeshCard({ mesh }: { mesh: MeshAsset }) {
         slotProps={{
           paper: {
             sx: {
-              bgcolor: '#0a0a0a',
-              borderRadius: { xs: 0, sm: 4 },
+              bgcolor: '#08080c',
+              borderRadius: { xs: 0, sm: 5 },
               overflow: 'hidden',
+              border: { sm: '1px solid' },
+              borderColor: { sm: alpha(catColor, 0.2) },
+              boxShadow: `0 40px 80px rgba(0,0,0,0.8), 0 0 60px ${alpha(catColor, 0.1)}`,
             },
           },
         }}
@@ -368,36 +543,67 @@ function MeshCard({ mesh }: { mesh: MeshAsset }) {
             justifyContent: 'space-between',
             color: '#fff',
             pb: 1,
+            px: 3,
+            pt: 2,
+            borderBottom: '1px solid',
+            borderColor: alpha('#fff', 0.06),
           }}
         >
           <Box>
-            <Typography variant="h6" fontWeight="900">
-              {displayName}
-            </Typography>
-            <Typography variant="caption" color="text.secondary">
-              {mesh.name} — Glisser pour tourner, molette pour zoomer
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Typography variant="h6" fontWeight="900">
+                {displayName}
+              </Typography>
+              <Chip
+                label={mesh.category}
+                size="small"
+                sx={{
+                  height: 20,
+                  fontSize: '0.6rem',
+                  fontWeight: 900,
+                  bgcolor: alpha(catColor, 0.15),
+                  color: catColor,
+                  textTransform: 'uppercase',
+                }}
+              />
+            </Box>
+            <Typography variant="caption" sx={{ color: alpha('#fff', 0.35) }}>
+              Glisser pour tourner · Molette pour zoomer · {mesh.name}
             </Typography>
           </Box>
           <IconButton
             onClick={() => setDialogOpen(false)}
-            sx={{ color: '#888' }}
+            sx={{
+              color: '#666',
+              bgcolor: alpha('#fff', 0.05),
+              '&:hover': { bgcolor: alpha('#fff', 0.1) },
+            }}
           >
             <Close />
           </IconButton>
         </DialogTitle>
-        <DialogContent sx={{ p: 0, display: 'flex', justifyContent: 'center' }}>
+        <DialogContent
+          sx={{
+            p: 0,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            bgcolor: '#08080c',
+          }}
+        >
           {dialogOpen && (
             <ThreeCanvas
               meshPath={mesh.path}
               meshName={mesh.name}
               width={Math.min(
-                600,
-                typeof window !== 'undefined' ? window.innerWidth - 32 : 600,
+                700,
+                typeof window !== 'undefined' ? window.innerWidth - 32 : 700,
               )}
               height={Math.min(
-                500,
-                typeof window !== 'undefined' ? window.innerHeight - 150 : 500,
+                550,
+                typeof window !== 'undefined' ? window.innerHeight - 120 : 550,
               )}
+              premium
             />
           )}
         </DialogContent>

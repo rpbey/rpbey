@@ -72,23 +72,36 @@ const PACK_LINES = [
 ];
 
 // VFX animation component that plays the Electric Cards reveal
+// 3-phase animation like the real BBX app:
+// Phase 1: Pack zoom-in with shake (0.5s)
+// Phase 2: Electric Cards VFX full screen (2s)
+// Phase 3: White flash then reveal (0.3s)
 function RevealAnimation({ onComplete }: { onComplete: () => void }) {
+  const [phase, setPhase] = useState(0); // 0=pack, 1=vfx, 2=flash
   const [frame, setFrame] = useState(0);
-  const totalFrames = 64;
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setFrame((f) => {
-        if (f >= totalFrames - 1) {
-          clearInterval(interval);
-          setTimeout(onComplete, 200);
-          return f;
-        }
-        return f + 1;
-      });
-    }, 40); // ~25fps
-    return () => clearInterval(interval);
+    // Phase 0 → 1 after 600ms
+    const t1 = setTimeout(() => setPhase(1), 600);
+    // Phase 1 → 2 after VFX completes
+    const t2 = setTimeout(() => setPhase(2), 2600);
+    // Complete after flash
+    const t3 = setTimeout(onComplete, 2900);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
+    };
   }, [onComplete]);
+
+  // VFX frame animation during phase 1
+  useEffect(() => {
+    if (phase !== 1) return;
+    const interval = setInterval(() => {
+      setFrame((f) => Math.min(f + 1, 63));
+    }, 30);
+    return () => clearInterval(interval);
+  }, [phase]);
 
   return (
     <Box
@@ -96,51 +109,110 @@ function RevealAnimation({ onComplete }: { onComplete: () => void }) {
         position: 'fixed',
         inset: 0,
         zIndex: 9999,
-        bgcolor: 'rgba(0,0,0,0.9)',
+        bgcolor: '#000',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
+        overflow: 'hidden',
       }}
     >
-      <Box
-        sx={{
-          position: 'relative',
-          width: { xs: 300, md: 500 },
-          height: { xs: 300, md: 500 },
-        }}
-      >
-        <img
-          src={`/app-assets/vfx/vfx_UI_ElectricCards_${frame}.png`}
-          alt=""
-          style={{
-            width: '100%',
-            height: '100%',
-            objectFit: 'contain',
+      {/* Phase 0: Pack close-up with shake */}
+      {phase === 0 && (
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: 2,
+            animation: 'bbx-shake 0.1s infinite',
+            '@keyframes bbx-shake': {
+              '0%': { transform: 'translate(0, 0) scale(1.2)' },
+              '25%': { transform: 'translate(-2px, 1px) scale(1.22)' },
+              '50%': { transform: 'translate(2px, -1px) scale(1.2)' },
+              '75%': { transform: 'translate(-1px, -2px) scale(1.23)' },
+              '100%': { transform: 'translate(1px, 2px) scale(1.2)' },
+            },
           }}
-        />
-        {/* Glow overlay */}
+        >
+          <Box
+            component="img"
+            src="/bbx-icons/orangeStar.png"
+            sx={{ width: { xs: 80, md: 120 }, height: { xs: 80, md: 120 } }}
+          />
+          <Typography
+            sx={{
+              color: '#f59e0b',
+              fontWeight: 900,
+              fontSize: { xs: '1.2rem', md: '1.8rem' },
+              letterSpacing: 4,
+              textTransform: 'uppercase',
+            }}
+          >
+            OPENING...
+          </Typography>
+        </Box>
+      )}
+
+      {/* Phase 1: Electric Cards VFX */}
+      {phase === 1 && (
+        <Box sx={{ position: 'relative', width: '100%', height: '100%' }}>
+          <Box
+            component="img"
+            src={`/app-assets/vfx/vfx_UI_ElectricCards_${frame}.png`}
+            alt=""
+            sx={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: { xs: '100vw', md: '60vw' },
+              height: { xs: '100vh', md: '60vh' },
+              objectFit: 'contain',
+            }}
+          />
+          {/* Secondary VFX layer */}
+          {frame > 10 && (
+            <Box
+              component="img"
+              src={`/app-assets/vfx/vfx_UI_ElectricCards02_${Math.min(frame - 10, 63)}.png`}
+              alt=""
+              sx={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%) scale(1.3)',
+                width: { xs: '100vw', md: '60vw' },
+                height: { xs: '100vh', md: '60vh' },
+                objectFit: 'contain',
+                opacity: 0.5,
+                mixBlendMode: 'screen',
+              }}
+            />
+          )}
+          {/* Radial glow pulse */}
+          <Box
+            sx={{
+              position: 'absolute',
+              inset: 0,
+              background:
+                'radial-gradient(circle, rgba(245,158,11,0.15) 0%, transparent 60%)',
+              animation: 'pulse 0.5s infinite',
+            }}
+          />
+        </Box>
+      )}
+
+      {/* Phase 2: White flash */}
+      {phase === 2 && (
         <Box
           sx={{
             position: 'absolute',
             inset: 0,
-            background: `radial-gradient(circle, ${alpha('#f59e0b', 0.2)} 0%, transparent 70%)`,
-            animation: 'pulse 1s infinite',
+            bgcolor: '#fff',
+            animation: 'bbx-flash 0.3s ease-out forwards',
           }}
         />
-      </Box>
-      <Typography
-        sx={{
-          position: 'absolute',
-          bottom: '15%',
-          color: alpha('#fff', 0.5),
-          fontWeight: 900,
-          letterSpacing: 3,
-          textTransform: 'uppercase',
-          fontSize: '0.8rem',
-        }}
-      >
-        Ouverture en cours...
-      </Typography>
+      )}
     </Box>
   );
 }

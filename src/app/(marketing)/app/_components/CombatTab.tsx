@@ -334,7 +334,7 @@ export function CombatTab({ blades, ratchets, bits }: CombatTabProps) {
     bit: null,
   });
   const [battling, setBattling] = useState(false);
-  const [showVfx, setShowVfx] = useState(false);
+  const [battlePhase, setBattlePhase] = useState(-1); // -1=idle, 0=intro, 1=clash, 2=sparks, 3=flash
   const [result, setResult] = useState<BattleResult | null>(null);
   const [vfxFrame, setVfxFrame] = useState(0);
 
@@ -344,26 +344,32 @@ export function CombatTab({ blades, ratchets, bits }: CombatTabProps) {
   const handleBattle = useCallback(() => {
     if (!canBattle) return;
     setBattling(true);
-    setShowVfx(true);
     setResult(null);
+    setVfxFrame(0);
 
-    // VFX animation then resolve
+    // Phase 0: Intro (names fly in) — 800ms
+    setBattlePhase(0);
+    setTimeout(() => setBattlePhase(1), 800);
+    // Phase 1: Clash VFX (sparks loop) — 1500ms
+    setTimeout(() => setBattlePhase(2), 2300);
+    // Phase 2: Lightning — 700ms
+    setTimeout(() => setBattlePhase(3), 3000);
+    // Phase 3: Flash + result — 300ms
     setTimeout(() => {
-      setShowVfx(false);
-      const res = simulateBattle(p1, p2);
-      setResult(res);
+      setBattlePhase(-1);
+      setResult(simulateBattle(p1, p2));
       setBattling(false);
-    }, 3000);
+    }, 3300);
   }, [canBattle, p1, p2]);
 
-  // VFX frame animation
+  // VFX frame ticker
   useEffect(() => {
-    if (!showVfx) return;
+    if (battlePhase < 0) return;
     const interval = setInterval(() => {
-      setVfxFrame((f) => (f + 1) % 8);
-    }, 100);
+      setVfxFrame((f) => f + 1);
+    }, 60);
     return () => clearInterval(interval);
-  }, [showVfx]);
+  }, [battlePhase]);
 
   const randomize = useCallback(() => {
     const randPart = (parts: Part[]) =>
@@ -476,44 +482,158 @@ export function CombatTab({ blades, ratchets, bits }: CombatTabProps) {
         </Button>
       </Box>
 
-      {/* VFX overlay */}
-      {showVfx && (
+      {/* Battle VFX overlay — multi-phase */}
+      {battlePhase >= 0 && (
         <Box
           sx={{
             position: 'fixed',
             inset: 0,
             zIndex: 9999,
-            bgcolor: 'rgba(0,0,0,0.95)',
+            bgcolor: '#000',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            flexDirection: 'column',
-            gap: 3,
+            overflow: 'hidden',
           }}
         >
-          <Box
-            component="img"
-            src={`/app-assets/vfx/BattleScreen_Center_Sparks_Seq_${vfxFrame}.png`}
-            alt="Combat VFX"
-            sx={{
-              width: { xs: '70vw', sm: 300 },
-              height: { xs: '70vw', sm: 300 },
-              maxWidth: 400,
-              objectFit: 'contain',
-            }}
-          />
-          <Typography
-            sx={{
-              color: '#fff',
-              fontWeight: 900,
-              fontSize: '1.5rem',
-              letterSpacing: 5,
-              textTransform: 'uppercase',
-              animation: 'pulse 1s infinite',
-            }}
-          >
-            Combat !
-          </Typography>
+          {/* Phase 0: Names fly in from sides */}
+          {battlePhase === 0 && (
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: { xs: 2, md: 6 },
+                width: '100%',
+                justifyContent: 'center',
+              }}
+            >
+              <Typography
+                sx={{
+                  color: '#ef4444',
+                  fontWeight: 900,
+                  fontSize: { xs: '1.2rem', md: '2rem' },
+                  letterSpacing: 2,
+                  textTransform: 'uppercase',
+                  animation: 'slideInLeft 0.4s ease-out',
+                  '@keyframes slideInLeft': {
+                    from: { transform: 'translateX(-100vw)', opacity: 0 },
+                    to: { transform: 'translateX(0)', opacity: 1 },
+                  },
+                }}
+              >
+                {p1.blade?.name || 'P1'}
+              </Typography>
+              <Typography
+                sx={{
+                  color: '#f59e0b',
+                  fontWeight: 900,
+                  fontSize: { xs: '1.5rem', md: '2.5rem' },
+                  animation: 'pulse 0.3s infinite',
+                }}
+              >
+                VS
+              </Typography>
+              <Typography
+                sx={{
+                  color: '#3b82f6',
+                  fontWeight: 900,
+                  fontSize: { xs: '1.2rem', md: '2rem' },
+                  letterSpacing: 2,
+                  textTransform: 'uppercase',
+                  animation: 'slideInRight 0.4s ease-out',
+                  '@keyframes slideInRight': {
+                    from: { transform: 'translateX(100vw)', opacity: 0 },
+                    to: { transform: 'translateX(0)', opacity: 1 },
+                  },
+                }}
+              >
+                {p2.blade?.name || 'P2'}
+              </Typography>
+            </Box>
+          )}
+
+          {/* Phase 1: Center sparks clash */}
+          {battlePhase === 1 && (
+            <Box sx={{ position: 'relative', width: '100%', height: '100%' }}>
+              <Box
+                component="img"
+                src={`/app-assets/vfx/BattleScreen_Center_Sparks_Seq_${vfxFrame % 8}.png`}
+                alt=""
+                sx={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  width: { xs: '90vw', md: '50vw' },
+                  maxWidth: 500,
+                  objectFit: 'contain',
+                }}
+              />
+              {/* Overlay sparks layer 2 */}
+              <Box
+                component="img"
+                src={`/app-assets/vfx/V_SEQ_Spark_0${(vfxFrame % 6) + 1}.png`}
+                alt=""
+                sx={{
+                  position: 'absolute',
+                  top: '45%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%) scale(1.5)',
+                  width: { xs: '70vw', md: '40vw' },
+                  objectFit: 'contain',
+                  opacity: 0.7,
+                  mixBlendMode: 'screen',
+                }}
+              />
+              <Typography
+                sx={{
+                  position: 'absolute',
+                  bottom: '20%',
+                  width: '100%',
+                  textAlign: 'center',
+                  color: '#fff',
+                  fontWeight: 900,
+                  fontSize: { xs: '1rem', md: '1.5rem' },
+                  letterSpacing: 8,
+                  textTransform: 'uppercase',
+                  textShadow: '0 0 20px rgba(220,38,38,0.8)',
+                }}
+              >
+                COMBAT !
+              </Typography>
+            </Box>
+          )}
+
+          {/* Phase 2: Lightning */}
+          {battlePhase === 2 && (
+            <Box sx={{ position: 'relative', width: '100%', height: '100%' }}>
+              <Box
+                component="img"
+                src={`/app-assets/vfx/V_SEQ_Lightning_UI_${vfxFrame % 30}.png`}
+                alt=""
+                sx={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  width: { xs: '100vw', md: '60vw' },
+                  objectFit: 'contain',
+                }}
+              />
+            </Box>
+          )}
+
+          {/* Phase 3: White flash */}
+          {battlePhase === 3 && (
+            <Box
+              sx={{
+                position: 'absolute',
+                inset: 0,
+                bgcolor: '#fff',
+                animation: 'bbx-flash 0.3s ease-out forwards',
+              }}
+            />
+          )}
         </Box>
       )}
 
