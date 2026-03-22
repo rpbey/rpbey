@@ -64,7 +64,7 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const type = searchParams.get('type') || 'textures';
 
-  const validTypes = ['textures', 'sprites', 'marketing'];
+  const validTypes = ['textures', 'sprites', 'marketing', 'vfx'];
   if (!validTypes.includes(type)) {
     return NextResponse.json({ error: 'Invalid type' }, { status: 400 });
   }
