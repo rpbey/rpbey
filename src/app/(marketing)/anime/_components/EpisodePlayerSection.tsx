@@ -49,6 +49,7 @@ export function EpisodePlayerSection({
         savedProgress={savedProgress}
         episodeId={episodeId}
         duration={duration}
+        seriesSlug={seriesSlug}
         onEnded={nextEpisode ? () => setShowNext(true) : undefined}
       />
       {showNext && nextEpisode && (

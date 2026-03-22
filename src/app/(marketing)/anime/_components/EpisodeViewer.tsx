@@ -20,6 +20,7 @@ interface EpisodeViewerProps {
   savedProgress: number;
   episodeId: string;
   duration: number;
+  seriesSlug?: string;
   onEnded?: () => void;
 }
 
@@ -53,6 +54,7 @@ export function EpisodeViewer({
   savedProgress,
   episodeId,
   duration,
+  seriesSlug,
   onEnded,
 }: EpisodeViewerProps) {
   const streamingSources = sources.filter((s) => !isDownloadSource(s));
@@ -105,6 +107,9 @@ export function EpisodeViewer({
         savedProgress={savedProgress}
         episodeId={episodeId}
         duration={duration}
+        startTime={
+          seriesSlug === 'beyblade-x' && selectedLang === 'VOSTFR' ? 4 : 0
+        }
         onEnded={onEnded}
       />
 

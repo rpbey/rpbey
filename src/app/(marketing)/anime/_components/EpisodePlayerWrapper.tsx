@@ -25,6 +25,7 @@ interface Props {
   savedProgress: number;
   episodeId: string;
   duration: number;
+  startTime?: number;
   onEnded?: () => void;
 }
 

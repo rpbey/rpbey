@@ -18,6 +18,7 @@ interface EpisodePlayerProps {
   savedProgress?: number;
   episodeId: string;
   duration?: number;
+  startTime?: number;
   onEnded?: () => void;
 }
 
@@ -48,6 +49,7 @@ function isYouTubeSource(src: string, sourceType: string): boolean {
 }
 
 /** Extract YouTube video ID from any src format */
+/** Extract YouTube video ID from any src format */
 function extractYouTubeId(src: string): string {
   if (src.startsWith('youtube/')) {
     return src.replace('youtube/', '');
@@ -58,6 +60,18 @@ function extractYouTubeId(src: string): string {
   return match?.[1] ?? src;
 }
 
+/** Append start time to iframe URL based on host */
+function applyStartTime(src: string, startTime: number): string {
+  if (startTime <= 0) return src;
+  const sep = src.includes('?') ? '&' : '?';
+  if (src.includes('sibnet.ru')) return `${src}${sep}t=${startTime}`;
+  if (src.includes('vk.com')) return `${src}${sep}t=${startTime}s`;
+  if (src.includes('dailymotion.com')) return `${src}${sep}start=${startTime}`;
+  if (src.includes('vidmoly.net')) return `${src}${sep}start=${startTime}`;
+  if (src.includes('ok.ru')) return `${src}${sep}fromTime=${startTime}`;
+  return src;
+}
+
 export function EpisodePlayer({
   title,
   src,
@@ -65,6 +79,7 @@ export function EpisodePlayer({
   savedProgress = 0,
   episodeId,
   duration: episodeDuration,
+  startTime = 0,
   onEnded: onEndedProp,
 }: EpisodePlayerProps) {
   const lastReportRef = useRef(0);
@@ -128,7 +143,7 @@ export function EpisodePlayer({
         >
           <Box
             component="iframe"
-            src={src}
+            src={applyStartTime(src, startTime)}
             title={title}
             allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
             allowFullScreen
@@ -173,7 +188,7 @@ export function EpisodePlayer({
         aspectRatio="16/9"
         playsInline
         crossOrigin
-        currentTime={savedProgress}
+        currentTime={Math.max(savedProgress, startTime)}
         onTimeUpdate={(detail) =>
           handleTimeUpdate(
             detail as unknown as { currentTime: number; duration: number },
