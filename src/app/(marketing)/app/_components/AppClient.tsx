@@ -15,6 +15,7 @@ import { alpha } from '@mui/material/styles';
 import type { Part } from '@prisma/client';
 import { useMemo, useState } from 'react';
 import { AssetGallery } from './AssetGallery';
+import { MeshGallery } from './MeshViewer';
 import { PartGrid } from './PartGrid';
 import { ProductCatalog } from './ProductCatalog';
 import { VfxGallery } from './VfxGallery';
@@ -67,6 +68,7 @@ export function AppClient({
     const filteredBits = filterParts(bits);
     return [
       { label: 'Textures & Sprites', count: null },
+      { label: 'Modèles 3D', count: null },
       { label: 'Animations VFX', count: null },
       { label: 'Blades', count: filteredBlades.length },
       { label: 'Ratchets', count: filteredRatchets.length },
@@ -76,12 +78,12 @@ export function AppClient({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [blades, ratchets, bits, products, filterParts]);
 
-  const isPartTab = activeTab >= 2 && activeTab <= 4;
+  const isPartTab = activeTab >= 3 && activeTab <= 5;
 
   const getActiveParts = (): Part[] => {
-    if (activeTab === 2) return filterParts(blades);
-    if (activeTab === 3) return filterParts(ratchets);
-    if (activeTab === 4) return filterParts(bits);
+    if (activeTab === 3) return filterParts(blades);
+    if (activeTab === 4) return filterParts(ratchets);
+    if (activeTab === 5) return filterParts(bits);
     return [];
   };
 
@@ -196,9 +198,10 @@ export function AppClient({
 
       {/* Content */}
       {activeTab === 0 && <AssetGallery />}
-      {activeTab === 1 && <VfxGallery />}
+      {activeTab === 1 && <MeshGallery />}
+      {activeTab === 2 && <VfxGallery />}
       {isPartTab && <PartGrid parts={getActiveParts()} />}
-      {activeTab === 5 && <ProductCatalog products={products} />}
+      {activeTab === 6 && <ProductCatalog products={products} />}
     </Container>
   );
 }

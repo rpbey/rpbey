@@ -64,7 +64,7 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const type = searchParams.get('type') || 'textures';
 
-  const validTypes = ['textures', 'sprites', 'marketing', 'vfx'];
+  const validTypes = ['textures', 'sprites', 'marketing', 'vfx', 'meshes'];
   if (!validTypes.includes(type)) {
     return NextResponse.json({ error: 'Invalid type' }, { status: 400 });
   }
@@ -73,8 +73,13 @@ export async function GET(request: NextRequest) {
     const dirPath = path.join(process.cwd(), 'public', 'app-assets', type);
     const files = await readdir(dirPath);
 
+    const extPattern =
+      type === 'meshes'
+        ? /\.(obj|fbx|gltf|glb)$/i
+        : /\.(png|jpg|jpeg|webp|gif)$/i;
+
     const assets = files
-      .filter((f) => /\.(png|jpg|jpeg|webp|gif)$/i.test(f))
+      .filter((f) => extPattern.test(f))
       .map((name) => ({
         name,
         path: `/app-assets/${type}/${name}`,
