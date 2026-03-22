@@ -1505,9 +1505,10 @@ export async function generateGachaCard(data: GachaCardData): Promise<Buffer> {
   const theme = RARITY_THEMES[data.rarity] || RARITY_THEMES.COMMON!;
   const hasStats = data.atk != null;
 
-  // Generation colors: OG=red, Metal=yellow, Burst=green, X=blue
+  // Generation colors: Bakuten=red, Metal=yellow, Burst=green, X=blue
   const GEN_COLORS: Record<string, string> = {
-    OG: '#ef4444',
+    BAKUTEN: '#ef4444',
+    BAKUTEN_SHOOT: '#ef4444',
     METAL: '#f59e0b',
     BURST: '#22c55e',
     X: '#3b82f6',
