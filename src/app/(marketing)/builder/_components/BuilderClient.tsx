@@ -11,7 +11,11 @@ function BuilderLayout() {
   const { state } = useBuilder();
 
   return (
-    <Container maxWidth="xl" sx={{ py: { xs: 1.5, md: 3 } }}>
+    <Container
+      maxWidth="xl"
+      className="bbx-diagonal"
+      sx={{ py: { xs: 1.5, md: 3 } }}
+    >
       <BuilderHeader />
 
       <MobileTabSwitcher />

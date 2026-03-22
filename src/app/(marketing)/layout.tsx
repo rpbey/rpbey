@@ -32,6 +32,7 @@ export default function MarketingLayout({
       {/* Main content */}
       <Box
         component="main"
+        className="bbx-dots"
         sx={{
           flex: 1,
           display: 'flex',
@@ -44,7 +45,7 @@ export default function MarketingLayout({
         }}
       >
         <MarketingHeader />
-        <Box sx={{ flex: 1 }}>{children}</Box>
+        <Box sx={{ flex: 1, position: 'relative', zIndex: 1 }}>{children}</Box>
         <IconFooter />
       </Box>
 

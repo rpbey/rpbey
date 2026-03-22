@@ -240,6 +240,7 @@ export default async function RankingsPage({
 
   return (
     <Box
+      className="bbx-scanlines"
       sx={{
         minHeight: '100vh',
         position: 'relative',

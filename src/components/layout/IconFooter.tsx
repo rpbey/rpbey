@@ -15,9 +15,19 @@ export function IconFooter() {
         gap: 2,
         py: 3,
         px: 2,
-        borderTop: '1px solid',
-        borderColor: 'divider',
+        borderTop: 'none',
         bgcolor: 'background.default',
+        position: 'relative',
+        '&::before': {
+          content: '""',
+          position: 'absolute',
+          top: 0,
+          left: '10%',
+          right: '10%',
+          height: '1px',
+          background:
+            'linear-gradient(90deg, transparent, rgba(220,38,38,0.3) 30%, rgba(220,38,38,0.5) 50%, rgba(220,38,38,0.3) 70%, transparent)',
+        },
       }}
     >
       {/* Social icons */}

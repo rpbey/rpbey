@@ -91,10 +91,23 @@ export function IconNav() {
         borderBottomRightRadius: 24,
         bgcolor: (theme) => alpha(theme.palette.background.paper, 0.9),
         backdropFilter: 'blur(20px)',
-        boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
+        boxShadow:
+          '0 8px 32px rgba(0,0,0,0.3), inset 0 -1px 0 0 rgba(220,38,38,0.1)',
         border: '1px solid',
         borderColor: 'divider',
+        borderRight: '1px solid rgba(220,38,38,0.08)',
         width: ICON_NAV_WIDTH,
+        '&::after': {
+          content: '""',
+          position: 'absolute',
+          bottom: 0,
+          left: '50%',
+          transform: 'translateX(-50%)',
+          width: 24,
+          height: 3,
+          borderRadius: 2,
+          bgcolor: 'rgba(220,38,38,0.3)',
+        },
       }}
     >
       {/* Logo */}
