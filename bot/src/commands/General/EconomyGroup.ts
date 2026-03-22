@@ -68,13 +68,13 @@ const BADGES = [
   { count: 31, reward: 3000, name: 'Légende (100%)', emoji: '⭐' },
 ] as const;
 
+// Drop 1 = 32 cartes: 16 Commun, 10 Rare, 4 Super Rare, 2 Légendaire
 const RARITY_RATES = {
-  MISS: 0.35,
-  COMMON: 0.3,
-  RARE: 0.2,
-  EPIC: 0.1,
-  LEGENDARY: 0.04,
-  SECRET: 0.01,
+  MISS: 0.3,
+  COMMON: 0.35, // 16/32 cartes
+  RARE: 0.22, // 10/32 cartes
+  SUPER_RARE: 0.1, // 4/32 cartes
+  LEGENDARY: 0.03, // 2/32 cartes
 } as const;
 
 const RARITY_CONFIG: Record<
@@ -83,13 +83,19 @@ const RARITY_CONFIG: Record<
 > = {
   COMMON: { emoji: '⚪', color: 0x9ca3af, label: 'Commune', sellPrice: 5 },
   RARE: { emoji: '🔵', color: 0x3b82f6, label: 'Rare', sellPrice: 15 },
-  EPIC: { emoji: '🟣', color: 0x8b5cf6, label: 'Épique', sellPrice: 50 },
+  SUPER_RARE: {
+    emoji: '🟣',
+    color: 0x8b5cf6,
+    label: 'Super Rare',
+    sellPrice: 50,
+  },
   LEGENDARY: {
     emoji: '🟡',
     color: 0xfbbf24,
     label: 'Légendaire',
     sellPrice: 150,
   },
+  // Legacy — keep for old cards still in DB
   SECRET: { emoji: '🔴', color: 0xef4444, label: 'Secrète', sellPrice: 500 },
 };
 
@@ -105,7 +111,7 @@ const MISS_MESSAGES = [
   'L-Drago a absorbé toute ton énergie de tirage...',
 ];
 
-type CardRarityType = 'COMMON' | 'RARE' | 'EPIC' | 'LEGENDARY' | 'SECRET';
+type CardRarityType = 'COMMON' | 'RARE' | 'SUPER_RARE' | 'LEGENDARY' | 'SECRET';
 
 interface UserProfile {
   userId: string; // Internal DB user ID
@@ -149,11 +155,11 @@ function rollRarity(): CardRarityType | null {
   if (roll < cum) return 'COMMON';
   cum += RARITY_RATES.RARE;
   if (roll < cum) return 'RARE';
-  cum += RARITY_RATES.EPIC;
-  if (roll < cum) return 'EPIC';
+  cum += RARITY_RATES.SUPER_RARE;
+  if (roll < cum) return 'SUPER_RARE';
   cum += RARITY_RATES.LEGENDARY;
   if (roll < cum) return 'LEGENDARY';
-  return 'SECRET';
+  return 'LEGENDARY'; // Fallback to highest
 }
 
 function rollDaily(): { amount: number; msg: string; tier: number } {
@@ -277,8 +283,16 @@ export class EconomyGroup {
     if (!rarity)
       return { rarity: null, card: null, isDuplicate: false, isWished: false };
 
+    // Prefer cards from active drop, fallback to all active cards
+    const activeDrop = await this.prisma.gachaDrop.findFirst({
+      where: { isActive: true },
+    });
     const cards = await this.prisma.gachaCard.findMany({
-      where: { rarity, isActive: true },
+      where: {
+        rarity,
+        isActive: true,
+        ...(activeDrop ? { dropId: activeDrop.id } : {}),
+      },
     });
     if (cards.length === 0)
       return { rarity, card: null, isDuplicate: false, isWished: false };
@@ -692,7 +706,13 @@ export class EconomyGroup {
     for (const inv of byRarity) {
       rarityCount[inv.card.rarity] = (rarityCount[inv.card.rarity] || 0) + 1;
     }
-    const rarityBreakdown = ['SECRET', 'LEGENDARY', 'EPIC', 'RARE', 'COMMON']
+    const rarityBreakdown = [
+      'SECRET',
+      'LEGENDARY',
+      'SUPER_RARE',
+      'RARE',
+      'COMMON',
+    ]
       .filter((r) => rarityCount[r])
       .map((r) => ({
         rarity: r,
@@ -1167,7 +1187,7 @@ export class EconomyGroup {
         .setTitle(`🃏 Collection de ${interaction.user.displayName}`)
         .setDescription(`**${inventory.length}** / ${totalCards} (${pct}%)`)
         .setThumbnail(interaction.user.displayAvatarURL());
-      for (const r of ['SECRET', 'LEGENDARY', 'EPIC', 'RARE', 'COMMON']) {
+      for (const r of ['SECRET', 'LEGENDARY', 'SUPER_RARE', 'RARE', 'COMMON']) {
         if (byRarity[r]?.length)
           embed.addFields({
             name: `${RARITY_CONFIG[r]?.emoji} ${RARITY_CONFIG[r]?.label} (${byRarity[r]?.length})`,

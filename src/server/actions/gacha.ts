@@ -9,7 +9,7 @@ import { prisma } from '@/lib/prisma';
 
 type ProductLine = 'BX' | 'UX' | 'CX';
 
-type Rarity = 'COMMON' | 'RARE' | 'EPIC' | 'LEGENDARY' | 'SECRET';
+type Rarity = 'COMMON' | 'RARE' | 'SUPER_RARE' | 'LEGENDARY' | 'SECRET';
 
 interface PulledPart {
   id: string;
@@ -71,7 +71,7 @@ const DAILY_RESET_HOURS = 48; // Streak resets after 48h without claiming
 const RARITY_WEIGHTS: { rarity: Rarity; weight: number }[] = [
   { rarity: 'COMMON', weight: 60 },
   { rarity: 'RARE', weight: 25 },
-  { rarity: 'EPIC', weight: 10 },
+  { rarity: 'SUPER_RARE', weight: 10 },
   { rarity: 'LEGENDARY', weight: 4 },
   { rarity: 'SECRET', weight: 1 },
 ];
@@ -119,13 +119,13 @@ function determinePartRarity(part: Part): Rarity {
       // Weight-based rarity (primary)
       if (w >= 45) return 'SECRET';
       if (w >= 39) return 'LEGENDARY';
-      if (w >= 35) return 'EPIC';
+      if (w >= 35) return 'SUPER_RARE';
       if (w >= 30) return 'RARE';
       return 'COMMON';
     }
     // Stat-based fallback for blades without weight
     if (statScore >= 200) return 'LEGENDARY';
-    if (statScore >= 150) return 'EPIC';
+    if (statScore >= 150) return 'SUPER_RARE';
     if (statScore >= 100) return 'RARE';
     return 'COMMON';
   }
@@ -139,16 +139,16 @@ function determinePartRarity(part: Part): Rarity {
 
     if (w > 0) {
       if (w >= 8) return 'LEGENDARY';
-      if (w >= 7.2) return 'EPIC';
+      if (w >= 7.2) return 'SUPER_RARE';
       if (w >= 6.5) return 'RARE';
       return 'COMMON';
     }
     // Protrusion-based fallback
     if (effectiveProtrusions >= 9) return 'LEGENDARY';
-    if (effectiveProtrusions >= 7) return 'EPIC';
+    if (effectiveProtrusions >= 7) return 'SUPER_RARE';
     if (effectiveProtrusions >= 4) return 'RARE';
     // Stat-based last resort
-    if (statScore >= 150) return 'EPIC';
+    if (statScore >= 150) return 'SUPER_RARE';
     if (statScore >= 100) return 'RARE';
     return 'COMMON';
   }
@@ -163,12 +163,12 @@ function determinePartRarity(part: Part): Rarity {
     const w = part.weight ?? 0;
 
     if (isSpecial && w >= 4) return 'SECRET';
-    if (isSpecial) return 'EPIC';
+    if (isSpecial) return 'SUPER_RARE';
     if (w >= 4) return 'LEGENDARY';
     if (w >= 3) return 'RARE';
     // Stat-based fallback
     if (statScore >= 200) return 'LEGENDARY';
-    if (statScore >= 150) return 'EPIC';
+    if (statScore >= 150) return 'SUPER_RARE';
     if (statScore >= 100) return 'RARE';
     return 'COMMON';
   }
@@ -182,13 +182,13 @@ function determinePartRarity(part: Part): Rarity {
   if (part.type === 'ASSIST_BLADE') {
     const w = part.weight ?? 0;
     if (w >= 7 || statScore >= 200) return 'LEGENDARY';
-    if (w >= 6 || statScore >= 170) return 'EPIC';
+    if (w >= 6 || statScore >= 170) return 'SUPER_RARE';
     if (w >= 5 || statScore >= 140) return 'RARE';
     return 'COMMON';
   }
 
   // Fallback for any unknown type
-  if (statScore >= 200) return 'EPIC';
+  if (statScore >= 200) return 'SUPER_RARE';
   if (statScore >= 100) return 'RARE';
   return 'COMMON';
 }
@@ -229,7 +229,7 @@ function selectPartByRarity(parts: Part[], targetRarity: Rarity): Part {
   const rarityOrder: Rarity[] = [
     'COMMON',
     'RARE',
-    'EPIC',
+    'SUPER_RARE',
     'LEGENDARY',
     'SECRET',
   ];
@@ -300,11 +300,15 @@ async function executePull(
   // Guarantee at least 1 EPIC+ for multi-pull
   if (guaranteeEpicPlus) {
     const hasEpicPlus = selectedParts.some((p) =>
-      ['EPIC', 'LEGENDARY', 'SECRET'].includes(p.rarity),
+      ['SUPER_RARE', 'LEGENDARY', 'SECRET'].includes(p.rarity),
     );
     if (!hasEpicPlus) {
       // Replace the last pull with a guaranteed EPIC+
-      const guaranteedRarities: Rarity[] = ['EPIC', 'LEGENDARY', 'SECRET'];
+      const guaranteedRarities: Rarity[] = [
+        'SUPER_RARE',
+        'LEGENDARY',
+        'SECRET',
+      ];
       const guaranteedRarity =
         guaranteedRarities[
           Math.floor(Math.random() * guaranteedRarities.length)

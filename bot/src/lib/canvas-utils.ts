@@ -1351,13 +1351,13 @@ const RARITY_THEMES: Record<
     stars: 2,
     particleCount: 4,
   },
-  EPIC: {
+  SUPER_RARE: {
     borderColor: '#8b5cf6',
     borderGradient: ['#7c3aed', '#a78bfa', '#7c3aed'],
     glowColor: 'rgba(139,92,246,0.4)',
     bgGradient: ['#1e0a4a', '#2e1065', '#140530'],
     accentColor: '#a78bfa',
-    label: 'ÉPIQUE',
+    label: 'SUPER RARE',
     stars: 3,
     particleCount: 8,
   },
@@ -1834,7 +1834,7 @@ export async function generateGachaCard(data: GachaCardData): Promise<Buffer> {
   }
 
   // ── Corner ornaments (Epic+) ──
-  if (['EPIC', 'LEGENDARY', 'SECRET'].includes(data.rarity)) {
+  if (['SUPER_RARE', 'LEGENDARY', 'SECRET'].includes(data.rarity)) {
     ctx.strokeStyle = `${theme.borderColor}35`;
     ctx.lineWidth = 2.5;
     const corners: [number, number, number, number][] = [
@@ -2284,7 +2284,7 @@ export interface CollectionCardData {
 const RARITY_BORDER: Record<string, string> = {
   SECRET: '#ef4444',
   LEGENDARY: '#fbbf24',
-  EPIC: '#8b5cf6',
+  SUPER_RARE: '#8b5cf6',
   RARE: '#3b82f6',
   COMMON: '#6b7280',
 };
@@ -2478,7 +2478,7 @@ export async function generateCollectionCard(
     if (
       card.rarity === 'LEGENDARY' ||
       card.rarity === 'SECRET' ||
-      card.rarity === 'EPIC'
+      card.rarity === 'SUPER_RARE'
     ) {
       ctx.shadowColor = `${borderColor}40`;
       ctx.shadowBlur = 6;
@@ -3389,7 +3389,7 @@ export interface EconomyProfileData {
 const RARITY_BAR_COLORS: Record<string, string> = {
   SECRET: '#ef4444',
   LEGENDARY: '#f59e0b',
-  EPIC: '#8b5cf6',
+  SUPER_RARE: '#8b5cf6',
   RARE: '#3b82f6',
   COMMON: '#6b7280',
 };

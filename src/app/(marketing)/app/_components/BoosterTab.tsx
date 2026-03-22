@@ -34,15 +34,15 @@ interface PulledPart {
 const RARITY_COLORS: Record<string, string> = {
   COMMON: '#6b7280',
   RARE: '#3b82f6',
-  EPIC: '#8b5cf6',
+  SUPER_RARE: '#8b5cf6',
   LEGENDARY: '#f59e0b',
-  SECRET: '#ef4444',
+  SECRET: '#ef4444', // Legacy
 };
 
 const RARITY_LABELS: Record<string, string> = {
   COMMON: 'Commune',
   RARE: 'Rare',
-  EPIC: 'Épique',
+  SUPER_RARE: 'Super Rare',
   LEGENDARY: 'Légendaire',
   SECRET: 'Secrète',
 };
@@ -538,7 +538,7 @@ const RARITY_THEME: Record<
     glow: 'rgba(74,128,184,0.15)',
     foilOpacity: 0,
   },
-  EPIC: {
+  SUPER_RARE: {
     bg: 'linear-gradient(160deg, #1a0e30 0%, #3a1a70 40%, #1a0e30 100%)',
     border: '#9060e0',
     frame: '#2a1a50',
@@ -573,7 +573,7 @@ const TYPE_ICONS: Record<string, string> = {
 const STAR_COUNT: Record<string, number> = {
   COMMON: 1,
   RARE: 2,
-  EPIC: 3,
+  SUPER_RARE: 3,
   LEGENDARY: 4,
   SECRET: 5,
 };
@@ -917,7 +917,7 @@ function RevealedCard({
           )}
         </Box>
 
-        {/* ── Corner ornaments (EPIC+) ── */}
+        {/* ── Corner ornaments (Super Rare+) ── */}
         {isHolo && (
           <Box
             sx={{
@@ -1088,7 +1088,7 @@ export function BoosterTab({ allParts }: BoosterTabProps) {
       const lineParts = allParts.filter((p) => p.system === line || !p.system);
       if (lineParts.length === 0) return [];
 
-      const rarities = ['COMMON', 'RARE', 'EPIC', 'LEGENDARY', 'SECRET'];
+      const rarities = ['COMMON', 'RARE', 'SUPER_RARE', 'LEGENDARY', 'SECRET'];
       const weights = [60, 25, 10, 4, 1];
 
       const results: PulledPart[] = [];
@@ -1105,17 +1105,21 @@ export function BoosterTab({ allParts }: BoosterTabProps) {
           }
         }
 
-        // Guarantee at least 1 EPIC+ on multi
+        // Guarantee at least 1 Super Rare+ on multi
         if (
           count > 1 &&
           i === count - 1 &&
           !results.some((r) =>
-            ['EPIC', 'LEGENDARY', 'SECRET'].includes(r.rarity),
+            ['SUPER_RARE', 'LEGENDARY', 'SECRET'].includes(r.rarity),
           )
         ) {
           const epicRoll = Math.random() * 100;
           rarity =
-            epicRoll < 70 ? 'EPIC' : epicRoll < 95 ? 'LEGENDARY' : 'SECRET';
+            epicRoll < 70
+              ? 'SUPER_RARE'
+              : epicRoll < 95
+                ? 'LEGENDARY'
+                : 'SECRET';
         }
 
         const part = lineParts[Math.floor(Math.random() * lineParts.length)];
@@ -1399,7 +1403,7 @@ export function BoosterTab({ allParts }: BoosterTabProps) {
               '&:hover': { bgcolor: alpha('#f59e0b', 0.8) },
             }}
           >
-            Pull x5 — 450 ★ (1 Épique+ garanti)
+            Pull x5 — 450 ★ (1 Super Rare+ garanti)
           </Button>
         </Box>
       )}
@@ -1411,8 +1415,8 @@ export function BoosterTab({ allParts }: BoosterTabProps) {
           color="text.disabled"
           sx={{ display: 'block' }}
         >
-          Taux de drop : Commune 60% · Rare 25% · Épique 10% · Légendaire 4% ·
-          Secrète 1%
+          Taux : Commune 35% · Rare 22% · Super Rare 10% · Légendaire 3% · Raté
+          30%
         </Typography>
       </Box>
 
@@ -1501,7 +1505,9 @@ export function BoosterTab({ allParts }: BoosterTabProps) {
                 flexWrap: 'wrap',
               }}
             >
-              {(['SECRET', 'LEGENDARY', 'EPIC', 'RARE', 'COMMON'] as const)
+              {(
+                ['SECRET', 'LEGENDARY', 'SUPER_RARE', 'RARE', 'COMMON'] as const
+              )
                 .filter((r) => revealedParts.some((p) => p.rarity === r))
                 .map((r) => {
                   const count = revealedParts.filter(

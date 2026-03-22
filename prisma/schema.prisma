@@ -679,11 +679,16 @@ enum ProductLine {
 
 // Economy & Gacha System
 enum CardRarity {
-  COMMON
-  RARE
-  EPIC
-  LEGENDARY
-  SECRET
+  COMMON    // Commun
+  RARE      // Rare
+  SUPER_RARE // Super Rare (ex-EPIC)
+  LEGENDARY // Légendaire
+  SECRET    // Secrète (animation/effet spécial)
+}
+
+enum CardType {
+  PNG       // Image existante/officielle
+  ARTIST    // Dessinée par un artiste RPB
 }
 
 enum TransactionType {
@@ -698,25 +703,50 @@ enum TransactionType {
   BADGE_REWARD
 }
 
+// ── TCG Drop (collection thématique limitée) ──
+model GachaDrop {
+  id          String      @id @default(cuid())
+  slug        String      @unique
+  name        String      // "Personnages Principaux", etc.
+  theme       String      // Description du thème
+  season      Int         @default(1) // Numéro du drop (1, 2, 3...)
+  maxCards    Int         @default(32) // Max cartes dans ce drop
+  startDate   DateTime
+  endDate     DateTime    // ~3 mois après startDate
+  isActive    Boolean     @default(false)
+  imageUrl    String?     // Bannière/visuel du drop
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  cards       GachaCard[]
+
+  @@index([isActive])
+  @@map("gacha_drops")
+}
+
 model GachaCard {
   id          String        @id @default(cuid())
   slug        String        @unique
   name        String
   nameJp      String?
-  series      String        // "METAL_MASTERS", "METAL_FURY", etc.
+  series      String        // Legacy: "METAL_MASTERS", etc.
   rarity      CardRarity    @default(COMMON)
+  cardType    CardType      @default(PNG)
+  artistName  String?       // Nom de l'artiste (si ARTIST)
   imageUrl    String?
   beyblade    String?       // Associated beyblade name
   description String?
-  dropRate    Float         @default(0) // 0-1, managed by rarity tier
+  dropRate    Float         @default(0)
   isActive    Boolean       @default(true)
+  // Drop link
+  dropId      String?
+  drop        GachaDrop?    @relation(fields: [dropId], references: [id])
   // TCG Stats
   atk         Int           @default(0)
   def         Int           @default(0)
   spd         Int           @default(0)
   hp          Int           @default(0)
-  element     String        @default("NEUTRAL") // FEU, EAU, TERRE, VENT, OMBRE, LUMIERE, NEUTRAL
-  specialMove String?       // Signature attack name
+  element     String        @default("NEUTRAL")
+  specialMove String?
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
   inventory   CardInventory[]
@@ -724,6 +754,7 @@ model GachaCard {
 
   @@index([series])
   @@index([rarity])
+  @@index([dropId])
   @@map("gacha_cards")
 }
 
