@@ -133,7 +133,7 @@ export function AppClient({
               minHeight: 72,
               textTransform: 'none',
               fontWeight: 800,
-              fontSize: { xs: '0.7rem', sm: '0.85rem', md: '0.95rem' },
+              fontSize: { xs: '0.8rem', sm: '0.85rem', md: '0.95rem' },
               color: alpha('#fff', 0.45),
               transition: 'all 0.2s ease',
               '&.Mui-selected': {
@@ -222,7 +222,8 @@ export function AppClient({
                   },
                 }}
                 sx={{
-                  minWidth: 280,
+                  minWidth: { xs: 0, sm: 280 },
+                  width: { xs: '100%', sm: 'auto' },
                   '& .MuiOutlinedInput-root': {
                     borderRadius: 3,
                     fontWeight: 600,

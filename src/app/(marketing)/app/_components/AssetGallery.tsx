@@ -87,7 +87,9 @@ export function AssetGallery() {
     'textures' | 'sprites' | 'marketing'
   >('textures');
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [cols, setCols] = useState(4);
+  const [cols, setCols] = useState(
+    typeof window !== 'undefined' && window.innerWidth < 600 ? 2 : 4,
+  );
 
   useEffect(() => {
     async function loadAssets() {

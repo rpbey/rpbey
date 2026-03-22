@@ -215,7 +215,8 @@ export function ProductCatalog({ products }: { products: ProductEntry[] }) {
             },
           }}
           sx={{
-            minWidth: 280,
+            minWidth: { xs: 0, sm: 280 },
+            width: { xs: '100%', sm: 'auto' },
             '& .MuiOutlinedInput-root': { borderRadius: 3, fontWeight: 600 },
           }}
         />
@@ -273,9 +274,14 @@ export function ProductCatalog({ products }: { products: ProductEntry[] }) {
       <TableContainer
         component={Paper}
         elevation={0}
-        sx={{ borderRadius: 3, border: '1px solid', borderColor: 'divider' }}
+        sx={{
+          borderRadius: 3,
+          border: '1px solid',
+          borderColor: 'divider',
+          overflowX: 'auto',
+        }}
       >
-        <Table size="small">
+        <Table size="small" sx={{ minWidth: 600 }}>
           <TableHead>
             <TableRow>
               <TableCell sx={{ fontWeight: 900, fontSize: '0.75rem' }}>

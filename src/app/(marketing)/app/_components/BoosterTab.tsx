@@ -171,8 +171,11 @@ function RevealedCard({
           ? 'scale(1) translateY(0)'
           : 'scale(0.5) translateY(40px)',
         transition: 'all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)',
-        flex: total > 3 ? '0 0 calc(33.33% - 12px)' : '0 0 calc(50% - 8px)',
-        minWidth: 120,
+        flex: {
+          xs: '0 0 calc(50% - 8px)',
+          sm: total > 3 ? '0 0 calc(33.33% - 12px)' : '0 0 calc(50% - 8px)',
+        },
+        minWidth: { xs: 100, sm: 120 },
         maxWidth: 180,
       }}
     >
@@ -417,12 +420,14 @@ export function BoosterTab({ allParts }: BoosterTabProps) {
 
   return (
     <Box>
-      {/* Currency display */}
+      {/* Currency display — stacks on mobile */}
       <Box
         sx={{
           display: 'flex',
-          alignItems: 'center',
+          flexDirection: { xs: 'column', sm: 'row' },
+          alignItems: { xs: 'stretch', sm: 'center' },
           justifyContent: 'space-between',
+          gap: { xs: 1.5, sm: 0 },
           mb: 3,
           p: 2,
           borderRadius: 3,
@@ -435,6 +440,7 @@ export function BoosterTab({ allParts }: BoosterTabProps) {
           <Box
             component="img"
             src="/bbx-icons/orangeStar.png"
+            alt="BeyCoins"
             sx={{ width: 28, height: 28 }}
           />
           <Box>
@@ -450,19 +456,20 @@ export function BoosterTab({ allParts }: BoosterTabProps) {
               color="text.secondary"
               fontWeight="600"
             >
-              BeyCoins
+              BeyCoins{!isLoggedIn ? ' (démo)' : ''}
             </Typography>
           </Box>
         </Box>
         <Button
           variant="outlined"
-          size="small"
           onClick={handleDailyClaim}
           sx={{
             borderColor: alpha('#22c55e', 0.3),
             color: '#22c55e',
             fontWeight: 900,
             borderRadius: 2,
+            py: 1,
+            minHeight: 44,
             '&:hover': { bgcolor: alpha('#22c55e', 0.1) },
           }}
         >
@@ -487,7 +494,7 @@ export function BoosterTab({ allParts }: BoosterTabProps) {
       <Box
         sx={{
           display: 'grid',
-          gridTemplateColumns: { xs: '1fr', sm: 'repeat(3, 1fr)' },
+          gridTemplateColumns: { xs: 'repeat(3, 1fr)', sm: 'repeat(3, 1fr)' },
           gap: 2,
           mb: 4,
         }}
@@ -515,15 +522,16 @@ export function BoosterTab({ allParts }: BoosterTabProps) {
               },
             }}
           >
-            <Box sx={{ p: 3, textAlign: 'center' }}>
+            <Box sx={{ p: { xs: 1.5, sm: 3 }, textAlign: 'center' }}>
               <Box
                 component="img"
                 src={pack.img}
+                alt={pack.name}
                 sx={{
-                  width: 64,
-                  height: 64,
+                  width: { xs: 40, sm: 64 },
+                  height: { xs: 40, sm: 64 },
                   mx: 'auto',
-                  mb: 2,
+                  mb: { xs: 1, sm: 2 },
                   filter:
                     selectedLine === pack.id
                       ? 'none'
@@ -532,13 +540,19 @@ export function BoosterTab({ allParts }: BoosterTabProps) {
                 }}
               />
               <Typography
-                variant="h6"
                 fontWeight="900"
-                sx={{ color: pack.color }}
+                sx={{
+                  color: pack.color,
+                  fontSize: { xs: '0.8rem', sm: '1.1rem' },
+                }}
               >
                 {pack.name}
               </Typography>
-              <Typography variant="caption" color="text.secondary">
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                sx={{ display: { xs: 'none', sm: 'block' } }}
+              >
                 {pack.desc}
               </Typography>
             </Box>
@@ -551,22 +565,24 @@ export function BoosterTab({ allParts }: BoosterTabProps) {
         <Box
           sx={{
             display: 'flex',
+            flexDirection: { xs: 'column', sm: 'row' },
             gap: 2,
             justifyContent: 'center',
-            flexWrap: 'wrap',
           }}
         >
           <Button
             variant="contained"
-            size="large"
+            fullWidth={false}
             disabled={pulling || currency < 100}
             onClick={() => handlePull(1)}
             sx={{
               fontWeight: 900,
               borderRadius: 3,
-              px: 4,
+              px: { xs: 3, sm: 4 },
               py: 1.5,
-              fontSize: '1rem',
+              fontSize: { xs: '0.9rem', sm: '1rem' },
+              minHeight: 48,
+              flex: { xs: 1, sm: 'none' },
               bgcolor: PACK_LINES.find((p) => p.id === selectedLine)?.color,
               '&:hover': {
                 bgcolor: alpha(
@@ -581,15 +597,17 @@ export function BoosterTab({ allParts }: BoosterTabProps) {
           </Button>
           <Button
             variant="contained"
-            size="large"
+            fullWidth={false}
             disabled={pulling || currency < 450}
             onClick={() => handlePull(5)}
             sx={{
               fontWeight: 900,
               borderRadius: 3,
-              px: 4,
+              px: { xs: 3, sm: 4 },
               py: 1.5,
-              fontSize: '1rem',
+              fontSize: { xs: '0.9rem', sm: '1rem' },
+              minHeight: 48,
+              flex: { xs: 1, sm: 'none' },
               bgcolor: '#f59e0b',
               '&:hover': { bgcolor: alpha('#f59e0b', 0.8) },
             }}

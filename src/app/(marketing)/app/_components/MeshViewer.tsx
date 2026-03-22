@@ -303,8 +303,8 @@ function MeshCard({ mesh }: { mesh: MeshAsset }) {
             <ThreeCanvas
               meshPath={mesh.path}
               meshName={mesh.name}
-              width={200}
-              height={200}
+              width={160}
+              height={160}
             />
             <Box
               sx={{
@@ -350,9 +350,14 @@ function MeshCard({ mesh }: { mesh: MeshAsset }) {
         onClose={() => setDialogOpen(false)}
         maxWidth="md"
         fullWidth
+        fullScreen={typeof window !== 'undefined' && window.innerWidth < 600}
         slotProps={{
           paper: {
-            sx: { bgcolor: '#0a0a0a', borderRadius: 4, overflow: 'hidden' },
+            sx: {
+              bgcolor: '#0a0a0a',
+              borderRadius: { xs: 0, sm: 4 },
+              overflow: 'hidden',
+            },
           },
         }}
       >
@@ -385,8 +390,14 @@ function MeshCard({ mesh }: { mesh: MeshAsset }) {
             <ThreeCanvas
               meshPath={mesh.path}
               meshName={mesh.name}
-              width={600}
-              height={500}
+              width={Math.min(
+                600,
+                typeof window !== 'undefined' ? window.innerWidth - 32 : 600,
+              )}
+              height={Math.min(
+                500,
+                typeof window !== 'undefined' ? window.innerHeight - 150 : 500,
+              )}
             />
           )}
         </DialogContent>

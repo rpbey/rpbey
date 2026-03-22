@@ -293,10 +293,11 @@ function PartDetailDialog({ part, onClose }: PartDetailDialogProps) {
       onClose={onClose}
       maxWidth="sm"
       fullWidth
+      fullScreen={typeof window !== 'undefined' && window.innerWidth < 600}
       slotProps={{
         paper: {
           sx: {
-            borderRadius: 5,
+            borderRadius: { xs: 0, sm: 5 },
             overflow: 'hidden',
             boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)',
           },
@@ -371,13 +372,21 @@ function PartDetailDialog({ part, onClose }: PartDetailDialogProps) {
       </DialogTitle>
 
       <DialogContent sx={{ p: 3 }}>
-        {/* Image + Info */}
-        <Box sx={{ display: 'flex', gap: 3, mb: 4, alignItems: 'center' }}>
+        {/* Image + Info — stack on mobile */}
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: { xs: 'column', sm: 'row' },
+            gap: { xs: 2, sm: 3 },
+            mb: 4,
+            alignItems: { xs: 'center', sm: 'center' },
+          }}
+        >
           <Box
             sx={{
               position: 'relative',
-              width: 140,
-              height: 140,
+              width: { xs: 100, sm: 140 },
+              height: { xs: 100, sm: 140 },
               flexShrink: 0,
               filter: `drop-shadow(0 10px 20px ${alpha(color, 0.3)})`,
             }}

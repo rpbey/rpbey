@@ -505,6 +505,26 @@ export function MobileNav() {
           }
         />
         <BottomNavigationAction
+          label="Meta"
+          value="/meta"
+          icon={
+            <Box
+              component="img"
+              src="/bbx-icons/BBX-AttackType.png"
+              alt=""
+              sx={{
+                width: 22,
+                height: 22,
+                objectFit: 'contain',
+                filter:
+                  activeValue === '/meta'
+                    ? 'none'
+                    : 'grayscale(0.5) opacity(0.6)',
+              }}
+            />
+          }
+        />
+        <BottomNavigationAction
           label="Anime"
           value="/anime"
           icon={

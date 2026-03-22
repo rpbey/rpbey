@@ -140,7 +140,6 @@ function ComboCard({
         borderColor: alpha(color, 0.3),
         bgcolor: alpha(color, 0.03),
         flex: 1,
-        minWidth: 280,
       }}
     >
       <CardContent sx={{ p: 2.5 }}>
@@ -404,8 +403,16 @@ export function CombatTab({ blades, ratchets, bits }: CombatTabProps) {
         </Button>
       </Box>
 
-      {/* Two combo selectors */}
-      <Box sx={{ display: 'flex', gap: 3, flexWrap: 'wrap', mb: 4 }}>
+      {/* Two combo selectors — stack on mobile */}
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: { xs: '1fr', md: '1fr auto 1fr' },
+          gap: { xs: 1, md: 3 },
+          mb: 4,
+          alignItems: 'start',
+        }}
+      >
         <ComboCard
           title="Joueur 1"
           combo={p1}
@@ -421,12 +428,16 @@ export function CombatTab({ blades, ratchets, bits }: CombatTabProps) {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            py: { xs: 1, md: 0 },
           }}
         >
           <Typography
             variant="h4"
             fontWeight="900"
-            sx={{ color: 'text.disabled' }}
+            sx={{
+              color: 'text.disabled',
+              fontSize: { xs: '1.5rem', md: '2rem' },
+            }}
           >
             VS
           </Typography>
@@ -480,10 +491,16 @@ export function CombatTab({ blades, ratchets, bits }: CombatTabProps) {
             gap: 3,
           }}
         >
-          <img
+          <Box
+            component="img"
             src={`/app-assets/vfx/BattleScreen_Center_Sparks_Seq_${vfxFrame}.png`}
-            alt=""
-            style={{ width: 300, height: 300, objectFit: 'contain' }}
+            alt="Combat VFX"
+            sx={{
+              width: { xs: '70vw', sm: 300 },
+              height: { xs: '70vw', sm: 300 },
+              maxWidth: 400,
+              objectFit: 'contain',
+            }}
           />
           <Typography
             sx={{
