@@ -513,21 +513,52 @@ function RevealAnimation({
   );
 }
 
-// ── TCG Card backgrounds per rarity ──
-const RARITY_BG: Record<string, string> = {
-  COMMON: 'linear-gradient(145deg, #1a1d24 0%, #2a2d34 50%, #1a1d24 100%)',
-  RARE: 'linear-gradient(145deg, #0c1929 0%, #1a3a5c 50%, #0c1929 100%)',
-  EPIC: 'linear-gradient(145deg, #1a0c29 0%, #3a1a6c 50%, #1a0c29 100%)',
-  LEGENDARY: 'linear-gradient(145deg, #29200c 0%, #6c4a1a 50%, #29200c 100%)',
-  SECRET: 'linear-gradient(145deg, #290c0c 0%, #6c1a2a 50%, #0c1a29 100%)',
-};
-
-const RARITY_BORDER: Record<string, string> = {
-  COMMON: '#3a3d44',
-  RARE: '#4a7aac',
-  EPIC: '#8a5adc',
-  LEGENDARY: '#dca84a',
-  SECRET: '#dc4a6a',
+// ── TCG Card design tokens ──
+const RARITY_THEME: Record<
+  string,
+  {
+    bg: string;
+    border: string;
+    frame: string;
+    glow: string;
+    foilOpacity: number;
+  }
+> = {
+  COMMON: {
+    bg: 'linear-gradient(160deg, #1c1f26 0%, #262a33 40%, #1c1f26 100%)',
+    border: '#3a3e48',
+    frame: '#2a2e38',
+    glow: 'transparent',
+    foilOpacity: 0,
+  },
+  RARE: {
+    bg: 'linear-gradient(160deg, #0e1b30 0%, #1a3a60 40%, #0e1b30 100%)',
+    border: '#4a80b8',
+    frame: '#1a3050',
+    glow: 'rgba(74,128,184,0.15)',
+    foilOpacity: 0,
+  },
+  EPIC: {
+    bg: 'linear-gradient(160deg, #1a0e30 0%, #3a1a70 40%, #1a0e30 100%)',
+    border: '#9060e0',
+    frame: '#2a1a50',
+    glow: 'rgba(144,96,224,0.2)',
+    foilOpacity: 0.6,
+  },
+  LEGENDARY: {
+    bg: 'linear-gradient(160deg, #2a1e08 0%, #705020 30%, #2a1e08 100%)',
+    border: '#e0a840',
+    frame: '#4a3418',
+    glow: 'rgba(224,168,64,0.25)',
+    foilOpacity: 0.8,
+  },
+  SECRET: {
+    bg: 'linear-gradient(160deg, #2a0e10 0%, #701830 25%, #0e1a30 75%, #2a0e10 100%)',
+    border: '#e04868',
+    frame: '#3a1020',
+    glow: 'rgba(224,72,104,0.3)',
+    foilOpacity: 1,
+  },
 };
 
 const TYPE_ICONS: Record<string, string> = {
@@ -539,7 +570,15 @@ const TYPE_ICONS: Record<string, string> = {
   ASSIST_BLADE: '/bbx-icons/BBX-BalanceType.webp',
 };
 
-// TCG-style revealed card — Pokémon card layout with holo effect
+const STAR_COUNT: Record<string, number> = {
+  COMMON: 1,
+  RARE: 2,
+  EPIC: 3,
+  LEGENDARY: 4,
+  SECRET: 5,
+};
+
+// ── Professional TCG Card Component ──
 function RevealedCard({
   part,
   index,
@@ -550,30 +589,31 @@ function RevealedCard({
   total: number;
 }) {
   const [visible, setVisible] = useState(false);
-  const [mousePos, setMousePos] = useState({ x: 50, y: 50 });
+  const [mouse, setMouse] = useState({ x: 50, y: 50 });
   const cardRef = useRef<HTMLDivElement>(null);
-  const rarityColor = RARITY_COLORS[part.rarity] || '#6b7280';
-  const borderColor = RARITY_BORDER[part.rarity] || '#3a3d44';
-  const bgGradient = RARITY_BG[part.rarity] || RARITY_BG.COMMON;
-  const isHolo = ['EPIC', 'LEGENDARY', 'SECRET'].includes(part.rarity);
+  const rc = RARITY_COLORS[part.rarity] || '#6b7280';
+  const theme = RARITY_THEME[part.rarity] || RARITY_THEME.COMMON!;
+  const isHolo = theme.foilOpacity > 0;
+  const stars = STAR_COUNT[part.rarity] || 1;
 
   useEffect(() => {
-    const timer = setTimeout(() => setVisible(true), index * 300);
-    return () => clearTimeout(timer);
+    const t = setTimeout(() => setVisible(true), index * 250);
+    return () => clearTimeout(t);
   }, [index]);
 
-  const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    const card = cardRef.current;
-    if (!card) return;
-    const rect = card.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * 100;
-    const y = ((e.clientY - rect.top) / rect.height) * 100;
-    setMousePos({ x, y });
+  const onMove = useCallback((e: React.PointerEvent) => {
+    const el = cardRef.current;
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    setMouse({
+      x: ((e.clientX - r.left) / r.width) * 100,
+      y: ((e.clientY - r.top) / r.height) * 100,
+    });
   }, []);
 
-  // 3D tilt based on mouse position
-  const rotateX = ((mousePos.y - 50) / 50) * -8;
-  const rotateY = ((mousePos.x - 50) / 50) * 8;
+  const tiltX = ((mouse.y - 50) / 50) * -10;
+  const tiltY = ((mouse.x - 50) / 50) * 10;
+  const lightAngle = 115 + (mouse.x - 50) * 0.6;
 
   return (
     <Box
@@ -581,47 +621,75 @@ function RevealedCard({
         opacity: visible ? 1 : 0,
         transform: visible
           ? 'scale(1) translateY(0)'
-          : 'scale(0.5) translateY(40px)',
-        transition: 'all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)',
+          : 'scale(0.3) translateY(60px)',
+        transition: `all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) ${index * 0.08}s`,
         flex: {
           xs: '0 0 calc(50% - 8px)',
           sm: total > 3 ? '0 0 calc(33.33% - 12px)' : '0 0 calc(50% - 8px)',
         },
-        minWidth: { xs: 120, sm: 140 },
-        maxWidth: 200,
-        perspective: '600px',
+        minWidth: { xs: 130, sm: 150 },
+        maxWidth: 210,
+        perspective: '800px',
       }}
     >
       <Box
         ref={cardRef}
-        onMouseMove={handleMouseMove}
-        onMouseLeave={() => setMousePos({ x: 50, y: 50 })}
+        onPointerMove={onMove}
+        onPointerLeave={() => setMouse({ x: 50, y: 50 })}
         sx={{
           position: 'relative',
-          aspectRatio: '5/7',
-          borderRadius: '12px',
+          aspectRatio: '63/88', // Standard TCG card ratio
+          borderRadius: '14px',
           overflow: 'hidden',
           border: '3px solid',
-          borderColor,
-          background: bgGradient,
-          boxShadow: `0 4px 20px ${alpha(rarityColor, 0.3)}, 0 0 40px ${alpha(rarityColor, 0.15)}`,
-          transform: `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`,
-          transition: 'transform 0.15s ease-out',
+          borderColor: theme.border,
+          background: theme.bg,
+          boxShadow: `0 6px 24px ${alpha(rc, 0.35)}, 0 0 50px ${theme.glow}, inset 0 1px 0 ${alpha('#fff', 0.06)}`,
+          transform: `rotateX(${tiltX}deg) rotateY(${tiltY}deg)`,
+          transition: 'transform 0.12s ease-out, box-shadow 0.3s',
           cursor: 'default',
           '&:hover': {
-            boxShadow: `0 8px 30px ${alpha(rarityColor, 0.5)}, 0 0 60px ${alpha(rarityColor, 0.2)}`,
+            boxShadow: `0 12px 40px ${alpha(rc, 0.5)}, 0 0 80px ${alpha(rc, 0.2)}, inset 0 1px 0 ${alpha('#fff', 0.1)}`,
           },
         }}
       >
-        {/* ── Card Header ── */}
+        {/* ── Noise texture overlay ── */}
         <Box
           sx={{
+            position: 'absolute',
+            inset: 0,
+            opacity: 0.04,
+            background:
+              "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='256' height='256' filter='url(%23n)'/%3E%3C/svg%3E\")",
+            pointerEvents: 'none',
+            zIndex: 1,
+          }}
+        />
+
+        {/* ── Inner frame ── */}
+        <Box
+          sx={{
+            position: 'absolute',
+            inset: 5,
+            borderRadius: '10px',
+            border: '1px solid',
+            borderColor: alpha(theme.border, 0.3),
+            pointerEvents: 'none',
+            zIndex: 2,
+          }}
+        />
+
+        {/* ── Header: Name + Type icon ── */}
+        <Box
+          sx={{
+            position: 'relative',
+            zIndex: 3,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            px: 1.2,
-            pt: 1,
-            pb: 0.5,
+            px: 1.4,
+            pt: 1.2,
+            pb: 0.4,
           }}
         >
           <Typography
@@ -629,9 +697,10 @@ function RevealedCard({
             sx={{
               color: '#fff',
               fontWeight: 900,
-              fontSize: { xs: '0.65rem', sm: '0.75rem' },
+              fontSize: { xs: '0.7rem', sm: '0.8rem' },
               flex: 1,
-              textShadow: '0 1px 3px rgba(0,0,0,0.5)',
+              textShadow: `0 1px 4px rgba(0,0,0,0.6), 0 0 12px ${alpha(rc, 0.3)}`,
+              letterSpacing: 0.3,
             }}
           >
             {part.name}
@@ -640,23 +709,40 @@ function RevealedCard({
             component="img"
             src={TYPE_ICONS[part.type] || '/bbx-icons/BBX-BalanceType.webp'}
             alt=""
-            sx={{ width: 16, height: 16, ml: 0.5, flexShrink: 0 }}
+            sx={{
+              width: 18,
+              height: 18,
+              ml: 0.5,
+              flexShrink: 0,
+              filter: `drop-shadow(0 0 4px ${alpha(rc, 0.4)})`,
+            }}
           />
         </Box>
 
-        {/* ── Art Window ── */}
+        {/* ── Art Window with inner shadow ── */}
         <Box
           sx={{
-            mx: 1,
-            borderRadius: '6px',
+            mx: 1.2,
+            borderRadius: '8px',
             overflow: 'hidden',
             border: '2px solid',
-            borderColor: alpha(borderColor, 0.6),
+            borderColor: theme.frame,
             position: 'relative',
-            aspectRatio: '4/3',
-            bgcolor: '#0a0a0e',
+            aspectRatio: '5/4',
+            bgcolor: '#08080c',
+            zIndex: 3,
           }}
         >
+          {/* Radial spotlight behind art */}
+          <Box
+            sx={{
+              position: 'absolute',
+              inset: 0,
+              background: `radial-gradient(ellipse at 50% 40%, ${alpha(rc, 0.12)} 0%, transparent 65%)`,
+              pointerEvents: 'none',
+            }}
+          />
+
           {part.imageUrl ? (
             <img
               src={part.imageUrl}
@@ -665,8 +751,10 @@ function RevealedCard({
                 width: '100%',
                 height: '100%',
                 objectFit: 'contain',
-                padding: '8%',
-                filter: `drop-shadow(0 0 8px ${alpha(rarityColor, 0.5)})`,
+                padding: '6%',
+                filter: `drop-shadow(0 4px 12px ${alpha(rc, 0.4)})`,
+                position: 'relative',
+                zIndex: 1,
               }}
             />
           ) : (
@@ -679,146 +767,288 @@ function RevealedCard({
                 justifyContent: 'center',
               }}
             >
-              <Typography variant="h3" sx={{ opacity: 0.08, fontWeight: 900 }}>
+              <Typography
+                variant="h3"
+                sx={{ opacity: 0.06, fontWeight: 900, color: rc }}
+              >
                 {part.name.charAt(0)}
               </Typography>
             </Box>
           )}
 
-          {/* Holographic overlay — only for EPIC+ */}
+          {/* Inner shadow vignette */}
+          <Box
+            sx={{
+              position: 'absolute',
+              inset: 0,
+              boxShadow: 'inset 0 0 20px rgba(0,0,0,0.5)',
+              borderRadius: '6px',
+              pointerEvents: 'none',
+              zIndex: 2,
+            }}
+          />
+
+          {/* ── Holographic foil overlay ── */}
           {isHolo && (
             <Box
               sx={{
                 position: 'absolute',
                 inset: 0,
-                background: `
-                  linear-gradient(
-                    ${115 + (mousePos.x - 50) * 0.5}deg,
-                    transparent 20%,
-                    ${alpha(rarityColor, 0.15)} 35%,
-                    ${alpha('#fff', 0.1)} 40%,
-                    ${alpha('#88ccff', 0.12)} 45%,
-                    ${alpha(rarityColor, 0.15)} 55%,
-                    transparent 70%
-                  )
-                `,
-                backgroundPosition: `${mousePos.x}% ${mousePos.y}%`,
-                mixBlendMode: 'color-dodge',
+                zIndex: 3,
                 pointerEvents: 'none',
-                transition: 'background-position 0.1s',
+                mixBlendMode: 'color-dodge',
+                opacity: theme.foilOpacity,
+                background: `
+                linear-gradient(${lightAngle}deg,
+                  transparent 15%,
+                  ${alpha('#fff', 0.08)} 28%,
+                  ${alpha(rc, 0.12)} 35%,
+                  ${alpha('#88ccff', 0.1)} 42%,
+                  ${alpha('#fff', 0.15)} 50%,
+                  ${alpha('#ff88cc', 0.08)} 58%,
+                  ${alpha(rc, 0.12)} 65%,
+                  transparent 80%
+                )`,
+                transition: 'background 0.08s',
               }}
             />
           )}
 
-          {/* SECRET rainbow shimmer */}
+          {/* ── SECRET full rainbow ── */}
           {part.rarity === 'SECRET' && (
             <Box
               sx={{
                 position: 'absolute',
                 inset: 0,
-                background: `
-                  linear-gradient(
-                    ${125 + (mousePos.x - 50)}deg,
-                    ${alpha('#ff0000', 0.08)} 0%,
-                    ${alpha('#ff8800', 0.08)} 15%,
-                    ${alpha('#ffff00', 0.08)} 30%,
-                    ${alpha('#00ff88', 0.08)} 45%,
-                    ${alpha('#0088ff', 0.08)} 60%,
-                    ${alpha('#8800ff', 0.08)} 75%,
-                    ${alpha('#ff0088', 0.08)} 100%
-                  )
-                `,
-                mixBlendMode: 'screen',
+                zIndex: 4,
                 pointerEvents: 'none',
+                mixBlendMode: 'overlay',
+                opacity: 0.3,
+                background: `linear-gradient(${130 + (mouse.x - 50) * 1.2}deg, #ff0000 0%, #ff8800 15%, #ffff00 30%, #00ff88 45%, #0088ff 60%, #8800ff 75%, #ff0088 100%)`,
+                transition: 'background 0.06s',
               }}
             />
           )}
         </Box>
 
-        {/* ── Info Bar (type + rarity) ── */}
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            px: 1.2,
-            pt: 0.6,
-          }}
-        >
-          <Chip
-            label={part.type.replace('_', ' ')}
-            size="small"
+        {/* ── Info section ── */}
+        <Box sx={{ position: 'relative', zIndex: 3, px: 1.4, pt: 0.8 }}>
+          {/* Type chip + Stars */}
+          <Box
             sx={{
-              height: 16,
-              fontSize: '0.5rem',
-              fontWeight: 900,
-              bgcolor: alpha('#fff', 0.08),
-              color: alpha('#fff', 0.7),
-              letterSpacing: 0.3,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
             }}
-          />
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.3 }}>
-            {/* Rarity stars */}
-            {Array.from({
-              length:
-                part.rarity === 'SECRET'
-                  ? 5
-                  : part.rarity === 'LEGENDARY'
-                    ? 4
-                    : part.rarity === 'EPIC'
-                      ? 3
-                      : part.rarity === 'RARE'
-                        ? 2
-                        : 1,
-            }).map((_, i) => (
-              <Box
-                key={i}
-                sx={{
-                  width: 6,
-                  height: 6,
-                  borderRadius: '50%',
-                  bgcolor: rarityColor,
-                  boxShadow: isHolo ? `0 0 4px ${rarityColor}` : 'none',
-                }}
-              />
-            ))}
+          >
+            <Chip
+              label={part.type.replace('_', ' ')}
+              size="small"
+              sx={{
+                height: 18,
+                fontSize: '0.5rem',
+                fontWeight: 900,
+                bgcolor: alpha(rc, 0.12),
+                color: alpha('#fff', 0.75),
+                letterSpacing: 0.5,
+                border: '1px solid',
+                borderColor: alpha(rc, 0.2),
+              }}
+            />
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.4 }}>
+              {Array.from({ length: stars }).map((_, i) => (
+                <Box
+                  key={i}
+                  sx={{
+                    width: 7,
+                    height: 7,
+                    borderRadius: '50%',
+                    bgcolor: rc,
+                    boxShadow: isHolo
+                      ? `0 0 6px ${rc}, 0 0 2px ${rc}`
+                      : `0 0 2px ${alpha(rc, 0.5)}`,
+                    animation: isHolo
+                      ? `star-pulse 1.5s ease-in-out ${i * 0.2}s infinite`
+                      : 'none',
+                    '@keyframes star-pulse': {
+                      '0%,100%': { opacity: 0.7, transform: 'scale(1)' },
+                      '50%': { opacity: 1, transform: 'scale(1.3)' },
+                    },
+                  }}
+                />
+              ))}
+            </Box>
           </Box>
-        </Box>
 
-        {/* ── Rarity Label ── */}
-        <Box sx={{ px: 1.2, pb: 0.8 }}>
+          {/* Rarity label */}
           <Typography
             sx={{
-              color: rarityColor,
+              mt: 0.4,
+              color: rc,
               fontWeight: 900,
-              fontSize: '0.55rem',
-              letterSpacing: 1,
+              fontSize: '0.6rem',
+              letterSpacing: 1.5,
               textTransform: 'uppercase',
-              textShadow: isHolo
-                ? `0 0 8px ${alpha(rarityColor, 0.5)}`
-                : 'none',
+              textShadow: isHolo ? `0 0 10px ${alpha(rc, 0.6)}` : 'none',
             }}
           >
             {RARITY_LABELS[part.rarity] || part.rarity}
           </Typography>
+
+          {/* System badge */}
+          {part.system && (
+            <Typography
+              sx={{
+                fontSize: '0.5rem',
+                fontWeight: 700,
+                color: alpha('#fff', 0.3),
+                mt: 0.2,
+                letterSpacing: 0.5,
+              }}
+            >
+              {part.system === 'BX'
+                ? 'XTREME'
+                : part.system === 'UX'
+                  ? 'ULTIMATE'
+                  : part.system === 'CX'
+                    ? 'CUSTOM'
+                    : part.system}
+            </Typography>
+          )}
         </Box>
 
-        {/* ── Shine sweep (LEGENDARY/SECRET) ── */}
+        {/* ── Corner ornaments (EPIC+) ── */}
+        {isHolo && (
+          <Box
+            sx={{
+              position: 'absolute',
+              inset: 0,
+              pointerEvents: 'none',
+              zIndex: 4,
+            }}
+          >
+            {/* Top-left */}
+            <Box
+              sx={{
+                position: 'absolute',
+                top: 8,
+                left: 8,
+                width: 16,
+                height: 16,
+                borderTop: `1.5px solid ${alpha(rc, 0.4)}`,
+                borderLeft: `1.5px solid ${alpha(rc, 0.4)}`,
+                borderRadius: '3px 0 0 0',
+              }}
+            />
+            {/* Top-right */}
+            <Box
+              sx={{
+                position: 'absolute',
+                top: 8,
+                right: 8,
+                width: 16,
+                height: 16,
+                borderTop: `1.5px solid ${alpha(rc, 0.4)}`,
+                borderRight: `1.5px solid ${alpha(rc, 0.4)}`,
+                borderRadius: '0 3px 0 0',
+              }}
+            />
+            {/* Bottom-left */}
+            <Box
+              sx={{
+                position: 'absolute',
+                bottom: 8,
+                left: 8,
+                width: 16,
+                height: 16,
+                borderBottom: `1.5px solid ${alpha(rc, 0.4)}`,
+                borderLeft: `1.5px solid ${alpha(rc, 0.4)}`,
+                borderRadius: '0 0 0 3px',
+              }}
+            />
+            {/* Bottom-right */}
+            <Box
+              sx={{
+                position: 'absolute',
+                bottom: 8,
+                right: 8,
+                width: 16,
+                height: 16,
+                borderBottom: `1.5px solid ${alpha(rc, 0.4)}`,
+                borderRight: `1.5px solid ${alpha(rc, 0.4)}`,
+                borderRadius: '0 0 3px 0',
+              }}
+            />
+          </Box>
+        )}
+
+        {/* ── Animated shine sweep ── */}
         {(part.rarity === 'LEGENDARY' || part.rarity === 'SECRET') && (
           <Box
             sx={{
               position: 'absolute',
               inset: 0,
-              background: `linear-gradient(105deg, transparent 40%, ${alpha('#fff', 0.06)} 45%, ${alpha('#fff', 0.12)} 50%, ${alpha('#fff', 0.06)} 55%, transparent 60%)`,
-              backgroundSize: '250% 100%',
-              animation: 'tcg-shine 3s ease-in-out infinite',
+              zIndex: 5,
               pointerEvents: 'none',
+              background: `linear-gradient(105deg, transparent 35%, ${alpha('#fff', 0.05)} 42%, ${alpha('#fff', 0.15)} 50%, ${alpha('#fff', 0.05)} 58%, transparent 65%)`,
+              backgroundSize: '300% 100%',
+              animation: 'tcg-shine 4s ease-in-out infinite',
               '@keyframes tcg-shine': {
-                '0%': { backgroundPosition: '200% 0' },
-                '100%': { backgroundPosition: '-50% 0' },
+                '0%': { backgroundPosition: '250% 0' },
+                '100%': { backgroundPosition: '-100% 0' },
               },
             }}
           />
+        )}
+
+        {/* ── Sparkle particles (LEGENDARY/SECRET) ── */}
+        {part.rarity === 'SECRET' && (
+          <Box
+            sx={{
+              position: 'absolute',
+              inset: 0,
+              zIndex: 6,
+              pointerEvents: 'none',
+              overflow: 'hidden',
+            }}
+          >
+            {Array.from({ length: 6 }).map((_, i) => (
+              <Box
+                key={i}
+                sx={{
+                  position: 'absolute',
+                  width: 3,
+                  height: 3,
+                  borderRadius: '50%',
+                  bgcolor: '#fff',
+                  top: `${15 + i * 14}%`,
+                  left: `${10 + ((i * 17) % 80)}%`,
+                  boxShadow: '0 0 4px #fff, 0 0 8px rgba(255,255,255,0.5)',
+                  animation: `sparkle-${i % 3} ${1.5 + i * 0.3}s ease-in-out infinite`,
+                  '@keyframes sparkle-0': {
+                    '0%,100%': { opacity: 0, transform: 'scale(0)' },
+                    '50%': { opacity: 1, transform: 'scale(1)' },
+                  },
+                  '@keyframes sparkle-1': {
+                    '0%,100%': {
+                      opacity: 0,
+                      transform: 'scale(0) translateY(0)',
+                    },
+                    '50%': {
+                      opacity: 0.8,
+                      transform: 'scale(1.2) translateY(-3px)',
+                    },
+                  },
+                  '@keyframes sparkle-2': {
+                    '0%,100%': { opacity: 0 },
+                    '40%': { opacity: 1 },
+                    '60%': { opacity: 1 },
+                    '100%': { opacity: 0 },
+                  },
+                }}
+              />
+            ))}
+          </Box>
         )}
       </Box>
     </Box>
@@ -1196,38 +1426,119 @@ export function BoosterTab({ allParts }: BoosterTabProps) {
         />
       )}
 
-      {/* Reveal dialog */}
+      {/* Reveal dialog — professional layout */}
       <Dialog
         open={showReveal}
         onClose={() => setShowReveal(false)}
-        maxWidth="sm"
+        maxWidth="md"
         fullWidth
         slotProps={{
           paper: {
             sx: {
-              bgcolor: '#0a0a0a',
-              borderRadius: 5,
-              border: '1px solid',
-              borderColor: alpha('#f59e0b', 0.2),
+              bgcolor: '#08080c',
+              borderRadius: { xs: 0, sm: 5 },
+              border: { sm: '1px solid' },
+              borderColor: { sm: alpha('#f59e0b', 0.15) },
               overflow: 'hidden',
+              maxHeight: '95vh',
             },
           },
         }}
+        fullScreen={typeof window !== 'undefined' && window.innerWidth < 600}
       >
-        <DialogContent sx={{ p: 3 }}>
-          <Typography
-            variant="h5"
-            fontWeight="900"
-            sx={{ textAlign: 'center', mb: 3, color: '#fff' }}
-          >
-            Résultat du Pull !
-          </Typography>
+        <DialogContent sx={{ p: { xs: 2, sm: 3 }, overflow: 'auto' }}>
+          {/* ── Header banner ── */}
+          <Box sx={{ textAlign: 'center', mb: 3 }}>
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 1,
+                mb: 1,
+              }}
+            >
+              <Box
+                component="img"
+                src="/bbx-icons/orangeStar.webp"
+                alt=""
+                sx={{
+                  width: 28,
+                  height: 28,
+                  animation: 'spin 3s linear infinite',
+                  '@keyframes spin': {
+                    '100%': { transform: 'rotate(360deg)' },
+                  },
+                }}
+              />
+              <Typography
+                variant="h5"
+                fontWeight="900"
+                sx={{ color: '#fff', letterSpacing: 1 }}
+              >
+                {revealedParts.length > 1
+                  ? `${revealedParts.length}x Pull`
+                  : 'Résultat'}
+              </Typography>
+              <Box
+                component="img"
+                src="/bbx-icons/orangeStar.webp"
+                alt=""
+                sx={{
+                  width: 28,
+                  height: 28,
+                  animation: 'spin 3s linear reverse infinite',
+                }}
+              />
+            </Box>
+
+            {/* Rarity summary chips */}
+            <Box
+              sx={{
+                display: 'flex',
+                gap: 0.5,
+                justifyContent: 'center',
+                flexWrap: 'wrap',
+              }}
+            >
+              {(['SECRET', 'LEGENDARY', 'EPIC', 'RARE', 'COMMON'] as const)
+                .filter((r) => revealedParts.some((p) => p.rarity === r))
+                .map((r) => {
+                  const count = revealedParts.filter(
+                    (p) => p.rarity === r,
+                  ).length;
+                  const c = RARITY_COLORS[r] || '#888';
+                  return (
+                    <Chip
+                      key={r}
+                      label={`${count}× ${RARITY_LABELS[r]}`}
+                      size="small"
+                      sx={{
+                        height: 22,
+                        fontSize: '0.65rem',
+                        fontWeight: 900,
+                        bgcolor: alpha(c, 0.12),
+                        color: c,
+                        border: '1px solid',
+                        borderColor: alpha(c, 0.25),
+                        boxShadow: ['LEGENDARY', 'SECRET'].includes(r)
+                          ? `0 0 8px ${alpha(c, 0.3)}`
+                          : 'none',
+                      }}
+                    />
+                  );
+                })}
+            </Box>
+          </Box>
+
+          {/* ── Cards grid ── */}
           <Box
             sx={{
               display: 'flex',
               flexWrap: 'wrap',
-              gap: 1.5,
+              gap: { xs: 1, sm: 1.5 },
               justifyContent: 'center',
+              mb: 3,
             }}
           >
             {revealedParts.map((part, i) => (
@@ -1239,19 +1550,83 @@ export function BoosterTab({ allParts }: BoosterTabProps) {
               />
             ))}
           </Box>
-          <Box sx={{ textAlign: 'center', mt: 3 }}>
+
+          {/* ── Action buttons ── */}
+          <Box
+            sx={{
+              display: 'flex',
+              gap: 2,
+              justifyContent: 'center',
+              flexWrap: 'wrap',
+            }}
+          >
+            {selectedLine && currency >= 100 && (
+              <Button
+                variant="contained"
+                onClick={() => {
+                  setShowReveal(false);
+                  handlePull(1);
+                }}
+                disabled={pulling}
+                sx={{
+                  fontWeight: 900,
+                  borderRadius: 3,
+                  px: 3,
+                  bgcolor: PACK_LINES.find((p) => p.id === selectedLine)?.color,
+                  '&:hover': {
+                    bgcolor: alpha(
+                      PACK_LINES.find((p) => p.id === selectedLine)?.color ||
+                        '#fff',
+                      0.8,
+                    ),
+                  },
+                }}
+              >
+                Pull x1 — 100 ★
+              </Button>
+            )}
+            {selectedLine && currency >= 450 && (
+              <Button
+                variant="contained"
+                onClick={() => {
+                  setShowReveal(false);
+                  handlePull(5);
+                }}
+                disabled={pulling}
+                sx={{
+                  fontWeight: 900,
+                  borderRadius: 3,
+                  px: 3,
+                  bgcolor: '#f59e0b',
+                  '&:hover': { bgcolor: alpha('#f59e0b', 0.8) },
+                }}
+              >
+                Pull x5 — 450 ★
+              </Button>
+            )}
             <Button
               variant="outlined"
               onClick={() => setShowReveal(false)}
               sx={{
                 fontWeight: 900,
                 borderRadius: 3,
-                borderColor: alpha('#fff', 0.2),
-                color: '#fff',
+                borderColor: alpha('#fff', 0.15),
+                color: alpha('#fff', 0.7),
+                px: 3,
               }}
             >
               Fermer
             </Button>
+          </Box>
+
+          {/* ── Balance reminder ── */}
+          <Box sx={{ textAlign: 'center', mt: 2 }}>
+            <Typography
+              variant="caption"
+              sx={{ color: alpha('#f59e0b', 0.5), fontWeight: 700 }}
+            >
+              Solde : {currency} ★
+            </Typography>
           </Box>
         </DialogContent>
       </Dialog>
