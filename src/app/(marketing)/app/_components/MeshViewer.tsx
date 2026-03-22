@@ -50,17 +50,45 @@ function categorizeMesh(name: string): string {
   return 'other';
 }
 
+// Try to find matching textures (AO + EdgeMask) for a mesh
+function findTextures(meshName: string): {
+  ao: string | null;
+  edge: string | null;
+} {
+  const base = meshName.replace('.obj', '');
+  // Strip trailing _N variant numbers for texture lookup
+  const stripped = base.replace(/_\d+$/, '');
+
+  // Texture paths to try
+  const aoTries = [
+    `/app-assets/textures/${stripped}_AO.png`,
+    `/app-assets/textures/${base}_AO.png`,
+    `/app-assets/textures/${stripped}_Blade_AO.png`,
+  ];
+  const edgeTries = [
+    `/app-assets/textures/${stripped}_EdgeMask.png`,
+    `/app-assets/textures/${base}_EdgeMask.png`,
+    `/app-assets/textures/${stripped}_Blade_EdgeMask.png`,
+  ];
+
+  return {
+    ao: aoTries[0] ?? null,
+    edge: edgeTries[0] ?? null,
+  };
+}
+
 function ThreeCanvas({
   meshPath,
+  meshName,
   width,
   height,
 }: {
   meshPath: string;
+  meshName: string;
   width: number;
   height: number;
 }) {
   const mountRef = useRef<HTMLDivElement>(null);
-  const cleanupRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
     const container = mountRef.current;
@@ -75,17 +103,26 @@ function ThreeCanvas({
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setClearColor(0x000000, 0);
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.2;
     container.appendChild(renderer.domElement);
 
-    // Lighting
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+    // Lighting — mimic BBX app style
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
     scene.add(ambientLight);
-    const dirLight = new THREE.DirectionalLight(0xffffff, 1);
-    dirLight.position.set(5, 10, 7);
-    scene.add(dirLight);
-    const backLight = new THREE.DirectionalLight(0xdc2626, 0.3);
-    backLight.position.set(-5, -5, -5);
-    scene.add(backLight);
+
+    const keyLight = new THREE.DirectionalLight(0xffffff, 1.2);
+    keyLight.position.set(5, 10, 7);
+    scene.add(keyLight);
+
+    const fillLight = new THREE.DirectionalLight(0x6688cc, 0.4);
+    fillLight.position.set(-5, 3, -5);
+    scene.add(fillLight);
+
+    // Red accent light (BBX brand)
+    const accentLight = new THREE.PointLight(0xdc2626, 0.6, 20);
+    accentLight.position.set(0, -3, 3);
+    scene.add(accentLight);
 
     // Controls
     const controls = new OrbitControls(camera, renderer.domElement);
@@ -94,20 +131,46 @@ function ThreeCanvas({
     controls.autoRotate = true;
     controls.autoRotateSpeed = 2;
 
+    // Load textures
+    const textureLoader = new THREE.TextureLoader();
+    const textures = findTextures(meshName);
+
+    // Build PBR material
+    const material = new THREE.MeshStandardMaterial({
+      color: 0xcccccc,
+      metalness: 0.75,
+      roughness: 0.25,
+      side: THREE.DoubleSide,
+    });
+
+    // Try loading AO map
+    if (textures.ao) {
+      textureLoader.load(
+        textures.ao,
+        (tex) => {
+          material.aoMap = tex;
+          material.aoMapIntensity = 1.0;
+          material.needsUpdate = true;
+        },
+        undefined,
+        () => {
+          // AO texture not found — no problem
+        },
+      );
+    }
+
     // Load OBJ
     const loader = new OBJLoader();
     loader.load(
       meshPath,
       (obj) => {
-        // Apply material
-        const material = new THREE.MeshStandardMaterial({
-          color: 0xcccccc,
-          metalness: 0.7,
-          roughness: 0.3,
-        });
         obj.traverse((child) => {
           if (child instanceof THREE.Mesh) {
             child.material = material;
+            // Generate UV2 for AO map
+            if (child.geometry.attributes.uv) {
+              child.geometry.setAttribute('uv2', child.geometry.attributes.uv);
+            }
           }
         });
 
@@ -126,11 +189,11 @@ function ThreeCanvas({
       },
       undefined,
       () => {
-        // Error loading — show nothing
+        // Error — silently fail
       },
     );
 
-    // Animation loop
+    // Animate
     let animId: number;
     const animate = () => {
       animId = requestAnimationFrame(animate);
@@ -139,20 +202,17 @@ function ThreeCanvas({
     };
     animate();
 
-    cleanupRef.current = () => {
+    return () => {
       cancelAnimationFrame(animId);
       controls.dispose();
       renderer.dispose();
+      material.dispose();
       if (container.contains(renderer.domElement)) {
         container.removeChild(renderer.domElement);
       }
       scene.clear();
     };
-
-    return () => {
-      cleanupRef.current?.();
-    };
-  }, [meshPath, width, height]);
+  }, [meshPath, meshName, width, height]);
 
   return <div ref={mountRef} style={{ width, height }} />;
 }
@@ -179,7 +239,6 @@ function MeshCard({ mesh }: { mesh: MeshAsset }) {
         }}
       >
         <CardActionArea onClick={() => setDialogOpen(true)}>
-          {/* 3D Preview */}
           <Box
             sx={{
               width: '100%',
@@ -192,7 +251,12 @@ function MeshCard({ mesh }: { mesh: MeshAsset }) {
               overflow: 'hidden',
             }}
           >
-            <ThreeCanvas meshPath={mesh.path} width={200} height={200} />
+            <ThreeCanvas
+              meshPath={mesh.path}
+              meshName={mesh.name}
+              width={200}
+              height={200}
+            />
             <Box
               sx={{
                 position: 'absolute',
@@ -232,7 +296,6 @@ function MeshCard({ mesh }: { mesh: MeshAsset }) {
         </CardActionArea>
       </Card>
 
-      {/* Full viewer dialog */}
       <Dialog
         open={dialogOpen}
         onClose={() => setDialogOpen(false)}
@@ -258,7 +321,7 @@ function MeshCard({ mesh }: { mesh: MeshAsset }) {
               {displayName}
             </Typography>
             <Typography variant="caption" color="text.secondary">
-              {mesh.name} — Cliquer-glisser pour tourner, molette pour zoomer
+              {mesh.name} — Glisser pour tourner, molette pour zoomer
             </Typography>
           </Box>
           <IconButton
@@ -270,7 +333,12 @@ function MeshCard({ mesh }: { mesh: MeshAsset }) {
         </DialogTitle>
         <DialogContent sx={{ p: 0, display: 'flex', justifyContent: 'center' }}>
           {dialogOpen && (
-            <ThreeCanvas meshPath={mesh.path} width={600} height={500} />
+            <ThreeCanvas
+              meshPath={mesh.path}
+              meshName={mesh.name}
+              width={600}
+              height={500}
+            />
           )}
         </DialogContent>
       </Dialog>
@@ -307,7 +375,6 @@ export function MeshGallery() {
 
   return (
     <Box>
-      {/* Category filter */}
       <Box sx={{ display: 'flex', gap: 0.75, flexWrap: 'wrap', mb: 3 }}>
         {MESH_CATEGORIES.map((cat) => {
           const count =
@@ -345,8 +412,8 @@ export function MeshGallery() {
         color="text.disabled"
         sx={{ mb: 2, display: 'block' }}
       >
-        {filtered.length} modèle{filtered.length !== 1 ? 's' : ''} 3D — Chaque
-        carte affiche un aperçu en rotation automatique
+        {filtered.length} modèle{filtered.length !== 1 ? 's' : ''} 3D avec
+        textures PBR — Rotation auto, cliquer pour vue plein écran
       </Typography>
 
       {loading ? (
