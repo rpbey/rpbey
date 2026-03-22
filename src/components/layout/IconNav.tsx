@@ -3,17 +3,10 @@
 import {
   AccountCircle,
   AdminPanelSettings,
-  Apps,
-  AutoGraph,
-  BarChart,
-  Build,
-  Home,
-  LiveTv,
   Login,
   Logout,
   PersonAdd,
   Settings,
-  Theaters,
 } from '@mui/icons-material';
 import {
   alpha,
@@ -35,19 +28,29 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { ThemeSwitcher } from '@/components/theme/ThemeSwitcher';
-import { TrophyIcon } from '@/components/ui/Icons';
 import { signOut, useSession } from '@/lib/auth-client';
 import { ICON_NAV_WIDTH } from './constants';
 
+// Beyblade X app icons for navigation
 const navItems = [
-  { icon: Home, label: 'Accueil', href: '/' },
-  { icon: TrophyIcon, label: 'Tournois', href: '/tournaments' },
-  { icon: BarChart, label: 'Classements', href: '/rankings' },
-  { icon: AutoGraph, label: 'Meta', href: '/meta' },
-  { icon: LiveTv, label: 'TV', href: '/tv' },
-  { icon: Theaters, label: 'Anime', href: '/anime' },
-  { icon: Build, label: 'Builder', href: '/builder' },
-  { icon: Apps, label: 'App', href: '/app' },
+  {
+    img: '/bbx-icons/home-icon-3home-on.png',
+    imgOff: '/bbx-icons/home-icon-3home-off.png',
+    label: 'Accueil',
+    href: '/',
+  },
+  {
+    img: '/bbx-icons/icon-trophy-active.png',
+    imgOff: '/bbx-icons/icon-trophy.png',
+    label: 'Tournois',
+    href: '/tournaments',
+  },
+  { img: '/bbx-icons/ICN_Rank.png', label: 'Classements', href: '/rankings' },
+  { img: '/bbx-icons/BBX-AttackType.png', label: 'Meta', href: '/meta' },
+  { img: '/bbx-icons/icon-video-play.png', label: 'TV', href: '/tv' },
+  { img: '/bbx-icons/Icon_Stars_Cyclone.png', label: 'Anime', href: '/anime' },
+  { img: '/bbx-icons/icon-scan.png', label: 'Builder', href: '/builder' },
+  { img: '/bbx-icons/app_icon_round.png', label: 'App', href: '/app' },
 ];
 
 export function IconNav() {
@@ -127,10 +130,11 @@ export function IconNav() {
       >
         {/* Nav items */}
         {navItems.map((item) => {
-          const Icon = item.icon;
           const isActive =
             pathname === item.href ||
             (item.href !== '/' && pathname.startsWith(item.href));
+          const iconSrc = isActive && item.imgOff ? item.img : item.img;
+          const iconSrcFinal = !isActive && item.imgOff ? item.imgOff : iconSrc;
 
           return (
             <Tooltip key={item.href} title={item.label} placement="right">
@@ -140,17 +144,18 @@ export function IconNav() {
                 sx={{
                   width: 56,
                   height: 48,
-                  borderRadius: 24, // Pill shape
+                  borderRadius: 24,
                   position: 'relative',
-                  color: isActive ? 'primary.main' : 'text.secondary',
                   transition: 'all 0.2s ease',
                   '&:hover': {
-                    color: 'primary.main',
                     bgcolor: 'rgba(255,255,255,0.05)',
+                    '& img': {
+                      filter: 'none',
+                      transform: 'scale(1.15)',
+                    },
                   },
                 }}
               >
-                {/* M3 Active Indicator */}
                 {isActive && (
                   <Box
                     component={motion.div}
@@ -168,7 +173,18 @@ export function IconNav() {
                     }}
                   />
                 )}
-                <Icon sx={{ fontSize: 26 }} />
+                <Box
+                  component="img"
+                  src={iconSrcFinal}
+                  alt={item.label}
+                  sx={{
+                    width: 26,
+                    height: 26,
+                    objectFit: 'contain',
+                    filter: isActive ? 'none' : 'grayscale(0.5) opacity(0.6)',
+                    transition: 'all 0.2s ease',
+                  }}
+                />
               </IconButton>
             </Tooltip>
           );
@@ -423,21 +439,77 @@ export function MobileNav() {
           },
         }}
       >
-        <BottomNavigationAction label="Accueil" value="/" icon={<Home />} />
+        <BottomNavigationAction
+          label="Accueil"
+          value="/"
+          icon={
+            <Box
+              component="img"
+              src={
+                activeValue === '/'
+                  ? '/bbx-icons/home-icon-3home-on.png'
+                  : '/bbx-icons/home-icon-3home-off.png'
+              }
+              alt=""
+              sx={{ width: 22, height: 22, objectFit: 'contain' }}
+            />
+          }
+        />
         <BottomNavigationAction
           label="Tournois"
           value="/tournaments"
-          icon={<TrophyIcon />}
+          icon={
+            <Box
+              component="img"
+              src={
+                activeValue === '/tournaments'
+                  ? '/bbx-icons/icon-trophy-active.png'
+                  : '/bbx-icons/icon-trophy.png'
+              }
+              alt=""
+              sx={{ width: 22, height: 22, objectFit: 'contain' }}
+            />
+          }
         />
         <BottomNavigationAction
           label="Classements"
           value="/rankings"
-          icon={<BarChart />}
+          icon={
+            <Box
+              component="img"
+              src="/bbx-icons/ICN_Rank.png"
+              alt=""
+              sx={{
+                width: 22,
+                height: 22,
+                objectFit: 'contain',
+                filter:
+                  activeValue === '/rankings'
+                    ? 'none'
+                    : 'grayscale(0.5) opacity(0.6)',
+              }}
+            />
+          }
         />
         <BottomNavigationAction
           label="Anime"
           value="/anime"
-          icon={<Theaters />}
+          icon={
+            <Box
+              component="img"
+              src="/bbx-icons/Icon_Stars_Cyclone.png"
+              alt=""
+              sx={{
+                width: 22,
+                height: 22,
+                objectFit: 'contain',
+                filter:
+                  activeValue === '/anime'
+                    ? 'none'
+                    : 'grayscale(0.5) opacity(0.6)',
+              }}
+            />
+          }
         />
         <BottomNavigationAction
           label={session?.user ? 'Profil' : 'Connexion'}
