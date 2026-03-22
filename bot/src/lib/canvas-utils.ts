@@ -1308,7 +1308,7 @@ export interface GachaCardData {
   specialMove?: string | null;
 }
 
-const ELEMENT_ICONS: Record<string, { emoji: string; color: string }> = {
+const _ELEMENT_ICONS: Record<string, { emoji: string; color: string }> = {
   FEU: { emoji: '🔥', color: '#ef4444' },
   EAU: { emoji: '💧', color: '#3b82f6' },
   TERRE: { emoji: '🌍', color: '#a16207' },
@@ -1459,7 +1459,7 @@ function drawLightRays(
 }
 
 /** Draw stat bar */
-function drawStatBar(
+function _drawStatBar(
   ctx: ReturnType<ReturnType<typeof createCanvas>['getContext']>,
   x: number,
   y: number,
@@ -1498,14 +1498,29 @@ function drawStatBar(
 
 export async function generateGachaCard(data: GachaCardData): Promise<Buffer> {
   const W = 640;
-  const H = 960;
+  const H = 900;
+  const PAD = 24;
   const canvas = createCanvas(W, H);
   const ctx = canvas.getContext('2d');
   const theme = RARITY_THEMES[data.rarity] || RARITY_THEMES.COMMON!;
   const hasStats = data.atk != null;
-  const elem = data.element ? ELEMENT_ICONS[data.element] : null;
 
-  // ── Background: diagonal gradient with 3 stops ──
+  // Generation colors: OG=red, Metal=yellow, Burst=green, X=blue
+  const GEN_COLORS: Record<string, string> = {
+    OG: '#ef4444',
+    METAL: '#f59e0b',
+    BURST: '#22c55e',
+    X: '#3b82f6',
+    METAL_MASTERS: '#f59e0b',
+    METAL_FURY: '#f59e0b',
+    METAL_FUSION: '#f59e0b',
+    BEYBLADE_X: '#3b82f6',
+    BURST_SURGE: '#22c55e',
+    BURST_GT: '#22c55e',
+  };
+  const genColor = GEN_COLORS[data.series.toUpperCase()] || theme.accentColor;
+
+  // ── Background ──
   const bgGrad = ctx.createLinearGradient(0, 0, W * 0.3, H);
   bgGrad.addColorStop(0, theme.bgGradient[0]);
   bgGrad.addColorStop(0.5, theme.bgGradient[1]);
@@ -1513,30 +1528,14 @@ export async function generateGachaCard(data: GachaCardData): Promise<Buffer> {
   ctx.fillStyle = bgGrad;
   ctx.fillRect(0, 0, W, H);
 
-  // Radial glow behind image area
-  const centerGlow = ctx.createRadialGradient(W / 2, 280, 20, W / 2, 280, 320);
-  centerGlow.addColorStop(0, `${theme.borderColor}18`);
-  centerGlow.addColorStop(1, 'rgba(0,0,0,0)');
-  ctx.fillStyle = centerGlow;
-  ctx.fillRect(0, 0, W, H);
-
-  // Light rays for Legendary/Secret
   if (data.rarity === 'LEGENDARY' || data.rarity === 'SECRET') {
-    drawLightRays(
-      ctx,
-      W,
-      H,
-      `${theme.accentColor}12`,
-      data.rarity === 'SECRET' ? 5 : 3,
-    );
+    drawLightRays(ctx, W, H, `${theme.accentColor}10`, 4);
   }
+  drawNoise(ctx, W, H, 0.02);
 
-  // Noise texture
-  drawNoise(ctx, W, H, 0.025);
-
-  // ── Outer glow border ──
+  // ── Outer card border (double) ──
   ctx.shadowColor = theme.glowColor;
-  ctx.shadowBlur = 35;
+  ctx.shadowBlur = 30;
   const borderGrad = ctx.createLinearGradient(0, 0, W, H);
   borderGrad.addColorStop(0, theme.borderGradient[0]);
   borderGrad.addColorStop(0.5, theme.borderGradient[1]);
@@ -1544,254 +1543,243 @@ export async function generateGachaCard(data: GachaCardData): Promise<Buffer> {
   ctx.strokeStyle = borderGrad;
   ctx.lineWidth = 4;
   ctx.beginPath();
-  ctx.roundRect(12, 12, W - 24, H - 24, 20);
+  ctx.roundRect(10, 10, W - 20, H - 20, 18);
   ctx.stroke();
   ctx.shadowBlur = 0;
-
-  // Inner border
-  ctx.strokeStyle = `${theme.borderColor}30`;
+  ctx.strokeStyle = `${theme.borderColor}25`;
   ctx.lineWidth = 1;
   ctx.beginPath();
-  ctx.roundRect(20, 20, W - 40, H - 40, 16);
+  ctx.roundRect(18, 18, W - 36, H - 36, 14);
   ctx.stroke();
 
-  // ── Top rarity band ──
-  const bandH = 44;
-  const bandGrad2 = ctx.createLinearGradient(24, 24, W - 24, 24);
-  bandGrad2.addColorStop(0, `${theme.borderColor}90`);
-  bandGrad2.addColorStop(0.5, `${theme.borderColor}DD`);
-  bandGrad2.addColorStop(1, `${theme.borderColor}90`);
-  ctx.fillStyle = bandGrad2;
+  // ── Battle Edge bar (top) — 6 colored diamonds ──
+  const beY = PAD + 4;
+  const beW = W - PAD * 2;
+  ctx.fillStyle = 'rgba(0,0,0,0.4)';
   ctx.beginPath();
-  ctx.roundRect(24, 24, W - 48, bandH, [14, 14, 0, 0]);
+  ctx.roundRect(PAD, beY, beW, 28, [12, 12, 0, 0]);
   ctx.fill();
-
-  ctx.font = 'bold 16px GoogleSans';
-  ctx.fillStyle = '#ffffff';
-  ctx.textAlign = 'center';
-  ctx.shadowColor = 'rgba(0,0,0,0.5)';
-  ctx.shadowBlur = 4;
-  ctx.fillText(theme.label, W / 2, 52);
-  ctx.shadowBlur = 0;
-
-  ctx.font = '14px GoogleSans';
-  ctx.fillStyle = theme.accentColor;
-  ctx.fillText(
-    '★'.repeat(theme.stars) + '☆'.repeat(5 - theme.stars),
-    W / 2,
-    66,
-  );
-
-  // Element badge (top-right corner)
-  if (elem) {
-    const eX = W - 56,
-      eY = 36;
-    ctx.fillStyle = `${elem.color}40`;
+  const edgeColors = [
+    '#ef4444',
+    '#f59e0b',
+    '#22c55e',
+    '#3b82f6',
+    '#a855f7',
+    genColor,
+  ];
+  const diamondSize = 8;
+  const edgeGap = beW / 7;
+  for (let i = 0; i < 6; i++) {
+    const dx = PAD + edgeGap * (i + 1);
+    const dy = beY + 14;
+    ctx.fillStyle = edgeColors[i]!;
     ctx.beginPath();
-    ctx.arc(eX, eY, 14, 0, Math.PI * 2);
+    ctx.moveTo(dx, dy - diamondSize);
+    ctx.lineTo(dx + diamondSize, dy);
+    ctx.lineTo(dx, dy + diamondSize);
+    ctx.lineTo(dx - diamondSize, dy);
+    ctx.closePath();
     ctx.fill();
-    ctx.strokeStyle = `${elem.color}80`;
-    ctx.lineWidth = 1.5;
-    ctx.beginPath();
-    ctx.arc(eX, eY, 14, 0, Math.PI * 2);
-    ctx.stroke();
-    ctx.font = '14px GoogleSans';
-    ctx.fillStyle = '#ffffff';
-    ctx.fillText(elem.emoji, eX, eY + 5);
+    // Glow on high rarity
+    if (theme.stars >= 3) {
+      ctx.shadowColor = edgeColors[i]!;
+      ctx.shadowBlur = 4;
+      ctx.fill();
+      ctx.shadowBlur = 0;
+    }
   }
 
-  // ── Character image ──
-  const imgY = 78;
-  const imgH = 380;
-  const imgW = W - 60;
-  const imgX = 30;
-
-  ctx.fillStyle = 'rgba(0,0,0,0.5)';
+  // ── Rarity label (left) + Gen color strip (right) ──
+  const labelY = beY + 28;
+  ctx.fillStyle = `${theme.borderColor}60`;
   ctx.beginPath();
-  ctx.roundRect(imgX, imgY, imgW, imgH, 12);
+  ctx.roundRect(PAD, labelY, beW * 0.55, 26, 0);
+  ctx.fill();
+  ctx.fillStyle = `${genColor}60`;
+  ctx.beginPath();
+  ctx.roundRect(PAD + beW * 0.55, labelY, beW * 0.45, 26, 0);
   ctx.fill();
 
-  // Force-remove white backgrounds from character art (even PNGs)
+  ctx.font = 'bold 13px GoogleSans';
+  ctx.fillStyle = '#fff';
+  ctx.textAlign = 'left';
+  ctx.fillText(theme.label, PAD + 10, labelY + 18);
+  ctx.textAlign = 'right';
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 12px GoogleSans';
+  ctx.fillText(data.series.replace(/_/g, ' '), W - PAD - 10, labelY + 17);
+
+  // ── Character art window ──
+  const artY = labelY + 34;
+  const artH = 380;
+  const artW = W - PAD * 2;
+  ctx.fillStyle = 'rgba(0,0,0,0.5)';
+  ctx.beginPath();
+  ctx.roundRect(PAD, artY, artW, artH, 10);
+  ctx.fill();
+
   const charImg = await _loadImageNoWhiteBg(data.imageUrl || null);
   if (charImg) {
     ctx.save();
     ctx.beginPath();
-    ctx.roundRect(imgX, imgY, imgW, imgH, 12);
+    ctx.roundRect(PAD, artY, artW, artH, 10);
     ctx.clip();
+    // Radial spotlight
+    const spot = ctx.createRadialGradient(
+      W / 2,
+      artY + artH * 0.35,
+      10,
+      W / 2,
+      artY + artH * 0.35,
+      artH * 0.7,
+    );
+    spot.addColorStop(0, `${theme.accentColor}15`);
+    spot.addColorStop(1, 'transparent');
+    ctx.fillStyle = spot;
+    ctx.fillRect(PAD, artY, artW, artH);
+    // Draw image
     const aspect = charImg.width / charImg.height;
-    let dW = imgW,
-      dH = imgH,
-      dX = imgX,
-      dY = imgY;
-    if (aspect > imgW / imgH) {
-      dH = imgW / aspect;
-      dY = imgY + (imgH - dH) / 2;
+    let dW = artW,
+      dH = artH,
+      dX = PAD,
+      dY = artY;
+    if (aspect > artW / artH) {
+      dH = artW / aspect;
+      dY = artY + (artH - dH) / 2;
     } else {
-      dW = imgH * aspect;
-      dX = imgX + (imgW - dW) / 2;
+      dW = artH * aspect;
+      dX = PAD + (artW - dW) / 2;
     }
     ctx.drawImage(charImg, dX, dY, dW, dH);
-
-    // Vignette (bottom + top subtle)
-    const vigBot = ctx.createLinearGradient(0, imgY, 0, imgY + imgH);
-    vigBot.addColorStop(0, 'rgba(0,0,0,0.15)');
-    vigBot.addColorStop(0.3, 'rgba(0,0,0,0)');
-    vigBot.addColorStop(0.65, 'rgba(0,0,0,0)');
-    vigBot.addColorStop(1, 'rgba(0,0,0,0.75)');
-    ctx.fillStyle = vigBot;
-    ctx.fillRect(imgX, imgY, imgW, imgH);
-
-    // Side vignettes
-    const vigL = ctx.createLinearGradient(imgX, 0, imgX + 60, 0);
-    vigL.addColorStop(0, 'rgba(0,0,0,0.4)');
-    vigL.addColorStop(1, 'rgba(0,0,0,0)');
-    ctx.fillStyle = vigL;
-    ctx.fillRect(imgX, imgY, 60, imgH);
-    const vigR = ctx.createLinearGradient(imgX + imgW - 60, 0, imgX + imgW, 0);
-    vigR.addColorStop(0, 'rgba(0,0,0,0)');
-    vigR.addColorStop(1, 'rgba(0,0,0,0.4)');
-    ctx.fillStyle = vigR;
-    ctx.fillRect(imgX + imgW - 60, imgY, 60, imgH);
+    // Vignette
+    const vig = ctx.createLinearGradient(0, artY, 0, artY + artH);
+    vig.addColorStop(0, 'rgba(0,0,0,0.1)');
+    vig.addColorStop(0.4, 'rgba(0,0,0,0)');
+    vig.addColorStop(0.7, 'rgba(0,0,0,0)');
+    vig.addColorStop(1, 'rgba(0,0,0,0.7)');
+    ctx.fillStyle = vig;
+    ctx.fillRect(PAD, artY, artW, artH);
     ctx.restore();
   } else {
-    ctx.font = 'bold 100px GoogleSans';
-    ctx.fillStyle = 'rgba(255,255,255,0.04)';
+    ctx.font = 'bold 80px GoogleSans';
+    ctx.fillStyle = 'rgba(255,255,255,0.03)';
     ctx.textAlign = 'center';
-    ctx.fillText('?', W / 2, imgY + imgH / 2 + 35);
+    ctx.fillText('?', W / 2, artY + artH / 2 + 28);
   }
 
-  // Image frame border
-  ctx.strokeStyle = `${theme.borderColor}60`;
+  // Art frame
+  ctx.strokeStyle = `${theme.borderColor}50`;
   ctx.lineWidth = 2;
   ctx.beginPath();
-  ctx.roundRect(imgX, imgY, imgW, imgH, 12);
+  ctx.roundRect(PAD, artY, artW, artH, 10);
   ctx.stroke();
 
-  // ── Name section ──
-  const nameY = imgY + imgH + 38;
+  // ── Spin Strength badge (overlays art bottom-right) ──
+  if (hasStats) {
+    const spinVal = Math.round(
+      (data.atk! + data.def! + data.spd! + data.hp!) / 4,
+    );
+    const ssX = W - PAD - 60;
+    const ssY = artY + artH - 36;
+    ctx.fillStyle = 'rgba(0,0,0,0.7)';
+    ctx.beginPath();
+    ctx.roundRect(ssX, ssY, 52, 28, 6);
+    ctx.fill();
+    ctx.strokeStyle = theme.accentColor;
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.roundRect(ssX, ssY, 52, 28, 6);
+    ctx.stroke();
+    ctx.font = 'bold 16px GoogleSans';
+    ctx.fillStyle = theme.accentColor;
+    ctx.textAlign = 'center';
+    ctx.fillText(`${spinVal}`, ssX + 26, ssY + 20);
+  }
+
+  // ── Character name ──
+  const nameY = artY + artH + 30;
   ctx.textAlign = 'center';
-  ctx.font = 'bold 30px GoogleSans';
+  ctx.font = 'bold 32px GoogleSans';
   ctx.shadowColor = 'rgba(0,0,0,0.6)';
   ctx.shadowBlur = 6;
-  ctx.fillStyle = '#ffffff';
+  ctx.fillStyle = '#fff';
   let dn = data.name;
   while (ctx.measureText(dn).width > W - 80 && dn.length > 10)
-    dn = `${dn.substring(0, dn.length - 2)}…`;
+    dn = `${dn.slice(0, -2)}...`;
   ctx.fillText(dn, W / 2, nameY);
   ctx.shadowBlur = 0;
 
   if (data.nameJp) {
-    ctx.font = '15px GoogleSans';
-    ctx.fillStyle = 'rgba(255,255,255,0.35)';
-    ctx.fillText(data.nameJp, W / 2, nameY + 24);
+    ctx.font = '14px GoogleSans';
+    ctx.fillStyle = 'rgba(255,255,255,0.3)';
+    ctx.fillText(data.nameJp, W / 2, nameY + 22);
   }
 
-  // ── Series badge ──
-  const seriesY = nameY + (data.nameJp ? 48 : 30);
-  const seriesText = data.series.replace(/_/g, ' ');
-  ctx.font = 'bold 12px GoogleSans';
-  const sW = ctx.measureText(seriesText).width + 28;
-  ctx.fillStyle = `${theme.borderColor}20`;
-  ctx.beginPath();
-  ctx.roundRect(W / 2 - sW / 2, seriesY - 14, sW, 22, 11);
-  ctx.fill();
-  ctx.strokeStyle = `${theme.borderColor}40`;
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.roundRect(W / 2 - sW / 2, seriesY - 14, sW, 22, 11);
-  ctx.stroke();
-  ctx.fillStyle = theme.accentColor;
-  ctx.fillText(seriesText, W / 2, seriesY + 2);
-
-  // ── Beyblade & Special Move ──
-  let contentY = seriesY + 20;
+  // ── Beyblade name ──
+  let cy = nameY + (data.nameJp ? 40 : 22);
   if (data.beyblade) {
-    const beyBoxW = W - 72;
-    ctx.fillStyle = 'rgba(255,255,255,0.03)';
-    ctx.strokeStyle = `${theme.borderColor}25`;
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.roundRect(36, contentY, beyBoxW, 30, 8);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.roundRect(36, contentY, beyBoxW, 30, 8);
-    ctx.stroke();
-    ctx.font = 'bold 12px GoogleSans';
-    ctx.fillStyle = theme.accentColor;
-    ctx.textAlign = 'left';
-    let beyName = `🌀 ${data.beyblade}`;
-    if (ctx.measureText(beyName).width > beyBoxW - 20)
-      beyName = `${beyName.substring(0, 30)}…`;
-    ctx.fillText(beyName, 48, contentY + 20);
-    ctx.textAlign = 'center';
-    contentY += 38;
+    ctx.font = 'bold 14px GoogleSans';
+    ctx.fillStyle = genColor;
+    let bey = data.beyblade;
+    while (ctx.measureText(bey).width > W - 120 && bey.length > 15)
+      bey = `${bey.slice(0, -2)}...`;
+    ctx.fillText(bey, W / 2, cy);
+    cy += 24;
   }
 
-  // ── Stats section (ATK/DEF/SPD/HP) ──
+  // ── Stats row (4 badges) ──
   if (hasStats) {
-    const statsX = 36;
-    const statsW = (W - 72 - 16) / 2;
-    drawStatBar(
-      ctx,
-      statsX,
-      contentY,
-      statsW,
-      data.atk!,
-      100,
-      'ATK',
-      '#ef4444',
-    );
-    drawStatBar(
-      ctx,
-      statsX + statsW + 16,
-      contentY,
-      statsW,
-      data.def!,
-      100,
-      'DEF',
-      '#3b82f6',
-    );
-    contentY += 20;
-    drawStatBar(
-      ctx,
-      statsX,
-      contentY,
-      statsW,
-      data.spd!,
-      100,
-      'SPD',
-      '#22d3ee',
-    );
-    drawStatBar(
-      ctx,
-      statsX + statsW + 16,
-      contentY,
-      statsW,
-      data.hp!,
-      100,
-      'HP',
-      '#22c55e',
-    );
-    contentY += 20;
+    const statDefs = [
+      { label: 'ATK', val: data.atk!, color: '#ef4444' },
+      { label: 'DEF', val: data.def!, color: '#3b82f6' },
+      { label: 'SPD', val: data.spd!, color: '#22d3ee' },
+      { label: 'HP', val: data.hp!, color: '#22c55e' },
+    ];
+    const badgeW = 120;
+    const badgeH = 32;
+    const totalW = statDefs.length * badgeW + (statDefs.length - 1) * 8;
+    const startX = (W - totalW) / 2;
+    for (let i = 0; i < statDefs.length; i++) {
+      const s = statDefs[i]!;
+      const bx = startX + i * (badgeW + 8);
+      ctx.fillStyle = `${s.color}18`;
+      ctx.beginPath();
+      ctx.roundRect(bx, cy, badgeW, badgeH, 6);
+      ctx.fill();
+      ctx.strokeStyle = `${s.color}40`;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.roundRect(bx, cy, badgeW, badgeH, 6);
+      ctx.stroke();
+      ctx.font = 'bold 11px GoogleSans';
+      ctx.fillStyle = `${s.color}90`;
+      ctx.textAlign = 'left';
+      ctx.fillText(s.label, bx + 8, cy + 21);
+      ctx.font = 'bold 18px GoogleSans';
+      ctx.fillStyle = s.color;
+      ctx.textAlign = 'right';
+      ctx.fillText(`${s.val}`, bx + badgeW - 8, cy + 23);
+    }
+    cy += badgeH + 12;
   }
 
   // ── Special move ──
   if (data.specialMove) {
-    contentY += 4;
-    ctx.font = '11px GoogleSans';
-    ctx.fillStyle = 'rgba(255,255,255,0.35)';
+    ctx.font = '12px GoogleSans';
+    ctx.fillStyle = 'rgba(255,255,255,0.3)';
     ctx.textAlign = 'center';
-    ctx.fillText(`⚡ ${data.specialMove}`, W / 2, contentY + 10);
+    ctx.fillText(`-- ${data.specialMove} --`, W / 2, cy + 4);
+    cy += 18;
   }
 
   // ── Description ──
   if (data.description && !hasStats) {
-    contentY += 4;
     ctx.font = '12px GoogleSans';
-    ctx.fillStyle = 'rgba(255,255,255,0.45)';
+    ctx.fillStyle = 'rgba(255,255,255,0.4)';
+    ctx.textAlign = 'center';
     const words = data.description.split(' ');
     let line = '',
-      ly = contentY,
+      ly = cy,
       lc = 0;
     for (const word of words) {
       if (lc >= 3) break;
@@ -1799,53 +1787,64 @@ export async function generateGachaCard(data: GachaCardData): Promise<Buffer> {
       if (ctx.measureText(test).width > W - 100) {
         ctx.fillText(line, W / 2, ly);
         line = word;
-        ly += 17;
+        ly += 16;
         lc++;
       } else line = test;
     }
-    if (line && lc < 3) ctx.fillText(lc === 2 ? `${line}…` : line, W / 2, ly);
+    if (line && lc < 3) ctx.fillText(line, W / 2, ly);
   }
 
-  // ── Bottom bar (glassmorphism) ──
-  const barH = 50;
-  const barY = H - barH - 18;
+  // ── Bottom bar ──
+  const barH = 48;
+  const barY = H - barH - 14;
   ctx.fillStyle = 'rgba(0,0,0,0.35)';
   ctx.beginPath();
-  ctx.roundRect(24, barY, W - 48, barH, [0, 0, 14, 14]);
+  ctx.roundRect(PAD, barY, W - PAD * 2, barH, [0, 0, 12, 12]);
   ctx.fill();
-  ctx.strokeStyle = 'rgba(255,255,255,0.06)';
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.roundRect(24, barY, W - 48, barH, [0, 0, 14, 14]);
-  ctx.stroke();
-  ctx.font = 'bold 14px GoogleSans';
+
+  // Stars
   ctx.textAlign = 'left';
-  ctx.fillStyle = 'rgba(255,255,255,0.65)';
-  ctx.fillText(`💰 ${data.balance.toLocaleString('fr-FR')} 🪙`, 42, barY + 30);
+  ctx.font = 'bold 16px GoogleSans';
+  ctx.fillStyle = theme.accentColor;
+  let starStr = '';
+  for (let i = 0; i < 4; i++) starStr += i < theme.stars ? '★' : '☆';
+  ctx.fillText(starStr, PAD + 12, barY + 30);
+
+  // Balance
   ctx.textAlign = 'right';
+  ctx.font = 'bold 14px GoogleSans';
+  ctx.fillStyle = 'rgba(255,255,255,0.5)';
+  ctx.fillText(
+    `${data.balance.toLocaleString('fr-FR')} coins`,
+    W - PAD - 12,
+    barY + 22,
+  );
+
+  // Status
   if (data.isWished) {
     ctx.fillStyle = '#fbbf24';
-    ctx.font = 'bold 14px GoogleSans';
-    ctx.fillText('⭐ WISHED', W - 42, barY + 30);
+    ctx.font = 'bold 12px GoogleSans';
+    ctx.fillText('WISHED', W - PAD - 12, barY + 40);
   } else if (data.isDuplicate) {
-    ctx.fillStyle = 'rgba(255,255,255,0.35)';
-    ctx.font = 'bold 14px GoogleSans';
-    ctx.fillText('📋 DOUBLON', W - 42, barY + 30);
+    ctx.fillStyle = 'rgba(255,255,255,0.3)';
+    ctx.font = 'bold 12px GoogleSans';
+    ctx.fillText('DOUBLON', W - PAD - 12, barY + 40);
   }
 
-  // ── Corner ornaments (Epic+) ──
+  // ── Corner ornaments (SR+) ──
   if (['SUPER_RARE', 'LEGENDARY', 'SECRET'].includes(data.rarity)) {
-    ctx.strokeStyle = `${theme.borderColor}35`;
-    ctx.lineWidth = 2.5;
+    ctx.strokeStyle = `${theme.borderColor}30`;
+    ctx.lineWidth = 2;
+    const c = 40;
     const corners: [number, number, number, number][] = [
-      [24, 70, 24, 24],
-      [24, 24, 70, 24],
-      [W - 70, 24, W - 24, 24],
-      [W - 24, 24, W - 24, 70],
-      [24, H - 70, 24, H - 24],
-      [24, H - 24, 70, H - 24],
-      [W - 70, H - 24, W - 24, H - 24],
-      [W - 24, H - 24, W - 24, H - 70],
+      [PAD, beY + c, PAD, beY],
+      [PAD, beY, PAD + c, beY],
+      [W - PAD - c, beY, W - PAD, beY],
+      [W - PAD, beY, W - PAD, beY + c],
+      [PAD, H - 14 - c, PAD, H - 14],
+      [PAD, H - 14, PAD + c, H - 14],
+      [W - PAD - c, H - 14, W - PAD, H - 14],
+      [W - PAD, H - 14, W - PAD, H - 14 - c],
     ];
     for (const [x1, y1, x2, y2] of corners) {
       ctx.beginPath();
@@ -1855,14 +1854,19 @@ export async function generateGachaCard(data: GachaCardData): Promise<Buffer> {
     }
   }
 
-  // ── Sparkles & particles ──
+  // ── Sparkles ──
   if (theme.particleCount > 0) {
     for (let i = 0; i < theme.particleCount; i++) {
       const sx = 30 + Math.random() * (W - 60);
       const sy = 30 + Math.random() * (H - 60);
-      const sz = 3 + Math.random() * 6;
-      const alpha = 0.2 + Math.random() * 0.5;
-      drawSparkle(ctx, sx, sy, sz, theme.accentColor, alpha);
+      drawSparkle(
+        ctx,
+        sx,
+        sy,
+        3 + Math.random() * 5,
+        theme.accentColor,
+        0.2 + Math.random() * 0.4,
+      );
     }
   }
 
