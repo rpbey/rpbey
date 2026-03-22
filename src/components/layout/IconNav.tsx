@@ -3,6 +3,7 @@
 import {
   AccountCircle,
   AdminPanelSettings,
+  Apps,
   AutoGraph,
   BarChart,
   Build,
@@ -46,6 +47,7 @@ const navItems = [
   { icon: LiveTv, label: 'TV', href: '/tv' },
   { icon: Theaters, label: 'Anime', href: '/anime' },
   { icon: Build, label: 'Builder', href: '/builder' },
+  { icon: Apps, label: 'App', href: '/app' },
 ];
 
 export function IconNav() {

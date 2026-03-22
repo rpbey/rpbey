@@ -1,0 +1,5 @@
+# App assets (served from disk, not in git)
+textures/
+sprites/
+meshes/
+marketing/
