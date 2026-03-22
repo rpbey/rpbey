@@ -18,7 +18,19 @@ import {
 import { alpha } from '@mui/material/styles';
 import type { Part } from '@prisma/client';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+
+function _useMobile() {
+  const [mobile, setMobile] = useState(false);
+  useEffect(() => {
+    const mql = window.matchMedia('(max-width:599px)');
+    setMobile(mql.matches);
+    const handler = (e: MediaQueryListEvent) => setMobile(e.matches);
+    mql.addEventListener('change', handler);
+    return () => mql.removeEventListener('change', handler);
+  }, []);
+  return mobile;
+}
 
 const TYPE_COLORS: Record<string, string> = {
   ATTACK: '#ef4444',
@@ -50,12 +62,32 @@ function parseStat(val: string | number | null | undefined): number {
 }
 
 function getPartTextures(part: Part): string[] {
+  if (part.textureUrl) return [part.textureUrl];
+
   const name = part.name.replace(/\s+/g, '');
-  const textures: string[] = [];
-  // Try common texture patterns based on the part name
   const basePath = '/app-assets/textures/';
-  textures.push(`${basePath}${name}_Blade_AO.webp`);
-  textures.push(`${basePath}${name}_EdgeMask.webp`);
+  const textures: string[] = [];
+
+  if (part.type === 'BLADE' || part.type === 'OVER_BLADE') {
+    textures.push(`${basePath}${name}_Blade_AO.webp`);
+    textures.push(`${basePath}${name}_EdgeMask.webp`);
+  } else if (part.type === 'RATCHET') {
+    const ratchetName = `Ratchet${part.name.replace(/\s+/g, '')}`;
+    textures.push(`${basePath}${ratchetName}_AO.webp`);
+    textures.push(`${basePath}${ratchetName}_EdgeMask.webp`);
+  } else if (part.type === 'BIT') {
+    // Bits use code format: "A (Accel)" → "Bit_A"
+    const codeMatch = part.name.match(/^(\w+)\s*\(/);
+    const bitName = codeMatch ? `Bit_${codeMatch[1]}` : `Bit_${name}`;
+    textures.push(`${basePath}${bitName}_AO.webp`);
+    textures.push(`${basePath}${bitName}_EdgeMask.webp`);
+  } else if (part.type === 'ASSIST_BLADE') {
+    const codeMatch = part.name.match(/^(\w+)\s*\(/);
+    const abName = codeMatch ? `AuxBlade_${codeMatch[1]}` : `AuxBlade_${name}`;
+    textures.push(`${basePath}${abName}_AO.webp`);
+    textures.push(`${basePath}${abName}_EdgeMask.webp`);
+  }
+
   return textures;
 }
 
@@ -282,6 +314,7 @@ interface PartDetailDialogProps {
 }
 
 function PartDetailDialog({ part, onClose }: PartDetailDialogProps) {
+  const isMobile = _useMobile();
   if (!part) return null;
 
   const color = (part.beyType && TYPE_COLORS[part.beyType]) || '#6b7280';
@@ -293,7 +326,7 @@ function PartDetailDialog({ part, onClose }: PartDetailDialogProps) {
       onClose={onClose}
       maxWidth="sm"
       fullWidth
-      fullScreen={typeof window !== 'undefined' && window.innerWidth < 600}
+      fullScreen={isMobile}
       slotProps={{
         paper: {
           sx: {

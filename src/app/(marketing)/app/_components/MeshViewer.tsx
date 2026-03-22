@@ -377,8 +377,21 @@ function ThreeCanvas({
   );
 }
 
+function useMobile() {
+  const [mobile, setMobile] = useState(false);
+  useEffect(() => {
+    const mql = window.matchMedia('(max-width:599px)');
+    setMobile(mql.matches);
+    const handler = (e: MediaQueryListEvent) => setMobile(e.matches);
+    mql.addEventListener('change', handler);
+    return () => mql.removeEventListener('change', handler);
+  }, []);
+  return mobile;
+}
+
 function MeshCard({ mesh }: { mesh: MeshAsset }) {
   const [dialogOpen, setDialogOpen] = useState(false);
+  const isMobile = useMobile();
   const catColor =
     MESH_CATEGORIES.find((c) => c.value === mesh.category)?.color || '#888';
   const displayName = mesh.name.replace('.obj', '').replace(/_/g, ' ');
@@ -522,7 +535,7 @@ function MeshCard({ mesh }: { mesh: MeshAsset }) {
         onClose={() => setDialogOpen(false)}
         maxWidth="md"
         fullWidth
-        fullScreen={typeof window !== 'undefined' && window.innerWidth < 600}
+        fullScreen={isMobile}
         slotProps={{
           paper: {
             sx: {
@@ -568,7 +581,10 @@ function MeshCard({ mesh }: { mesh: MeshAsset }) {
               />
             </Box>
             <Typography variant="caption" sx={{ color: alpha('#fff', 0.35) }}>
-              Glisser pour tourner · Molette pour zoomer · {mesh.name}
+              {isMobile
+                ? 'Toucher pour tourner'
+                : 'Glisser pour tourner · Molette pour zoomer'}{' '}
+              · {mesh.name}
             </Typography>
           </Box>
           <IconButton
@@ -595,14 +611,16 @@ function MeshCard({ mesh }: { mesh: MeshAsset }) {
             <ThreeCanvas
               meshPath={mesh.path}
               meshName={mesh.name}
-              width={Math.min(
-                700,
-                typeof window !== 'undefined' ? window.innerWidth - 32 : 700,
-              )}
-              height={Math.min(
-                550,
-                typeof window !== 'undefined' ? window.innerHeight - 120 : 550,
-              )}
+              width={
+                isMobile
+                  ? window.innerWidth
+                  : Math.min(700, window.innerWidth - 32)
+              }
+              height={
+                isMobile
+                  ? window.innerHeight - 100
+                  : Math.min(550, window.innerHeight - 120)
+              }
               premium
             />
           )}

@@ -87,9 +87,12 @@ export function AssetGallery() {
     'textures' | 'sprites' | 'marketing'
   >('textures');
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [cols, setCols] = useState(
-    typeof window !== 'undefined' && window.innerWidth < 600 ? 2 : 4,
-  );
+  const [cols, setCols] = useState(4);
+
+  // Set responsive default on mount (avoids SSR hydration mismatch)
+  useEffect(() => {
+    if (window.innerWidth < 600) setCols(2);
+  }, []);
 
   useEffect(() => {
     async function loadAssets() {

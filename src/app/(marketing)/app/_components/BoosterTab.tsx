@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import { alpha } from '@mui/material/styles';
 import type { Part } from '@prisma/client';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSession } from '@/lib/auth-client';
 import {
   claimDaily,
@@ -71,40 +71,108 @@ const PACK_LINES = [
   },
 ];
 
-// VFX animation component that plays the Electric Cards reveal
-// 3-phase animation like the real BBX app:
-// Phase 1: Pack zoom-in with shake (0.5s)
-// Phase 2: Electric Cards VFX full screen (2s)
-// Phase 3: White flash then reveal (0.3s)
-function RevealAnimation({ onComplete }: { onComplete: () => void }) {
-  const [phase, setPhase] = useState(0); // 0=pack, 1=vfx, 2=flash
+// VFX animation — 4 phases:
+// Phase 0: Interactive — user drags/swipes to split the booster pack
+// Phase 1: Pack separates with shake
+// Phase 2: Electric Cards VFX full screen
+// Phase 3: White flash then reveal
+function RevealAnimation({
+  onComplete,
+  packColor,
+}: {
+  onComplete: () => void;
+  packColor: string;
+}) {
+  // 0=split, 1=separating, 2=vfx, 3=flash
+  const [phase, setPhase] = useState(0);
   const [frame, setFrame] = useState(0);
+  const [splitProgress, setSplitProgress] = useState(0); // 0-100
+  const [glowIntensity, setGlowIntensity] = useState(0);
+  const dragStartRef = useRef<{ x: number; y: number } | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
+  // After split completes → auto-advance through phases
   useEffect(() => {
-    // Phase 0 → 1 after 600ms
-    const t1 = setTimeout(() => setPhase(1), 600);
-    // Phase 1 → 2 after VFX completes
-    const t2 = setTimeout(() => setPhase(2), 2600);
-    // Complete after flash
+    if (phase !== 1) return;
+    const t1 = setTimeout(() => setPhase(2), 600);
+    const t2 = setTimeout(() => setPhase(3), 2600);
     const t3 = setTimeout(onComplete, 2900);
     return () => {
       clearTimeout(t1);
       clearTimeout(t2);
       clearTimeout(t3);
     };
-  }, [onComplete]);
+  }, [phase, onComplete]);
 
-  // VFX frame animation during phase 1
+  // VFX frame animation during phase 2
   useEffect(() => {
-    if (phase !== 1) return;
+    if (phase !== 2) return;
     const interval = setInterval(() => {
       setFrame((f) => Math.min(f + 1, 63));
     }, 30);
     return () => clearInterval(interval);
   }, [phase]);
 
+  // Glow pulsing during drag
+  useEffect(() => {
+    if (phase !== 0) return;
+    const interval = setInterval(() => {
+      setGlowIntensity((_g) => {
+        const base = splitProgress / 100;
+        return base * 0.5 + Math.sin(Date.now() / 200) * 0.15 * base;
+      });
+    }, 50);
+    return () => clearInterval(interval);
+  }, [phase, splitProgress]);
+
+  // Handle drag/touch to split
+  const handlePointerDown = useCallback(
+    (e: React.PointerEvent) => {
+      if (phase !== 0) return;
+      dragStartRef.current = { x: e.clientX, y: e.clientY };
+      (e.target as HTMLElement).setPointerCapture(e.pointerId);
+    },
+    [phase],
+  );
+
+  const handlePointerMove = useCallback(
+    (e: React.PointerEvent) => {
+      if (phase !== 0 || !dragStartRef.current) return;
+      const dx = Math.abs(e.clientX - dragStartRef.current.x);
+      const dy = Math.abs(e.clientY - dragStartRef.current.y);
+      const distance = Math.max(dx, dy);
+      const threshold = Math.min(window.innerWidth, window.innerHeight) * 0.25;
+      const progress = Math.min((distance / threshold) * 100, 100);
+      setSplitProgress(progress);
+
+      if (progress >= 100) {
+        dragStartRef.current = null;
+        setPhase(1);
+      }
+    },
+    [phase],
+  );
+
+  const handlePointerUp = useCallback(() => {
+    if (phase !== 0) {
+      dragStartRef.current = null;
+      return;
+    }
+    dragStartRef.current = null;
+    // Snap back if not fully split
+    if (splitProgress < 100) {
+      setSplitProgress(0);
+    }
+  }, [phase, splitProgress]);
+
+  const halfGap = (splitProgress / 100) * 120; // max 120px apart
+
   return (
     <Box
+      ref={containerRef}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={handlePointerUp}
       sx={{
         position: 'fixed',
         inset: 0,
@@ -114,47 +182,277 @@ function RevealAnimation({ onComplete }: { onComplete: () => void }) {
         alignItems: 'center',
         justifyContent: 'center',
         overflow: 'hidden',
+        cursor: phase === 0 ? 'grab' : 'default',
+        touchAction: 'none',
+        userSelect: 'none',
       }}
     >
-      {/* Phase 0: Pack close-up with shake */}
+      {/* Phase 0: Interactive split */}
       {phase === 0 && (
         <Box
           sx={{
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            gap: 2,
-            animation: 'bbx-shake 0.1s infinite',
-            '@keyframes bbx-shake': {
-              '0%': { transform: 'translate(0, 0) scale(1.2)' },
-              '25%': { transform: 'translate(-2px, 1px) scale(1.22)' },
-              '50%': { transform: 'translate(2px, -1px) scale(1.2)' },
-              '75%': { transform: 'translate(-1px, -2px) scale(1.23)' },
-              '100%': { transform: 'translate(1px, 2px) scale(1.2)' },
-            },
+            gap: 3,
           }}
         >
+          {/* Booster pack — splits in two */}
           <Box
-            component="img"
-            src="/bbx-icons/orangeStar.webp"
-            sx={{ width: { xs: 80, md: 120 }, height: { xs: 80, md: 120 } }}
-          />
-          <Typography
             sx={{
-              color: '#f59e0b',
-              fontWeight: 900,
-              fontSize: { xs: '1.2rem', md: '1.8rem' },
-              letterSpacing: 4,
-              textTransform: 'uppercase',
+              position: 'relative',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
             }}
           >
-            OPENING...
+            {/* Center glow line */}
+            <Box
+              sx={{
+                position: 'absolute',
+                width: 4,
+                height: '130%',
+                bgcolor: packColor,
+                opacity: glowIntensity,
+                boxShadow: `0 0 ${20 + splitProgress * 0.5}px ${packColor}, 0 0 ${40 + splitProgress}px ${packColor}`,
+                zIndex: 3,
+                transition: 'opacity 0.1s',
+              }}
+            />
+
+            {/* Left half */}
+            <Box
+              sx={{
+                transform: `translateX(-${halfGap / 2}px) rotate(-${splitProgress * 0.05}deg)`,
+                transition:
+                  splitProgress === 0 ? 'transform 0.3s ease-out' : 'none',
+                clipPath: 'inset(0 50% 0 0)',
+                filter: `drop-shadow(${halfGap > 10 ? `0 0 15px ${packColor}` : 'none'})`,
+              }}
+            >
+              <Box
+                component="img"
+                src="/bbx-icons/orangeStar.webp"
+                alt=""
+                sx={{
+                  width: { xs: 140, md: 200 },
+                  height: { xs: 140, md: 200 },
+                }}
+              />
+            </Box>
+
+            {/* Right half */}
+            <Box
+              sx={{
+                transform: `translateX(${halfGap / 2}px) rotate(${splitProgress * 0.05}deg)`,
+                transition:
+                  splitProgress === 0 ? 'transform 0.3s ease-out' : 'none',
+                clipPath: 'inset(0 0 0 50%)',
+                ml: '-100%',
+                filter: `drop-shadow(${halfGap > 10 ? `0 0 15px ${packColor}` : 'none'})`,
+              }}
+            >
+              <Box
+                component="img"
+                src="/bbx-icons/orangeStar.webp"
+                alt=""
+                sx={{
+                  width: { xs: 140, md: 200 },
+                  height: { xs: 140, md: 200 },
+                }}
+              />
+            </Box>
+
+            {/* Spark particles along the split */}
+            {splitProgress > 30 &&
+              Array.from({ length: Math.floor(splitProgress / 15) }).map(
+                (_, i) => (
+                  <Box
+                    key={i}
+                    sx={{
+                      position: 'absolute',
+                      width: 4,
+                      height: 4,
+                      borderRadius: '50%',
+                      bgcolor: packColor,
+                      boxShadow: `0 0 6px ${packColor}`,
+                      top: `${15 + i * 18 + Math.sin(Date.now() / 100 + i) * 10}%`,
+                      left: '50%',
+                      transform: `translateX(${Math.sin(i * 1.5) * halfGap * 0.3}px)`,
+                      opacity: 0.5 + Math.random() * 0.5,
+                      animation: `spark-float-${i % 3} 0.6s ease-out infinite`,
+                      '@keyframes spark-float-0': {
+                        '0%': {
+                          transform: 'translateX(0) scale(1)',
+                          opacity: 1,
+                        },
+                        '100%': {
+                          transform: 'translateX(-20px) scale(0)',
+                          opacity: 0,
+                        },
+                      },
+                      '@keyframes spark-float-1': {
+                        '0%': {
+                          transform: 'translateX(0) scale(1)',
+                          opacity: 1,
+                        },
+                        '100%': {
+                          transform: 'translateX(20px) scale(0)',
+                          opacity: 0,
+                        },
+                      },
+                      '@keyframes spark-float-2': {
+                        '0%': {
+                          transform: 'translateY(0) scale(1)',
+                          opacity: 1,
+                        },
+                        '100%': {
+                          transform: 'translateY(-15px) scale(0)',
+                          opacity: 0,
+                        },
+                      },
+                    }}
+                  />
+                ),
+              )}
+          </Box>
+
+          {/* Progress bar */}
+          <Box
+            sx={{
+              width: { xs: 200, md: 280 },
+              height: 6,
+              borderRadius: 3,
+              bgcolor: alpha(packColor, 0.15),
+              overflow: 'hidden',
+            }}
+          >
+            <Box
+              sx={{
+                width: `${splitProgress}%`,
+                height: '100%',
+                bgcolor: packColor,
+                borderRadius: 3,
+                boxShadow:
+                  splitProgress > 50 ? `0 0 10px ${packColor}` : 'none',
+                transition:
+                  splitProgress === 0 ? 'width 0.3s ease-out' : 'none',
+              }}
+            />
+          </Box>
+
+          {/* Instruction text */}
+          <Typography
+            sx={{
+              color: alpha('#fff', 0.5),
+              fontWeight: 700,
+              fontSize: { xs: '0.85rem', md: '1rem' },
+              letterSpacing: 1,
+              textAlign: 'center',
+              animation:
+                splitProgress === 0
+                  ? 'bbx-pulse-text 2s ease-in-out infinite'
+                  : 'none',
+              '@keyframes bbx-pulse-text': {
+                '0%, 100%': { opacity: 0.4 },
+                '50%': { opacity: 0.8 },
+              },
+            }}
+          >
+            {splitProgress > 60
+              ? 'ENCORE !'
+              : splitProgress > 0
+                ? 'Continue...'
+                : 'Glisser pour ouvrir le booster'}
           </Typography>
         </Box>
       )}
 
-      {/* Phase 1: Electric Cards VFX */}
+      {/* Phase 1: Pack flies apart with shake */}
       {phase === 1 && (
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            animation: 'bbx-shake 0.08s infinite',
+            '@keyframes bbx-shake': {
+              '0%': { transform: 'translate(0, 0) scale(1.3)' },
+              '25%': { transform: 'translate(-3px, 2px) scale(1.32)' },
+              '50%': { transform: 'translate(3px, -1px) scale(1.3)' },
+              '75%': { transform: 'translate(-2px, -3px) scale(1.33)' },
+              '100%': { transform: 'translate(2px, 3px) scale(1.3)' },
+            },
+          }}
+        >
+          {/* Left half flies left */}
+          <Box
+            sx={{
+              clipPath: 'inset(0 50% 0 0)',
+              animation: 'fly-left 0.5s ease-in forwards',
+              '@keyframes fly-left': {
+                '0%': {
+                  transform: 'translateX(-60px) rotate(-3deg)',
+                  opacity: 1,
+                },
+                '100%': {
+                  transform: 'translateX(-200px) rotate(-20deg)',
+                  opacity: 0,
+                },
+              },
+            }}
+          >
+            <Box
+              component="img"
+              src="/bbx-icons/orangeStar.webp"
+              sx={{ width: { xs: 140, md: 200 }, height: { xs: 140, md: 200 } }}
+            />
+          </Box>
+          {/* Right half flies right */}
+          <Box
+            sx={{
+              clipPath: 'inset(0 0 0 50%)',
+              ml: '-100%',
+              animation: 'fly-right 0.5s ease-in forwards',
+              '@keyframes fly-right': {
+                '0%': {
+                  transform: 'translateX(60px) rotate(3deg)',
+                  opacity: 1,
+                },
+                '100%': {
+                  transform: 'translateX(200px) rotate(20deg)',
+                  opacity: 0,
+                },
+              },
+            }}
+          >
+            <Box
+              component="img"
+              src="/bbx-icons/orangeStar.webp"
+              sx={{ width: { xs: 140, md: 200 }, height: { xs: 140, md: 200 } }}
+            />
+          </Box>
+          {/* Center burst */}
+          <Box
+            sx={{
+              position: 'absolute',
+              width: 200,
+              height: 200,
+              borderRadius: '50%',
+              background: `radial-gradient(circle, ${packColor} 0%, transparent 70%)`,
+              opacity: 0,
+              animation: 'center-burst 0.4s 0.1s ease-out forwards',
+              '@keyframes center-burst': {
+                '0%': { transform: 'scale(0)', opacity: 0.8 },
+                '100%': { transform: 'scale(3)', opacity: 0 },
+              },
+            }}
+          />
+        </Box>
+      )}
+
+      {/* Phase 2: Electric Cards VFX */}
+      {phase === 2 && (
         <Box sx={{ position: 'relative', width: '100%', height: '100%' }}>
           <Box
             component="img"
@@ -170,7 +468,6 @@ function RevealAnimation({ onComplete }: { onComplete: () => void }) {
               objectFit: 'contain',
             }}
           />
-          {/* Secondary VFX layer */}
           {frame > 10 && (
             <Box
               component="img"
@@ -189,7 +486,6 @@ function RevealAnimation({ onComplete }: { onComplete: () => void }) {
               }}
             />
           )}
-          {/* Radial glow pulse */}
           <Box
             sx={{
               position: 'absolute',
@@ -202,8 +498,8 @@ function RevealAnimation({ onComplete }: { onComplete: () => void }) {
         </Box>
       )}
 
-      {/* Phase 2: White flash */}
-      {phase === 2 && (
+      {/* Phase 3: White flash */}
+      {phase === 3 && (
         <Box
           sx={{
             position: 'absolute',
@@ -217,7 +513,33 @@ function RevealAnimation({ onComplete }: { onComplete: () => void }) {
   );
 }
 
-// Revealed card component
+// ── TCG Card backgrounds per rarity ──
+const RARITY_BG: Record<string, string> = {
+  COMMON: 'linear-gradient(145deg, #1a1d24 0%, #2a2d34 50%, #1a1d24 100%)',
+  RARE: 'linear-gradient(145deg, #0c1929 0%, #1a3a5c 50%, #0c1929 100%)',
+  EPIC: 'linear-gradient(145deg, #1a0c29 0%, #3a1a6c 50%, #1a0c29 100%)',
+  LEGENDARY: 'linear-gradient(145deg, #29200c 0%, #6c4a1a 50%, #29200c 100%)',
+  SECRET: 'linear-gradient(145deg, #290c0c 0%, #6c1a2a 50%, #0c1a29 100%)',
+};
+
+const RARITY_BORDER: Record<string, string> = {
+  COMMON: '#3a3d44',
+  RARE: '#4a7aac',
+  EPIC: '#8a5adc',
+  LEGENDARY: '#dca84a',
+  SECRET: '#dc4a6a',
+};
+
+const TYPE_ICONS: Record<string, string> = {
+  BLADE: '/bbx-icons/BBX-AttackType.webp',
+  OVER_BLADE: '/bbx-icons/BBX-AttackType.webp',
+  RATCHET: '/bbx-icons/BBX-DefenseType.webp',
+  BIT: '/bbx-icons/BBX-StaminaType.webp',
+  LOCK_CHIP: '/bbx-icons/BBX-BalanceType.webp',
+  ASSIST_BLADE: '/bbx-icons/BBX-BalanceType.webp',
+};
+
+// TCG-style revealed card — Pokémon card layout with holo effect
 function RevealedCard({
   part,
   index,
@@ -228,12 +550,30 @@ function RevealedCard({
   total: number;
 }) {
   const [visible, setVisible] = useState(false);
+  const [mousePos, setMousePos] = useState({ x: 50, y: 50 });
+  const cardRef = useRef<HTMLDivElement>(null);
   const rarityColor = RARITY_COLORS[part.rarity] || '#6b7280';
+  const borderColor = RARITY_BORDER[part.rarity] || '#3a3d44';
+  const bgGradient = RARITY_BG[part.rarity] || RARITY_BG.COMMON;
+  const isHolo = ['EPIC', 'LEGENDARY', 'SECRET'].includes(part.rarity);
 
   useEffect(() => {
     const timer = setTimeout(() => setVisible(true), index * 300);
     return () => clearTimeout(timer);
   }, [index]);
+
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    const card = cardRef.current;
+    if (!card) return;
+    const rect = card.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    setMousePos({ x, y });
+  }, []);
+
+  // 3D tilt based on mouse position
+  const rotateX = ((mousePos.y - 50) / 50) * -8;
+  const rotateY = ((mousePos.x - 50) / 50) * 8;
 
   return (
     <Box
@@ -247,32 +587,74 @@ function RevealedCard({
           xs: '0 0 calc(50% - 8px)',
           sm: total > 3 ? '0 0 calc(33.33% - 12px)' : '0 0 calc(50% - 8px)',
         },
-        minWidth: { xs: 100, sm: 120 },
-        maxWidth: 180,
+        minWidth: { xs: 120, sm: 140 },
+        maxWidth: 200,
+        perspective: '600px',
       }}
     >
-      <Card
-        elevation={0}
+      <Box
+        ref={cardRef}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={() => setMousePos({ x: 50, y: 50 })}
         sx={{
-          borderRadius: 4,
+          position: 'relative',
+          aspectRatio: '5/7',
+          borderRadius: '12px',
           overflow: 'hidden',
-          border: '2px solid',
-          borderColor: rarityColor,
-          boxShadow: `0 0 20px ${alpha(rarityColor, 0.4)}, inset 0 0 30px ${alpha(rarityColor, 0.05)}`,
-          bgcolor: alpha(rarityColor, 0.05),
+          border: '3px solid',
+          borderColor,
+          background: bgGradient,
+          boxShadow: `0 4px 20px ${alpha(rarityColor, 0.3)}, 0 0 40px ${alpha(rarityColor, 0.15)}`,
+          transform: `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`,
+          transition: 'transform 0.15s ease-out',
+          cursor: 'default',
+          '&:hover': {
+            boxShadow: `0 8px 30px ${alpha(rarityColor, 0.5)}, 0 0 60px ${alpha(rarityColor, 0.2)}`,
+          },
         }}
       >
-        {/* Image */}
+        {/* ── Card Header ── */}
         <Box
           sx={{
-            position: 'relative',
-            width: '100%',
-            aspectRatio: '1',
-            bgcolor: '#0a0a0a',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center',
+            justifyContent: 'space-between',
+            px: 1.2,
+            pt: 1,
+            pb: 0.5,
+          }}
+        >
+          <Typography
+            noWrap
+            sx={{
+              color: '#fff',
+              fontWeight: 900,
+              fontSize: { xs: '0.65rem', sm: '0.75rem' },
+              flex: 1,
+              textShadow: '0 1px 3px rgba(0,0,0,0.5)',
+            }}
+          >
+            {part.name}
+          </Typography>
+          <Box
+            component="img"
+            src={TYPE_ICONS[part.type] || '/bbx-icons/BBX-BalanceType.webp'}
+            alt=""
+            sx={{ width: 16, height: 16, ml: 0.5, flexShrink: 0 }}
+          />
+        </Box>
+
+        {/* ── Art Window ── */}
+        <Box
+          sx={{
+            mx: 1,
+            borderRadius: '6px',
             overflow: 'hidden',
+            border: '2px solid',
+            borderColor: alpha(borderColor, 0.6),
+            position: 'relative',
+            aspectRatio: '4/3',
+            bgcolor: '#0a0a0e',
           }}
         >
           {part.imageUrl ? (
@@ -280,73 +662,165 @@ function RevealedCard({
               src={part.imageUrl}
               alt={part.name}
               style={{
-                width: '80%',
-                height: '80%',
+                width: '100%',
+                height: '100%',
                 objectFit: 'contain',
-                filter: `drop-shadow(0 0 10px ${alpha(rarityColor, 0.6)})`,
+                padding: '8%',
+                filter: `drop-shadow(0 0 8px ${alpha(rarityColor, 0.5)})`,
               }}
             />
           ) : (
-            <Typography variant="h3" sx={{ opacity: 0.1, fontWeight: 900 }}>
-              {part.name.charAt(0)}
-            </Typography>
+            <Box
+              sx={{
+                width: '100%',
+                height: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <Typography variant="h3" sx={{ opacity: 0.08, fontWeight: 900 }}>
+                {part.name.charAt(0)}
+              </Typography>
+            </Box>
           )}
-          {/* Rarity sparkle */}
-          {(part.rarity === 'LEGENDARY' || part.rarity === 'SECRET') && (
+
+          {/* Holographic overlay — only for EPIC+ */}
+          {isHolo && (
             <Box
               sx={{
                 position: 'absolute',
                 inset: 0,
-                background: `radial-gradient(circle at 30% 30%, ${alpha(rarityColor, 0.3)} 0%, transparent 50%)`,
-                animation: 'bbx-flash 2s infinite',
+                background: `
+                  linear-gradient(
+                    ${115 + (mousePos.x - 50) * 0.5}deg,
+                    transparent 20%,
+                    ${alpha(rarityColor, 0.15)} 35%,
+                    ${alpha('#fff', 0.1)} 40%,
+                    ${alpha('#88ccff', 0.12)} 45%,
+                    ${alpha(rarityColor, 0.15)} 55%,
+                    transparent 70%
+                  )
+                `,
+                backgroundPosition: `${mousePos.x}% ${mousePos.y}%`,
+                mixBlendMode: 'color-dodge',
+                pointerEvents: 'none',
+                transition: 'background-position 0.1s',
+              }}
+            />
+          )}
+
+          {/* SECRET rainbow shimmer */}
+          {part.rarity === 'SECRET' && (
+            <Box
+              sx={{
+                position: 'absolute',
+                inset: 0,
+                background: `
+                  linear-gradient(
+                    ${125 + (mousePos.x - 50)}deg,
+                    ${alpha('#ff0000', 0.08)} 0%,
+                    ${alpha('#ff8800', 0.08)} 15%,
+                    ${alpha('#ffff00', 0.08)} 30%,
+                    ${alpha('#00ff88', 0.08)} 45%,
+                    ${alpha('#0088ff', 0.08)} 60%,
+                    ${alpha('#8800ff', 0.08)} 75%,
+                    ${alpha('#ff0088', 0.08)} 100%
+                  )
+                `,
+                mixBlendMode: 'screen',
+                pointerEvents: 'none',
               }}
             />
           )}
         </Box>
 
-        {/* Info */}
-        <Box sx={{ p: 1.5, textAlign: 'center' }}>
-          <Typography
-            variant="body2"
-            fontWeight="900"
-            noWrap
-            sx={{ fontSize: '0.8rem' }}
-          >
-            {part.name}
-          </Typography>
-          <Box
+        {/* ── Info Bar (type + rarity) ── */}
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            px: 1.2,
+            pt: 0.6,
+          }}
+        >
+          <Chip
+            label={part.type.replace('_', ' ')}
+            size="small"
             sx={{
-              display: 'flex',
-              gap: 0.5,
-              justifyContent: 'center',
-              mt: 0.5,
+              height: 16,
+              fontSize: '0.5rem',
+              fontWeight: 900,
+              bgcolor: alpha('#fff', 0.08),
+              color: alpha('#fff', 0.7),
+              letterSpacing: 0.3,
             }}
-          >
-            <Chip
-              label={part.type}
-              size="small"
-              sx={{
-                height: 18,
-                fontSize: '0.55rem',
-                fontWeight: 900,
-                bgcolor: alpha('#fff', 0.1),
-                color: '#fff',
-              }}
-            />
-            <Chip
-              label={RARITY_LABELS[part.rarity] || part.rarity}
-              size="small"
-              sx={{
-                height: 18,
-                fontSize: '0.55rem',
-                fontWeight: 900,
-                bgcolor: alpha(rarityColor, 0.2),
-                color: rarityColor,
-              }}
-            />
+          />
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.3 }}>
+            {/* Rarity stars */}
+            {Array.from({
+              length:
+                part.rarity === 'SECRET'
+                  ? 5
+                  : part.rarity === 'LEGENDARY'
+                    ? 4
+                    : part.rarity === 'EPIC'
+                      ? 3
+                      : part.rarity === 'RARE'
+                        ? 2
+                        : 1,
+            }).map((_, i) => (
+              <Box
+                key={i}
+                sx={{
+                  width: 6,
+                  height: 6,
+                  borderRadius: '50%',
+                  bgcolor: rarityColor,
+                  boxShadow: isHolo ? `0 0 4px ${rarityColor}` : 'none',
+                }}
+              />
+            ))}
           </Box>
         </Box>
-      </Card>
+
+        {/* ── Rarity Label ── */}
+        <Box sx={{ px: 1.2, pb: 0.8 }}>
+          <Typography
+            sx={{
+              color: rarityColor,
+              fontWeight: 900,
+              fontSize: '0.55rem',
+              letterSpacing: 1,
+              textTransform: 'uppercase',
+              textShadow: isHolo
+                ? `0 0 8px ${alpha(rarityColor, 0.5)}`
+                : 'none',
+            }}
+          >
+            {RARITY_LABELS[part.rarity] || part.rarity}
+          </Typography>
+        </Box>
+
+        {/* ── Shine sweep (LEGENDARY/SECRET) ── */}
+        {(part.rarity === 'LEGENDARY' || part.rarity === 'SECRET') && (
+          <Box
+            sx={{
+              position: 'absolute',
+              inset: 0,
+              background: `linear-gradient(105deg, transparent 40%, ${alpha('#fff', 0.06)} 45%, ${alpha('#fff', 0.12)} 50%, ${alpha('#fff', 0.06)} 55%, transparent 60%)`,
+              backgroundSize: '250% 100%',
+              animation: 'tcg-shine 3s ease-in-out infinite',
+              pointerEvents: 'none',
+              '@keyframes tcg-shine': {
+                '0%': { backgroundPosition: '200% 0' },
+                '100%': { backgroundPosition: '-50% 0' },
+              },
+            }}
+          />
+        )}
+      </Box>
     </Box>
   );
 }
@@ -362,6 +836,7 @@ export function BoosterTab({ allParts }: BoosterTabProps) {
   const [pulling, setPulling] = useState(false);
   const [showAnimation, setShowAnimation] = useState(false);
   const [revealedParts, setRevealedParts] = useState<PulledPart[]>([]);
+  const [_pendingParts, _setPendingParts] = useState<PulledPart[]>([]);
   const [showReveal, setShowReveal] = useState(false);
   const [currency, setCurrency] = useState(500);
   const [message, setMessage] = useState<string | null>(null);
@@ -479,16 +954,19 @@ export function BoosterTab({ allParts }: BoosterTabProps) {
         setCurrency((c) => c - cost);
       }
 
-      // Wait for animation to finish
-      setTimeout(() => {
-        setShowAnimation(false);
-        setRevealedParts(parts);
-        setShowReveal(true);
-        setPulling(false);
-      }, 2800);
+      // Store parts — animation onComplete will trigger reveal
+      _setPendingParts(parts);
     },
     [selectedLine, currency, doClientPull, isLoggedIn],
   );
+
+  const _handleAnimationComplete = useCallback(() => {
+    setShowAnimation(false);
+    setRevealedParts(_pendingParts);
+    setShowReveal(true);
+    setPulling(false);
+    _setPendingParts([]);
+  }, [_pendingParts]);
 
   return (
     <Box>
@@ -551,8 +1029,15 @@ export function BoosterTab({ allParts }: BoosterTabProps) {
 
       {message && (
         <Typography
-          color="error"
-          sx={{ mb: 2, fontWeight: 700, fontSize: '0.85rem' }}
+          sx={{
+            mb: 2,
+            fontWeight: 700,
+            fontSize: '0.85rem',
+            color:
+              message.includes('+') || message.includes('BeyCoins')
+                ? '#22c55e'
+                : '#ef4444',
+          }}
         >
           {message}
         </Typography>
@@ -702,7 +1187,14 @@ export function BoosterTab({ allParts }: BoosterTabProps) {
       </Box>
 
       {/* VFX Animation overlay */}
-      {showAnimation && <RevealAnimation onComplete={() => {}} />}
+      {showAnimation && (
+        <RevealAnimation
+          onComplete={_handleAnimationComplete}
+          packColor={
+            PACK_LINES.find((p) => p.id === selectedLine)?.color || '#f59e0b'
+          }
+        />
+      )}
 
       {/* Reveal dialog */}
       <Dialog

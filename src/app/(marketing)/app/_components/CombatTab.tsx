@@ -322,7 +322,104 @@ interface CombatTabProps {
   bits: Part[];
 }
 
+// AI difficulty presets
+const _AI_STYLES = [
+  { label: 'Débutant', value: 'easy', color: '#22c55e', strategy: 'random' },
+  {
+    label: 'Intermédiaire',
+    value: 'medium',
+    color: '#f59e0b',
+    strategy: 'balanced',
+  },
+  {
+    label: 'Expert',
+    value: 'hard',
+    color: '#ef4444',
+    strategy: 'optimized',
+  },
+] as const;
+
+type BattleMode = 'pvp' | 'ai';
+type AIDifficulty = 'easy' | 'medium' | 'hard';
+
+function buildAICombo(
+  blades: Part[],
+  ratchets: Part[],
+  bits: Part[],
+  difficulty: AIDifficulty,
+): BeyCombo {
+  const randPart = (parts: Part[]) =>
+    parts[Math.floor(Math.random() * parts.length)] || null;
+
+  if (difficulty === 'easy') {
+    return {
+      blade: randPart(blades),
+      ratchet: randPart(ratchets),
+      bit: randPart(bits),
+    };
+  }
+
+  // Medium/Hard: pick parts with better stats
+  const sortByStatTotal = (parts: Part[]) =>
+    [...parts].sort((a, b) => {
+      const totalA =
+        parseStat(a.attack) + parseStat(a.defense) + parseStat(a.stamina);
+      const totalB =
+        parseStat(b.attack) + parseStat(b.defense) + parseStat(b.stamina);
+      return totalB - totalA;
+    });
+
+  const sortedBlades = sortByStatTotal(blades);
+  const sortedRatchets = sortByStatTotal(ratchets);
+  const sortedBits = sortByStatTotal(bits);
+
+  if (difficulty === 'hard') {
+    // Pick from top 5 with slight randomness
+    const topN = 5;
+    return {
+      blade:
+        sortedBlades[
+          Math.floor(Math.random() * Math.min(topN, sortedBlades.length))
+        ] || null,
+      ratchet:
+        sortedRatchets[
+          Math.floor(Math.random() * Math.min(topN, sortedRatchets.length))
+        ] || null,
+      bit:
+        sortedBits[
+          Math.floor(Math.random() * Math.min(topN, sortedBits.length))
+        ] || null,
+    };
+  }
+
+  // Medium: pick from top 30%
+  const topPct = 0.3;
+  return {
+    blade:
+      sortedBlades[
+        Math.floor(
+          Math.random() * Math.max(1, Math.floor(sortedBlades.length * topPct)),
+        )
+      ] || null,
+    ratchet:
+      sortedRatchets[
+        Math.floor(
+          Math.random() *
+            Math.max(1, Math.floor(sortedRatchets.length * topPct)),
+        )
+      ] || null,
+    bit:
+      sortedBits[
+        Math.floor(
+          Math.random() * Math.max(1, Math.floor(sortedBits.length * topPct)),
+        )
+      ] || null,
+  };
+}
+
 export function CombatTab({ blades, ratchets, bits }: CombatTabProps) {
+  const [mode, _setMode] = useState<BattleMode>('ai');
+  const [aiDifficulty, _setAiDifficulty] = useState<AIDifficulty>('medium');
   const [p1, setP1] = useState<BeyCombo>({
     blade: null,
     ratchet: null,
@@ -334,33 +431,55 @@ export function CombatTab({ blades, ratchets, bits }: CombatTabProps) {
     bit: null,
   });
   const [battling, setBattling] = useState(false);
-  const [battlePhase, setBattlePhase] = useState(-1); // -1=idle, 0=intro, 1=clash, 2=sparks, 3=flash
+  const [battlePhase, setBattlePhase] = useState(-1);
   const [result, setResult] = useState<BattleResult | null>(null);
   const [vfxFrame, setVfxFrame] = useState(0);
+  const [_aiName, setAiName] = useState('IA');
 
-  const canBattle =
-    p1.blade && p1.ratchet && p1.bit && p2.blade && p2.ratchet && p2.bit;
+  const p1Ready = p1.blade && p1.ratchet && p1.bit;
+  const p2Ready = p2.blade && p2.ratchet && p2.bit;
+  const canBattle = mode === 'ai' ? p1Ready : p1Ready && p2Ready;
 
   const handleBattle = useCallback(() => {
     if (!canBattle) return;
+
+    let opponent = p2;
+
+    // In AI mode, generate opponent combo
+    if (mode === 'ai') {
+      opponent = buildAICombo(blades, ratchets, bits, aiDifficulty);
+      setP2(opponent);
+      const names = [
+        'VALT',
+        'AIGA',
+        'DRUM',
+        'HIKARU',
+        'BIRD',
+        'XANDER',
+        'SISCO',
+        'FREE',
+        'LUI',
+        'LAIN',
+        'RASHAD',
+        'BEL',
+      ];
+      setAiName(names[Math.floor(Math.random() * names.length)] || 'IA');
+    }
+
     setBattling(true);
     setResult(null);
     setVfxFrame(0);
 
-    // Phase 0: Intro (names fly in) — 800ms
     setBattlePhase(0);
     setTimeout(() => setBattlePhase(1), 800);
-    // Phase 1: Clash VFX (sparks loop) — 1500ms
     setTimeout(() => setBattlePhase(2), 2300);
-    // Phase 2: Lightning — 700ms
     setTimeout(() => setBattlePhase(3), 3000);
-    // Phase 3: Flash + result — 300ms
     setTimeout(() => {
       setBattlePhase(-1);
-      setResult(simulateBattle(p1, p2));
+      setResult(simulateBattle(p1, opponent));
       setBattling(false);
     }, 3300);
-  }, [canBattle, p1, p2]);
+  }, [canBattle, p1, p2, mode, aiDifficulty, blades, ratchets, bits]);
 
   // VFX frame ticker
   useEffect(() => {
@@ -379,48 +498,124 @@ export function CombatTab({ blades, ratchets, bits }: CombatTabProps) {
       ratchet: randPart(ratchets),
       bit: randPart(bits),
     });
-    setP2({
-      blade: randPart(blades),
-      ratchet: randPart(ratchets),
-      bit: randPart(bits),
-    });
+    if (mode === 'pvp') {
+      setP2({
+        blade: randPart(blades),
+        ratchet: randPart(ratchets),
+        bit: randPart(bits),
+      });
+    }
     setResult(null);
-  }, [blades, ratchets, bits]);
+  }, [blades, ratchets, bits, mode]);
 
   return (
     <Box>
+      {/* Mode selector + title */}
       <Box
         sx={{
           display: 'flex',
+          flexDirection: { xs: 'column', sm: 'row' },
           justifyContent: 'space-between',
-          alignItems: 'center',
+          alignItems: { xs: 'stretch', sm: 'center' },
+          gap: 2,
           mb: 3,
         }}
       >
         <Typography variant="h6" fontWeight="900">
           Simulateur de Combat
         </Typography>
-        <Button
-          size="small"
-          onClick={randomize}
-          sx={{ fontWeight: 900, borderRadius: 2 }}
+
+        <Box
+          sx={{
+            display: 'flex',
+            gap: 1,
+            alignItems: 'center',
+            flexWrap: 'wrap',
+          }}
         >
-          Aléatoire
-        </Button>
+          {/* Mode toggle */}
+          <Chip
+            label="vs IA"
+            clickable
+            onClick={() => {
+              _setMode('ai');
+              setResult(null);
+            }}
+            sx={{
+              fontWeight: 900,
+              fontSize: '0.75rem',
+              borderRadius: 2,
+              bgcolor: mode === 'ai' ? '#dc2626' : 'transparent',
+              color: mode === 'ai' ? '#fff' : 'text.secondary',
+              border: '1px solid',
+              borderColor: mode === 'ai' ? '#dc2626' : 'divider',
+            }}
+          />
+          <Chip
+            label="vs Joueur"
+            clickable
+            onClick={() => {
+              _setMode('pvp');
+              setResult(null);
+            }}
+            sx={{
+              fontWeight: 900,
+              fontSize: '0.75rem',
+              borderRadius: 2,
+              bgcolor: mode === 'pvp' ? '#3b82f6' : 'transparent',
+              color: mode === 'pvp' ? '#fff' : 'text.secondary',
+              border: '1px solid',
+              borderColor: mode === 'pvp' ? '#3b82f6' : 'divider',
+            }}
+          />
+
+          {/* AI difficulty (only in AI mode) */}
+          {mode === 'ai' &&
+            _AI_STYLES.map((ai) => (
+              <Chip
+                key={ai.value}
+                label={ai.label}
+                clickable
+                onClick={() => _setAiDifficulty(ai.value)}
+                size="small"
+                sx={{
+                  fontWeight: 800,
+                  fontSize: '0.7rem',
+                  borderRadius: 2,
+                  bgcolor: aiDifficulty === ai.value ? ai.color : 'transparent',
+                  color: aiDifficulty === ai.value ? '#fff' : 'text.disabled',
+                  border: '1px solid',
+                  borderColor:
+                    aiDifficulty === ai.value ? ai.color : alpha(ai.color, 0.2),
+                }}
+              />
+            ))}
+
+          <Button
+            size="small"
+            onClick={randomize}
+            sx={{ fontWeight: 900, borderRadius: 2, ml: 'auto' }}
+          >
+            Aléatoire
+          </Button>
+        </Box>
       </Box>
 
-      {/* Two combo selectors — stack on mobile */}
+      {/* Combo selectors */}
       <Box
         sx={{
           display: 'grid',
-          gridTemplateColumns: { xs: '1fr', md: '1fr auto 1fr' },
+          gridTemplateColumns: {
+            xs: '1fr',
+            md: mode === 'pvp' ? '1fr auto 1fr' : '1fr auto 1fr',
+          },
           gap: { xs: 1, md: 3 },
           mb: 4,
           alignItems: 'start',
         }}
       >
         <ComboCard
-          title="Joueur 1"
+          title="Mon Beyblade"
           combo={p1}
           blades={blades}
           ratchets={ratchets}
@@ -449,15 +644,79 @@ export function CombatTab({ blades, ratchets, bits }: CombatTabProps) {
           </Typography>
         </Box>
 
-        <ComboCard
-          title="Joueur 2"
-          combo={p2}
-          blades={blades}
-          ratchets={ratchets}
-          bits={bits}
-          onUpdate={setP2}
-          color="#3b82f6"
-        />
+        {mode === 'pvp' ? (
+          <ComboCard
+            title="Joueur 2"
+            combo={p2}
+            blades={blades}
+            ratchets={ratchets}
+            bits={bits}
+            onUpdate={setP2}
+            color="#3b82f6"
+          />
+        ) : (
+          <Card
+            elevation={0}
+            sx={{
+              borderRadius: 4,
+              border: '2px dashed',
+              borderColor: alpha('#3b82f6', 0.3),
+              bgcolor: alpha('#3b82f6', 0.03),
+              flex: 1,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              minHeight: 200,
+              gap: 1.5,
+              p: 3,
+            }}
+          >
+            <Box
+              component="img"
+              src="/bbx-icons/btn-battle.webp"
+              sx={{
+                width: 48,
+                height: 48,
+                opacity: 0.5,
+                filter: 'grayscale(0.5)',
+              }}
+            />
+            <Typography
+              variant="body2"
+              fontWeight="900"
+              sx={{ color: '#3b82f6' }}
+            >
+              {_aiName} (IA)
+            </Typography>
+            <Typography
+              variant="caption"
+              color="text.disabled"
+              sx={{ textAlign: 'center' }}
+            >
+              L'IA choisira son Beyblade au lancement du combat
+            </Typography>
+            <Chip
+              label={
+                _AI_STYLES.find((a) => a.value === aiDifficulty)?.label ||
+                'Medium'
+              }
+              size="small"
+              sx={{
+                fontWeight: 900,
+                fontSize: '0.7rem',
+                bgcolor: alpha(
+                  _AI_STYLES.find((a) => a.value === aiDifficulty)?.color ||
+                    '#f59e0b',
+                  0.15,
+                ),
+                color:
+                  _AI_STYLES.find((a) => a.value === aiDifficulty)?.color ||
+                  '#f59e0b',
+              }}
+            />
+          </Card>
+        )}
       </Box>
 
       {/* Battle button */}
