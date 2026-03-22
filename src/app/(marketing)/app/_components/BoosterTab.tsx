@@ -12,14 +12,13 @@ import {
 import { alpha } from '@mui/material/styles';
 import type { Part } from '@prisma/client';
 import { useCallback, useEffect, useState } from 'react';
-
-// Pull result from server action
-interface PullResult {
-  success: boolean;
-  parts?: PulledPart[];
-  message?: string;
-  newBalance?: number;
-}
+import { useSession } from '@/lib/auth-client';
+import {
+  claimDaily,
+  getUserCurrency,
+  pullBooster,
+  pullMulti,
+} from '@/server/actions/gacha';
 
 interface PulledPart {
   id: string;
@@ -27,7 +26,9 @@ interface PulledPart {
   type: string;
   imageUrl: string | null;
   rarity: string;
-  beyType: string | null;
+  beyType?: string | null;
+  system?: string | null;
+  weight?: number | null;
 }
 
 const RARITY_COLORS: Record<string, string> = {
@@ -280,13 +281,26 @@ interface BoosterTabProps {
 }
 
 export function BoosterTab({ allParts }: BoosterTabProps) {
+  const { data: session } = useSession();
+  const isLoggedIn = !!session?.user;
   const [selectedLine, setSelectedLine] = useState<string | null>(null);
   const [pulling, setPulling] = useState(false);
   const [showAnimation, setShowAnimation] = useState(false);
   const [revealedParts, setRevealedParts] = useState<PulledPart[]>([]);
   const [showReveal, setShowReveal] = useState(false);
-  const [currency, setCurrency] = useState(500); // Default starter currency
+  const [currency, setCurrency] = useState(500);
   const [message, setMessage] = useState<string | null>(null);
+
+  // Load real currency if logged in
+  useEffect(() => {
+    if (isLoggedIn) {
+      getUserCurrency().then((res) => {
+        if (res.success && res.balance !== undefined) {
+          setCurrency(res.balance);
+        }
+      });
+    }
+  }, [isLoggedIn]);
 
   // Client-side random pull (fallback when not logged in)
   const doClientPull = useCallback(
@@ -340,6 +354,21 @@ export function BoosterTab({ allParts }: BoosterTabProps) {
     [allParts],
   );
 
+  const handleDailyClaim = useCallback(async () => {
+    if (!isLoggedIn) {
+      setCurrency((c) => c + 50);
+      setMessage('Mode démo : +50 BeyCoins !');
+      return;
+    }
+    const res = await claimDaily();
+    if (res.success) {
+      setCurrency(res.newBalance ?? currency);
+      setMessage(`+${res.amount} BeyCoins ! (Série : ${res.streak} jours)`);
+    } else {
+      setMessage(res.message ?? 'Erreur');
+    }
+  }, [isLoggedIn, currency]);
+
   const handlePull = useCallback(
     async (count: number) => {
       if (!selectedLine) return;
@@ -351,20 +380,39 @@ export function BoosterTab({ allParts }: BoosterTabProps) {
 
       setPulling(true);
       setShowAnimation(true);
+      setMessage(null);
 
-      // Simulate pull while animation plays
-      const parts = doClientPull(selectedLine, count);
+      let parts: PulledPart[];
 
-      // Wait for animation
+      if (isLoggedIn) {
+        // Server-side pull with real persistence
+        const line = selectedLine as 'BX' | 'UX' | 'CX';
+        const res =
+          count === 1 ? await pullBooster(line) : await pullMulti(line);
+        if (res.success && res.parts) {
+          parts = res.parts;
+          setCurrency(res.newBalance ?? currency - cost);
+        } else {
+          setShowAnimation(false);
+          setPulling(false);
+          setMessage(res.message ?? 'Erreur lors du pull');
+          return;
+        }
+      } else {
+        // Client-side demo mode
+        parts = doClientPull(selectedLine, count);
+        setCurrency((c) => c - cost);
+      }
+
+      // Wait for animation to finish
       setTimeout(() => {
         setShowAnimation(false);
         setRevealedParts(parts);
         setShowReveal(true);
-        setCurrency((c) => c - cost);
         setPulling(false);
       }, 2800);
     },
-    [selectedLine, currency, doClientPull],
+    [selectedLine, currency, doClientPull, isLoggedIn],
   );
 
   return (
@@ -409,6 +457,7 @@ export function BoosterTab({ allParts }: BoosterTabProps) {
         <Button
           variant="outlined"
           size="small"
+          onClick={handleDailyClaim}
           sx={{
             borderColor: alpha('#22c55e', 0.3),
             color: '#22c55e',

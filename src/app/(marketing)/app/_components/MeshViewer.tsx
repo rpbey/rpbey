@@ -50,30 +50,66 @@ function categorizeMesh(name: string): string {
   return 'other';
 }
 
-// Try to find matching textures (AO + EdgeMask) for a mesh
+// Texture lookup with multiple fallback strategies
+// Unity naming: [BladeName]_Blade_AO.png, Ratchet3-85_AO.png, Bit_A_AO.png, AuxBlade_B_AO.png
 function findTextures(meshName: string): {
-  ao: string | null;
-  edge: string | null;
+  ao: string[];
+  edge: string[];
 } {
   const base = meshName.replace('.obj', '');
-  // Strip trailing _N variant numbers for texture lookup
   const stripped = base.replace(/_\d+$/, '');
+  const t = '/app-assets/textures/';
 
-  // Texture paths to try
-  const aoTries = [
-    `/app-assets/textures/${stripped}_AO.png`,
-    `/app-assets/textures/${base}_AO.png`,
-    `/app-assets/textures/${stripped}_Blade_AO.png`,
-  ];
-  const edgeTries = [
-    `/app-assets/textures/${stripped}_EdgeMask.png`,
-    `/app-assets/textures/${base}_EdgeMask.png`,
-    `/app-assets/textures/${stripped}_Blade_EdgeMask.png`,
-  ];
+  // Different strategies based on mesh category
+  const lower = base.toLowerCase();
 
+  if (lower.startsWith('auxblade')) {
+    return {
+      ao: [`${t}${stripped}_AO.png`, `${t}${base}_AO.png`],
+      edge: [`${t}${stripped}_EdgeMask.png`, `${t}${base}_EdgeMask.png`],
+    };
+  }
+
+  if (lower.startsWith('ratchet')) {
+    // Ratchet meshes: Ratchet3-85.obj → Ratchet3-85_AO.png
+    return {
+      ao: [`${t}${stripped}_AO.png`, `${t}${base}_AO.png`],
+      edge: [`${t}${stripped}_EdgeMask.png`, `${t}${base}_EdgeMask.png`],
+    };
+  }
+
+  if (lower.startsWith('bit_')) {
+    // Bit meshes: Bit_A.obj → Bit_A_AO.png
+    return {
+      ao: [`${t}${stripped}_AO.png`, `${t}${base}_AO.png`],
+      edge: [`${t}${stripped}_EdgeMask.png`, `${t}${base}_EdgeMask.png`],
+    };
+  }
+
+  if (lower.startsWith('trophy')) {
+    return { ao: [], edge: [] };
+  }
+
+  // Head meshes are generic — try edge textures
+  if (lower.startsWith('head_metal')) {
+    return {
+      ao: [`${t}head_metal_edge.png`, `${t}head_metal_edge_1.png`],
+      edge: [`${t}head_metal_edge.png`],
+    };
+  }
+
+  // Default: try direct name match
   return {
-    ao: aoTries[0] ?? null,
-    edge: edgeTries[0] ?? null,
+    ao: [
+      `${t}${stripped}_AO.png`,
+      `${t}${base}_AO.png`,
+      `${t}${stripped}_Blade_AO.png`,
+    ],
+    edge: [
+      `${t}${stripped}_EdgeMask.png`,
+      `${t}${base}_EdgeMask.png`,
+      `${t}${stripped}_Blade_EdgeMask.png`,
+    ],
   };
 }
 
@@ -131,9 +167,9 @@ function ThreeCanvas({
     controls.autoRotate = true;
     controls.autoRotateSpeed = 2;
 
-    // Load textures
+    // Load textures — try multiple paths, use first that works
     const textureLoader = new THREE.TextureLoader();
-    const textures = findTextures(meshName);
+    const texPaths = findTextures(meshName);
 
     // Build PBR material
     const material = new THREE.MeshStandardMaterial({
@@ -143,21 +179,34 @@ function ThreeCanvas({
       side: THREE.DoubleSide,
     });
 
-    // Try loading AO map
-    if (textures.ao) {
+    // Try loading AO map — cascade through paths
+    function tryLoadTexture(
+      paths: string[],
+      onSuccess: (tex: THREE.Texture) => void,
+    ) {
+      if (paths.length === 0) return;
+      const [first, ...rest] = paths;
+      if (!first) return;
       textureLoader.load(
-        textures.ao,
-        (tex) => {
-          material.aoMap = tex;
-          material.aoMapIntensity = 1.0;
-          material.needsUpdate = true;
-        },
+        first,
+        (tex) => onSuccess(tex),
         undefined,
-        () => {
-          // AO texture not found — no problem
-        },
+        () => tryLoadTexture(rest, onSuccess),
       );
     }
+
+    tryLoadTexture(texPaths.ao, (tex) => {
+      material.aoMap = tex;
+      material.aoMapIntensity = 1.0;
+      material.needsUpdate = true;
+    });
+
+    tryLoadTexture(texPaths.edge, (tex) => {
+      // Use edge mask as bump map for extra detail
+      material.bumpMap = tex;
+      material.bumpScale = 0.3;
+      material.needsUpdate = true;
+    });
 
     // Load OBJ
     const loader = new OBJLoader();
