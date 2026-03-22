@@ -63,6 +63,14 @@ async function removeWhiteBackground(input: string | Buffer): Promise<Buffer> {
     .toBuffer();
 }
 
+// Domains where we should NOT apply white background removal (avatars, CDN)
+const SKIP_BG_REMOVAL_DOMAINS = [
+  'cdn.discordapp.com',
+  'cdn.discord.com',
+  'images-ext-',
+  'media.discordapp.net',
+];
+
 async function safeLoadImage(url: string | null): Promise<CanvasImage | null> {
   if (!url) return null;
   try {
@@ -71,8 +79,14 @@ async function safeLoadImage(url: string | null): Promise<CanvasImage | null> {
       imageToLoad = getAssetPath(`public${url}`);
     }
 
-    // Remove white background for non-transparent formats (jpg, webp, etc.)
+    // Skip bg removal for avatar/CDN URLs — they don't need it
+    const isExternalAvatar =
+      typeof imageToLoad === 'string' &&
+      SKIP_BG_REMOVAL_DOMAINS.some((d) => imageToLoad.toString().includes(d));
+
+    // Remove white background only for local non-transparent formats
     if (
+      !isExternalAvatar &&
       typeof imageToLoad === 'string' &&
       NON_TRANSPARENT_EXTS.test(imageToLoad)
     ) {
@@ -83,6 +97,14 @@ async function safeLoadImage(url: string | null): Promise<CanvasImage | null> {
       } else {
         imageToLoad = await removeWhiteBackground(imageToLoad);
       }
+    }
+
+    // For HTTP URLs that weren't processed above, fetch as buffer first
+    if (typeof imageToLoad === 'string' && imageToLoad.startsWith('http')) {
+      const res = await fetch(imageToLoad);
+      if (!res.ok) return null;
+      const buf = Buffer.from(await res.arrayBuffer());
+      return await loadImage(buf);
     }
 
     return await loadImage(imageToLoad);
