@@ -11,6 +11,20 @@ const fontPath = getAssetPath(
 );
 GlobalFonts.registerFromPath(fontPath, 'GoogleSans');
 
+// Register emoji font for canvas text rendering
+try {
+  GlobalFonts.registerFromPath(
+    '/usr/share/fonts/truetype/noto/NotoColorEmoji.ttf',
+    'NotoEmoji',
+  );
+} catch {
+  // Emoji font not available — fallback to text symbols
+}
+
+// Font string with emoji fallback
+const _FONT = (weight: string, size: number) =>
+  `${weight} ${size}px GoogleSans, NotoEmoji, sans-serif`;
+
 type CanvasImage = Awaited<ReturnType<typeof loadImage>>;
 
 const NON_TRANSPARENT_EXTS = /\.(jpe?g|webp|bmp|tiff?)(\?.*)?$/i;
@@ -3125,9 +3139,11 @@ export async function generateGachaLeaderboardCard(
   ctx.textAlign = 'left';
   ctx.font = 'bold 22px GoogleSans';
   ctx.fillStyle = '#a78bfa';
-  ctx.fillText('🃏  TOP COLLECTIONNEURS', 50, y - 10);
+  // Draw card icon (small filled rect)
+  ctx.fillRect(50, y - 22, 10, 14);
+  ctx.fillText('  TOP COLLECTIONNEURS', 62, y - 10);
 
-  const medals = ['🥇', '🥈', '🥉'];
+  const medals = ['#1', '#2', '#3'];
   const medalColors = ['#fbbf24', '#e2e8f0', '#cd7f32'];
 
   const collectorAvatars = await Promise.all(
@@ -3159,21 +3175,22 @@ export async function generateGachaLeaderboardCard(
 
     // Rank
     const rankColor = medalColors[i] || '#64748b';
+    // Rank circle with number
+    ctx.fillStyle = rankColor;
+    ctx.beginPath();
+    ctx.arc(80, ry + 30, 20, 0, Math.PI * 2);
+    ctx.fill();
     if (i < 3) {
-      ctx.font = 'bold 26px GoogleSans';
-      ctx.fillStyle = '#fff';
-      ctx.textAlign = 'center';
-      ctx.fillText(medals[i]!, 80, ry + 38);
-    } else {
-      ctx.fillStyle = rankColor;
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 2;
       ctx.beginPath();
-      ctx.arc(80, ry + 30, 18, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.font = 'bold 16px GoogleSans';
-      ctx.fillStyle = '#000';
-      ctx.textAlign = 'center';
-      ctx.fillText(`${entry.rank}`, 80, ry + 36);
+      ctx.arc(80, ry + 30, 20, 0, Math.PI * 2);
+      ctx.stroke();
     }
+    ctx.font = 'bold 18px GoogleSans';
+    ctx.fillStyle = i < 3 ? '#000' : '#fff';
+    ctx.textAlign = 'center';
+    ctx.fillText(`${entry.rank}`, 80, ry + 37);
 
     // Avatar
     drawCircularAvatar(
@@ -3227,7 +3244,19 @@ export async function generateGachaLeaderboardCard(
   ctx.textAlign = 'left';
   ctx.font = 'bold 22px GoogleSans';
   ctx.fillStyle = '#fbbf24';
-  ctx.fillText('💰  TOP FORTUNES', 50, y - 10);
+  // Gold coin icon
+  ctx.fillStyle = '#fbbf24';
+  ctx.beginPath();
+  ctx.arc(62, y - 15, 8, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.font = 'bold 10px GoogleSans';
+  ctx.fillStyle = '#000';
+  ctx.textAlign = 'center';
+  ctx.fillText('$', 62, y - 12);
+  ctx.font = 'bold 22px GoogleSans';
+  ctx.fillStyle = '#fbbf24';
+  ctx.textAlign = 'left';
+  ctx.fillText('TOP FORTUNES', 78, y - 10);
 
   const richAvatars = await Promise.all(
     data.richest.map((r) => safeLoadImage(r.avatarUrl)),
@@ -3289,7 +3318,7 @@ export async function generateGachaLeaderboardCard(
     ctx.shadowColor = 'rgba(251,191,36,0.2)';
     ctx.shadowBlur = 8;
     ctx.fillText(
-      `${entry.currency.toLocaleString('fr-FR')} 🪙`,
+      `${entry.currency.toLocaleString('fr-FR')} coins`,
       W - 60,
       ry + 38,
     );
@@ -3388,21 +3417,21 @@ export async function generateEconomyProfileCard(
   const statBoxW = (W - 80) / 3;
   const statBoxes = [
     {
-      label: 'PIÈCES',
+      label: 'PIECES',
       value: data.currency.toLocaleString('fr-FR'),
-      icon: '🪙',
+      sym: '$',
       color: '#fbbf24',
     },
     {
       label: 'STREAK',
       value: `${data.streak} jour${data.streak !== 1 ? 's' : ''}`,
-      icon: '🔥',
+      sym: 'x',
       color: '#ef4444',
     },
     {
       label: 'WISHLIST',
       value: `${data.wishlistCount}`,
-      icon: '⭐',
+      sym: '*',
       color: '#a78bfa',
     },
   ];
@@ -3424,7 +3453,18 @@ export async function generateEconomyProfileCard(
     ctx.fillStyle = sb.color;
     ctx.shadowColor = `${sb.color}40`;
     ctx.shadowBlur = 6;
-    ctx.fillText(`${sb.icon} ${sb.value}`, sx + statBoxW / 2, statsY + 30);
+    // Draw colored circle indicator instead of emoji
+    const iconX = sx + statBoxW / 2 - ctx.measureText(sb.value).width / 2 - 14;
+    ctx.beginPath();
+    ctx.arc(iconX, statsY + 25, 6, 0, Math.PI * 2);
+    ctx.fillStyle = sb.color;
+    ctx.fill();
+    ctx.font = 'bold 8px GoogleSans';
+    ctx.fillStyle = '#000';
+    ctx.fillText(sb.sym, iconX, statsY + 28);
+    ctx.font = 'bold 22px GoogleSans';
+    ctx.fillStyle = sb.color;
+    ctx.fillText(sb.value, sx + statBoxW / 2 + 4, statsY + 30);
     ctx.shadowBlur = 0;
     ctx.font = 'bold 10px GoogleSans';
     ctx.fillStyle = 'rgba(255,255,255,0.35)';
@@ -3505,7 +3545,7 @@ export async function generateEconomyProfileCard(
     ctx.font = 'bold 12px GoogleSans';
     ctx.fillStyle = 'rgba(255,255,255,0.6)';
     ctx.textAlign = 'left';
-    const label = `${r.emoji} ${r.count}`;
+    const label = `${r.count}`;
     ctx.fillText(label, lx + 14, legY + 4);
     lx += ctx.measureText(label).width + 30;
   }
@@ -3523,7 +3563,7 @@ export async function generateEconomyProfileCard(
     { label: 'Doublons', value: `${data.dupeCount}`, color: '#f59e0b' },
     {
       label: 'Total dépensé',
-      value: `${Math.abs(data.totalSpent).toLocaleString('fr-FR')} 🪙`,
+      value: `${Math.abs(data.totalSpent).toLocaleString('fr-FR')} coins`,
       color: '#ef4444',
     },
     {
