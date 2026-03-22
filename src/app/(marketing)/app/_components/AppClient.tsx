@@ -1,10 +1,7 @@
 'use client';
 
-import { ExpandMore, Search } from '@mui/icons-material';
+import { Search } from '@mui/icons-material';
 import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
   Box,
   Chip,
   Container,
@@ -19,8 +16,6 @@ import { alpha } from '@mui/material/styles';
 import type { Part } from '@prisma/client';
 import { useMemo, useState } from 'react';
 import { AssetGallery } from './AssetGallery';
-import { BoosterTab } from './BoosterTab';
-import { CombatTab } from './CombatTab';
 import { MeshGallery } from './MeshViewer';
 import { PartGrid } from './PartGrid';
 import { ProductCatalog } from './ProductCatalog';
@@ -45,22 +40,32 @@ interface AppClientProps {
 
 /* ─── Constants ─── */
 
-const GAME_TABS = [
-  { label: 'Boosters', icon: '/bbx-icons/orangeStar.webp', color: '#f59e0b' },
+const APP_TABS = [
   {
     label: 'Collection',
     icon: '/bbx-icons/home-icon-2beylocker-on.webp',
     color: '#3b82f6',
   },
-  { label: 'Atelier 3D', icon: '/bbx-icons/icon-scan.webp', color: '#22c55e' },
-  { label: 'Combat', icon: '/bbx-icons/btn-battle.webp', color: '#ef4444' },
-];
-
-const RESOURCE_TABS = [
-  { label: 'Textures & Sprites' },
-  { label: 'Modèles 3D' },
-  { label: 'Animations VFX' },
-  { label: 'Produits & Codes' },
+  {
+    label: 'Textures & Sprites',
+    icon: '/bbx-icons/icon-scan.webp',
+    color: '#22c55e',
+  },
+  {
+    label: 'Modèles 3D',
+    icon: '/bbx-icons/icon-scan.webp',
+    color: '#a855f7',
+  },
+  {
+    label: 'Animations VFX',
+    icon: '/bbx-icons/orangeStar.webp',
+    color: '#f59e0b',
+  },
+  {
+    label: 'Produits',
+    icon: '/bbx-icons/btn-battle.webp',
+    color: '#ef4444',
+  },
 ];
 
 const TYPE_FILTERS = [
@@ -71,7 +76,7 @@ const TYPE_FILTERS = [
   { label: 'Équilibre', value: 'BALANCE', color: '#a855f7' },
 ];
 
-const _SYSTEM_FILTERS = [
+const SYSTEM_FILTERS = [
   { label: 'Tous', value: 'ALL' },
   { label: 'BX', value: 'BX', color: '#ef4444' },
   { label: 'UX', value: 'UX', color: '#3b82f6' },
@@ -88,12 +93,10 @@ export function AppClient({
   assistBlades,
   products,
 }: AppClientProps) {
-  const [gameTab, setGameTab] = useState(0);
-  const [resourceTab, setResourceTab] = useState(0);
+  const [tab, setTab] = useState(0);
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState('ALL');
-  const [systemFilter, _setSystemFilter] = useState('ALL');
-  const [resourcesOpen, setResourcesOpen] = useState(false);
+  const [systemFilter, setSystemFilter] = useState('ALL');
 
   const allParts = useMemo(
     () => [...blades, ...ratchets, ...bits, ...lockChips, ...assistBlades],
@@ -112,11 +115,30 @@ export function AppClient({
     });
   };
 
-  const activeColor = GAME_TABS[gameTab]?.color ?? '#fff';
+  const activeColor = APP_TABS[tab]?.color ?? '#fff';
 
   return (
     <Container maxWidth="xl" sx={{ py: { xs: 1, md: 2 } }}>
-      {/* ── Game Tabs Top Bar ── */}
+      {/* ── Header ── */}
+      <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 2 }}>
+        <Box
+          component="img"
+          src="/bbx-icons/app_icon_round.webp"
+          alt="Beyblade X App"
+          sx={{ width: 40, height: 40 }}
+        />
+        <Box>
+          <Typography variant="h5" fontWeight="900" sx={{ lineHeight: 1.2 }}>
+            BEYBLADE X APP
+          </Typography>
+          <Typography variant="caption" color="text.secondary" fontWeight="600">
+            {allParts.length} pièces · {products.length} produits · Ressources
+            extraites de l'application officielle
+          </Typography>
+        </Box>
+      </Box>
+
+      {/* ── Tab Bar ── */}
       <Paper
         elevation={0}
         sx={{
@@ -131,11 +153,12 @@ export function AppClient({
         }}
       >
         <Tabs
-          value={gameTab}
-          onChange={(_, v) => setGameTab(v)}
-          variant="fullWidth"
+          value={tab}
+          onChange={(_, v) => setTab(v)}
+          variant="scrollable"
+          scrollButtons="auto"
           sx={{
-            minHeight: 72,
+            minHeight: 64,
             '& .MuiTabs-indicator': {
               height: 3,
               borderRadius: '3px 3px 0 0',
@@ -143,15 +166,13 @@ export function AppClient({
               boxShadow: `0 0 12px ${activeColor}`,
             },
             '& .MuiTab-root': {
-              minHeight: 72,
+              minHeight: 64,
               textTransform: 'none',
               fontWeight: 800,
-              fontSize: { xs: '0.8rem', sm: '0.85rem', md: '0.95rem' },
+              fontSize: { xs: '0.75rem', sm: '0.85rem' },
               color: alpha('#fff', 0.45),
               transition: 'all 0.2s ease',
-              '&.Mui-selected': {
-                color: '#fff',
-              },
+              '&.Mui-selected': { color: '#fff' },
               '&:hover': {
                 color: alpha('#fff', 0.7),
                 bgcolor: alpha('#fff', 0.03),
@@ -159,9 +180,9 @@ export function AppClient({
             },
           }}
         >
-          {GAME_TABS.map((tab, i) => (
+          {APP_TABS.map((t, i) => (
             <Tab
-              key={tab.label}
+              key={t.label}
               label={
                 <Box
                   sx={{
@@ -173,20 +194,19 @@ export function AppClient({
                 >
                   <Box
                     sx={{
-                      width: 32,
-                      height: 32,
-                      position: 'relative',
+                      width: 26,
+                      height: 26,
                       filter:
-                        gameTab === i
-                          ? `drop-shadow(0 0 8px ${tab.color})`
+                        tab === i
+                          ? `drop-shadow(0 0 6px ${t.color})`
                           : 'grayscale(0.7) opacity(0.5)',
                       transition: 'filter 0.2s ease',
                     }}
                   >
                     <Box
                       component="img"
-                      src={tab.icon}
-                      alt={tab.label}
+                      src={t.icon}
+                      alt={t.label}
                       sx={{
                         width: '100%',
                         height: '100%',
@@ -194,7 +214,7 @@ export function AppClient({
                       }}
                     />
                   </Box>
-                  <span>{tab.label}</span>
+                  <span>{t.label}</span>
                 </Box>
               }
             />
@@ -202,15 +222,12 @@ export function AppClient({
         </Tabs>
       </Paper>
 
-      {/* ── Game Tab Content ── */}
+      {/* ── Tab Content ── */}
       <Box sx={{ minHeight: 400 }}>
-        {/* Boosters */}
-        {gameTab === 0 && <BoosterTab allParts={allParts} />}
-
         {/* Collection */}
-        {gameTab === 1 && (
+        {tab === 0 && (
           <Box>
-            {/* Search & type filters */}
+            {/* Search & filters */}
             <Box
               sx={{
                 display: 'flex',
@@ -272,13 +289,12 @@ export function AppClient({
                     }}
                   />
                 ))}
-                {/* System filters */}
-                {_SYSTEM_FILTERS.map((f) => (
+                {SYSTEM_FILTERS.map((f) => (
                   <Chip
                     key={`sys-${f.value}`}
                     label={f.label}
                     clickable
-                    onClick={() => _setSystemFilter(f.value)}
+                    onClick={() => setSystemFilter(f.value)}
                     size="small"
                     sx={{
                       fontWeight: 800,
@@ -347,98 +363,17 @@ export function AppClient({
           </Box>
         )}
 
-        {/* Atelier 3D */}
-        {gameTab === 2 && <MeshGallery />}
+        {/* Textures & Sprites */}
+        {tab === 1 && <AssetGallery />}
 
-        {/* Combat */}
-        {gameTab === 3 && (
-          <CombatTab blades={blades} ratchets={ratchets} bits={bits} />
-        )}
-      </Box>
+        {/* Modèles 3D */}
+        {tab === 2 && <MeshGallery />}
 
-      {/* ── Ressources extraites (collapsible) ── */}
-      <Box sx={{ mt: 6 }}>
-        <Accordion
-          expanded={resourcesOpen}
-          onChange={() => setResourcesOpen(!resourcesOpen)}
-          disableGutters
-          elevation={0}
-          sx={{
-            borderRadius: '16px !important',
-            overflow: 'hidden',
-            border: '1px solid',
-            borderColor: alpha('#fff', 0.08),
-            bgcolor: alpha('#0f172a', 0.5),
-            '&::before': { display: 'none' },
-          }}
-        >
-          <AccordionSummary
-            expandIcon={
-              <ExpandMore sx={{ color: alpha('#fff', 0.4), fontSize: 28 }} />
-            }
-            sx={{
-              minHeight: 64,
-              px: 3,
-              '& .MuiAccordionSummary-content': {
-                alignItems: 'center',
-                gap: 2,
-              },
-            }}
-          >
-            <Box
-              component="img"
-              src="/bbx-icons/icon-scan.webp"
-              sx={{ width: 24, height: 24, opacity: 0.7 }}
-            />
-            <Typography
-              variant="subtitle1"
-              sx={{
-                fontWeight: 800,
-                color: alpha('#fff', 0.7),
-                letterSpacing: 0.5,
-              }}
-            >
-              Ressources extraites
-            </Typography>
-            <Chip
-              label={`${allParts.length + products.length}+ assets`}
-              size="small"
-              sx={{
-                height: 22,
-                fontSize: '0.7rem',
-                fontWeight: 700,
-                bgcolor: alpha('#dc2626', 0.1),
-                color: '#dc2626',
-              }}
-            />
-          </AccordionSummary>
+        {/* Animations VFX */}
+        {tab === 3 && <VfxGallery />}
 
-          <AccordionDetails sx={{ px: 3, pb: 3 }}>
-            <Tabs
-              value={resourceTab}
-              onChange={(_, v) => setResourceTab(v)}
-              variant="scrollable"
-              scrollButtons="auto"
-              sx={{
-                mb: 3,
-                '& .MuiTab-root': {
-                  fontWeight: 900,
-                  fontSize: '0.8rem',
-                  textTransform: 'none',
-                },
-              }}
-            >
-              {RESOURCE_TABS.map((tab) => (
-                <Tab key={tab.label} label={tab.label} />
-              ))}
-            </Tabs>
-
-            {resourceTab === 0 && <AssetGallery />}
-            {resourceTab === 1 && <MeshGallery />}
-            {resourceTab === 2 && <VfxGallery />}
-            {resourceTab === 3 && <ProductCatalog products={products} />}
-          </AccordionDetails>
-        </Accordion>
+        {/* Produits */}
+        {tab === 4 && <ProductCatalog products={products} />}
       </Box>
     </Container>
   );
