@@ -4,9 +4,10 @@ import {
   type CommandInteraction,
   EmbedBuilder,
 } from 'discord.js';
-import { Discord, Slash, SlashGroup, SlashOption } from 'discordx';
+import { Discord, Guard, Slash, SlashGroup, SlashOption } from 'discordx';
 import { inject, injectable } from 'tsyringe';
 
+import { StaffOnly } from '../../guards/StaffOnly.js';
 import {
   generateCollectionCard,
   generateEconomyProfileCard,
@@ -185,6 +186,7 @@ function randomMiss(): string {
   description: 'Système de cartes à collectionner RPB',
 })
 @SlashGroup('gacha')
+@Guard(StaffOnly)
 @injectable()
 export class EconomyGroup {
   constructor(@inject(PrismaService) private prisma: PrismaService) {}
