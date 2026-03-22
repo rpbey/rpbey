@@ -64,6 +64,7 @@ model User {
   twoFactors       TwoFactor[]
   animeProgress    AnimeWatchProgress[]
   cardInventory    CardInventory[]
+  partInventory    PartInventory[]
   transactions     CurrencyTransaction[]
 
   @@map("users")
@@ -268,6 +269,7 @@ model Part {
   deckRatchets     DeckItem[] @relation("RatchetRelation")
   deckLockChips    DeckItem[] @relation("LockChipRelation")
   deckAssistBlades DeckItem[] @relation("AssistBladeRelation")
+  partInventory    PartInventory[]
 
   @@index([type])
   @@index([beyType])
@@ -750,6 +752,20 @@ model CardWishlist {
   @@unique([profileId, cardId])
   @@index([profileId])
   @@map("card_wishlists")
+}
+
+model PartInventory {
+  id         String   @id @default(cuid())
+  userId     String
+  partId     String
+  count      Int      @default(1)
+  obtainedAt DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  part       Part     @relation(fields: [partId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, partId])
+  @@index([userId])
+  @@map("part_inventory")
 }
 
 model CurrencyTransaction {
