@@ -44,17 +44,32 @@ function categorizeAsset(name: string): string {
   )
     return 'bit';
   if (lower.includes('arena') || lower.includes('stadium')) return 'arena';
-  if (lower.includes('portrait') || lower.includes('frame_')) return 'portrait';
+  if (lower.includes('powercore') || lower.includes('power_core'))
+    return 'powercore';
+  if (
+    lower.includes('battlepass') ||
+    lower.includes('season') ||
+    lower.includes('seasonxp')
+  )
+    return 'battlepass';
+  if (
+    lower.includes('portrait') ||
+    lower.includes('frame_') ||
+    lower.includes('frame-')
+  )
+    return 'frame';
+  if (lower.includes('clan') || lower.includes('exhibition')) return 'clan';
   if (lower.includes('marketing')) return 'marketing';
+  if (lower.includes('augment')) return 'augment';
+  if (lower.includes('badge') || lower.includes('achievement')) return 'badge';
   if (
     lower.includes('battle') ||
     lower.includes('screen') ||
     lower.includes('icon') ||
     lower.includes('banner') ||
     lower.includes('button') ||
-    lower.includes('ui') ||
-    lower.includes('augment') ||
-    lower.includes('seasonxp')
+    lower.includes('btn') ||
+    lower.includes('ui')
   )
     return 'ui';
   return 'other';

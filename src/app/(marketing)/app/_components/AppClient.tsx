@@ -16,6 +16,7 @@ import { alpha } from '@mui/material/styles';
 import type { Part } from '@prisma/client';
 import { useMemo, useState } from 'react';
 import { AssetGallery } from './AssetGallery';
+import { GameData } from './GameData';
 import { MeshGallery } from './MeshViewer';
 import { PartGrid } from './PartGrid';
 import { ProductCatalog } from './ProductCatalog';
@@ -65,6 +66,11 @@ const APP_TABS = [
     label: 'Produits',
     icon: '/bbx-icons/btn-battle.webp',
     color: '#ef4444',
+  },
+  {
+    label: 'Game Data',
+    icon: '/bbx-icons/home-icon-2beylocker-on.webp',
+    color: '#dc2626',
   },
 ];
 
@@ -374,6 +380,9 @@ export function AppClient({
 
         {/* Produits */}
         {tab === 4 && <ProductCatalog products={products} />}
+
+        {/* Game Data */}
+        {tab === 5 && <GameData />}
       </Box>
     </Container>
   );

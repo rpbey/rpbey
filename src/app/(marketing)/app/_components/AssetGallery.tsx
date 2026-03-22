@@ -30,8 +30,13 @@ const TEXTURE_CATEGORIES = [
   { label: 'Ratchets', value: 'ratchet' },
   { label: 'Bits', value: 'bit' },
   { label: 'Arènes', value: 'arena' },
+  { label: 'PowerCores', value: 'powercore' },
+  { label: 'Battlepass', value: 'battlepass' },
+  { label: 'Frames & Portraits', value: 'frame' },
+  { label: 'Augments', value: 'augment' },
+  { label: 'Badges', value: 'badge' },
+  { label: 'Clan & Exhibition', value: 'clan' },
   { label: 'UI', value: 'ui' },
-  { label: 'Portraits', value: 'portrait' },
   { label: 'Marketing', value: 'marketing' },
 ];
 
