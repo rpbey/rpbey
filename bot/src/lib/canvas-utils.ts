@@ -15,9 +15,38 @@ type CanvasImage = Awaited<ReturnType<typeof loadImage>>;
 
 const NON_TRANSPARENT_EXTS = /\.(jpe?g|webp|bmp|tiff?)(\?.*)?$/i;
 
-/** Remove white background from non-PNG images using sharp unflatten */
+/**
+ * Remove white/light backgrounds from images.
+ * Uses sharp unflatten for simple cases, then applies a pixel-level
+ * threshold to catch near-white (#F0F0F0+) backgrounds with tolerance.
+ */
 async function removeWhiteBackground(input: string | Buffer): Promise<Buffer> {
-  return sharp(input).unflatten().png().toBuffer();
+  // First pass: sharp unflatten handles pure white
+  const unflattened = await sharp(input).unflatten().png().toBuffer();
+
+  // Second pass: threshold-based removal for near-white pixels
+  // This catches light grey backgrounds (#F0F0F0+)
+  const { data, info } = await sharp(unflattened)
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+
+  const threshold = 240; // Pixels with R,G,B all >= 240 → transparent
+  const pixels = new Uint8Array(data.buffer, data.byteOffset, data.length);
+  for (let i = 0; i < pixels.length; i += 4) {
+    const r = pixels[i]!;
+    const g = pixels[i + 1]!;
+    const b = pixels[i + 2]!;
+    if (r >= threshold && g >= threshold && b >= threshold) {
+      pixels[i + 3] = 0; // Set alpha to 0
+    }
+  }
+
+  return sharp(Buffer.from(pixels.buffer), {
+    raw: { width: info.width, height: info.height, channels: 4 },
+  })
+    .png()
+    .toBuffer();
 }
 
 async function safeLoadImage(url: string | null): Promise<CanvasImage | null> {
@@ -28,7 +57,7 @@ async function safeLoadImage(url: string | null): Promise<CanvasImage | null> {
       imageToLoad = getAssetPath(`public${url}`);
     }
 
-    // Remove white background for non-transparent formats
+    // Remove white background for non-transparent formats (jpg, webp, etc.)
     if (
       typeof imageToLoad === 'string' &&
       NON_TRANSPARENT_EXTS.test(imageToLoad)
@@ -43,6 +72,31 @@ async function safeLoadImage(url: string | null): Promise<CanvasImage | null> {
     }
 
     return await loadImage(imageToLoad);
+  } catch (_e) {
+    return null;
+  }
+}
+
+/**
+ * Force-remove white background even for PNG images.
+ * Use this specifically for character/portrait images that may have
+ * white backgrounds even in PNG format.
+ */
+async function _loadImageNoWhiteBg(
+  url: string | null,
+): Promise<CanvasImage | null> {
+  if (!url) return null;
+  try {
+    let source: string | Buffer = url;
+    if (url.startsWith('/')) {
+      source = getAssetPath(`public${url}`);
+    }
+    if (typeof source === 'string' && source.startsWith('http')) {
+      const res = await fetch(source);
+      source = Buffer.from(await res.arrayBuffer());
+    }
+    const cleaned = await removeWhiteBackground(source);
+    return await loadImage(cleaned);
   } catch (_e) {
     return null;
   }
@@ -1521,7 +1575,8 @@ export async function generateGachaCard(data: GachaCardData): Promise<Buffer> {
   ctx.roundRect(imgX, imgY, imgW, imgH, 12);
   ctx.fill();
 
-  const charImg = await safeLoadImage(data.imageUrl || null);
+  // Force-remove white backgrounds from character art (even PNGs)
+  const charImg = await _loadImageNoWhiteBg(data.imageUrl || null);
   if (charImg) {
     ctx.save();
     ctx.beginPath();
@@ -2062,7 +2117,7 @@ export async function generateMultiPullCard(
       ctx.fill();
 
       if (slot.imageUrl) {
-        const img = await safeLoadImage(slot.imageUrl);
+        const img = await _loadImageNoWhiteBg(slot.imageUrl);
         if (img) {
           ctx.save();
           ctx.beginPath();
@@ -2354,8 +2409,8 @@ export async function generateCollectionCard(
     ctx.roundRect(x, y, CELL, CELL, 10);
     ctx.fill();
 
-    // Card image
-    const img = await safeLoadImage(card.imageUrl);
+    // Card image — force white bg removal for character art
+    const img = await _loadImageNoWhiteBg(card.imageUrl);
     if (img) {
       ctx.save();
       ctx.beginPath();
@@ -2805,7 +2860,7 @@ export async function generateGachaDuelCard(
     ctx.beginPath();
     ctx.roundRect(x + 10, imgY, cW - 20, imgH, 10);
     ctx.fill();
-    const img = await safeLoadImage(card.imageUrl);
+    const img = await _loadImageNoWhiteBg(card.imageUrl);
     if (img) {
       ctx.save();
       ctx.beginPath();
