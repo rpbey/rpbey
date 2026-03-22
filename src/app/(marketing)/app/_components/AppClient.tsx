@@ -71,6 +71,13 @@ const TYPE_FILTERS = [
   { label: 'Équilibre', value: 'BALANCE', color: '#a855f7' },
 ];
 
+const _SYSTEM_FILTERS = [
+  { label: 'Tous', value: 'ALL' },
+  { label: 'BX', value: 'BX', color: '#ef4444' },
+  { label: 'UX', value: 'UX', color: '#3b82f6' },
+  { label: 'CX', value: 'CX', color: '#a855f7' },
+];
+
 /* ─── Main Component ─── */
 
 export function AppClient({
@@ -85,6 +92,7 @@ export function AppClient({
   const [resourceTab, setResourceTab] = useState(0);
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState('ALL');
+  const [systemFilter, _setSystemFilter] = useState('ALL');
   const [resourcesOpen, setResourcesOpen] = useState(false);
 
   const allParts = useMemo(
@@ -99,7 +107,8 @@ export function AppClient({
         p.name.toLowerCase().includes(search.toLowerCase()) ||
         p.externalId.toLowerCase().includes(search.toLowerCase());
       const matchType = typeFilter === 'ALL' || p.beyType === typeFilter;
-      return matchSearch && matchType;
+      const matchSystem = systemFilter === 'ALL' || p.system === systemFilter;
+      return matchSearch && matchType && matchSystem;
     });
   };
 
@@ -263,6 +272,32 @@ export function AppClient({
                     }}
                   />
                 ))}
+                {/* System filters */}
+                {_SYSTEM_FILTERS.map((f) => (
+                  <Chip
+                    key={`sys-${f.value}`}
+                    label={f.label}
+                    clickable
+                    onClick={() => _setSystemFilter(f.value)}
+                    size="small"
+                    sx={{
+                      fontWeight: 800,
+                      fontSize: '0.65rem',
+                      borderRadius: 2,
+                      bgcolor:
+                        systemFilter === f.value
+                          ? f.color || 'text.primary'
+                          : 'transparent',
+                      color:
+                        systemFilter === f.value ? '#fff' : 'text.disabled',
+                      border: '1px solid',
+                      borderColor:
+                        systemFilter === f.value
+                          ? f.color || 'text.primary'
+                          : alpha('#fff', 0.08),
+                    }}
+                  />
+                ))}
               </Box>
             </Box>
 
@@ -366,7 +401,7 @@ export function AppClient({
               Ressources extraites
             </Typography>
             <Chip
-              label="4 861 assets"
+              label={`${allParts.length + products.length}+ assets`}
               size="small"
               sx={{
                 height: 22,

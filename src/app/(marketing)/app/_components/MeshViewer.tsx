@@ -3,6 +3,7 @@
 import { Close, ThreeDRotation } from '@mui/icons-material';
 import {
   Box,
+  Button,
   Card,
   CardActionArea,
   CardContent,
@@ -630,10 +631,13 @@ function MeshCard({ mesh }: { mesh: MeshAsset }) {
   );
 }
 
+const _MESHES_PER_PAGE = 30;
+
 export function MeshGallery() {
   const [meshes, setMeshes] = useState<MeshAsset[]>([]);
   const [category, setCategory] = useState('all');
   const [loading, setLoading] = useState(true);
+  const [_page, _setPage] = useState(1);
 
   useEffect(() => {
     fetch('/api/app-assets?type=meshes')
@@ -719,28 +723,28 @@ export function MeshGallery() {
             gap: 2,
           }}
         >
-          {filtered.slice(0, 60).map((mesh) => (
+          {filtered.slice(0, _page * _MESHES_PER_PAGE).map((mesh) => (
             <MeshCard key={mesh.name} mesh={mesh} />
           ))}
         </Box>
       )}
 
-      {filtered.length > 60 && (
-        <Box
-          sx={{
-            textAlign: 'center',
-            py: 3,
-            mt: 2,
-            borderRadius: 3,
-            bgcolor: alpha('#a855f7', 0.03),
-            border: '1px solid',
-            borderColor: alpha('#a855f7', 0.1),
-          }}
-        >
-          <Typography variant="body2" color="text.secondary">
-            Affichage limité à 60 modèles — {filtered.length - 60} modèles
-            supplémentaires disponibles
-          </Typography>
+      {filtered.length > _page * _MESHES_PER_PAGE && (
+        <Box sx={{ textAlign: 'center', mt: 3 }}>
+          <Button
+            variant="outlined"
+            onClick={() => _setPage((p) => p + 1)}
+            sx={{
+              fontWeight: 900,
+              borderRadius: 3,
+              borderColor: alpha('#a855f7', 0.3),
+              color: '#a855f7',
+              px: 4,
+              '&:hover': { bgcolor: alpha('#a855f7', 0.08) },
+            }}
+          >
+            Voir plus ({filtered.length - _page * _MESHES_PER_PAGE} restants)
+          </Button>
         </Box>
       )}
     </Box>

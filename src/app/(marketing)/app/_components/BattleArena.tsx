@@ -298,13 +298,13 @@ export function BattleArena({
           ? ARENA_CENTER.y + ARENA_RADIUS * 0.6
           : ARENA_CENTER.y - ARENA_RADIUS * 0.6;
 
-      // Mass from weight stat
-      const mass = 1 + (stats.weight || 30) * 0.02;
+      // Mass from weight stat (clamped 0.8-2.5)
+      const mass = clamp(0.8 + (stats.weight || 30) * 0.04, 0.8, 2.5);
 
       const bey = Matter.Bodies.circle(startX, startY, BEY_RADIUS, {
         restitution: 0.8,
         friction: FRICTION_GROUND,
-        frictionAir: 0.005 + (1 - stats.dash / 200) * 0.01,
+        frictionAir: clamp(0.005 + (1 - stats.dash / 200) * 0.008, 0.002, 0.02),
         density: mass * 0.001,
         label: player,
         render: { fillStyle: color },
@@ -822,10 +822,12 @@ export function BattleArena({
           style={{
             width: '100%',
             maxWidth: CANVAS_SIZE,
+            height: 'auto',
             aspectRatio: '1',
             borderRadius: 16,
             border: '2px solid rgba(255,255,255,0.08)',
             background: '#08080c',
+            touchAction: 'none',
           }}
         />
 

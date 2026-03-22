@@ -270,7 +270,91 @@ export function ProductCatalog({ products }: { products: ProductEntry[] }) {
         </Typography>
       </Box>
 
-      {/* Products table */}
+      {/* Mobile: card layout */}
+      <Box
+        sx={{
+          display: { xs: 'flex', sm: 'none' },
+          flexDirection: 'column',
+          gap: 1.5,
+        }}
+      >
+        {filtered.map((product, idx) => {
+          const line = getLine(product.code);
+          const lineColor = LINE_COLORS[line] || '#6b7280';
+          const future = isFuture(product);
+          const cleanDate = product.date.replace(/\s*\(.*\)/, '').trim();
+          const pType = getProductType(product.name);
+
+          return (
+            <Paper
+              key={`m-${product.code}-${idx}`}
+              elevation={0}
+              sx={{
+                p: 1.5,
+                borderRadius: 2,
+                border: '1px solid',
+                borderColor: alpha(lineColor, 0.15),
+                bgcolor: future ? alpha('#22c55e', 0.03) : 'transparent',
+              }}
+            >
+              <Box
+                sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}
+              >
+                <Chip
+                  label={product.code}
+                  size="small"
+                  sx={{
+                    fontWeight: 900,
+                    fontSize: '0.65rem',
+                    fontFamily: 'monospace',
+                    height: 20,
+                    borderRadius: 1.5,
+                    bgcolor: alpha(lineColor, 0.1),
+                    color: lineColor,
+                  }}
+                />
+                <Typography
+                  variant="caption"
+                  color="text.disabled"
+                  fontWeight="600"
+                >
+                  {pType}
+                </Typography>
+                {future && (
+                  <Chip
+                    label="À VENIR"
+                    size="small"
+                    sx={{
+                      height: 16,
+                      fontSize: '0.5rem',
+                      fontWeight: 900,
+                      bgcolor: '#22c55e',
+                      color: '#fff',
+                      ml: 'auto',
+                    }}
+                  />
+                )}
+              </Box>
+              <Typography
+                variant="body2"
+                fontWeight="700"
+                sx={{ fontSize: '0.8rem' }}
+              >
+                {product.name}
+              </Typography>
+              <Typography
+                variant="caption"
+                color="text.disabled"
+                sx={{ fontSize: '0.7rem' }}
+              >
+                {cleanDate}
+              </Typography>
+            </Paper>
+          );
+        })}
+      </Box>
+
+      {/* Desktop: table layout */}
       <TableContainer
         component={Paper}
         elevation={0}
@@ -278,10 +362,10 @@ export function ProductCatalog({ products }: { products: ProductEntry[] }) {
           borderRadius: 3,
           border: '1px solid',
           borderColor: 'divider',
-          overflowX: 'auto',
+          display: { xs: 'none', sm: 'block' },
         }}
       >
-        <Table size="small" sx={{ minWidth: 600 }}>
+        <Table size="small">
           <TableHead>
             <TableRow>
               <TableCell sx={{ fontWeight: 900, fontSize: '0.75rem' }}>
@@ -305,21 +389,16 @@ export function ProductCatalog({ products }: { products: ProductEntry[] }) {
             {filtered.map((product, idx) => {
               const line = getLine(product.code);
               const lineColor = LINE_COLORS[line] || '#6b7280';
-              const special = isSpecial(product);
               const future = isFuture(product);
-              const note = getNote(product.date);
               const cleanDate = product.date.replace(/\s*\(.*\)/, '').trim();
               const pType = getProductType(product.name);
+              const note = getNote(product.date);
 
               return (
                 <TableRow
                   key={`${product.code}-${idx}`}
                   sx={{
-                    bgcolor: future
-                      ? alpha('#22c55e', 0.04)
-                      : special
-                        ? alpha('#f59e0b', 0.03)
-                        : 'transparent',
+                    bgcolor: future ? alpha('#22c55e', 0.04) : 'transparent',
                     '&:hover': { bgcolor: alpha(lineColor, 0.06) },
                   }}
                 >

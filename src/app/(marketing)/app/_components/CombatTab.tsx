@@ -487,7 +487,6 @@ export function CombatTab({ blades, ratchets, bits }: CombatTabProps) {
         bit: randPart(bits),
       });
     }
-    void 0;
   }, [blades, ratchets, bits, mode]);
 
   // Convert combo to BattleArena stats
@@ -521,7 +520,6 @@ export function CombatTab({ blades, ratchets, bits }: CombatTabProps) {
         aiDifficulty={aiDifficulty}
         onBack={() => {
           setInArena(false);
-          void 0;
         }}
       />
     );
@@ -558,7 +556,6 @@ export function CombatTab({ blades, ratchets, bits }: CombatTabProps) {
             clickable
             onClick={() => {
               _setMode('ai');
-              void 0;
             }}
             sx={{
               fontWeight: 900,
@@ -575,7 +572,6 @@ export function CombatTab({ blades, ratchets, bits }: CombatTabProps) {
             clickable
             onClick={() => {
               _setMode('pvp');
-              void 0;
             }}
             sx={{
               fontWeight: 900,

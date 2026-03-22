@@ -182,7 +182,7 @@ function AnimatedPreview({ sequence }: { sequence: VfxSequence }) {
     if (playing) {
       intervalRef.current = setInterval(() => {
         setFrame((f) => (f + 1) % validFrames.current.length);
-      }, 80);
+      }, 42);
     }
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
