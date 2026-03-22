@@ -13,7 +13,8 @@ import {
 } from '@mui/material';
 import { alpha } from '@mui/material/styles';
 import type { Part } from '@prisma/client';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
+import { BattleArena } from './BattleArena';
 
 const TYPE_COLORS: Record<string, string> = {
   ATTACK: '#ef4444',
@@ -238,7 +239,7 @@ interface BattleResult {
   log: string[];
 }
 
-function simulateBattle(p1: BeyCombo, p2: BeyCombo): BattleResult {
+function _simulateBattle(p1: BeyCombo, p2: BeyCombo): BattleResult {
   const s1 = getComboStats(p1);
   const s2 = getComboStats(p2);
 
@@ -430,10 +431,12 @@ export function CombatTab({ blades, ratchets, bits }: CombatTabProps) {
     ratchet: null,
     bit: null,
   });
-  const [battling, setBattling] = useState(false);
-  const [battlePhase, setBattlePhase] = useState(-1);
-  const [result, setResult] = useState<BattleResult | null>(null);
-  const [vfxFrame, setVfxFrame] = useState(0);
+  const [_inArena, setInArena] = useState(false);
+  const [_arenaP2, setArenaP2] = useState<BeyCombo>({
+    blade: null,
+    ratchet: null,
+    bit: null,
+  });
   const [_aiName, setAiName] = useState('IA');
 
   const p1Ready = p1.blade && p1.ratchet && p1.bit;
@@ -445,7 +448,6 @@ export function CombatTab({ blades, ratchets, bits }: CombatTabProps) {
 
     let opponent = p2;
 
-    // In AI mode, generate opponent combo
     if (mode === 'ai') {
       opponent = buildAICombo(blades, ratchets, bits, aiDifficulty);
       setP2(opponent);
@@ -466,29 +468,9 @@ export function CombatTab({ blades, ratchets, bits }: CombatTabProps) {
       setAiName(names[Math.floor(Math.random() * names.length)] || 'IA');
     }
 
-    setBattling(true);
-    setResult(null);
-    setVfxFrame(0);
-
-    setBattlePhase(0);
-    setTimeout(() => setBattlePhase(1), 800);
-    setTimeout(() => setBattlePhase(2), 2300);
-    setTimeout(() => setBattlePhase(3), 3000);
-    setTimeout(() => {
-      setBattlePhase(-1);
-      setResult(simulateBattle(p1, opponent));
-      setBattling(false);
-    }, 3300);
-  }, [canBattle, p1, p2, mode, aiDifficulty, blades, ratchets, bits]);
-
-  // VFX frame ticker
-  useEffect(() => {
-    if (battlePhase < 0) return;
-    const interval = setInterval(() => {
-      setVfxFrame((f) => f + 1);
-    }, 60);
-    return () => clearInterval(interval);
-  }, [battlePhase]);
+    setArenaP2(opponent);
+    setInArena(true);
+  }, [canBattle, p2, mode, aiDifficulty, blades, ratchets, bits]);
 
   const randomize = useCallback(() => {
     const randPart = (parts: Part[]) =>
@@ -505,8 +487,45 @@ export function CombatTab({ blades, ratchets, bits }: CombatTabProps) {
         bit: randPart(bits),
       });
     }
-    setResult(null);
+    void 0;
   }, [blades, ratchets, bits, mode]);
+
+  // Convert combo to BattleArena stats
+  const toBeyStats = (combo: BeyCombo, fallbackName: string) => {
+    const stats = getComboStats(combo);
+    return {
+      name: combo.blade?.name || fallbackName,
+      attack: stats.attack,
+      defense: stats.defense,
+      stamina: stats.stamina,
+      dash: stats.dash,
+      burst: stats.burst,
+      weight:
+        (combo.blade?.weight || 30) +
+        (combo.ratchet?.weight || 7) +
+        (combo.bit?.weight || 2),
+      type: stats.type,
+      color: TYPE_COLORS[stats.type] || '#888',
+      imageUrl: combo.blade?.imageUrl,
+    };
+  };
+
+  // If in arena, render BattleArena
+  if (_inArena && p1.blade && (mode === 'ai' || _arenaP2.blade)) {
+    const opponent = mode === 'ai' ? _arenaP2 : p2;
+    return (
+      <BattleArena
+        p1Stats={toBeyStats(p1, 'Joueur 1')}
+        p2Stats={toBeyStats(opponent, mode === 'ai' ? _aiName : 'Joueur 2')}
+        mode={mode}
+        aiDifficulty={aiDifficulty}
+        onBack={() => {
+          setInArena(false);
+          void 0;
+        }}
+      />
+    );
+  }
 
   return (
     <Box>
@@ -539,7 +558,7 @@ export function CombatTab({ blades, ratchets, bits }: CombatTabProps) {
             clickable
             onClick={() => {
               _setMode('ai');
-              setResult(null);
+              void 0;
             }}
             sx={{
               fontWeight: 900,
@@ -556,7 +575,7 @@ export function CombatTab({ blades, ratchets, bits }: CombatTabProps) {
             clickable
             onClick={() => {
               _setMode('pvp');
-              setResult(null);
+              void 0;
             }}
             sx={{
               fontWeight: 900,
@@ -724,7 +743,7 @@ export function CombatTab({ blades, ratchets, bits }: CombatTabProps) {
         <Button
           variant="contained"
           size="large"
-          disabled={!canBattle || battling}
+          disabled={!canBattle}
           onClick={handleBattle}
           sx={{
             fontWeight: 900,
@@ -737,276 +756,9 @@ export function CombatTab({ blades, ratchets, bits }: CombatTabProps) {
             '&:hover': { bgcolor: '#b91c1c' },
           }}
         >
-          {battling ? 'COMBAT EN COURS...' : 'LANCER LE COMBAT'}
+          LANCER LE COMBAT
         </Button>
       </Box>
-
-      {/* Battle VFX overlay — multi-phase */}
-      {battlePhase >= 0 && (
-        <Box
-          sx={{
-            position: 'fixed',
-            inset: 0,
-            zIndex: 9999,
-            bgcolor: '#000',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            overflow: 'hidden',
-          }}
-        >
-          {/* Phase 0: Names fly in from sides */}
-          {battlePhase === 0 && (
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: { xs: 2, md: 6 },
-                width: '100%',
-                justifyContent: 'center',
-              }}
-            >
-              <Typography
-                sx={{
-                  color: '#ef4444',
-                  fontWeight: 900,
-                  fontSize: { xs: '1.2rem', md: '2rem' },
-                  letterSpacing: 2,
-                  textTransform: 'uppercase',
-                  animation: 'slideInLeft 0.4s ease-out',
-                  '@keyframes slideInLeft': {
-                    from: { transform: 'translateX(-100vw)', opacity: 0 },
-                    to: { transform: 'translateX(0)', opacity: 1 },
-                  },
-                }}
-              >
-                {p1.blade?.name || 'P1'}
-              </Typography>
-              <Typography
-                sx={{
-                  color: '#f59e0b',
-                  fontWeight: 900,
-                  fontSize: { xs: '1.5rem', md: '2.5rem' },
-                  animation: 'pulse 0.3s infinite',
-                }}
-              >
-                VS
-              </Typography>
-              <Typography
-                sx={{
-                  color: '#3b82f6',
-                  fontWeight: 900,
-                  fontSize: { xs: '1.2rem', md: '2rem' },
-                  letterSpacing: 2,
-                  textTransform: 'uppercase',
-                  animation: 'slideInRight 0.4s ease-out',
-                  '@keyframes slideInRight': {
-                    from: { transform: 'translateX(100vw)', opacity: 0 },
-                    to: { transform: 'translateX(0)', opacity: 1 },
-                  },
-                }}
-              >
-                {p2.blade?.name || 'P2'}
-              </Typography>
-            </Box>
-          )}
-
-          {/* Phase 1: Center sparks clash */}
-          {battlePhase === 1 && (
-            <Box sx={{ position: 'relative', width: '100%', height: '100%' }}>
-              <Box
-                component="img"
-                src={`/app-assets/vfx/BattleScreen_Center_Sparks_Seq_${vfxFrame % 8}.webp`}
-                alt=""
-                sx={{
-                  position: 'absolute',
-                  top: '50%',
-                  left: '50%',
-                  transform: 'translate(-50%, -50%)',
-                  width: { xs: '90vw', md: '50vw' },
-                  maxWidth: 500,
-                  objectFit: 'contain',
-                }}
-              />
-              {/* Overlay sparks layer 2 */}
-              <Box
-                component="img"
-                src={`/app-assets/vfx/V_SEQ_Spark_0${(vfxFrame % 6) + 1}.webp`}
-                alt=""
-                sx={{
-                  position: 'absolute',
-                  top: '45%',
-                  left: '50%',
-                  transform: 'translate(-50%, -50%) scale(1.5)',
-                  width: { xs: '70vw', md: '40vw' },
-                  objectFit: 'contain',
-                  opacity: 0.7,
-                  mixBlendMode: 'screen',
-                }}
-              />
-              <Typography
-                sx={{
-                  position: 'absolute',
-                  bottom: '20%',
-                  width: '100%',
-                  textAlign: 'center',
-                  color: '#fff',
-                  fontWeight: 900,
-                  fontSize: { xs: '1rem', md: '1.5rem' },
-                  letterSpacing: 8,
-                  textTransform: 'uppercase',
-                  textShadow: '0 0 20px rgba(220,38,38,0.8)',
-                }}
-              >
-                COMBAT !
-              </Typography>
-            </Box>
-          )}
-
-          {/* Phase 2: Lightning */}
-          {battlePhase === 2 && (
-            <Box sx={{ position: 'relative', width: '100%', height: '100%' }}>
-              <Box
-                component="img"
-                src={`/app-assets/vfx/V_SEQ_Lightning_UI_${vfxFrame % 30}.webp`}
-                alt=""
-                sx={{
-                  position: 'absolute',
-                  top: '50%',
-                  left: '50%',
-                  transform: 'translate(-50%, -50%)',
-                  width: { xs: '100vw', md: '60vw' },
-                  objectFit: 'contain',
-                }}
-              />
-            </Box>
-          )}
-
-          {/* Phase 3: White flash */}
-          {battlePhase === 3 && (
-            <Box
-              sx={{
-                position: 'absolute',
-                inset: 0,
-                bgcolor: '#fff',
-                animation: 'bbx-flash 0.3s ease-out forwards',
-              }}
-            />
-          )}
-        </Box>
-      )}
-
-      {/* Result */}
-      {result && (
-        <Card
-          elevation={0}
-          sx={{
-            borderRadius: 4,
-            border: '2px solid',
-            borderColor: result.winner === 'p1' ? '#ef4444' : '#3b82f6',
-            bgcolor: alpha(
-              result.winner === 'p1' ? '#ef4444' : '#3b82f6',
-              0.03,
-            ),
-            overflow: 'hidden',
-          }}
-        >
-          <CardContent sx={{ p: 3 }}>
-            <Typography
-              variant="h5"
-              fontWeight="900"
-              sx={{
-                textAlign: 'center',
-                mb: 2,
-                color: result.winner === 'p1' ? '#ef4444' : '#3b82f6',
-              }}
-            >
-              {result.winner === 'p1' ? p1.blade?.name : p2.blade?.name} GAGNE !
-            </Typography>
-
-            {/* HP bars */}
-            <Box sx={{ display: 'flex', gap: 3, mb: 3 }}>
-              <Box sx={{ flex: 1 }}>
-                <Typography
-                  variant="caption"
-                  fontWeight="900"
-                  sx={{ color: '#ef4444' }}
-                >
-                  {p1.blade?.name} — {result.p1Hp}%
-                </Typography>
-                <LinearProgress
-                  variant="determinate"
-                  value={result.p1Hp}
-                  sx={{
-                    height: 12,
-                    borderRadius: 6,
-                    bgcolor: alpha('#ef4444', 0.1),
-                    '& .MuiLinearProgress-bar': {
-                      bgcolor: '#ef4444',
-                      borderRadius: 6,
-                    },
-                  }}
-                />
-              </Box>
-              <Box sx={{ flex: 1 }}>
-                <Typography
-                  variant="caption"
-                  fontWeight="900"
-                  sx={{ color: '#3b82f6' }}
-                >
-                  {p2.blade?.name} — {result.p2Hp}%
-                </Typography>
-                <LinearProgress
-                  variant="determinate"
-                  value={result.p2Hp}
-                  sx={{
-                    height: 12,
-                    borderRadius: 6,
-                    bgcolor: alpha('#3b82f6', 0.1),
-                    '& .MuiLinearProgress-bar': {
-                      bgcolor: '#3b82f6',
-                      borderRadius: 6,
-                    },
-                  }}
-                />
-              </Box>
-            </Box>
-
-            {/* Battle log */}
-            <Box
-              sx={{
-                bgcolor: alpha('#000', 0.3),
-                borderRadius: 2,
-                p: 2,
-                fontFamily: 'monospace',
-              }}
-            >
-              {result.log.map((line, i) => (
-                <Typography
-                  key={i}
-                  variant="caption"
-                  sx={{
-                    display: 'block',
-                    color: line.includes('BURST')
-                      ? '#f59e0b'
-                      : line.includes('gagne')
-                        ? '#22c55e'
-                        : 'text.secondary',
-                    fontWeight:
-                      line.includes('BURST') || line.includes('gagne')
-                        ? 900
-                        : 400,
-                    fontSize: '0.75rem',
-                    lineHeight: 1.8,
-                  }}
-                >
-                  {line}
-                </Typography>
-              ))}
-            </Box>
-          </CardContent>
-        </Card>
-      )}
     </Box>
   );
 }
