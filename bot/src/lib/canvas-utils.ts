@@ -3025,3 +3025,541 @@ export async function generateGachaDuelCard(
 
   return canvas.toBuffer('image/png');
 }
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// GACHA LEADERBOARD CARD
+// ═══════════════════════════════════════════════════════════════════════════════
+
+export interface GachaLeaderboardEntry {
+  rank: number;
+  name: string;
+  avatarUrl: string | null;
+  uniqueCards: number;
+  totalCards: number;
+  percentage: number;
+  isCallerRow?: boolean;
+}
+
+export interface GachaRichEntry {
+  rank: number;
+  name: string;
+  avatarUrl: string | null;
+  currency: number;
+  isCallerRow?: boolean;
+}
+
+export interface GachaLeaderboardData {
+  collectors: GachaLeaderboardEntry[];
+  richest: GachaRichEntry[];
+  callerName: string;
+  callerRank: number;
+  totalAvailableCards: number;
+}
+
+export async function generateGachaLeaderboardCard(
+  data: GachaLeaderboardData,
+): Promise<Buffer> {
+  const W = 900;
+  const ROW_H = 72;
+  const HEADER_H = 140;
+  const SECTION_GAP = 50;
+  const collectorRows = data.collectors.length;
+  const richRows = data.richest.length;
+  const H =
+    HEADER_H + collectorRows * ROW_H + SECTION_GAP + 40 + richRows * ROW_H + 80;
+  const canvas = createCanvas(W, H);
+  const ctx = canvas.getContext('2d');
+
+  // Background
+  const bgGrad = ctx.createLinearGradient(0, 0, W * 0.2, H);
+  bgGrad.addColorStop(0, '#0c0e14');
+  bgGrad.addColorStop(0.5, '#10131c');
+  bgGrad.addColorStop(1, '#08090f');
+  ctx.fillStyle = bgGrad;
+  ctx.fillRect(0, 0, W, H);
+  drawNoise(ctx, W, H, 0.02);
+
+  // Decorative side lines
+  ctx.strokeStyle = 'rgba(251,191,36,0.08)';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(30, 120);
+  ctx.lineTo(30, H - 50);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(W - 30, 120);
+  ctx.lineTo(W - 30, H - 50);
+  ctx.stroke();
+
+  // Header
+  ctx.font = 'bold 42px GoogleSans';
+  ctx.fillStyle = '#fbbf24';
+  ctx.textAlign = 'center';
+  ctx.shadowColor = 'rgba(251,191,36,0.3)';
+  ctx.shadowBlur = 15;
+  ctx.fillText('CLASSEMENT GACHA', W / 2, 55);
+  ctx.shadowBlur = 0;
+
+  ctx.font = 'bold 16px GoogleSans';
+  ctx.fillStyle = 'rgba(255,255,255,0.4)';
+  ctx.fillText(
+    `${data.totalAvailableCards} cartes disponibles · rpbey.fr`,
+    W / 2,
+    82,
+  );
+
+  // Divider
+  const divGrad = ctx.createLinearGradient(60, 0, W - 60, 0);
+  divGrad.addColorStop(0, 'transparent');
+  divGrad.addColorStop(0.5, 'rgba(251,191,36,0.4)');
+  divGrad.addColorStop(1, 'transparent');
+  ctx.strokeStyle = divGrad;
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(60, 100);
+  ctx.lineTo(W - 60, 100);
+  ctx.stroke();
+
+  // Section: Top Collectors
+  let y = HEADER_H;
+  ctx.textAlign = 'left';
+  ctx.font = 'bold 22px GoogleSans';
+  ctx.fillStyle = '#a78bfa';
+  ctx.fillText('🃏  TOP COLLECTIONNEURS', 50, y - 10);
+
+  const medals = ['🥇', '🥈', '🥉'];
+  const medalColors = ['#fbbf24', '#e2e8f0', '#cd7f32'];
+
+  const collectorAvatars = await Promise.all(
+    data.collectors.map((c) => safeLoadImage(c.avatarUrl)),
+  );
+
+  for (let i = 0; i < data.collectors.length; i++) {
+    const entry = data.collectors[i]!;
+    const avatar = collectorAvatars[i] ?? null;
+    const ry = y + i * ROW_H;
+
+    // Row bg
+    if (entry.isCallerRow) {
+      ctx.fillStyle = 'rgba(251,191,36,0.06)';
+      ctx.beginPath();
+      ctx.roundRect(40, ry - 2, W - 80, ROW_H - 6, 8);
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(251,191,36,0.15)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.roundRect(40, ry - 2, W - 80, ROW_H - 6, 8);
+      ctx.stroke();
+    } else if (i % 2 === 0) {
+      ctx.fillStyle = 'rgba(255,255,255,0.015)';
+      ctx.beginPath();
+      ctx.roundRect(40, ry - 2, W - 80, ROW_H - 6, 8);
+      ctx.fill();
+    }
+
+    // Rank
+    const rankColor = medalColors[i] || '#64748b';
+    if (i < 3) {
+      ctx.font = 'bold 26px GoogleSans';
+      ctx.fillStyle = '#fff';
+      ctx.textAlign = 'center';
+      ctx.fillText(medals[i]!, 80, ry + 38);
+    } else {
+      ctx.fillStyle = rankColor;
+      ctx.beginPath();
+      ctx.arc(80, ry + 30, 18, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.font = 'bold 16px GoogleSans';
+      ctx.fillStyle = '#000';
+      ctx.textAlign = 'center';
+      ctx.fillText(`${entry.rank}`, 80, ry + 36);
+    }
+
+    // Avatar
+    drawCircularAvatar(
+      ctx,
+      avatar,
+      138,
+      ry + 30,
+      22,
+      i < 3 ? rankColor : 'rgba(255,255,255,0.1)',
+    );
+
+    // Name
+    ctx.textAlign = 'left';
+    ctx.font = 'bold 20px GoogleSans';
+    ctx.fillStyle = entry.isCallerRow ? '#fbbf24' : '#fff';
+    let eName = entry.name;
+    while (ctx.measureText(eName).width > 260 && eName.length > 8)
+      eName = `${eName.slice(0, -2)}…`;
+    ctx.fillText(eName, 175, ry + 28);
+
+    // Progress bar
+    const barX = 175;
+    const barY2 = ry + 40;
+    const barW = 300;
+    ctx.fillStyle = 'rgba(255,255,255,0.05)';
+    ctx.beginPath();
+    ctx.roundRect(barX, barY2, barW, 8, 4);
+    ctx.fill();
+    const fillW = (entry.percentage / 100) * barW;
+    const bGrad = ctx.createLinearGradient(barX, 0, barX + fillW, 0);
+    bGrad.addColorStop(0, '#a78bfa');
+    bGrad.addColorStop(1, '#7c3aed');
+    ctx.fillStyle = bGrad;
+    ctx.beginPath();
+    ctx.roundRect(barX, barY2, Math.max(fillW, 1), 8, 4);
+    ctx.fill();
+
+    // Stats
+    ctx.textAlign = 'right';
+    ctx.font = 'bold 22px GoogleSans';
+    ctx.fillStyle = '#a78bfa';
+    ctx.fillText(`${entry.uniqueCards}/${entry.totalCards}`, W - 140, ry + 30);
+    ctx.font = 'bold 18px GoogleSans';
+    ctx.fillStyle =
+      entry.percentage >= 80 ? '#fbbf24' : 'rgba(255,255,255,0.5)';
+    ctx.fillText(`${entry.percentage}%`, W - 60, ry + 30);
+  }
+
+  // Section: Top Richest
+  y = HEADER_H + collectorRows * ROW_H + SECTION_GAP;
+  ctx.textAlign = 'left';
+  ctx.font = 'bold 22px GoogleSans';
+  ctx.fillStyle = '#fbbf24';
+  ctx.fillText('💰  TOP FORTUNES', 50, y - 10);
+
+  const richAvatars = await Promise.all(
+    data.richest.map((r) => safeLoadImage(r.avatarUrl)),
+  );
+
+  for (let i = 0; i < data.richest.length; i++) {
+    const entry = data.richest[i]!;
+    const avatar = richAvatars[i] ?? null;
+    const ry = y + i * ROW_H;
+
+    if (entry.isCallerRow) {
+      ctx.fillStyle = 'rgba(251,191,36,0.06)';
+      ctx.beginPath();
+      ctx.roundRect(40, ry - 2, W - 80, ROW_H - 6, 8);
+      ctx.fill();
+    } else if (i % 2 === 0) {
+      ctx.fillStyle = 'rgba(255,255,255,0.015)';
+      ctx.beginPath();
+      ctx.roundRect(40, ry - 2, W - 80, ROW_H - 6, 8);
+      ctx.fill();
+    }
+
+    if (i < 3) {
+      ctx.font = 'bold 26px GoogleSans';
+      ctx.fillStyle = '#fff';
+      ctx.textAlign = 'center';
+      ctx.fillText(medals[i]!, 80, ry + 38);
+    } else {
+      ctx.fillStyle = '#64748b';
+      ctx.beginPath();
+      ctx.arc(80, ry + 30, 18, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.font = 'bold 16px GoogleSans';
+      ctx.fillStyle = '#000';
+      ctx.textAlign = 'center';
+      ctx.fillText(`${entry.rank}`, 80, ry + 36);
+    }
+
+    drawCircularAvatar(
+      ctx,
+      avatar,
+      138,
+      ry + 30,
+      22,
+      i < 3 ? medalColors[i]! : 'rgba(255,255,255,0.1)',
+    );
+
+    ctx.textAlign = 'left';
+    ctx.font = 'bold 20px GoogleSans';
+    ctx.fillStyle = entry.isCallerRow ? '#fbbf24' : '#fff';
+    let rName = entry.name;
+    while (ctx.measureText(rName).width > 350 && rName.length > 8)
+      rName = `${rName.slice(0, -2)}…`;
+    ctx.fillText(rName, 175, ry + 35);
+
+    ctx.textAlign = 'right';
+    ctx.font = 'bold 26px GoogleSans';
+    ctx.fillStyle = '#fbbf24';
+    ctx.shadowColor = 'rgba(251,191,36,0.2)';
+    ctx.shadowBlur = 8;
+    ctx.fillText(
+      `${entry.currency.toLocaleString('fr-FR')} 🪙`,
+      W - 60,
+      ry + 38,
+    );
+    ctx.shadowBlur = 0;
+  }
+
+  // Footer
+  ctx.textAlign = 'center';
+  if (data.callerRank > 0) {
+    ctx.font = 'bold 16px GoogleSans';
+    ctx.fillStyle = 'rgba(255,255,255,0.35)';
+    ctx.fillText(
+      `${data.callerName} — #${data.callerRank} au classement`,
+      W / 2,
+      H - 35,
+    );
+  } else {
+    ctx.font = '14px GoogleSans';
+    ctx.fillStyle = 'rgba(255,255,255,0.2)';
+    ctx.fillText('Commence ta collection avec /gacha gacha !', W / 2, H - 35);
+  }
+
+  return canvas.toBuffer('image/png');
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// ECONOMY PROFILE CARD
+// ═══════════════════════════════════════════════════════════════════════════════
+
+export interface EconomyProfileData {
+  name: string;
+  avatarUrl: string;
+  currency: number;
+  streak: number;
+  uniqueCards: number;
+  totalCards: number;
+  totalCopies: number;
+  wishlistCount: number;
+  dupeCount: number;
+  totalSpent: number;
+  badge: string;
+  nextBadge: string | null;
+  rarityBreakdown: { rarity: string; count: number; emoji: string }[];
+}
+
+const RARITY_BAR_COLORS: Record<string, string> = {
+  SECRET: '#ef4444',
+  LEGENDARY: '#f59e0b',
+  EPIC: '#8b5cf6',
+  RARE: '#3b82f6',
+  COMMON: '#6b7280',
+};
+
+export async function generateEconomyProfileCard(
+  data: EconomyProfileData,
+): Promise<Buffer> {
+  const W = 700;
+  const H = 520;
+  const canvas = createCanvas(W, H);
+  const ctx = canvas.getContext('2d');
+
+  // Background
+  const bgGrad = ctx.createLinearGradient(0, 0, W * 0.3, H);
+  bgGrad.addColorStop(0, '#0c0e16');
+  bgGrad.addColorStop(0.5, '#10131e');
+  bgGrad.addColorStop(1, '#080a10');
+  ctx.fillStyle = bgGrad;
+  ctx.fillRect(0, 0, W, H);
+  drawNoise(ctx, W, H, 0.02);
+
+  // Outer border
+  ctx.strokeStyle = 'rgba(251,191,36,0.12)';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.roundRect(10, 10, W - 20, H - 20, 16);
+  ctx.stroke();
+
+  // Avatar + Name header
+  const avatar = await safeLoadImage(data.avatarUrl);
+  drawCircularAvatar(ctx, avatar, 60, 55, 30, '#fbbf24');
+
+  ctx.textAlign = 'left';
+  ctx.font = 'bold 28px GoogleSans';
+  ctx.fillStyle = '#fff';
+  ctx.shadowColor = 'rgba(0,0,0,0.5)';
+  ctx.shadowBlur = 4;
+  ctx.fillText(data.name, 105, 50);
+  ctx.shadowBlur = 0;
+
+  ctx.font = 'bold 14px GoogleSans';
+  ctx.fillStyle = data.badge ? '#fbbf24' : 'rgba(255,255,255,0.4)';
+  ctx.fillText(data.badge || 'Aucun badge', 105, 72);
+
+  // Currency + Streak + Wishlist boxes
+  const statsY = 105;
+  const statBoxW = (W - 80) / 3;
+  const statBoxes = [
+    {
+      label: 'PIÈCES',
+      value: data.currency.toLocaleString('fr-FR'),
+      icon: '🪙',
+      color: '#fbbf24',
+    },
+    {
+      label: 'STREAK',
+      value: `${data.streak} jour${data.streak !== 1 ? 's' : ''}`,
+      icon: '🔥',
+      color: '#ef4444',
+    },
+    {
+      label: 'WISHLIST',
+      value: `${data.wishlistCount}`,
+      icon: '⭐',
+      color: '#a78bfa',
+    },
+  ];
+
+  for (let i = 0; i < statBoxes.length; i++) {
+    const sb = statBoxes[i]!;
+    const sx = 30 + i * (statBoxW + 10);
+    ctx.fillStyle = 'rgba(255,255,255,0.03)';
+    ctx.beginPath();
+    ctx.roundRect(sx, statsY, statBoxW, 60, 10);
+    ctx.fill();
+    ctx.strokeStyle = `${sb.color}20`;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.roundRect(sx, statsY, statBoxW, 60, 10);
+    ctx.stroke();
+    ctx.textAlign = 'center';
+    ctx.font = 'bold 22px GoogleSans';
+    ctx.fillStyle = sb.color;
+    ctx.shadowColor = `${sb.color}40`;
+    ctx.shadowBlur = 6;
+    ctx.fillText(`${sb.icon} ${sb.value}`, sx + statBoxW / 2, statsY + 30);
+    ctx.shadowBlur = 0;
+    ctx.font = 'bold 10px GoogleSans';
+    ctx.fillStyle = 'rgba(255,255,255,0.35)';
+    ctx.fillText(sb.label, sx + statBoxW / 2, statsY + 50);
+  }
+
+  // Collection progress
+  const collY = 190;
+  ctx.textAlign = 'left';
+  ctx.font = 'bold 16px GoogleSans';
+  ctx.fillStyle = 'rgba(255,255,255,0.6)';
+  ctx.fillText('COLLECTION', 30, collY);
+  const pct =
+    data.totalCards > 0
+      ? Math.round((data.uniqueCards / data.totalCards) * 100)
+      : 0;
+  ctx.textAlign = 'right';
+  ctx.font = 'bold 16px GoogleSans';
+  ctx.fillStyle = pct >= 80 ? '#fbbf24' : pct >= 50 ? '#22c55e' : '#64748b';
+  ctx.fillText(
+    `${data.uniqueCards} / ${data.totalCards} (${pct}%)`,
+    W - 30,
+    collY,
+  );
+
+  const barY = collY + 12;
+  const barW = W - 60;
+  ctx.fillStyle = 'rgba(255,255,255,0.05)';
+  ctx.beginPath();
+  ctx.roundRect(30, barY, barW, 14, 7);
+  ctx.fill();
+  if (pct > 0) {
+    const fillW = (pct / 100) * barW;
+    const pGrad = ctx.createLinearGradient(30, 0, 30 + fillW, 0);
+    pGrad.addColorStop(0, pct >= 80 ? '#fbbf24' : '#a78bfa');
+    pGrad.addColorStop(1, pct >= 80 ? '#f59e0b' : '#7c3aed');
+    ctx.fillStyle = pGrad;
+    ctx.beginPath();
+    ctx.roundRect(30, barY, fillW, 14, 7);
+    ctx.fill();
+  }
+
+  // Rarity breakdown — stacked bar
+  const rarY = collY + 45;
+  ctx.font = 'bold 14px GoogleSans';
+  ctx.fillStyle = 'rgba(255,255,255,0.4)';
+  ctx.textAlign = 'left';
+  ctx.fillText('RÉPARTITION PAR RARETÉ', 30, rarY);
+
+  const rarBarY = rarY + 14;
+  const rarBarW = W - 60;
+  const rarBarH = 22;
+  ctx.fillStyle = 'rgba(255,255,255,0.03)';
+  ctx.beginPath();
+  ctx.roundRect(30, rarBarY, rarBarW, rarBarH, 6);
+  ctx.fill();
+
+  let rx = 30;
+  const total = data.rarityBreakdown.reduce((s, r) => s + r.count, 0) || 1;
+  for (const r of data.rarityBreakdown) {
+    const rw = (r.count / total) * rarBarW;
+    if (rw < 1) continue;
+    ctx.fillStyle = RARITY_BAR_COLORS[r.rarity] || '#666';
+    ctx.fillRect(rx, rarBarY, rw, rarBarH);
+    rx += rw;
+  }
+
+  // Legend
+  const legY = rarBarY + rarBarH + 14;
+  let lx = 30;
+  for (const r of data.rarityBreakdown) {
+    if (r.count === 0) continue;
+    const color = RARITY_BAR_COLORS[r.rarity] || '#666';
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.arc(lx + 5, legY, 5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.font = 'bold 12px GoogleSans';
+    ctx.fillStyle = 'rgba(255,255,255,0.6)';
+    ctx.textAlign = 'left';
+    const label = `${r.emoji} ${r.count}`;
+    ctx.fillText(label, lx + 14, legY + 4);
+    lx += ctx.measureText(label).width + 30;
+  }
+
+  // Stats grid
+  const gridY = legY + 30;
+  const gW = (W - 80) / 2;
+  const gH = 50;
+  const gridItems = [
+    {
+      label: 'Total copies',
+      value: data.totalCopies.toLocaleString('fr-FR'),
+      color: '#64748b',
+    },
+    { label: 'Doublons', value: `${data.dupeCount}`, color: '#f59e0b' },
+    {
+      label: 'Total dépensé',
+      value: `${Math.abs(data.totalSpent).toLocaleString('fr-FR')} 🪙`,
+      color: '#ef4444',
+    },
+    {
+      label: 'Prochain badge',
+      value: data.nextBadge || 'MAX ✓',
+      color: '#22c55e',
+    },
+  ];
+
+  for (let i = 0; i < gridItems.length; i++) {
+    const item = gridItems[i]!;
+    const col = i % 2;
+    const row = Math.floor(i / 2);
+    const gx = 30 + col * (gW + 20);
+    const gy = gridY + row * (gH + 8);
+    ctx.fillStyle = 'rgba(255,255,255,0.02)';
+    ctx.beginPath();
+    ctx.roundRect(gx, gy, gW, gH, 8);
+    ctx.fill();
+    ctx.textAlign = 'left';
+    ctx.font = '12px GoogleSans';
+    ctx.fillStyle = 'rgba(255,255,255,0.35)';
+    ctx.fillText(item.label.toUpperCase(), gx + 12, gy + 18);
+    ctx.font = 'bold 18px GoogleSans';
+    ctx.fillStyle = item.color;
+    let val = item.value;
+    while (ctx.measureText(val).width > gW - 24 && val.length > 5)
+      val = `${val.slice(0, -2)}…`;
+    ctx.fillText(val, gx + 12, gy + 38);
+  }
+
+  // Footer
+  ctx.textAlign = 'center';
+  ctx.font = '12px GoogleSans';
+  ctx.fillStyle = 'rgba(255,255,255,0.15)';
+  ctx.fillText('Profil Économie · rpbey.fr', W / 2, H - 18);
+
+  return canvas.toBuffer('image/png');
+}

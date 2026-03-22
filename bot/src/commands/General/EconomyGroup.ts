@@ -9,7 +9,9 @@ import { inject, injectable } from 'tsyringe';
 
 import {
   generateCollectionCard,
+  generateEconomyProfileCard,
   generateGachaCard,
+  generateGachaLeaderboardCard,
   generateGachaMissCard,
 } from '../../lib/canvas-utils.js';
 import { Colors, RPB } from '../../lib/constants.js';
@@ -667,7 +669,7 @@ export class EconomyGroup {
 
     const pct =
       totalCards > 0 ? Math.round((uniqueCards / totalCards) * 100) : 0;
-    const bar =
+    const _bar =
       '▓'.repeat(Math.floor(pct / 5)) + '░'.repeat(20 - Math.floor(pct / 5));
 
     let currentBadge = '';
@@ -688,63 +690,38 @@ export class EconomyGroup {
     for (const inv of byRarity) {
       rarityCount[inv.card.rarity] = (rarityCount[inv.card.rarity] || 0) + 1;
     }
-    const rarityLine = ['SECRET', 'LEGENDARY', 'EPIC', 'RARE', 'COMMON']
+    const rarityBreakdown = ['SECRET', 'LEGENDARY', 'EPIC', 'RARE', 'COMMON']
       .filter((r) => rarityCount[r])
-      .map((r) => `${RARITY_CONFIG[r]?.emoji}${rarityCount[r]}`)
-      .join(' · ');
-
-    const embed = new EmbedBuilder()
-      .setColor(pct === 100 ? 0xfbbf24 : RPB.Color)
-      .setAuthor({
-        name: interaction.user.displayName,
-        iconURL: interaction.user.displayAvatarURL(),
-      })
-      .setTitle('📊 Profil Gacha')
-      .addFields(
-        {
-          name: '🪙 Pièces',
-          value: `**${profile.currency.toLocaleString('fr-FR')}**`,
-          inline: true,
-        },
-        {
-          name: '🔥 Streak',
-          value: `**${profile.dailyStreak}** jour${profile.dailyStreak !== 1 ? 's' : ''}`,
-          inline: true,
-        },
-        {
-          name: '⭐ Wishlist',
-          value: `**${wishCount}** carte${wishCount !== 1 ? 's' : ''}`,
-          inline: true,
-        },
-        {
-          name: `🃏 Collection — ${pct}%`,
-          value: `\`${bar}\`\n**${uniqueCards}** / ${totalCards} uniques · **${totalCopies._sum.count || 0}** total · **${dupeCount}** doublons\n${rarityLine}`,
-        },
-      );
-
-    if (currentBadge) {
-      const badgeProgress = nextBadge
-        ? ` → prochain : ${nextBadge.emoji} **${nextBadge.name}** (${nextBadge.count - uniqueCards} cartes restantes)`
-        : ' — **Collection complète !** 🎉';
-      embed.addFields({
-        name: '🏅 Badge',
-        value: currentBadge + badgeProgress,
-      });
-    }
+      .map((r) => ({
+        rarity: r,
+        count: rarityCount[r] || 0,
+        emoji: RARITY_CONFIG[r]?.emoji || '⚪',
+      }));
 
     const spent = Math.abs(totalSpent._sum.amount || 0);
-    if (spent > 0)
-      embed.addFields({
-        name: '📈 Stats',
-        value: `Total dépensé : **${spent.toLocaleString('fr-FR')}** 🪙`,
-        inline: true,
-      });
 
-    embed.setFooter({
-      text: `x1 : ${GACHA_COST}🪙 · x10 : ${MULTI_PULL_COST}🪙 · Découvert max : -1 000🪙`,
+    const buffer = await generateEconomyProfileCard({
+      name: interaction.user.displayName,
+      avatarUrl: interaction.user.displayAvatarURL({ size: 128 }),
+      currency: profile.currency,
+      streak: profile.dailyStreak,
+      uniqueCards,
+      totalCards,
+      totalCopies: totalCopies._sum.count || 0,
+      wishlistCount: wishCount,
+      dupeCount,
+      totalSpent: spent,
+      badge: currentBadge,
+      nextBadge: nextBadge
+        ? `${nextBadge.count - uniqueCards} → ${nextBadge.emoji} ${nextBadge.name}`
+        : null,
+      rarityBreakdown,
     });
 
-    return interaction.reply({ embeds: [embed] });
+    const attachment = new AttachmentBuilder(buffer, {
+      name: 'economy-profile.png',
+    });
+    return interaction.reply({ files: [attachment] });
   }
 
   // ═══ /gacha gacha ═══
@@ -1331,7 +1308,6 @@ export class EconomyGroup {
       where: { isActive: true },
     });
 
-    // Top collectors
     const topCollectors = await this.prisma.cardInventory.groupBy({
       by: ['userId'],
       _count: { cardId: true },
@@ -1339,11 +1315,14 @@ export class EconomyGroup {
       take: 10,
     });
 
-    // Top richest
     const topRich = await this.prisma.profile.findMany({
       orderBy: { currency: 'desc' },
       take: 5,
-      include: { user: { select: { name: true, globalName: true, id: true } } },
+      include: {
+        user: {
+          select: { name: true, globalName: true, id: true, image: true },
+        },
+      },
     });
 
     if (topCollectors.length === 0)
@@ -1355,51 +1334,55 @@ export class EconomyGroup {
         ],
       });
 
-    const medals = ['🥇', '🥈', '🥉'];
-    const collectorLines: string[] = [];
+    // Build collector entries
     let callerRank = -1;
-    for (let i = 0; i < topCollectors.length; i++) {
-      const tc = topCollectors[i]!;
-      const u = await this.prisma.user.findUnique({
-        where: { id: tc.userId },
-        select: { name: true, globalName: true },
-      });
-      const name = u?.globalName || u?.name || '?';
-      const pct = Math.round((tc._count.cardId / totalCards) * 100);
-      const medal = medals[i] || `\`${String(i + 1).padStart(2, ' ')}.\``;
-      const bar =
-        '▓'.repeat(Math.floor(pct / 10)) +
-        '░'.repeat(10 - Math.floor(pct / 10));
-      const isMe = tc.userId === callerId ? ' ◀' : '';
-      collectorLines.push(
-        `${medal} **${name}** — ${tc._count.cardId}/${totalCards} \`${bar}\` ${pct}%${isMe}`,
-      );
-      if (tc.userId === callerId) callerRank = i + 1;
-    }
+    const collectors = await Promise.all(
+      topCollectors.map(async (tc, i) => {
+        const u = await this.prisma.user.findUnique({
+          where: { id: tc.userId },
+          select: { name: true, globalName: true, image: true },
+        });
+        if (tc.userId === callerId) callerRank = i + 1;
+        return {
+          rank: i + 1,
+          name: u?.globalName || u?.name || '?',
+          avatarUrl: u?.image || null,
+          uniqueCards: tc._count.cardId,
+          totalCards: totalCards,
+          percentage:
+            totalCards > 0
+              ? Math.round((tc._count.cardId / totalCards) * 100)
+              : 0,
+          isCallerRow: tc.userId === callerId,
+        };
+      }),
+    );
 
-    const richLines = topRich.map((p, i) => {
-      const name = p.user?.globalName || p.user?.name || '?';
-      const isMe = p.user?.id === callerId ? ' ◀' : '';
-      return `${medals[i] || `\`${i + 1}.\``} **${name}** — ${p.currency.toLocaleString('fr-FR')} 🪙${isMe}`;
+    const richest = topRich.map((p, i) => ({
+      rank: i + 1,
+      name: p.user?.globalName || p.user?.name || '?',
+      avatarUrl: p.user?.image || null,
+      currency: p.currency,
+      isCallerRow: p.user?.id === callerId,
+    }));
+
+    const callerUser = await this.prisma.user.findUnique({
+      where: { id: callerId },
+      select: { globalName: true, name: true },
     });
 
-    const embed = new EmbedBuilder()
-      .setColor(RPB.GoldColor)
-      .setTitle('🏆 Classement Gacha RPB')
-      .addFields(
-        { name: '🃏 Top Collectionneurs', value: collectorLines.join('\n') },
-        { name: '💰 Top Fortunes', value: richLines.join('\n') || 'Aucun' },
-      );
+    const buffer = await generateGachaLeaderboardCard({
+      collectors,
+      richest,
+      callerName: callerUser?.globalName || callerUser?.name || '?',
+      callerRank,
+      totalAvailableCards: totalCards,
+    });
 
-    if (callerRank > 0) {
-      embed.setFooter({
-        text: `Tu es #${callerRank} au classement des collectionneurs`,
-      });
-    } else {
-      embed.setFooter({ text: 'Commence ta collection avec /gacha gacha !' });
-    }
-
-    return interaction.editReply({ embeds: [embed] });
+    const attachment = new AttachmentBuilder(buffer, {
+      name: 'gacha-leaderboard.png',
+    });
+    return interaction.editReply({ files: [attachment] });
   }
 
   // ═══ /gacha taux ═══
