@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     title: 'BEYBLADE X APP | RPB',
     description:
       "Assets, animations et catalogue produits extraits de l'application officielle Beyblade X.",
-    images: ['/app-assets/marketing/Marketing.png'],
+    images: ['/app-assets/marketing/Marketing.webp'],
   },
 };
 

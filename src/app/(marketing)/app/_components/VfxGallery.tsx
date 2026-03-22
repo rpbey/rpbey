@@ -26,7 +26,7 @@ const VFX_SEQUENCES: VfxSequence[] = [
     name: 'Battle Sparks',
     frames: Array.from(
       { length: 8 },
-      (_, i) => `/app-assets/vfx/BattleScreen_Center_Sparks_Seq_${i}.png`,
+      (_, i) => `/app-assets/vfx/BattleScreen_Center_Sparks_Seq_${i}.webp`,
     ),
     category: 'combat',
     description: "Étincelles centrales de l'arène de combat",
@@ -35,7 +35,7 @@ const VFX_SEQUENCES: VfxSequence[] = [
     name: 'Point Appearing',
     frames: Array.from(
       { length: 15 },
-      (_, i) => `/app-assets/vfx/PointAppearing_Seq_${i}.png`,
+      (_, i) => `/app-assets/vfx/PointAppearing_Seq_${i}.webp`,
     ),
     category: 'ui',
     description: "Animation d'apparition des points de score",
@@ -44,7 +44,7 @@ const VFX_SEQUENCES: VfxSequence[] = [
     name: 'Lightning Strike',
     frames: Array.from(
       { length: 30 },
-      (_, i) => `/app-assets/vfx/V_SEQ_Lightning_UI_${i}.png`,
+      (_, i) => `/app-assets/vfx/V_SEQ_Lightning_UI_${i}.webp`,
     ),
     category: 'combat',
     description: "Éclair d'attaque (30 frames)",
@@ -53,7 +53,7 @@ const VFX_SEQUENCES: VfxSequence[] = [
     name: 'Lightning Strike (Variant)',
     frames: Array.from(
       { length: 10 },
-      (_, i) => `/app-assets/vfx/V_SEQ_Lightning_UI_${i}_1.png`,
+      (_, i) => `/app-assets/vfx/V_SEQ_Lightning_UI_${i}_1.webp`,
     ),
     category: 'combat',
     description: "Variante éclair d'attaque",
@@ -62,7 +62,7 @@ const VFX_SEQUENCES: VfxSequence[] = [
     name: 'XP Bar Fill',
     frames: Array.from(
       { length: 15 },
-      (_, i) => `/app-assets/vfx/V_XPBar_SpriteSheet_${i}.png`,
+      (_, i) => `/app-assets/vfx/V_XPBar_SpriteSheet_${i}.webp`,
     ),
     category: 'ui',
     description: "Remplissage de la barre d'XP",
@@ -71,7 +71,7 @@ const VFX_SEQUENCES: VfxSequence[] = [
     name: 'XP Raise Surge',
     frames: Array.from(
       { length: 11 },
-      (_, i) => `/app-assets/vfx/V_XPBar_Raise_SpriteSheet_${i}.png`,
+      (_, i) => `/app-assets/vfx/V_XPBar_Raise_SpriteSheet_${i}.webp`,
     ),
     category: 'ui',
     description: "Effet de gain d'XP",
@@ -80,7 +80,7 @@ const VFX_SEQUENCES: VfxSequence[] = [
     name: 'MiniGame Orb',
     frames: Array.from(
       { length: 15 },
-      (_, i) => `/app-assets/vfx/V_MiniGame_Orb_SpriteSheet_${i}.png`,
+      (_, i) => `/app-assets/vfx/V_MiniGame_Orb_SpriteSheet_${i}.webp`,
     ),
     category: 'booster',
     description: 'Animation orbe du mini-jeu / ouverture booster',
@@ -89,7 +89,7 @@ const VFX_SEQUENCES: VfxSequence[] = [
     name: 'Spark Burst 1',
     frames: Array.from(
       { length: 6 },
-      (_, i) => `/app-assets/vfx/V_SEQ_Spark_0${i + 1}.png`,
+      (_, i) => `/app-assets/vfx/V_SEQ_Spark_0${i + 1}.webp`,
     ),
     category: 'combat',
     description: "Rafale d'étincelles d'impact",
@@ -98,7 +98,7 @@ const VFX_SEQUENCES: VfxSequence[] = [
     name: 'End Sparks',
     frames: Array.from(
       { length: 3 },
-      (_, i) => `/app-assets/vfx/V_SEQ_End_Sparks_Alph_${i}.png`,
+      (_, i) => `/app-assets/vfx/V_SEQ_End_Sparks_Alph_${i}.webp`,
     ),
     category: 'combat',
     description: 'Étincelles de fin de combat',
@@ -107,7 +107,7 @@ const VFX_SEQUENCES: VfxSequence[] = [
     name: 'Hit Manga',
     frames: Array.from(
       { length: 3 },
-      (_, i) => `/app-assets/vfx/V_SEQ_Hit_Manga_01_${i}.png`,
+      (_, i) => `/app-assets/vfx/V_SEQ_Hit_Manga_01_${i}.webp`,
     ),
     category: 'combat',
     description: 'Impact style manga',
@@ -116,7 +116,7 @@ const VFX_SEQUENCES: VfxSequence[] = [
     name: 'Bey Explode Hit',
     frames: Array.from(
       { length: 2 },
-      (_, i) => `/app-assets/vfx/V_SEQ_Bey_Explode_Hit_${i}.png`,
+      (_, i) => `/app-assets/vfx/V_SEQ_Bey_Explode_Hit_${i}.webp`,
     ),
     category: 'combat',
     description: "Explosion d'un Beyblade à l'impact",
@@ -125,7 +125,7 @@ const VFX_SEQUENCES: VfxSequence[] = [
     name: 'Fire Burst',
     frames: Array.from(
       { length: 7 },
-      (_, i) => `/app-assets/vfx/V_Fire_04_${i}.png`,
+      (_, i) => `/app-assets/vfx/V_Fire_04_${i}.webp`,
     ),
     category: 'element',
     description: 'Explosion de feu (type Attaque)',
@@ -134,7 +134,7 @@ const VFX_SEQUENCES: VfxSequence[] = [
     name: 'Electric Cards Reveal',
     frames: Array.from(
       { length: 64 },
-      (_, i) => `/app-assets/vfx/vfx_UI_ElectricCards_${i}.png`,
+      (_, i) => `/app-assets/vfx/vfx_UI_ElectricCards_${i}.webp`,
     ),
     category: 'booster',
     description:
@@ -144,7 +144,7 @@ const VFX_SEQUENCES: VfxSequence[] = [
     name: 'Electric Cards 2',
     frames: Array.from(
       { length: 64 },
-      (_, i) => `/app-assets/vfx/vfx_UI_ElectricCards02_${i}.png`,
+      (_, i) => `/app-assets/vfx/vfx_UI_ElectricCards02_${i}.webp`,
     ),
     category: 'booster',
     description: 'Variante de révélation de carte (64 frames)',
@@ -153,7 +153,7 @@ const VFX_SEQUENCES: VfxSequence[] = [
     name: 'Electric Cards 3',
     frames: Array.from(
       { length: 16 },
-      (_, i) => `/app-assets/vfx/vfx_UI_ElectricCards03_${i}.png`,
+      (_, i) => `/app-assets/vfx/vfx_UI_ElectricCards03_${i}.webp`,
     ),
     category: 'booster',
     description: 'Effet électrique final de révélation',

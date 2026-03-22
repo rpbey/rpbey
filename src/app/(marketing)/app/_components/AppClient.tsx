@@ -44,14 +44,14 @@ interface AppClientProps {
 /* ─── Constants ─── */
 
 const GAME_TABS = [
-  { label: 'Boosters', icon: '/bbx-icons/orangeStar.png', color: '#f59e0b' },
+  { label: 'Boosters', icon: '/bbx-icons/orangeStar.webp', color: '#f59e0b' },
   {
     label: 'Collection',
-    icon: '/bbx-icons/home-icon-2beylocker-on.png',
+    icon: '/bbx-icons/home-icon-2beylocker-on.webp',
     color: '#3b82f6',
   },
-  { label: 'Atelier 3D', icon: '/bbx-icons/icon-scan.png', color: '#22c55e' },
-  { label: 'Combat', icon: '/bbx-icons/btn-battle.png', color: '#ef4444' },
+  { label: 'Atelier 3D', icon: '/bbx-icons/icon-scan.webp', color: '#22c55e' },
+  { label: 'Combat', icon: '/bbx-icons/btn-battle.webp', color: '#ef4444' },
 ];
 
 const RESOURCE_TABS = [
@@ -326,7 +326,7 @@ export function AppClient({
           >
             <Box
               component="img"
-              src="/bbx-icons/icon-scan.png"
+              src="/bbx-icons/icon-scan.webp"
               sx={{ width: 24, height: 24, opacity: 0.7 }}
             />
             <Typography

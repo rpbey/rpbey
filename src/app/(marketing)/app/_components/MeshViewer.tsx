@@ -51,7 +51,7 @@ function categorizeMesh(name: string): string {
 }
 
 // Texture lookup with multiple fallback strategies
-// Unity naming: [BladeName]_Blade_AO.png, Ratchet3-85_AO.png, Bit_A_AO.png, AuxBlade_B_AO.png
+// Unity naming: [BladeName]_Blade_AO.webp, Ratchet3-85_AO.webp, Bit_A_AO.webp, AuxBlade_B_AO.webp
 function findTextures(meshName: string): {
   ao: string[];
   edge: string[];
@@ -65,24 +65,24 @@ function findTextures(meshName: string): {
 
   if (lower.startsWith('auxblade')) {
     return {
-      ao: [`${t}${stripped}_AO.png`, `${t}${base}_AO.png`],
-      edge: [`${t}${stripped}_EdgeMask.png`, `${t}${base}_EdgeMask.png`],
+      ao: [`${t}${stripped}_AO.webp`, `${t}${base}_AO.webp`],
+      edge: [`${t}${stripped}_EdgeMask.webp`, `${t}${base}_EdgeMask.webp`],
     };
   }
 
   if (lower.startsWith('ratchet')) {
-    // Ratchet meshes: Ratchet3-85.obj → Ratchet3-85_AO.png
+    // Ratchet meshes: Ratchet3-85.obj → Ratchet3-85_AO.webp
     return {
-      ao: [`${t}${stripped}_AO.png`, `${t}${base}_AO.png`],
-      edge: [`${t}${stripped}_EdgeMask.png`, `${t}${base}_EdgeMask.png`],
+      ao: [`${t}${stripped}_AO.webp`, `${t}${base}_AO.webp`],
+      edge: [`${t}${stripped}_EdgeMask.webp`, `${t}${base}_EdgeMask.webp`],
     };
   }
 
   if (lower.startsWith('bit_')) {
-    // Bit meshes: Bit_A.obj → Bit_A_AO.png
+    // Bit meshes: Bit_A.obj → Bit_A_AO.webp
     return {
-      ao: [`${t}${stripped}_AO.png`, `${t}${base}_AO.png`],
-      edge: [`${t}${stripped}_EdgeMask.png`, `${t}${base}_EdgeMask.png`],
+      ao: [`${t}${stripped}_AO.webp`, `${t}${base}_AO.webp`],
+      edge: [`${t}${stripped}_EdgeMask.webp`, `${t}${base}_EdgeMask.webp`],
     };
   }
 
@@ -93,22 +93,22 @@ function findTextures(meshName: string): {
   // Head meshes are generic — try edge textures
   if (lower.startsWith('head_metal')) {
     return {
-      ao: [`${t}head_metal_edge.png`, `${t}head_metal_edge_1.png`],
-      edge: [`${t}head_metal_edge.png`],
+      ao: [`${t}head_metal_edge.webp`, `${t}head_metal_edge_1.webp`],
+      edge: [`${t}head_metal_edge.webp`],
     };
   }
 
   // Default: try direct name match
   return {
     ao: [
-      `${t}${stripped}_AO.png`,
-      `${t}${base}_AO.png`,
-      `${t}${stripped}_Blade_AO.png`,
+      `${t}${stripped}_AO.webp`,
+      `${t}${base}_AO.webp`,
+      `${t}${stripped}_Blade_AO.webp`,
     ],
     edge: [
-      `${t}${stripped}_EdgeMask.png`,
-      `${t}${base}_EdgeMask.png`,
-      `${t}${stripped}_Blade_EdgeMask.png`,
+      `${t}${stripped}_EdgeMask.webp`,
+      `${t}${base}_EdgeMask.webp`,
+      `${t}${stripped}_Blade_EdgeMask.webp`,
     ],
   };
 }

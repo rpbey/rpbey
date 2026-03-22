@@ -34,23 +34,23 @@ import { ICON_NAV_WIDTH } from './constants';
 // Beyblade X app icons for navigation
 const navItems = [
   {
-    img: '/bbx-icons/home-icon-3home-on.png',
-    imgOff: '/bbx-icons/home-icon-3home-off.png',
+    img: '/bbx-icons/home-icon-3home-on.webp',
+    imgOff: '/bbx-icons/home-icon-3home-off.webp',
     label: 'Accueil',
     href: '/',
   },
   {
-    img: '/bbx-icons/icon-trophy-active.png',
-    imgOff: '/bbx-icons/icon-trophy.png',
+    img: '/bbx-icons/icon-trophy-active.webp',
+    imgOff: '/bbx-icons/icon-trophy.webp',
     label: 'Tournois',
     href: '/tournaments',
   },
-  { img: '/bbx-icons/ICN_Rank.png', label: 'Classements', href: '/rankings' },
-  { img: '/bbx-icons/BBX-AttackType.png', label: 'Meta', href: '/meta' },
-  { img: '/bbx-icons/icon-video-play.png', label: 'TV', href: '/tv' },
-  { img: '/bbx-icons/Icon_Stars_Cyclone.png', label: 'Anime', href: '/anime' },
-  { img: '/bbx-icons/icon-scan.png', label: 'Builder', href: '/builder' },
-  { img: '/bbx-icons/app_icon_round.png', label: 'App', href: '/app' },
+  { img: '/bbx-icons/ICN_Rank.webp', label: 'Classements', href: '/rankings' },
+  { img: '/bbx-icons/BBX-AttackType.webp', label: 'Meta', href: '/meta' },
+  { img: '/bbx-icons/icon-video-play.webp', label: 'TV', href: '/tv' },
+  { img: '/bbx-icons/Icon_Stars_Cyclone.webp', label: 'Anime', href: '/anime' },
+  { img: '/bbx-icons/icon-scan.webp', label: 'Builder', href: '/builder' },
+  { img: '/bbx-icons/app_icon_round.webp', label: 'App', href: '/app' },
 ];
 
 export function IconNav() {
@@ -460,8 +460,8 @@ export function MobileNav() {
               component="img"
               src={
                 activeValue === '/'
-                  ? '/bbx-icons/home-icon-3home-on.png'
-                  : '/bbx-icons/home-icon-3home-off.png'
+                  ? '/bbx-icons/home-icon-3home-on.webp'
+                  : '/bbx-icons/home-icon-3home-off.webp'
               }
               alt=""
               sx={{ width: 22, height: 22, objectFit: 'contain' }}
@@ -476,8 +476,8 @@ export function MobileNav() {
               component="img"
               src={
                 activeValue === '/tournaments'
-                  ? '/bbx-icons/icon-trophy-active.png'
-                  : '/bbx-icons/icon-trophy.png'
+                  ? '/bbx-icons/icon-trophy-active.webp'
+                  : '/bbx-icons/icon-trophy.webp'
               }
               alt=""
               sx={{ width: 22, height: 22, objectFit: 'contain' }}
@@ -490,7 +490,7 @@ export function MobileNav() {
           icon={
             <Box
               component="img"
-              src="/bbx-icons/ICN_Rank.png"
+              src="/bbx-icons/ICN_Rank.webp"
               alt=""
               sx={{
                 width: 22,
@@ -510,7 +510,7 @@ export function MobileNav() {
           icon={
             <Box
               component="img"
-              src="/bbx-icons/BBX-AttackType.png"
+              src="/bbx-icons/BBX-AttackType.webp"
               alt=""
               sx={{
                 width: 22,
@@ -530,7 +530,7 @@ export function MobileNav() {
           icon={
             <Box
               component="img"
-              src="/bbx-icons/Icon_Stars_Cyclone.png"
+              src="/bbx-icons/Icon_Stars_Cyclone.webp"
               alt=""
               sx={{
                 width: 22,

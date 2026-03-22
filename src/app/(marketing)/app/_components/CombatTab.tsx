@@ -557,7 +557,7 @@ export function CombatTab({ blades, ratchets, bits }: CombatTabProps) {
             <Box sx={{ position: 'relative', width: '100%', height: '100%' }}>
               <Box
                 component="img"
-                src={`/app-assets/vfx/BattleScreen_Center_Sparks_Seq_${vfxFrame % 8}.png`}
+                src={`/app-assets/vfx/BattleScreen_Center_Sparks_Seq_${vfxFrame % 8}.webp`}
                 alt=""
                 sx={{
                   position: 'absolute',
@@ -572,7 +572,7 @@ export function CombatTab({ blades, ratchets, bits }: CombatTabProps) {
               {/* Overlay sparks layer 2 */}
               <Box
                 component="img"
-                src={`/app-assets/vfx/V_SEQ_Spark_0${(vfxFrame % 6) + 1}.png`}
+                src={`/app-assets/vfx/V_SEQ_Spark_0${(vfxFrame % 6) + 1}.webp`}
                 alt=""
                 sx={{
                   position: 'absolute',
@@ -609,7 +609,7 @@ export function CombatTab({ blades, ratchets, bits }: CombatTabProps) {
             <Box sx={{ position: 'relative', width: '100%', height: '100%' }}>
               <Box
                 component="img"
-                src={`/app-assets/vfx/V_SEQ_Lightning_UI_${vfxFrame % 30}.png`}
+                src={`/app-assets/vfx/V_SEQ_Lightning_UI_${vfxFrame % 30}.webp`}
                 alt=""
                 sx={{
                   position: 'absolute',

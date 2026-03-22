@@ -52,21 +52,21 @@ const PACK_LINES = [
     id: 'BX',
     name: 'XTREME',
     color: '#ef4444',
-    img: '/bbx-icons/BBX-AttackType.png',
+    img: '/bbx-icons/BBX-AttackType.webp',
     desc: 'Pièces de la série Beyblade Xtreme',
   },
   {
     id: 'UX',
     name: 'ULTIMATE',
     color: '#3b82f6',
-    img: '/bbx-icons/BBX-DefenseType.png',
+    img: '/bbx-icons/BBX-DefenseType.webp',
     desc: 'Pièces de la série Ultimate Xtreme',
   },
   {
     id: 'CX',
     name: 'CUSTOM',
     color: '#a855f7',
-    img: '/bbx-icons/BBX-BalanceType.png',
+    img: '/bbx-icons/BBX-BalanceType.webp',
     desc: 'Pièces de la série Custom Xtreme',
   },
 ];
@@ -136,7 +136,7 @@ function RevealAnimation({ onComplete }: { onComplete: () => void }) {
         >
           <Box
             component="img"
-            src="/bbx-icons/orangeStar.png"
+            src="/bbx-icons/orangeStar.webp"
             sx={{ width: { xs: 80, md: 120 }, height: { xs: 80, md: 120 } }}
           />
           <Typography
@@ -158,7 +158,7 @@ function RevealAnimation({ onComplete }: { onComplete: () => void }) {
         <Box sx={{ position: 'relative', width: '100%', height: '100%' }}>
           <Box
             component="img"
-            src={`/app-assets/vfx/vfx_UI_ElectricCards_${frame}.png`}
+            src={`/app-assets/vfx/vfx_UI_ElectricCards_${frame}.webp`}
             alt=""
             sx={{
               position: 'absolute',
@@ -174,7 +174,7 @@ function RevealAnimation({ onComplete }: { onComplete: () => void }) {
           {frame > 10 && (
             <Box
               component="img"
-              src={`/app-assets/vfx/vfx_UI_ElectricCards02_${Math.min(frame - 10, 63)}.png`}
+              src={`/app-assets/vfx/vfx_UI_ElectricCards02_${Math.min(frame - 10, 63)}.webp`}
               alt=""
               sx={{
                 position: 'absolute',
@@ -511,7 +511,7 @@ export function BoosterTab({ allParts }: BoosterTabProps) {
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
           <Box
             component="img"
-            src="/bbx-icons/orangeStar.png"
+            src="/bbx-icons/orangeStar.webp"
             alt="BeyCoins"
             sx={{ width: 28, height: 28 }}
           />
