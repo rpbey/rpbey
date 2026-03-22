@@ -47,8 +47,8 @@ const navItems = [
   },
   { img: '/bbx-icons/ICN_Rank.webp', label: 'Classements', href: '/rankings' },
   { img: '/bbx-icons/BBX-AttackType.webp', label: 'Meta', href: '/meta' },
-  { img: '/bbx-icons/icon-video-play.webp', label: 'TV', href: '/tv' },
-  { img: '/bbx-icons/Icon_Stars_Cyclone.webp', label: 'Anime', href: '/anime' },
+  { img: '/bbx-icons/Icon_Stars_Cyclone.webp', label: 'TV', href: '/tv' },
+  { img: '/bbx-icons/icon-video-play.webp', label: 'Anime', href: '/anime' },
   { img: '/bbx-icons/icon-scan.webp', label: 'Builder', href: '/builder' },
   { img: '/bbx-icons/app_icon_round.webp', label: 'App', href: '/app' },
 ];
@@ -530,7 +530,7 @@ export function MobileNav() {
           icon={
             <Box
               component="img"
-              src="/bbx-icons/Icon_Stars_Cyclone.webp"
+              src="/bbx-icons/icon-video-play.webp"
               alt=""
               sx={{
                 width: 22,

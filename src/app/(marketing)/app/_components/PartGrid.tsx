@@ -54,8 +54,8 @@ function getPartTextures(part: Part): string[] {
   const textures: string[] = [];
   // Try common texture patterns based on the part name
   const basePath = '/app-assets/textures/';
-  textures.push(`${basePath}${name}_Blade_AO.png`);
-  textures.push(`${basePath}${name}_EdgeMask.png`);
+  textures.push(`${basePath}${name}_Blade_AO.webp`);
+  textures.push(`${basePath}${name}_EdgeMask.webp`);
   return textures;
 }
 

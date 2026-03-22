@@ -389,8 +389,8 @@ function StaticVfxGrid() {
         // Filter to show only non-sequence files (single images)
         const singles = (data.assets || []).filter(
           (a: { name: string }) =>
-            !/_\d+\.png$/.test(a.name) &&
-            !/_\d\.png$/.test(a.name) &&
+            !/_\d+\.\w+$/.test(a.name) &&
+            !/_\d\.\w+$/.test(a.name) &&
             !/Seq_\d/.test(a.name) &&
             !/SpriteSheet_\d/.test(a.name) &&
             !/ElectricCards/.test(a.name),
