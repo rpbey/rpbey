@@ -124,6 +124,12 @@ interface PullResult {
     beyblade: string | null;
     imageUrl: string | null;
     id: string;
+    atk: number;
+    def: number;
+    spd: number;
+    hp: number;
+    element: string;
+    specialMove: string | null;
   } | null;
   isDuplicate: boolean;
   isWished: boolean;
@@ -793,6 +799,12 @@ export class EconomyGroup {
           isDuplicate: result.isDuplicate,
           isWished: result.isWished,
           balance: bal,
+          atk: result.card.atk,
+          def: result.card.def,
+          spd: result.card.spd,
+          hp: result.card.hp,
+          element: result.card.element,
+          specialMove: result.card.specialMove,
         });
         const attachment = new AttachmentBuilder(cardBuffer, {
           name: 'gacha-card.png',

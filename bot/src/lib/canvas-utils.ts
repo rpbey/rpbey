@@ -1197,7 +1197,7 @@ export async function generateWantedImage(
   return canvas.toBuffer('image/png');
 }
 
-// ─── Gacha Card Generator ───────────────────────────────────────────────────
+// ─── Gacha Card Generator (v2 — HD) ─────────────────────────────────────────
 
 export interface GachaCardData {
   name: string;
@@ -1210,332 +1210,568 @@ export interface GachaCardData {
   isDuplicate: boolean;
   isWished: boolean;
   balance: number;
+  atk?: number;
+  def?: number;
+  spd?: number;
+  hp?: number;
+  element?: string | null;
+  specialMove?: string | null;
 }
+
+const ELEMENT_ICONS: Record<string, { emoji: string; color: string }> = {
+  FEU: { emoji: '🔥', color: '#ef4444' },
+  EAU: { emoji: '💧', color: '#3b82f6' },
+  TERRE: { emoji: '🌍', color: '#a16207' },
+  VENT: { emoji: '🌪️', color: '#22d3ee' },
+  OMBRE: { emoji: '🌑', color: '#7c3aed' },
+  LUMIERE: { emoji: '✨', color: '#fbbf24' },
+  NEUTRAL: { emoji: '⚪', color: '#9ca3af' },
+};
 
 const RARITY_THEMES: Record<
   string,
   {
     borderColor: string;
+    borderGradient: [string, string, string];
     glowColor: string;
-    bgGradient: [string, string];
+    bgGradient: [string, string, string];
     accentColor: string;
     label: string;
     stars: number;
+    particleCount: number;
   }
 > = {
   COMMON: {
     borderColor: '#6b7280',
-    glowColor: 'rgba(107,114,128,0.3)',
-    bgGradient: ['#1f2937', '#111827'],
+    borderGradient: ['#6b7280', '#9ca3af', '#6b7280'],
+    glowColor: 'rgba(107,114,128,0.25)',
+    bgGradient: ['#1a1f2e', '#141824', '#0d1117'],
     accentColor: '#9ca3af',
     label: 'COMMUNE',
     stars: 1,
+    particleCount: 0,
   },
   RARE: {
     borderColor: '#3b82f6',
-    glowColor: 'rgba(59,130,246,0.4)',
-    bgGradient: ['#1e3a5f', '#0c1f3d'],
+    borderGradient: ['#2563eb', '#60a5fa', '#2563eb'],
+    glowColor: 'rgba(59,130,246,0.35)',
+    bgGradient: ['#0c2461', '#1e3a5f', '#0a1628'],
     accentColor: '#60a5fa',
     label: 'RARE',
     stars: 2,
+    particleCount: 4,
   },
   EPIC: {
     borderColor: '#8b5cf6',
+    borderGradient: ['#7c3aed', '#a78bfa', '#7c3aed'],
     glowColor: 'rgba(139,92,246,0.4)',
-    bgGradient: ['#2e1065', '#1a0533'],
+    bgGradient: ['#1e0a4a', '#2e1065', '#140530'],
     accentColor: '#a78bfa',
     label: 'ÉPIQUE',
     stars: 3,
+    particleCount: 8,
   },
   LEGENDARY: {
-    borderColor: '#fbbf24',
+    borderColor: '#f59e0b',
+    borderGradient: ['#d97706', '#fbbf24', '#f59e0b'],
     glowColor: 'rgba(251,191,36,0.5)',
-    bgGradient: ['#422006', '#1c0a00'],
+    bgGradient: ['#3b1a00', '#422006', '#1a0d00'],
     accentColor: '#fcd34d',
     label: 'LÉGENDAIRE',
     stars: 4,
+    particleCount: 14,
   },
   SECRET: {
     borderColor: '#ef4444',
-    glowColor: 'rgba(239,68,68,0.6)',
-    bgGradient: ['#450a0a', '#1f0000'],
+    borderGradient: ['#dc2626', '#f87171', '#ef4444'],
+    glowColor: 'rgba(239,68,68,0.55)',
+    bgGradient: ['#3b0a0a', '#450a0a', '#1f0000'],
     accentColor: '#f87171',
     label: '✦ SECRÈTE ✦',
     stars: 5,
+    particleCount: 20,
   },
 };
 
+/** Draw noise texture overlay for depth */
+function drawNoise(
+  ctx: ReturnType<ReturnType<typeof createCanvas>['getContext']>,
+  w: number,
+  h: number,
+  alpha = 0.03,
+) {
+  const imgData = ctx.getImageData(0, 0, w, h);
+  const d = imgData.data;
+  for (let i = 0; i < d.length; i += 4) {
+    const noise = (Math.random() - 0.5) * 255 * alpha;
+    d[i] = Math.min(255, Math.max(0, d[i]! + noise));
+    d[i + 1] = Math.min(255, Math.max(0, d[i + 1]! + noise));
+    d[i + 2] = Math.min(255, Math.max(0, d[i + 2]! + noise));
+  }
+  ctx.putImageData(imgData, 0, 0);
+}
+
+/** Draw a sparkle at given position */
+function drawSparkle(
+  ctx: ReturnType<ReturnType<typeof createCanvas>['getContext']>,
+  x: number,
+  y: number,
+  size: number,
+  color: string,
+  alpha = 0.7,
+) {
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  // 4-point star
+  ctx.moveTo(x, y - size);
+  ctx.quadraticCurveTo(x + size * 0.15, y - size * 0.15, x + size, y);
+  ctx.quadraticCurveTo(x + size * 0.15, y + size * 0.15, x, y + size);
+  ctx.quadraticCurveTo(x - size * 0.15, y + size * 0.15, x - size, y);
+  ctx.quadraticCurveTo(x - size * 0.15, y - size * 0.15, x, y - size);
+  ctx.closePath();
+  ctx.fill();
+  // Inner glow
+  ctx.globalAlpha = alpha * 0.5;
+  ctx.shadowColor = color;
+  ctx.shadowBlur = size * 2;
+  ctx.fill();
+  ctx.restore();
+}
+
+/** Draw light rays from top for legendary/secret */
+function drawLightRays(
+  ctx: ReturnType<ReturnType<typeof createCanvas>['getContext']>,
+  w: number,
+  h: number,
+  color: string,
+  count = 3,
+) {
+  ctx.save();
+  ctx.globalCompositeOperation = 'screen';
+  for (let i = 0; i < count; i++) {
+    const x = w * 0.2 + (w * 0.6 * i) / (count - 1 || 1);
+    const grad = ctx.createLinearGradient(x, 0, x + w * 0.05, h * 0.7);
+    grad.addColorStop(0, color);
+    grad.addColorStop(0.5, `${color}40`);
+    grad.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.moveTo(x - 15, 0);
+    ctx.lineTo(x + 15, 0);
+    ctx.lineTo(x + 40, h * 0.7);
+    ctx.lineTo(x - 10, h * 0.7);
+    ctx.closePath();
+    ctx.fill();
+  }
+  ctx.restore();
+}
+
+/** Draw stat bar */
+function drawStatBar(
+  ctx: ReturnType<ReturnType<typeof createCanvas>['getContext']>,
+  x: number,
+  y: number,
+  w: number,
+  value: number,
+  max: number,
+  label: string,
+  color: string,
+) {
+  const pct = Math.min(value / max, 1);
+  ctx.font = 'bold 11px GoogleSans';
+  ctx.fillStyle = 'rgba(255,255,255,0.5)';
+  ctx.textAlign = 'left';
+  ctx.fillText(label, x, y + 10);
+  const barX = x + 36;
+  const barW = w - 36;
+  // Track
+  ctx.fillStyle = 'rgba(255,255,255,0.06)';
+  ctx.beginPath();
+  ctx.roundRect(barX, y + 2, barW, 10, 5);
+  ctx.fill();
+  // Fill
+  const fillGrad = ctx.createLinearGradient(barX, 0, barX + barW * pct, 0);
+  fillGrad.addColorStop(0, color);
+  fillGrad.addColorStop(1, `${color}80`);
+  ctx.fillStyle = fillGrad;
+  ctx.beginPath();
+  ctx.roundRect(barX, y + 2, barW * pct, 10, 5);
+  ctx.fill();
+  // Value
+  ctx.font = '9px GoogleSans';
+  ctx.fillStyle = '#ffffff';
+  ctx.textAlign = 'right';
+  ctx.fillText(String(value), x + w, y + 10);
+}
+
 export async function generateGachaCard(data: GachaCardData): Promise<Buffer> {
-  const W = 480;
-  const H = 720;
+  const W = 640;
+  const H = 960;
   const canvas = createCanvas(W, H);
   const ctx = canvas.getContext('2d');
   const theme = RARITY_THEMES[data.rarity] || RARITY_THEMES.COMMON!;
+  const hasStats = data.atk != null;
+  const elem = data.element ? ELEMENT_ICONS[data.element] : null;
 
-  // Background
-  const bgGrad = ctx.createLinearGradient(0, 0, 0, H);
+  // ── Background: diagonal gradient with 3 stops ──
+  const bgGrad = ctx.createLinearGradient(0, 0, W * 0.3, H);
   bgGrad.addColorStop(0, theme.bgGradient[0]);
-  bgGrad.addColorStop(1, theme.bgGradient[1]);
+  bgGrad.addColorStop(0.5, theme.bgGradient[1]);
+  bgGrad.addColorStop(1, theme.bgGradient[2]);
   ctx.fillStyle = bgGrad;
   ctx.fillRect(0, 0, W, H);
 
-  // Subtle grid
-  ctx.strokeStyle = 'rgba(255,255,255,0.02)';
-  ctx.lineWidth = 1;
-  for (let y = 0; y < H; y += 20) {
-    ctx.beginPath();
-    ctx.moveTo(0, y);
-    ctx.lineTo(W, y);
-    ctx.stroke();
-  }
-  for (let x = 0; x < W; x += 20) {
-    ctx.beginPath();
-    ctx.moveTo(x, 0);
-    ctx.lineTo(x, H);
-    ctx.stroke();
+  // Radial glow behind image area
+  const centerGlow = ctx.createRadialGradient(W / 2, 280, 20, W / 2, 280, 320);
+  centerGlow.addColorStop(0, `${theme.borderColor}18`);
+  centerGlow.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = centerGlow;
+  ctx.fillRect(0, 0, W, H);
+
+  // Light rays for Legendary/Secret
+  if (data.rarity === 'LEGENDARY' || data.rarity === 'SECRET') {
+    drawLightRays(
+      ctx,
+      W,
+      H,
+      `${theme.accentColor}12`,
+      data.rarity === 'SECRET' ? 5 : 3,
+    );
   }
 
-  // Outer glow border
+  // Noise texture
+  drawNoise(ctx, W, H, 0.025);
+
+  // ── Outer glow border ──
   ctx.shadowColor = theme.glowColor;
-  ctx.shadowBlur = 25;
-  ctx.strokeStyle = theme.borderColor;
+  ctx.shadowBlur = 35;
+  const borderGrad = ctx.createLinearGradient(0, 0, W, H);
+  borderGrad.addColorStop(0, theme.borderGradient[0]);
+  borderGrad.addColorStop(0.5, theme.borderGradient[1]);
+  borderGrad.addColorStop(1, theme.borderGradient[2]);
+  ctx.strokeStyle = borderGrad;
   ctx.lineWidth = 4;
   ctx.beginPath();
-  ctx.roundRect(10, 10, W - 20, H - 20, 16);
+  ctx.roundRect(12, 12, W - 24, H - 24, 20);
   ctx.stroke();
   ctx.shadowBlur = 0;
 
   // Inner border
-  ctx.strokeStyle = `${theme.borderColor}40`;
+  ctx.strokeStyle = `${theme.borderColor}30`;
   ctx.lineWidth = 1;
   ctx.beginPath();
-  ctx.roundRect(16, 16, W - 32, H - 32, 12);
+  ctx.roundRect(20, 20, W - 40, H - 40, 16);
   ctx.stroke();
 
-  // Top rarity band
-  const bandGrad = ctx.createLinearGradient(20, 20, W - 20, 20);
-  bandGrad.addColorStop(0, `${theme.borderColor}CC`);
-  bandGrad.addColorStop(0.5, theme.borderColor);
-  bandGrad.addColorStop(1, `${theme.borderColor}CC`);
-  ctx.fillStyle = bandGrad;
+  // ── Top rarity band ──
+  const bandH = 44;
+  const bandGrad2 = ctx.createLinearGradient(24, 24, W - 24, 24);
+  bandGrad2.addColorStop(0, `${theme.borderColor}90`);
+  bandGrad2.addColorStop(0.5, `${theme.borderColor}DD`);
+  bandGrad2.addColorStop(1, `${theme.borderColor}90`);
+  ctx.fillStyle = bandGrad2;
   ctx.beginPath();
-  ctx.roundRect(20, 20, W - 40, 36, [10, 10, 0, 0]);
+  ctx.roundRect(24, 24, W - 48, bandH, [14, 14, 0, 0]);
   ctx.fill();
 
-  ctx.font = 'bold 14px GoogleSans';
+  ctx.font = 'bold 16px GoogleSans';
   ctx.fillStyle = '#ffffff';
   ctx.textAlign = 'center';
-  ctx.fillText(theme.label, W / 2, 44);
+  ctx.shadowColor = 'rgba(0,0,0,0.5)';
+  ctx.shadowBlur = 4;
+  ctx.fillText(theme.label, W / 2, 52);
+  ctx.shadowBlur = 0;
 
-  ctx.font = '12px GoogleSans';
+  ctx.font = '14px GoogleSans';
   ctx.fillStyle = theme.accentColor;
   ctx.fillText(
     '★'.repeat(theme.stars) + '☆'.repeat(5 - theme.stars),
     W / 2,
-    55,
+    66,
   );
 
-  // Character image
-  const imgY = 68;
-  const imgH = 300;
-  const imgW = W - 56;
+  // Element badge (top-right corner)
+  if (elem) {
+    const eX = W - 56,
+      eY = 36;
+    ctx.fillStyle = `${elem.color}40`;
+    ctx.beginPath();
+    ctx.arc(eX, eY, 14, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = `${elem.color}80`;
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.arc(eX, eY, 14, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.font = '14px GoogleSans';
+    ctx.fillStyle = '#ffffff';
+    ctx.fillText(elem.emoji, eX, eY + 5);
+  }
 
-  ctx.fillStyle = 'rgba(0,0,0,0.4)';
+  // ── Character image ──
+  const imgY = 78;
+  const imgH = 380;
+  const imgW = W - 60;
+  const imgX = 30;
+
+  ctx.fillStyle = 'rgba(0,0,0,0.5)';
   ctx.beginPath();
-  ctx.roundRect(28, imgY, imgW, imgH, 8);
+  ctx.roundRect(imgX, imgY, imgW, imgH, 12);
   ctx.fill();
 
   const charImg = await safeLoadImage(data.imageUrl || null);
   if (charImg) {
     ctx.save();
     ctx.beginPath();
-    ctx.roundRect(28, imgY, imgW, imgH, 8);
+    ctx.roundRect(imgX, imgY, imgW, imgH, 12);
     ctx.clip();
     const aspect = charImg.width / charImg.height;
     let dW = imgW,
       dH = imgH,
-      dX = 28,
+      dX = imgX,
       dY = imgY;
     if (aspect > imgW / imgH) {
       dH = imgW / aspect;
       dY = imgY + (imgH - dH) / 2;
     } else {
       dW = imgH * aspect;
-      dX = 28 + (imgW - dW) / 2;
+      dX = imgX + (imgW - dW) / 2;
     }
     ctx.drawImage(charImg, dX, dY, dW, dH);
-    const vigGrad = ctx.createLinearGradient(0, imgY, 0, imgY + imgH);
-    vigGrad.addColorStop(0, 'rgba(0,0,0,0)');
-    vigGrad.addColorStop(0.7, 'rgba(0,0,0,0)');
-    vigGrad.addColorStop(1, 'rgba(0,0,0,0.7)');
-    ctx.fillStyle = vigGrad;
-    ctx.fillRect(28, imgY, imgW, imgH);
+
+    // Vignette (bottom + top subtle)
+    const vigBot = ctx.createLinearGradient(0, imgY, 0, imgY + imgH);
+    vigBot.addColorStop(0, 'rgba(0,0,0,0.15)');
+    vigBot.addColorStop(0.3, 'rgba(0,0,0,0)');
+    vigBot.addColorStop(0.65, 'rgba(0,0,0,0)');
+    vigBot.addColorStop(1, 'rgba(0,0,0,0.75)');
+    ctx.fillStyle = vigBot;
+    ctx.fillRect(imgX, imgY, imgW, imgH);
+
+    // Side vignettes
+    const vigL = ctx.createLinearGradient(imgX, 0, imgX + 60, 0);
+    vigL.addColorStop(0, 'rgba(0,0,0,0.4)');
+    vigL.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = vigL;
+    ctx.fillRect(imgX, imgY, 60, imgH);
+    const vigR = ctx.createLinearGradient(imgX + imgW - 60, 0, imgX + imgW, 0);
+    vigR.addColorStop(0, 'rgba(0,0,0,0)');
+    vigR.addColorStop(1, 'rgba(0,0,0,0.4)');
+    ctx.fillStyle = vigR;
+    ctx.fillRect(imgX + imgW - 60, imgY, 60, imgH);
     ctx.restore();
   } else {
-    ctx.font = 'bold 80px GoogleSans';
-    ctx.fillStyle = 'rgba(255,255,255,0.05)';
+    ctx.font = 'bold 100px GoogleSans';
+    ctx.fillStyle = 'rgba(255,255,255,0.04)';
     ctx.textAlign = 'center';
-    ctx.fillText('?', W / 2, imgY + imgH / 2 + 30);
+    ctx.fillText('?', W / 2, imgY + imgH / 2 + 35);
   }
 
-  ctx.strokeStyle = `${theme.borderColor}80`;
+  // Image frame border
+  ctx.strokeStyle = `${theme.borderColor}60`;
   ctx.lineWidth = 2;
   ctx.beginPath();
-  ctx.roundRect(28, imgY, imgW, imgH, 8);
+  ctx.roundRect(imgX, imgY, imgW, imgH, 12);
   ctx.stroke();
 
-  // Name
-  const nameY = imgY + imgH + 32;
+  // ── Name section ──
+  const nameY = imgY + imgH + 38;
   ctx.textAlign = 'center';
-  ctx.font = 'bold 26px GoogleSans';
+  ctx.font = 'bold 30px GoogleSans';
+  ctx.shadowColor = 'rgba(0,0,0,0.6)';
+  ctx.shadowBlur = 6;
   ctx.fillStyle = '#ffffff';
   let dn = data.name;
-  while (ctx.measureText(dn).width > W - 60 && dn.length > 10)
+  while (ctx.measureText(dn).width > W - 80 && dn.length > 10)
     dn = `${dn.substring(0, dn.length - 2)}…`;
   ctx.fillText(dn, W / 2, nameY);
+  ctx.shadowBlur = 0;
 
   if (data.nameJp) {
-    ctx.font = '14px GoogleSans';
-    ctx.fillStyle = 'rgba(255,255,255,0.4)';
-    ctx.fillText(data.nameJp, W / 2, nameY + 22);
+    ctx.font = '15px GoogleSans';
+    ctx.fillStyle = 'rgba(255,255,255,0.35)';
+    ctx.fillText(data.nameJp, W / 2, nameY + 24);
   }
 
-  // Series badge
-  const seriesY = nameY + (data.nameJp ? 42 : 26);
+  // ── Series badge ──
+  const seriesY = nameY + (data.nameJp ? 48 : 30);
   const seriesText = data.series.replace(/_/g, ' ');
-  ctx.font = '12px GoogleSans';
-  const sW = ctx.measureText(seriesText).width + 20;
-  ctx.fillStyle = `${theme.borderColor}30`;
+  ctx.font = 'bold 12px GoogleSans';
+  const sW = ctx.measureText(seriesText).width + 28;
+  ctx.fillStyle = `${theme.borderColor}20`;
   ctx.beginPath();
-  ctx.roundRect(W / 2 - sW / 2, seriesY - 12, sW, 20, 10);
+  ctx.roundRect(W / 2 - sW / 2, seriesY - 14, sW, 22, 11);
   ctx.fill();
+  ctx.strokeStyle = `${theme.borderColor}40`;
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.roundRect(W / 2 - sW / 2, seriesY - 14, sW, 22, 11);
+  ctx.stroke();
   ctx.fillStyle = theme.accentColor;
   ctx.fillText(seriesText, W / 2, seriesY + 2);
 
-  // Beyblade section with box
+  // ── Beyblade & Special Move ──
+  let contentY = seriesY + 20;
   if (data.beyblade) {
-    const beyY = seriesY + 16;
-    const beyBoxW = W - 56;
+    const beyBoxW = W - 72;
     ctx.fillStyle = 'rgba(255,255,255,0.03)';
-    ctx.strokeStyle = `${theme.borderColor}30`;
+    ctx.strokeStyle = `${theme.borderColor}25`;
     ctx.lineWidth = 1;
     ctx.beginPath();
-    ctx.roundRect(28, beyY, beyBoxW, 28, 6);
+    ctx.roundRect(36, contentY, beyBoxW, 30, 8);
     ctx.fill();
     ctx.beginPath();
-    ctx.roundRect(28, beyY, beyBoxW, 28, 6);
+    ctx.roundRect(36, contentY, beyBoxW, 30, 8);
     ctx.stroke();
-
-    // Beyblade icon circle
-    ctx.fillStyle = `${theme.borderColor}40`;
-    ctx.beginPath();
-    ctx.arc(46, beyY + 14, 10, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.font = '10px GoogleSans';
-    ctx.fillStyle = '#ffffff';
-    ctx.textAlign = 'center';
-    ctx.fillText('🌀', 46, beyY + 18);
-
-    // Beyblade name
-    ctx.font = 'bold 11px GoogleSans';
+    ctx.font = 'bold 12px GoogleSans';
     ctx.fillStyle = theme.accentColor;
     ctx.textAlign = 'left';
-    let beyName = data.beyblade;
-    if (ctx.measureText(beyName).width > beyBoxW - 40)
-      beyName = `${beyName.substring(0, 25)}…`;
-    ctx.fillText(beyName, 62, beyY + 18);
+    let beyName = `🌀 ${data.beyblade}`;
+    if (ctx.measureText(beyName).width > beyBoxW - 20)
+      beyName = `${beyName.substring(0, 30)}…`;
+    ctx.fillText(beyName, 48, contentY + 20);
     ctx.textAlign = 'center';
+    contentY += 38;
   }
 
-  // Description (word-wrapped)
-  if (data.description) {
-    const descY = seriesY + (data.beyblade ? 58 : 28);
+  // ── Stats section (ATK/DEF/SPD/HP) ──
+  if (hasStats) {
+    const statsX = 36;
+    const statsW = (W - 72 - 16) / 2;
+    drawStatBar(
+      ctx,
+      statsX,
+      contentY,
+      statsW,
+      data.atk!,
+      100,
+      'ATK',
+      '#ef4444',
+    );
+    drawStatBar(
+      ctx,
+      statsX + statsW + 16,
+      contentY,
+      statsW,
+      data.def!,
+      100,
+      'DEF',
+      '#3b82f6',
+    );
+    contentY += 20;
+    drawStatBar(
+      ctx,
+      statsX,
+      contentY,
+      statsW,
+      data.spd!,
+      100,
+      'SPD',
+      '#22d3ee',
+    );
+    drawStatBar(
+      ctx,
+      statsX + statsW + 16,
+      contentY,
+      statsW,
+      data.hp!,
+      100,
+      'HP',
+      '#22c55e',
+    );
+    contentY += 20;
+  }
+
+  // ── Special move ──
+  if (data.specialMove) {
+    contentY += 4;
     ctx.font = '11px GoogleSans';
-    ctx.fillStyle = 'rgba(255,255,255,0.5)';
+    ctx.fillStyle = 'rgba(255,255,255,0.35)';
+    ctx.textAlign = 'center';
+    ctx.fillText(`⚡ ${data.specialMove}`, W / 2, contentY + 10);
+  }
+
+  // ── Description ──
+  if (data.description && !hasStats) {
+    contentY += 4;
+    ctx.font = '12px GoogleSans';
+    ctx.fillStyle = 'rgba(255,255,255,0.45)';
     const words = data.description.split(' ');
     let line = '',
-      ly = descY,
+      ly = contentY,
       lc = 0;
     for (const word of words) {
       if (lc >= 3) break;
       const test = line ? `${line} ${word}` : word;
-      if (ctx.measureText(test).width > W - 80) {
+      if (ctx.measureText(test).width > W - 100) {
         ctx.fillText(line, W / 2, ly);
         line = word;
-        ly += 15;
+        ly += 17;
         lc++;
       } else line = test;
     }
     if (line && lc < 3) ctx.fillText(lc === 2 ? `${line}…` : line, W / 2, ly);
   }
 
-  // Bottom bar
-  ctx.fillStyle = 'rgba(0,0,0,0.3)';
+  // ── Bottom bar (glassmorphism) ──
+  const barH = 50;
+  const barY = H - barH - 18;
+  ctx.fillStyle = 'rgba(0,0,0,0.35)';
   ctx.beginPath();
-  ctx.roundRect(20, H - 60, W - 40, 40, [0, 0, 10, 10]);
+  ctx.roundRect(24, barY, W - 48, barH, [0, 0, 14, 14]);
   ctx.fill();
-  ctx.font = '13px GoogleSans';
+  ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.roundRect(24, barY, W - 48, barH, [0, 0, 14, 14]);
+  ctx.stroke();
+  ctx.font = 'bold 14px GoogleSans';
   ctx.textAlign = 'left';
-  ctx.fillStyle = 'rgba(255,255,255,0.6)';
-  ctx.fillText(`💰 ${data.balance.toLocaleString('fr-FR')} 🪙`, 35, H - 35);
+  ctx.fillStyle = 'rgba(255,255,255,0.65)';
+  ctx.fillText(`💰 ${data.balance.toLocaleString('fr-FR')} 🪙`, 42, barY + 30);
   ctx.textAlign = 'right';
   if (data.isWished) {
     ctx.fillStyle = '#fbbf24';
-    ctx.fillText('⭐ WISHED', W - 35, H - 35);
+    ctx.font = 'bold 14px GoogleSans';
+    ctx.fillText('⭐ WISHED', W - 42, barY + 30);
   } else if (data.isDuplicate) {
-    ctx.fillStyle = 'rgba(255,255,255,0.4)';
-    ctx.fillText('📋 DOUBLON', W - 35, H - 35);
+    ctx.fillStyle = 'rgba(255,255,255,0.35)';
+    ctx.font = 'bold 14px GoogleSans';
+    ctx.fillText('📋 DOUBLON', W - 42, barY + 30);
   }
 
-  // Corner decorations (Epic+)
+  // ── Corner ornaments (Epic+) ──
   if (['EPIC', 'LEGENDARY', 'SECRET'].includes(data.rarity)) {
-    ctx.strokeStyle = `${theme.borderColor}40`;
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(20, 65);
-    ctx.lineTo(20, 20);
-    ctx.lineTo(65, 20);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(W - 65, 20);
-    ctx.lineTo(W - 20, 20);
-    ctx.lineTo(W - 20, 65);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(20, H - 65);
-    ctx.lineTo(20, H - 20);
-    ctx.lineTo(65, H - 20);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(W - 65, H - 20);
-    ctx.lineTo(W - 20, H - 20);
-    ctx.lineTo(W - 20, H - 65);
-    ctx.stroke();
+    ctx.strokeStyle = `${theme.borderColor}35`;
+    ctx.lineWidth = 2.5;
+    const corners: [number, number, number, number][] = [
+      [24, 70, 24, 24],
+      [24, 24, 70, 24],
+      [W - 70, 24, W - 24, 24],
+      [W - 24, 24, W - 24, 70],
+      [24, H - 70, 24, H - 24],
+      [24, H - 24, 70, H - 24],
+      [W - 70, H - 24, W - 24, H - 24],
+      [W - 24, H - 24, W - 24, H - 70],
+    ];
+    for (const [x1, y1, x2, y2] of corners) {
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.stroke();
+    }
   }
 
-  // Sparkles (Legendary/Secret)
-  if (data.rarity === 'LEGENDARY' || data.rarity === 'SECRET') {
-    ctx.fillStyle = `${theme.accentColor}60`;
-    for (const [sx, sy] of [
-      [60, 80],
-      [W - 70, 90],
-      [80, H - 80],
-      [W - 60, H - 90],
-      [W / 2 - 50, 65],
-      [W / 2 + 50, 65],
-    ]) {
-      const sz = 4 + Math.random() * 3;
-      ctx.beginPath();
-      ctx.moveTo(sx!, sy! - sz);
-      ctx.lineTo(sx! + sz * 0.3, sy! - sz * 0.3);
-      ctx.lineTo(sx! + sz, sy!);
-      ctx.lineTo(sx! + sz * 0.3, sy! + sz * 0.3);
-      ctx.lineTo(sx!, sy! + sz);
-      ctx.lineTo(sx! - sz * 0.3, sy! + sz * 0.3);
-      ctx.lineTo(sx! - sz, sy!);
-      ctx.lineTo(sx! - sz * 0.3, sy! - sz * 0.3);
-      ctx.closePath();
-      ctx.fill();
+  // ── Sparkles & particles ──
+  if (theme.particleCount > 0) {
+    for (let i = 0; i < theme.particleCount; i++) {
+      const sx = 30 + Math.random() * (W - 60);
+      const sy = 30 + Math.random() * (H - 60);
+      const sz = 3 + Math.random() * 6;
+      const alpha = 0.2 + Math.random() * 0.5;
+      drawSparkle(ctx, sx, sy, sz, theme.accentColor, alpha);
     }
   }
 
@@ -1546,55 +1782,105 @@ export async function generateGachaMissCard(
   message: string,
   balance: number,
 ): Promise<Buffer> {
-  const W = 480,
-    H = 280;
+  const W = 640,
+    H = 340;
   const canvas = createCanvas(W, H);
   const ctx = canvas.getContext('2d');
 
-  const bg = ctx.createLinearGradient(0, 0, 0, H);
-  bg.addColorStop(0, '#1a1a2e');
-  bg.addColorStop(1, '#16213e');
+  // Background with fog effect
+  const bg = ctx.createLinearGradient(0, 0, W * 0.3, H);
+  bg.addColorStop(0, '#12151f');
+  bg.addColorStop(0.5, '#161a28');
+  bg.addColorStop(1, '#0e1118');
   ctx.fillStyle = bg;
   ctx.fillRect(0, 0, W, H);
 
-  ctx.strokeStyle = 'rgba(107,114,128,0.4)';
+  // Radial fog
+  const fog = ctx.createRadialGradient(
+    W / 2,
+    H * 0.4,
+    10,
+    W / 2,
+    H * 0.4,
+    W * 0.5,
+  );
+  fog.addColorStop(0, 'rgba(107,114,128,0.06)');
+  fog.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = fog;
+  ctx.fillRect(0, 0, W, H);
+
+  drawNoise(ctx, W, H, 0.02);
+
+  // Border
+  ctx.strokeStyle = 'rgba(107,114,128,0.25)';
   ctx.lineWidth = 2;
   ctx.beginPath();
-  ctx.roundRect(8, 8, W - 16, H - 16, 12);
+  ctx.roundRect(10, 10, W - 20, H - 20, 16);
   ctx.stroke();
 
-  ctx.font = 'bold 32px GoogleSans';
-  ctx.fillStyle = '#6b7280';
+  // Faded X background watermark
+  ctx.save();
+  ctx.globalAlpha = 0.03;
+  ctx.font = 'bold 200px GoogleSans';
+  ctx.fillStyle = '#ffffff';
   ctx.textAlign = 'center';
-  ctx.fillText('💨 RATÉ !', W / 2, 80);
+  ctx.fillText('✕', W / 2, H / 2 + 60);
+  ctx.restore();
 
-  ctx.font = '13px GoogleSans';
-  ctx.fillStyle = 'rgba(255,255,255,0.5)';
+  // Title
+  ctx.font = 'bold 38px GoogleSans';
+  ctx.fillStyle = '#4b5563';
+  ctx.textAlign = 'center';
+  ctx.shadowColor = 'rgba(0,0,0,0.4)';
+  ctx.shadowBlur = 6;
+  ctx.fillText('💨 RATÉ !', W / 2, 85);
+  ctx.shadowBlur = 0;
+
+  // Decorative line
+  const lineGrad = ctx.createLinearGradient(W * 0.25, 100, W * 0.75, 100);
+  lineGrad.addColorStop(0, 'rgba(107,114,128,0)');
+  lineGrad.addColorStop(0.5, 'rgba(107,114,128,0.3)');
+  lineGrad.addColorStop(1, 'rgba(107,114,128,0)');
+  ctx.strokeStyle = lineGrad;
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(W * 0.25, 100);
+  ctx.lineTo(W * 0.75, 100);
+  ctx.stroke();
+
+  // Message
+  ctx.font = '14px GoogleSans';
+  ctx.fillStyle = 'rgba(255,255,255,0.45)';
   const words = message.split(' ');
   let line = '',
-    y = 120;
+    y = 140;
   for (const word of words) {
     const test = line ? `${line} ${word}` : word;
-    if (ctx.measureText(test).width > W - 60) {
+    if (ctx.measureText(test).width > W - 80) {
       ctx.fillText(line, W / 2, y);
       line = word;
-      y += 18;
+      y += 20;
     } else line = test;
   }
   if (line) ctx.fillText(line, W / 2, y);
 
-  ctx.font = '14px GoogleSans';
+  // Balance pill
+  ctx.fillStyle = 'rgba(0,0,0,0.25)';
+  ctx.beginPath();
+  ctx.roundRect(W / 2 - 120, H - 55, 240, 30, 15);
+  ctx.fill();
+  ctx.font = 'bold 13px GoogleSans';
   ctx.fillStyle = 'rgba(255,255,255,0.4)';
   ctx.fillText(
     `💰 ${balance.toLocaleString('fr-FR')} 🪙 restants`,
     W / 2,
-    H - 25,
+    H - 35,
   );
 
   return canvas.toBuffer('image/png');
 }
 
-// ─── Multi-Pull Canvas ──────────────────────────────────────────────────────
+// ─── Multi-Pull Canvas (v2 — HD) ────────────────────────────────────────────
 
 export interface MultiPullSlot {
   rarity: string | null; // null = miss
@@ -1616,19 +1902,19 @@ export async function generateMultiPullCard(
 ): Promise<Buffer> {
   const COLS = 5;
   const ROWS = 2;
-  const CARD_W = 160;
-  const CARD_H = 220;
-  const GAP = 12;
-  const PAD = 24;
-  const HEADER = 70;
-  const FOOTER = 50;
+  const CARD_W = 190;
+  const CARD_H = 265;
+  const GAP = 14;
+  const PAD = 30;
+  const HEADER = 80;
+  const FOOTER = 60;
   const W = PAD * 2 + COLS * CARD_W + (COLS - 1) * GAP;
   const H = HEADER + ROWS * CARD_H + (ROWS - 1) * GAP + FOOTER + PAD;
   const canvas = createCanvas(W, H);
   const ctx = canvas.getContext('2d');
 
-  // Background — dark with radial glow
-  ctx.fillStyle = '#080810';
+  // ── Background ──
+  ctx.fillStyle = '#06060e';
   ctx.fillRect(0, 0, W, H);
 
   // Radial glow center
@@ -1638,47 +1924,50 @@ export async function generateMultiPullCard(
     50,
     W / 2,
     H / 2,
-    W * 0.6,
+    W * 0.55,
   );
-  radGrad.addColorStop(0, 'rgba(139,92,246,0.08)');
+  radGrad.addColorStop(0, 'rgba(139,92,246,0.07)');
   radGrad.addColorStop(1, 'rgba(0,0,0,0)');
   ctx.fillStyle = radGrad;
   ctx.fillRect(0, 0, W, H);
 
-  // Scan lines effect
-  ctx.fillStyle = 'rgba(255,255,255,0.008)';
-  for (let y = 0; y < H; y += 3) {
-    ctx.fillRect(0, y, W, 1);
-  }
+  drawNoise(ctx, W, H, 0.018);
 
-  // Border
-  ctx.strokeStyle = 'rgba(139,92,246,0.3)';
+  // Border with gradient
+  const borderG = ctx.createLinearGradient(0, 0, W, H);
+  borderG.addColorStop(0, 'rgba(139,92,246,0.25)');
+  borderG.addColorStop(0.5, 'rgba(251,191,36,0.2)');
+  borderG.addColorStop(1, 'rgba(139,92,246,0.25)');
+  ctx.strokeStyle = borderG;
   ctx.lineWidth = 2;
   ctx.beginPath();
-  ctx.roundRect(6, 6, W - 12, H - 12, 16);
+  ctx.roundRect(8, 8, W - 16, H - 16, 18);
   ctx.stroke();
 
   // Header
-  ctx.font = 'bold 28px GoogleSans';
+  ctx.font = 'bold 32px GoogleSans';
   ctx.fillStyle = '#ffffff';
   ctx.textAlign = 'center';
-  ctx.fillText('🎰  MULTI-PULL  ×10', W / 2, 46);
+  ctx.shadowColor = 'rgba(139,92,246,0.3)';
+  ctx.shadowBlur = 10;
+  ctx.fillText('🎰  MULTI-PULL  ×10', W / 2, 52);
+  ctx.shadowBlur = 0;
 
-  // Decorative line under header
-  const lineGrad = ctx.createLinearGradient(PAD, 58, W - PAD, 58);
+  // Decorative line
+  const lineGrad = ctx.createLinearGradient(PAD, 66, W - PAD, 66);
   lineGrad.addColorStop(0, 'rgba(139,92,246,0)');
-  lineGrad.addColorStop(0.3, 'rgba(139,92,246,0.5)');
-  lineGrad.addColorStop(0.5, 'rgba(251,191,36,0.6)');
-  lineGrad.addColorStop(0.7, 'rgba(139,92,246,0.5)');
+  lineGrad.addColorStop(0.3, 'rgba(139,92,246,0.4)');
+  lineGrad.addColorStop(0.5, 'rgba(251,191,36,0.5)');
+  lineGrad.addColorStop(0.7, 'rgba(139,92,246,0.4)');
   lineGrad.addColorStop(1, 'rgba(139,92,246,0)');
   ctx.strokeStyle = lineGrad;
   ctx.lineWidth = 2;
   ctx.beginPath();
-  ctx.moveTo(PAD + 40, 58);
-  ctx.lineTo(W - PAD - 40, 58);
+  ctx.moveTo(PAD + 50, 66);
+  ctx.lineTo(W - PAD - 50, 66);
   ctx.stroke();
 
-  // Draw 10 mini-cards
+  // ── Draw 10 mini-cards ──
   for (let i = 0; i < data.slots.length; i++) {
     const slot = data.slots[i]!;
     const col = i % COLS;
@@ -1688,83 +1977,88 @@ export async function generateMultiPullCard(
 
     if (!slot.rarity) {
       // ── MISS card ──
-      ctx.fillStyle = 'rgba(255,255,255,0.02)';
+      ctx.fillStyle = 'rgba(255,255,255,0.015)';
       ctx.beginPath();
-      ctx.roundRect(x, y, CARD_W, CARD_H, 10);
+      ctx.roundRect(x, y, CARD_W, CARD_H, 12);
       ctx.fill();
-
-      ctx.strokeStyle = 'rgba(107,114,128,0.3)';
+      ctx.strokeStyle = 'rgba(107,114,128,0.2)';
       ctx.lineWidth = 1.5;
       ctx.beginPath();
-      ctx.roundRect(x, y, CARD_W, CARD_H, 10);
+      ctx.roundRect(x, y, CARD_W, CARD_H, 12);
       ctx.stroke();
 
-      // X mark
-      ctx.font = 'bold 40px GoogleSans';
-      ctx.fillStyle = 'rgba(107,114,128,0.15)';
+      // Faded X
+      ctx.save();
+      ctx.globalAlpha = 0.05;
+      ctx.font = 'bold 80px GoogleSans';
+      ctx.fillStyle = '#ffffff';
       ctx.textAlign = 'center';
-      ctx.fillText('✕', x + CARD_W / 2, y + CARD_H / 2 - 10);
+      ctx.fillText('✕', x + CARD_W / 2, y + CARD_H / 2 + 10);
+      ctx.restore();
 
-      ctx.font = 'bold 14px GoogleSans';
-      ctx.fillStyle = 'rgba(107,114,128,0.4)';
-      ctx.fillText('RATÉ', x + CARD_W / 2, y + CARD_H / 2 + 25);
-
-      // Diagonal strikethrough
-      ctx.strokeStyle = 'rgba(107,114,128,0.1)';
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(x + 10, y + 10);
-      ctx.lineTo(x + CARD_W - 10, y + CARD_H - 10);
-      ctx.stroke();
+      ctx.font = 'bold 15px GoogleSans';
+      ctx.fillStyle = 'rgba(107,114,128,0.35)';
+      ctx.textAlign = 'center';
+      ctx.fillText('RATÉ', x + CARD_W / 2, y + CARD_H / 2 + 50);
     } else {
       // ── Card drop ──
-      const theme = RARITY_THEMES[slot.rarity] || RARITY_THEMES.COMMON!;
+      const t = RARITY_THEMES[slot.rarity] || RARITY_THEMES.COMMON!;
 
-      // Card background gradient
-      const cardGrad = ctx.createLinearGradient(x, y, x, y + CARD_H);
-      cardGrad.addColorStop(0, theme.bgGradient[0]);
-      cardGrad.addColorStop(1, theme.bgGradient[1]);
+      // Background gradient
+      const cardGrad = ctx.createLinearGradient(
+        x,
+        y,
+        x + CARD_W * 0.2,
+        y + CARD_H,
+      );
+      cardGrad.addColorStop(0, t.bgGradient[0]);
+      cardGrad.addColorStop(0.5, t.bgGradient[1]);
+      cardGrad.addColorStop(1, t.bgGradient[2]);
       ctx.fillStyle = cardGrad;
       ctx.beginPath();
-      ctx.roundRect(x, y, CARD_W, CARD_H, 10);
+      ctx.roundRect(x, y, CARD_W, CARD_H, 12);
       ctx.fill();
 
       // Glow border
-      ctx.shadowColor = theme.glowColor;
+      ctx.shadowColor = t.glowColor;
       ctx.shadowBlur =
-        slot.rarity === 'SECRET' || slot.rarity === 'LEGENDARY' ? 15 : 8;
-      ctx.strokeStyle = theme.borderColor;
+        slot.rarity === 'SECRET' || slot.rarity === 'LEGENDARY' ? 18 : 8;
+      const bGrad = ctx.createLinearGradient(x, y, x + CARD_W, y + CARD_H);
+      bGrad.addColorStop(0, t.borderGradient[0]);
+      bGrad.addColorStop(0.5, t.borderGradient[1]);
+      bGrad.addColorStop(1, t.borderGradient[2]);
+      ctx.strokeStyle = bGrad;
       ctx.lineWidth = 2.5;
       ctx.beginPath();
-      ctx.roundRect(x, y, CARD_W, CARD_H, 10);
+      ctx.roundRect(x, y, CARD_W, CARD_H, 12);
       ctx.stroke();
       ctx.shadowBlur = 0;
 
       // Rarity band
-      ctx.fillStyle = `${theme.borderColor}CC`;
+      ctx.fillStyle = `${t.borderColor}CC`;
       ctx.beginPath();
-      ctx.roundRect(x + 4, y + 4, CARD_W - 8, 22, [8, 8, 0, 0]);
+      ctx.roundRect(x + 5, y + 5, CARD_W - 10, 24, [9, 9, 0, 0]);
       ctx.fill();
-      ctx.font = 'bold 10px GoogleSans';
+      ctx.font = 'bold 11px GoogleSans';
       ctx.fillStyle = '#ffffff';
       ctx.textAlign = 'center';
-      ctx.fillText(theme.label, x + CARD_W / 2, y + 18);
+      ctx.fillText(t.label, x + CARD_W / 2, y + 21);
 
       // Stars
-      ctx.font = '9px GoogleSans';
-      ctx.fillStyle = theme.accentColor;
+      ctx.font = '10px GoogleSans';
+      ctx.fillStyle = t.accentColor;
       ctx.fillText(
-        '★'.repeat(theme.stars) + '☆'.repeat(5 - theme.stars),
+        '★'.repeat(t.stars) + '☆'.repeat(5 - t.stars),
         x + CARD_W / 2,
-        y + 32,
+        y + 36,
       );
 
       // Character image
-      const imgY = y + 36;
-      const imgH = 110;
-      ctx.fillStyle = 'rgba(0,0,0,0.3)';
+      const imgY2 = y + 42;
+      const imgH2 = 140;
+      ctx.fillStyle = 'rgba(0,0,0,0.35)';
       ctx.beginPath();
-      ctx.roundRect(x + 6, imgY, CARD_W - 12, imgH, 6);
+      ctx.roundRect(x + 8, imgY2, CARD_W - 16, imgH2, 8);
       ctx.fill();
 
       if (slot.imageUrl) {
@@ -1772,118 +2066,114 @@ export async function generateMultiPullCard(
         if (img) {
           ctx.save();
           ctx.beginPath();
-          ctx.roundRect(x + 6, imgY, CARD_W - 12, imgH, 6);
+          ctx.roundRect(x + 8, imgY2, CARD_W - 16, imgH2, 8);
           ctx.clip();
           const aspect = img.width / img.height;
-          let dw = CARD_W - 12,
-            dh = imgH;
-          if (aspect > dw / dh) {
-            dh = dw / aspect;
-          } else {
-            dw = dh * aspect;
-          }
+          let dw = CARD_W - 16,
+            dh = imgH2;
+          if (aspect > dw / dh) dh = dw / aspect;
+          else dw = dh * aspect;
           ctx.drawImage(
             img,
-            x + 6 + (CARD_W - 12 - dw) / 2,
-            imgY + (imgH - dh) / 2,
+            x + 8 + (CARD_W - 16 - dw) / 2,
+            imgY2 + (imgH2 - dh) / 2,
             dw,
             dh,
           );
-
           // Vignette
-          const vig = ctx.createLinearGradient(0, imgY, 0, imgY + imgH);
+          const vig = ctx.createLinearGradient(0, imgY2, 0, imgY2 + imgH2);
           vig.addColorStop(0, 'rgba(0,0,0,0)');
-          vig.addColorStop(0.8, 'rgba(0,0,0,0)');
+          vig.addColorStop(0.75, 'rgba(0,0,0,0)');
           vig.addColorStop(1, 'rgba(0,0,0,0.6)');
           ctx.fillStyle = vig;
-          ctx.fillRect(x + 6, imgY, CARD_W - 12, imgH);
+          ctx.fillRect(x + 8, imgY2, CARD_W - 16, imgH2);
           ctx.restore();
         }
       }
 
       // Name
-      ctx.font = 'bold 13px GoogleSans';
+      ctx.font = 'bold 14px GoogleSans';
       ctx.fillStyle = '#ffffff';
       ctx.textAlign = 'center';
       let name = slot.name || '???';
-      if (ctx.measureText(name).width > CARD_W - 16)
-        name = `${name.substring(0, 12)}…`;
-      ctx.fillText(name, x + CARD_W / 2, y + CARD_H - 36);
+      if (ctx.measureText(name).width > CARD_W - 20)
+        name = `${name.substring(0, 14)}…`;
+      ctx.fillText(name, x + CARD_W / 2, y + CARD_H - 42);
 
-      // Duplicate / Wished badge
+      // Status badge
       if (slot.isWished) {
-        ctx.font = '10px GoogleSans';
+        ctx.font = 'bold 11px GoogleSans';
         ctx.fillStyle = '#fbbf24';
-        ctx.fillText('⭐ WISHED', x + CARD_W / 2, y + CARD_H - 18);
+        ctx.fillText('⭐ WISHED', x + CARD_W / 2, y + CARD_H - 22);
       } else if (slot.isDuplicate) {
-        ctx.font = '10px GoogleSans';
+        ctx.font = '11px GoogleSans';
         ctx.fillStyle = 'rgba(255,255,255,0.3)';
-        ctx.fillText('DOUBLON', x + CARD_W / 2, y + CARD_H - 18);
+        ctx.fillText('DOUBLON', x + CARD_W / 2, y + CARD_H - 22);
       }
 
-      // Bottom accent
-      ctx.fillStyle = theme.borderColor;
+      // Bottom accent bar
+      const accentGrad = ctx.createLinearGradient(x, 0, x + CARD_W, 0);
+      accentGrad.addColorStop(0, `${t.borderColor}00`);
+      accentGrad.addColorStop(0.5, t.borderColor);
+      accentGrad.addColorStop(1, `${t.borderColor}00`);
+      ctx.fillStyle = accentGrad;
       ctx.beginPath();
-      ctx.roundRect(x + 4, y + CARD_H - 6, CARD_W - 8, 3, [0, 0, 4, 4]);
+      ctx.roundRect(x + 8, y + CARD_H - 7, CARD_W - 16, 3, [0, 0, 6, 6]);
       ctx.fill();
 
-      // Sparkles for legendary/secret
+      // Sparkles
       if (slot.rarity === 'LEGENDARY' || slot.rarity === 'SECRET') {
-        ctx.fillStyle = `${theme.accentColor}50`;
-        for (let s = 0; s < 4; s++) {
-          const sx = x + 15 + Math.random() * (CARD_W - 30);
-          const sy = y + 30 + Math.random() * (CARD_H - 60);
-          const sz = 2 + Math.random() * 2;
-          ctx.beginPath();
-          ctx.moveTo(sx, sy - sz);
-          ctx.lineTo(sx + sz * 0.3, sy - sz * 0.3);
-          ctx.lineTo(sx + sz, sy);
-          ctx.lineTo(sx + sz * 0.3, sy + sz * 0.3);
-          ctx.lineTo(sx, sy + sz);
-          ctx.lineTo(sx - sz * 0.3, sy + sz * 0.3);
-          ctx.lineTo(sx - sz, sy);
-          ctx.lineTo(sx - sz * 0.3, sy - sz * 0.3);
-          ctx.closePath();
-          ctx.fill();
+        for (let s = 0; s < 5; s++) {
+          drawSparkle(
+            ctx,
+            x + 15 + Math.random() * (CARD_W - 30),
+            y + 35 + Math.random() * (CARD_H - 65),
+            2 + Math.random() * 3,
+            t.accentColor,
+            0.3 + Math.random() * 0.3,
+          );
         }
       }
     }
   }
 
   // ── Footer bar ──
-  const footY = H - FOOTER - 6;
-  ctx.fillStyle = 'rgba(0,0,0,0.4)';
+  const footY = H - FOOTER - 8;
+  ctx.fillStyle = 'rgba(0,0,0,0.35)';
   ctx.beginPath();
-  ctx.roundRect(PAD, footY, W - PAD * 2, FOOTER - 4, [0, 0, 10, 10]);
+  ctx.roundRect(PAD, footY, W - PAD * 2, FOOTER, [0, 0, 12, 12]);
   ctx.fill();
+  ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.roundRect(PAD, footY, W - PAD * 2, FOOTER, [0, 0, 12, 12]);
+  ctx.stroke();
 
-  ctx.font = 'bold 14px GoogleSans';
+  ctx.font = 'bold 16px GoogleSans';
   ctx.textAlign = 'left';
   ctx.fillStyle = '#22c55e';
-  ctx.fillText(`✅ ${data.hitsCount} cartes`, PAD + 16, footY + 22);
-
+  ctx.fillText(`✅ ${data.hitsCount} cartes`, PAD + 20, footY + 26);
   ctx.fillStyle = '#6b7280';
-  ctx.fillText(`💨 ${data.missCount} ratés`, PAD + 130, footY + 22);
+  ctx.fillText(`💨 ${data.missCount} ratés`, PAD + 160, footY + 26);
 
   ctx.textAlign = 'right';
   ctx.fillStyle = 'rgba(255,255,255,0.6)';
-  ctx.font = '13px GoogleSans';
+  ctx.font = 'bold 14px GoogleSans';
   ctx.fillText(
     `💰 ${data.balance.toLocaleString('fr-FR')} 🪙`,
-    W - PAD - 16,
-    footY + 22,
+    W - PAD - 20,
+    footY + 26,
   );
 
-  // Savings badge
   ctx.textAlign = 'center';
-  ctx.font = '10px GoogleSans';
-  ctx.fillStyle = 'rgba(251,191,36,0.5)';
-  ctx.fillText('Économie : 50🪙 vs tirages individuels', W / 2, footY + 40);
+  ctx.font = '11px GoogleSans';
+  ctx.fillStyle = 'rgba(251,191,36,0.4)';
+  ctx.fillText('Économie : 50🪙 vs tirages individuels', W / 2, footY + 48);
 
   return canvas.toBuffer('image/png');
 }
 
-// ─── Collection Canvas ──────────────────────────────────────────────────────
+// ─── Collection Canvas (v2 — HD) ────────────────────────────────────────────
 
 export interface CollectionCardData {
   username: string;
@@ -1912,121 +2202,156 @@ export async function generateCollectionCard(
   data: CollectionCardData,
 ): Promise<Buffer> {
   const COLS = 5;
-  const CELL = 90;
-  const PAD = 20;
-  const HEADER = 160;
+  const CELL = 110;
+  const CELL_GAP = 12;
+  const PAD = 28;
+  const HEADER = 180;
   const rows = Math.ceil(data.cards.length / COLS);
-  const gridH = rows * (CELL + 10);
-  const W = PAD * 2 + COLS * (CELL + 10);
+  const gridH = rows * (CELL + CELL_GAP);
+  const W = PAD * 2 + COLS * (CELL + CELL_GAP);
   const H = HEADER + gridH + 60;
   const canvas = createCanvas(W, H);
   const ctx = canvas.getContext('2d');
 
   // Background
-  const bg = ctx.createLinearGradient(0, 0, 0, H);
-  bg.addColorStop(0, '#0f172a');
-  bg.addColorStop(1, '#020617');
+  const bg = ctx.createLinearGradient(0, 0, W * 0.2, H);
+  bg.addColorStop(0, '#0c1220');
+  bg.addColorStop(0.5, '#0a0f1a');
+  bg.addColorStop(1, '#050810');
   ctx.fillStyle = bg;
   ctx.fillRect(0, 0, W, H);
 
-  // Grid pattern
-  ctx.strokeStyle = 'rgba(255,255,255,0.015)';
-  for (let y = 0; y < H; y += 15) {
-    ctx.beginPath();
-    ctx.moveTo(0, y);
-    ctx.lineTo(W, y);
-    ctx.stroke();
-  }
+  drawNoise(ctx, W, H, 0.02);
 
-  // Border
-  ctx.strokeStyle = 'rgba(251,191,36,0.3)';
+  // Border with gold gradient
+  const bGrad = ctx.createLinearGradient(0, 0, W, H);
+  bGrad.addColorStop(0, 'rgba(251,191,36,0.2)');
+  bGrad.addColorStop(0.5, 'rgba(251,191,36,0.35)');
+  bGrad.addColorStop(1, 'rgba(251,191,36,0.2)');
+  ctx.strokeStyle = bGrad;
   ctx.lineWidth = 2;
   ctx.beginPath();
-  ctx.roundRect(6, 6, W - 12, H - 12, 14);
+  ctx.roundRect(8, 8, W - 16, H - 16, 16);
   ctx.stroke();
 
   // ── Header ──
-  // Avatar
   const avatar = await safeLoadImage(data.avatarUrl);
-  const avX = PAD + 30,
-    avY = 35,
-    avR = 28;
-  ctx.save();
+  const avX = PAD + 36,
+    avY = 42,
+    avR = 32;
+  // Avatar glow
+  ctx.shadowColor = 'rgba(251,191,36,0.3)';
+  ctx.shadowBlur = 12;
   ctx.beginPath();
   ctx.arc(avX, avY, avR, 0, Math.PI * 2);
+  ctx.strokeStyle = '#fbbf24';
+  ctx.lineWidth = 2.5;
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+  // Avatar image
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(avX, avY, avR - 2, 0, Math.PI * 2);
   ctx.clip();
-  if (avatar) ctx.drawImage(avatar, avX - avR, avY - avR, avR * 2, avR * 2);
+  if (avatar)
+    ctx.drawImage(
+      avatar,
+      avX - avR + 2,
+      avY - avR + 2,
+      (avR - 2) * 2,
+      (avR - 2) * 2,
+    );
   else {
     ctx.fillStyle = '#374151';
     ctx.fill();
   }
   ctx.restore();
-  ctx.strokeStyle = '#fbbf24';
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.arc(avX, avY, avR, 0, Math.PI * 2);
-  ctx.stroke();
 
   // Username
-  ctx.font = 'bold 22px GoogleSans';
+  ctx.font = 'bold 24px GoogleSans';
   ctx.fillStyle = '#ffffff';
   ctx.textAlign = 'left';
-  ctx.fillText(data.username, avX + avR + 12, avY + 7);
+  ctx.shadowColor = 'rgba(0,0,0,0.4)';
+  ctx.shadowBlur = 4;
+  ctx.fillText(data.username, avX + avR + 16, avY + 8);
+  ctx.shadowBlur = 0;
 
   // Stats row
   const pct =
     data.totalCards > 0
       ? Math.round((data.cards.length / data.totalCards) * 100)
       : 0;
-  ctx.font = '13px GoogleSans';
-  ctx.fillStyle = 'rgba(255,255,255,0.6)';
-  const statsY = 80;
+  ctx.font = 'bold 14px GoogleSans';
+  ctx.fillStyle = 'rgba(255,255,255,0.55)';
+  const statsY = 95;
   ctx.fillText(`🪙 ${data.currency.toLocaleString('fr-FR')}`, PAD, statsY);
-  ctx.fillText(`🔥 ${data.streak}j`, PAD + 120, statsY);
+  ctx.fillText(`🔥 ${data.streak}j`, PAD + 140, statsY);
   ctx.fillText(
     `🃏 ${data.cards.length}/${data.totalCards} (${pct}%)`,
-    PAD + 200,
+    PAD + 230,
     statsY,
   );
 
   // Progress bar
-  const barY = statsY + 15;
-  const barW = W - PAD * 2;
-  ctx.fillStyle = 'rgba(255,255,255,0.06)';
+  const barY2 = statsY + 18;
+  const barW2 = W - PAD * 2;
+  ctx.fillStyle = 'rgba(255,255,255,0.05)';
   ctx.beginPath();
-  ctx.roundRect(PAD, barY, barW, 8, 4);
+  ctx.roundRect(PAD, barY2, barW2, 10, 5);
   ctx.fill();
-  ctx.fillStyle = '#fbbf24';
-  ctx.beginPath();
-  ctx.roundRect(PAD, barY, (barW * pct) / 100, 8, 4);
-  ctx.fill();
+  // Gold fill with gradient
+  if (pct > 0) {
+    const progGrad = ctx.createLinearGradient(
+      PAD,
+      0,
+      PAD + (barW2 * pct) / 100,
+      0,
+    );
+    progGrad.addColorStop(0, '#d97706');
+    progGrad.addColorStop(1, '#fbbf24');
+    ctx.fillStyle = progGrad;
+    ctx.beginPath();
+    ctx.roundRect(PAD, barY2, (barW2 * pct) / 100, 10, 5);
+    ctx.fill();
+  }
 
   // Badges
   if (data.badges.length > 0) {
-    ctx.font = '12px GoogleSans';
-    ctx.fillStyle = 'rgba(255,255,255,0.5)';
-    ctx.fillText(data.badges.join('  '), PAD, barY + 25);
+    ctx.font = '13px GoogleSans';
+    ctx.fillStyle = 'rgba(255,255,255,0.45)';
+    ctx.fillText(data.badges.join('  '), PAD, barY2 + 28);
   }
 
   // Section title
   ctx.font = 'bold 14px GoogleSans';
-  ctx.fillStyle = 'rgba(255,255,255,0.4)';
+  ctx.fillStyle = 'rgba(255,255,255,0.3)';
+  ctx.textAlign = 'left';
   ctx.fillText('COLLECTION', PAD, HEADER - 10);
+  // Decorative line
+  const titleLineW = ctx.measureText('COLLECTION').width;
+  const tlGrad = ctx.createLinearGradient(PAD + titleLineW + 10, 0, W - PAD, 0);
+  tlGrad.addColorStop(0, 'rgba(251,191,36,0.2)');
+  tlGrad.addColorStop(1, 'rgba(251,191,36,0)');
+  ctx.strokeStyle = tlGrad;
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(PAD + titleLineW + 10, HEADER - 14);
+  ctx.lineTo(W - PAD, HEADER - 14);
+  ctx.stroke();
 
   // ── Card grid ──
   for (let i = 0; i < data.cards.length; i++) {
     const card = data.cards[i]!;
     const col = i % COLS;
     const row = Math.floor(i / COLS);
-    const x = PAD + col * (CELL + 10);
-    const y = HEADER + row * (CELL + 10);
-
+    const x = PAD + col * (CELL + CELL_GAP);
+    const y = HEADER + row * (CELL + CELL_GAP);
     const borderColor = RARITY_BORDER[card.rarity] || '#6b7280';
 
     // Card background
-    ctx.fillStyle = 'rgba(255,255,255,0.03)';
+    ctx.fillStyle = 'rgba(255,255,255,0.025)';
     ctx.beginPath();
-    ctx.roundRect(x, y, CELL, CELL, 8);
+    ctx.roundRect(x, y, CELL, CELL, 10);
     ctx.fill();
 
     // Card image
@@ -2034,54 +2359,76 @@ export async function generateCollectionCard(
     if (img) {
       ctx.save();
       ctx.beginPath();
-      ctx.roundRect(x + 2, y + 2, CELL - 4, CELL - 20, 6);
+      ctx.roundRect(x + 3, y + 3, CELL - 6, CELL - 24, 8);
       ctx.clip();
       const imgAspect = img.width / img.height;
-      let dw = CELL - 4,
-        dh = CELL - 20;
-      if (imgAspect > 1) {
-        dh = dw / imgAspect;
-      } else {
-        dw = dh * imgAspect;
-      }
-      ctx.drawImage(img, x + 2 + (CELL - 4 - dw) / 2, y + 2, dw, dh);
+      let dw = CELL - 6,
+        dh = CELL - 24;
+      if (imgAspect > 1) dh = dw / imgAspect;
+      else dw = dh * imgAspect;
+      ctx.drawImage(
+        img,
+        x + 3 + (CELL - 6 - dw) / 2,
+        y + 3 + (CELL - 24 - dh) / 2,
+        dw,
+        dh,
+      );
+      // Subtle vignette
+      const vg = ctx.createLinearGradient(0, y + 3, 0, y + CELL - 24);
+      vg.addColorStop(0, 'rgba(0,0,0,0)');
+      vg.addColorStop(0.8, 'rgba(0,0,0,0)');
+      vg.addColorStop(1, 'rgba(0,0,0,0.5)');
+      ctx.fillStyle = vg;
+      ctx.fillRect(x + 3, y + 3, CELL - 6, CELL - 24);
       ctx.restore();
     }
 
-    // Rarity border
+    // Rarity border with glow for high rarities
+    if (
+      card.rarity === 'LEGENDARY' ||
+      card.rarity === 'SECRET' ||
+      card.rarity === 'EPIC'
+    ) {
+      ctx.shadowColor = `${borderColor}40`;
+      ctx.shadowBlur = 6;
+    }
     ctx.strokeStyle = borderColor;
     ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.roundRect(x, y, CELL, CELL, 8);
+    ctx.roundRect(x, y, CELL, CELL, 10);
     ctx.stroke();
+    ctx.shadowBlur = 0;
 
     // Name
-    ctx.font = '9px GoogleSans';
+    ctx.font = 'bold 10px GoogleSans';
     ctx.fillStyle = '#ffffff';
     ctx.textAlign = 'center';
     let name = card.name.split(' ')[0] || card.name;
-    if (ctx.measureText(name).width > CELL - 6)
-      name = `${name.substring(0, 7)}…`;
+    if (ctx.measureText(name).width > CELL - 8)
+      name = `${name.substring(0, 8)}…`;
     ctx.fillText(name, x + CELL / 2, y + CELL - 5);
 
-    // Count badge if >1
+    // Count badge
     if (card.count > 1) {
       ctx.fillStyle = borderColor;
+      ctx.shadowColor = `${borderColor}60`;
+      ctx.shadowBlur = 4;
       ctx.beginPath();
-      ctx.arc(x + CELL - 8, y + 8, 9, 0, Math.PI * 2);
+      ctx.arc(x + CELL - 10, y + 10, 11, 0, Math.PI * 2);
       ctx.fill();
-      ctx.font = 'bold 9px GoogleSans';
+      ctx.shadowBlur = 0;
+      ctx.font = 'bold 10px GoogleSans';
       ctx.fillStyle = '#fff';
-      ctx.fillText(`x${card.count}`, x + CELL - 8, y + 11);
+      ctx.fillText(`x${card.count}`, x + CELL - 10, y + 13);
     }
     ctx.textAlign = 'left';
   }
 
   // ── Footer ──
-  ctx.font = '11px GoogleSans';
-  ctx.fillStyle = 'rgba(255,255,255,0.25)';
+  ctx.font = '12px GoogleSans';
+  ctx.fillStyle = 'rgba(255,255,255,0.2)';
   ctx.textAlign = 'center';
-  ctx.fillText('RPB Gacha · /gacha collection', W / 2, H - 15);
+  ctx.fillText('RPB Gacha · /gacha collection', W / 2, H - 16);
 
   return canvas.toBuffer('image/png');
 }
@@ -2313,7 +2660,7 @@ export async function generateBattleResultCard(
   return canvas.toBuffer('image/png');
 }
 
-// ─── Gacha Duel Canvas ──────────────────────────────────────────────────────
+// ─── Gacha Duel Canvas (v2 — HD) ────────────────────────────────────────────
 
 export interface GachaDuelData {
   cardA: {
@@ -2342,30 +2689,51 @@ export interface GachaDuelData {
 export async function generateGachaDuelCard(
   data: GachaDuelData,
 ): Promise<Buffer> {
-  const W = 900,
-    H = 440;
+  const W = 1080,
+    H = 520;
   const canvas = createCanvas(W, H);
   const ctx = canvas.getContext('2d');
 
   // Background
   const bg = ctx.createLinearGradient(0, 0, W, H);
-  bg.addColorStop(0, '#0a0014');
-  bg.addColorStop(0.5, '#140a0a');
-  bg.addColorStop(1, '#000a14');
+  bg.addColorStop(0, '#08001a');
+  bg.addColorStop(0.5, '#140808');
+  bg.addColorStop(1, '#000814');
   ctx.fillStyle = bg;
   ctx.fillRect(0, 0, W, H);
 
-  // Center glow
-  const vsGlow = ctx.createRadialGradient(W / 2, H / 2, 10, W / 2, H / 2, 200);
-  vsGlow.addColorStop(0, 'rgba(220,38,38,0.15)');
+  // Center energy glow
+  const vsGlow = ctx.createRadialGradient(W / 2, H / 2, 10, W / 2, H / 2, 250);
+  vsGlow.addColorStop(0, 'rgba(220,38,38,0.12)');
+  vsGlow.addColorStop(0.5, 'rgba(220,38,38,0.04)');
   vsGlow.addColorStop(1, 'rgba(0,0,0,0)');
   ctx.fillStyle = vsGlow;
   ctx.fillRect(0, 0, W, H);
 
-  ctx.strokeStyle = 'rgba(220,38,38,0.25)';
+  // Diagonal energy lines
+  ctx.save();
+  ctx.globalAlpha = 0.03;
+  ctx.strokeStyle = '#ef4444';
+  ctx.lineWidth = 1;
+  for (let i = -H; i < W + H; i += 30) {
+    ctx.beginPath();
+    ctx.moveTo(i, 0);
+    ctx.lineTo(i + H, H);
+    ctx.stroke();
+  }
+  ctx.restore();
+
+  drawNoise(ctx, W, H, 0.02);
+
+  // Border
+  const brdGrad = ctx.createLinearGradient(0, 0, W, H);
+  brdGrad.addColorStop(0, 'rgba(220,38,38,0.2)');
+  brdGrad.addColorStop(0.5, 'rgba(220,38,38,0.35)');
+  brdGrad.addColorStop(1, 'rgba(220,38,38,0.2)');
+  ctx.strokeStyle = brdGrad;
   ctx.lineWidth = 2;
   ctx.beginPath();
-  ctx.roundRect(6, 6, W - 12, H - 12, 14);
+  ctx.roundRect(8, 8, W - 16, H - 16, 16);
   ctx.stroke();
 
   const drawSide = async (
@@ -2375,175 +2743,230 @@ export async function generateGachaDuelCard(
     isWinner: boolean,
     score: number,
   ) => {
-    const theme = RARITY_THEMES[card.rarity] || RARITY_THEMES.COMMON!;
-    const cW = 340,
-      cH = 360,
-      cy = 30;
+    const t = RARITY_THEMES[card.rarity] || RARITY_THEMES.COMMON!;
+    const cW = 400,
+      cH = 430,
+      cy = 36;
 
-    const cg = ctx.createLinearGradient(x, cy, x, cy + cH);
-    cg.addColorStop(0, theme.bgGradient[0]);
-    cg.addColorStop(1, theme.bgGradient[1]);
+    // Card background
+    const cg = ctx.createLinearGradient(x, cy, x + cW * 0.2, cy + cH);
+    cg.addColorStop(0, t.bgGradient[0]);
+    cg.addColorStop(0.5, t.bgGradient[1]);
+    cg.addColorStop(1, t.bgGradient[2]);
     ctx.fillStyle = cg;
     ctx.beginPath();
-    ctx.roundRect(x, cy, cW, cH, 12);
+    ctx.roundRect(x, cy, cW, cH, 14);
     ctx.fill();
 
+    // Border with glow
     if (isWinner) {
-      ctx.shadowColor = theme.glowColor;
-      ctx.shadowBlur = 20;
+      ctx.shadowColor = t.glowColor;
+      ctx.shadowBlur = 25;
     }
-    ctx.strokeStyle = isWinner ? theme.borderColor : `${theme.borderColor}60`;
+    const cbGrad = ctx.createLinearGradient(x, cy, x + cW, cy + cH);
+    cbGrad.addColorStop(0, t.borderGradient[0]);
+    cbGrad.addColorStop(0.5, t.borderGradient[1]);
+    cbGrad.addColorStop(1, t.borderGradient[2]);
+    ctx.strokeStyle = isWinner ? cbGrad : `${t.borderColor}50`;
     ctx.lineWidth = isWinner ? 3 : 1.5;
     ctx.beginPath();
-    ctx.roundRect(x, cy, cW, cH, 12);
+    ctx.roundRect(x, cy, cW, cH, 14);
     ctx.stroke();
     ctx.shadowBlur = 0;
 
+    // Crown
     if (isWinner) {
-      ctx.font = '24px GoogleSans';
+      ctx.font = '28px GoogleSans';
       ctx.textAlign = 'center';
-      ctx.fillText('👑', x + cW / 2, cy - 2);
+      ctx.fillText('👑', x + cW / 2, cy - 4);
     }
 
     // Rarity band
-    ctx.fillStyle = `${theme.borderColor}CC`;
+    ctx.fillStyle = `${t.borderColor}CC`;
     ctx.beginPath();
-    ctx.roundRect(x + 4, cy + 4, cW - 8, 24, [10, 10, 0, 0]);
+    ctx.roundRect(x + 5, cy + 5, cW - 10, 26, [11, 11, 0, 0]);
     ctx.fill();
-    ctx.font = 'bold 11px GoogleSans';
+    ctx.font = 'bold 12px GoogleSans';
     ctx.fillStyle = '#fff';
     ctx.textAlign = 'center';
+    ctx.shadowColor = 'rgba(0,0,0,0.4)';
+    ctx.shadowBlur = 3;
     ctx.fillText(
-      `${theme.label} · ${'★'.repeat(theme.stars)}${'☆'.repeat(5 - theme.stars)}`,
+      `${t.label} · ${'★'.repeat(t.stars)}${'☆'.repeat(5 - t.stars)}`,
       x + cW / 2,
-      cy + 20,
+      cy + 22,
     );
+    ctx.shadowBlur = 0;
 
     // Image
-    const imgY = cy + 32,
-      imgH = 155;
-    ctx.fillStyle = 'rgba(0,0,0,0.3)';
+    const imgY = cy + 36,
+      imgH = 190;
+    ctx.fillStyle = 'rgba(0,0,0,0.35)';
     ctx.beginPath();
-    ctx.roundRect(x + 8, imgY, cW - 16, imgH, 8);
+    ctx.roundRect(x + 10, imgY, cW - 20, imgH, 10);
     ctx.fill();
     const img = await safeLoadImage(card.imageUrl);
     if (img) {
       ctx.save();
       ctx.beginPath();
-      ctx.roundRect(x + 8, imgY, cW - 16, imgH, 8);
+      ctx.roundRect(x + 10, imgY, cW - 20, imgH, 10);
       ctx.clip();
       const a = img.width / img.height;
-      let dw = cW - 16,
+      let dw = cW - 20,
         dh = imgH;
       if (a > dw / dh) dh = dw / a;
       else dw = dh * a;
       ctx.drawImage(
         img,
-        x + 8 + (cW - 16 - dw) / 2,
+        x + 10 + (cW - 20 - dw) / 2,
         imgY + (imgH - dh) / 2,
         dw,
         dh,
       );
+      // Vignette
       const vig = ctx.createLinearGradient(0, imgY, 0, imgY + imgH);
-      vig.addColorStop(0, 'rgba(0,0,0,0)');
-      vig.addColorStop(0.7, 'rgba(0,0,0,0)');
-      vig.addColorStop(1, 'rgba(0,0,0,0.6)');
+      vig.addColorStop(0, 'rgba(0,0,0,0.1)');
+      vig.addColorStop(0.6, 'rgba(0,0,0,0)');
+      vig.addColorStop(1, 'rgba(0,0,0,0.65)');
       ctx.fillStyle = vig;
-      ctx.fillRect(x + 8, imgY, cW - 16, imgH);
+      ctx.fillRect(x + 10, imgY, cW - 20, imgH);
       ctx.restore();
     }
     if (!isWinner) {
-      ctx.fillStyle = 'rgba(0,0,0,0.4)';
+      ctx.fillStyle = 'rgba(0,0,0,0.45)';
       ctx.beginPath();
-      ctx.roundRect(x + 8, imgY, cW - 16, imgH, 8);
+      ctx.roundRect(x + 10, imgY, cW - 20, imgH, 10);
       ctx.fill();
-      ctx.font = 'bold 36px GoogleSans';
-      ctx.fillStyle = 'rgba(239,68,68,0.4)';
+      ctx.font = 'bold 42px GoogleSans';
+      ctx.fillStyle = 'rgba(239,68,68,0.35)';
       ctx.textAlign = 'center';
-      ctx.fillText('✕', x + cW / 2, imgY + imgH / 2 + 14);
+      ctx.fillText('✕', x + cW / 2, imgY + imgH / 2 + 16);
     }
 
     // Name + player
-    ctx.font = 'bold 18px GoogleSans';
-    ctx.fillStyle = isWinner ? '#ffffff' : 'rgba(255,255,255,0.5)';
+    ctx.font = 'bold 20px GoogleSans';
+    ctx.fillStyle = isWinner ? '#ffffff' : 'rgba(255,255,255,0.45)';
     ctx.textAlign = 'center';
+    ctx.shadowColor = 'rgba(0,0,0,0.5)';
+    ctx.shadowBlur = isWinner ? 4 : 0;
     let nm = card.name;
-    if (ctx.measureText(nm).width > cW - 24) nm = `${nm.substring(0, 18)}…`;
-    ctx.fillText(nm, x + cW / 2, imgY + imgH + 24);
-    ctx.font = '12px GoogleSans';
-    ctx.fillStyle = 'rgba(255,255,255,0.4)';
-    ctx.fillText(player, x + cW / 2, imgY + imgH + 42);
+    if (ctx.measureText(nm).width > cW - 30) nm = `${nm.substring(0, 20)}…`;
+    ctx.fillText(nm, x + cW / 2, imgY + imgH + 28);
+    ctx.shadowBlur = 0;
+    ctx.font = '13px GoogleSans';
+    ctx.fillStyle = 'rgba(255,255,255,0.35)';
+    ctx.fillText(player, x + cW / 2, imgY + imgH + 48);
 
     // Beyblade box
-    const beyY = imgY + imgH + 52;
-    ctx.fillStyle = 'rgba(255,255,255,0.03)';
-    ctx.strokeStyle = `${theme.borderColor}25`;
+    const beyY = imgY + imgH + 58;
+    ctx.fillStyle = 'rgba(255,255,255,0.025)';
+    ctx.strokeStyle = `${t.borderColor}20`;
     ctx.lineWidth = 1;
     ctx.beginPath();
-    ctx.roundRect(x + 12, beyY, cW - 24, 28, 6);
+    ctx.roundRect(x + 14, beyY, cW - 28, 30, 8);
     ctx.fill();
     ctx.beginPath();
-    ctx.roundRect(x + 12, beyY, cW - 24, 28, 6);
+    ctx.roundRect(x + 14, beyY, cW - 28, 30, 8);
     ctx.stroke();
-    ctx.font = 'bold 11px GoogleSans';
-    ctx.fillStyle = theme.accentColor;
+    ctx.font = 'bold 12px GoogleSans';
+    ctx.fillStyle = t.accentColor;
     ctx.textAlign = 'left';
     let bey = card.beyblade;
-    if (ctx.measureText(`🌀 ${bey}`).width > cW - 40)
-      bey = `${bey.substring(0, 22)}…`;
-    ctx.fillText(`🌀 ${bey}`, x + 20, beyY + 18);
+    if (ctx.measureText(`🌀 ${bey}`).width > cW - 50)
+      bey = `${bey.substring(0, 24)}…`;
+    ctx.fillText(`🌀 ${bey}`, x + 24, beyY + 20);
 
     // Power bar
-    const barY = beyY + 36;
-    const barW = cW - 24;
+    const barY3 = beyY + 40;
+    const barW3 = cW - 28;
     const pct = Math.min(score / 100, 1);
-    ctx.fillStyle = 'rgba(255,255,255,0.06)';
+    ctx.fillStyle = 'rgba(255,255,255,0.05)';
     ctx.beginPath();
-    ctx.roundRect(x + 12, barY, barW, 8, 4);
+    ctx.roundRect(x + 14, barY3, barW3, 10, 5);
     ctx.fill();
-    ctx.fillStyle = isWinner ? '#22c55e' : '#ef4444';
+    const pwrColor = isWinner ? '#22c55e' : '#ef4444';
+    const pwrGrad = ctx.createLinearGradient(
+      x + 14,
+      0,
+      x + 14 + barW3 * pct,
+      0,
+    );
+    pwrGrad.addColorStop(0, pwrColor);
+    pwrGrad.addColorStop(1, `${pwrColor}80`);
+    ctx.fillStyle = pwrGrad;
     ctx.beginPath();
-    ctx.roundRect(x + 12, barY, barW * pct, 8, 4);
+    ctx.roundRect(x + 14, barY3, barW3 * pct, 10, 5);
     ctx.fill();
-    ctx.font = '10px GoogleSans';
+    ctx.font = 'bold 11px GoogleSans';
     ctx.fillStyle = 'rgba(255,255,255,0.4)';
     ctx.textAlign = 'center';
-    ctx.fillText(`${Math.round(score)} PWR`, x + cW / 2, barY + 20);
+    ctx.fillText(`${Math.round(score)} PWR`, x + cW / 2, barY3 + 24);
+
+    // Sparkles for winner
+    if (isWinner && (card.rarity === 'LEGENDARY' || card.rarity === 'SECRET')) {
+      for (let s = 0; s < 6; s++) {
+        drawSparkle(
+          ctx,
+          x + 15 + Math.random() * (cW - 30),
+          cy + 20 + Math.random() * (cH - 40),
+          3 + Math.random() * 4,
+          t.accentColor,
+          0.25 + Math.random() * 0.3,
+        );
+      }
+    }
   };
 
   await drawSide(
     data.cardA,
     data.playerA,
-    24,
+    28,
     data.winner === 'A',
     data.scoreA,
   );
   await drawSide(
     data.cardB,
     data.playerB,
-    W - 364,
+    W - 428,
     data.winner === 'B',
     data.scoreB,
   );
 
-  // Center VS
-  ctx.font = 'italic bold 48px GoogleSans';
+  // ── Center VS ──
+  // VS glow circle
+  const vsCircleGrad = ctx.createRadialGradient(
+    W / 2,
+    H / 2 - 10,
+    5,
+    W / 2,
+    H / 2 - 10,
+    50,
+  );
+  vsCircleGrad.addColorStop(0, 'rgba(220,38,38,0.15)');
+  vsCircleGrad.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = vsCircleGrad;
+  ctx.fillRect(W / 2 - 50, H / 2 - 60, 100, 100);
+
+  ctx.font = 'italic bold 56px GoogleSans';
   ctx.fillStyle = 'rgba(255,255,255,0.06)';
   ctx.textAlign = 'center';
-  ctx.fillText('VS', W / 2, H / 2 - 20);
+  ctx.fillText('VS', W / 2, H / 2 - 10);
 
   // Finish banner
-  ctx.fillStyle = 'rgba(220,38,38,0.9)';
+  ctx.fillStyle = 'rgba(220,38,38,0.85)';
+  ctx.shadowColor = 'rgba(220,38,38,0.3)';
+  ctx.shadowBlur = 12;
   ctx.beginPath();
-  ctx.roundRect(W / 2 - 120, H / 2 - 5, 240, 32, 16);
+  ctx.roundRect(W / 2 - 140, H / 2 + 5, 280, 36, 18);
   ctx.fill();
-  ctx.font = 'bold 14px GoogleSans';
+  ctx.shadowBlur = 0;
+  ctx.font = 'bold 15px GoogleSans';
   ctx.fillStyle = '#ffffff';
-  ctx.fillText(data.finishMessage, W / 2, H / 2 + 16);
+  ctx.fillText(data.finishMessage, W / 2, H / 2 + 28);
 
-  ctx.font = '12px GoogleSans';
+  ctx.font = 'bold 13px GoogleSans';
   ctx.fillStyle = '#fbbf24';
-  ctx.fillText(`🪙 +${data.coinReward} au gagnant`, W / 2, H / 2 + 42);
+  ctx.fillText(`🪙 +${data.coinReward} au gagnant`, W / 2, H / 2 + 56);
 
   return canvas.toBuffer('image/png');
 }
