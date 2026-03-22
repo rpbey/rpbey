@@ -78,6 +78,13 @@ const RARITY_WEIGHTS: { rarity: Rarity; weight: number }[] = [
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
+function parseStat(val: string | number | null | undefined): number {
+  if (typeof val === 'number') return val;
+  if (!val) return 0;
+  const match = String(val).match(/^(\d+)/);
+  return match?.[1] ? parseInt(match[1], 10) : 0;
+}
+
 async function getSessionUser() {
   const session = await auth.api.getSession({
     headers: await headers(),
@@ -86,45 +93,103 @@ async function getSessionUser() {
 }
 
 /**
- * Determine a part's rarity based on its characteristics.
- * - BLADE: heavier = rarer
- * - RATCHET: higher protrusions = rarer
- * - BIT: special tip types (gear/trans/rubber) = rarer; heavier = rarer
+ * Compute a combined score from stats for rarity fallback.
+ * Returns a 0-100 percentile-like score based on total stats.
+ */
+function computeStatScore(part: Part): number {
+  const atk = parseStat(part.attack);
+  const def = parseStat(part.defense);
+  const sta = parseStat(part.stamina);
+  const brs = parseStat(part.burst);
+  const dsh = parseStat(part.dash);
+  // Total of all combat stats, weighted — higher total = stronger part
+  return atk + def + sta + brs * 0.5 + dsh * 0.5;
+}
+
+/**
+ * Determine a part's rarity based on weight, stats, and special attributes.
+ * Uses a multi-factor approach: weight when available, stats as fallback.
  */
 function determinePartRarity(part: Part): Rarity {
+  const statScore = computeStatScore(part);
+
   if (part.type === 'BLADE' || part.type === 'OVER_BLADE') {
     const w = part.weight ?? 0;
-    if (w >= 50) return 'SECRET';
-    if (w >= 42) return 'LEGENDARY';
-    if (w >= 35) return 'EPIC';
-    if (w >= 28) return 'RARE';
+    if (w > 0) {
+      // Weight-based rarity (primary)
+      if (w >= 45) return 'SECRET';
+      if (w >= 39) return 'LEGENDARY';
+      if (w >= 35) return 'EPIC';
+      if (w >= 30) return 'RARE';
+      return 'COMMON';
+    }
+    // Stat-based fallback for blades without weight
+    if (statScore >= 200) return 'LEGENDARY';
+    if (statScore >= 150) return 'EPIC';
+    if (statScore >= 100) return 'RARE';
     return 'COMMON';
   }
 
   if (part.type === 'RATCHET') {
-    const protrusions = part.protrusions ?? 0;
     const w = part.weight ?? 0;
-    // High protrusion count or very heavy ratchets are rarer
-    if (protrusions >= 9 || w >= 30) return 'LEGENDARY';
-    if (protrusions >= 6 || w >= 25) return 'EPIC';
-    if (protrusions >= 4 || w >= 20) return 'RARE';
+    const protrusions = part.protrusions ?? 0;
+    // Ratchet name encodes protrusion count: "9-80" → 9 protrusions
+    const nameProtrusions = parseInt(part.name.split('-')[0] ?? '0', 10) || 0;
+    const effectiveProtrusions = protrusions || nameProtrusions;
+
+    if (w > 0) {
+      if (w >= 8) return 'LEGENDARY';
+      if (w >= 7.2) return 'EPIC';
+      if (w >= 6.5) return 'RARE';
+      return 'COMMON';
+    }
+    // Protrusion-based fallback
+    if (effectiveProtrusions >= 9) return 'LEGENDARY';
+    if (effectiveProtrusions >= 7) return 'EPIC';
+    if (effectiveProtrusions >= 4) return 'RARE';
+    // Stat-based last resort
+    if (statScore >= 150) return 'EPIC';
+    if (statScore >= 100) return 'RARE';
     return 'COMMON';
   }
 
   if (part.type === 'BIT') {
     const tip = (part.tipType ?? '').toLowerCase();
-    const specialTips = ['gear', 'trans', 'rubber', 'metal', 'gyro', 'accel'];
-    const isSpecial = specialTips.some((t) => tip.includes(t));
+    const name = part.name.toLowerCase();
+    const specialTips = ['gear', 'trans', 'rubber', 'metal', 'gyro'];
+    const isSpecial = specialTips.some(
+      (t) => tip.includes(t) || name.includes(t),
+    );
     const w = part.weight ?? 0;
 
-    if (isSpecial && w >= 12) return 'SECRET';
+    if (isSpecial && w >= 4) return 'SECRET';
     if (isSpecial) return 'EPIC';
-    if (w >= 12) return 'LEGENDARY';
-    if (w >= 9) return 'RARE';
+    if (w >= 4) return 'LEGENDARY';
+    if (w >= 3) return 'RARE';
+    // Stat-based fallback
+    if (statScore >= 200) return 'LEGENDARY';
+    if (statScore >= 150) return 'EPIC';
+    if (statScore >= 100) return 'RARE';
     return 'COMMON';
   }
 
-  // LOCK_CHIP, ASSIST_BLADE fallback
+  if (part.type === 'LOCK_CHIP') {
+    const w = part.weight ?? 0;
+    if (w >= 5) return 'LEGENDARY';
+    return 'RARE';
+  }
+
+  if (part.type === 'ASSIST_BLADE') {
+    const w = part.weight ?? 0;
+    if (w >= 7 || statScore >= 200) return 'LEGENDARY';
+    if (w >= 6 || statScore >= 170) return 'EPIC';
+    if (w >= 5 || statScore >= 140) return 'RARE';
+    return 'COMMON';
+  }
+
+  // Fallback for any unknown type
+  if (statScore >= 200) return 'EPIC';
+  if (statScore >= 100) return 'RARE';
   return 'COMMON';
 }
 
@@ -204,7 +269,16 @@ async function executePull(
   const availableParts = await prisma.part.findMany({
     where: {
       system: line,
-      type: { in: ['BLADE', 'RATCHET', 'BIT'] },
+      type: {
+        in: [
+          'BLADE',
+          'OVER_BLADE',
+          'RATCHET',
+          'BIT',
+          'LOCK_CHIP',
+          'ASSIST_BLADE',
+        ],
+      },
     },
   });
 

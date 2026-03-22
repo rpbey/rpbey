@@ -38,6 +38,8 @@ interface AppClientProps {
   blades: Part[];
   ratchets: Part[];
   bits: Part[];
+  lockChips: Part[];
+  assistBlades: Part[];
   products: ProductEntry[];
 }
 
@@ -75,6 +77,8 @@ export function AppClient({
   blades,
   ratchets,
   bits,
+  lockChips,
+  assistBlades,
   products,
 }: AppClientProps) {
   const [gameTab, setGameTab] = useState(0);
@@ -84,8 +88,8 @@ export function AppClient({
   const [resourcesOpen, setResourcesOpen] = useState(false);
 
   const allParts = useMemo(
-    () => [...blades, ...ratchets, ...bits],
-    [blades, ratchets, bits],
+    () => [...blades, ...ratchets, ...bits, ...lockChips, ...assistBlades],
+    [blades, ratchets, bits, lockChips, assistBlades],
   );
 
   const filterParts = (parts: Part[]) => {
@@ -283,6 +287,28 @@ export function AppClient({
               Bits ({filterParts(bits).length})
             </Typography>
             <PartGrid parts={filterParts(bits)} />
+
+            {/* Assist Blades (CX) */}
+            {assistBlades.length > 0 && (
+              <>
+                <Box sx={{ my: 3 }} />
+                <Typography variant="h6" fontWeight="900" sx={{ mb: 2 }}>
+                  Assist Blades ({filterParts(assistBlades).length})
+                </Typography>
+                <PartGrid parts={filterParts(assistBlades)} />
+              </>
+            )}
+
+            {/* Lock Chips (CX) */}
+            {lockChips.length > 0 && (
+              <>
+                <Box sx={{ my: 3 }} />
+                <Typography variant="h6" fontWeight="900" sx={{ mb: 2 }}>
+                  Lock Chips ({filterParts(lockChips).length})
+                </Typography>
+                <PartGrid parts={filterParts(lockChips)} />
+              </>
+            )}
           </Box>
         )}
 

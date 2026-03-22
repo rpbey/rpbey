@@ -37,7 +37,7 @@ function loadProducts(): ProductEntry[] {
 }
 
 export default async function AppPage() {
-  const [blades, ratchets, bits] = await Promise.all([
+  const [blades, ratchets, bits, lockChips, assistBlades] = await Promise.all([
     prisma.part.findMany({
       where: { type: { in: ['BLADE', 'OVER_BLADE'] } },
       orderBy: { name: 'asc' },
@@ -50,6 +50,14 @@ export default async function AppPage() {
       where: { type: 'BIT' },
       orderBy: { name: 'asc' },
     }),
+    prisma.part.findMany({
+      where: { type: 'LOCK_CHIP' },
+      orderBy: { name: 'asc' },
+    }),
+    prisma.part.findMany({
+      where: { type: 'ASSIST_BLADE' },
+      orderBy: { name: 'asc' },
+    }),
   ]);
 
   const products = loadProducts();
@@ -59,6 +67,8 @@ export default async function AppPage() {
       blades={blades}
       ratchets={ratchets}
       bits={bits}
+      lockChips={lockChips}
+      assistBlades={assistBlades}
       products={products}
     />
   );
