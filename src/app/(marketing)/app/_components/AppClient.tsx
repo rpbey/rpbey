@@ -99,17 +99,17 @@ export function AppClient({
   assistBlades,
   products,
 }: AppClientProps) {
-  const [tab, setTab] = useState(0);
-  const [search, setSearch] = useState('');
-  const [typeFilter, setTypeFilter] = useState('ALL');
-  const [systemFilter, setSystemFilter] = useState('ALL');
+  const [tab, _setTab] = useState(0);
+  const [search, _setSearch] = useState('');
+  const [typeFilter, _setTypeFilter] = useState('ALL');
+  const [systemFilter, _setSystemFilter] = useState('ALL');
 
-  const allParts = useMemo(
+  const _allParts = useMemo(
     () => [...blades, ...ratchets, ...bits, ...lockChips, ...assistBlades],
     [blades, ratchets, bits, lockChips, assistBlades],
   );
 
-  const filterParts = (parts: Part[]) => {
+  const _filterParts = (parts: Part[]) => {
     return parts.filter((p) => {
       const matchSearch =
         !search ||
@@ -121,269 +121,296 @@ export function AppClient({
     });
   };
 
-  const activeColor = APP_TABS[tab]?.color ?? '#fff';
+  const _activeColor = APP_TABS[tab]?.color ?? '#fff';
 
   return (
-    <Container maxWidth="xl" sx={{ py: { xs: 1, md: 2 } }}>
-      {/* ── Header ── */}
-      <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 2 }}>
-        <Box
-          component="img"
-          src="/bbx-icons/app_icon_round.webp"
-          alt="Beyblade X App"
-          sx={{ width: 40, height: 40 }}
-        />
-        <Box>
-          <Typography variant="h5" fontWeight="900" sx={{ lineHeight: 1.2 }}>
-            BEYBLADE X APP
-          </Typography>
-          <Typography variant="caption" color="text.secondary" fontWeight="600">
-            {allParts.length} pièces · {products.length} produits · Ressources
-            extraites de l'application officielle
-          </Typography>
-        </Box>
-      </Box>
-
-      {/* ── Tab Bar ── */}
-      <Paper
-        elevation={0}
-        sx={{
-          mb: 3,
-          borderRadius: 3,
-          overflow: 'hidden',
+    <Box
+      sx={{
+        minHeight: '100vh',
+        backgroundImage: 'url(/app-assets/sprites/arena-background.webp)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed',
+        position: 'relative',
+        '&::before': {
+          content: '""',
+          position: 'fixed',
+          inset: 0,
           background:
-            'linear-gradient(180deg, rgba(15,23,42,0.95) 0%, rgba(15,23,42,0.8) 100%)',
-          border: '1px solid',
-          borderColor: alpha('#fff', 0.08),
-          backdropFilter: 'blur(12px)',
-        }}
+            'linear-gradient(180deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.7) 40%, rgba(0,0,0,0.85) 100%)',
+          zIndex: 0,
+        },
+      }}
+    >
+      <Container
+        maxWidth="xl"
+        sx={{ py: { xs: 1, md: 2 }, position: 'relative', zIndex: 1 }}
       >
-        <Tabs
-          value={tab}
-          onChange={(_, v) => setTab(v)}
-          variant="scrollable"
-          scrollButtons="auto"
+        {/* ── Header ── */}
+        <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Box
+            component="img"
+            src="/bbx-icons/app_icon_round.webp"
+            alt="Beyblade X App"
+            sx={{ width: 40, height: 40 }}
+          />
+          <Box>
+            <Typography variant="h5" fontWeight="900" sx={{ lineHeight: 1.2 }}>
+              BEYBLADE X APP
+            </Typography>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              fontWeight="600"
+            >
+              {_allParts.length} pièces · {products.length} produits ·
+              Ressources extraites de l'application officielle
+            </Typography>
+          </Box>
+        </Box>
+
+        {/* ── Tab Bar ── */}
+        <Paper
+          elevation={0}
           sx={{
-            minHeight: 64,
-            '& .MuiTabs-indicator': {
-              height: 3,
-              borderRadius: '3px 3px 0 0',
-              background: activeColor,
-              boxShadow: `0 0 12px ${activeColor}`,
-            },
-            '& .MuiTab-root': {
-              minHeight: 64,
-              textTransform: 'none',
-              fontWeight: 800,
-              fontSize: { xs: '0.75rem', sm: '0.85rem' },
-              color: alpha('#fff', 0.45),
-              transition: 'all 0.2s ease',
-              '&.Mui-selected': { color: '#fff' },
-              '&:hover': {
-                color: alpha('#fff', 0.7),
-                bgcolor: alpha('#fff', 0.03),
-              },
-            },
+            mb: 3,
+            borderRadius: 3,
+            overflow: 'hidden',
+            background:
+              'linear-gradient(180deg, rgba(15,23,42,0.95) 0%, rgba(15,23,42,0.8) 100%)',
+            border: '1px solid',
+            borderColor: alpha('#fff', 0.08),
+            backdropFilter: 'blur(12px)',
           }}
         >
-          {APP_TABS.map((t, i) => (
-            <Tab
-              key={t.label}
-              label={
-                <Box
-                  sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    gap: 0.5,
-                  }}
-                >
+          <Tabs
+            value={tab}
+            onChange={(_, v) => _setTab(v)}
+            variant="scrollable"
+            scrollButtons="auto"
+            sx={{
+              minHeight: 64,
+              '& .MuiTabs-indicator': {
+                height: 3,
+                borderRadius: '3px 3px 0 0',
+                background: _activeColor,
+                boxShadow: `0 0 12px ${_activeColor}`,
+              },
+              '& .MuiTab-root': {
+                minHeight: 64,
+                textTransform: 'none',
+                fontWeight: 800,
+                fontSize: { xs: '0.75rem', sm: '0.85rem' },
+                color: alpha('#fff', 0.45),
+                transition: 'all 0.2s ease',
+                '&.Mui-selected': { color: '#fff' },
+                '&:hover': {
+                  color: alpha('#fff', 0.7),
+                  bgcolor: alpha('#fff', 0.03),
+                },
+              },
+            }}
+          >
+            {APP_TABS.map((t, i) => (
+              <Tab
+                key={t.label}
+                label={
                   <Box
                     sx={{
-                      width: 26,
-                      height: 26,
-                      filter:
-                        tab === i
-                          ? `drop-shadow(0 0 6px ${t.color})`
-                          : 'grayscale(0.7) opacity(0.5)',
-                      transition: 'filter 0.2s ease',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      gap: 0.5,
                     }}
                   >
                     <Box
-                      component="img"
-                      src={t.icon}
-                      alt={t.label}
                       sx={{
-                        width: '100%',
-                        height: '100%',
-                        objectFit: 'contain',
+                        width: 26,
+                        height: 26,
+                        filter:
+                          tab === i
+                            ? `drop-shadow(0 0 6px ${t.color})`
+                            : 'grayscale(0.7) opacity(0.5)',
+                        transition: 'filter 0.2s ease',
+                      }}
+                    >
+                      <Box
+                        component="img"
+                        src={t.icon}
+                        alt={t.label}
+                        sx={{
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'contain',
+                        }}
+                      />
+                    </Box>
+                    <span>{t.label}</span>
+                  </Box>
+                }
+              />
+            ))}
+          </Tabs>
+        </Paper>
+
+        {/* ── Tab Content ── */}
+        <Box sx={{ minHeight: 400 }}>
+          {/* Collection */}
+          {tab === 0 && (
+            <Box>
+              {/* Search & filters */}
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexWrap: 'wrap',
+                  gap: 2,
+                  mb: 3,
+                  alignItems: 'center',
+                }}
+              >
+                <TextField
+                  placeholder="Rechercher une pièce..."
+                  value={search}
+                  onChange={(e) => _setSearch(e.target.value)}
+                  size="small"
+                  slotProps={{
+                    input: {
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <Search sx={{ color: 'text.disabled' }} />
+                        </InputAdornment>
+                      ),
+                    },
+                  }}
+                  sx={{
+                    minWidth: { xs: 0, sm: 280 },
+                    width: { xs: '100%', sm: 'auto' },
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: 3,
+                      fontWeight: 600,
+                    },
+                  }}
+                />
+                <Box sx={{ display: 'flex', gap: 0.75, flexWrap: 'wrap' }}>
+                  {TYPE_FILTERS.map((f) => (
+                    <Chip
+                      key={f.value}
+                      label={f.label}
+                      clickable
+                      onClick={() => _setTypeFilter(f.value)}
+                      sx={{
+                        fontWeight: 900,
+                        fontSize: '0.75rem',
+                        borderRadius: 2,
+                        bgcolor:
+                          typeFilter === f.value
+                            ? f.color || 'text.primary'
+                            : 'transparent',
+                        color:
+                          typeFilter === f.value ? '#fff' : 'text.secondary',
+                        border: '1px solid',
+                        borderColor:
+                          typeFilter === f.value
+                            ? f.color || 'text.primary'
+                            : 'divider',
+                        '&:hover': {
+                          bgcolor: f.color
+                            ? alpha(f.color, typeFilter === f.value ? 1 : 0.15)
+                            : undefined,
+                        },
                       }}
                     />
-                  </Box>
-                  <span>{t.label}</span>
+                  ))}
+                  {SYSTEM_FILTERS.map((f) => (
+                    <Chip
+                      key={`sys-${f.value}`}
+                      label={f.label}
+                      clickable
+                      onClick={() => _setSystemFilter(f.value)}
+                      size="small"
+                      sx={{
+                        fontWeight: 800,
+                        fontSize: '0.65rem',
+                        borderRadius: 2,
+                        bgcolor:
+                          systemFilter === f.value
+                            ? f.color || 'text.primary'
+                            : 'transparent',
+                        color:
+                          systemFilter === f.value ? '#fff' : 'text.disabled',
+                        border: '1px solid',
+                        borderColor:
+                          systemFilter === f.value
+                            ? f.color || 'text.primary'
+                            : alpha('#fff', 0.08),
+                      }}
+                    />
+                  ))}
                 </Box>
-              }
-            />
-          ))}
-        </Tabs>
-      </Paper>
-
-      {/* ── Tab Content ── */}
-      <Box sx={{ minHeight: 400 }}>
-        {/* Collection */}
-        {tab === 0 && (
-          <Box>
-            {/* Search & filters */}
-            <Box
-              sx={{
-                display: 'flex',
-                flexWrap: 'wrap',
-                gap: 2,
-                mb: 3,
-                alignItems: 'center',
-              }}
-            >
-              <TextField
-                placeholder="Rechercher une pièce..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                size="small"
-                slotProps={{
-                  input: {
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <Search sx={{ color: 'text.disabled' }} />
-                      </InputAdornment>
-                    ),
-                  },
-                }}
-                sx={{
-                  minWidth: { xs: 0, sm: 280 },
-                  width: { xs: '100%', sm: 'auto' },
-                  '& .MuiOutlinedInput-root': {
-                    borderRadius: 3,
-                    fontWeight: 600,
-                  },
-                }}
-              />
-              <Box sx={{ display: 'flex', gap: 0.75, flexWrap: 'wrap' }}>
-                {TYPE_FILTERS.map((f) => (
-                  <Chip
-                    key={f.value}
-                    label={f.label}
-                    clickable
-                    onClick={() => setTypeFilter(f.value)}
-                    sx={{
-                      fontWeight: 900,
-                      fontSize: '0.75rem',
-                      borderRadius: 2,
-                      bgcolor:
-                        typeFilter === f.value
-                          ? f.color || 'text.primary'
-                          : 'transparent',
-                      color: typeFilter === f.value ? '#fff' : 'text.secondary',
-                      border: '1px solid',
-                      borderColor:
-                        typeFilter === f.value
-                          ? f.color || 'text.primary'
-                          : 'divider',
-                      '&:hover': {
-                        bgcolor: f.color
-                          ? alpha(f.color, typeFilter === f.value ? 1 : 0.15)
-                          : undefined,
-                      },
-                    }}
-                  />
-                ))}
-                {SYSTEM_FILTERS.map((f) => (
-                  <Chip
-                    key={`sys-${f.value}`}
-                    label={f.label}
-                    clickable
-                    onClick={() => setSystemFilter(f.value)}
-                    size="small"
-                    sx={{
-                      fontWeight: 800,
-                      fontSize: '0.65rem',
-                      borderRadius: 2,
-                      bgcolor:
-                        systemFilter === f.value
-                          ? f.color || 'text.primary'
-                          : 'transparent',
-                      color:
-                        systemFilter === f.value ? '#fff' : 'text.disabled',
-                      border: '1px solid',
-                      borderColor:
-                        systemFilter === f.value
-                          ? f.color || 'text.primary'
-                          : alpha('#fff', 0.08),
-                    }}
-                  />
-                ))}
               </Box>
+
+              {/* Blades */}
+              <Typography variant="h6" fontWeight="900" sx={{ mb: 2 }}>
+                Blades ({_filterParts(blades).length})
+              </Typography>
+              <PartGrid parts={_filterParts(blades)} />
+
+              <Box sx={{ my: 3 }} />
+
+              {/* Ratchets */}
+              <Typography variant="h6" fontWeight="900" sx={{ mb: 2 }}>
+                Ratchets ({_filterParts(ratchets).length})
+              </Typography>
+              <PartGrid parts={_filterParts(ratchets)} />
+
+              <Box sx={{ my: 3 }} />
+
+              {/* Bits */}
+              <Typography variant="h6" fontWeight="900" sx={{ mb: 2 }}>
+                Bits ({_filterParts(bits).length})
+              </Typography>
+              <PartGrid parts={_filterParts(bits)} />
+
+              {/* Assist Blades (CX) */}
+              {assistBlades.length > 0 && (
+                <>
+                  <Box sx={{ my: 3 }} />
+                  <Typography variant="h6" fontWeight="900" sx={{ mb: 2 }}>
+                    Assist Blades ({_filterParts(assistBlades).length})
+                  </Typography>
+                  <PartGrid parts={_filterParts(assistBlades)} />
+                </>
+              )}
+
+              {/* Lock Chips (CX) */}
+              {lockChips.length > 0 && (
+                <>
+                  <Box sx={{ my: 3 }} />
+                  <Typography variant="h6" fontWeight="900" sx={{ mb: 2 }}>
+                    Lock Chips ({_filterParts(lockChips).length})
+                  </Typography>
+                  <PartGrid parts={_filterParts(lockChips)} />
+                </>
+              )}
             </Box>
+          )}
 
-            {/* Blades */}
-            <Typography variant="h6" fontWeight="900" sx={{ mb: 2 }}>
-              Blades ({filterParts(blades).length})
-            </Typography>
-            <PartGrid parts={filterParts(blades)} />
+          {/* Textures & Sprites */}
+          {tab === 1 && <AssetGallery />}
 
-            <Box sx={{ my: 3 }} />
+          {/* Modèles 3D */}
+          {tab === 2 && <MeshGallery />}
 
-            {/* Ratchets */}
-            <Typography variant="h6" fontWeight="900" sx={{ mb: 2 }}>
-              Ratchets ({filterParts(ratchets).length})
-            </Typography>
-            <PartGrid parts={filterParts(ratchets)} />
+          {/* Animations VFX */}
+          {tab === 3 && <VfxGallery />}
 
-            <Box sx={{ my: 3 }} />
+          {/* Produits */}
+          {tab === 4 && <ProductCatalog products={products} />}
 
-            {/* Bits */}
-            <Typography variant="h6" fontWeight="900" sx={{ mb: 2 }}>
-              Bits ({filterParts(bits).length})
-            </Typography>
-            <PartGrid parts={filterParts(bits)} />
-
-            {/* Assist Blades (CX) */}
-            {assistBlades.length > 0 && (
-              <>
-                <Box sx={{ my: 3 }} />
-                <Typography variant="h6" fontWeight="900" sx={{ mb: 2 }}>
-                  Assist Blades ({filterParts(assistBlades).length})
-                </Typography>
-                <PartGrid parts={filterParts(assistBlades)} />
-              </>
-            )}
-
-            {/* Lock Chips (CX) */}
-            {lockChips.length > 0 && (
-              <>
-                <Box sx={{ my: 3 }} />
-                <Typography variant="h6" fontWeight="900" sx={{ mb: 2 }}>
-                  Lock Chips ({filterParts(lockChips).length})
-                </Typography>
-                <PartGrid parts={filterParts(lockChips)} />
-              </>
-            )}
-          </Box>
-        )}
-
-        {/* Textures & Sprites */}
-        {tab === 1 && <AssetGallery />}
-
-        {/* Modèles 3D */}
-        {tab === 2 && <MeshGallery />}
-
-        {/* Animations VFX */}
-        {tab === 3 && <VfxGallery />}
-
-        {/* Produits */}
-        {tab === 4 && <ProductCatalog products={products} />}
-
-        {/* Game Data */}
-        {tab === 5 && <GameData />}
-      </Box>
-    </Container>
+          {/* Game Data */}
+          {tab === 5 && <GameData />}
+        </Box>
+      </Container>
+    </Box>
   );
 }
