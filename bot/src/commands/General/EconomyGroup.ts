@@ -287,13 +287,25 @@ export class EconomyGroup {
     const activeDrop = await this.prisma.gachaDrop.findFirst({
       where: { isActive: true },
     });
-    const cards = await this.prisma.gachaCard.findMany({
+    let cards = await this.prisma.gachaCard.findMany({
       where: {
         rarity,
         isActive: true,
         ...(activeDrop ? { dropId: activeDrop.id } : {}),
       },
     });
+    // Fallback: if no cards of this rarity in active drop, try all drop cards
+    if (cards.length === 0 && activeDrop) {
+      cards = await this.prisma.gachaCard.findMany({
+        where: { isActive: true, dropId: activeDrop.id },
+      });
+    }
+    // Final fallback: any active card of this rarity
+    if (cards.length === 0) {
+      cards = await this.prisma.gachaCard.findMany({
+        where: { rarity, isActive: true },
+      });
+    }
     if (cards.length === 0)
       return { rarity, card: null, isDuplicate: false, isWished: false };
 
