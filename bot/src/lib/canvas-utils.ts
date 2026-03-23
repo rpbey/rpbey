@@ -1287,7 +1287,7 @@ export async function generateWantedImage(
   return canvas.toBuffer('image/png');
 }
 
-// ─── Gacha Card Generator (v2 — HD) ─────────────────────────────────────────
+// ─── Gacha Card Generator (v3 — TCG Layout) ─────────────────────────────────
 
 export interface GachaCardData {
   name: string;
@@ -1308,14 +1308,27 @@ export interface GachaCardData {
   specialMove?: string | null;
 }
 
-const _ELEMENT_ICONS: Record<string, { emoji: string; color: string }> = {
-  FEU: { emoji: '🔥', color: '#ef4444' },
-  EAU: { emoji: '💧', color: '#3b82f6' },
-  TERRE: { emoji: '🌍', color: '#a16207' },
-  VENT: { emoji: '🌪️', color: '#22d3ee' },
-  OMBRE: { emoji: '🌑', color: '#7c3aed' },
-  LUMIERE: { emoji: '✨', color: '#fbbf24' },
-  NEUTRAL: { emoji: '⚪', color: '#9ca3af' },
+const ELEMENT_ICONS: Record<
+  string,
+  { symbol: string; color: string; name: string }
+> = {
+  FEU: { symbol: '🔥', color: '#ef4444', name: 'Feu' },
+  EAU: { symbol: '💧', color: '#3b82f6', name: 'Eau' },
+  TERRE: { symbol: '🌍', color: '#a16207', name: 'Terre' },
+  VENT: { symbol: '🌪', color: '#22d3ee', name: 'Vent' },
+  OMBRE: { symbol: '🌑', color: '#7c3aed', name: 'Ombre' },
+  LUMIERE: { symbol: '✨', color: '#fbbf24', name: 'Lumière' },
+  NEUTRAL: { symbol: '⚪', color: '#9ca3af', name: 'Neutre' },
+};
+
+// Element weakness cycle: Feu > Vent > Terre > Eau > Feu, Ombre <> Lumière
+const ELEMENT_WEAKNESS: Record<string, string> = {
+  FEU: 'EAU',
+  EAU: 'TERRE',
+  TERRE: 'VENT',
+  VENT: 'FEU',
+  OMBRE: 'LUMIERE',
+  LUMIERE: 'OMBRE',
 };
 
 const RARITY_THEMES: Record<
@@ -1329,67 +1342,76 @@ const RARITY_THEMES: Record<
     label: string;
     stars: number;
     particleCount: number;
+    frameColor: string;
+    headerBg: string;
   }
 > = {
   COMMON: {
     borderColor: '#6b7280',
     borderGradient: ['#6b7280', '#9ca3af', '#6b7280'],
     glowColor: 'rgba(107,114,128,0.25)',
-    bgGradient: ['#1a1f2e', '#141824', '#0d1117'],
+    bgGradient: ['#e8e6e1', '#d4d0c8', '#c4c0b8'],
     accentColor: '#9ca3af',
     label: 'COMMUNE',
     stars: 1,
     particleCount: 0,
+    frameColor: '#8a8a8a',
+    headerBg: '#4b5563',
   },
   RARE: {
     borderColor: '#3b82f6',
     borderGradient: ['#2563eb', '#60a5fa', '#2563eb'],
     glowColor: 'rgba(59,130,246,0.35)',
-    bgGradient: ['#0c2461', '#1e3a5f', '#0a1628'],
+    bgGradient: ['#c7d9f0', '#a8c4e8', '#8db0e0'],
     accentColor: '#60a5fa',
     label: 'RARE',
     stars: 2,
     particleCount: 4,
+    frameColor: '#2563eb',
+    headerBg: '#1e40af',
   },
   SUPER_RARE: {
     borderColor: '#8b5cf6',
     borderGradient: ['#7c3aed', '#a78bfa', '#7c3aed'],
     glowColor: 'rgba(139,92,246,0.4)',
-    bgGradient: ['#1e0a4a', '#2e1065', '#140530'],
+    bgGradient: ['#ddd0f5', '#c4b0f0', '#b098e8'],
     accentColor: '#a78bfa',
     label: 'SUPER RARE',
     stars: 3,
     particleCount: 8,
+    frameColor: '#7c3aed',
+    headerBg: '#5b21b6',
   },
   LEGENDARY: {
     borderColor: '#f59e0b',
     borderGradient: ['#d97706', '#fbbf24', '#f59e0b'],
     glowColor: 'rgba(251,191,36,0.5)',
-    bgGradient: ['#3b1a00', '#422006', '#1a0d00'],
+    bgGradient: ['#fef3c7', '#fde68a', '#fcd34d'],
     accentColor: '#fcd34d',
     label: 'LÉGENDAIRE',
     stars: 4,
     particleCount: 14,
+    frameColor: '#b45309',
+    headerBg: '#92400e',
   },
   SECRET: {
     borderColor: '#ef4444',
     borderGradient: ['#dc2626', '#f87171', '#ef4444'],
     glowColor: 'rgba(239,68,68,0.55)',
-    bgGradient: ['#3b0a0a', '#450a0a', '#1f0000'],
+    bgGradient: ['#fecaca', '#fca5a5', '#f87171'],
     accentColor: '#f87171',
     label: '✦ SECRÈTE ✦',
     stars: 5,
     particleCount: 20,
+    frameColor: '#dc2626',
+    headerBg: '#991b1b',
   },
 };
 
+type CanvasCtx = ReturnType<ReturnType<typeof createCanvas>['getContext']>;
+
 /** Draw noise texture overlay for depth */
-function drawNoise(
-  ctx: ReturnType<ReturnType<typeof createCanvas>['getContext']>,
-  w: number,
-  h: number,
-  alpha = 0.03,
-) {
+function drawNoise(ctx: CanvasCtx, w: number, h: number, alpha = 0.03) {
   const imgData = ctx.getImageData(0, 0, w, h);
   const d = imgData.data;
   for (let i = 0; i < d.length; i += 4) {
@@ -1401,9 +1423,9 @@ function drawNoise(
   ctx.putImageData(imgData, 0, 0);
 }
 
-/** Draw a sparkle at given position */
+/** Draw a 4-point sparkle at given position */
 function drawSparkle(
-  ctx: ReturnType<ReturnType<typeof createCanvas>['getContext']>,
+  ctx: CanvasCtx,
   x: number,
   y: number,
   size: number,
@@ -1414,7 +1436,6 @@ function drawSparkle(
   ctx.globalAlpha = alpha;
   ctx.fillStyle = color;
   ctx.beginPath();
-  // 4-point star
   ctx.moveTo(x, y - size);
   ctx.quadraticCurveTo(x + size * 0.15, y - size * 0.15, x + size, y);
   ctx.quadraticCurveTo(x + size * 0.15, y + size * 0.15, x, y + size);
@@ -1422,7 +1443,6 @@ function drawSparkle(
   ctx.quadraticCurveTo(x - size * 0.15, y - size * 0.15, x, y - size);
   ctx.closePath();
   ctx.fill();
-  // Inner glow
   ctx.globalAlpha = alpha * 0.5;
   ctx.shadowColor = color;
   ctx.shadowBlur = size * 2;
@@ -1432,7 +1452,7 @@ function drawSparkle(
 
 /** Draw light rays from top for legendary/secret */
 function drawLightRays(
-  ctx: ReturnType<ReturnType<typeof createCanvas>['getContext']>,
+  ctx: CanvasCtx,
   w: number,
   h: number,
   color: string,
@@ -1458,394 +1478,627 @@ function drawLightRays(
   ctx.restore();
 }
 
-/** Draw stat bar */
-function _drawStatBar(
-  ctx: ReturnType<ReturnType<typeof createCanvas>['getContext']>,
+/** Draw a rounded rect with fill + optional stroke */
+function drawBox(
+  ctx: CanvasCtx,
   x: number,
   y: number,
   w: number,
-  value: number,
-  max: number,
-  label: string,
+  h: number,
+  r: number | number[],
+  fill: string,
+  stroke?: string,
+  strokeW = 1,
+) {
+  ctx.fillStyle = fill;
+  ctx.beginPath();
+  ctx.roundRect(x, y, w, h, r);
+  ctx.fill();
+  if (stroke) {
+    ctx.strokeStyle = stroke;
+    ctx.lineWidth = strokeW;
+    ctx.beginPath();
+    ctx.roundRect(x, y, w, h, r);
+    ctx.stroke();
+  }
+}
+
+/** Draw a horizontal separator line with gradient fade */
+function drawSeparator(
+  ctx: CanvasCtx,
+  x: number,
+  y: number,
+  w: number,
   color: string,
 ) {
-  const pct = Math.min(value / max, 1);
-  ctx.font = 'bold 11px GoogleSans';
-  ctx.fillStyle = 'rgba(255,255,255,0.5)';
-  ctx.textAlign = 'left';
-  ctx.fillText(label, x, y + 10);
-  const barX = x + 36;
-  const barW = w - 36;
-  // Track
-  ctx.fillStyle = 'rgba(255,255,255,0.06)';
+  const grad = ctx.createLinearGradient(x, y, x + w, y);
+  grad.addColorStop(0, `${color}00`);
+  grad.addColorStop(0.15, `${color}60`);
+  grad.addColorStop(0.5, color);
+  grad.addColorStop(0.85, `${color}60`);
+  grad.addColorStop(1, `${color}00`);
+  ctx.strokeStyle = grad;
+  ctx.lineWidth = 1;
   ctx.beginPath();
-  ctx.roundRect(barX, y + 2, barW, 10, 5);
-  ctx.fill();
-  // Fill
-  const fillGrad = ctx.createLinearGradient(barX, 0, barX + barW * pct, 0);
-  fillGrad.addColorStop(0, color);
-  fillGrad.addColorStop(1, `${color}80`);
-  ctx.fillStyle = fillGrad;
-  ctx.beginPath();
-  ctx.roundRect(barX, y + 2, barW * pct, 10, 5);
-  ctx.fill();
-  // Value
-  ctx.font = '9px GoogleSans';
-  ctx.fillStyle = '#ffffff';
-  ctx.textAlign = 'right';
-  ctx.fillText(String(value), x + w, y + 10);
+  ctx.moveTo(x, y);
+  ctx.lineTo(x + w, y);
+  ctx.stroke();
 }
+
+// Generation colors: Bakuten=red, Metal=gold, Burst=green, X=blue
+const GEN_COLORS: Record<string, string> = {
+  BAKUTEN: '#ef4444',
+  BAKUTEN_SHOOT: '#ef4444',
+  METAL: '#f59e0b',
+  BURST: '#22c55e',
+  X: '#3b82f6',
+  METAL_MASTERS: '#f59e0b',
+  METAL_FURY: '#f59e0b',
+  METAL_FUSION: '#f59e0b',
+  BEYBLADE_X: '#3b82f6',
+  BURST_SURGE: '#22c55e',
+  BURST_GT: '#22c55e',
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// TCG CARD — Full-size single pull (v3 — Pokémon TCG-inspired layout)
+// ─────────────────────────────────────────────────────────────────────────────
 
 export async function generateGachaCard(data: GachaCardData): Promise<Buffer> {
   const W = 640;
   const H = 900;
-  const PAD = 24;
+  const FRAME = 14;
+  const PAD = FRAME + 10;
+  const INNER_W = W - PAD * 2;
   const canvas = createCanvas(W, H);
   const ctx = canvas.getContext('2d');
   const theme = RARITY_THEMES[data.rarity] || RARITY_THEMES.COMMON!;
   const hasStats = data.atk != null;
-
-  // Generation colors: Bakuten=red, Metal=yellow, Burst=green, X=blue
-  const GEN_COLORS: Record<string, string> = {
-    BAKUTEN: '#ef4444',
-    BAKUTEN_SHOOT: '#ef4444',
-    METAL: '#f59e0b',
-    BURST: '#22c55e',
-    X: '#3b82f6',
-    METAL_MASTERS: '#f59e0b',
-    METAL_FURY: '#f59e0b',
-    METAL_FUSION: '#f59e0b',
-    BEYBLADE_X: '#3b82f6',
-    BURST_SURGE: '#22c55e',
-    BURST_GT: '#22c55e',
-  };
   const genColor = GEN_COLORS[data.series.toUpperCase()] || theme.accentColor;
+  const elem =
+    ELEMENT_ICONS[(data.element || 'NEUTRAL').toUpperCase()] ||
+    ELEMENT_ICONS.NEUTRAL!;
+  const weakness = ELEMENT_WEAKNESS[(data.element || '').toUpperCase()];
+  const weakElem = weakness ? ELEMENT_ICONS[weakness] : null;
 
-  // ── Background ──
-  const bgGrad = ctx.createLinearGradient(0, 0, W * 0.3, H);
+  // ══════════════════════════════════════════════════════════════════════════
+  // 1. CARD BACKGROUND — Light parchment with element tint
+  // ══════════════════════════════════════════════════════════════════════════
+  const bgGrad = ctx.createLinearGradient(0, 0, W * 0.4, H);
   bgGrad.addColorStop(0, theme.bgGradient[0]);
   bgGrad.addColorStop(0.5, theme.bgGradient[1]);
   bgGrad.addColorStop(1, theme.bgGradient[2]);
   ctx.fillStyle = bgGrad;
   ctx.fillRect(0, 0, W, H);
 
-  if (data.rarity === 'LEGENDARY' || data.rarity === 'SECRET') {
-    drawLightRays(ctx, W, H, `${theme.accentColor}10`, 4);
-  }
-  drawNoise(ctx, W, H, 0.02);
+  // Subtle element-tinted radial glow behind art area
+  const elemGlow = ctx.createRadialGradient(W / 2, 300, 20, W / 2, 300, 320);
+  elemGlow.addColorStop(0, `${elem.color}12`);
+  elemGlow.addColorStop(1, 'transparent');
+  ctx.fillStyle = elemGlow;
+  ctx.fillRect(0, 0, W, H);
 
-  // ── Outer card border (double) ──
+  // Light rays for legendary/secret
+  if (data.rarity === 'LEGENDARY' || data.rarity === 'SECRET') {
+    drawLightRays(ctx, W, H, `${theme.accentColor}18`, 5);
+  }
+
+  drawNoise(ctx, W, H, 0.015);
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // 2. OUTER FRAME — Thick ornate border with rarity gradient
+  // ══════════════════════════════════════════════════════════════════════════
   ctx.shadowColor = theme.glowColor;
-  ctx.shadowBlur = 30;
-  const borderGrad = ctx.createLinearGradient(0, 0, W, H);
-  borderGrad.addColorStop(0, theme.borderGradient[0]);
-  borderGrad.addColorStop(0.5, theme.borderGradient[1]);
-  borderGrad.addColorStop(1, theme.borderGradient[2]);
-  ctx.strokeStyle = borderGrad;
-  ctx.lineWidth = 4;
+  ctx.shadowBlur =
+    data.rarity === 'LEGENDARY' || data.rarity === 'SECRET' ? 40 : 20;
+  const frameGrad = ctx.createLinearGradient(0, 0, W, H);
+  frameGrad.addColorStop(0, theme.borderGradient[0]);
+  frameGrad.addColorStop(0.3, theme.borderGradient[1]);
+  frameGrad.addColorStop(0.7, theme.borderGradient[2]);
+  frameGrad.addColorStop(1, theme.borderGradient[1]);
+  ctx.strokeStyle = frameGrad;
+  ctx.lineWidth = FRAME;
   ctx.beginPath();
-  ctx.roundRect(10, 10, W - 20, H - 20, 18);
+  ctx.roundRect(FRAME / 2, FRAME / 2, W - FRAME, H - FRAME, 20);
   ctx.stroke();
   ctx.shadowBlur = 0;
-  ctx.strokeStyle = `${theme.borderColor}25`;
-  ctx.lineWidth = 1;
+
+  // Inner frame line
+  ctx.strokeStyle = `${theme.frameColor}40`;
+  ctx.lineWidth = 1.5;
   ctx.beginPath();
-  ctx.roundRect(18, 18, W - 36, H - 36, 14);
+  ctx.roundRect(FRAME + 4, FRAME + 4, W - FRAME * 2 - 8, H - FRAME * 2 - 8, 16);
   ctx.stroke();
 
-  // ── Battle Edge bar (top) — 6 colored diamonds ──
-  const beY = PAD + 4;
-  const beW = W - PAD * 2;
-  ctx.fillStyle = 'rgba(0,0,0,0.4)';
+  // ══════════════════════════════════════════════════════════════════════════
+  // 3. NAME HEADER BAR — Element icon + Name + HP
+  // ══════════════════════════════════════════════════════════════════════════
+  const headerY = PAD + 2;
+  const headerH = 52;
+
+  // Dark header background with gen color tint
+  const headerGrad = ctx.createLinearGradient(
+    PAD,
+    headerY,
+    PAD + INNER_W,
+    headerY,
+  );
+  headerGrad.addColorStop(0, theme.headerBg);
+  headerGrad.addColorStop(0.6, `${theme.headerBg}E0`);
+  headerGrad.addColorStop(1, `${genColor}90`);
+  ctx.fillStyle = headerGrad;
   ctx.beginPath();
-  ctx.roundRect(PAD, beY, beW, 28, [12, 12, 0, 0]);
+  ctx.roundRect(PAD, headerY, INNER_W, headerH, [10, 10, 0, 0]);
   ctx.fill();
-  const edgeColors = [
-    '#ef4444',
-    '#f59e0b',
-    '#22c55e',
-    '#3b82f6',
-    '#a855f7',
-    genColor,
-  ];
-  const diamondSize = 8;
-  const edgeGap = beW / 7;
-  for (let i = 0; i < 6; i++) {
-    const dx = PAD + edgeGap * (i + 1);
-    const dy = beY + 14;
-    ctx.fillStyle = edgeColors[i]!;
-    ctx.beginPath();
-    ctx.moveTo(dx, dy - diamondSize);
-    ctx.lineTo(dx + diamondSize, dy);
-    ctx.lineTo(dx, dy + diamondSize);
-    ctx.lineTo(dx - diamondSize, dy);
-    ctx.closePath();
-    ctx.fill();
-    // Glow on high rarity
-    if (theme.stars >= 3) {
-      ctx.shadowColor = edgeColors[i]!;
-      ctx.shadowBlur = 4;
-      ctx.fill();
-      ctx.shadowBlur = 0;
-    }
+
+  // Element circle icon
+  const elemCircleX = PAD + 28;
+  const elemCircleY = headerY + headerH / 2;
+  ctx.beginPath();
+  ctx.arc(elemCircleX, elemCircleY, 16, 0, Math.PI * 2);
+  ctx.fillStyle = `${elem.color}40`;
+  ctx.fill();
+  ctx.strokeStyle = elem.color;
+  ctx.lineWidth = 2;
+  ctx.stroke();
+  ctx.font = 'bold 16px GoogleSans, NotoEmoji';
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#ffffff';
+  ctx.fillText(elem.symbol, elemCircleX, elemCircleY + 6);
+
+  // Character name
+  ctx.textAlign = 'left';
+  ctx.font = 'bold 26px GoogleSans';
+  ctx.fillStyle = '#ffffff';
+  ctx.shadowColor = 'rgba(0,0,0,0.5)';
+  ctx.shadowBlur = 4;
+  let displayName = data.name;
+  while (
+    ctx.measureText(displayName).width > INNER_W - 180 &&
+    displayName.length > 8
+  )
+    displayName = `${displayName.slice(0, -2)}...`;
+  ctx.fillText(displayName, PAD + 52, headerY + 28);
+  ctx.shadowBlur = 0;
+
+  // Japanese name (subtitle)
+  if (data.nameJp) {
+    ctx.font = '12px GoogleSans';
+    ctx.fillStyle = 'rgba(255,255,255,0.5)';
+    ctx.fillText(data.nameJp, PAD + 52, headerY + 44);
   }
 
-  // ── Rarity label (left) + Gen color strip (right) ──
-  const labelY = beY + 28;
-  ctx.fillStyle = `${theme.borderColor}60`;
-  ctx.beginPath();
-  ctx.roundRect(PAD, labelY, beW * 0.55, 26, 0);
-  ctx.fill();
-  ctx.fillStyle = `${genColor}60`;
-  ctx.beginPath();
-  ctx.roundRect(PAD + beW * 0.55, labelY, beW * 0.45, 26, 0);
-  ctx.fill();
+  // HP display (right side)
+  if (hasStats && data.hp != null) {
+    ctx.textAlign = 'right';
+    ctx.font = 'bold 13px GoogleSans';
+    ctx.fillStyle = 'rgba(255,255,255,0.6)';
+    ctx.fillText('HP', W - PAD - 68, headerY + 22);
+    ctx.font = 'bold 28px GoogleSans';
+    ctx.fillStyle = '#ffffff';
+    ctx.fillText(`${data.hp}`, W - PAD - 12, headerY + 24);
+    // Heart icon
+    ctx.font = 'bold 14px GoogleSans, NotoEmoji';
+    ctx.fillStyle = '#ef4444';
+    ctx.fillText('\u2764', W - PAD - 12, headerY + 44);
+  }
 
-  ctx.font = 'bold 13px GoogleSans';
-  ctx.fillStyle = '#fff';
-  ctx.textAlign = 'left';
-  ctx.fillText(theme.label, PAD + 10, labelY + 18);
-  ctx.textAlign = 'right';
-  ctx.fillStyle = '#fff';
-  ctx.font = 'bold 12px GoogleSans';
-  ctx.fillText(data.series.replace(/_/g, ' '), W - PAD - 10, labelY + 17);
+  // Rarity label badge (over header right edge)
+  ctx.font = 'bold 11px GoogleSans';
+  const rarityBadgeW = ctx.measureText(theme.label).width + 20;
+  const rbX = W - PAD - rarityBadgeW - 6;
+  const rbY = headerY - 4;
+  drawBox(ctx, rbX, rbY, rarityBadgeW + 12, 18, 9, theme.borderColor);
+  ctx.fillStyle = '#ffffff';
+  ctx.textAlign = 'center';
+  ctx.fillText(theme.label, rbX + (rarityBadgeW + 12) / 2, rbY + 13);
 
-  // ── Character art window ──
-  const artY = labelY + 34;
-  const artH = 380;
-  const artW = W - PAD * 2;
-  ctx.fillStyle = 'rgba(0,0,0,0.5)';
-  ctx.beginPath();
-  ctx.roundRect(PAD, artY, artW, artH, 10);
-  ctx.fill();
+  // ══════════════════════════════════════════════════════════════════════════
+  // 4. ART WINDOW — Character illustration with inner frame
+  // ══════════════════════════════════════════════════════════════════════════
+  const artY = headerY + headerH + 4;
+  const artH = 370;
+  const artX = PAD + 6;
+  const artInnerW = INNER_W - 12;
 
+  // Art background (dark)
+  drawBox(
+    ctx,
+    artX,
+    artY,
+    artInnerW,
+    artH,
+    4,
+    '#0a0a12',
+    `${theme.frameColor}50`,
+    2,
+  );
+
+  // Character image
   const charImg = await _loadImageNoWhiteBg(data.imageUrl || null);
   if (charImg) {
     ctx.save();
     ctx.beginPath();
-    ctx.roundRect(PAD, artY, artW, artH, 10);
+    ctx.roundRect(artX + 2, artY + 2, artInnerW - 4, artH - 4, 3);
     ctx.clip();
-    // Radial spotlight
+
+    // Radial spotlight behind character
     const spot = ctx.createRadialGradient(
       W / 2,
-      artY + artH * 0.35,
+      artY + artH * 0.4,
       10,
       W / 2,
-      artY + artH * 0.35,
-      artH * 0.7,
+      artY + artH * 0.4,
+      artH * 0.65,
     );
-    spot.addColorStop(0, `${theme.accentColor}15`);
+    spot.addColorStop(0, `${elem.color}20`);
     spot.addColorStop(1, 'transparent');
     ctx.fillStyle = spot;
-    ctx.fillRect(PAD, artY, artW, artH);
-    // Draw image
+    ctx.fillRect(artX, artY, artInnerW, artH);
+
+    // Draw image (cover-fit)
     const aspect = charImg.width / charImg.height;
-    let dW = artW,
-      dH = artH,
-      dX = PAD,
-      dY = artY;
-    if (aspect > artW / artH) {
-      dH = artW / aspect;
-      dY = artY + (artH - dH) / 2;
+    let dW = artInnerW - 4,
+      dH = artH - 4,
+      dX = artX + 2,
+      dY = artY + 2;
+    if (aspect > artInnerW / artH) {
+      dH = (artInnerW - 4) / aspect;
+      dY = artY + 2 + (artH - 4 - dH) / 2;
     } else {
-      dW = artH * aspect;
-      dX = PAD + (artW - dW) / 2;
+      dW = (artH - 4) * aspect;
+      dX = artX + 2 + (artInnerW - 4 - dW) / 2;
     }
     ctx.drawImage(charImg, dX, dY, dW, dH);
-    // Vignette
+
+    // Bottom vignette
     const vig = ctx.createLinearGradient(0, artY, 0, artY + artH);
-    vig.addColorStop(0, 'rgba(0,0,0,0.1)');
-    vig.addColorStop(0.4, 'rgba(0,0,0,0)');
-    vig.addColorStop(0.7, 'rgba(0,0,0,0)');
-    vig.addColorStop(1, 'rgba(0,0,0,0.7)');
+    vig.addColorStop(0, 'rgba(0,0,0,0)');
+    vig.addColorStop(0.75, 'rgba(0,0,0,0)');
+    vig.addColorStop(1, 'rgba(0,0,0,0.6)');
     ctx.fillStyle = vig;
-    ctx.fillRect(PAD, artY, artW, artH);
+    ctx.fillRect(artX, artY, artInnerW, artH);
     ctx.restore();
   } else {
-    ctx.font = 'bold 80px GoogleSans';
-    ctx.fillStyle = 'rgba(255,255,255,0.03)';
+    ctx.font = 'bold 100px GoogleSans';
+    ctx.fillStyle = 'rgba(255,255,255,0.04)';
     ctx.textAlign = 'center';
-    ctx.fillText('?', W / 2, artY + artH / 2 + 28);
+    ctx.fillText('?', W / 2, artY + artH / 2 + 35);
   }
 
-  // Art frame
-  ctx.strokeStyle = `${theme.borderColor}50`;
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.roundRect(PAD, artY, artW, artH, 10);
-  ctx.stroke();
-
-  // ── Spin Strength badge (overlays art bottom-right) ──
-  if (hasStats) {
-    const spinVal = Math.round(
-      (data.atk! + data.def! + data.spd! + data.hp!) / 4,
+  // Inner art frame highlight (metallic for high rarity)
+  if (['SUPER_RARE', 'LEGENDARY', 'SECRET'].includes(data.rarity)) {
+    const innerFrameGrad = ctx.createLinearGradient(
+      artX,
+      artY,
+      artX + artInnerW,
+      artY + artH,
     );
-    const ssX = W - PAD - 60;
-    const ssY = artY + artH - 36;
-    ctx.fillStyle = 'rgba(0,0,0,0.7)';
+    innerFrameGrad.addColorStop(0, `${theme.borderColor}60`);
+    innerFrameGrad.addColorStop(0.3, `${theme.borderColor}20`);
+    innerFrameGrad.addColorStop(0.7, `${theme.borderColor}20`);
+    innerFrameGrad.addColorStop(1, `${theme.borderColor}60`);
+    ctx.strokeStyle = innerFrameGrad;
+    ctx.lineWidth = 3;
     ctx.beginPath();
-    ctx.roundRect(ssX, ssY, 52, 28, 6);
-    ctx.fill();
-    ctx.strokeStyle = theme.accentColor;
-    ctx.lineWidth = 1.5;
-    ctx.beginPath();
-    ctx.roundRect(ssX, ssY, 52, 28, 6);
+    ctx.roundRect(artX, artY, artInnerW, artH, 4);
     ctx.stroke();
-    ctx.font = 'bold 16px GoogleSans';
-    ctx.fillStyle = theme.accentColor;
-    ctx.textAlign = 'center';
-    ctx.fillText(`${spinVal}`, ssX + 26, ssY + 20);
   }
 
-  // ── Character name ──
-  const nameY = artY + artH + 30;
-  ctx.textAlign = 'center';
-  ctx.font = 'bold 32px GoogleSans';
-  ctx.shadowColor = 'rgba(0,0,0,0.6)';
-  ctx.shadowBlur = 6;
-  ctx.fillStyle = '#fff';
-  let dn = data.name;
-  while (ctx.measureText(dn).width > W - 80 && dn.length > 10)
-    dn = `${dn.slice(0, -2)}...`;
-  ctx.fillText(dn, W / 2, nameY);
-  ctx.shadowBlur = 0;
+  // ══════════════════════════════════════════════════════════════════════════
+  // 5. TYPE STRIP — Series + Beyblade name
+  // ══════════════════════════════════════════════════════════════════════════
+  const typeY = artY + artH + 6;
+  const typeH = 26;
 
-  if (data.nameJp) {
-    ctx.font = '14px GoogleSans';
-    ctx.fillStyle = 'rgba(255,255,255,0.3)';
-    ctx.fillText(data.nameJp, W / 2, nameY + 22);
-  }
+  const typeGrad = ctx.createLinearGradient(PAD, typeY, PAD + INNER_W, typeY);
+  typeGrad.addColorStop(0, `${genColor}30`);
+  typeGrad.addColorStop(1, `${theme.borderColor}20`);
+  ctx.fillStyle = typeGrad;
+  ctx.beginPath();
+  ctx.roundRect(PAD, typeY, INNER_W, typeH, 3);
+  ctx.fill();
 
-  // ── Beyblade name ──
-  let cy = nameY + (data.nameJp ? 40 : 22);
+  ctx.font = 'bold 12px GoogleSans';
+  ctx.textAlign = 'left';
+  ctx.fillStyle = genColor;
+  ctx.fillText(data.series.replace(/_/g, ' '), PAD + 10, typeY + 18);
+
   if (data.beyblade) {
-    ctx.font = 'bold 14px GoogleSans';
-    ctx.fillStyle = genColor;
+    ctx.textAlign = 'right';
+    ctx.fillStyle = '#3d3528';
+    ctx.font = 'bold 12px GoogleSans';
     let bey = data.beyblade;
-    while (ctx.measureText(bey).width > W - 120 && bey.length > 15)
+    while (ctx.measureText(bey).width > INNER_W * 0.5 && bey.length > 12)
       bey = `${bey.slice(0, -2)}...`;
-    ctx.fillText(bey, W / 2, cy);
-    cy += 24;
+    ctx.fillText(bey, W - PAD - 10, typeY + 18);
   }
 
-  // ── Stats row (4 badges) ──
+  // ══════════════════════════════════════════════════════════════════════════
+  // 6. ATTACK / SPECIAL MOVE SECTION — TCG-style attack box
+  // ══════════════════════════════════════════════════════════════════════════
+  const atkY = typeY + typeH + 8;
+  const atkBoxH = data.description && !data.specialMove ? 80 : 70;
+
+  drawSeparator(ctx, PAD, atkY - 2, INNER_W, theme.frameColor);
+
+  if (data.specialMove || data.description) {
+    const atkNameY = atkY + 24;
+    ctx.textAlign = 'left';
+
+    // Element cost circles (like energy cost in Pokémon TCG)
+    const costX = PAD + 12;
+    for (let i = 0; i < Math.min(theme.stars, 4); i++) {
+      ctx.beginPath();
+      ctx.arc(costX + i * 22, atkNameY - 4, 9, 0, Math.PI * 2);
+      ctx.fillStyle = `${elem.color}30`;
+      ctx.fill();
+      ctx.strokeStyle = elem.color;
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+      ctx.font = 'bold 10px GoogleSans, NotoEmoji';
+      ctx.fillStyle = elem.color;
+      ctx.textAlign = 'center';
+      ctx.fillText(elem.symbol, costX + i * 22, atkNameY);
+    }
+
+    // Attack name
+    ctx.textAlign = 'left';
+    ctx.font = 'bold 18px GoogleSans';
+    ctx.fillStyle = '#1a1510';
+    const atkLabelX = costX + Math.min(theme.stars, 4) * 22 + 8;
+    if (data.specialMove) {
+      let moveName = data.specialMove;
+      while (
+        ctx.measureText(moveName).width > INNER_W - atkLabelX + PAD - 80 &&
+        moveName.length > 10
+      )
+        moveName = `${moveName.slice(0, -2)}...`;
+      ctx.fillText(moveName, atkLabelX, atkNameY + 2);
+    }
+
+    // Damage value (right side)
+    if (hasStats) {
+      const dmg = Math.round(data.atk! * 1.2);
+      ctx.textAlign = 'right';
+      ctx.font = 'bold 24px GoogleSans';
+      ctx.fillStyle = '#1a1510';
+      ctx.fillText(`${dmg}`, W - PAD - 14, atkNameY + 4);
+    }
+
+    // Description text
+    if (data.description) {
+      ctx.font = '11px GoogleSans';
+      ctx.fillStyle = '#4a4438';
+      ctx.textAlign = 'left';
+      const words = data.description.split(' ');
+      let descLine = '';
+      let ly = atkNameY + 22;
+      let lc = 0;
+      for (const word of words) {
+        if (lc >= 2) break;
+        const test = descLine ? `${descLine} ${word}` : word;
+        if (ctx.measureText(test).width > INNER_W - 30) {
+          ctx.fillText(descLine, PAD + 12, ly);
+          descLine = word;
+          ly += 15;
+          lc++;
+        } else descLine = test;
+      }
+      if (descLine && lc < 2) ctx.fillText(descLine, PAD + 12, ly);
+    }
+  }
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // 7. STATS SECTION — ATK / DEF / SPD horizontal badges
+  // ══════════════════════════════════════════════════════════════════════════
+  const statsY = atkY + atkBoxH + 4;
+  drawSeparator(ctx, PAD, statsY - 2, INNER_W, theme.frameColor);
+
   if (hasStats) {
     const statDefs = [
-      { label: 'ATK', val: data.atk!, color: '#ef4444' },
-      { label: 'DEF', val: data.def!, color: '#3b82f6' },
-      { label: 'SPD', val: data.spd!, color: '#22d3ee' },
-      { label: 'HP', val: data.hp!, color: '#22c55e' },
+      { label: 'ATK', val: data.atk!, color: '#dc2626', icon: '\u2694' },
+      { label: 'DEF', val: data.def!, color: '#2563eb', icon: '\uD83D\uDEE1' },
+      { label: 'SPD', val: data.spd!, color: '#0891b2', icon: '\u26A1' },
     ];
-    const badgeW = 120;
-    const badgeH = 32;
-    const totalW = statDefs.length * badgeW + (statDefs.length - 1) * 8;
-    const startX = (W - totalW) / 2;
+    const badgeW = Math.floor((INNER_W - 24) / 3);
+    const badgeH = 42;
+    const badgeGap = 8;
+    const totalBadgesW = badgeW * 3 + badgeGap * 2;
+    const startX = PAD + (INNER_W - totalBadgesW) / 2;
+
     for (let i = 0; i < statDefs.length; i++) {
       const s = statDefs[i]!;
-      const bx = startX + i * (badgeW + 8);
-      ctx.fillStyle = `${s.color}18`;
-      ctx.beginPath();
-      ctx.roundRect(bx, cy, badgeW, badgeH, 6);
-      ctx.fill();
-      ctx.strokeStyle = `${s.color}40`;
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.roundRect(bx, cy, badgeW, badgeH, 6);
-      ctx.stroke();
-      ctx.font = 'bold 11px GoogleSans';
+      const bx = startX + i * (badgeW + badgeGap);
+      const by = statsY + 8;
+
+      drawBox(
+        ctx,
+        bx,
+        by,
+        badgeW,
+        badgeH,
+        6,
+        `${s.color}12`,
+        `${s.color}35`,
+        1.5,
+      );
+
+      ctx.font = 'bold 12px GoogleSans, NotoEmoji';
       ctx.fillStyle = `${s.color}90`;
       ctx.textAlign = 'left';
-      ctx.fillText(s.label, bx + 8, cy + 21);
-      ctx.font = 'bold 18px GoogleSans';
+      ctx.fillText(`${s.icon} ${s.label}`, bx + 8, by + 17);
+
+      ctx.font = 'bold 22px GoogleSans';
       ctx.fillStyle = s.color;
       ctx.textAlign = 'right';
-      ctx.fillText(`${s.val}`, bx + badgeW - 8, cy + 23);
+      ctx.fillText(`${s.val}`, bx + badgeW - 10, by + 33);
     }
-    cy += badgeH + 12;
   }
 
-  // ── Special move ──
-  if (data.specialMove) {
-    ctx.font = '12px GoogleSans';
-    ctx.fillStyle = 'rgba(255,255,255,0.3)';
+  // ══════════════════════════════════════════════════════════════════════════
+  // 8. WEAKNESS / RESISTANCE ROW
+  // ══════════════════════════════════════════════════════════════════════════
+  const weakY = hasStats ? statsY + 62 : statsY + 10;
+  drawSeparator(ctx, PAD, weakY - 2, INNER_W, theme.frameColor);
+
+  ctx.font = 'bold 12px GoogleSans';
+  ctx.textAlign = 'left';
+
+  // Weakness
+  if (weakElem) {
+    ctx.fillStyle = '#6b5e50';
+    ctx.fillText('Faiblesse :', PAD + 12, weakY + 16);
+    ctx.fillStyle = weakElem.color;
+    ctx.font = 'bold 14px GoogleSans, NotoEmoji';
+    ctx.fillText(`${weakElem.symbol} x2`, PAD + 100, weakY + 16);
+  }
+
+  // Resistance (element we are strong against)
+  const resistance = Object.entries(ELEMENT_WEAKNESS).find(
+    ([_, v]) => v === (data.element || '').toUpperCase(),
+  );
+  const resElem = resistance ? ELEMENT_ICONS[resistance[0]] : null;
+  if (resElem) {
+    ctx.font = 'bold 12px GoogleSans';
+    ctx.fillStyle = '#6b5e50';
     ctx.textAlign = 'center';
-    ctx.fillText(`-- ${data.specialMove} --`, W / 2, cy + 4);
-    cy += 18;
+    ctx.fillText('Résistance :', W / 2 + 20, weakY + 16);
+    ctx.fillStyle = resElem.color;
+    ctx.font = 'bold 14px GoogleSans, NotoEmoji';
+    ctx.fillText(`${resElem.symbol} -30`, W / 2 + 110, weakY + 16);
   }
 
-  // ── Description ──
-  if (data.description && !hasStats) {
-    ctx.font = '12px GoogleSans';
-    ctx.fillStyle = 'rgba(255,255,255,0.4)';
-    ctx.textAlign = 'center';
-    const words = data.description.split(' ');
-    let line = '',
-      ly = cy,
-      lc = 0;
-    for (const word of words) {
-      if (lc >= 3) break;
-      const test = line ? `${line} ${word}` : word;
-      if (ctx.measureText(test).width > W - 100) {
-        ctx.fillText(line, W / 2, ly);
-        line = word;
-        ly += 16;
-        lc++;
-      } else line = test;
-    }
-    if (line && lc < 3) ctx.fillText(line, W / 2, ly);
-  }
+  // Retreat cost (stars = energy cost)
+  ctx.textAlign = 'right';
+  ctx.font = 'bold 12px GoogleSans';
+  ctx.fillStyle = '#6b5e50';
+  ctx.fillText('Coût :', W - PAD - 60, weakY + 16);
+  ctx.font = 'bold 14px GoogleSans, NotoEmoji';
+  ctx.fillStyle = elem.color;
+  let costStr = '';
+  for (let i = 0; i < Math.min(theme.stars, 4); i++) costStr += elem.symbol;
+  ctx.fillText(costStr, W - PAD - 12, weakY + 16);
 
-  // ── Bottom bar ──
-  const barH = 48;
-  const barY = H - barH - 14;
-  ctx.fillStyle = 'rgba(0,0,0,0.35)';
-  ctx.beginPath();
-  ctx.roundRect(PAD, barY, W - PAD * 2, barH, [0, 0, 12, 12]);
-  ctx.fill();
+  // ══════════════════════════════════════════════════════════════════════════
+  // 9. FOOTER — Stars, set info, card identifier
+  // ══════════════════════════════════════════════════════════════════════════
+  const footerY = H - FRAME - 80;
+  drawSeparator(ctx, PAD, footerY, INNER_W, theme.frameColor);
 
   // Stars
   ctx.textAlign = 'left';
-  ctx.font = 'bold 16px GoogleSans';
+  ctx.font = 'bold 18px GoogleSans';
   ctx.fillStyle = theme.accentColor;
   let starStr = '';
-  for (let i = 0; i < 4; i++) starStr += i < theme.stars ? '★' : '☆';
-  ctx.fillText(starStr, PAD + 12, barY + 30);
+  for (let i = 0; i < 5; i++) starStr += i < theme.stars ? '\u2605' : '\u2606';
+  ctx.fillText(starStr, PAD + 10, footerY + 22);
 
-  // Balance
+  // Set name
+  ctx.textAlign = 'center';
+  ctx.font = 'bold 13px GoogleSans';
+  ctx.fillStyle = '#5a5248';
+  ctx.fillText('RPB TCG', W / 2, footerY + 22);
+
+  // Card number
   ctx.textAlign = 'right';
-  ctx.font = 'bold 14px GoogleSans';
-  ctx.fillStyle = 'rgba(255,255,255,0.5)';
-  ctx.fillText(
-    `${data.balance.toLocaleString('fr-FR')} coins`,
-    W - PAD - 12,
-    barY + 22,
+  ctx.font = 'bold 12px GoogleSans';
+  ctx.fillStyle = '#8a7e70';
+  ctx.fillText('Drop 1', W - PAD - 12, footerY + 22);
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // 10. STATUS BAR — Balance + WISHED/DOUBLON
+  // ══════════════════════════════════════════════════════════════════════════
+  const statusY = footerY + 32;
+  const statusH = 36;
+  drawBox(
+    ctx,
+    PAD,
+    statusY,
+    INNER_W,
+    statusH,
+    [0, 0, 8, 8],
+    'rgba(0,0,0,0.15)',
   );
 
-  // Status
+  ctx.font = 'bold 14px GoogleSans';
+  ctx.textAlign = 'left';
+  ctx.fillStyle = '#6b5e50';
+  ctx.fillText(
+    `${data.balance.toLocaleString('fr-FR')} coins`,
+    PAD + 14,
+    statusY + 23,
+  );
+
   if (data.isWished) {
-    ctx.fillStyle = '#fbbf24';
+    const wishBadgeW = 90;
+    drawBox(
+      ctx,
+      W - PAD - wishBadgeW - 8,
+      statusY + 6,
+      wishBadgeW,
+      24,
+      12,
+      '#fbbf2430',
+      '#fbbf24',
+      1.5,
+    );
     ctx.font = 'bold 12px GoogleSans';
-    ctx.fillText('WISHED', W - PAD - 12, barY + 40);
+    ctx.fillStyle = '#b45309';
+    ctx.textAlign = 'center';
+    ctx.fillText('WISHED', W - PAD - wishBadgeW / 2 - 8, statusY + 22);
   } else if (data.isDuplicate) {
-    ctx.fillStyle = 'rgba(255,255,255,0.3)';
+    const dupBadgeW = 90;
+    drawBox(
+      ctx,
+      W - PAD - dupBadgeW - 8,
+      statusY + 6,
+      dupBadgeW,
+      24,
+      12,
+      'rgba(107,114,128,0.15)',
+      '#9ca3af',
+      1,
+    );
     ctx.font = 'bold 12px GoogleSans';
-    ctx.fillText('DOUBLON', W - PAD - 12, barY + 40);
+    ctx.fillStyle = '#6b7280';
+    ctx.textAlign = 'center';
+    ctx.fillText('DOUBLON', W - PAD - dupBadgeW / 2 - 8, statusY + 22);
   }
 
-  // ── Corner ornaments (SR+) ──
+  // ══════════════════════════════════════════════════════════════════════════
+  // 11. SPARKLES & CORNER ORNAMENTS (high rarity)
+  // ══════════════════════════════════════════════════════════════════════════
+  if (theme.particleCount > 0) {
+    for (let i = 0; i < theme.particleCount; i++) {
+      const sx = FRAME + 20 + Math.random() * (W - FRAME * 2 - 40);
+      const sy = FRAME + 20 + Math.random() * (H - FRAME * 2 - 40);
+      drawSparkle(
+        ctx,
+        sx,
+        sy,
+        3 + Math.random() * 6,
+        theme.accentColor,
+        0.25 + Math.random() * 0.45,
+      );
+    }
+  }
+
   if (['SUPER_RARE', 'LEGENDARY', 'SECRET'].includes(data.rarity)) {
-    ctx.strokeStyle = `${theme.borderColor}30`;
-    ctx.lineWidth = 2;
-    const c = 40;
+    ctx.strokeStyle = `${theme.borderColor}50`;
+    ctx.lineWidth = 2.5;
+    const c = 35;
+    const ox = FRAME + 6;
+    const oy = FRAME + 6;
     const corners: [number, number, number, number][] = [
-      [PAD, beY + c, PAD, beY],
-      [PAD, beY, PAD + c, beY],
-      [W - PAD - c, beY, W - PAD, beY],
-      [W - PAD, beY, W - PAD, beY + c],
-      [PAD, H - 14 - c, PAD, H - 14],
-      [PAD, H - 14, PAD + c, H - 14],
-      [W - PAD - c, H - 14, W - PAD, H - 14],
-      [W - PAD, H - 14, W - PAD, H - 14 - c],
+      [ox, oy + c, ox, oy],
+      [ox, oy, ox + c, oy],
+      [W - ox - c, oy, W - ox, oy],
+      [W - ox, oy, W - ox, oy + c],
+      [ox, H - oy - c, ox, H - oy],
+      [ox, H - oy, ox + c, H - oy],
+      [W - ox - c, H - oy, W - ox, H - oy],
+      [W - ox, H - oy, W - ox, H - oy - c],
     ];
     for (const [x1, y1, x2, y2] of corners) {
       ctx.beginPath();
@@ -1855,128 +2108,135 @@ export async function generateGachaCard(data: GachaCardData): Promise<Buffer> {
     }
   }
 
-  // ── Sparkles ──
-  if (theme.particleCount > 0) {
-    for (let i = 0; i < theme.particleCount; i++) {
-      const sx = 30 + Math.random() * (W - 60);
-      const sy = 30 + Math.random() * (H - 60);
-      drawSparkle(
-        ctx,
-        sx,
-        sy,
-        3 + Math.random() * 5,
-        theme.accentColor,
-        0.2 + Math.random() * 0.4,
-      );
-    }
-  }
-
   return canvas.toBuffer('image/png');
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MISS CARD — TCG-style "cracked" card for failed pulls
+// ─────────────────────────────────────────────────────────────────────────────
 
 export async function generateGachaMissCard(
   message: string,
   balance: number,
 ): Promise<Buffer> {
-  const W = 640,
-    H = 340;
+  const W = 640;
+  const H = 380;
+  const FRAME = 10;
+  const PAD = FRAME + 10;
+  const INNER_W = W - PAD * 2;
   const canvas = createCanvas(W, H);
   const ctx = canvas.getContext('2d');
 
-  // Background with fog effect
+  // TCG-style grey parchment background
   const bg = ctx.createLinearGradient(0, 0, W * 0.3, H);
-  bg.addColorStop(0, '#12151f');
-  bg.addColorStop(0.5, '#161a28');
-  bg.addColorStop(1, '#0e1118');
+  bg.addColorStop(0, '#d4d0c8');
+  bg.addColorStop(0.5, '#c4c0b8');
+  bg.addColorStop(1, '#b8b4ac');
   ctx.fillStyle = bg;
   ctx.fillRect(0, 0, W, H);
+  drawNoise(ctx, W, H, 0.03);
 
-  // Radial fog
-  const fog = ctx.createRadialGradient(
-    W / 2,
-    H * 0.4,
-    10,
-    W / 2,
-    H * 0.4,
-    W * 0.5,
-  );
-  fog.addColorStop(0, 'rgba(107,114,128,0.06)');
-  fog.addColorStop(1, 'rgba(0,0,0,0)');
-  ctx.fillStyle = fog;
-  ctx.fillRect(0, 0, W, H);
-
-  drawNoise(ctx, W, H, 0.02);
-
-  // Border
-  ctx.strokeStyle = 'rgba(107,114,128,0.25)';
-  ctx.lineWidth = 2;
+  // Grey frame border
+  ctx.strokeStyle = '#8a8a8a';
+  ctx.lineWidth = FRAME;
   ctx.beginPath();
-  ctx.roundRect(10, 10, W - 20, H - 20, 16);
+  ctx.roundRect(FRAME / 2, FRAME / 2, W - FRAME, H - FRAME, 16);
   ctx.stroke();
 
-  // Faded X background watermark
-  ctx.save();
-  ctx.globalAlpha = 0.03;
-  ctx.font = 'bold 200px GoogleSans';
-  ctx.fillStyle = '#ffffff';
-  ctx.textAlign = 'center';
-  ctx.fillText('✕', W / 2, H / 2 + 60);
-  ctx.restore();
-
-  // Title
-  ctx.font = 'bold 38px GoogleSans';
-  ctx.fillStyle = '#4b5563';
-  ctx.textAlign = 'center';
-  ctx.shadowColor = 'rgba(0,0,0,0.4)';
-  ctx.shadowBlur = 6;
-  ctx.fillText('💨 RATÉ !', W / 2, 85);
-  ctx.shadowBlur = 0;
-
-  // Decorative line
-  const lineGrad = ctx.createLinearGradient(W * 0.25, 100, W * 0.75, 100);
-  lineGrad.addColorStop(0, 'rgba(107,114,128,0)');
-  lineGrad.addColorStop(0.5, 'rgba(107,114,128,0.3)');
-  lineGrad.addColorStop(1, 'rgba(107,114,128,0)');
-  ctx.strokeStyle = lineGrad;
+  // Inner frame
+  ctx.strokeStyle = 'rgba(100,100,100,0.3)';
   ctx.lineWidth = 1;
   ctx.beginPath();
-  ctx.moveTo(W * 0.25, 100);
-  ctx.lineTo(W * 0.75, 100);
+  ctx.roundRect(FRAME + 4, FRAME + 4, W - FRAME * 2 - 8, H - FRAME * 2 - 8, 12);
   ctx.stroke();
 
-  // Message
+  // Faded X watermark (cracked card feel)
+  ctx.save();
+  ctx.globalAlpha = 0.06;
+  ctx.font = 'bold 220px GoogleSans';
+  ctx.fillStyle = '#4b4b4b';
+  ctx.textAlign = 'center';
+  ctx.fillText('\u2715', W / 2, H / 2 + 60);
+  ctx.restore();
+
+  // Diagonal crack lines
+  ctx.save();
+  ctx.globalAlpha = 0.08;
+  ctx.strokeStyle = '#666666';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(W * 0.3, 0);
+  ctx.lineTo(W * 0.6, H);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(W * 0.7, 0);
+  ctx.lineTo(W * 0.4, H);
+  ctx.stroke();
+  ctx.restore();
+
+  // Header bar (dark like TCG name header)
+  drawBox(ctx, PAD, PAD + 2, INNER_W, 44, [8, 8, 0, 0], '#4b5563');
+
+  // Title
+  ctx.font = 'bold 28px GoogleSans';
+  ctx.fillStyle = '#d1d5db';
+  ctx.textAlign = 'center';
+  ctx.fillText('BURST OUT !', W / 2, PAD + 32);
+
+  drawSeparator(ctx, PAD, PAD + 52, INNER_W, '#6b7280');
+
+  // Message text
   ctx.font = '14px GoogleSans';
-  ctx.fillStyle = 'rgba(255,255,255,0.45)';
+  ctx.fillStyle = '#4b4540';
+  ctx.textAlign = 'center';
   const words = message.split(' ');
-  let line = '',
-    y = 140;
+  let line = '';
+  let y = PAD + 80;
   for (const word of words) {
     const test = line ? `${line} ${word}` : word;
-    if (ctx.measureText(test).width > W - 80) {
+    if (ctx.measureText(test).width > INNER_W - 40) {
       ctx.fillText(line, W / 2, y);
       line = word;
-      y += 20;
+      y += 22;
     } else line = test;
   }
   if (line) ctx.fillText(line, W / 2, y);
 
-  // Balance pill
-  ctx.fillStyle = 'rgba(0,0,0,0.25)';
-  ctx.beginPath();
-  ctx.roundRect(W / 2 - 120, H - 55, 240, 30, 15);
-  ctx.fill();
-  ctx.font = 'bold 13px GoogleSans';
-  ctx.fillStyle = 'rgba(255,255,255,0.4)';
-  ctx.fillText(
-    `💰 ${balance.toLocaleString('fr-FR')} 🪙 restants`,
-    W / 2,
-    H - 35,
+  // Flavor text
+  ctx.font = 'bold 11px GoogleSans';
+  ctx.fillStyle = '#9ca3af';
+  ctx.fillText('-- La toupie a quitté le stadium... --', W / 2, H - PAD - 60);
+
+  // Bottom status bar
+  drawSeparator(ctx, PAD, H - PAD - 46, INNER_W, '#8a8a8a');
+  drawBox(
+    ctx,
+    PAD,
+    H - PAD - 40,
+    INNER_W,
+    30,
+    [0, 0, 8, 8],
+    'rgba(0,0,0,0.08)',
   );
+
+  ctx.font = 'bold 13px GoogleSans';
+  ctx.textAlign = 'left';
+  ctx.fillStyle = '#6b5e50';
+  ctx.fillText(
+    `${balance.toLocaleString('fr-FR')} coins restants`,
+    PAD + 14,
+    H - PAD - 20,
+  );
+
+  ctx.textAlign = 'right';
+  ctx.fillStyle = '#9ca3af';
+  ctx.font = 'bold 12px GoogleSans';
+  ctx.fillText('RPB TCG', W - PAD - 14, H - PAD - 20);
 
   return canvas.toBuffer('image/png');
 }
 
-// ─── Multi-Pull Canvas (v2 — HD) ────────────────────────────────────────────
+// ─── Multi-Pull Canvas (v3 — TCG Layout) ────────────────────────────────────
 
 export interface MultiPullSlot {
   rarity: string | null; // null = miss
@@ -1999,21 +2259,25 @@ export async function generateMultiPullCard(
   const COLS = 5;
   const ROWS = 2;
   const CARD_W = 190;
-  const CARD_H = 265;
-  const GAP = 14;
-  const PAD = 30;
-  const HEADER = 80;
-  const FOOTER = 60;
+  const CARD_H = 270;
+  const GAP = 12;
+  const PAD = 28;
+  const HEADER = 76;
+  const FOOTER = 56;
   const W = PAD * 2 + COLS * CARD_W + (COLS - 1) * GAP;
   const H = HEADER + ROWS * CARD_H + (ROWS - 1) * GAP + FOOTER + PAD;
   const canvas = createCanvas(W, H);
   const ctx = canvas.getContext('2d');
 
-  // ── Background ──
-  ctx.fillStyle = '#06060e';
+  // ── TCG table background (dark felt green) ──
+  const bgGrad = ctx.createLinearGradient(0, 0, W * 0.3, H);
+  bgGrad.addColorStop(0, '#0f1a14');
+  bgGrad.addColorStop(0.5, '#0c1610');
+  bgGrad.addColorStop(1, '#08100c');
+  ctx.fillStyle = bgGrad;
   ctx.fillRect(0, 0, W, H);
 
-  // Radial glow center
+  // Subtle radial light
   const radGrad = ctx.createRadialGradient(
     W / 2,
     H / 2,
@@ -2022,89 +2286,91 @@ export async function generateMultiPullCard(
     H / 2,
     W * 0.55,
   );
-  radGrad.addColorStop(0, 'rgba(139,92,246,0.07)');
+  radGrad.addColorStop(0, 'rgba(251,191,36,0.04)');
   radGrad.addColorStop(1, 'rgba(0,0,0,0)');
   ctx.fillStyle = radGrad;
   ctx.fillRect(0, 0, W, H);
 
-  drawNoise(ctx, W, H, 0.018);
+  drawNoise(ctx, W, H, 0.015);
 
-  // Border with gradient
+  // Gold border frame
   const borderG = ctx.createLinearGradient(0, 0, W, H);
-  borderG.addColorStop(0, 'rgba(139,92,246,0.25)');
-  borderG.addColorStop(0.5, 'rgba(251,191,36,0.2)');
-  borderG.addColorStop(1, 'rgba(139,92,246,0.25)');
+  borderG.addColorStop(0, 'rgba(180,83,9,0.4)');
+  borderG.addColorStop(0.5, 'rgba(251,191,36,0.3)');
+  borderG.addColorStop(1, 'rgba(180,83,9,0.4)');
   ctx.strokeStyle = borderG;
-  ctx.lineWidth = 2;
+  ctx.lineWidth = 3;
   ctx.beginPath();
-  ctx.roundRect(8, 8, W - 16, H - 16, 18);
+  ctx.roundRect(6, 6, W - 12, H - 12, 16);
   ctx.stroke();
 
   // Header
-  ctx.font = 'bold 32px GoogleSans';
-  ctx.fillStyle = '#ffffff';
+  ctx.font = 'bold 30px GoogleSans';
+  ctx.fillStyle = '#fbbf24';
   ctx.textAlign = 'center';
-  ctx.shadowColor = 'rgba(139,92,246,0.3)';
+  ctx.shadowColor = 'rgba(251,191,36,0.25)';
   ctx.shadowBlur = 10;
-  ctx.fillText('🎰  MULTI-PULL  ×10', W / 2, 52);
+  ctx.fillText('MULTI-PULL  \u00d710', W / 2, 48);
   ctx.shadowBlur = 0;
 
-  // Decorative line
-  const lineGrad = ctx.createLinearGradient(PAD, 66, W - PAD, 66);
-  lineGrad.addColorStop(0, 'rgba(139,92,246,0)');
-  lineGrad.addColorStop(0.3, 'rgba(139,92,246,0.4)');
-  lineGrad.addColorStop(0.5, 'rgba(251,191,36,0.5)');
-  lineGrad.addColorStop(0.7, 'rgba(139,92,246,0.4)');
-  lineGrad.addColorStop(1, 'rgba(139,92,246,0)');
-  ctx.strokeStyle = lineGrad;
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(PAD + 50, 66);
-  ctx.lineTo(W - PAD - 50, 66);
-  ctx.stroke();
+  // Subtitle
+  ctx.font = 'bold 12px GoogleSans';
+  ctx.fillStyle = '#6b5e50';
+  ctx.fillText('RPB TCG \u2022 Drop 1', W / 2, 66);
 
-  // ── Draw 10 mini-cards ──
+  drawSeparator(ctx, PAD, HEADER - 4, W - PAD * 2, '#b4530960');
+
+  // ── Draw 10 mini TCG cards ──
   for (let i = 0; i < data.slots.length; i++) {
     const slot = data.slots[i]!;
     const col = i % COLS;
     const row = Math.floor(i / COLS);
     const x = PAD + col * (CARD_W + GAP);
     const y = HEADER + row * (CARD_H + GAP);
+    const FR = 4; // mini frame
 
     if (!slot.rarity) {
-      // ── MISS card ──
-      ctx.fillStyle = 'rgba(255,255,255,0.015)';
-      ctx.beginPath();
-      ctx.roundRect(x, y, CARD_W, CARD_H, 12);
-      ctx.fill();
-      ctx.strokeStyle = 'rgba(107,114,128,0.2)';
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.roundRect(x, y, CARD_W, CARD_H, 12);
-      ctx.stroke();
+      // ── MISS — greyed out TCG card ──
+      // Parchment bg
+      drawBox(ctx, x, y, CARD_W, CARD_H, 8, '#2a2a28', '#4b4b4840', 1.5);
 
-      // Faded X
+      // Faded X watermark
       ctx.save();
-      ctx.globalAlpha = 0.05;
-      ctx.font = 'bold 80px GoogleSans';
-      ctx.fillStyle = '#ffffff';
+      ctx.globalAlpha = 0.06;
+      ctx.font = 'bold 90px GoogleSans';
+      ctx.fillStyle = '#888888';
       ctx.textAlign = 'center';
-      ctx.fillText('✕', x + CARD_W / 2, y + CARD_H / 2 + 10);
+      ctx.fillText('\u2715', x + CARD_W / 2, y + CARD_H / 2 + 20);
       ctx.restore();
 
-      ctx.font = 'bold 15px GoogleSans';
-      ctx.fillStyle = 'rgba(107,114,128,0.35)';
+      // Grey header bar
+      drawBox(
+        ctx,
+        x + FR,
+        y + FR,
+        CARD_W - FR * 2,
+        22,
+        [6, 6, 0, 0],
+        '#3a3a38',
+      );
+      ctx.font = 'bold 11px GoogleSans';
+      ctx.fillStyle = '#6b7280';
       ctx.textAlign = 'center';
-      ctx.fillText('RATÉ', x + CARD_W / 2, y + CARD_H / 2 + 50);
+      ctx.fillText('BURST OUT', x + CARD_W / 2, y + FR + 16);
+
+      // Bottom label
+      ctx.font = 'bold 13px GoogleSans';
+      ctx.fillStyle = '#4b5563';
+      ctx.fillText('RAT\u00c9', x + CARD_W / 2, y + CARD_H - 16);
     } else {
-      // ── Card drop ──
+      // ── Card drop — mini TCG card ──
       const t = RARITY_THEMES[slot.rarity] || RARITY_THEMES.COMMON!;
 
-      // Background gradient
+      // Card parchment background
       const cardGrad = ctx.createLinearGradient(
         x,
         y,
-        x + CARD_W * 0.2,
+        x + CARD_W * 0.3,
         y + CARD_H,
       );
       cardGrad.addColorStop(0, t.bgGradient[0]);
@@ -2112,99 +2378,138 @@ export async function generateMultiPullCard(
       cardGrad.addColorStop(1, t.bgGradient[2]);
       ctx.fillStyle = cardGrad;
       ctx.beginPath();
-      ctx.roundRect(x, y, CARD_W, CARD_H, 12);
+      ctx.roundRect(x, y, CARD_W, CARD_H, 8);
       ctx.fill();
 
-      // Glow border
+      // Rarity border frame with glow
       ctx.shadowColor = t.glowColor;
       ctx.shadowBlur =
-        slot.rarity === 'SECRET' || slot.rarity === 'LEGENDARY' ? 18 : 8;
+        slot.rarity === 'SECRET' || slot.rarity === 'LEGENDARY' ? 16 : 6;
       const bGrad = ctx.createLinearGradient(x, y, x + CARD_W, y + CARD_H);
       bGrad.addColorStop(0, t.borderGradient[0]);
       bGrad.addColorStop(0.5, t.borderGradient[1]);
       bGrad.addColorStop(1, t.borderGradient[2]);
       ctx.strokeStyle = bGrad;
-      ctx.lineWidth = 2.5;
+      ctx.lineWidth = FR;
       ctx.beginPath();
-      ctx.roundRect(x, y, CARD_W, CARD_H, 12);
+      ctx.roundRect(x + FR / 2, y + FR / 2, CARD_W - FR, CARD_H - FR, 7);
       ctx.stroke();
       ctx.shadowBlur = 0;
 
-      // Rarity band
-      ctx.fillStyle = `${t.borderColor}CC`;
+      // Name header bar (dark, like TCG)
+      const hdrH = 26;
+      ctx.fillStyle = t.headerBg;
       ctx.beginPath();
-      ctx.roundRect(x + 5, y + 5, CARD_W - 10, 24, [9, 9, 0, 0]);
+      ctx.roundRect(x + FR, y + FR, CARD_W - FR * 2, hdrH, [5, 5, 0, 0]);
       ctx.fill();
-      ctx.font = 'bold 11px GoogleSans';
-      ctx.fillStyle = '#ffffff';
-      ctx.textAlign = 'center';
-      ctx.fillText(t.label, x + CARD_W / 2, y + 21);
 
-      // Stars
+      // Card name in header
+      ctx.font = 'bold 12px GoogleSans';
+      ctx.fillStyle = '#ffffff';
+      ctx.textAlign = 'left';
+      let name = slot.name || '???';
+      if (ctx.measureText(name).width > CARD_W - 30)
+        name = `${name.substring(0, 13)}\u2026`;
+      ctx.fillText(name, x + FR + 8, y + FR + 18);
+
+      // Rarity stars (right of header)
+      ctx.textAlign = 'right';
       ctx.font = '10px GoogleSans';
       ctx.fillStyle = t.accentColor;
-      ctx.fillText(
-        '★'.repeat(t.stars) + '☆'.repeat(5 - t.stars),
-        x + CARD_W / 2,
-        y + 36,
-      );
+      ctx.fillText('\u2605'.repeat(t.stars), x + CARD_W - FR - 6, y + FR + 17);
 
-      // Character image
-      const imgY2 = y + 42;
-      const imgH2 = 140;
-      ctx.fillStyle = 'rgba(0,0,0,0.35)';
-      ctx.beginPath();
-      ctx.roundRect(x + 8, imgY2, CARD_W - 16, imgH2, 8);
-      ctx.fill();
+      // Art window
+      const imgY2 = y + FR + hdrH + 3;
+      const imgH2 = 150;
+      drawBox(
+        ctx,
+        x + FR + 3,
+        imgY2,
+        CARD_W - FR * 2 - 6,
+        imgH2,
+        3,
+        '#0a0a12',
+        `${t.frameColor}40`,
+        1.5,
+      );
 
       if (slot.imageUrl) {
         const img = await _loadImageNoWhiteBg(slot.imageUrl);
         if (img) {
           ctx.save();
           ctx.beginPath();
-          ctx.roundRect(x + 8, imgY2, CARD_W - 16, imgH2, 8);
+          ctx.roundRect(
+            x + FR + 4,
+            imgY2 + 1,
+            CARD_W - FR * 2 - 8,
+            imgH2 - 2,
+            2,
+          );
           ctx.clip();
           const aspect = img.width / img.height;
-          let dw = CARD_W - 16,
-            dh = imgH2;
+          let dw = CARD_W - FR * 2 - 8,
+            dh = imgH2 - 2;
           if (aspect > dw / dh) dh = dw / aspect;
           else dw = dh * aspect;
           ctx.drawImage(
             img,
-            x + 8 + (CARD_W - 16 - dw) / 2,
-            imgY2 + (imgH2 - dh) / 2,
+            x + FR + 4 + (CARD_W - FR * 2 - 8 - dw) / 2,
+            imgY2 + 1 + (imgH2 - 2 - dh) / 2,
             dw,
             dh,
           );
-          // Vignette
+          // Bottom vignette
           const vig = ctx.createLinearGradient(0, imgY2, 0, imgY2 + imgH2);
           vig.addColorStop(0, 'rgba(0,0,0,0)');
-          vig.addColorStop(0.75, 'rgba(0,0,0,0)');
-          vig.addColorStop(1, 'rgba(0,0,0,0.6)');
+          vig.addColorStop(0.8, 'rgba(0,0,0,0)');
+          vig.addColorStop(1, 'rgba(0,0,0,0.5)');
           ctx.fillStyle = vig;
-          ctx.fillRect(x + 8, imgY2, CARD_W - 16, imgH2);
+          ctx.fillRect(x + FR + 4, imgY2, CARD_W - FR * 2 - 8, imgH2);
           ctx.restore();
         }
       }
 
-      // Name
-      ctx.font = 'bold 14px GoogleSans';
-      ctx.fillStyle = '#ffffff';
+      // Rarity label below art
+      const labelY2 = imgY2 + imgH2 + 6;
+      ctx.font = 'bold 10px GoogleSans';
+      ctx.fillStyle = t.borderColor;
       ctx.textAlign = 'center';
-      let name = slot.name || '???';
-      if (ctx.measureText(name).width > CARD_W - 20)
-        name = `${name.substring(0, 14)}…`;
-      ctx.fillText(name, x + CARD_W / 2, y + CARD_H - 42);
+      ctx.fillText(t.label, x + CARD_W / 2, labelY2 + 4);
 
-      // Status badge
+      // Status badge (WISHED / DOUBLON)
+      const statusY2 = labelY2 + 18;
       if (slot.isWished) {
-        ctx.font = 'bold 11px GoogleSans';
-        ctx.fillStyle = '#fbbf24';
-        ctx.fillText('⭐ WISHED', x + CARD_W / 2, y + CARD_H - 22);
+        drawBox(
+          ctx,
+          x + CARD_W / 2 - 38,
+          statusY2,
+          76,
+          18,
+          9,
+          '#fbbf2420',
+          '#fbbf24',
+          1,
+        );
+        ctx.font = 'bold 10px GoogleSans';
+        ctx.fillStyle = '#b45309';
+        ctx.textAlign = 'center';
+        ctx.fillText('WISHED', x + CARD_W / 2, statusY2 + 13);
       } else if (slot.isDuplicate) {
-        ctx.font = '11px GoogleSans';
-        ctx.fillStyle = 'rgba(255,255,255,0.3)';
-        ctx.fillText('DOUBLON', x + CARD_W / 2, y + CARD_H - 22);
+        drawBox(
+          ctx,
+          x + CARD_W / 2 - 38,
+          statusY2,
+          76,
+          18,
+          9,
+          'rgba(107,114,128,0.12)',
+          '#9ca3af80',
+          1,
+        );
+        ctx.font = 'bold 10px GoogleSans';
+        ctx.fillStyle = '#6b7280';
+        ctx.textAlign = 'center';
+        ctx.fillText('DOUBLON', x + CARD_W / 2, statusY2 + 13);
       }
 
       // Bottom accent bar
@@ -2214,57 +2519,68 @@ export async function generateMultiPullCard(
       accentGrad.addColorStop(1, `${t.borderColor}00`);
       ctx.fillStyle = accentGrad;
       ctx.beginPath();
-      ctx.roundRect(x + 8, y + CARD_H - 7, CARD_W - 16, 3, [0, 0, 6, 6]);
+      ctx.roundRect(
+        x + FR + 4,
+        y + CARD_H - FR - 4,
+        CARD_W - FR * 2 - 8,
+        2.5,
+        1,
+      );
       ctx.fill();
 
-      // Sparkles
+      // Sparkles for high rarity
       if (slot.rarity === 'LEGENDARY' || slot.rarity === 'SECRET') {
-        for (let s = 0; s < 5; s++) {
+        for (let s = 0; s < 4; s++) {
           drawSparkle(
             ctx,
-            x + 15 + Math.random() * (CARD_W - 30),
-            y + 35 + Math.random() * (CARD_H - 65),
+            x + 12 + Math.random() * (CARD_W - 24),
+            y + 30 + Math.random() * (CARD_H - 55),
             2 + Math.random() * 3,
             t.accentColor,
-            0.3 + Math.random() * 0.3,
+            0.3 + Math.random() * 0.35,
           );
         }
       }
     }
   }
 
-  // ── Footer bar ──
-  const footY = H - FOOTER - 8;
-  ctx.fillStyle = 'rgba(0,0,0,0.35)';
-  ctx.beginPath();
-  ctx.roundRect(PAD, footY, W - PAD * 2, FOOTER, [0, 0, 12, 12]);
-  ctx.fill();
-  ctx.strokeStyle = 'rgba(255,255,255,0.04)';
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.roundRect(PAD, footY, W - PAD * 2, FOOTER, [0, 0, 12, 12]);
-  ctx.stroke();
+  // ── Footer ──
+  const footY = H - FOOTER - 6;
+  drawSeparator(ctx, PAD, footY - 2, W - PAD * 2, '#b4530940');
+  drawBox(
+    ctx,
+    PAD,
+    footY,
+    W - PAD * 2,
+    FOOTER,
+    [0, 0, 10, 10],
+    'rgba(0,0,0,0.2)',
+  );
 
-  ctx.font = 'bold 16px GoogleSans';
+  ctx.font = 'bold 15px GoogleSans';
   ctx.textAlign = 'left';
   ctx.fillStyle = '#22c55e';
-  ctx.fillText(`✅ ${data.hitsCount} cartes`, PAD + 20, footY + 26);
+  ctx.fillText(`${data.hitsCount} cartes`, PAD + 20, footY + 24);
   ctx.fillStyle = '#6b7280';
-  ctx.fillText(`💨 ${data.missCount} ratés`, PAD + 160, footY + 26);
+  ctx.fillText(`${data.missCount} rat\u00e9s`, PAD + 140, footY + 24);
 
   ctx.textAlign = 'right';
-  ctx.fillStyle = 'rgba(255,255,255,0.6)';
+  ctx.fillStyle = '#b4530990';
   ctx.font = 'bold 14px GoogleSans';
   ctx.fillText(
-    `💰 ${data.balance.toLocaleString('fr-FR')} 🪙`,
+    `${data.balance.toLocaleString('fr-FR')} coins`,
     W - PAD - 20,
-    footY + 26,
+    footY + 24,
   );
 
   ctx.textAlign = 'center';
   ctx.font = '11px GoogleSans';
-  ctx.fillStyle = 'rgba(251,191,36,0.4)';
-  ctx.fillText('Économie : 50🪙 vs tirages individuels', W / 2, footY + 48);
+  ctx.fillStyle = 'rgba(180,83,9,0.35)';
+  ctx.fillText(
+    '\u00c9conomie : 50 coins vs tirages individuels',
+    W / 2,
+    footY + 46,
+  );
 
   return canvas.toBuffer('image/png');
 }
