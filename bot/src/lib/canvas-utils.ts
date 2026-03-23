@@ -1540,8 +1540,117 @@ const GEN_COLORS: Record<string, string> = {
   BURST_GT: '#22c55e',
 };
 
+/** Draw holographic foil overlay — rainbow conic gradient, screen-blended */
+function drawHoloFoil(
+  ctx: CanvasCtx,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  intensity: number,
+) {
+  ctx.save();
+  ctx.globalCompositeOperation = 'screen';
+  ctx.globalAlpha = intensity;
+  const holo = ctx.createConicGradient(0, x + w / 2, y + h / 2);
+  holo.addColorStop(0, '#ff000040');
+  holo.addColorStop(0.12, '#ff880040');
+  holo.addColorStop(0.25, '#ffff0040');
+  holo.addColorStop(0.37, '#00ff0040');
+  holo.addColorStop(0.5, '#00ffff40');
+  holo.addColorStop(0.62, '#0044ff40');
+  holo.addColorStop(0.75, '#8800ff40');
+  holo.addColorStop(0.87, '#ff00ff40');
+  holo.addColorStop(1, '#ff000040');
+  ctx.fillStyle = holo;
+  ctx.beginPath();
+  ctx.roundRect(x, y, w, h, 4);
+  ctx.fill();
+  ctx.restore();
+}
+
+/** Draw holographic seal stamp */
+function drawHoloSeal(
+  ctx: CanvasCtx,
+  cx: number,
+  cy: number,
+  radius: number,
+  color: string,
+) {
+  // Rainbow ring
+  ctx.save();
+  const sealHolo = ctx.createConicGradient(0, cx, cy);
+  sealHolo.addColorStop(0, '#ef4444');
+  sealHolo.addColorStop(0.2, '#f59e0b');
+  sealHolo.addColorStop(0.4, '#22c55e');
+  sealHolo.addColorStop(0.6, '#3b82f6');
+  sealHolo.addColorStop(0.8, '#a855f7');
+  sealHolo.addColorStop(1, '#ef4444');
+  ctx.strokeStyle = sealHolo;
+  ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+  ctx.stroke();
+  // Inner fill
+  ctx.fillStyle = `${color}30`;
+  ctx.beginPath();
+  ctx.arc(cx, cy, radius - 2, 0, Math.PI * 2);
+  ctx.fill();
+  // Text
+  ctx.font = 'bold 9px GoogleSans';
+  ctx.fillStyle = color;
+  ctx.textAlign = 'center';
+  ctx.fillText('RPB', cx, cy + 3);
+  ctx.restore();
+}
+
+/** Draw Battle Edge — row of 6 colored diamonds */
+function drawBattleEdge(
+  ctx: CanvasCtx,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  genColor: string,
+  glowStars: number,
+) {
+  // Background bar
+  ctx.fillStyle = 'rgba(0,0,0,0.5)';
+  ctx.beginPath();
+  ctx.roundRect(x, y, w, h, [8, 8, 0, 0]);
+  ctx.fill();
+  const edgeColors = [
+    '#ef4444',
+    '#f59e0b',
+    '#22c55e',
+    '#3b82f6',
+    '#a855f7',
+    genColor,
+  ];
+  const dSize = 7;
+  const gap = w / 7;
+  for (let i = 0; i < 6; i++) {
+    const dx = x + gap * (i + 1);
+    const dy = y + h / 2;
+    ctx.fillStyle = edgeColors[i]!;
+    ctx.beginPath();
+    ctx.moveTo(dx, dy - dSize);
+    ctx.lineTo(dx + dSize, dy);
+    ctx.lineTo(dx, dy + dSize);
+    ctx.lineTo(dx - dSize, dy);
+    ctx.closePath();
+    ctx.fill();
+    if (glowStars >= 3) {
+      ctx.shadowColor = edgeColors[i]!;
+      ctx.shadowBlur = 5;
+      ctx.fill();
+      ctx.shadowBlur = 0;
+    }
+  }
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
-// TCG CARD — Full-size single pull (v3 — Pokémon TCG-inspired layout)
+// TCG CARD — Full-size single pull (v4 — Holo foil + Battle Edge + Full-Art)
 // ─────────────────────────────────────────────────────────────────────────────
 
 export async function generateGachaCard(data: GachaCardData): Promise<Buffer> {
@@ -1560,37 +1669,82 @@ export async function generateGachaCard(data: GachaCardData): Promise<Buffer> {
     ELEMENT_ICONS.NEUTRAL!;
   const weakness = ELEMENT_WEAKNESS[(data.element || '').toUpperCase()];
   const weakElem = weakness ? ELEMENT_ICONS[weakness] : null;
+  const isSecret = data.rarity === 'SECRET';
+  const isLegendary = data.rarity === 'LEGENDARY';
+  const isHighRarity = ['SUPER_RARE', 'LEGENDARY', 'SECRET'].includes(
+    data.rarity,
+  );
 
   // ══════════════════════════════════════════════════════════════════════════
-  // 1. CARD BACKGROUND — Light parchment with element tint
+  // 1. CARD BACKGROUND
+  // Secret = full-art dark bleed, others = light parchment
   // ══════════════════════════════════════════════════════════════════════════
-  const bgGrad = ctx.createLinearGradient(0, 0, W * 0.4, H);
-  bgGrad.addColorStop(0, theme.bgGradient[0]);
-  bgGrad.addColorStop(0.5, theme.bgGradient[1]);
-  bgGrad.addColorStop(1, theme.bgGradient[2]);
-  ctx.fillStyle = bgGrad;
-  ctx.fillRect(0, 0, W, H);
+  if (isSecret) {
+    ctx.fillStyle = '#08060a';
+    ctx.fillRect(0, 0, W, H);
+  } else {
+    const bgGrad = ctx.createLinearGradient(0, 0, W * 0.4, H);
+    bgGrad.addColorStop(0, theme.bgGradient[0]);
+    bgGrad.addColorStop(0.5, theme.bgGradient[1]);
+    bgGrad.addColorStop(1, theme.bgGradient[2]);
+    ctx.fillStyle = bgGrad;
+    ctx.fillRect(0, 0, W, H);
+  }
 
-  // Subtle element-tinted radial glow behind art area
+  // Element-tinted radial glow
   const elemGlow = ctx.createRadialGradient(W / 2, 300, 20, W / 2, 300, 320);
-  elemGlow.addColorStop(0, `${elem.color}12`);
+  elemGlow.addColorStop(0, `${elem.color}${isSecret ? '20' : '12'}`);
   elemGlow.addColorStop(1, 'transparent');
   ctx.fillStyle = elemGlow;
   ctx.fillRect(0, 0, W, H);
 
-  // Light rays for legendary/secret
-  if (data.rarity === 'LEGENDARY' || data.rarity === 'SECRET') {
-    drawLightRays(ctx, W, H, `${theme.accentColor}18`, 5);
+  if (isLegendary || isSecret) {
+    drawLightRays(
+      ctx,
+      W,
+      H,
+      `${theme.accentColor}${isSecret ? '25' : '18'}`,
+      isSecret ? 7 : 5,
+    );
   }
 
   drawNoise(ctx, W, H, 0.015);
 
   // ══════════════════════════════════════════════════════════════════════════
+  // 1b. SECRET FULL-ART BLEED — character art behind everything
+  // ══════════════════════════════════════════════════════════════════════════
+  let charImg = await _loadImageNoWhiteBg(data.imageUrl || null);
+  if (isSecret && charImg) {
+    ctx.save();
+    ctx.beginPath();
+    ctx.roundRect(FRAME, FRAME, W - FRAME * 2, H - FRAME * 2, 16);
+    ctx.clip();
+    const aspect = charImg.width / charImg.height;
+    let dW = W,
+      dH = H;
+    if (aspect > W / H) {
+      dH = W / aspect;
+    } else {
+      dW = H * aspect;
+    }
+    ctx.drawImage(charImg, (W - dW) / 2, (H - dH) / 2, dW, dH);
+    // Dark overlay for text readability
+    const overlay = ctx.createLinearGradient(0, 0, 0, H);
+    overlay.addColorStop(0, 'rgba(8,6,10,0.4)');
+    overlay.addColorStop(0.35, 'rgba(8,6,10,0.15)');
+    overlay.addColorStop(0.55, 'rgba(8,6,10,0.1)');
+    overlay.addColorStop(0.75, 'rgba(8,6,10,0.55)');
+    overlay.addColorStop(1, 'rgba(8,6,10,0.85)');
+    ctx.fillStyle = overlay;
+    ctx.fillRect(0, 0, W, H);
+    ctx.restore();
+  }
+
+  // ══════════════════════════════════════════════════════════════════════════
   // 2. OUTER FRAME — Thick ornate border with rarity gradient
   // ══════════════════════════════════════════════════════════════════════════
   ctx.shadowColor = theme.glowColor;
-  ctx.shadowBlur =
-    data.rarity === 'LEGENDARY' || data.rarity === 'SECRET' ? 40 : 20;
+  ctx.shadowBlur = isLegendary || isSecret ? 40 : 20;
   const frameGrad = ctx.createLinearGradient(0, 0, W, H);
   frameGrad.addColorStop(0, theme.borderGradient[0]);
   frameGrad.addColorStop(0.3, theme.borderGradient[1]);
@@ -1603,17 +1757,29 @@ export async function generateGachaCard(data: GachaCardData): Promise<Buffer> {
   ctx.stroke();
   ctx.shadowBlur = 0;
 
+  // Holographic rainbow foil overlay for SR+
+  if (isHighRarity) {
+    drawHoloFoil(ctx, 0, 0, W, H, isSecret ? 0.35 : isLegendary ? 0.25 : 0.15);
+  }
+
   // Inner frame line
-  ctx.strokeStyle = `${theme.frameColor}40`;
+  ctx.strokeStyle = `${theme.frameColor}${isSecret ? '60' : '40'}`;
   ctx.lineWidth = 1.5;
   ctx.beginPath();
   ctx.roundRect(FRAME + 4, FRAME + 4, W - FRAME * 2 - 8, H - FRAME * 2 - 8, 16);
   ctx.stroke();
 
   // ══════════════════════════════════════════════════════════════════════════
+  // 2b. BATTLE EDGE — 6 colored diamonds (iconic Beyblade TCG element)
+  // ══════════════════════════════════════════════════════════════════════════
+  const beY = PAD + 2;
+  const beH = 22;
+  drawBattleEdge(ctx, PAD, beY, INNER_W, beH, genColor, theme.stars);
+
+  // ══════════════════════════════════════════════════════════════════════════
   // 3. NAME HEADER BAR — Element icon + Name + HP
   // ══════════════════════════════════════════════════════════════════════════
-  const headerY = PAD + 2;
+  const headerY = beY + beH + 2;
   const headerH = 52;
 
   // Dark header background with gen color tint
@@ -1714,8 +1880,8 @@ export async function generateGachaCard(data: GachaCardData): Promise<Buffer> {
     2,
   );
 
-  // Character image
-  const charImg = await _loadImageNoWhiteBg(data.imageUrl || null);
+  // Character image (may already be loaded for Secret full-art bleed)
+  if (!charImg) charImg = await _loadImageNoWhiteBg(data.imageUrl || null);
   if (charImg) {
     ctx.save();
     ctx.beginPath();
@@ -1767,7 +1933,7 @@ export async function generateGachaCard(data: GachaCardData): Promise<Buffer> {
   }
 
   // Inner art frame highlight (metallic for high rarity)
-  if (['SUPER_RARE', 'LEGENDARY', 'SECRET'].includes(data.rarity)) {
+  if (isHighRarity) {
     const innerFrameGrad = ctx.createLinearGradient(
       artX,
       artY,
@@ -1783,6 +1949,10 @@ export async function generateGachaCard(data: GachaCardData): Promise<Buffer> {
     ctx.beginPath();
     ctx.roundRect(artX, artY, artInnerW, artH, 4);
     ctx.stroke();
+    // Holo foil shimmer on art window for Legendary/Secret
+    if (isLegendary || isSecret) {
+      drawHoloFoil(ctx, artX, artY, artInnerW, artH, isSecret ? 0.2 : 0.12);
+    }
   }
 
   // ══════════════════════════════════════════════════════════════════════════
@@ -1799,6 +1969,11 @@ export async function generateGachaCard(data: GachaCardData): Promise<Buffer> {
   ctx.roundRect(PAD, typeY, INNER_W, typeH, 3);
   ctx.fill();
 
+  // Text colors adapt: Secret = light on dark, others = dark on light
+  const textDark = isSecret ? '#e0dcd4' : '#3d3528';
+  const textMuted = isSecret ? '#a09888' : '#4a4438';
+  const textSubtle = isSecret ? '#807868' : '#6b5e50';
+
   ctx.font = 'bold 12px GoogleSans';
   ctx.textAlign = 'left';
   ctx.fillStyle = genColor;
@@ -1806,7 +1981,7 @@ export async function generateGachaCard(data: GachaCardData): Promise<Buffer> {
 
   if (data.beyblade) {
     ctx.textAlign = 'right';
-    ctx.fillStyle = '#3d3528';
+    ctx.fillStyle = textDark;
     ctx.font = 'bold 12px GoogleSans';
     let bey = data.beyblade;
     while (ctx.measureText(bey).width > INNER_W * 0.5 && bey.length > 12)
@@ -1845,7 +2020,7 @@ export async function generateGachaCard(data: GachaCardData): Promise<Buffer> {
     // Attack name
     ctx.textAlign = 'left';
     ctx.font = 'bold 18px GoogleSans';
-    ctx.fillStyle = '#1a1510';
+    ctx.fillStyle = textDark;
     const atkLabelX = costX + Math.min(theme.stars, 4) * 22 + 8;
     if (data.specialMove) {
       let moveName = data.specialMove;
@@ -1862,14 +2037,14 @@ export async function generateGachaCard(data: GachaCardData): Promise<Buffer> {
       const dmg = Math.round(data.atk! * 1.2);
       ctx.textAlign = 'right';
       ctx.font = 'bold 24px GoogleSans';
-      ctx.fillStyle = '#1a1510';
+      ctx.fillStyle = textDark;
       ctx.fillText(`${dmg}`, W - PAD - 14, atkNameY + 4);
     }
 
     // Description text
     if (data.description) {
       ctx.font = '11px GoogleSans';
-      ctx.fillStyle = '#4a4438';
+      ctx.fillStyle = textMuted;
       ctx.textAlign = 'left';
       const words = data.description.split(' ');
       let descLine = '';
@@ -1914,7 +2089,7 @@ export async function generateGachaCard(data: GachaCardData): Promise<Buffer> {
 
       // Label
       ctx.font = 'bold 13px GoogleSans';
-      ctx.fillStyle = '#4a4438';
+      ctx.fillStyle = textMuted;
       ctx.textAlign = 'left';
       ctx.fillText(s.label, PAD + 12, by + 11);
 
@@ -1973,7 +2148,7 @@ export async function generateGachaCard(data: GachaCardData): Promise<Buffer> {
 
   // Weakness
   if (weakElem) {
-    ctx.fillStyle = '#6b5e50';
+    ctx.fillStyle = textSubtle;
     ctx.fillText('Faiblesse :', PAD + 12, weakY + 16);
     ctx.fillStyle = weakElem.color;
     ctx.font = 'bold 14px GoogleSans, NotoEmoji';
@@ -1987,7 +2162,7 @@ export async function generateGachaCard(data: GachaCardData): Promise<Buffer> {
   const resElem = resistance ? ELEMENT_ICONS[resistance[0]] : null;
   if (resElem) {
     ctx.font = 'bold 12px GoogleSans';
-    ctx.fillStyle = '#6b5e50';
+    ctx.fillStyle = textSubtle;
     ctx.textAlign = 'center';
     ctx.fillText('Résistance :', W / 2 + 20, weakY + 16);
     ctx.fillStyle = resElem.color;
@@ -1998,7 +2173,7 @@ export async function generateGachaCard(data: GachaCardData): Promise<Buffer> {
   // Retreat cost (stars = energy cost)
   ctx.textAlign = 'right';
   ctx.font = 'bold 12px GoogleSans';
-  ctx.fillStyle = '#6b5e50';
+  ctx.fillStyle = textSubtle;
   ctx.fillText('Coût :', W - PAD - 60, weakY + 16);
   ctx.font = 'bold 14px GoogleSans, NotoEmoji';
   ctx.fillStyle = elem.color;
@@ -2007,7 +2182,7 @@ export async function generateGachaCard(data: GachaCardData): Promise<Buffer> {
   ctx.fillText(costStr, W - PAD - 12, weakY + 16);
 
   // ══════════════════════════════════════════════════════════════════════════
-  // 9. FOOTER — Stars, set info, card identifier
+  // 9. FOOTER — Stars, set info, card number, holo seal
   // ══════════════════════════════════════════════════════════════════════════
   const footerY = H - FRAME - 80;
   drawSeparator(ctx, PAD, footerY, INNER_W, theme.frameColor);
@@ -2023,14 +2198,21 @@ export async function generateGachaCard(data: GachaCardData): Promise<Buffer> {
   // Set name
   ctx.textAlign = 'center';
   ctx.font = 'bold 13px GoogleSans';
-  ctx.fillStyle = '#5a5248';
-  ctx.fillText('RPB TCG', W / 2, footerY + 22);
+  ctx.fillStyle = textSubtle;
+  ctx.fillText('RPB TCG \u2022 Drop 1', W / 2, footerY + 22);
 
-  // Card number
+  // Card number (#001/032)
   ctx.textAlign = 'right';
   ctx.font = 'bold 12px GoogleSans';
-  ctx.fillStyle = '#8a7e70';
-  ctx.fillText('Drop 1', W - PAD - 12, footerY + 22);
+  ctx.fillStyle = textSubtle;
+  ctx.fillText('#???/032', W - PAD - 12, footerY + 22);
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // 9b. HOLOGRAPHIC SEAL (Rare+ only)
+  // ══════════════════════════════════════════════════════════════════════════
+  if (isHighRarity) {
+    drawHoloSeal(ctx, W - PAD - 24, footerY + 48, 13, theme.accentColor);
+  }
 
   // ══════════════════════════════════════════════════════════════════════════
   // 10. STATUS BAR — Balance + WISHED/DOUBLON
@@ -2049,7 +2231,7 @@ export async function generateGachaCard(data: GachaCardData): Promise<Buffer> {
 
   ctx.font = 'bold 14px GoogleSans';
   ctx.textAlign = 'left';
-  ctx.fillStyle = '#6b5e50';
+  ctx.fillStyle = textSubtle;
   ctx.fillText(
     `${data.balance.toLocaleString('fr-FR')} coins`,
     PAD + 14,
@@ -2070,7 +2252,7 @@ export async function generateGachaCard(data: GachaCardData): Promise<Buffer> {
       1.5,
     );
     ctx.font = 'bold 12px GoogleSans';
-    ctx.fillStyle = '#b45309';
+    ctx.fillStyle = isSecret ? '#fcd34d' : '#b45309';
     ctx.textAlign = 'center';
     ctx.fillText('WISHED', W - PAD - wishBadgeW / 2 - 8, statusY + 22);
   } else if (data.isDuplicate) {
@@ -2110,7 +2292,7 @@ export async function generateGachaCard(data: GachaCardData): Promise<Buffer> {
     }
   }
 
-  if (['SUPER_RARE', 'LEGENDARY', 'SECRET'].includes(data.rarity)) {
+  if (isHighRarity) {
     ctx.strokeStyle = `${theme.borderColor}50`;
     ctx.lineWidth = 2.5;
     const c = 35;
