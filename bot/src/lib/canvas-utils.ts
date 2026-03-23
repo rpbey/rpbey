@@ -1890,56 +1890,82 @@ export async function generateGachaCard(data: GachaCardData): Promise<Buffer> {
   }
 
   // ══════════════════════════════════════════════════════════════════════════
-  // 7. STATS SECTION — ATK / DEF / SPD horizontal badges
+  // 7. STATS SECTION — Horizontal progress bars (Beyblade TCG style)
   // ══════════════════════════════════════════════════════════════════════════
   const statsY = atkY + atkBoxH + 4;
   drawSeparator(ctx, PAD, statsY - 2, INNER_W, theme.frameColor);
 
+  const STAT_BAR_H = hasStats ? 90 : 0;
   if (hasStats) {
     const statDefs = [
-      { label: 'ATK', val: data.atk!, color: '#dc2626', icon: '\u2694' },
-      { label: 'DEF', val: data.def!, color: '#2563eb', icon: '\uD83D\uDEE1' },
-      { label: 'SPD', val: data.spd!, color: '#0891b2', icon: '\u26A1' },
+      { label: 'ATK', val: data.atk!, max: 142, color: '#dc2626' },
+      { label: 'DEF', val: data.def!, max: 142, color: '#2563eb' },
+      { label: 'SPD', val: data.spd!, max: 142, color: '#0891b2' },
     ];
-    const badgeW = Math.floor((INNER_W - 24) / 3);
-    const badgeH = 42;
-    const badgeGap = 8;
-    const totalBadgesW = badgeW * 3 + badgeGap * 2;
-    const startX = PAD + (INNER_W - totalBadgesW) / 2;
+    const barX = PAD + 56;
+    const barW = INNER_W - 56 - 46;
+    const barH = 14;
+    const rowGap = 26;
 
     for (let i = 0; i < statDefs.length; i++) {
       const s = statDefs[i]!;
-      const bx = startX + i * (badgeW + badgeGap);
-      const by = statsY + 8;
+      const by = statsY + 12 + i * rowGap;
+      const pct = Math.min(s.val / s.max, 1);
 
-      drawBox(
-        ctx,
-        bx,
-        by,
-        badgeW,
-        badgeH,
-        6,
-        `${s.color}12`,
-        `${s.color}35`,
-        1.5,
-      );
-
-      ctx.font = 'bold 12px GoogleSans, NotoEmoji';
-      ctx.fillStyle = `${s.color}90`;
+      // Label
+      ctx.font = 'bold 13px GoogleSans';
+      ctx.fillStyle = '#4a4438';
       ctx.textAlign = 'left';
-      ctx.fillText(`${s.icon} ${s.label}`, bx + 8, by + 17);
+      ctx.fillText(s.label, PAD + 12, by + 11);
 
-      ctx.font = 'bold 22px GoogleSans';
+      // Track background
+      ctx.fillStyle = 'rgba(0,0,0,0.08)';
+      ctx.beginPath();
+      ctx.roundRect(barX, by, barW, barH, 7);
+      ctx.fill();
+      ctx.strokeStyle = `${s.color}25`;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.roundRect(barX, by, barW, barH, 7);
+      ctx.stroke();
+
+      // Fill gradient
+      if (pct > 0) {
+        const fillGrad = ctx.createLinearGradient(
+          barX,
+          0,
+          barX + barW * pct,
+          0,
+        );
+        fillGrad.addColorStop(0, `${s.color}CC`);
+        fillGrad.addColorStop(1, s.color);
+        ctx.fillStyle = fillGrad;
+        ctx.beginPath();
+        ctx.roundRect(barX, by, barW * pct, barH, 7);
+        ctx.fill();
+
+        // Shine highlight on bar
+        const shine = ctx.createLinearGradient(0, by, 0, by + barH);
+        shine.addColorStop(0, 'rgba(255,255,255,0.25)');
+        shine.addColorStop(0.5, 'rgba(255,255,255,0)');
+        ctx.fillStyle = shine;
+        ctx.beginPath();
+        ctx.roundRect(barX, by, barW * pct, barH / 2, [7, 7, 0, 0]);
+        ctx.fill();
+      }
+
+      // Value
+      ctx.font = 'bold 14px GoogleSans';
       ctx.fillStyle = s.color;
       ctx.textAlign = 'right';
-      ctx.fillText(`${s.val}`, bx + badgeW - 10, by + 33);
+      ctx.fillText(`${s.val}`, W - PAD - 10, by + 12);
     }
   }
 
   // ══════════════════════════════════════════════════════════════════════════
   // 8. WEAKNESS / RESISTANCE ROW
   // ══════════════════════════════════════════════════════════════════════════
-  const weakY = hasStats ? statsY + 62 : statsY + 10;
+  const weakY = hasStats ? statsY + STAT_BAR_H + 4 : statsY + 10;
   drawSeparator(ctx, PAD, weakY - 2, INNER_W, theme.frameColor);
 
   ctx.font = 'bold 12px GoogleSans';
