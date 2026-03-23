@@ -830,7 +830,8 @@ export class EconomyGroup {
         });
         await interaction.editReply({ files: [attachment] });
       }
-    } catch {
+    } catch (canvasErr) {
+      console.error('[Gacha Pull] Canvas error:', canvasErr);
       // Fallback to embed if canvas fails
       await interaction.editReply({
         embeds: [this.buildPullEmbed(result, bal)],
@@ -908,7 +909,8 @@ export class EconomyGroup {
         const bm = await this.checkBadges(userId, profile.id);
         if (bm) await reply.reply({ content: bm });
       }
-    } catch {
+    } catch (canvasErr) {
+      console.error('[Gacha Multi] Canvas error:', canvasErr);
       // Fallback embed
       const lines = results.map((r) =>
         r.card

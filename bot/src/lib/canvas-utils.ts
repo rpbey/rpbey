@@ -2526,7 +2526,7 @@ export async function generateMultiPullCard(
   ctx.fillStyle = '#6b5e50';
   ctx.fillText('RPB TCG \u2022 Drop 1', W / 2, 66);
 
-  drawSeparator(ctx, PAD, HEADER - 4, W - PAD * 2, '#b4530960');
+  drawSeparator(ctx, PAD, HEADER - 4, W - PAD * 2, '#b45309');
 
   // ── Draw 10 mini TCG cards ──
   for (let i = 0; i < data.slots.length; i++) {
@@ -2754,7 +2754,7 @@ export async function generateMultiPullCard(
 
   // ── Footer ──
   const footY = H - FOOTER - 6;
-  drawSeparator(ctx, PAD, footY - 2, W - PAD * 2, '#b4530940');
+  drawSeparator(ctx, PAD, footY - 2, W - PAD * 2, '#b45309');
   drawBox(
     ctx,
     PAD,
