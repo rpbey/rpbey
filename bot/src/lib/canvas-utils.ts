@@ -2554,11 +2554,70 @@ export async function generateAnimatedGachaCard(
  * Realistic meteor-like fragments falling from space with glowing tails,
  * dust particles, and atmospheric entry glow. No text overlay.
  */
-export async function generateStarFragmentGif(): Promise<Buffer> {
+/**
+ * Rarity → fragment color theme.
+ * LEGENDARY = multicolor rainbow, SUPER_RARE = gold, RARE = violet, COMMON/MISS = white
+ */
+const FRAGMENT_COLORS: Record<
+  string,
+  {
+    hues: number[];
+    saturation: number;
+    lightness: number;
+    size: [number, number];
+    tailLen: [number, number];
+    brightness: [number, number];
+    rainbow?: boolean;
+  }
+> = {
+  LEGENDARY: {
+    hues: [0, 30, 60, 120, 200, 280],
+    saturation: 90,
+    lightness: 80,
+    size: [4, 6],
+    tailLen: [100, 160],
+    brightness: [0.9, 1],
+    rainbow: true,
+  },
+  SUPER_RARE: {
+    hues: [40, 45, 50],
+    saturation: 85,
+    lightness: 75,
+    size: [3, 5],
+    tailLen: [80, 130],
+    brightness: [0.8, 0.95],
+  },
+  RARE: {
+    hues: [270, 280, 290],
+    saturation: 70,
+    lightness: 70,
+    size: [2.5, 4],
+    tailLen: [60, 100],
+    brightness: [0.6, 0.8],
+  },
+  COMMON: {
+    hues: [210, 220],
+    saturation: 15,
+    lightness: 90,
+    size: [1.5, 3],
+    tailLen: [30, 60],
+    brightness: [0.4, 0.65],
+  },
+};
+
+export async function generateStarFragmentGif(
+  rarities?: (string | null)[],
+): Promise<Buffer> {
   const W = 640,
     H = 400;
   const FRAMES = 24;
   const r = (a: number, b: number) => a + Math.random() * (b - a);
+
+  // Resolve 10 rarities (fallback to COMMON if not provided)
+  const slots = Array.from({ length: 10 }, (_, i) => {
+    const raw = rarities?.[i] ?? 'COMMON';
+    return FRAGMENT_COLORS[raw || 'COMMON'] || FRAGMENT_COLORS.COMMON!;
+  });
 
   // Background stars (fixed)
   const STARS = Array.from({ length: 120 }, () => ({
@@ -2569,25 +2628,24 @@ export async function generateStarFragmentGif(): Promise<Buffer> {
     twinkle: 1 + Math.random() * 4,
   }));
 
-  // Meteor fragments — each has a trajectory, speed, size, color
-  const FRAGMENTS = Array.from({ length: 10 }, (_, i) => {
+  // Meteor fragments — colored by rarity
+  const FRAGMENTS = slots.map((color) => {
     const startX = r(W * 0.05, W * 0.95);
     const startY = r(-H * 0.5, -H * 0.1);
-    const angle = r(0.55, 0.85) * Math.PI; // mostly downward
-    const speed = r(0.6, 1.2);
-    const delay = r(0, 0.3); // staggered entry
-    const len = r(300, 600); // travel distance
     return {
       sx: startX,
       sy: startY,
-      angle,
-      speed,
-      delay,
-      len,
-      size: i < 3 ? r(3, 5) : r(1.5, 3), // 3 big, rest smaller
-      tailLen: i < 3 ? r(80, 140) : r(30, 70),
-      hue: r(190, 240), // blue-cyan-white spectrum
-      brightness: i < 3 ? r(0.8, 1) : r(0.4, 0.75),
+      angle: r(0.55, 0.85) * Math.PI,
+      speed: r(0.6, 1.2),
+      delay: r(0, 0.3),
+      len: r(300, 600),
+      size: r(color.size[0], color.size[1]),
+      tailLen: r(color.tailLen[0], color.tailLen[1]),
+      hues: color.hues,
+      saturation: color.saturation,
+      lightness: color.lightness,
+      brightness: r(color.brightness[0], color.brightness[1]),
+      rainbow: color.rainbow ?? false,
     };
   });
 
@@ -2701,17 +2759,42 @@ export async function generateStarFragmentGif(): Promise<Buffer> {
           ? 1
           : Math.max(0, 1 - (headY - H * 0.75) / (H * 0.3)));
 
+      // Pick hue — rainbow cycles through all hues per frame, others use fixed
+      const hue = frag.rainbow
+        ? frag.hues[Math.floor((fragT * 8 + f * 0.5) % frag.hues.length)]!
+        : frag.hues[Math.floor(r(0, frag.hues.length))]!;
+      const sat = frag.saturation;
+      const lit = frag.lightness;
+
       // Outer glow trail (wide, faint)
       const tailGrad = ctx.createLinearGradient(tailX, tailY, headX, headY);
       tailGrad.addColorStop(0, 'rgba(0,0,0,0)');
-      tailGrad.addColorStop(0.3, `hsla(${frag.hue},70%,70%,${alpha * 0.15})`);
-      tailGrad.addColorStop(1, `hsla(${frag.hue},60%,85%,${alpha * 0.4})`);
+      if (frag.rainbow) {
+        // Rainbow gradient along the tail
+        const rh = frag.hues;
+        for (let ci = 0; ci < rh.length; ci++) {
+          const stop = 0.3 + (ci / rh.length) * 0.7;
+          tailGrad.addColorStop(
+            stop,
+            `hsla(${rh[ci]},${sat}%,${lit}%,${alpha * 0.2})`,
+          );
+        }
+      } else {
+        tailGrad.addColorStop(
+          0.3,
+          `hsla(${hue},${sat}%,${lit}%,${alpha * 0.15})`,
+        );
+        tailGrad.addColorStop(
+          1,
+          `hsla(${hue},${sat - 10}%,${lit + 10}%,${alpha * 0.4})`,
+        );
+      }
       ctx.save();
       ctx.strokeStyle = tailGrad;
       ctx.lineWidth = frag.size * 5;
       ctx.lineCap = 'round';
-      ctx.shadowColor = `hsla(${frag.hue},80%,70%,0.6)`;
-      ctx.shadowBlur = 15;
+      ctx.shadowColor = `hsla(${hue},${sat}%,${lit}%,0.6)`;
+      ctx.shadowBlur = frag.rainbow ? 25 : 15;
       ctx.beginPath();
       ctx.moveTo(tailX, tailY);
       ctx.lineTo(headX, headY);
@@ -2721,8 +2804,14 @@ export async function generateStarFragmentGif(): Promise<Buffer> {
       // Main colored trail
       const mainGrad = ctx.createLinearGradient(tailX, tailY, headX, headY);
       mainGrad.addColorStop(0, 'rgba(0,0,0,0)');
-      mainGrad.addColorStop(0.5, `hsla(${frag.hue},50%,88%,${alpha * 0.5})`);
-      mainGrad.addColorStop(1, `hsla(${frag.hue},40%,95%,${alpha * 0.8})`);
+      mainGrad.addColorStop(
+        0.5,
+        `hsla(${hue},${sat - 20}%,${lit + 10}%,${alpha * 0.5})`,
+      );
+      mainGrad.addColorStop(
+        1,
+        `hsla(${hue},${sat - 30}%,${Math.min(lit + 20, 95)}%,${alpha * 0.8})`,
+      );
       ctx.save();
       ctx.strokeStyle = mainGrad;
       ctx.lineWidth = frag.size * 1.5;
@@ -2739,8 +2828,8 @@ export async function generateStarFragmentGif(): Promise<Buffer> {
       ctx.save();
       ctx.globalAlpha = alpha;
       ctx.fillStyle = '#ffffff';
-      ctx.shadowColor = `hsla(${frag.hue},80%,85%,1)`;
-      ctx.shadowBlur = frag.size * 6;
+      ctx.shadowColor = `hsla(${hue},${sat}%,${lit + 5}%,1)`;
+      ctx.shadowBlur = frag.size * (frag.rainbow ? 10 : 6);
       ctx.beginPath();
       ctx.arc(headX, headY, frag.size * 0.8, 0, Math.PI * 2);
       ctx.fill();
@@ -2798,7 +2887,8 @@ export async function generateStarFragmentGif(): Promise<Buffer> {
       const dustAlpha = d.alpha * Math.max(0, 1 - fragT * d.decay);
       ctx.save();
       ctx.globalAlpha = dustAlpha;
-      ctx.fillStyle = `hsla(${frag.hue},40%,80%,1)`;
+      const dHue = frag.hues[Math.floor(Math.random() * frag.hues.length)]!;
+      ctx.fillStyle = `hsla(${dHue},${frag.saturation * 0.6}%,${frag.lightness + 5}%,1)`;
       ctx.beginPath();
       ctx.arc(px, py, d.size, 0, Math.PI * 2);
       ctx.fill();

@@ -923,13 +923,11 @@ export class EconomyGroup {
       },
     });
 
-    // Pull cards while generating animation in parallel
     const { generateStarFragmentGif, generateMultiPullCard } = await import(
       '../../lib/canvas-utils.js'
     );
 
-    // Start animation + pulls in parallel
-    const animPromise = generateStarFragmentGif().catch(() => null);
+    // Pull cards first to know rarities
     const results: PullResult[] = [];
     for (let i = 0; i < MULTI_PULL_COUNT; i++)
       results.push(await this.pullCard(userId, profile.id));
@@ -938,8 +936,9 @@ export class EconomyGroup {
     const misses = results.filter((r) => !r.card);
     const bal = profile.currency - MULTI_PULL_COST;
 
-    // Send Star Fragment animation first
-    const animBuf = await animPromise;
+    // Generate Star Fragment animation colored by pull rarities
+    const rarities = results.map((r) => r.rarity);
+    const animBuf = await generateStarFragmentGif(rarities).catch(() => null);
     if (animBuf) {
       const animAttachment = new AttachmentBuilder(animBuf, {
         name: 'invocation.gif',
