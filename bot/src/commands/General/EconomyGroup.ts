@@ -923,6 +923,22 @@ export class EconomyGroup {
       },
     });
 
+    // Send Star Fragment summoning animation first
+    try {
+      const { generateStarFragmentGif } = await import(
+        '../../lib/canvas-utils.js'
+      );
+      const animBuf = await generateStarFragmentGif();
+      const animAttachment = new AttachmentBuilder(animBuf, {
+        name: 'invocation.gif',
+      });
+      await interaction.editReply({ files: [animAttachment] });
+      // Wait for animation to play (~1.5s)
+      await new Promise((r) => setTimeout(r, 1500));
+    } catch {
+      // Animation failed — continue without it
+    }
+
     const results: PullResult[] = [];
     for (let i = 0; i < MULTI_PULL_COUNT; i++)
       results.push(await this.pullCard(userId, profile.id));

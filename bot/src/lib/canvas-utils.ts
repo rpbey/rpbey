@@ -138,6 +138,26 @@ async function _loadImageNoWhiteBg(
   }
 }
 
+/** Load image directly without white background removal */
+async function _loadImageDirect(
+  url: string | null,
+): Promise<CanvasImage | null> {
+  if (!url) return null;
+  try {
+    let source: string | Buffer = url;
+    if (url.startsWith('/')) {
+      source = getAssetPath(`public${url}`);
+    }
+    if (typeof source === 'string' && source.startsWith('http')) {
+      const res = await fetch(source);
+      source = Buffer.from(await res.arrayBuffer());
+    }
+    return await loadImage(source);
+  } catch (_e) {
+    return null;
+  }
+}
+
 export async function generateWelcomeImage(
   displayName: string,
   avatarUrl: string,
@@ -1300,12 +1320,20 @@ export interface GachaCardData {
   isDuplicate: boolean;
   isWished: boolean;
   balance: number;
-  atk?: number;
+  att?: number;
   def?: number;
-  spd?: number;
-  hp?: number;
+  end?: number;
+  equilibre?: number;
   element?: string | null;
-  specialMove?: string | null;
+  fullArt?: boolean;
+  artist?: string | null;
+  beybladeImageUrl?: string | null;
+  themeOverride?: {
+    headerBg?: string;
+    borderColor?: string;
+    accentColor?: string;
+    frameColor?: string;
+  };
 }
 
 const ELEMENT_ICONS: Record<
@@ -1605,7 +1633,7 @@ function drawHoloSeal(
 }
 
 /** Draw Battle Edge — row of 6 colored diamonds */
-function drawBattleEdge(
+function _drawBattleEdge(
   ctx: CanvasCtx,
   x: number,
   y: number,
@@ -1661,125 +1689,140 @@ export async function generateGachaCard(data: GachaCardData): Promise<Buffer> {
   const INNER_W = W - PAD * 2;
   const canvas = createCanvas(W, H);
   const ctx = canvas.getContext('2d');
-  const theme = RARITY_THEMES[data.rarity] || RARITY_THEMES.COMMON!;
-  const hasStats = data.atk != null;
+  const baseTheme = RARITY_THEMES[data.rarity] || RARITY_THEMES.COMMON!;
+  const theme = data.themeOverride
+    ? { ...baseTheme, ...data.themeOverride }
+    : baseTheme;
+  const hasStats = data.att != null;
   const genColor = GEN_COLORS[data.series.toUpperCase()] || theme.accentColor;
   const elem =
     ELEMENT_ICONS[(data.element || 'NEUTRAL').toUpperCase()] ||
     ELEMENT_ICONS.NEUTRAL!;
   const weakness = ELEMENT_WEAKNESS[(data.element || '').toUpperCase()];
-  const weakElem = weakness ? ELEMENT_ICONS[weakness] : null;
+  const _weakElem = weakness ? ELEMENT_ICONS[weakness] : null;
   const isSecret = data.rarity === 'SECRET';
+  const isFullArt = data.fullArt || isSecret;
   const isLegendary = data.rarity === 'LEGENDARY';
   const isHighRarity = ['SUPER_RARE', 'LEGENDARY', 'SECRET'].includes(
     data.rarity,
   );
 
   // ══════════════════════════════════════════════════════════════════════════
-  // 1. CARD BACKGROUND
-  // Secret = full-art dark bleed, others = light parchment
+  // 1. CARD BACKGROUND — Grey base + white text zone
   // ══════════════════════════════════════════════════════════════════════════
-  if (isSecret) {
+  if (isFullArt) {
     ctx.fillStyle = '#08060a';
     ctx.fillRect(0, 0, W, H);
   } else {
-    const bgGrad = ctx.createLinearGradient(0, 0, W * 0.4, H);
-    bgGrad.addColorStop(0, theme.bgGradient[0]);
-    bgGrad.addColorStop(0.5, theme.bgGradient[1]);
-    bgGrad.addColorStop(1, theme.bgGradient[2]);
+    // Grey background
+    const bgGrad = ctx.createLinearGradient(0, 0, 0, H);
+    bgGrad.addColorStop(0, '#e5e7eb');
+    bgGrad.addColorStop(0.5, '#d1d5db');
+    bgGrad.addColorStop(1, '#c8cbd0');
     ctx.fillStyle = bgGrad;
     ctx.fillRect(0, 0, W, H);
   }
 
-  // Element-tinted radial glow
-  const elemGlow = ctx.createRadialGradient(W / 2, 300, 20, W / 2, 300, 320);
-  elemGlow.addColorStop(0, `${elem.color}${isSecret ? '20' : '12'}`);
-  elemGlow.addColorStop(1, 'transparent');
-  ctx.fillStyle = elemGlow;
-  ctx.fillRect(0, 0, W, H);
+  // Element-tinted radial glow (non full-art only)
+  if (!isFullArt) {
+    const elemGlow = ctx.createRadialGradient(W / 2, 300, 20, W / 2, 300, 320);
+    elemGlow.addColorStop(0, `${elem.color}12`);
+    elemGlow.addColorStop(1, 'transparent');
+    ctx.fillStyle = elemGlow;
+    ctx.fillRect(0, 0, W, H);
 
-  if (isLegendary || isSecret) {
-    drawLightRays(
-      ctx,
-      W,
-      H,
-      `${theme.accentColor}${isSecret ? '25' : '18'}`,
-      isSecret ? 7 : 5,
-    );
+    if (isLegendary) {
+      drawLightRays(ctx, W, H, theme.accentColor, 5);
+    }
+
+    drawNoise(ctx, W, H, 0.015);
   }
 
-  drawNoise(ctx, W, H, 0.015);
-
   // ══════════════════════════════════════════════════════════════════════════
-  // 1b. SECRET FULL-ART BLEED — character art behind everything
+  // 1b. FULL-ART BLEED — character art behind everything (contain-fit)
   // ══════════════════════════════════════════════════════════════════════════
-  let charImg = await _loadImageNoWhiteBg(data.imageUrl || null);
-  if (isSecret && charImg) {
+  let charImg = isFullArt
+    ? await _loadImageDirect(data.imageUrl || null)
+    : await _loadImageNoWhiteBg(data.imageUrl || null);
+  if (isFullArt && charImg) {
     ctx.save();
     ctx.beginPath();
-    ctx.roundRect(FRAME, FRAME, W - FRAME * 2, H - FRAME * 2, 16);
+    ctx.roundRect(FRAME, FRAME, W - FRAME * 2, H - FRAME * 2, 24);
     ctx.clip();
+    // Fill full card height, center horizontally (no black gap at bottom)
     const aspect = charImg.width / charImg.height;
-    let dW = W,
-      dH = H;
-    if (aspect > W / H) {
-      dH = W / aspect;
-    } else {
-      dW = H * aspect;
-    }
-    ctx.drawImage(charImg, (W - dW) / 2, (H - dH) / 2, dW, dH);
-    // Dark overlay for text readability
+    const dH = H;
+    const dW = H * aspect;
+    ctx.drawImage(charImg, (W - dW) / 2, 0, dW, dH);
+    // Dark overlay for text readability (stronger at bottom for stats)
     const overlay = ctx.createLinearGradient(0, 0, 0, H);
-    overlay.addColorStop(0, 'rgba(8,6,10,0.4)');
-    overlay.addColorStop(0.35, 'rgba(8,6,10,0.15)');
-    overlay.addColorStop(0.55, 'rgba(8,6,10,0.1)');
-    overlay.addColorStop(0.75, 'rgba(8,6,10,0.55)');
-    overlay.addColorStop(1, 'rgba(8,6,10,0.85)');
+    overlay.addColorStop(0, 'rgba(8,6,10,0.25)');
+    overlay.addColorStop(0.4, 'rgba(8,6,10,0.08)');
+    overlay.addColorStop(0.6, 'rgba(8,6,10,0.08)');
+    overlay.addColorStop(0.78, 'rgba(8,6,10,0.5)');
+    overlay.addColorStop(1, 'rgba(8,6,10,0.88)');
     ctx.fillStyle = overlay;
     ctx.fillRect(0, 0, W, H);
     ctx.restore();
   }
 
   // ══════════════════════════════════════════════════════════════════════════
-  // 2. OUTER FRAME — Thick ornate border with rarity gradient
+  // 2. OUTER FRAME — Rounded grey border with wave effect
   // ══════════════════════════════════════════════════════════════════════════
-  ctx.shadowColor = theme.glowColor;
-  ctx.shadowBlur = isLegendary || isSecret ? 40 : 20;
-  const frameGrad = ctx.createLinearGradient(0, 0, W, H);
-  frameGrad.addColorStop(0, theme.borderGradient[0]);
-  frameGrad.addColorStop(0.3, theme.borderGradient[1]);
-  frameGrad.addColorStop(0.7, theme.borderGradient[2]);
-  frameGrad.addColorStop(1, theme.borderGradient[1]);
-  ctx.strokeStyle = frameGrad;
+  const CORNER_R = 28;
+
+  // Grey border base
+  ctx.strokeStyle = '#9ca3af';
   ctx.lineWidth = FRAME;
   ctx.beginPath();
-  ctx.roundRect(FRAME / 2, FRAME / 2, W - FRAME, H - FRAME, 20);
+  ctx.roundRect(FRAME / 2, FRAME / 2, W - FRAME, H - FRAME, CORNER_R);
   ctx.stroke();
-  ctx.shadowBlur = 0;
 
-  // Holographic rainbow foil overlay for SR+
-  if (isHighRarity) {
+  // Wave texture on border only (clipped to border strip)
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(0, 0, W, FRAME);
+  ctx.rect(0, H - FRAME, W, FRAME);
+  ctx.rect(0, 0, FRAME, H);
+  ctx.rect(W - FRAME, 0, FRAME, H);
+  ctx.clip();
+  ctx.globalAlpha = 0.18;
+  for (let wave = 0; wave < 6; wave++) {
+    const waveY0 = wave * (H / 5);
+    ctx.strokeStyle = wave % 2 === 0 ? '#6b7280' : '#b0b5bc';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    for (let x = 0; x <= W; x += 2) {
+      const y = waveY0 + Math.sin((x / W) * Math.PI * 4 + wave * 1.2) * 6;
+      if (x === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+  }
+  ctx.restore();
+
+  // Inner frame line (rounded)
+  ctx.strokeStyle = `${theme.frameColor}40`;
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.roundRect(
+    FRAME + 4,
+    FRAME + 4,
+    W - FRAME * 2 - 8,
+    H - FRAME * 2 - 8,
+    CORNER_R - 4,
+  );
+  ctx.stroke();
+
+  // Holographic rainbow foil overlay for SR+ (non full-art only)
+  if (isHighRarity && !isFullArt) {
     drawHoloFoil(ctx, 0, 0, W, H, isSecret ? 0.35 : isLegendary ? 0.25 : 0.15);
   }
 
-  // Inner frame line
-  ctx.strokeStyle = `${theme.frameColor}${isSecret ? '60' : '40'}`;
-  ctx.lineWidth = 1.5;
-  ctx.beginPath();
-  ctx.roundRect(FRAME + 4, FRAME + 4, W - FRAME * 2 - 8, H - FRAME * 2 - 8, 16);
-  ctx.stroke();
-
   // ══════════════════════════════════════════════════════════════════════════
-  // 2b. BATTLE EDGE — 6 colored diamonds (iconic Beyblade TCG element)
+  // 3. NAME HEADER BAR — Beyblade name + Character name + ÉQU
   // ══════════════════════════════════════════════════════════════════════════
-  const beY = PAD + 2;
-  const beH = 22;
-  drawBattleEdge(ctx, PAD, beY, INNER_W, beH, genColor, theme.stars);
-
-  // ══════════════════════════════════════════════════════════════════════════
-  // 3. NAME HEADER BAR — Element icon + Name + HP
-  // ══════════════════════════════════════════════════════════════════════════
-  const headerY = beY + beH + 2;
+  const headerY = FRAME;
   const headerH = 52;
 
   // Dark header background with gen color tint
@@ -1797,20 +1840,40 @@ export async function generateGachaCard(data: GachaCardData): Promise<Buffer> {
   ctx.roundRect(PAD, headerY, INNER_W, headerH, [10, 10, 0, 0]);
   ctx.fill();
 
-  // Element circle icon
-  const elemCircleX = PAD + 28;
-  const elemCircleY = headerY + headerH / 2;
-  ctx.beginPath();
-  ctx.arc(elemCircleX, elemCircleY, 16, 0, Math.PI * 2);
-  ctx.fillStyle = `${elem.color}40`;
-  ctx.fill();
-  ctx.strokeStyle = elem.color;
-  ctx.lineWidth = 2;
-  ctx.stroke();
-  ctx.font = 'bold 16px GoogleSans, NotoEmoji';
-  ctx.textAlign = 'center';
-  ctx.fillStyle = '#ffffff';
-  ctx.fillText(elem.symbol, elemCircleX, elemCircleY + 6);
+  // Beyblade image icon (left of character name)
+  let nameX = PAD + 12;
+  const beyImg = await _loadImageDirect(data.beybladeImageUrl || null);
+  if (beyImg) {
+    const iconSize = 42;
+    const iconX = PAD + 8;
+    const iconY = headerY + (headerH - iconSize) / 2;
+    // Circle clip for beyblade icon
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(
+      iconX + iconSize / 2,
+      iconY + iconSize / 2,
+      iconSize / 2,
+      0,
+      Math.PI * 2,
+    );
+    ctx.clip();
+    ctx.drawImage(beyImg, iconX, iconY, iconSize, iconSize);
+    ctx.restore();
+    // Thin border around icon
+    ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.arc(
+      iconX + iconSize / 2,
+      iconY + iconSize / 2,
+      iconSize / 2,
+      0,
+      Math.PI * 2,
+    );
+    ctx.stroke();
+    nameX = iconX + iconSize + 8;
+  }
 
   // Character name
   ctx.textAlign = 'left';
@@ -1820,33 +1883,26 @@ export async function generateGachaCard(data: GachaCardData): Promise<Buffer> {
   ctx.shadowBlur = 4;
   let displayName = data.name;
   while (
-    ctx.measureText(displayName).width > INNER_W - 180 &&
+    ctx.measureText(displayName).width > INNER_W - (nameX - PAD) - 120 &&
     displayName.length > 8
   )
     displayName = `${displayName.slice(0, -2)}...`;
-  ctx.fillText(displayName, PAD + 52, headerY + 28);
+  ctx.fillText(displayName, nameX, headerY + 34);
   ctx.shadowBlur = 0;
 
-  // Japanese name (subtitle)
-  if (data.nameJp) {
-    ctx.font = '12px GoogleSans';
-    ctx.fillStyle = 'rgba(255,255,255,0.5)';
-    ctx.fillText(data.nameJp, PAD + 52, headerY + 44);
-  }
-
   // HP display (right side)
-  if (hasStats && data.hp != null) {
+  if (hasStats && data.equilibre != null) {
     ctx.textAlign = 'right';
     ctx.font = 'bold 13px GoogleSans';
     ctx.fillStyle = 'rgba(255,255,255,0.6)';
-    ctx.fillText('HP', W - PAD - 68, headerY + 22);
+    ctx.fillText('ÉQU', W - PAD - 68, headerY + 22);
     ctx.font = 'bold 28px GoogleSans';
     ctx.fillStyle = '#ffffff';
-    ctx.fillText(`${data.hp}`, W - PAD - 12, headerY + 24);
-    // Heart icon
+    ctx.fillText(`${data.equilibre}`, W - PAD - 12, headerY + 24);
+    // Balance icon
     ctx.font = 'bold 14px GoogleSans, NotoEmoji';
-    ctx.fillStyle = '#ef4444';
-    ctx.fillText('\u2764', W - PAD - 12, headerY + 44);
+    ctx.fillStyle = '#22c55e';
+    ctx.fillText('\u2696', W - PAD - 12, headerY + 44);
   }
 
   // Rarity label badge (over header right edge)
@@ -1861,118 +1917,141 @@ export async function generateGachaCard(data: GachaCardData): Promise<Buffer> {
 
   // ══════════════════════════════════════════════════════════════════════════
   // 4. ART WINDOW — Character illustration with inner frame
+  //    (Skipped for full-art — image is already drawn as card background)
   // ══════════════════════════════════════════════════════════════════════════
   const artY = headerY + headerH + 4;
-  const artH = 370;
+  const artH = isFullArt ? H - headerY - headerH - 4 - 200 : 440;
   const artX = PAD + 6;
   const artInnerW = INNER_W - 12;
 
-  // Art background (dark)
-  drawBox(
-    ctx,
-    artX,
-    artY,
-    artInnerW,
-    artH,
-    4,
-    '#0a0a12',
-    `${theme.frameColor}50`,
-    2,
-  );
-
-  // Character image (may already be loaded for Secret full-art bleed)
-  if (!charImg) charImg = await _loadImageNoWhiteBg(data.imageUrl || null);
-  if (charImg) {
-    ctx.save();
-    ctx.beginPath();
-    ctx.roundRect(artX + 2, artY + 2, artInnerW - 4, artH - 4, 3);
-    ctx.clip();
-
-    // Radial spotlight behind character
-    const spot = ctx.createRadialGradient(
-      W / 2,
-      artY + artH * 0.4,
-      10,
-      W / 2,
-      artY + artH * 0.4,
-      artH * 0.65,
-    );
-    spot.addColorStop(0, `${elem.color}20`);
-    spot.addColorStop(1, 'transparent');
-    ctx.fillStyle = spot;
-    ctx.fillRect(artX, artY, artInnerW, artH);
-
-    // Draw image (cover-fit)
-    const aspect = charImg.width / charImg.height;
-    let dW = artInnerW - 4,
-      dH = artH - 4,
-      dX = artX + 2,
-      dY = artY + 2;
-    if (aspect > artInnerW / artH) {
-      dH = (artInnerW - 4) / aspect;
-      dY = artY + 2 + (artH - 4 - dH) / 2;
-    } else {
-      dW = (artH - 4) * aspect;
-      dX = artX + 2 + (artInnerW - 4 - dW) / 2;
-    }
-    ctx.drawImage(charImg, dX, dY, dW, dH);
-
-    // Bottom vignette
-    const vig = ctx.createLinearGradient(0, artY, 0, artY + artH);
-    vig.addColorStop(0, 'rgba(0,0,0,0)');
-    vig.addColorStop(0.75, 'rgba(0,0,0,0)');
-    vig.addColorStop(1, 'rgba(0,0,0,0.6)');
-    ctx.fillStyle = vig;
-    ctx.fillRect(artX, artY, artInnerW, artH);
-    ctx.restore();
-  } else {
-    ctx.font = 'bold 100px GoogleSans';
-    ctx.fillStyle = 'rgba(255,255,255,0.04)';
-    ctx.textAlign = 'center';
-    ctx.fillText('?', W / 2, artY + artH / 2 + 35);
-  }
-
-  // Inner art frame highlight (metallic for high rarity)
-  if (isHighRarity) {
-    const innerFrameGrad = ctx.createLinearGradient(
+  if (!isFullArt) {
+    // Art background (dark)
+    drawBox(
+      ctx,
       artX,
       artY,
-      artX + artInnerW,
-      artY + artH,
+      artInnerW,
+      artH,
+      4,
+      '#0a0a12',
+      `${theme.frameColor}50`,
+      2,
     );
-    innerFrameGrad.addColorStop(0, `${theme.borderColor}60`);
-    innerFrameGrad.addColorStop(0.3, `${theme.borderColor}20`);
-    innerFrameGrad.addColorStop(0.7, `${theme.borderColor}20`);
-    innerFrameGrad.addColorStop(1, `${theme.borderColor}60`);
-    ctx.strokeStyle = innerFrameGrad;
-    ctx.lineWidth = 3;
-    ctx.beginPath();
-    ctx.roundRect(artX, artY, artInnerW, artH, 4);
-    ctx.stroke();
-    // Holo foil shimmer on art window for Legendary/Secret
-    if (isLegendary || isSecret) {
-      drawHoloFoil(ctx, artX, artY, artInnerW, artH, isSecret ? 0.2 : 0.12);
+
+    // Character image
+    if (!charImg) charImg = await _loadImageNoWhiteBg(data.imageUrl || null);
+    if (charImg) {
+      ctx.save();
+      ctx.beginPath();
+      ctx.roundRect(artX + 2, artY + 2, artInnerW - 4, artH - 4, 3);
+      ctx.clip();
+
+      // Radial spotlight behind character
+      const spot = ctx.createRadialGradient(
+        W / 2,
+        artY + artH * 0.4,
+        10,
+        W / 2,
+        artY + artH * 0.4,
+        artH * 0.65,
+      );
+      spot.addColorStop(0, `${elem.color}20`);
+      spot.addColorStop(1, 'transparent');
+      ctx.fillStyle = spot;
+      ctx.fillRect(artX, artY, artInnerW, artH);
+
+      // Draw image (cover-fit — fills the window, crops overflow)
+      const aspect = charImg.width / charImg.height;
+      const windowW = artInnerW - 4;
+      const windowH = artH - 4;
+      let dW: number, dH: number, dX: number, dY: number;
+      if (aspect > windowW / windowH) {
+        dH = windowH;
+        dW = windowH * aspect;
+        dX = artX + 2 + (windowW - dW) / 2;
+        dY = artY + 2;
+      } else {
+        dW = windowW;
+        dH = windowW / aspect;
+        dX = artX + 2;
+        dY = artY + 2 - (dH - windowH) * 0.15;
+      }
+      ctx.drawImage(charImg, dX, dY, dW, dH);
+
+      // Bottom vignette
+      const vig = ctx.createLinearGradient(0, artY, 0, artY + artH);
+      vig.addColorStop(0, 'rgba(0,0,0,0)');
+      vig.addColorStop(0.75, 'rgba(0,0,0,0)');
+      vig.addColorStop(1, 'rgba(0,0,0,0.6)');
+      ctx.fillStyle = vig;
+      ctx.fillRect(artX, artY, artInnerW, artH);
+      ctx.restore();
+    } else {
+      ctx.font = 'bold 100px GoogleSans';
+      ctx.fillStyle = 'rgba(255,255,255,0.04)';
+      ctx.textAlign = 'center';
+      ctx.fillText('?', W / 2, artY + artH / 2 + 35);
+    }
+
+    // Inner art frame highlight (metallic for high rarity)
+    if (isHighRarity) {
+      const innerFrameGrad = ctx.createLinearGradient(
+        artX,
+        artY,
+        artX + artInnerW,
+        artY + artH,
+      );
+      innerFrameGrad.addColorStop(0, `${theme.borderColor}60`);
+      innerFrameGrad.addColorStop(0.3, `${theme.borderColor}20`);
+      innerFrameGrad.addColorStop(0.7, `${theme.borderColor}20`);
+      innerFrameGrad.addColorStop(1, `${theme.borderColor}60`);
+      ctx.strokeStyle = innerFrameGrad;
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.roundRect(artX, artY, artInnerW, artH, 4);
+      ctx.stroke();
+      if (isLegendary || isSecret) {
+        drawHoloFoil(ctx, artX, artY, artInnerW, artH, isSecret ? 0.2 : 0.12);
+      }
     }
   }
 
   // ══════════════════════════════════════════════════════════════════════════
-  // 5. TYPE STRIP — Series + Beyblade name
+  // 5. WHITE TEXT ZONE + TYPE STRIP
   // ══════════════════════════════════════════════════════════════════════════
-  const typeY = artY + artH + 6;
+  // Full-art: flush text to very bottom edge
+  const contentH =
+    26 + 4 + (data.description ? 35 : 0) + 4 + (hasStats ? 30 : 0);
+  const typeY = isFullArt ? H - FRAME - contentH : artY + artH + 6;
   const typeH = 26;
+  const textZoneTop = typeY - 2;
+  const textZoneBottom = H - FRAME - 6;
+
+  // White background for the entire text area below the art
+  if (!isFullArt) {
+    drawBox(
+      ctx,
+      PAD,
+      textZoneTop,
+      INNER_W,
+      textZoneBottom - textZoneTop,
+      6,
+      '#ffffff',
+    );
+  }
 
   const typeGrad = ctx.createLinearGradient(PAD, typeY, PAD + INNER_W, typeY);
   typeGrad.addColorStop(0, `${genColor}30`);
   typeGrad.addColorStop(1, `${theme.borderColor}20`);
   ctx.fillStyle = typeGrad;
   ctx.beginPath();
-  ctx.roundRect(PAD, typeY, INNER_W, typeH, 3);
+  ctx.roundRect(PAD + 2, typeY, INNER_W - 4, typeH, 3);
   ctx.fill();
 
-  // Text colors adapt: Secret = light on dark, others = dark on light
-  const textDark = isSecret ? '#e0dcd4' : '#3d3528';
-  const textMuted = isSecret ? '#a09888' : '#4a4438';
-  const textSubtle = isSecret ? '#807868' : '#6b5e50';
+  // Text colors adapt: full-art = light on dark, others = dark on white
+  const textDark = isFullArt ? '#e0dcd4' : '#1f2937';
+  const textMuted = isFullArt ? '#a09888' : '#4b5563';
+  const textSubtle = isFullArt ? '#807868' : '#6b7280';
 
   ctx.font = 'bold 12px GoogleSans';
   ctx.textAlign = 'left';
@@ -1990,294 +2069,152 @@ export async function generateGachaCard(data: GachaCardData): Promise<Buffer> {
   }
 
   // ══════════════════════════════════════════════════════════════════════════
-  // 6. ATTACK / SPECIAL MOVE SECTION — TCG-style attack box
+  // 6. DESCRIPTION (optional, compact)
   // ══════════════════════════════════════════════════════════════════════════
-  const atkY = typeY + typeH + 8;
-  const atkBoxH = data.description && !data.specialMove ? 80 : 70;
-
-  drawSeparator(ctx, PAD, atkY - 2, INNER_W, theme.frameColor);
-
-  if (data.specialMove || data.description) {
-    const atkNameY = atkY + 24;
+  const descY = typeY + typeH + 4;
+  let descBlockH = 0;
+  if (data.description) {
+    drawSeparator(ctx, PAD, descY, INNER_W, theme.frameColor);
+    ctx.font = '11px GoogleSans';
+    ctx.fillStyle = textMuted;
     ctx.textAlign = 'left';
-
-    // Element cost circles (like energy cost in Pokémon TCG)
-    const costX = PAD + 12;
-    for (let i = 0; i < Math.min(theme.stars, 4); i++) {
-      ctx.beginPath();
-      ctx.arc(costX + i * 22, atkNameY - 4, 9, 0, Math.PI * 2);
-      ctx.fillStyle = `${elem.color}30`;
-      ctx.fill();
-      ctx.strokeStyle = elem.color;
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
-      ctx.font = 'bold 10px GoogleSans, NotoEmoji';
-      ctx.fillStyle = elem.color;
-      ctx.textAlign = 'center';
-      ctx.fillText(elem.symbol, costX + i * 22, atkNameY);
+    const words = data.description.split(' ');
+    let descLine = '';
+    let ly = descY + 16;
+    let lc = 0;
+    for (const word of words) {
+      if (lc >= 2) break;
+      const test = descLine ? `${descLine} ${word}` : word;
+      if (ctx.measureText(test).width > INNER_W - 30) {
+        ctx.fillText(descLine, PAD + 12, ly);
+        descLine = word;
+        ly += 15;
+        lc++;
+      } else descLine = test;
     }
-
-    // Attack name
-    ctx.textAlign = 'left';
-    ctx.font = 'bold 18px GoogleSans';
-    ctx.fillStyle = textDark;
-    const atkLabelX = costX + Math.min(theme.stars, 4) * 22 + 8;
-    if (data.specialMove) {
-      let moveName = data.specialMove;
-      while (
-        ctx.measureText(moveName).width > INNER_W - atkLabelX + PAD - 80 &&
-        moveName.length > 10
-      )
-        moveName = `${moveName.slice(0, -2)}...`;
-      ctx.fillText(moveName, atkLabelX, atkNameY + 2);
-    }
-
-    // Damage value (right side)
-    if (hasStats) {
-      const dmg = Math.round(data.atk! * 1.2);
-      ctx.textAlign = 'right';
-      ctx.font = 'bold 24px GoogleSans';
-      ctx.fillStyle = textDark;
-      ctx.fillText(`${dmg}`, W - PAD - 14, atkNameY + 4);
-    }
-
-    // Description text
-    if (data.description) {
-      ctx.font = '11px GoogleSans';
-      ctx.fillStyle = textMuted;
-      ctx.textAlign = 'left';
-      const words = data.description.split(' ');
-      let descLine = '';
-      let ly = atkNameY + 22;
-      let lc = 0;
-      for (const word of words) {
-        if (lc >= 2) break;
-        const test = descLine ? `${descLine} ${word}` : word;
-        if (ctx.measureText(test).width > INNER_W - 30) {
-          ctx.fillText(descLine, PAD + 12, ly);
-          descLine = word;
-          ly += 15;
-          lc++;
-        } else descLine = test;
-      }
-      if (descLine && lc < 2) ctx.fillText(descLine, PAD + 12, ly);
-    }
+    if (descLine && lc < 2) ctx.fillText(descLine, PAD + 12, ly);
+    descBlockH = 20 + lc * 15;
   }
 
   // ══════════════════════════════════════════════════════════════════════════
-  // 7. STATS SECTION — Horizontal progress bars (Beyblade TCG style)
+  // 6b. STATS — Single line: ATT / DEF / END / EQL
   // ══════════════════════════════════════════════════════════════════════════
-  const statsY = atkY + atkBoxH + 4;
-  drawSeparator(ctx, PAD, statsY - 2, INNER_W, theme.frameColor);
-
-  const STAT_BAR_H = hasStats ? 90 : 0;
+  const statsStartY = descY + descBlockH + 4;
   if (hasStats) {
-    const statDefs = [
-      { label: 'ATK', val: data.atk!, max: 142, color: '#dc2626' },
-      { label: 'DEF', val: data.def!, max: 142, color: '#2563eb' },
-      { label: 'SPD', val: data.spd!, max: 142, color: '#0891b2' },
+    drawSeparator(ctx, PAD, statsStartY, INNER_W, theme.frameColor);
+    const sy = statsStartY + 16;
+    const stats = [
+      { label: 'ATT', val: data.att!, color: '#dc2626' },
+      { label: 'DEF', val: data.def!, color: '#2563eb' },
+      { label: 'END', val: data.end!, color: '#0891b2' },
+      { label: 'EQL', val: data.equilibre!, color: '#22c55e' },
     ];
-    const barX = PAD + 56;
-    const barW = INNER_W - 56 - 46;
-    const barH = 14;
-    const rowGap = 26;
-
-    for (let i = 0; i < statDefs.length; i++) {
-      const s = statDefs[i]!;
-      const by = statsY + 12 + i * rowGap;
-      const pct = Math.min(s.val / s.max, 1);
-
+    const colW = INNER_W / stats.length;
+    for (let i = 0; i < stats.length; i++) {
+      const s = stats[i]!;
+      const cx = PAD + colW * i + colW / 2;
       // Label
-      ctx.font = 'bold 13px GoogleSans';
-      ctx.fillStyle = textMuted;
-      ctx.textAlign = 'left';
-      ctx.fillText(s.label, PAD + 12, by + 11);
-
-      // Track background
-      ctx.fillStyle = 'rgba(0,0,0,0.08)';
-      ctx.beginPath();
-      ctx.roundRect(barX, by, barW, barH, 7);
-      ctx.fill();
-      ctx.strokeStyle = `${s.color}25`;
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.roundRect(barX, by, barW, barH, 7);
-      ctx.stroke();
-
-      // Fill gradient
-      if (pct > 0) {
-        const fillGrad = ctx.createLinearGradient(
-          barX,
-          0,
-          barX + barW * pct,
-          0,
-        );
-        fillGrad.addColorStop(0, `${s.color}CC`);
-        fillGrad.addColorStop(1, s.color);
-        ctx.fillStyle = fillGrad;
-        ctx.beginPath();
-        ctx.roundRect(barX, by, barW * pct, barH, 7);
-        ctx.fill();
-
-        // Shine highlight on bar
-        const shine = ctx.createLinearGradient(0, by, 0, by + barH);
-        shine.addColorStop(0, 'rgba(255,255,255,0.25)');
-        shine.addColorStop(0.5, 'rgba(255,255,255,0)');
-        ctx.fillStyle = shine;
-        ctx.beginPath();
-        ctx.roundRect(barX, by, barW * pct, barH / 2, [7, 7, 0, 0]);
-        ctx.fill();
-      }
-
+      ctx.font = 'bold 10px GoogleSans';
+      ctx.fillStyle = isFullArt ? 'rgba(255,255,255,0.6)' : textMuted;
+      ctx.textAlign = 'center';
+      ctx.fillText(s.label, cx, sy - 2);
       // Value
-      ctx.font = 'bold 14px GoogleSans';
+      ctx.font = 'bold 16px GoogleSans';
       ctx.fillStyle = s.color;
-      ctx.textAlign = 'right';
-      ctx.fillText(`${s.val}`, W - PAD - 10, by + 12);
+      ctx.fillText(`${s.val}`, cx, sy + 16);
     }
   }
 
   // ══════════════════════════════════════════════════════════════════════════
-  // 8. WEAKNESS / RESISTANCE ROW
-  // ══════════════════════════════════════════════════════════════════════════
-  const weakY = hasStats ? statsY + STAT_BAR_H + 4 : statsY + 10;
-  drawSeparator(ctx, PAD, weakY - 2, INNER_W, theme.frameColor);
-
-  ctx.font = 'bold 12px GoogleSans';
-  ctx.textAlign = 'left';
-
-  // Weakness
-  if (weakElem) {
-    ctx.fillStyle = textSubtle;
-    ctx.fillText('Faiblesse :', PAD + 12, weakY + 16);
-    ctx.fillStyle = weakElem.color;
-    ctx.font = 'bold 14px GoogleSans, NotoEmoji';
-    ctx.fillText(`${weakElem.symbol} x2`, PAD + 100, weakY + 16);
-  }
-
-  // Resistance (element we are strong against)
-  const resistance = Object.entries(ELEMENT_WEAKNESS).find(
-    ([_, v]) => v === (data.element || '').toUpperCase(),
-  );
-  const resElem = resistance ? ELEMENT_ICONS[resistance[0]] : null;
-  if (resElem) {
-    ctx.font = 'bold 12px GoogleSans';
-    ctx.fillStyle = textSubtle;
-    ctx.textAlign = 'center';
-    ctx.fillText('Résistance :', W / 2 + 20, weakY + 16);
-    ctx.fillStyle = resElem.color;
-    ctx.font = 'bold 14px GoogleSans, NotoEmoji';
-    ctx.fillText(`${resElem.symbol} -30`, W / 2 + 110, weakY + 16);
-  }
-
-  // Retreat cost (stars = energy cost)
-  ctx.textAlign = 'right';
-  ctx.font = 'bold 12px GoogleSans';
-  ctx.fillStyle = textSubtle;
-  ctx.fillText('Coût :', W - PAD - 60, weakY + 16);
-  ctx.font = 'bold 14px GoogleSans, NotoEmoji';
-  ctx.fillStyle = elem.color;
-  let costStr = '';
-  for (let i = 0; i < Math.min(theme.stars, 4); i++) costStr += elem.symbol;
-  ctx.fillText(costStr, W - PAD - 12, weakY + 16);
-
-  // ══════════════════════════════════════════════════════════════════════════
-  // 9. FOOTER — Stars, set info, card number, holo seal
+  // 9. FOOTER + STATUS BAR (hidden in full-art — text is already at bottom)
   // ══════════════════════════════════════════════════════════════════════════
   const footerY = H - FRAME - 80;
-  drawSeparator(ctx, PAD, footerY, INNER_W, theme.frameColor);
-
-  // Stars
-  ctx.textAlign = 'left';
-  ctx.font = 'bold 18px GoogleSans';
-  ctx.fillStyle = theme.accentColor;
-  let starStr = '';
-  for (let i = 0; i < 5; i++) starStr += i < theme.stars ? '\u2605' : '\u2606';
-  ctx.fillText(starStr, PAD + 10, footerY + 22);
-
-  // Set name
-  ctx.textAlign = 'center';
-  ctx.font = 'bold 13px GoogleSans';
-  ctx.fillStyle = textSubtle;
-  ctx.fillText('RPB TCG \u2022 Drop 1', W / 2, footerY + 22);
-
-  // Card number (#001/032)
-  ctx.textAlign = 'right';
-  ctx.font = 'bold 12px GoogleSans';
-  ctx.fillStyle = textSubtle;
-  ctx.fillText('#???/032', W - PAD - 12, footerY + 22);
-
-  // ══════════════════════════════════════════════════════════════════════════
-  // 9b. HOLOGRAPHIC SEAL (Rare+ only)
-  // ══════════════════════════════════════════════════════════════════════════
-  if (isHighRarity) {
-    drawHoloSeal(ctx, W - PAD - 24, footerY + 48, 13, theme.accentColor);
-  }
-
-  // ══════════════════════════════════════════════════════════════════════════
-  // 10. STATUS BAR — Balance + WISHED/DOUBLON
-  // ══════════════════════════════════════════════════════════════════════════
   const statusY = footerY + 32;
   const statusH = 36;
-  drawBox(
-    ctx,
-    PAD,
-    statusY,
-    INNER_W,
-    statusH,
-    [0, 0, 8, 8],
-    'rgba(0,0,0,0.15)',
-  );
 
-  ctx.font = 'bold 14px GoogleSans';
-  ctx.textAlign = 'left';
-  ctx.fillStyle = textSubtle;
-  ctx.fillText(
-    `${data.balance.toLocaleString('fr-FR')} coins`,
-    PAD + 14,
-    statusY + 23,
-  );
+  if (!isFullArt) {
+    drawSeparator(ctx, PAD, footerY, INNER_W, theme.frameColor);
 
-  if (data.isWished) {
-    const wishBadgeW = 90;
+    // Card number (left)
+    ctx.textAlign = 'left';
+    ctx.font = 'bold 12px GoogleSans';
+    ctx.fillStyle = textSubtle;
+    ctx.fillText('#???/032', PAD + 10, footerY + 18);
+
+    if (isHighRarity) {
+      drawHoloSeal(ctx, W - PAD - 24, footerY + 48, 13, theme.accentColor);
+    }
+
     drawBox(
       ctx,
-      W - PAD - wishBadgeW - 8,
-      statusY + 6,
-      wishBadgeW,
-      24,
-      12,
-      '#fbbf2430',
-      '#fbbf24',
-      1.5,
+      PAD,
+      statusY,
+      INNER_W,
+      statusH,
+      [0, 0, 8, 8],
+      'rgba(0,0,0,0.15)',
     );
-    ctx.font = 'bold 12px GoogleSans';
-    ctx.fillStyle = isSecret ? '#fcd34d' : '#b45309';
-    ctx.textAlign = 'center';
-    ctx.fillText('WISHED', W - PAD - wishBadgeW / 2 - 8, statusY + 22);
-  } else if (data.isDuplicate) {
-    const dupBadgeW = 90;
-    drawBox(
-      ctx,
-      W - PAD - dupBadgeW - 8,
-      statusY + 6,
-      dupBadgeW,
-      24,
-      12,
-      'rgba(107,114,128,0.15)',
-      '#9ca3af',
-      1,
-    );
-    ctx.font = 'bold 12px GoogleSans';
-    ctx.fillStyle = '#6b7280';
-    ctx.textAlign = 'center';
-    ctx.fillText('DOUBLON', W - PAD - dupBadgeW / 2 - 8, statusY + 22);
   }
+
+  if (!isFullArt) {
+    if (data.balance > 0) {
+      ctx.font = 'bold 14px GoogleSans';
+      ctx.textAlign = 'left';
+      ctx.fillStyle = textSubtle;
+      ctx.fillText(
+        `${data.balance.toLocaleString('fr-FR')} coins`,
+        PAD + 14,
+        statusY + 23,
+      );
+    }
+
+    if (data.isWished) {
+      const wishBadgeW = 90;
+      drawBox(
+        ctx,
+        W - PAD - wishBadgeW - 8,
+        statusY + 6,
+        wishBadgeW,
+        24,
+        12,
+        '#fbbf2430',
+        '#fbbf24',
+        1.5,
+      );
+      ctx.font = 'bold 12px GoogleSans';
+      ctx.fillStyle = isSecret ? '#fcd34d' : '#b45309';
+      ctx.textAlign = 'center';
+      ctx.fillText('WISHED', W - PAD - wishBadgeW / 2 - 8, statusY + 22);
+    } else if (data.isDuplicate) {
+      const dupBadgeW = 90;
+      drawBox(
+        ctx,
+        W - PAD - dupBadgeW - 8,
+        statusY + 6,
+        dupBadgeW,
+        24,
+        12,
+        'rgba(107,114,128,0.15)',
+        '#9ca3af',
+        1,
+      );
+      ctx.font = 'bold 12px GoogleSans';
+      ctx.fillStyle = '#6b7280';
+      ctx.textAlign = 'center';
+      ctx.fillText('DOUBLON', W - PAD - dupBadgeW / 2 - 8, statusY + 22);
+    }
+  }
+
+  // Illu credit (bottom-right on border)
+  ctx.textAlign = 'right';
+  ctx.font = '11px GoogleSans';
+  ctx.fillStyle = '#6b7280';
+  ctx.fillText('made by Illu', W - FRAME - 6, H - FRAME / 2 + 4);
 
   // ══════════════════════════════════════════════════════════════════════════
   // 11. SPARKLES & CORNER ORNAMENTS (high rarity)
   // ══════════════════════════════════════════════════════════════════════════
-  if (theme.particleCount > 0) {
+  if (theme.particleCount > 0 && !isFullArt) {
     for (let i = 0; i < theme.particleCount; i++) {
       const sx = FRAME + 20 + Math.random() * (W - FRAME * 2 - 40);
       const sy = FRAME + 20 + Math.random() * (H - FRAME * 2 - 40);
@@ -2292,7 +2229,7 @@ export async function generateGachaCard(data: GachaCardData): Promise<Buffer> {
     }
   }
 
-  if (isHighRarity) {
+  if (isHighRarity && !isFullArt) {
     ctx.strokeStyle = `${theme.borderColor}50`;
     ctx.lineWidth = 2.5;
     const c = 35;
@@ -2316,7 +2253,549 @@ export async function generateGachaCard(data: GachaCardData): Promise<Buffer> {
     }
   }
 
+  // Copyright on bottom-left border
+  ctx.font = '11px GoogleSans';
+  ctx.fillStyle = '#6b7280';
+  ctx.textAlign = 'left';
+  ctx.fillText('\u00A9 RPBey 2026', FRAME + 6, H - FRAME / 2 + 4);
+
   return canvas.toBuffer('image/png');
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ANIMATED GACHA CARD — Beyblade X lightning VFX overlay (GIF)
+// ─────────────────────────────────────────────────────────────────────────────
+
+type Pt = { x: number; y: number };
+const _rand = (a: number, b: number) => a + Math.random() * (b - a);
+
+function _generateBoltPath(
+  sx: number,
+  sy: number,
+  angle: number,
+  segs: number,
+  segLen: [number, number],
+  deviation: number,
+): Pt[][] {
+  const paths: Pt[][] = [];
+  const trunk: Pt[] = [{ x: sx, y: sy }];
+  let cx = sx,
+    cy = sy;
+  for (let s = 0; s < segs; s++) {
+    const len = _rand(segLen[0], segLen[1]);
+    const a = angle + _rand(-deviation, deviation);
+    cx += Math.cos(a) * len;
+    cy += Math.sin(a) * len;
+    trunk.push({ x: cx, y: cy });
+    if (Math.random() < 0.3 && s < segs - 1) {
+      const branch: Pt[] = [{ x: cx, y: cy }];
+      let bx = cx,
+        by = cy;
+      const ba = a + _rand(-1.2, 1.2);
+      for (let b = 0; b < 2 + Math.floor(_rand(0, 2)); b++) {
+        bx +=
+          Math.cos(ba + _rand(-0.5, 0.5)) *
+          _rand(segLen[0] * 0.3, segLen[1] * 0.5);
+        by +=
+          Math.sin(ba + _rand(-0.5, 0.5)) *
+          _rand(segLen[0] * 0.3, segLen[1] * 0.5);
+        branch.push({ x: bx, y: by });
+      }
+      paths.push(branch);
+    }
+  }
+  paths.unshift(trunk);
+  return paths;
+}
+
+function _drawBoltTriplePass(
+  ctx: CanvasCtx,
+  pts: Pt[],
+  color: string,
+  w: number,
+  glow: number,
+  alpha: number,
+) {
+  if (pts.length < 2) return;
+  const trace = () => {
+    ctx.beginPath();
+    ctx.moveTo(pts[0]?.x, pts[0]?.y);
+    for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i]?.x, pts[i]?.y);
+  };
+  // Pass 1: outer glow
+  ctx.save();
+  ctx.globalAlpha = alpha * 0.3;
+  ctx.strokeStyle = color;
+  ctx.lineWidth = w * 4;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  ctx.shadowColor = color;
+  ctx.shadowBlur = glow * 2;
+  trace();
+  ctx.stroke();
+  ctx.restore();
+  // Pass 2: main color
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  ctx.strokeStyle = color;
+  ctx.lineWidth = w;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'bevel';
+  ctx.shadowColor = color;
+  ctx.shadowBlur = glow;
+  trace();
+  ctx.stroke();
+  ctx.restore();
+  // Pass 3: white-hot core
+  ctx.save();
+  ctx.globalAlpha = alpha * 0.75;
+  ctx.strokeStyle = '#e0f4ff';
+  ctx.lineWidth = Math.max(w * 0.35, 1);
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  ctx.shadowColor = '#ffffff';
+  ctx.shadowBlur = glow * 0.4;
+  trace();
+  ctx.stroke();
+  ctx.restore();
+}
+
+const BX_BOLT_COLORS = ['#00ccff', '#00e5ff', '#40c4ff', '#00b0ff', '#80d8ff'];
+
+function _drawBXLightning(ctx: CanvasCtx, w: number, h: number) {
+  ctx.save();
+  // Radial glow source
+  const gx = w * 0.72,
+    gy = h * 0.06;
+  const rad = ctx.createRadialGradient(gx, gy, 0, gx, gy, w * 0.5);
+  rad.addColorStop(0, 'rgba(0,204,255,0.18)');
+  rad.addColorStop(0.3, 'rgba(0,204,255,0.06)');
+  rad.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.globalCompositeOperation = 'screen';
+  ctx.fillStyle = rad;
+  ctx.fillRect(0, 0, w, h);
+  ctx.globalCompositeOperation = 'source-over';
+
+  // Main bolts
+  for (let i = 0; i < 5; i++) {
+    const sx = w * 0.5 + _rand(0, w * 0.45);
+    const sy = _rand(-h * 0.02, h * 0.15);
+    const angle = Math.PI * 0.6 + _rand(-0.3, 0.3);
+    const paths = _generateBoltPath(
+      sx,
+      sy,
+      angle,
+      4 + Math.floor(_rand(0, 4)),
+      [50, 140],
+      0.65,
+    );
+    const color = BX_BOLT_COLORS[Math.floor(_rand(0, 3))]!;
+    const mw = _rand(2.5, 5);
+    for (let p = 0; p < paths.length; p++) {
+      _drawBoltTriplePass(
+        ctx,
+        paths[p]!,
+        color,
+        p === 0 ? mw : mw * 0.45,
+        p === 0 ? _rand(16, 28) : _rand(6, 14),
+        p === 0 ? _rand(0.75, 1) : _rand(0.35, 0.65),
+      );
+    }
+  }
+  // Secondary bolts
+  for (let i = 0; i < 8; i++) {
+    const sx = w * 0.35 + _rand(0, w * 0.6);
+    const sy = _rand(-h * 0.01, h * 0.25);
+    const angle = Math.PI * 0.55 + _rand(-0.45, 0.45);
+    const paths = _generateBoltPath(
+      sx,
+      sy,
+      angle,
+      3 + Math.floor(_rand(0, 2)),
+      [25, 80],
+      0.85,
+    );
+    const color = BX_BOLT_COLORS[Math.floor(_rand(0, BX_BOLT_COLORS.length))]!;
+    for (const pts of paths) {
+      _drawBoltTriplePass(
+        ctx,
+        pts,
+        color,
+        _rand(1.2, 2.5),
+        _rand(8, 16),
+        _rand(0.3, 0.6),
+      );
+    }
+  }
+  // Spark particles
+  for (let i = 0; i < 10; i++) {
+    const sx = w * 0.4 + _rand(0, w * 0.55);
+    const sy = _rand(0, h * 0.4);
+    const size = _rand(1.5, 5);
+    ctx.save();
+    ctx.globalAlpha = _rand(0.4, 1);
+    ctx.fillStyle = '#b3e5fc';
+    ctx.shadowColor = '#00ccff';
+    ctx.shadowBlur = size * 3;
+    ctx.beginPath();
+    ctx.moveTo(sx, sy - size);
+    ctx.lineTo(sx + size * 0.18, sy - size * 0.18);
+    ctx.lineTo(sx + size, sy);
+    ctx.lineTo(sx + size * 0.18, sy + size * 0.18);
+    ctx.lineTo(sx, sy + size);
+    ctx.lineTo(sx - size * 0.18, sy + size * 0.18);
+    ctx.lineTo(sx - size, sy);
+    ctx.lineTo(sx - size * 0.18, sy - size * 0.18);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+  }
+  ctx.restore();
+}
+
+/**
+ * Generate an animated GIF from a static gacha card PNG.
+ * Overlays Beyblade X lightning VFX + shimmer + border glow.
+ * Returns a GIF buffer (~2-3 MB, 18 frames, 65ms delay).
+ */
+export async function generateAnimatedGachaCard(
+  staticCardPng: Buffer,
+): Promise<Buffer> {
+  const W = 640,
+    H = 900;
+  const FRAMES = 18,
+    DELAY = 65;
+
+  const baseImg = await loadImage(staticCardPng);
+  const framePngs: Buffer[] = [];
+
+  for (let i = 0; i < FRAMES; i++) {
+    const canvas = createCanvas(W, H);
+    const ctx = canvas.getContext('2d');
+    const t = i / FRAMES;
+
+    // Base card
+    ctx.drawImage(baseImg, 0, 0, W, H);
+
+    // Shimmer sweep
+    const sx = t * W * 2.2 - W * 0.6;
+    ctx.save();
+    ctx.globalCompositeOperation = 'screen';
+    const shimmer = ctx.createLinearGradient(sx - 180, 0, sx + 180, H);
+    shimmer.addColorStop(0, 'rgba(255,255,255,0)');
+    shimmer.addColorStop(0.42, 'rgba(255,255,255,0)');
+    shimmer.addColorStop(0.48, 'rgba(0,200,255,0.10)');
+    shimmer.addColorStop(0.5, 'rgba(255,255,255,0.20)');
+    shimmer.addColorStop(0.52, 'rgba(0,200,255,0.10)');
+    shimmer.addColorStop(0.58, 'rgba(255,255,255,0)');
+    shimmer.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = shimmer;
+    ctx.fillRect(0, 0, W, H);
+    ctx.restore();
+
+    // Pulsing border glow
+    const pulse = 0.5 + Math.sin(t * Math.PI * 2) * 0.5;
+    ctx.save();
+    ctx.shadowColor = `rgba(0,204,255,${0.4 * pulse})`;
+    ctx.shadowBlur = 12 + pulse * 18;
+    ctx.strokeStyle = `rgba(0,204,255,${0.25 * pulse})`;
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.roundRect(10, 10, W - 20, H - 20, 22);
+    ctx.stroke();
+    ctx.restore();
+
+    // Lightning VFX (regenerated each frame = crackling)
+    _drawBXLightning(ctx, W, H);
+
+    framePngs.push(Buffer.from(canvas.toBuffer('image/png')));
+  }
+
+  // Assemble GIF: stack frames → raw RGBA → sharp with pageHeight
+  const composites = framePngs.slice(1).map((buf, i) => ({
+    input: buf,
+    top: (i + 1) * H,
+    left: 0,
+  }));
+  const tallPng = await sharp(framePngs[0]!)
+    .extend({
+      bottom: H * (FRAMES - 1),
+      background: { r: 0, g: 0, b: 0, alpha: 1 },
+    })
+    .composite(composites)
+    .png()
+    .toBuffer();
+  const rawData = await sharp(tallPng).ensureAlpha().raw().toBuffer();
+
+  return sharp(rawData, {
+    raw: {
+      width: W,
+      height: H * FRAMES,
+      channels: 4,
+      pageHeight: H,
+    },
+  })
+    .gif({
+      delay: Array.from({ length: FRAMES }, () => DELAY),
+      loop: 0,
+      colours: 180,
+      dither: 0.4,
+      effort: 8,
+    })
+    .toBuffer();
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// STAR FRAGMENT — Summoning animation for multi-pulls (Metal Fury style)
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Generate a "Star Fragment" summoning animation GIF.
+ * Light rays converging from space, anime-style energy burst.
+ * ~1MB, 20 frames, plays once then the caller edits the message with results.
+ */
+export async function generateStarFragmentGif(): Promise<Buffer> {
+  const W = 640,
+    H = 400;
+  const FRAMES = 20,
+    _DELAY = 55;
+
+  // Pre-generate star positions (fixed across all frames)
+  const STAR_COUNT = 80;
+  const stars = Array.from({ length: STAR_COUNT }, () => ({
+    x: Math.random() * W,
+    y: Math.random() * H,
+    size: 0.5 + Math.random() * 2,
+    brightness: 0.3 + Math.random() * 0.7,
+    twinkleSpeed: 1 + Math.random() * 3,
+  }));
+
+  // Pre-generate ray angles (light beams converging to center-bottom)
+  const RAY_COUNT = 14;
+  const rays = Array.from({ length: RAY_COUNT }, (_, i) => ({
+    angle: (i / RAY_COUNT) * Math.PI * 0.8 + Math.PI * 0.1, // spread across top
+    width: 2 + Math.random() * 4,
+    brightness: 0.4 + Math.random() * 0.6,
+    speed: 0.8 + Math.random() * 0.4,
+    hue: Math.random() < 0.3 ? 220 : 200 + Math.random() * 40, // mostly blue-white
+  }));
+
+  const framePngs: Buffer[] = [];
+
+  for (let f = 0; f < FRAMES; f++) {
+    const canvas = createCanvas(W, H);
+    const ctx = canvas.getContext('2d');
+    const t = f / FRAMES; // 0..1
+
+    // Phase animation:
+    // 0.0-0.3: dark space with twinkling stars
+    // 0.3-0.7: rays appear and intensify
+    // 0.7-1.0: flash burst then fade
+
+    // 1. Deep space background
+    const bgGrad = ctx.createRadialGradient(
+      W / 2,
+      H * 0.8,
+      10,
+      W / 2,
+      H * 0.3,
+      W,
+    );
+    bgGrad.addColorStop(0, '#0a0a1a');
+    bgGrad.addColorStop(0.5, '#050510');
+    bgGrad.addColorStop(1, '#000005');
+    ctx.fillStyle = bgGrad;
+    ctx.fillRect(0, 0, W, H);
+
+    // 2. Planet/horizon curve at bottom
+    const horizonY = H * 0.78;
+    ctx.save();
+    ctx.beginPath();
+    ctx.ellipse(W / 2, H + 200, W * 0.9, 350, 0, Math.PI, 0);
+    ctx.closePath();
+    const planetGrad = ctx.createLinearGradient(0, horizonY - 50, 0, H);
+    planetGrad.addColorStop(0, '#1a2040');
+    planetGrad.addColorStop(0.4, '#141830');
+    planetGrad.addColorStop(1, '#0a0e20');
+    ctx.fillStyle = planetGrad;
+    ctx.fill();
+    // Atmosphere glow on horizon
+    const atmosGlow = ctx.createLinearGradient(
+      0,
+      horizonY - 30,
+      0,
+      horizonY + 20,
+    );
+    atmosGlow.addColorStop(0, 'rgba(100,150,255,0.15)');
+    atmosGlow.addColorStop(0.5, 'rgba(60,100,200,0.08)');
+    atmosGlow.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = atmosGlow;
+    ctx.fillRect(0, horizonY - 30, W, 50);
+    ctx.restore();
+
+    // 3. Stars with twinkling
+    for (const star of stars) {
+      const twinkle = 0.5 + Math.sin(t * Math.PI * 2 * star.twinkleSpeed) * 0.5;
+      const alpha = star.brightness * twinkle;
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = '#ffffff';
+      ctx.shadowColor = '#aaccff';
+      ctx.shadowBlur = star.size * 2;
+      ctx.beginPath();
+      ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    // 4. Light rays (appear at t=0.15, peak at t=0.7)
+    const rayIntensity = t < 0.15 ? 0 : t < 0.7 ? (t - 0.15) / 0.55 : 1.0;
+
+    if (rayIntensity > 0) {
+      const convergePt = { x: W / 2, y: H * 0.75 }; // convergence point
+
+      ctx.save();
+      ctx.globalCompositeOperation = 'screen';
+
+      for (const ray of rays) {
+        // Ray origin: far above, spread across the top
+        const originX = convergePt.x + Math.cos(ray.angle) * W * 1.2;
+        const originY = -H * 0.3 + Math.sin(ray.angle) * H * 0.2;
+
+        // Ray extends toward convergence point
+        const rayProgress = Math.min(rayIntensity * ray.speed, 1);
+        const endX = originX + (convergePt.x - originX) * rayProgress;
+        const endY = originY + (convergePt.y - originY) * rayProgress;
+
+        const alpha = ray.brightness * rayIntensity * 0.7;
+
+        // Wide outer glow
+        ctx.save();
+        ctx.globalAlpha = alpha * 0.3;
+        ctx.strokeStyle = `hsla(${ray.hue}, 80%, 80%, 1)`;
+        ctx.lineWidth = ray.width * 6;
+        ctx.lineCap = 'round';
+        ctx.shadowColor = `hsla(${ray.hue}, 80%, 70%, 1)`;
+        ctx.shadowBlur = 20;
+        ctx.beginPath();
+        ctx.moveTo(originX, originY);
+        ctx.lineTo(endX, endY);
+        ctx.stroke();
+        ctx.restore();
+
+        // Main ray
+        ctx.save();
+        ctx.globalAlpha = alpha * 0.7;
+        ctx.strokeStyle = `hsla(${ray.hue}, 60%, 90%, 1)`;
+        ctx.lineWidth = ray.width * 2;
+        ctx.lineCap = 'round';
+        ctx.shadowColor = '#ffffff';
+        ctx.shadowBlur = 10;
+        ctx.beginPath();
+        ctx.moveTo(originX, originY);
+        ctx.lineTo(endX, endY);
+        ctx.stroke();
+        ctx.restore();
+
+        // White-hot core
+        ctx.save();
+        ctx.globalAlpha = alpha;
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = ray.width * 0.5;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(originX, originY);
+        ctx.lineTo(endX, endY);
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      // Central burst glow at convergence point
+      const burstAlpha = rayIntensity * 0.6;
+      const burstRad = ctx.createRadialGradient(
+        convergePt.x,
+        convergePt.y,
+        0,
+        convergePt.x,
+        convergePt.y,
+        60 + rayIntensity * 100,
+      );
+      burstRad.addColorStop(0, `rgba(255,255,255,${burstAlpha})`);
+      burstRad.addColorStop(0.2, `rgba(200,220,255,${burstAlpha * 0.6})`);
+      burstRad.addColorStop(0.5, `rgba(100,150,255,${burstAlpha * 0.2})`);
+      burstRad.addColorStop(1, 'rgba(0,0,50,0)');
+      ctx.fillStyle = burstRad;
+      ctx.fillRect(0, 0, W, H);
+
+      ctx.restore();
+    }
+
+    // 5. Flash burst at peak (t=0.7-0.85)
+    if (t > 0.65 && t < 0.9) {
+      const flashT = (t - 0.65) / 0.25;
+      const flashAlpha =
+        flashT < 0.4 ? (flashT / 0.4) * 0.5 : ((1 - flashT) / 0.6) * 0.5;
+      ctx.save();
+      ctx.globalAlpha = flashAlpha;
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, W, H);
+      ctx.restore();
+    }
+
+    // 6. Text overlay (appears after flash)
+    if (t > 0.5) {
+      const textAlpha = Math.min((t - 0.5) / 0.2, 1);
+      ctx.save();
+      ctx.globalAlpha = textAlpha;
+      ctx.font = 'bold 36px GoogleSans';
+      ctx.fillStyle = '#ffffff';
+      ctx.textAlign = 'center';
+      ctx.shadowColor = 'rgba(100,150,255,0.8)';
+      ctx.shadowBlur = 20;
+      ctx.fillText('✦ INVOCATION ×10 ✦', W / 2, H / 2 - 10);
+      ctx.font = '16px GoogleSans';
+      ctx.shadowBlur = 10;
+      ctx.fillStyle = 'rgba(200,220,255,0.8)';
+      ctx.fillText("Les étoiles s'alignent...", W / 2, H / 2 + 25);
+      ctx.restore();
+    }
+
+    framePngs.push(Buffer.from(canvas.toBuffer('image/png')));
+  }
+
+  // Assemble GIF
+  const composites = framePngs.slice(1).map((buf, i) => ({
+    input: buf,
+    top: (i + 1) * H,
+    left: 0,
+  }));
+  const tallPng = await sharp(framePngs[0]!)
+    .extend({
+      bottom: H * (FRAMES - 1),
+      background: { r: 0, g: 0, b: 0, alpha: 1 },
+    })
+    .composite(composites)
+    .png()
+    .toBuffer();
+  const rawData = await sharp(tallPng).ensureAlpha().raw().toBuffer();
+
+  return sharp(rawData, {
+    raw: { width: W, height: H * FRAMES, channels: 4, pageHeight: H },
+  })
+    .gif({
+      delay: [
+        // Slow start, fast middle, slow end
+        ...Array.from({ length: 4 }, () => 90), // slow intro (stars)
+        ...Array.from({ length: 10 }, () => 50), // fast rays
+        ...Array.from({ length: 3 }, () => 40), // flash
+        ...Array.from({ length: 3 }, () => 120), // linger on text
+      ],
+      loop: 1, // play once then stop
+      colours: 128,
+      dither: 0.3,
+      effort: 8,
+    })
+    .toBuffer();
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
