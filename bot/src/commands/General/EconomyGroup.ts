@@ -923,22 +923,13 @@ export class EconomyGroup {
       },
     });
 
-    // Send Star Fragment summoning animation first
-    try {
-      const { generateStarFragmentGif } = await import(
-        '../../lib/canvas-utils.js'
-      );
-      const animBuf = await generateStarFragmentGif();
-      const animAttachment = new AttachmentBuilder(animBuf, {
-        name: 'invocation.gif',
-      });
-      await interaction.editReply({ files: [animAttachment] });
-      // Wait for animation to play (~1.5s)
-      await new Promise((r) => setTimeout(r, 1500));
-    } catch {
-      // Animation failed — continue without it
-    }
+    // Pull cards while generating animation in parallel
+    const { generateStarFragmentGif, generateMultiPullCard } = await import(
+      '../../lib/canvas-utils.js'
+    );
 
+    // Start animation + pulls in parallel
+    const animPromise = generateStarFragmentGif().catch(() => null);
     const results: PullResult[] = [];
     for (let i = 0; i < MULTI_PULL_COUNT; i++)
       results.push(await this.pullCard(userId, profile.id));
@@ -947,10 +938,18 @@ export class EconomyGroup {
     const misses = results.filter((r) => !r.card);
     const bal = profile.currency - MULTI_PULL_COST;
 
+    // Send Star Fragment animation first
+    const animBuf = await animPromise;
+    if (animBuf) {
+      const animAttachment = new AttachmentBuilder(animBuf, {
+        name: 'invocation.gif',
+      });
+      await interaction.editReply({ files: [animAttachment] });
+      // Wait for animation to play
+      await new Promise((r) => setTimeout(r, 1800));
+    }
+
     try {
-      const { generateMultiPullCard } = await import(
-        '../../lib/canvas-utils.js'
-      );
       const cardBuffer = await generateMultiPullCard({
         slots: results.map((r) => ({
           rarity: r.rarity,
@@ -966,7 +965,8 @@ export class EconomyGroup {
       const attachment = new AttachmentBuilder(cardBuffer, {
         name: 'multi-pull.png',
       });
-      const reply = await interaction.editReply({ files: [attachment] });
+      // Send results as follow-up (animation stays visible above)
+      const reply = await interaction.followUp({ files: [attachment] });
       if (hits.length > 0) {
         const bm = await this.checkBadges(userId, profile.id);
         if (bm) await reply.reply({ content: bm });

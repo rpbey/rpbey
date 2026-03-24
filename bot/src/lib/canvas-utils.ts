@@ -2551,33 +2551,55 @@ export async function generateAnimatedGachaCard(
 
 /**
  * Generate a "Star Fragment" summoning animation GIF.
- * Light rays converging from space, anime-style energy burst.
- * ~1MB, 20 frames, plays once then the caller edits the message with results.
+ * Realistic meteor-like fragments falling from space with glowing tails,
+ * dust particles, and atmospheric entry glow. No text overlay.
  */
 export async function generateStarFragmentGif(): Promise<Buffer> {
   const W = 640,
     H = 400;
-  const FRAMES = 20,
-    _DELAY = 55;
+  const FRAMES = 24;
+  const r = (a: number, b: number) => a + Math.random() * (b - a);
 
-  // Pre-generate star positions (fixed across all frames)
-  const STAR_COUNT = 80;
-  const stars = Array.from({ length: STAR_COUNT }, () => ({
+  // Background stars (fixed)
+  const STARS = Array.from({ length: 120 }, () => ({
     x: Math.random() * W,
-    y: Math.random() * H,
-    size: 0.5 + Math.random() * 2,
-    brightness: 0.3 + Math.random() * 0.7,
-    twinkleSpeed: 1 + Math.random() * 3,
+    y: Math.random() * H * 0.85,
+    size: 0.3 + Math.random() * 1.8,
+    brightness: 0.15 + Math.random() * 0.6,
+    twinkle: 1 + Math.random() * 4,
   }));
 
-  // Pre-generate ray angles (light beams converging to center-bottom)
-  const RAY_COUNT = 14;
-  const rays = Array.from({ length: RAY_COUNT }, (_, i) => ({
-    angle: (i / RAY_COUNT) * Math.PI * 0.8 + Math.PI * 0.1, // spread across top
-    width: 2 + Math.random() * 4,
-    brightness: 0.4 + Math.random() * 0.6,
-    speed: 0.8 + Math.random() * 0.4,
-    hue: Math.random() < 0.3 ? 220 : 200 + Math.random() * 40, // mostly blue-white
+  // Meteor fragments — each has a trajectory, speed, size, color
+  const FRAGMENTS = Array.from({ length: 10 }, (_, i) => {
+    const startX = r(W * 0.05, W * 0.95);
+    const startY = r(-H * 0.5, -H * 0.1);
+    const angle = r(0.55, 0.85) * Math.PI; // mostly downward
+    const speed = r(0.6, 1.2);
+    const delay = r(0, 0.3); // staggered entry
+    const len = r(300, 600); // travel distance
+    return {
+      sx: startX,
+      sy: startY,
+      angle,
+      speed,
+      delay,
+      len,
+      size: i < 3 ? r(3, 5) : r(1.5, 3), // 3 big, rest smaller
+      tailLen: i < 3 ? r(80, 140) : r(30, 70),
+      hue: r(190, 240), // blue-cyan-white spectrum
+      brightness: i < 3 ? r(0.8, 1) : r(0.4, 0.75),
+    };
+  });
+
+  // Dust particles spawned along fragment trails
+  const DUST_COUNT = 50;
+  const dust = Array.from({ length: DUST_COUNT }, () => ({
+    fragIdx: Math.floor(Math.random() * FRAGMENTS.length),
+    offset: Math.random(), // position along the trail (0=head, 1=tail)
+    drift: { x: r(-2, 2), y: r(-1, 1) },
+    size: r(0.5, 2),
+    alpha: r(0.2, 0.6),
+    decay: r(0.3, 0.8),
   }));
 
   const framePngs: Buffer[] = [];
@@ -2585,178 +2607,227 @@ export async function generateStarFragmentGif(): Promise<Buffer> {
   for (let f = 0; f < FRAMES; f++) {
     const canvas = createCanvas(W, H);
     const ctx = canvas.getContext('2d');
-    const t = f / FRAMES; // 0..1
+    const t = f / FRAMES;
 
-    // Phase animation:
-    // 0.0-0.3: dark space with twinkling stars
-    // 0.3-0.7: rays appear and intensify
-    // 0.7-1.0: flash burst then fade
-
-    // 1. Deep space background
-    const bgGrad = ctx.createRadialGradient(
-      W / 2,
-      H * 0.8,
-      10,
-      W / 2,
-      H * 0.3,
-      W,
-    );
-    bgGrad.addColorStop(0, '#0a0a1a');
-    bgGrad.addColorStop(0.5, '#050510');
-    bgGrad.addColorStop(1, '#000005');
-    ctx.fillStyle = bgGrad;
+    // 1. Deep space background with subtle nebula
+    ctx.fillStyle = '#020208';
     ctx.fillRect(0, 0, W, H);
 
-    // 2. Planet/horizon curve at bottom
-    const horizonY = H * 0.78;
+    // Nebula haze
+    const neb1 = ctx.createRadialGradient(
+      W * 0.3,
+      H * 0.2,
+      0,
+      W * 0.3,
+      H * 0.2,
+      W * 0.5,
+    );
+    neb1.addColorStop(0, 'rgba(20,10,50,0.3)');
+    neb1.addColorStop(0.5, 'rgba(10,5,30,0.1)');
+    neb1.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = neb1;
+    ctx.fillRect(0, 0, W, H);
+
+    const neb2 = ctx.createRadialGradient(
+      W * 0.75,
+      H * 0.15,
+      0,
+      W * 0.75,
+      H * 0.15,
+      W * 0.35,
+    );
+    neb2.addColorStop(0, 'rgba(5,15,40,0.25)');
+    neb2.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = neb2;
+    ctx.fillRect(0, 0, W, H);
+
+    // 2. Planet horizon (subtle curve)
     ctx.save();
     ctx.beginPath();
-    ctx.ellipse(W / 2, H + 200, W * 0.9, 350, 0, Math.PI, 0);
+    ctx.ellipse(W / 2, H + 220, W * 0.95, 350, 0, Math.PI, 0);
     ctx.closePath();
-    const planetGrad = ctx.createLinearGradient(0, horizonY - 50, 0, H);
-    planetGrad.addColorStop(0, '#1a2040');
-    planetGrad.addColorStop(0.4, '#141830');
-    planetGrad.addColorStop(1, '#0a0e20');
-    ctx.fillStyle = planetGrad;
+    const pGrad = ctx.createLinearGradient(0, H * 0.72, 0, H);
+    pGrad.addColorStop(0, '#0e1228');
+    pGrad.addColorStop(0.5, '#0a0e1e');
+    pGrad.addColorStop(1, '#060810');
+    ctx.fillStyle = pGrad;
     ctx.fill();
-    // Atmosphere glow on horizon
-    const atmosGlow = ctx.createLinearGradient(
-      0,
-      horizonY - 30,
-      0,
-      horizonY + 20,
-    );
-    atmosGlow.addColorStop(0, 'rgba(100,150,255,0.15)');
-    atmosGlow.addColorStop(0.5, 'rgba(60,100,200,0.08)');
-    atmosGlow.addColorStop(1, 'rgba(0,0,0,0)');
-    ctx.fillStyle = atmosGlow;
-    ctx.fillRect(0, horizonY - 30, W, 50);
+    // Thin atmosphere line
+    const atm = ctx.createLinearGradient(0, H * 0.73, 0, H * 0.78);
+    atm.addColorStop(0, 'rgba(80,130,220,0.12)');
+    atm.addColorStop(0.5, 'rgba(60,100,180,0.06)');
+    atm.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = atm;
+    ctx.fillRect(0, H * 0.73, W, H * 0.05);
     ctx.restore();
 
-    // 3. Stars with twinkling
-    for (const star of stars) {
-      const twinkle = 0.5 + Math.sin(t * Math.PI * 2 * star.twinkleSpeed) * 0.5;
-      const alpha = star.brightness * twinkle;
+    // 3. Stars
+    for (const s of STARS) {
+      const tw = 0.4 + Math.sin(t * Math.PI * 2 * s.twinkle + s.x) * 0.4;
       ctx.save();
-      ctx.globalAlpha = alpha;
-      ctx.fillStyle = '#ffffff';
-      ctx.shadowColor = '#aaccff';
-      ctx.shadowBlur = star.size * 2;
+      ctx.globalAlpha = s.brightness * tw;
+      ctx.fillStyle = '#ddeeff';
       ctx.beginPath();
-      ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+      ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
       ctx.fill();
       ctx.restore();
     }
 
-    // 4. Light rays (appear at t=0.15, peak at t=0.7)
-    const rayIntensity = t < 0.15 ? 0 : t < 0.7 ? (t - 0.15) / 0.55 : 1.0;
+    // 4. Meteor fragments
+    ctx.save();
+    ctx.globalCompositeOperation = 'screen';
 
-    if (rayIntensity > 0) {
-      const convergePt = { x: W / 2, y: H * 0.75 }; // convergence point
+    for (const frag of FRAGMENTS) {
+      const fragT = Math.max(0, (t - frag.delay) / (1 - frag.delay));
+      if (fragT <= 0) continue;
+      const eased = fragT * fragT * (3 - 2 * fragT); // smoothstep
 
+      const headX =
+        frag.sx + Math.cos(frag.angle) * frag.len * eased * frag.speed;
+      const headY =
+        frag.sy + Math.sin(frag.angle) * frag.len * eased * frag.speed;
+
+      // Tail: line from head back along trajectory
+      const tailX = headX - Math.cos(frag.angle) * frag.tailLen;
+      const tailY = headY - Math.sin(frag.angle) * frag.tailLen;
+
+      // Skip if fully off-screen
+      if (headY > H + 50) continue;
+
+      const alpha =
+        frag.brightness *
+        Math.min(fragT * 3, 1) *
+        (headY < H * 0.75
+          ? 1
+          : Math.max(0, 1 - (headY - H * 0.75) / (H * 0.3)));
+
+      // Outer glow trail (wide, faint)
+      const tailGrad = ctx.createLinearGradient(tailX, tailY, headX, headY);
+      tailGrad.addColorStop(0, 'rgba(0,0,0,0)');
+      tailGrad.addColorStop(0.3, `hsla(${frag.hue},70%,70%,${alpha * 0.15})`);
+      tailGrad.addColorStop(1, `hsla(${frag.hue},60%,85%,${alpha * 0.4})`);
       ctx.save();
-      ctx.globalCompositeOperation = 'screen';
+      ctx.strokeStyle = tailGrad;
+      ctx.lineWidth = frag.size * 5;
+      ctx.lineCap = 'round';
+      ctx.shadowColor = `hsla(${frag.hue},80%,70%,0.6)`;
+      ctx.shadowBlur = 15;
+      ctx.beginPath();
+      ctx.moveTo(tailX, tailY);
+      ctx.lineTo(headX, headY);
+      ctx.stroke();
+      ctx.restore();
 
-      for (const ray of rays) {
-        // Ray origin: far above, spread across the top
-        const originX = convergePt.x + Math.cos(ray.angle) * W * 1.2;
-        const originY = -H * 0.3 + Math.sin(ray.angle) * H * 0.2;
+      // Main colored trail
+      const mainGrad = ctx.createLinearGradient(tailX, tailY, headX, headY);
+      mainGrad.addColorStop(0, 'rgba(0,0,0,0)');
+      mainGrad.addColorStop(0.5, `hsla(${frag.hue},50%,88%,${alpha * 0.5})`);
+      mainGrad.addColorStop(1, `hsla(${frag.hue},40%,95%,${alpha * 0.8})`);
+      ctx.save();
+      ctx.strokeStyle = mainGrad;
+      ctx.lineWidth = frag.size * 1.5;
+      ctx.lineCap = 'round';
+      ctx.shadowColor = '#ffffff';
+      ctx.shadowBlur = 6;
+      ctx.beginPath();
+      ctx.moveTo(tailX, tailY);
+      ctx.lineTo(headX, headY);
+      ctx.stroke();
+      ctx.restore();
 
-        // Ray extends toward convergence point
-        const rayProgress = Math.min(rayIntensity * ray.speed, 1);
-        const endX = originX + (convergePt.x - originX) * rayProgress;
-        const endY = originY + (convergePt.y - originY) * rayProgress;
+      // White-hot head point
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = '#ffffff';
+      ctx.shadowColor = `hsla(${frag.hue},80%,85%,1)`;
+      ctx.shadowBlur = frag.size * 6;
+      ctx.beginPath();
+      ctx.arc(headX, headY, frag.size * 0.8, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
 
-        const alpha = ray.brightness * rayIntensity * 0.7;
-
-        // Wide outer glow
+      // Atmospheric entry glow (orange-warm near planet)
+      if (headY > H * 0.5) {
+        const entryAlpha = alpha * ((headY - H * 0.5) / (H * 0.3)) * 0.4;
         ctx.save();
-        ctx.globalAlpha = alpha * 0.3;
-        ctx.strokeStyle = `hsla(${ray.hue}, 80%, 80%, 1)`;
-        ctx.lineWidth = ray.width * 6;
-        ctx.lineCap = 'round';
-        ctx.shadowColor = `hsla(${ray.hue}, 80%, 70%, 1)`;
-        ctx.shadowBlur = 20;
-        ctx.beginPath();
-        ctx.moveTo(originX, originY);
-        ctx.lineTo(endX, endY);
-        ctx.stroke();
-        ctx.restore();
-
-        // Main ray
-        ctx.save();
-        ctx.globalAlpha = alpha * 0.7;
-        ctx.strokeStyle = `hsla(${ray.hue}, 60%, 90%, 1)`;
-        ctx.lineWidth = ray.width * 2;
-        ctx.lineCap = 'round';
-        ctx.shadowColor = '#ffffff';
-        ctx.shadowBlur = 10;
-        ctx.beginPath();
-        ctx.moveTo(originX, originY);
-        ctx.lineTo(endX, endY);
-        ctx.stroke();
-        ctx.restore();
-
-        // White-hot core
-        ctx.save();
-        ctx.globalAlpha = alpha;
-        ctx.strokeStyle = '#ffffff';
-        ctx.lineWidth = ray.width * 0.5;
-        ctx.lineCap = 'round';
-        ctx.beginPath();
-        ctx.moveTo(originX, originY);
-        ctx.lineTo(endX, endY);
-        ctx.stroke();
+        ctx.globalAlpha = entryAlpha;
+        const entryGrad = ctx.createRadialGradient(
+          headX,
+          headY,
+          0,
+          headX,
+          headY,
+          frag.size * 8,
+        );
+        entryGrad.addColorStop(0, 'rgba(255,180,80,0.6)');
+        entryGrad.addColorStop(0.3, 'rgba(255,120,40,0.3)');
+        entryGrad.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = entryGrad;
+        ctx.fillRect(
+          headX - frag.size * 8,
+          headY - frag.size * 8,
+          frag.size * 16,
+          frag.size * 16,
+        );
         ctx.restore();
       }
+    }
 
-      // Central burst glow at convergence point
-      const burstAlpha = rayIntensity * 0.6;
-      const burstRad = ctx.createRadialGradient(
-        convergePt.x,
-        convergePt.y,
+    // 5. Dust particles drifting off fragments
+    for (const d of dust) {
+      const frag = FRAGMENTS[d.fragIdx]!;
+      const fragT = Math.max(0, (t - frag.delay) / (1 - frag.delay));
+      if (fragT <= 0) continue;
+      const eased = fragT * fragT * (3 - 2 * fragT);
+
+      const headX =
+        frag.sx + Math.cos(frag.angle) * frag.len * eased * frag.speed;
+      const headY =
+        frag.sy + Math.sin(frag.angle) * frag.len * eased * frag.speed;
+      const px =
+        headX -
+        Math.cos(frag.angle) * frag.tailLen * d.offset +
+        d.drift.x * fragT * 30;
+      const py =
+        headY -
+        Math.sin(frag.angle) * frag.tailLen * d.offset +
+        d.drift.y * fragT * 30;
+
+      if (py > H || py < 0 || px < 0 || px > W) continue;
+
+      const dustAlpha = d.alpha * Math.max(0, 1 - fragT * d.decay);
+      ctx.save();
+      ctx.globalAlpha = dustAlpha;
+      ctx.fillStyle = `hsla(${frag.hue},40%,80%,1)`;
+      ctx.beginPath();
+      ctx.arc(px, py, d.size, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    ctx.restore();
+
+    // 6. Impact flash when fragments hit atmosphere
+    if (t > 0.6 && t < 0.85) {
+      const flashP = (t - 0.6) / 0.25;
+      const flashA =
+        flashP < 0.3 ? (flashP / 0.3) * 0.35 : ((1 - flashP) / 0.7) * 0.35;
+      ctx.save();
+      ctx.globalAlpha = flashA;
+      const impactGrad = ctx.createRadialGradient(
+        W / 2,
+        H * 0.75,
         0,
-        convergePt.x,
-        convergePt.y,
-        60 + rayIntensity * 100,
+        W / 2,
+        H * 0.75,
+        W * 0.6,
       );
-      burstRad.addColorStop(0, `rgba(255,255,255,${burstAlpha})`);
-      burstRad.addColorStop(0.2, `rgba(200,220,255,${burstAlpha * 0.6})`);
-      burstRad.addColorStop(0.5, `rgba(100,150,255,${burstAlpha * 0.2})`);
-      burstRad.addColorStop(1, 'rgba(0,0,50,0)');
-      ctx.fillStyle = burstRad;
+      impactGrad.addColorStop(0, 'rgba(255,255,255,0.8)');
+      impactGrad.addColorStop(0.2, 'rgba(200,220,255,0.4)');
+      impactGrad.addColorStop(0.5, 'rgba(100,140,220,0.1)');
+      impactGrad.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = impactGrad;
       ctx.fillRect(0, 0, W, H);
-
-      ctx.restore();
-    }
-
-    // 5. Flash burst at peak (t=0.7-0.85)
-    if (t > 0.65 && t < 0.9) {
-      const flashT = (t - 0.65) / 0.25;
-      const flashAlpha =
-        flashT < 0.4 ? (flashT / 0.4) * 0.5 : ((1 - flashT) / 0.6) * 0.5;
-      ctx.save();
-      ctx.globalAlpha = flashAlpha;
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0, 0, W, H);
-      ctx.restore();
-    }
-
-    // 6. Text overlay (appears after flash)
-    if (t > 0.5) {
-      const textAlpha = Math.min((t - 0.5) / 0.2, 1);
-      ctx.save();
-      ctx.globalAlpha = textAlpha;
-      ctx.font = 'bold 36px GoogleSans';
-      ctx.fillStyle = '#ffffff';
-      ctx.textAlign = 'center';
-      ctx.shadowColor = 'rgba(100,150,255,0.8)';
-      ctx.shadowBlur = 20;
-      ctx.fillText('✦ INVOCATION ×10 ✦', W / 2, H / 2 - 10);
-      ctx.font = '16px GoogleSans';
-      ctx.shadowBlur = 10;
-      ctx.fillStyle = 'rgba(200,220,255,0.8)';
-      ctx.fillText("Les étoiles s'alignent...", W / 2, H / 2 + 25);
       ctx.restore();
     }
 
@@ -2784,15 +2855,14 @@ export async function generateStarFragmentGif(): Promise<Buffer> {
   })
     .gif({
       delay: [
-        // Slow start, fast middle, slow end
-        ...Array.from({ length: 4 }, () => 90), // slow intro (stars)
-        ...Array.from({ length: 10 }, () => 50), // fast rays
-        ...Array.from({ length: 3 }, () => 40), // flash
-        ...Array.from({ length: 3 }, () => 120), // linger on text
+        ...Array.from({ length: 5 }, () => 80), // space intro
+        ...Array.from({ length: 12 }, () => 50), // fragments streaking
+        ...Array.from({ length: 4 }, () => 45), // impact
+        ...Array.from({ length: 3 }, () => 100), // linger
       ],
-      loop: 1, // play once then stop
-      colours: 128,
-      dither: 0.3,
+      loop: 1,
+      colours: 160,
+      dither: 0.35,
       effort: 8,
     })
     .toBuffer();
