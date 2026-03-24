@@ -198,6 +198,8 @@ model Profile {
   currency          Int             @default(0)
   lastDaily         DateTime?
   dailyStreak       Int             @default(0)
+  pityCount         Int             @default(0)
+  lastGiftSent      DateTime?
   user              User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   wishlist          CardWishlist[]
 
@@ -741,10 +743,10 @@ model GachaCard {
   dropId      String?
   drop        GachaDrop?    @relation(fields: [dropId], references: [id])
   // TCG Stats
-  atk         Int           @default(0)
+  att         Int           @default(0)
   def         Int           @default(0)
-  spd         Int           @default(0)
-  hp          Int           @default(0)
+  end         Int           @default(0)
+  equilibre   Int           @default(0)
   element     String        @default("NEUTRAL")
   specialMove String?
   createdAt   DateTime      @default(now())
