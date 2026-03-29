@@ -344,8 +344,6 @@ export async function deleteBeyblade(id: string) {
 
 // Products management
 export async function getProducts(search?: string) {
-  await checkAdmin();
-
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const where: any = {};
   if (search) {
