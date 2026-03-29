@@ -8,10 +8,21 @@ import { prisma } from '@/lib/prisma';
 
 async function checkAdmin() {
   const session = await auth.api.getSession({ headers: await headers() });
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const role = (session?.user as any)?.role;
-  if (role !== 'admin' && role !== 'superadmin')
-    throw new Error('Unauthorized');
+  if (!session?.user)
+    throw new Error('Non connecté — veuillez vous identifier');
+
+  // Try role from session first (set by session callback)
+  const sessionRole = (session.user as { role?: string }).role;
+  if (sessionRole === 'admin' || sessionRole === 'superadmin') return;
+
+  // Fallback: check role directly in the database
+  const dbUser = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { role: true },
+  });
+  if (dbUser?.role === 'admin' || dbUser?.role === 'superadmin') return;
+
+  throw new Error('Accès réservé aux administrateurs');
 }
 
 export async function getPartsStats() {

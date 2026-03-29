@@ -235,26 +235,48 @@ function PartsTab({ onStatsChange }: { onStatsChange: () => void }) {
       showToast('Pièce sauvegardée', 'success');
       loadData();
       onStatsChange();
-    } catch {
-      showToast('Erreur', 'error');
+    } catch (err) {
+      const msg =
+        err instanceof Error ? err.message : 'Erreur lors de la sauvegarde';
+      showToast(msg, 'error');
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (confirm('Supprimer cette pièce ?')) {
-      await deletePart(id);
-      showToast('Pièce supprimée', 'success');
-      loadData();
-      onStatsChange();
-    }
-  };
+  const handleDelete = useCallback(
+    async (id: string) => {
+      if (confirm('Supprimer cette pièce ?')) {
+        try {
+          await deletePart(id);
+          showToast('Pièce supprimée', 'success');
+          loadData();
+          onStatsChange();
+        } catch (err) {
+          const msg =
+            err instanceof Error
+              ? err.message
+              : 'Erreur lors de la suppression';
+          showToast(msg, 'error');
+        }
+      }
+    },
+    [loadData, onStatsChange, showToast],
+  );
 
-  const handleDuplicate = async (id: string) => {
-    await duplicatePart(id);
-    showToast('Pièce dupliquée', 'success');
-    loadData();
-    onStatsChange();
-  };
+  const handleDuplicate = useCallback(
+    async (id: string) => {
+      try {
+        await duplicatePart(id);
+        showToast('Pièce dupliquée', 'success');
+        loadData();
+        onStatsChange();
+      } catch (err) {
+        const msg =
+          err instanceof Error ? err.message : 'Erreur lors de la duplication';
+        showToast(msg, 'error');
+      }
+    },
+    [loadData, onStatsChange, showToast],
+  );
 
   const processRowUpdate = async (newRow: GridRowModel) => {
     const updatedPart = newRow as Part;
@@ -263,9 +285,11 @@ function PartsTab({ onStatsChange }: { onStatsChange: () => void }) {
       showToast('Modification enregistrée', 'success');
       onStatsChange();
       return updatedPart;
-    } catch (error) {
-      showToast('Erreur lors de la sauvegarde', 'error');
-      throw error;
+    } catch (err) {
+      const msg =
+        err instanceof Error ? err.message : 'Erreur lors de la sauvegarde';
+      showToast(msg, 'error');
+      throw err;
     }
   };
 
