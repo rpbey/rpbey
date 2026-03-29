@@ -1,24 +1,88 @@
-node_modules
-.next
+# Dependencies
+node_modules/
+**/node_modules/
+.pnpm-store/
 
-# Keep environment variables out of version control
+# Build output
+.next/
+dist/
+out/
+build/
+bot/dist/
+*.tsbuildinfo
+
+# Environment & Secrets
 .env
 .env.local
 .env.*.local
+.env.production
+.env.staging
+
+# Credentials & Cookies (NEVER commit)
+*_cookie
+*_cookie.json
+*cookie*.json
+gha-creds-*.json
+*.pem
+*.key
 
 # Prisma generated
 /generated/prisma
 
-# TypeScript
-*.tsbuildinfo
-
 # IDE
-.vscode
-.idea
+.vscode/
+.idea/
+.fleet/
+*.swp
+*.swo
 
+# AI Agent configs
 .gemini/
-gha-creds-*.json
-dist
-logs/*.log
-check-data.ts
+GEMINI.md
+bot/GEMINI.md
+
+# Logs
 *.log
+logs/
+**/*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Scraped data / mirrors (large assets)
+bey-library-mirror/
+bey-library-mirror.log
+
+# Temporary files
+tmp-drive/
+temp/
+bot/temp/
+storage/
+backups/
+
+# User uploads (runtime data, not code)
+public/uploads/
+
+# Audio/video assets (too large for git)
+*.mp3
+*.wav
+*.raw
+
+# Backup files
+*.bak
+*.backup
+*.orig
+
+# Random data dumps
+kenroys_lotte.json
+bird_cookie.json
+
+# Docker
+*.pid
+
+# Docs archives & misc
+docs/archive/
+docs/WSL_X11_FORWARDING.md
+TCG_ROADMAP.md
+trailer/
