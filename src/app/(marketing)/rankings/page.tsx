@@ -480,6 +480,75 @@ export default async function RankingsPage({
           </Suspense>
         </Box>
 
+        {/* Discord CTA — contextual for rankings visitors */}
+        <Paper
+          component="a"
+          href="https://discord.gg/rpb"
+          target="_blank"
+          rel="noopener noreferrer"
+          elevation={0}
+          sx={{
+            mt: { xs: 3, md: 5 },
+            p: { xs: 2, md: 3 },
+            display: 'flex',
+            alignItems: 'center',
+            gap: { xs: 1.5, md: 2.5 },
+            bgcolor: alpha('#5865F2', 0.08),
+            border: '1px solid',
+            borderColor: alpha('#5865F2', 0.2),
+            textDecoration: 'none',
+            color: 'text.primary',
+            transition: 'all 0.2s ease',
+            '&:hover': {
+              bgcolor: alpha('#5865F2', 0.12),
+              borderColor: alpha('#5865F2', 0.4),
+            },
+          }}
+        >
+          <Box
+            sx={{
+              width: { xs: 40, md: 52 },
+              height: { xs: 40, md: 52 },
+              bgcolor: '#5865F2',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0,
+            }}
+          >
+            <DiscordIcon
+              sx={{ fontSize: { xs: 22, md: 28 }, color: 'white' }}
+            />
+          </Box>
+          <Box sx={{ flex: 1, minWidth: 0 }}>
+            <Typography
+              fontWeight={800}
+              sx={{ fontSize: { xs: '0.85rem', md: '1rem' } }}
+            >
+              Tu veux monter dans le classement ?
+            </Typography>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{ fontSize: { xs: '0.72rem', md: '0.82rem' } }}
+            >
+              Rejoins le Discord RPB pour participer aux tournois officiels et
+              gagner des points.
+            </Typography>
+          </Box>
+          <Typography
+            fontWeight={800}
+            sx={{
+              color: '#5865F2',
+              fontSize: { xs: '0.75rem', md: '0.9rem' },
+              whiteSpace: 'nowrap',
+              display: { xs: 'none', sm: 'block' },
+            }}
+          >
+            Rejoindre →
+          </Typography>
+        </Paper>
+
         <Typography
           variant="caption"
           color="text.secondary"

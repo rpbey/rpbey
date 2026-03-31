@@ -7,6 +7,7 @@ import {
   MobileNav,
 } from '@/components/layout';
 import { ICON_NAV_WIDTH } from '@/components/layout/constants';
+import { DiscordFloatingCTA } from '@/components/ui/DiscordFloatingCTA';
 import { SmoothScroll } from '@/components/ui/SmoothScroll';
 
 export const metadata: Metadata = {
@@ -51,6 +52,9 @@ export default function MarketingLayout({
 
       {/* Mobile: Bottom navigation */}
       <MobileNav />
+
+      {/* Discord join CTA */}
+      <DiscordFloatingCTA />
     </Box>
   );
 }
