@@ -25,7 +25,6 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 import type { Profile, User } from '@prisma/client';
-import { AnimatePresence, motion } from 'framer-motion';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useState } from 'react';
@@ -64,6 +63,7 @@ function BladerInfo({
     >
       <Avatar
         src={profile.user?.image || undefined}
+        alt={profile.bladerName || profile.user?.name || 'Blader'}
         sx={{
           width: { xs: 28, sm: 36 },
           height: { xs: 28, sm: 36 },
@@ -135,8 +135,6 @@ function BladerInfo({
   );
 }
 
-const MotionTableRow = motion.create(TableRow);
-
 interface RankingsTableProps {
   profiles: ProfileWithUser[];
   totalPages: number;
@@ -159,10 +157,6 @@ export function RankingsTable({
   const searchParams = useSearchParams();
   const { data: session } = authClient.useSession();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const prefersReducedMotion = useMediaQuery(
-    '(prefers-reduced-motion: reduce)',
-  );
-
   // Comparator state
   const [compareSelection, setCompareSelection] = useState<ProfileWithUser[]>(
     [],
@@ -493,185 +487,164 @@ export function RankingsTable({
             </TableRow>
           </TableHead>
           <TableBody>
-            <AnimatePresence mode="popLayout">
-              {profiles.length > 0 ? (
-                profiles.map((profile, index) => {
-                  const totalMatches = profile.wins + profile.losses;
-                  const winRate =
-                    totalMatches > 0
-                      ? ((profile.wins / totalMatches) * 100).toFixed(0)
-                      : '0';
+            {profiles.length > 0 ? (
+              profiles.map((profile, index) => {
+                const totalMatches = profile.wins + profile.losses;
+                const winRate =
+                  totalMatches > 0
+                    ? ((profile.wins / totalMatches) * 100).toFixed(0)
+                    : '0';
 
-                  const isCurrentUser = session?.user?.id === profile.userId;
-                  const isSelected = compareSelection.some(
-                    (p) => p.id === profile.id,
-                  );
+                const isCurrentUser = session?.user?.id === profile.userId;
+                const isSelected = compareSelection.some(
+                  (p) => p.id === profile.id,
+                );
 
-                  return (
-                    <MotionTableRow
-                      key={profile.id}
-                      initial={
-                        prefersReducedMotion ? false : { opacity: 0, y: 8 }
-                      }
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={
-                        prefersReducedMotion
-                          ? { duration: 0 }
-                          : {
-                              duration: 0.25,
-                              delay: Math.min(index * 0.02, 0.5),
-                              ease: 'easeOut',
-                            }
-                      }
-                      hover
+                return (
+                  <TableRow
+                    key={profile.id}
+                    hover
+                    sx={{
+                      '&:last-child td, &:last-child th': { border: 0 },
+                      bgcolor: isSelected
+                        ? alpha(theme.palette.primary.main, 0.06)
+                        : isCurrentUser
+                          ? alpha(theme.palette.primary.main, 0.08)
+                          : index % 2 === 0
+                            ? 'transparent'
+                            : 'rgba(255, 255, 255, 0.015)',
+                      transition: 'background-color 0.2s',
+                      borderLeft: isCurrentUser
+                        ? `3px solid ${theme.palette.primary.main}`
+                        : isSelected
+                          ? `3px solid ${alpha(theme.palette.primary.main, 0.6)}`
+                          : '3px solid transparent',
+                      '&:hover': {
+                        bgcolor: alpha(theme.palette.action.hover, 0.08),
+                      },
+                    }}
+                  >
+                    {!isMobile && (
+                      <TableCell
+                        align="center"
+                        sx={{ px: 0.5, width: 40, cursor: 'pointer' }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleToggleCompare(profile);
+                        }}
+                      >
+                        <Checkbox
+                          size="small"
+                          checked={isSelected}
+                          aria-label={`Comparer ${profile.bladerName || profile.user?.name || 'ce blader'}`}
+                          inputProps={{
+                            'aria-describedby': undefined,
+                          }}
+                          sx={{
+                            p: 0,
+                            '& .MuiSvgIcon-root': { fontSize: '1.1rem' },
+                            color: alpha(theme.palette.text.secondary, 0.3),
+                            '&.Mui-checked': {
+                              color: 'primary.main',
+                            },
+                          }}
+                        />
+                      </TableCell>
+                    )}
+                    <TableCell align="center" sx={{ px: { xs: 0.5, sm: 2 } }}>
+                      {getRankBadge(index)}
+                    </TableCell>
+                    <TableCell sx={{ px: { xs: 1, sm: 2 } }}>
+                      {profile.userId ? (
+                        <Link
+                          href={`${profileUrlPrefix}/${profile.userId}`}
+                          style={{ textDecoration: 'none', color: 'inherit' }}
+                          aria-label={`Voir le profil de ${profile.bladerName || profile.user?.name || 'ce blader'}`}
+                        >
+                          <BladerInfo profile={profile} theme={theme} />
+                        </Link>
+                      ) : (
+                        <Box sx={{ color: 'inherit' }}>
+                          <BladerInfo profile={profile} theme={theme} />
+                        </Box>
+                      )}
+                    </TableCell>
+                    <TableCell align="center" sx={{ px: { xs: 0.5, sm: 2 } }}>
+                      <Typography
+                        fontWeight="900"
+                        color="primary.main"
+                        sx={{ fontSize: { xs: '0.8rem', sm: '1.1rem' } }}
+                      >
+                        {profile.rankingPoints}
+                      </Typography>
+                    </TableCell>
+                    <TableCell
+                      align="center"
                       sx={{
-                        '&:last-child td, &:last-child th': { border: 0 },
-                        bgcolor: isSelected
-                          ? alpha(theme.palette.primary.main, 0.06)
-                          : isCurrentUser
-                            ? alpha(theme.palette.primary.main, 0.08)
-                            : index % 2 === 0
-                              ? 'transparent'
-                              : 'rgba(255, 255, 255, 0.015)',
-                        transition: 'background-color 0.2s',
-                        borderLeft: isCurrentUser
-                          ? `3px solid ${theme.palette.primary.main}`
-                          : isSelected
-                            ? `3px solid ${alpha(theme.palette.primary.main, 0.6)}`
-                            : '3px solid transparent',
-                        '&:hover': {
-                          bgcolor: alpha(theme.palette.action.hover, 0.08),
-                        },
+                        px: { xs: 0.5, sm: 2 },
+                        display: { xs: 'none', sm: 'table-cell' },
                       }}
                     >
-                      {!isMobile && (
-                        <TableCell
-                          align="center"
-                          sx={{ px: 0.5, width: 40, cursor: 'pointer' }}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleToggleCompare(profile);
-                          }}
-                        >
-                          <Checkbox
-                            size="small"
-                            checked={isSelected}
-                            aria-label={`Comparer ${profile.bladerName || profile.user?.name || 'ce blader'}`}
-                            inputProps={{
-                              'aria-describedby': undefined,
-                            }}
-                            sx={{
-                              p: 0,
-                              '& .MuiSvgIcon-root': { fontSize: '1.1rem' },
-                              color: alpha(theme.palette.text.secondary, 0.3),
-                              '&.Mui-checked': {
-                                color: 'primary.main',
-                              },
-                            }}
-                          />
-                        </TableCell>
-                      )}
-                      <TableCell align="center" sx={{ px: { xs: 0.5, sm: 2 } }}>
-                        {getRankBadge(index)}
-                      </TableCell>
-                      <TableCell sx={{ px: { xs: 1, sm: 2 } }}>
-                        {profile.userId ? (
-                          <Link
-                            href={`${profileUrlPrefix}/${profile.userId}`}
-                            style={{ textDecoration: 'none', color: 'inherit' }}
-                            aria-label={`Voir le profil de ${profile.bladerName || profile.user?.name || 'ce blader'}`}
-                          >
-                            <BladerInfo profile={profile} theme={theme} />
-                          </Link>
-                        ) : (
-                          <Box sx={{ color: 'inherit' }}>
-                            <BladerInfo profile={profile} theme={theme} />
-                          </Box>
-                        )}
-                      </TableCell>
-                      <TableCell align="center" sx={{ px: { xs: 0.5, sm: 2 } }}>
-                        <Typography
-                          fontWeight="900"
-                          color="primary.main"
-                          sx={{ fontSize: { xs: '0.8rem', sm: '1.1rem' } }}
-                        >
-                          {profile.rankingPoints}
-                        </Typography>
-                      </TableCell>
-                      <TableCell
-                        align="center"
+                      <Typography
+                        sx={{ fontSize: { xs: '0.75rem', sm: '0.9rem' } }}
+                      >
+                        {profile.user?._count?.tournaments || 0}
+                      </Typography>
+                    </TableCell>
+                    <TableCell align="center" sx={{ px: { xs: 0.5, sm: 2 } }}>
+                      <Typography
                         sx={{
-                          px: { xs: 0.5, sm: 2 },
-                          display: { xs: 'none', sm: 'table-cell' },
+                          fontSize: { xs: '0.7rem', sm: '0.85rem' },
+                          whiteSpace: 'nowrap',
                         }}
                       >
-                        <Typography
-                          sx={{ fontSize: { xs: '0.75rem', sm: '0.9rem' } }}
-                        >
-                          {profile.user?._count?.tournaments || 0}
-                        </Typography>
-                      </TableCell>
-                      <TableCell align="center" sx={{ px: { xs: 0.5, sm: 2 } }}>
-                        <Typography
-                          sx={{
-                            fontSize: { xs: '0.7rem', sm: '0.85rem' },
-                            whiteSpace: 'nowrap',
-                          }}
-                        >
-                          <span style={{ color: theme.palette.success.main }}>
-                            {profile.wins}
-                          </span>
-                          <span style={{ opacity: 0.4, margin: '0 1px' }}>
-                            /
-                          </span>
-                          <span style={{ color: theme.palette.error.main }}>
-                            {profile.losses}
-                          </span>
-                        </Typography>
-                      </TableCell>
-                      <TableCell
-                        align="center"
-                        sx={{
-                          px: { xs: 0.5, sm: 2 },
-                          display: { xs: 'none', md: 'table-cell' },
-                        }}
-                      >
-                        <Typography
-                          fontWeight="bold"
-                          sx={{ fontSize: { xs: '0.7rem', sm: '0.9rem' } }}
-                          color={
-                            Number.parseFloat(winRate) >= 50
-                              ? 'success.main'
-                              : 'text.secondary'
-                          }
-                        >
-                          {winRate}%
-                        </Typography>
-                      </TableCell>
-                    </MotionTableRow>
-                  );
-                })
-              ) : (
-                <TableRow>
-                  <TableCell
-                    colSpan={isMobile ? 4 : 7}
-                    align="center"
-                    sx={{ py: 8 }}
-                  >
-                    <Typography
-                      variant="h6"
-                      color="text.secondary"
-                      gutterBottom
+                        <span style={{ color: theme.palette.success.main }}>
+                          {profile.wins}
+                        </span>
+                        <span style={{ opacity: 0.4, margin: '0 1px' }}>/</span>
+                        <span style={{ color: theme.palette.error.main }}>
+                          {profile.losses}
+                        </span>
+                      </Typography>
+                    </TableCell>
+                    <TableCell
+                      align="center"
+                      sx={{
+                        px: { xs: 0.5, sm: 2 },
+                        display: { xs: 'none', md: 'table-cell' },
+                      }}
                     >
-                      Aucun blader trouvé
-                    </Typography>
-                    <Typography variant="body2" color="text.disabled">
-                      Essayez de modifier votre recherche.
-                    </Typography>
-                  </TableCell>
-                </TableRow>
-              )}
-            </AnimatePresence>
+                      <Typography
+                        fontWeight="bold"
+                        sx={{ fontSize: { xs: '0.7rem', sm: '0.9rem' } }}
+                        color={
+                          Number.parseFloat(winRate) >= 50
+                            ? 'success.main'
+                            : 'text.secondary'
+                        }
+                      >
+                        {winRate}%
+                      </Typography>
+                    </TableCell>
+                  </TableRow>
+                );
+              })
+            ) : (
+              <TableRow>
+                <TableCell
+                  colSpan={isMobile ? 4 : 7}
+                  align="center"
+                  sx={{ py: 8 }}
+                >
+                  <Typography variant="h6" color="text.secondary" gutterBottom>
+                    Aucun blader trouvé
+                  </Typography>
+                  <Typography variant="body2" color="text.disabled">
+                    Essayez de modifier votre recherche.
+                  </Typography>
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </TableContainer>

@@ -72,7 +72,7 @@ export default function TopRankingsPodium({
             <Card
               component={Link}
               href={`/profile/${profile.userId}`}
-              aria-label={`${profile.rank === 1 ? '1er' : `${profile.rank}ème`} — ${profile.bladerName || profile.user?.name || 'Anonyme'} — ${profile.rankingPoints} points`}
+              aria-label={`${profile.bladerName || profile.user?.name || 'Anonyme'}, ${profile.rank === 1 ? '1er' : `${profile.rank}ème`}, ${profile.rankingPoints} points`}
               sx={{
                 position: 'relative',
                 overflow: 'visible',
@@ -160,6 +160,7 @@ export default function TopRankingsPodium({
               >
                 <Avatar
                   src={profile.user?.image || undefined}
+                  alt={profile.bladerName || profile.user?.name || 'Anonyme'}
                   sx={{
                     width: { xs: 40, sm: 48, md: isFirst ? 68 : 56 },
                     height: { xs: 40, sm: 48, md: isFirst ? 68 : 56 },
@@ -183,6 +184,7 @@ export default function TopRankingsPodium({
                     }}
                   >
                     <Typography
+                      component="h3"
                       variant={isFirst ? 'h6' : 'subtitle1'}
                       fontWeight={900}
                       noWrap

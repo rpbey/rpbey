@@ -170,7 +170,7 @@ export function BeybladeXIcon({ size = 24, ...props }: IconProps) {
 export function RPBLogoIcon({ size = 24, className }: ImageIconProps) {
   return (
     <Image
-      src="/logo.png"
+      src="/logo.webp"
       alt="RPB"
       width={size}
       height={size}
@@ -195,14 +195,14 @@ export function RPBIcon({ size = 24, ...props }: IconProps) {
       {...props}
     >
       {/* Background circle */}
-      <circle cx="50" cy="50" r="48" fill="#dc2626" />
+      <circle cx="50" cy="50" r="48" fill="var(--rpb-primary)" />
       {/* Inner ring */}
       <circle
         cx="50"
         cy="50"
         r="40"
         fill="none"
-        stroke="#fbbf24"
+        stroke="var(--rpb-secondary)"
         strokeWidth="3"
       />
       {/* RPB Text */}

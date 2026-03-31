@@ -13,7 +13,7 @@ export function RpbLogo({
 }: RpbLogoProps) {
   return (
     <Image
-      src={animated ? '/rpb.gif' : '/logo.png'}
+      src={animated ? '/rpb.gif' : '/logo.webp'}
       alt="RPB Logo"
       width={size}
       height={size}

@@ -129,7 +129,7 @@ export function IconNav() {
             }}
           >
             <Image
-              src="/logo.png"
+              src="/logo.webp"
               alt="RPB Logo"
               width={48}
               height={48}
