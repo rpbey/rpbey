@@ -4855,11 +4855,11 @@ const DUEL_RARITY_BORDER: Record<string, string> = {
 export async function generateDuelArenaCard(
   data: DuelArenaData,
 ): Promise<Buffer> {
-  const W = 1100;
+  const W = 1400;
   const roundCount = data.rounds.length;
-  const ROUND_H = 185;
-  const HEADER_H = 85;
-  const FOOTER_H = 110;
+  const ROUND_H = 260;
+  const HEADER_H = 120;
+  const FOOTER_H = 155;
   const H = HEADER_H + roundCount * ROUND_H + FOOTER_H;
 
   const canvas = createCanvas(W, H);
@@ -4875,8 +4875,8 @@ export async function generateDuelArenaCard(
   ctx.fillRect(0, 0, W, H);
 
   // Center energy glow
-  const glow = ctx.createRadialGradient(W / 2, H / 2, 20, W / 2, H / 2, 400);
-  glow.addColorStop(0, 'rgba(220,38,38,0.08)');
+  const glow = ctx.createRadialGradient(W / 2, H / 2, 30, W / 2, H / 2, 500);
+  glow.addColorStop(0, 'rgba(220,38,38,0.10)');
   glow.addColorStop(0.5, 'rgba(220,38,38,0.03)');
   glow.addColorStop(1, 'rgba(0,0,0,0)');
   ctx.fillStyle = glow;
@@ -4887,7 +4887,7 @@ export async function generateDuelArenaCard(
   ctx.globalAlpha = 0.025;
   ctx.strokeStyle = '#dc2626';
   ctx.lineWidth = 1;
-  for (let i = -H; i < W + H; i += 35) {
+  for (let i = -H; i < W + H; i += 40) {
     ctx.beginPath();
     ctx.moveTo(i, 0);
     ctx.lineTo(i + H * 0.7, H);
@@ -4899,24 +4899,24 @@ export async function generateDuelArenaCard(
   ctx.save();
   const centerGrad = ctx.createLinearGradient(0, 0, 0, H);
   centerGrad.addColorStop(0, 'rgba(220,38,38,0)');
-  centerGrad.addColorStop(0.3, 'rgba(220,38,38,0.06)');
-  centerGrad.addColorStop(0.7, 'rgba(220,38,38,0.06)');
+  centerGrad.addColorStop(0.3, 'rgba(220,38,38,0.07)');
+  centerGrad.addColorStop(0.7, 'rgba(220,38,38,0.07)');
   centerGrad.addColorStop(1, 'rgba(220,38,38,0)');
   ctx.fillStyle = centerGrad;
-  ctx.fillRect(W / 2 - 1, 0, 2, H);
+  ctx.fillRect(W / 2 - 1.5, 0, 3, H);
   ctx.restore();
 
-  drawNoise(ctx, W, H, 0.015);
+  drawNoise(ctx, W, H, 0.012);
 
   // Border
   const brd = ctx.createLinearGradient(0, 0, W, H);
-  brd.addColorStop(0, 'rgba(220,38,38,0.15)');
-  brd.addColorStop(0.5, 'rgba(251,191,36,0.25)');
-  brd.addColorStop(1, 'rgba(220,38,38,0.15)');
+  brd.addColorStop(0, 'rgba(220,38,38,0.18)');
+  brd.addColorStop(0.5, 'rgba(251,191,36,0.30)');
+  brd.addColorStop(1, 'rgba(220,38,38,0.18)');
   ctx.strokeStyle = brd;
-  ctx.lineWidth = 2;
+  ctx.lineWidth = 3;
   ctx.beginPath();
-  ctx.roundRect(6, 6, W - 12, H - 12, 14);
+  ctx.roundRect(8, 8, W - 16, H - 16, 16);
   ctx.stroke();
 
   // ── Load avatars ──
@@ -4935,12 +4935,12 @@ export async function generateDuelArenaCard(
   ) => {
     ctx.save();
     if (isWinner) {
-      ctx.shadowColor = 'rgba(251,191,36,0.6)';
-      ctx.shadowBlur = 15;
+      ctx.shadowColor = 'rgba(251,191,36,0.7)';
+      ctx.shadowBlur = 22;
     }
     ctx.beginPath();
-    ctx.arc(cx, cy, r + 2, 0, Math.PI * 2);
-    ctx.fillStyle = isWinner ? '#fbbf24' : 'rgba(255,255,255,0.2)';
+    ctx.arc(cx, cy, r + 3, 0, Math.PI * 2);
+    ctx.fillStyle = isWinner ? '#fbbf24' : 'rgba(255,255,255,0.25)';
     ctx.fill();
     ctx.shadowBlur = 0;
 
@@ -4956,57 +4956,56 @@ export async function generateDuelArenaCard(
     ctx.restore();
   };
 
-  const avatarR = 26;
-  const headerY = 42;
+  const avatarR = 38;
+  const headerY = 56;
 
-  drawAvatar(avatarA, 55, headerY, avatarR, data.winner === 'A');
-  drawAvatar(avatarB, W - 55, headerY, avatarR, data.winner === 'B');
+  drawAvatar(avatarA, 65, headerY, avatarR, data.winner === 'A');
+  drawAvatar(avatarB, W - 65, headerY, avatarR, data.winner === 'B');
 
   // Player names
-  ctx.font = 'bold 20px GoogleSans, NotoEmoji, sans-serif';
+  ctx.font = 'bold 28px GoogleSans, NotoEmoji, sans-serif';
   ctx.textAlign = 'left';
   ctx.fillStyle = data.winner === 'A' ? '#fbbf24' : '#ffffff';
   let nameA = data.playerA.name;
-  if (ctx.measureText(nameA).width > 280) nameA = `${nameA.slice(0, 18)}…`;
-  ctx.fillText(nameA, 90, headerY + 7);
+  if (ctx.measureText(nameA).width > 360) nameA = `${nameA.slice(0, 18)}…`;
+  ctx.fillText(nameA, 115, headerY + 10);
 
   ctx.textAlign = 'right';
   ctx.fillStyle = data.winner === 'B' ? '#fbbf24' : '#ffffff';
   let nameB = data.playerB.name;
-  if (ctx.measureText(nameB).width > 280) nameB = `${nameB.slice(0, 18)}…`;
-  ctx.fillText(nameB, W - 90, headerY + 7);
+  if (ctx.measureText(nameB).width > 360) nameB = `${nameB.slice(0, 18)}…`;
+  ctx.fillText(nameB, W - 115, headerY + 10);
 
   // Title
   ctx.textAlign = 'center';
-  ctx.font = 'italic bold 28px GoogleSans, NotoEmoji, sans-serif';
-  const titleGrad = ctx.createLinearGradient(W / 2 - 100, 0, W / 2 + 100, 0);
+  ctx.font = 'italic bold 36px GoogleSans, NotoEmoji, sans-serif';
+  const titleGrad = ctx.createLinearGradient(W / 2 - 120, 0, W / 2 + 120, 0);
   titleGrad.addColorStop(0, '#dc2626');
   titleGrad.addColorStop(0.5, '#fbbf24');
   titleGrad.addColorStop(1, '#dc2626');
   ctx.fillStyle = titleGrad;
-  ctx.fillText('RPB ARENA', W / 2, headerY + 8);
+  ctx.fillText('RPB ARENA', W / 2, headerY + 10);
 
-  ctx.font = '11px GoogleSans, sans-serif';
-  ctx.fillStyle = 'rgba(255,255,255,0.25)';
+  ctx.font = '15px GoogleSans, sans-serif';
+  ctx.fillStyle = 'rgba(255,255,255,0.35)';
   ctx.fillText(
     `Best of ${roundCount} · Match #${data.matchId}`,
     W / 2,
-    headerY + 26,
+    headerY + 34,
   );
 
   // Header separator
-  const sepY = HEADER_H - 5;
-  const sep = ctx.createLinearGradient(40, 0, W - 40, 0);
+  const sepY = HEADER_H - 6;
+  const sep = ctx.createLinearGradient(50, 0, W - 50, 0);
   sep.addColorStop(0, 'rgba(251,191,36,0)');
-  sep.addColorStop(0.3, 'rgba(251,191,36,0.4)');
-  sep.addColorStop(0.5, 'rgba(251,191,36,0.6)');
-  sep.addColorStop(0.7, 'rgba(251,191,36,0.4)');
+  sep.addColorStop(0.3, 'rgba(251,191,36,0.45)');
+  sep.addColorStop(0.5, 'rgba(251,191,36,0.65)');
+  sep.addColorStop(0.7, 'rgba(251,191,36,0.45)');
   sep.addColorStop(1, 'rgba(251,191,36,0)');
   ctx.fillStyle = sep;
-  ctx.fillRect(40, sepY, W - 80, 1.5);
+  ctx.fillRect(50, sepY, W - 100, 2);
 
   // ── Rounds ──
-  // Pre-load all card images in parallel
   const allCardImages = await Promise.all(
     data.rounds.flatMap((r) => [
       safeLoadImage(r.cardA.imageUrl),
@@ -5020,16 +5019,16 @@ export async function generateDuelArenaCard(
     const imgA = allCardImages[i * 2]!;
     const imgB = allCardImages[i * 2 + 1]!;
 
-    // Round row background
+    // Row background
     ctx.fillStyle =
-      i % 2 === 0 ? 'rgba(255,255,255,0.012)' : 'rgba(0,0,0,0.05)';
-    ctx.fillRect(12, ry, W - 24, ROUND_H);
+      i % 2 === 0 ? 'rgba(255,255,255,0.015)' : 'rgba(0,0,0,0.06)';
+    ctx.fillRect(14, ry, W - 28, ROUND_H);
 
     // Round label
-    ctx.font = 'bold 13px GoogleSans, sans-serif';
-    ctx.fillStyle = 'rgba(251,191,36,0.5)';
+    ctx.font = 'bold 18px GoogleSans, sans-serif';
+    ctx.fillStyle = 'rgba(251,191,36,0.6)';
     ctx.textAlign = 'left';
-    ctx.fillText(`ROUND ${i + 1}`, 24, ry + 20);
+    ctx.fillText(`ROUND ${i + 1}`, 30, ry + 28);
 
     // ── Mini card renderer ──
     const drawMiniCard = (
@@ -5039,50 +5038,52 @@ export async function generateDuelArenaCard(
       y: number,
       isWinner: boolean,
     ) => {
-      const cW = 95;
-      const cH = 130;
+      const cW = 140;
+      const cH = 190;
       const borderColor = DUEL_RARITY_BORDER[card.rarity] ?? '#6b7280';
 
       // Glow for winner
       if (isWinner) {
         ctx.save();
-        ctx.shadowColor = `${borderColor}80`;
-        ctx.shadowBlur = 18;
+        ctx.shadowColor = `${borderColor}90`;
+        ctx.shadowBlur = 24;
         ctx.beginPath();
-        ctx.roundRect(x, y, cW, cH, 8);
+        ctx.roundRect(x, y, cW, cH, 10);
         ctx.fillStyle = 'rgba(0,0,0,0.01)';
         ctx.fill();
         ctx.restore();
       }
 
       // Card bg
-      ctx.fillStyle = isWinner ? 'rgba(10,10,20,0.8)' : 'rgba(10,10,20,0.5)';
+      ctx.fillStyle = isWinner ? 'rgba(10,10,20,0.85)' : 'rgba(10,10,20,0.5)';
       ctx.beginPath();
-      ctx.roundRect(x, y, cW, cH, 8);
+      ctx.roundRect(x, y, cW, cH, 10);
       ctx.fill();
 
       // Border
       ctx.strokeStyle = isWinner ? borderColor : `${borderColor}40`;
-      ctx.lineWidth = isWinner ? 2.5 : 1.5;
+      ctx.lineWidth = isWinner ? 3 : 2;
       ctx.beginPath();
-      ctx.roundRect(x, y, cW, cH, 8);
+      ctx.roundRect(x, y, cW, cH, 10);
       ctx.stroke();
 
-      // Card image
+      // Card image area
+      const imgPad = 6;
+      const imgAreaH = cH - 48;
       if (img) {
         ctx.save();
         ctx.beginPath();
-        ctx.roundRect(x + 4, y + 4, cW - 8, cH - 32, 6);
+        ctx.roundRect(x + imgPad, y + imgPad, cW - imgPad * 2, imgAreaH, 7);
         ctx.clip();
         const ar = img.width / img.height;
-        let dw = cW - 8;
-        let dh = cH - 32;
+        let dw = cW - imgPad * 2;
+        let dh = imgAreaH;
         if (ar > dw / dh) dh = dw / ar;
         else dw = dh * ar;
         ctx.drawImage(
           img,
-          x + 4 + (cW - 8 - dw) / 2,
-          y + 4 + (cH - 32 - dh) / 2,
+          x + imgPad + (cW - imgPad * 2 - dw) / 2,
+          y + imgPad + (imgAreaH - dh) / 2,
           dw,
           dh,
         );
@@ -5091,152 +5092,155 @@ export async function generateDuelArenaCard(
 
       // Loser overlay
       if (!isWinner) {
-        ctx.fillStyle = 'rgba(0,0,0,0.5)';
+        ctx.fillStyle = 'rgba(0,0,0,0.55)';
         ctx.beginPath();
-        ctx.roundRect(x + 4, y + 4, cW - 8, cH - 32, 6);
+        ctx.roundRect(x + imgPad, y + imgPad, cW - imgPad * 2, imgAreaH, 7);
         ctx.fill();
-        ctx.font = 'bold 32px GoogleSans, sans-serif';
-        ctx.fillStyle = 'rgba(239,68,68,0.3)';
+        ctx.font = 'bold 48px GoogleSans, sans-serif';
+        ctx.fillStyle = 'rgba(239,68,68,0.35)';
         ctx.textAlign = 'center';
-        ctx.fillText('✕', x + cW / 2, y + (cH - 32) / 2 + 16);
+        ctx.fillText('✕', x + cW / 2, y + imgPad + imgAreaH / 2 + 18);
       }
 
       // Element badge
       const elColor = DUEL_ELEMENT_COLORS[card.element] ?? '#6b7280';
       ctx.beginPath();
-      ctx.arc(x + cW - 12, y + 14, 9, 0, Math.PI * 2);
-      ctx.fillStyle = `${elColor}CC`;
+      ctx.arc(x + cW - 18, y + 18, 14, 0, Math.PI * 2);
+      ctx.fillStyle = `${elColor}DD`;
       ctx.fill();
-      ctx.font = '10px NotoEmoji, sans-serif';
+      ctx.strokeStyle = 'rgba(0,0,0,0.4)';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+      ctx.font = '14px NotoEmoji, sans-serif';
       ctx.textAlign = 'center';
       ctx.fillText(
         DUEL_ELEMENT_ICONS[card.element] ?? '⚪',
-        x + cW - 12,
-        y + 18,
+        x + cW - 18,
+        y + 23,
       );
 
-      // Card name below
-      ctx.font = 'bold 11px GoogleSans, sans-serif';
-      ctx.fillStyle = isWinner ? '#ffffff' : 'rgba(255,255,255,0.4)';
+      // Card name
+      ctx.font = 'bold 15px GoogleSans, sans-serif';
+      ctx.fillStyle = isWinner ? '#ffffff' : 'rgba(255,255,255,0.45)';
       ctx.textAlign = 'center';
       let nm = card.name;
-      if (ctx.measureText(nm).width > cW + 20) nm = `${nm.slice(0, 14)}…`;
-      ctx.fillText(nm, x + cW / 2, y + cH - 6);
+      if (ctx.measureText(nm).width > cW + 30) nm = `${nm.slice(0, 16)}…`;
+      ctx.fillText(nm, x + cW / 2, y + cH - 10);
 
       // Rarity stars
       const t = RARITY_THEMES[card.rarity];
       if (t && t.stars > 0) {
-        ctx.font = '8px GoogleSans, sans-serif';
+        ctx.font = '12px GoogleSans, sans-serif';
         ctx.fillStyle = isWinner ? t.accentColor : `${t.accentColor}60`;
-        ctx.fillText('★'.repeat(t.stars), x + cW / 2, y + cH - 16);
+        ctx.fillText('★'.repeat(t.stars), x + cW / 2, y + cH - 26);
       }
     };
 
-    const cardY = ry + 30;
+    const cardY = ry + 40;
     const isWinA = round.winner === 'A';
-    drawMiniCard(round.cardA, imgA, 55, cardY, isWinA);
-    drawMiniCard(round.cardB, imgB, W - 150, cardY, !isWinA);
+    drawMiniCard(round.cardA, imgA, 60, cardY, isWinA);
+    drawMiniCard(round.cardB, imgB, W - 200, cardY, !isWinA);
 
     // ── Center VS + Power comparison ──
     const midX = W / 2;
-    const midY = cardY + 50;
+    const midY = cardY + 70;
 
-    // VS circle
-    const vsGlowG = ctx.createRadialGradient(midX, midY, 3, midX, midY, 30);
-    vsGlowG.addColorStop(0, 'rgba(220,38,38,0.2)');
+    // VS glow
+    const vsGlowG = ctx.createRadialGradient(midX, midY, 5, midX, midY, 45);
+    vsGlowG.addColorStop(0, 'rgba(220,38,38,0.25)');
     vsGlowG.addColorStop(1, 'rgba(0,0,0,0)');
     ctx.fillStyle = vsGlowG;
-    ctx.fillRect(midX - 30, midY - 30, 60, 60);
+    ctx.fillRect(midX - 45, midY - 45, 90, 90);
 
-    ctx.font = 'italic bold 22px GoogleSans, sans-serif';
-    ctx.fillStyle = 'rgba(255,255,255,0.08)';
+    ctx.font = 'italic bold 32px GoogleSans, sans-serif';
+    ctx.fillStyle = 'rgba(255,255,255,0.10)';
     ctx.textAlign = 'center';
-    ctx.fillText('VS', midX, midY + 8);
+    ctx.fillText('VS', midX, midY + 12);
 
-    // Power values
-    ctx.font = 'bold 20px GoogleSans, sans-serif';
+    // Power values (large)
+    ctx.font = 'bold 30px GoogleSans, sans-serif';
     ctx.textAlign = 'right';
     ctx.fillStyle = isWinA ? '#22c55e' : '#ef4444';
-    ctx.fillText(String(round.cardA.power), midX - 35, midY - 12);
+    ctx.fillText(String(round.cardA.power), midX - 45, midY - 14);
 
     ctx.textAlign = 'center';
-    ctx.font = 'bold 14px GoogleSans, sans-serif';
-    ctx.fillStyle = 'rgba(255,255,255,0.2)';
-    ctx.fillText('⚔️', midX, midY - 12);
+    ctx.font = 'bold 20px GoogleSans, NotoEmoji, sans-serif';
+    ctx.fillStyle = 'rgba(255,255,255,0.25)';
+    ctx.fillText('⚔️', midX, midY - 14);
 
     ctx.textAlign = 'left';
-    ctx.font = 'bold 20px GoogleSans, sans-serif';
+    ctx.font = 'bold 30px GoogleSans, sans-serif';
     ctx.fillStyle = !isWinA ? '#22c55e' : '#ef4444';
-    ctx.fillText(String(round.cardB.power), midX + 35, midY - 12);
+    ctx.fillText(String(round.cardB.power), midX + 45, midY - 14);
 
-    // Power bars (facing each other from center)
-    const barW = 140;
-    const barH = 6;
-    const barY2 = midY + 12;
+    // Power bars (thicker)
+    const barW = 190;
+    const barH = 10;
+    const barY2 = midY + 16;
     const maxPwr = Math.max(round.cardA.power, round.cardB.power, 1);
 
-    // Bar A (grows right-to-left toward center)
+    // Bar A
     const pctA = round.cardA.power / maxPwr;
-    ctx.fillStyle = 'rgba(255,255,255,0.05)';
+    ctx.fillStyle = 'rgba(255,255,255,0.06)';
     ctx.beginPath();
-    ctx.roundRect(midX - 30 - barW, barY2, barW, barH, 3);
+    ctx.roundRect(midX - 40 - barW, barY2, barW, barH, 5);
     ctx.fill();
     const barAGrad = ctx.createLinearGradient(
-      midX - 30 - barW,
+      midX - 40 - barW,
       0,
-      midX - 30,
+      midX - 40,
       0,
     );
     barAGrad.addColorStop(0, isWinA ? '#22c55e20' : '#ef444420');
     barAGrad.addColorStop(1, isWinA ? '#22c55e' : '#ef4444');
     ctx.fillStyle = barAGrad;
     ctx.beginPath();
-    ctx.roundRect(midX - 30 - barW * pctA, barY2, barW * pctA, barH, 3);
+    ctx.roundRect(midX - 40 - barW * pctA, barY2, barW * pctA, barH, 5);
     ctx.fill();
 
-    // Bar B (grows left-to-right from center)
+    // Bar B
     const pctB = round.cardB.power / maxPwr;
-    ctx.fillStyle = 'rgba(255,255,255,0.05)';
+    ctx.fillStyle = 'rgba(255,255,255,0.06)';
     ctx.beginPath();
-    ctx.roundRect(midX + 30, barY2, barW, barH, 3);
+    ctx.roundRect(midX + 40, barY2, barW, barH, 5);
     ctx.fill();
     const barBGrad = ctx.createLinearGradient(
-      midX + 30,
+      midX + 40,
       0,
-      midX + 30 + barW,
+      midX + 40 + barW,
       0,
     );
     barBGrad.addColorStop(0, !isWinA ? '#22c55e' : '#ef4444');
     barBGrad.addColorStop(1, !isWinA ? '#22c55e20' : '#ef444420');
     ctx.fillStyle = barBGrad;
     ctx.beginPath();
-    ctx.roundRect(midX + 30, barY2, barW * pctB, barH, 3);
+    ctx.roundRect(midX + 40, barY2, barW * pctB, barH, 5);
     ctx.fill();
 
     // Winner indicator
-    ctx.font = 'bold 15px GoogleSans, NotoEmoji, sans-serif';
-    const winX = isWinA ? 170 : W - 170;
+    ctx.font = 'bold 22px GoogleSans, NotoEmoji, sans-serif';
+    const winX = isWinA ? 220 : W - 220;
     ctx.fillStyle = '#22c55e';
     ctx.textAlign = 'center';
-    ctx.fillText('✓', winX, cardY + 65);
+    ctx.fillText('✓', winX, cardY + 90);
 
-    // Events
+    // Events (larger text, brighter)
     if (round.events.length > 0) {
-      ctx.font = '11px GoogleSans, NotoEmoji, sans-serif';
-      ctx.fillStyle = 'rgba(251,191,36,0.6)';
+      ctx.font = '15px GoogleSans, NotoEmoji, sans-serif';
+      ctx.fillStyle = 'rgba(251,191,36,0.75)';
       ctx.textAlign = 'center';
       const evText = round.events.slice(0, 2).join('  ·  ');
       let truncated = evText;
-      if (ctx.measureText(truncated).width > 400)
-        truncated = `${truncated.slice(0, 60)}…`;
-      ctx.fillText(truncated, midX, barY2 + 28);
+      if (ctx.measureText(truncated).width > 550)
+        truncated = `${truncated.slice(0, 65)}…`;
+      ctx.fillText(truncated, midX, barY2 + 38);
     }
 
     // Round separator
     if (i < roundCount - 1) {
       const rsY = ry + ROUND_H - 2;
-      ctx.fillStyle = 'rgba(255,255,255,0.04)';
-      ctx.fillRect(40, rsY, W - 80, 1);
+      ctx.fillStyle = 'rgba(255,255,255,0.05)';
+      ctx.fillRect(50, rsY, W - 100, 1.5);
     }
   }
 
@@ -5244,64 +5248,64 @@ export async function generateDuelArenaCard(
   const fy = HEADER_H + roundCount * ROUND_H;
 
   // Separator
-  const footSep = ctx.createLinearGradient(40, 0, W - 40, 0);
+  const footSep = ctx.createLinearGradient(50, 0, W - 50, 0);
   footSep.addColorStop(0, 'rgba(251,191,36,0)');
-  footSep.addColorStop(0.3, 'rgba(251,191,36,0.4)');
-  footSep.addColorStop(0.5, 'rgba(251,191,36,0.6)');
-  footSep.addColorStop(0.7, 'rgba(251,191,36,0.4)');
+  footSep.addColorStop(0.3, 'rgba(251,191,36,0.45)');
+  footSep.addColorStop(0.5, 'rgba(251,191,36,0.65)');
+  footSep.addColorStop(0.7, 'rgba(251,191,36,0.45)');
   footSep.addColorStop(1, 'rgba(251,191,36,0)');
   ctx.fillStyle = footSep;
-  ctx.fillRect(40, fy + 5, W - 80, 1.5);
+  ctx.fillRect(50, fy + 8, W - 100, 2);
 
   // Finish banner
-  ctx.fillStyle = 'rgba(220,38,38,0.85)';
-  ctx.shadowColor = 'rgba(220,38,38,0.3)';
-  ctx.shadowBlur = 12;
+  ctx.fillStyle = 'rgba(220,38,38,0.88)';
+  ctx.shadowColor = 'rgba(220,38,38,0.35)';
+  ctx.shadowBlur = 16;
   ctx.beginPath();
-  ctx.roundRect(W / 2 - 180, fy + 16, 360, 32, 16);
+  ctx.roundRect(W / 2 - 220, fy + 22, 440, 42, 21);
   ctx.fill();
   ctx.shadowBlur = 0;
-  ctx.font = 'bold 16px GoogleSans, NotoEmoji, sans-serif';
+  ctx.font = 'bold 22px GoogleSans, NotoEmoji, sans-serif';
   ctx.fillStyle = '#ffffff';
   ctx.textAlign = 'center';
-  ctx.fillText(data.finishMessage, W / 2, fy + 37);
+  ctx.fillText(data.finishMessage, W / 2, fy + 50);
 
-  // Score
-  ctx.font = 'bold 36px GoogleSans, sans-serif';
-  const scoreGrad = ctx.createLinearGradient(W / 2 - 60, 0, W / 2 + 60, 0);
+  // Score (big)
+  ctx.font = 'bold 52px GoogleSans, sans-serif';
+  const scoreGrad = ctx.createLinearGradient(W / 2 - 80, 0, W / 2 + 80, 0);
   scoreGrad.addColorStop(0, data.winner === 'A' ? '#22c55e' : '#ef4444');
-  scoreGrad.addColorStop(0.45, '#ffffff');
-  scoreGrad.addColorStop(0.55, '#ffffff');
+  scoreGrad.addColorStop(0.42, '#ffffff');
+  scoreGrad.addColorStop(0.58, '#ffffff');
   scoreGrad.addColorStop(1, data.winner === 'B' ? '#22c55e' : '#ef4444');
   ctx.fillStyle = scoreGrad;
-  ctx.fillText(`${data.score[0]}  —  ${data.score[1]}`, W / 2, fy + 78);
+  ctx.fillText(`${data.score[0]}  —  ${data.score[1]}`, W / 2, fy + 108);
 
   // Winner name
   const winnerName =
     data.winner === 'A' ? data.playerA.name : data.playerB.name;
-  ctx.font = 'bold 14px GoogleSans, NotoEmoji, sans-serif';
+  ctx.font = 'bold 20px GoogleSans, NotoEmoji, sans-serif';
   ctx.fillStyle = '#fbbf24';
-  ctx.fillText(`🏆 ${winnerName} remporte le duel !`, W / 2, fy + 96);
+  ctx.fillText(`🏆 ${winnerName} remporte le duel !`, W / 2, fy + 134);
 
-  // Reward (right side)
+  // Reward (right)
   ctx.textAlign = 'right';
-  ctx.font = 'bold 13px GoogleSans, NotoEmoji, sans-serif';
+  ctx.font = 'bold 18px GoogleSans, NotoEmoji, sans-serif';
   ctx.fillStyle = '#fbbf24';
-  ctx.fillText(`+${data.coinReward} 🪙`, W - 30, fy + 96);
+  ctx.fillText(`+${data.coinReward} 🪙`, W - 40, fy + 134);
 
-  // Bet info (left side)
+  // Bet info (left)
   if (data.bet > 0) {
     ctx.textAlign = 'left';
-    ctx.font = '12px GoogleSans, NotoEmoji, sans-serif';
-    ctx.fillStyle = 'rgba(255,255,255,0.3)';
-    ctx.fillText(`🎰 Mise : ${data.bet} 🪙`, 30, fy + 96);
+    ctx.font = '16px GoogleSans, NotoEmoji, sans-serif';
+    ctx.fillStyle = 'rgba(255,255,255,0.40)';
+    ctx.fillText(`🎰 Mise : ${data.bet} 🪙`, 40, fy + 134);
   }
 
   // Footer brand
   ctx.textAlign = 'center';
-  ctx.font = '10px GoogleSans, sans-serif';
-  ctx.fillStyle = 'rgba(255,255,255,0.12)';
-  ctx.fillText('rpbey.fr · République Populaire du Beyblade', W / 2, H - 10);
+  ctx.font = '13px GoogleSans, sans-serif';
+  ctx.fillStyle = 'rgba(255,255,255,0.18)';
+  ctx.fillText('rpbey.fr · République Populaire du Beyblade', W / 2, H - 14);
 
   return canvas.toBuffer('image/png');
 }
