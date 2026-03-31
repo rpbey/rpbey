@@ -1,6 +1,9 @@
 import type { Metadata } from 'next';
 import type {
   BreadcrumbList,
+  Event,
+  ItemList,
+  SportsOrganization,
   TechArticle,
   WebSite,
   WithContext,
@@ -102,6 +105,103 @@ export function generateBreadcrumbJsonLd(
       position: index + 1,
       name: item.name,
       item: `${baseUrl}${item.item}`,
+    })),
+  };
+}
+
+export function generateEventJsonLd(event: {
+  name: string;
+  description?: string;
+  date: string;
+  location?: string;
+  url: string;
+  maxAttendees?: number;
+  status?: 'upcoming' | 'active' | 'complete' | 'cancelled';
+}): WithContext<Event> {
+  const eventStatus = {
+    upcoming: 'https://schema.org/EventScheduled',
+    active: 'https://schema.org/EventScheduled',
+    complete: 'https://schema.org/EventPostponed',
+    cancelled: 'https://schema.org/EventCancelled',
+  } as const;
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Event',
+    name: event.name,
+    description: event.description || `Tournoi Beyblade X organisé par la RPB`,
+    startDate: event.date,
+    eventStatus: event.status
+      ? eventStatus[event.status]
+      : 'https://schema.org/EventScheduled',
+    eventAttendanceMode: event.location
+      ? 'https://schema.org/OfflineEventAttendanceMode'
+      : 'https://schema.org/OnlineEventAttendanceMode',
+    location: event.location
+      ? {
+          '@type': 'Place',
+          name: event.location,
+        }
+      : {
+          '@type': 'VirtualLocation',
+          url: `${baseUrl}${event.url}`,
+        },
+    organizer: {
+      '@type': 'Organization',
+      name: 'RPB - République Populaire du Beyblade',
+      url: baseUrl,
+    },
+    url: `${baseUrl}${event.url}`,
+    maximumAttendeeCapacity: event.maxAttendees,
+    image: `${baseUrl}/banner.png`,
+  };
+}
+
+export function generateOrganizationJsonLd(): WithContext<SportsOrganization> {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'SportsOrganization',
+    name: 'RPB - République Populaire du Beyblade',
+    alternateName: 'RPB',
+    url: baseUrl,
+    logo: `${baseUrl}/logo.png`,
+    description:
+      'La 1ère communauté Beyblade X en France. Tournois officiels, classements nationaux et événements.',
+    sport: 'Beyblade X',
+    sameAs: [
+      'https://discord.gg/V8H2vHWeU6',
+      'https://twitter.com/RPBey_fr',
+      'https://www.instagram.com/rpb_bey',
+      'https://www.tiktok.com/@rpb_bey',
+      'https://www.twitch.tv/tv_rpb',
+      'https://www.youtube.com/@RPB-Beyblade',
+    ],
+    foundingDate: '2024-01-01',
+    contactPoint: {
+      '@type': 'ContactPoint',
+      contactType: 'customer service',
+      url: 'https://discord.gg/V8H2vHWeU6',
+    },
+  };
+}
+
+export function generateItemListJsonLd(
+  items: {
+    name: string;
+    url: string;
+    position: number;
+    image?: string;
+  }[],
+): WithContext<ItemList> {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    itemListElement: items.map((item) => ({
+      '@type': 'ListItem',
+      position: item.position,
+      name: item.name,
+      url: `${baseUrl}${item.url}`,
+      image: item.image,
     })),
   };
 }

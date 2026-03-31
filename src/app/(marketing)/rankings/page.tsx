@@ -18,6 +18,7 @@ import {
 } from '@/components/rankings/RankingsTable';
 import SeasonSelector from '@/components/rankings/SeasonSelector';
 import TopRankingsPodium from '@/components/rankings/TopRankingsPodium';
+import { JsonLd } from '@/components/seo/JsonLd';
 import {
   MuiDiscordIcon as DiscordIcon,
   MuiTikTokIcon as TikTokIcon,
@@ -26,7 +27,11 @@ import {
 } from '@/components/ui/MuiIcons';
 import { ScrollToTop } from '@/components/ui/ScrollToTop';
 import { prisma } from '@/lib/prisma';
-import { createPageMetadata } from '@/lib/seo-utils';
+import {
+  createPageMetadata,
+  generateBreadcrumbJsonLd,
+  generateItemListJsonLd,
+} from '@/lib/seo-utils';
 import { getSeasonStandings, getSeasons } from '@/server/actions/season';
 
 export const dynamic = 'force-dynamic';
@@ -266,6 +271,24 @@ export default async function RankingsPage({
         maxWidth="lg"
         sx={{ position: 'relative', px: { xs: 1.5, sm: 2, md: 3 } }}
       >
+        <JsonLd
+          data={generateBreadcrumbJsonLd([
+            { name: 'Accueil', item: '/' },
+            { name: 'Classements', item: '/rankings' },
+          ])}
+        />
+        {showPodium && profiles.length >= 3 && (
+          <JsonLd
+            data={generateItemListJsonLd(
+              profiles.slice(0, 10).map((p, i) => ({
+                name: p.bladerName || 'Anonyme',
+                url: p.userId ? `/profile/${p.userId}` : '/rankings',
+                position: i + 1,
+                image: p.user?.image ?? undefined,
+              })),
+            )}
+          />
+        )}
         {/* Visually hidden heading for screen readers */}
         <Typography
           component="h1"

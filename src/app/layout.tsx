@@ -6,7 +6,10 @@ import { JsonLd } from '@/components/seo/JsonLd';
 import ThemeRegistry from '@/components/theme/ThemeRegistry';
 import { Toaster } from '@/components/ui/Toaster';
 import { googleSansFlex } from '@/lib/fonts';
-import { generateWebsiteJsonLd } from '@/lib/seo-utils';
+import {
+  generateOrganizationJsonLd,
+  generateWebsiteJsonLd,
+} from '@/lib/seo-utils';
 import './globals.css';
 
 export const viewport: Viewport = {
@@ -116,6 +119,7 @@ export default function RootLayout({
         />
         <InitColorSchemeScript attribute="class" defaultMode="dark" />
         <JsonLd data={generateWebsiteJsonLd()} />
+        <JsonLd data={generateOrganizationJsonLd()} />
         <NuqsAdapter>
           <ThemeRegistry>
             <Toaster />

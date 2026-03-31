@@ -72,6 +72,17 @@ export async function generateMetadata({
   return {
     title: `${bladerName} - Profil`,
     description,
+    keywords: [
+      bladerName,
+      'Beyblade X',
+      'profil blader',
+      'RPB',
+      'classement',
+      'tournoi Beyblade',
+    ],
+    alternates: {
+      canonical: `https://rpbey.fr/profile/${id}`,
+    },
     openGraph: {
       title: `${bladerName} - Profil | RPB`,
       description,

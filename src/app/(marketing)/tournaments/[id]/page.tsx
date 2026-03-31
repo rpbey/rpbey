@@ -2,7 +2,9 @@ import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { JsonLd } from '@/components/seo/JsonLd';
 import { prisma } from '@/lib/prisma';
+import { generateBreadcrumbJsonLd, generateEventJsonLd } from '@/lib/seo-utils';
 import type { TournamentData } from './_components/TournamentDetail';
 import TournamentDetail from './_components/TournamentDetail';
 
@@ -27,25 +29,45 @@ const tournamentSelect = {
   updatedAt: true,
 } as const;
 
+const BTS_META: Record<
+  string,
+  { file: string; name: string; desc: string; date: string }
+> = {
+  bts1: {
+    file: 'B_TS1.json',
+    name: 'Bey-Tamashii Séries #1',
+    desc: 'Première édition des Bey-Tamashii Séries au Dernier Bar avant la Fin du Monde.',
+    date: '2026-01-11',
+  },
+  bts2: {
+    file: 'B_TS2.json',
+    name: 'Bey-Tamashii Séries #2',
+    desc: 'Deuxième édition des Bey-Tamashii Séries.',
+    date: '2026-02-08',
+  },
+  bts3: {
+    file: 'B_TS3.json',
+    name: 'Bey-Tamashii Séries #3',
+    desc: 'Troisième édition des Bey-Tamashii Séries au Dernier Bar avant la Fin du Monde.',
+    date: '2026-03-01',
+  },
+};
+
 async function getScrapedTournament(id: string) {
-  if (id !== 'bts2' && id !== 'bts3') return null;
+  const meta = BTS_META[id];
+  if (!meta) return null;
 
-  const fileName = id === 'bts2' ? 'B_TS2.json' : 'B_TS3.json';
-  const filePath = join(process.cwd(), 'data/exports', fileName);
-
+  const filePath = join(process.cwd(), 'data/exports', meta.file);
   if (!existsSync(filePath)) return null;
 
   const data = JSON.parse(readFileSync(filePath, 'utf-8'));
 
   return {
     id,
-    name: id === 'bts2' ? 'Bey-Tamashii Séries #2' : 'Bey-Tamashii Séries #3',
+    name: meta.name,
     status: 'COMPLETE',
-    description:
-      id === 'bts2'
-        ? 'Deuxième édition des Bey-Tamashii Séries.'
-        : 'Troisième édition des Bey-Tamashii Séries au Dernier Bar avant la Fin du Monde.',
-    date: new Date(id === 'bts2' ? '2026-02-08' : '2026-03-01'),
+    description: meta.desc,
+    date: new Date(meta.date),
     location: 'Dernier Bar avant la Fin du Monde, Paris',
     format: '3on3 Double Elimination',
     maxPlayers: 128,
@@ -149,6 +171,17 @@ export async function generateMetadata({
   return {
     title: tournament.name,
     description,
+    keywords: [
+      tournament.name,
+      'tournoi Beyblade X',
+      'RPB',
+      'compétition',
+      'classement',
+      tournament.location ?? 'France',
+    ].filter(Boolean) as string[],
+    alternates: {
+      canonical: `https://rpbey.fr/tournaments/${id}`,
+    },
     openGraph: {
       type: 'website',
       locale: 'fr_FR',
@@ -240,11 +273,42 @@ export default async function TournamentDetailPage({ params }: PageProps) {
     lastUpdated: tournament.updatedAt.toISOString(),
   };
 
+  const statusMap: Record<
+    string,
+    'upcoming' | 'active' | 'complete' | 'cancelled'
+  > = {
+    UPCOMING: 'upcoming',
+    PENDING: 'upcoming',
+    ACTIVE: 'active',
+    COMPLETE: 'complete',
+    CANCELLED: 'cancelled',
+  };
+
   return (
-    <TournamentDetail
-      tournament={tournamentData}
-      formattedDate={formattedDate}
-      initialLiveData={initialLiveData}
-    />
+    <>
+      <JsonLd
+        data={generateEventJsonLd({
+          name: tournament.name,
+          description: tournament.description ?? undefined,
+          date: tournament.date.toISOString(),
+          location: tournament.location ?? undefined,
+          url: `/tournaments/${tournament.id}`,
+          maxAttendees: tournament.maxPlayers,
+          status: statusMap[tournament.status] ?? 'upcoming',
+        })}
+      />
+      <JsonLd
+        data={generateBreadcrumbJsonLd([
+          { name: 'Accueil', item: '/' },
+          { name: 'Tournois', item: '/tournaments' },
+          { name: tournament.name, item: `/tournaments/${tournament.id}` },
+        ])}
+      />
+      <TournamentDetail
+        tournament={tournamentData}
+        formattedDate={formattedDate}
+        initialLiveData={initialLiveData}
+      />
+    </>
   );
 }

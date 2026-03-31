@@ -7,15 +7,61 @@ export const dynamic = 'force-dynamic';
 
 // MIGRATED from: export const revalidate = 3600;
 // → Dynamic by default with Cache Components.
-const STATIC_ROUTES = {
-  '': 'src/app/(marketing)/page.tsx',
-  '/tournaments': 'src/app/(marketing)/tournaments/page.tsx',
-  '/rankings': 'src/app/(marketing)/rankings/page.tsx',
-  '/notre-equipe': 'src/app/(marketing)/notre-equipe/page.tsx',
-  '/a-propos': 'src/app/(marketing)/a-propos/page.tsx',
-  '/tv': 'src/app/(marketing)/tv/page.tsx',
-  '/reglement': 'src/app/(marketing)/reglement/page.tsx',
-  '/privacy': 'src/app/(marketing)/privacy/page.tsx',
+const STATIC_ROUTES: Record<
+  string,
+  { file: string; priority: number; freq: 'daily' | 'weekly' | 'monthly' }
+> = {
+  '': { file: 'src/app/(marketing)/page.tsx', priority: 1, freq: 'daily' },
+  '/rankings': {
+    file: 'src/app/(marketing)/rankings/page.tsx',
+    priority: 0.9,
+    freq: 'daily',
+  },
+  '/tournaments': {
+    file: 'src/app/(marketing)/tournaments/page.tsx',
+    priority: 0.9,
+    freq: 'daily',
+  },
+  '/meta': {
+    file: 'src/app/(marketing)/meta/page.tsx',
+    priority: 0.8,
+    freq: 'weekly',
+  },
+  '/tv': {
+    file: 'src/app/(marketing)/tv/page.tsx',
+    priority: 0.7,
+    freq: 'daily',
+  },
+  '/anime': {
+    file: 'src/app/(marketing)/anime/page.tsx',
+    priority: 0.7,
+    freq: 'weekly',
+  },
+  '/builder': {
+    file: 'src/app/(marketing)/builder/page.tsx',
+    priority: 0.7,
+    freq: 'weekly',
+  },
+  '/app': {
+    file: 'src/app/(marketing)/app/page.tsx',
+    priority: 0.6,
+    freq: 'monthly',
+  },
+  '/notre-equipe': {
+    file: 'src/app/(marketing)/notre-equipe/page.tsx',
+    priority: 0.5,
+    freq: 'monthly',
+  },
+  '/reglement': {
+    file: 'src/app/(marketing)/reglement/page.tsx',
+    priority: 0.4,
+    freq: 'monthly',
+  },
+  '/privacy': {
+    file: 'src/app/(marketing)/privacy/page.tsx',
+    priority: 0.3,
+    freq: 'monthly',
+  },
 };
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -23,21 +69,23 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const cwd = process.cwd();
 
   // Static routes with actual file modification times
-  const routes = Object.entries(STATIC_ROUTES).map(([route, filePath]) => {
+  const routes = Object.entries(STATIC_ROUTES).map(([route, config]) => {
     let lastModified = new Date();
     try {
-      const fullPath = path.join(cwd, filePath);
+      const fullPath = path.join(cwd, config.file);
       const stats = fs.statSync(fullPath);
       lastModified = stats.mtime;
     } catch {
-      console.warn(`Could not get stats for ${filePath}, using current date.`);
+      console.warn(
+        `Could not get stats for ${config.file}, using current date.`,
+      );
     }
 
     return {
       url: `${baseUrl}${route}`,
       lastModified,
-      changeFrequency: 'daily' as const,
-      priority: route === '' ? 1 : 0.8,
+      changeFrequency: config.freq,
+      priority: config.priority,
     };
   });
 
@@ -79,5 +127,40 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.warn('Failed to fetch profiles for sitemap:', error);
   }
 
-  return [...routes, ...tournamentRoutes, ...profileRoutes];
+  // Dynamic Anime Series & Episodes
+  const animeRoutes: MetadataRoute.Sitemap = [];
+  try {
+    const series = await prisma.animeSeries.findMany({
+      where: { isPublished: true },
+      select: {
+        slug: true,
+        updatedAt: true,
+        episodes: {
+          select: { number: true, updatedAt: true },
+          orderBy: { number: 'asc' },
+        },
+      },
+    });
+
+    for (const s of series) {
+      animeRoutes.push({
+        url: `${baseUrl}/anime/${s.slug}`,
+        lastModified: s.updatedAt,
+        changeFrequency: 'weekly',
+        priority: 0.6,
+      });
+      for (const ep of s.episodes) {
+        animeRoutes.push({
+          url: `${baseUrl}/anime/${s.slug}/${ep.number}`,
+          lastModified: ep.updatedAt,
+          changeFrequency: 'monthly',
+          priority: 0.5,
+        });
+      }
+    }
+  } catch (error) {
+    console.warn('Failed to fetch anime for sitemap:', error);
+  }
+
+  return [...routes, ...tournamentRoutes, ...profileRoutes, ...animeRoutes];
 }
