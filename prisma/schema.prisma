@@ -200,10 +200,17 @@ model Profile {
   dailyStreak       Int             @default(0)
   pityCount         Int             @default(0)
   lastGiftSent      DateTime?
+  // Duel TCG stats
+  duelRating        Int             @default(1000)
+  duelWins          Int             @default(0)
+  duelLosses        Int             @default(0)
+  duelStreak        Int             @default(0)
+  duelBestStreak    Int             @default(0)
   user              User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   wishlist          CardWishlist[]
 
   @@index([rankingPoints])
+  @@index([duelRating])
   @@map("profiles")
 }
 
