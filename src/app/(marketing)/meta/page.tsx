@@ -2,24 +2,20 @@ import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { Alert, Box, Container, Typography } from '@mui/material';
 import type { Metadata } from 'next';
-
 import { prisma } from '@/lib/prisma';
+import { createPageMetadata } from '@/lib/seo-utils';
 
 import { MetaClient } from './_components/MetaClient';
 import type { BbxWeeklyData, PartStats } from './_components/types';
 
 export const dynamic = 'force-dynamic';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPageMetadata({
   title: 'Meta Beyblade X | RPB',
   description:
     'Rankings des pièces Beyblade X basés sur les résultats de tournois WBO. Scores de puissance et synergies par catégorie.',
-  openGraph: {
-    title: 'Meta Beyblade X | RPB',
-    description:
-      'Rankings des pièces Beyblade X basés sur les résultats de tournois WBO.',
-  },
-};
+  path: '/meta',
+});
 
 async function getData(): Promise<BbxWeeklyData | null> {
   try {
@@ -235,7 +231,7 @@ export default async function MetaPage() {
       sx={{
         minHeight: '100vh',
         background:
-          'radial-gradient(ellipse at 50% 0%, rgba(220,38,38,0.08) 0%, transparent 60%)',
+          'radial-gradient(ellipse at 50% 0%, rgba(var(--rpb-primary-rgb),0.08) 0%, transparent 60%)',
       }}
     >
       <Container maxWidth="lg" sx={{ py: { xs: 2, md: 4 } }}>

@@ -26,11 +26,30 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const data = await getAnimeEpisode(slug, num);
   if (!data) return { title: 'Épisode introuvable | RPB' };
 
+  const title = `${data.series.titleFr || data.series.title} EP ${num} | RPB`;
+  const description =
+    data.episode.synopsis ||
+    `Épisode ${num} de ${data.series.titleFr || data.series.title}`;
+  const image =
+    data.episode.thumbnailUrl || data.series.posterUrl || '/banner.png';
+
   return {
-    title: `${data.series.titleFr || data.series.title} EP ${num} | RPB`,
-    description:
-      data.episode.synopsis ||
-      `Épisode ${num} de ${data.series.titleFr || data.series.title}`,
+    title,
+    description,
+    openGraph: {
+      type: 'article',
+      locale: 'fr_FR',
+      siteName: 'RPB - République Populaire du Beyblade',
+      title,
+      description,
+      images: [{ url: image, alt: title }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [image],
+    },
   };
 }
 
@@ -191,7 +210,7 @@ export default async function EpisodePage({ params }: Props) {
                     sx={{
                       fontWeight: 800,
                       fontSize: '0.65rem',
-                      bgcolor: '#dc2626',
+                      bgcolor: 'var(--rpb-primary)',
                       color: 'white',
                       height: 22,
                     }}
@@ -266,14 +285,14 @@ export default async function EpisodePage({ params }: Props) {
                       variant="contained"
                       size="small"
                       sx={{
-                        bgcolor: '#dc2626',
+                        bgcolor: 'var(--rpb-primary)',
                         color: 'white',
                         borderRadius: 2,
                         px: { xs: 1.5, md: 2 },
                         textTransform: 'none',
                         fontWeight: 700,
                         minHeight: 40,
-                        '&:hover': { bgcolor: '#b91c1c' },
+                        '&:hover': { bgcolor: 'var(--rpb-primary)' },
                       }}
                     >
                       <Box sx={{ display: { xs: 'none', sm: 'inline' } }}>
@@ -363,7 +382,7 @@ export default async function EpisodePage({ params }: Props) {
                           overflow: 'hidden',
                           bgcolor: 'rgba(255,255,255,0.03)',
                           border: isCurrent
-                            ? '2px solid #dc2626'
+                            ? '2px solid var(--rpb-primary)'
                             : '1px solid rgba(255,255,255,0.06)',
                         }}
                       >
@@ -406,7 +425,9 @@ export default async function EpisodePage({ params }: Props) {
                             px: 0.5,
                             py: 0.1,
                             borderRadius: 0.5,
-                            bgcolor: isCurrent ? '#dc2626' : 'rgba(0,0,0,0.75)',
+                            bgcolor: isCurrent
+                              ? 'var(--rpb-primary)'
+                              : 'rgba(0,0,0,0.75)',
                             fontSize: '0.55rem',
                             fontWeight: 700,
                             color: 'white',

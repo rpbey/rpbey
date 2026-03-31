@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { createPageMetadata } from '@/lib/seo-utils';
 import {
   getAnimeSeriesByGeneration,
   getFeaturedAnimeSeries,
@@ -6,11 +7,12 @@ import {
 import { AnimeCarousel } from './_components/AnimeCarousel';
 import { AnimeLanding } from './_components/AnimeLanding';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPageMetadata({
   title: 'Anime Beyblade | RPB',
   description:
     "Regardez toutes les séries anime Beyblade : de l'Original à Beyblade X, en streaming gratuit sur la RPB.",
-};
+  path: '/anime',
+});
 
 export const dynamic = 'force-dynamic';
 

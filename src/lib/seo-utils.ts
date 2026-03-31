@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import type {
   BreadcrumbList,
   TechArticle,
@@ -6,6 +7,48 @@ import type {
 } from 'schema-dts';
 
 const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://rpbey.fr';
+
+/**
+ * Generate consistent OG + Twitter metadata for a page.
+ */
+export function createPageMetadata(opts: {
+  title: string;
+  description: string;
+  path: string;
+  image?: string;
+  type?: 'website' | 'article' | 'profile';
+}): Metadata {
+  const { title, description, path, type = 'website' } = opts;
+  const image = opts.image || '/banner.png';
+  const url = `${baseUrl}${path}`;
+
+  return {
+    title,
+    description,
+    openGraph: {
+      type,
+      locale: 'fr_FR',
+      url,
+      siteName: 'RPB - République Populaire du Beyblade',
+      title,
+      description,
+      images: [
+        {
+          url: image,
+          width: 1200,
+          height: 630,
+          alt: title,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [image],
+    },
+  };
+}
 
 export function generateTechArticleJsonLd(article: {
   title: string;

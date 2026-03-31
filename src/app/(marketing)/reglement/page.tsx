@@ -19,12 +19,14 @@ import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { DiscordIcon } from '@/components/ui/Icons';
+import { createPageMetadata } from '@/lib/seo-utils';
 
-export const metadata = {
+export const metadata = createPageMetadata({
   title: 'Règlement de la RPB',
   description:
     'Le règlement officiel de la communauté République Populaire du Beyblade.',
-};
+  path: '/reglement',
+});
 
 const RULES = [
   {
@@ -32,56 +34,56 @@ const RULES = [
     title: 'Le respect avant tout',
     description:
       'Les insultes, propos haineux, discriminatoires ou agressifs sont strictement interdits. Traitez les autres membres avec courtoisie et respect.',
-    color: '#dc2626',
+    color: 'var(--rpb-primary)',
   },
   {
     icon: <Shield />,
     title: 'Contenu approprié',
     description:
       'Pas de contenu NSFW, choquant ou inapproprié. Le serveur est accessible à tous, y compris aux plus jeunes.',
-    color: '#fbbf24',
+    color: 'var(--rpb-secondary)',
   },
   {
     icon: <Warning />,
     title: 'Pas de spam',
     description:
       "Évitez de flood les salons ou d'envoyer des messages répétitifs. Cela inclut les pubs non autorisées, les liens ou les bots non approuvés.",
-    color: '#dc2626',
+    color: 'var(--rpb-primary)',
   },
   {
     icon: <Chat />,
     title: 'Suivez les catégories',
     description:
       'Utilisez les salons correctement (par exemple, ne postez pas de discussions hors-sujet dans les salons dédiés).',
-    color: '#fbbf24',
+    color: 'var(--rpb-secondary)',
   },
   {
     icon: <Campaign />,
     title: 'Publicité réglementée',
     description:
       "La publicité pour d'autres serveurs ou contenus est autorisée uniquement dans les salons dédiés et avec l'accord des modérateurs.",
-    color: '#dc2626',
+    color: 'var(--rpb-primary)',
   },
   {
     icon: <Gavel />,
     title: 'Pas de comportements toxiques',
     description:
       'Les provocations, conflits inutiles ou comportements toxiques (trash-talk excessif par exemple) ne seront pas tolérés.',
-    color: '#fbbf24',
+    color: 'var(--rpb-secondary)',
   },
   {
     icon: <EmojiEmotions />,
     title: 'Amusez-vous !',
     description:
       'Ce serveur est un espace convivial pour les fans de Beyblade. Partagez vos passions, stratégies et créations, et profitez de l’ambiance communautaire !',
-    color: '#dc2626',
+    color: 'var(--rpb-primary)',
   },
   {
     icon: <Group />,
     title: 'Respect mutuel exigé',
     description:
       'Toute forme de harcèlement visant un membre ou un staff de la RPB sera sévèrement punie. Si vous n’êtes pas d’accord avec une décision prise, cela doit se faire entendre dans le respect et la courtoisie.',
-    color: '#fbbf24',
+    color: 'var(--rpb-secondary)',
   },
 ];
 
@@ -92,7 +94,7 @@ export default function RulesPage() {
       <Box
         sx={{
           background:
-            'linear-gradient(135deg, #dc2626 0%, #991b1b 50%, #7f1d1d 100%)',
+            'linear-gradient(135deg, var(--rpb-primary) 0%, #991b1b 50%, #7f1d1d 100%)',
           color: 'white',
           py: { xs: 4, md: 10 },
           position: 'relative',
@@ -197,7 +199,7 @@ export default function RulesPage() {
             borderRadius: 4,
             border: '1px solid',
             borderColor: 'primary.main',
-            bgcolor: 'rgba(220, 38, 38, 0.05)',
+            bgcolor: 'rgba(var(--rpb-primary-rgb), 0.05)',
             mb: 6,
           }}
         >

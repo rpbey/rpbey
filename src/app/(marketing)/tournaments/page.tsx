@@ -18,14 +18,16 @@ import Link from 'next/link';
 import { TournamentCardGrid } from '@/components/cards/TournamentCard';
 import type { TournamentStatus } from '@/components/ui/StatusChip';
 import { prisma } from '@/lib/prisma';
+import { createPageMetadata } from '@/lib/seo-utils';
 
 export const dynamic = 'force-dynamic';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPageMetadata({
   title: 'Tournois | RPB',
   description:
     'Découvrez les tournois Beyblade X organisés par la République Populaire du Beyblade. Inscrivez-vous et participez !',
-};
+  path: '/tournaments',
+});
 
 function mapDbStatus(status: string): TournamentStatus {
   const mapping: Record<string, TournamentStatus> = {

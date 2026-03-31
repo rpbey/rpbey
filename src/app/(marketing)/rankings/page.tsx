@@ -26,15 +26,17 @@ import {
 } from '@/components/ui/MuiIcons';
 import { ScrollToTop } from '@/components/ui/ScrollToTop';
 import { prisma } from '@/lib/prisma';
+import { createPageMetadata } from '@/lib/seo-utils';
 import { getSeasonStandings, getSeasons } from '@/server/actions/season';
 
 export const dynamic = 'force-dynamic';
 
-export const metadata = {
+export const metadata = createPageMetadata({
   title: 'Classements | RPB',
   description:
     'Les meilleurs bladers de la République Populaire du Beyblade. Classement officiel mis à jour en temps réel.',
-};
+  path: '/rankings',
+});
 
 interface RankingsPageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
