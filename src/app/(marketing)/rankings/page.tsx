@@ -549,6 +549,72 @@ export default async function RankingsPage({
           </Typography>
         </Paper>
 
+        {/* X/Twitter CTA */}
+        <Paper
+          component="a"
+          href="https://x.com/rpb_ey"
+          target="_blank"
+          rel="noopener noreferrer"
+          elevation={0}
+          sx={{
+            mt: { xs: 1.5, md: 2 },
+            p: { xs: 2, md: 3 },
+            display: 'flex',
+            alignItems: 'center',
+            gap: { xs: 1.5, md: 2.5 },
+            bgcolor: 'rgba(255,255,255,0.03)',
+            border: '1px solid',
+            borderColor: 'rgba(255,255,255,0.1)',
+            textDecoration: 'none',
+            color: 'text.primary',
+            transition: 'all 0.2s ease',
+            '&:hover': {
+              bgcolor: 'rgba(255,255,255,0.06)',
+              borderColor: 'rgba(255,255,255,0.2)',
+            },
+          }}
+        >
+          <Box
+            sx={{
+              width: { xs: 40, md: 52 },
+              height: { xs: 40, md: 52 },
+              bgcolor: '#000',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0,
+            }}
+          >
+            <XIcon sx={{ fontSize: { xs: 22, md: 28 }, color: 'white' }} />
+          </Box>
+          <Box sx={{ flex: 1, minWidth: 0 }}>
+            <Typography
+              fontWeight={800}
+              sx={{ fontSize: { xs: '0.85rem', md: '1rem' } }}
+            >
+              Suis la RPB sur X
+            </Typography>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{ fontSize: { xs: '0.72rem', md: '0.82rem' } }}
+            >
+              Résultats en direct, clips de tournois et annonces exclusives.
+            </Typography>
+          </Box>
+          <Typography
+            fontWeight={800}
+            sx={{
+              color: 'text.secondary',
+              fontSize: { xs: '0.75rem', md: '0.9rem' },
+              whiteSpace: 'nowrap',
+              display: { xs: 'none', sm: 'block' },
+            }}
+          >
+            Suivre →
+          </Typography>
+        </Paper>
+
         <Typography
           variant="caption"
           color="text.secondary"
