@@ -703,6 +703,23 @@ enum TransactionType {
   STREAK_BONUS
   MULTI_PULL
   BADGE_REWARD
+  DUEL_REWARD
+}
+
+model DuelMatch {
+  id           String   @id @default(cuid())
+  challengerId String
+  opponentId   String
+  winnerId     String
+  bet          Int      @default(0)
+  score        String   // "2-1"
+  rounds       Json     @default("[]")
+  finishType   String   @default("SPIN FINISH")
+  createdAt    DateTime @default(now())
+
+  @@index([challengerId])
+  @@index([opponentId])
+  @@map("duel_matches")
 }
 
 // ── TCG Drop (collection thématique limitée) ──
