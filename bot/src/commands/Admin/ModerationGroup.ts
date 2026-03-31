@@ -19,13 +19,18 @@ import {
   SlashChoice,
   SlashOption,
 } from 'discordx';
-import { injectable } from 'tsyringe';
+import { inject, injectable } from 'tsyringe';
 
 import { Colors, RPB } from '../../lib/constants.js';
+import { PrismaService } from '../../lib/prisma.js';
 
 @Discord()
 @injectable()
 export class ModerationCommands {
+  constructor(@inject(PrismaService) private prisma: PrismaService) {}
+
+  // ──────────────── Clear ────────────────
+
   @Slash({
     name: 'clear',
     description: 'Supprimer un nombre de messages',
@@ -55,6 +60,8 @@ export class ModerationCommands {
       ephemeral: true,
     });
   }
+
+  // ──────────────── Ban ────────────────
 
   @Slash({
     name: 'ban',
@@ -103,6 +110,52 @@ export class ModerationCommands {
     );
   }
 
+  // ──────────────── Unban ────────────────
+
+  @Slash({
+    name: 'unban',
+    description: 'Débannir un utilisateur du serveur',
+    defaultMemberPermissions: PermissionFlagsBits.BanMembers,
+  })
+  async unban(
+    @SlashOption({
+      name: 'id',
+      description: "L'ID Discord de l'utilisateur à débannir",
+      required: true,
+      type: ApplicationCommandOptionType.String,
+    })
+    userId: string,
+    @SlashOption({
+      name: 'raison',
+      description: 'Raison du débannissement',
+      required: false,
+      type: ApplicationCommandOptionType.String,
+    })
+    reason: string = 'Aucune raison spécifiée',
+    interaction: CommandInteraction,
+  ) {
+    const guild = interaction.guild;
+    if (!guild)
+      return interaction.reply({
+        content: '❌ Commande serveur uniquement.',
+        ephemeral: true,
+      });
+
+    const ban = await guild.bans.fetch(userId).catch(() => null);
+    if (!ban)
+      return interaction.reply({
+        content: "❌ Cet utilisateur n'est pas banni.",
+        ephemeral: true,
+      });
+
+    await guild.members.unban(userId, reason);
+    return interaction.reply(
+      `✅ **${ban.user.tag}** a été débanni. Raison : ${reason}`,
+    );
+  }
+
+  // ──────────────── Kick ────────────────
+
   @Slash({
     name: 'kick',
     description: 'Expulser un membre du serveur',
@@ -143,6 +196,8 @@ export class ModerationCommands {
       `👢 **${target.tag}** a été expulsé. Raison : ${reason}`,
     );
   }
+
+  // ──────────────── Mute ────────────────
 
   @Slash({
     name: 'mute',
@@ -203,6 +258,343 @@ export class ModerationCommands {
       `🔇 **${target.tag}** muet pendant ${durationLabel}. Raison : ${reason}`,
     );
   }
+
+  // ──────────────── Unmute ────────────────
+
+  @Slash({
+    name: 'unmute',
+    description: "Retirer le mute d'un membre",
+    defaultMemberPermissions: PermissionFlagsBits.ModerateMembers,
+  })
+  async unmute(
+    @SlashOption({
+      name: 'cible',
+      description: 'Le membre à démuter',
+      required: true,
+      type: ApplicationCommandOptionType.User,
+    })
+    target: User,
+    interaction: CommandInteraction,
+  ) {
+    const member = await interaction.guild?.members
+      .fetch(target.id)
+      .catch(() => null);
+    if (!member)
+      return interaction.reply({
+        content: '❌ Membre introuvable.',
+        ephemeral: true,
+      });
+    if (!member.isCommunicationDisabled())
+      return interaction.reply({
+        content: "❌ Ce membre n'est pas muet.",
+        ephemeral: true,
+      });
+    await member.timeout(null);
+    return interaction.reply(`🔊 **${target.tag}** n'est plus muet.`);
+  }
+
+  // ──────────────── Warn ────────────────
+
+  @Slash({
+    name: 'warn',
+    description: 'Avertir un membre',
+    defaultMemberPermissions: PermissionFlagsBits.ModerateMembers,
+  })
+  async warn(
+    @SlashOption({
+      name: 'cible',
+      description: 'Le membre à avertir',
+      required: true,
+      type: ApplicationCommandOptionType.User,
+    })
+    target: User,
+    @SlashOption({
+      name: 'raison',
+      description: "Raison de l'avertissement",
+      required: true,
+      type: ApplicationCommandOptionType.String,
+    })
+    reason: string,
+    interaction: CommandInteraction,
+  ) {
+    if (target.bot)
+      return interaction.reply({
+        content: "❌ Impossible d'avertir un bot.",
+        ephemeral: true,
+      });
+
+    const warning = await this.prisma.warning.create({
+      data: {
+        discordId: target.id,
+        moderator: interaction.user.id,
+        reason,
+      },
+    });
+
+    const count = await this.prisma.warning.count({
+      where: { discordId: target.id },
+    });
+
+    const embed = new EmbedBuilder()
+      .setTitle('⚠️ Avertissement')
+      .setColor(Colors.Warning)
+      .addFields(
+        { name: 'Membre', value: `${target.tag} (${target.id})`, inline: true },
+        {
+          name: 'Modérateur',
+          value: interaction.user.tag,
+          inline: true,
+        },
+        { name: 'Raison', value: reason },
+        {
+          name: 'Total avertissements',
+          value: `${count}`,
+          inline: true,
+        },
+        { name: 'ID', value: warning.id, inline: true },
+      )
+      .setTimestamp();
+
+    return interaction.reply({ embeds: [embed] });
+  }
+
+  // ──────────────── Warnings (list) ────────────────
+
+  @Slash({
+    name: 'warnings',
+    description: "Voir les avertissements d'un membre",
+    defaultMemberPermissions: PermissionFlagsBits.ModerateMembers,
+  })
+  async warnings(
+    @SlashOption({
+      name: 'cible',
+      description: 'Le membre à inspecter',
+      required: true,
+      type: ApplicationCommandOptionType.User,
+    })
+    target: User,
+    interaction: CommandInteraction,
+  ) {
+    const warns = await this.prisma.warning.findMany({
+      where: { discordId: target.id },
+      orderBy: { createdAt: 'desc' },
+      take: 10,
+    });
+
+    if (warns.length === 0)
+      return interaction.reply({
+        content: `✅ **${target.tag}** n'a aucun avertissement.`,
+        ephemeral: true,
+      });
+
+    const lines = warns.map((w, i) => {
+      const date = `<t:${Math.floor(w.createdAt.getTime() / 1000)}:d>`;
+      return `**${i + 1}.** ${w.reason} — par <@${w.moderator}> ${date} \`${w.id}\``;
+    });
+
+    const embed = new EmbedBuilder()
+      .setTitle(`⚠️ Avertissements de ${target.tag}`)
+      .setDescription(lines.join('\n'))
+      .setColor(Colors.Warning)
+      .setFooter({ text: `${warns.length} avertissement(s)` });
+
+    return interaction.reply({ embeds: [embed] });
+  }
+
+  // ──────────────── Unwarn ────────────────
+
+  @Slash({
+    name: 'unwarn',
+    description: 'Retirer un avertissement par son ID',
+    defaultMemberPermissions: PermissionFlagsBits.ModerateMembers,
+  })
+  async unwarn(
+    @SlashOption({
+      name: 'id',
+      description: "ID de l'avertissement",
+      required: true,
+      type: ApplicationCommandOptionType.String,
+    })
+    warningId: string,
+    interaction: CommandInteraction,
+  ) {
+    const warning = await this.prisma.warning
+      .delete({ where: { id: warningId } })
+      .catch(() => null);
+
+    if (!warning)
+      return interaction.reply({
+        content: '❌ Avertissement introuvable.',
+        ephemeral: true,
+      });
+
+    return interaction.reply(
+      `✅ Avertissement \`${warningId}\` supprimé (était pour <@${warning.discordId}>).`,
+    );
+  }
+
+  // ──────────────── Slowmode ────────────────
+
+  @Slash({
+    name: 'slowmode',
+    description: "Définir le mode lent d'un salon",
+    defaultMemberPermissions: PermissionFlagsBits.ManageChannels,
+  })
+  async slowmode(
+    @SlashChoice({ name: 'Désactivé', value: 0 })
+    @SlashChoice({ name: '5 secondes', value: 5 })
+    @SlashChoice({ name: '10 secondes', value: 10 })
+    @SlashChoice({ name: '30 secondes', value: 30 })
+    @SlashChoice({ name: '1 minute', value: 60 })
+    @SlashChoice({ name: '5 minutes', value: 300 })
+    @SlashChoice({ name: '10 minutes', value: 600 })
+    @SlashChoice({ name: '30 minutes', value: 1800 })
+    @SlashChoice({ name: '1 heure', value: 3600 })
+    @SlashOption({
+      name: 'durée',
+      description: 'Intervalle entre les messages',
+      required: true,
+      type: ApplicationCommandOptionType.Integer,
+    })
+    seconds: number,
+    interaction: CommandInteraction,
+  ) {
+    const channel = interaction.channel as TextChannel;
+    if (!channel?.isTextBased())
+      return interaction.reply({
+        content: '❌ Salon texte uniquement.',
+        ephemeral: true,
+      });
+
+    await channel.setRateLimitPerUser(seconds);
+    const label =
+      seconds === 0
+        ? 'désactivé'
+        : seconds >= 3600
+          ? `${seconds / 3600} heure(s)`
+          : seconds >= 60
+            ? `${seconds / 60} minute(s)`
+            : `${seconds} seconde(s)`;
+
+    return interaction.reply(
+      `🐌 Mode lent ${seconds === 0 ? 'désactivé' : `activé : **${label}**`} dans ${channel}.`,
+    );
+  }
+
+  // ──────────────── Lock ────────────────
+
+  @Slash({
+    name: 'lock',
+    description: 'Verrouiller un salon (empêcher les messages)',
+    defaultMemberPermissions: PermissionFlagsBits.ManageChannels,
+  })
+  async lock(
+    @SlashOption({
+      name: 'raison',
+      description: 'Raison du verrouillage',
+      required: false,
+      type: ApplicationCommandOptionType.String,
+    })
+    reason: string = 'Aucune raison spécifiée',
+    interaction: CommandInteraction,
+  ) {
+    const channel = interaction.channel as TextChannel;
+    const guild = interaction.guild;
+    if (!channel || !guild)
+      return interaction.reply({
+        content: '❌ Salon texte uniquement.',
+        ephemeral: true,
+      });
+
+    await channel.permissionOverwrites.edit(guild.id, {
+      SendMessages: false,
+    });
+
+    const embed = new EmbedBuilder()
+      .setTitle('🔒 Salon verrouillé')
+      .setDescription(
+        `Ce salon a été verrouillé par ${interaction.user}.\n**Raison :** ${reason}`,
+      )
+      .setColor(Colors.Error)
+      .setTimestamp();
+
+    return interaction.reply({ embeds: [embed] });
+  }
+
+  // ──────────────── Unlock ────────────────
+
+  @Slash({
+    name: 'unlock',
+    description: 'Déverrouiller un salon',
+    defaultMemberPermissions: PermissionFlagsBits.ManageChannels,
+  })
+  async unlock(interaction: CommandInteraction) {
+    const channel = interaction.channel as TextChannel;
+    const guild = interaction.guild;
+    if (!channel || !guild)
+      return interaction.reply({
+        content: '❌ Salon texte uniquement.',
+        ephemeral: true,
+      });
+
+    await channel.permissionOverwrites.edit(guild.id, {
+      SendMessages: null,
+    });
+
+    const embed = new EmbedBuilder()
+      .setTitle('🔓 Salon déverrouillé')
+      .setDescription(`Ce salon a été déverrouillé par ${interaction.user}.`)
+      .setColor(Colors.Success)
+      .setTimestamp();
+
+    return interaction.reply({ embeds: [embed] });
+  }
+
+  // ──────────────── Nickname ────────────────
+
+  @Slash({
+    name: 'nickname',
+    description: "Changer le pseudo d'un membre",
+    defaultMemberPermissions: PermissionFlagsBits.ManageNicknames,
+  })
+  async nickname(
+    @SlashOption({
+      name: 'cible',
+      description: 'Le membre',
+      required: true,
+      type: ApplicationCommandOptionType.User,
+    })
+    target: User,
+    @SlashOption({
+      name: 'pseudo',
+      description: 'Le nouveau pseudo (laisser vide pour réinitialiser)',
+      required: false,
+      type: ApplicationCommandOptionType.String,
+    })
+    newNick: string | undefined,
+    interaction: CommandInteraction,
+  ) {
+    const member = await interaction.guild?.members
+      .fetch(target.id)
+      .catch(() => null);
+    if (!member || !member.manageable)
+      return interaction.reply({
+        content:
+          '❌ Impossible de modifier ce membre (rôle trop élevé ou introuvable).',
+        ephemeral: true,
+      });
+
+    const oldNick = member.displayName;
+    await member.setNickname(newNick ?? null);
+
+    return interaction.reply(
+      newNick
+        ? `✅ Pseudo de **${oldNick}** changé en **${newNick}**.`
+        : `✅ Pseudo de **${oldNick}** réinitialisé.`,
+    );
+  }
+
+  // ──────────────── Tickets ────────────────
 
   @Slash({
     name: 'tickets',

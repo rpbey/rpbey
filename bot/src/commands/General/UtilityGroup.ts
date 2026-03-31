@@ -31,6 +31,8 @@ import { PrismaService } from '../../lib/prisma.js';
 export class UtilityGroup {
   constructor(@inject(PrismaService) private prisma: PrismaService) {}
 
+  // ──────────────── Membre ────────────────
+
   @Slash({
     name: 'membre',
     description: "Afficher les informations d'un membre",
@@ -159,6 +161,8 @@ export class UtilityGroup {
     return interaction.editReply({ embeds: [embed] });
   }
 
+  // ──────────────── Avatar ────────────────
+
   @Slash({
     name: 'avatar',
     description: "Afficher l'avatar d'un membre en grand",
@@ -202,6 +206,45 @@ export class UtilityGroup {
 
     return interaction.reply({ embeds: [embed] });
   }
+
+  // ──────────────── Bannière ────────────────
+
+  @Slash({
+    name: 'banniere',
+    description: "Afficher la bannière d'un membre",
+  })
+  @SlashGroup('utilitaire')
+  async banner(
+    @SlashOption({
+      name: 'utilisateur',
+      description: "L'utilisateur dont voir la bannière",
+      required: false,
+      type: ApplicationCommandOptionType.User,
+    })
+    targetUser: User | undefined,
+    interaction: CommandInteraction,
+  ) {
+    const target = targetUser ?? interaction.user;
+    // Force-fetch to get banner data
+    const fetched = await target.fetch(true);
+    const bannerUrl = fetched.bannerURL({ size: 4096 });
+
+    if (!bannerUrl)
+      return interaction.reply({
+        content: `❌ **${target.displayName}** n'a pas de bannière.`,
+        ephemeral: true,
+      });
+
+    const embed = new EmbedBuilder()
+      .setTitle(`🎨 Bannière de ${target.displayName}`)
+      .setImage(bannerUrl)
+      .setDescription(`[Ouvrir en pleine taille](${bannerUrl})`)
+      .setColor(fetched.accentColor ?? Colors.Info);
+
+    return interaction.reply({ embeds: [embed] });
+  }
+
+  // ──────────────── Sondage ────────────────
 
   @Slash({
     name: 'sondage',
@@ -280,6 +323,8 @@ export class UtilityGroup {
       await message.react(emojis[i]!);
     }
   }
+
+  // ──────────────── Suggestion ────────────────
 
   @Slash({
     name: 'suggestion',
@@ -403,5 +448,163 @@ export class UtilityGroup {
     );
 
     await interaction.update({ components: [row] });
+  }
+
+  // ──────────────── Rappel ────────────────
+
+  @Slash({
+    name: 'rappel',
+    description: 'Programmer un rappel personnel',
+  })
+  @SlashGroup('utilitaire')
+  async reminder(
+    @SlashOption({
+      name: 'message',
+      description: 'Le contenu du rappel',
+      required: true,
+      type: ApplicationCommandOptionType.String,
+    })
+    message: string,
+    @SlashOption({
+      name: 'minutes',
+      description: 'Dans combien de minutes (défaut: 0)',
+      required: false,
+      type: ApplicationCommandOptionType.Integer,
+      minValue: 0,
+    })
+    minutes: number = 0,
+    @SlashOption({
+      name: 'heures',
+      description: "Dans combien d'heures (défaut: 0)",
+      required: false,
+      type: ApplicationCommandOptionType.Integer,
+      minValue: 0,
+    })
+    hours: number = 0,
+    @SlashOption({
+      name: 'jours',
+      description: 'Dans combien de jours (défaut: 0)',
+      required: false,
+      type: ApplicationCommandOptionType.Integer,
+      minValue: 0,
+      maxValue: 30,
+    })
+    days: number = 0,
+    interaction: CommandInteraction,
+  ) {
+    const totalMs = (minutes * 60 + hours * 3600 + days * 86400) * 1000;
+
+    if (totalMs === 0)
+      return interaction.reply({
+        content: '❌ Spécifie au moins une durée (minutes, heures ou jours).',
+        ephemeral: true,
+      });
+
+    if (totalMs > 30 * 24 * 3600 * 1000)
+      return interaction.reply({
+        content: '❌ Maximum 30 jours.',
+        ephemeral: true,
+      });
+
+    const expiresAt = new Date(Date.now() + totalMs);
+
+    await this.prisma.reminder.create({
+      data: {
+        discordId: interaction.user.id,
+        channelId: interaction.channelId,
+        message,
+        expiresAt,
+      },
+    });
+
+    const ts = Math.floor(expiresAt.getTime() / 1000);
+    return interaction.reply({
+      content: `⏰ Rappel programmé pour <t:${ts}:F> (<t:${ts}:R>) :\n> ${message}`,
+      ephemeral: true,
+    });
+  }
+
+  // ──────────────── Embed ────────────────
+
+  @Slash({
+    name: 'embed',
+    description: 'Créer un embed personnalisé',
+  })
+  @SlashGroup('utilitaire')
+  async embed(
+    @SlashOption({
+      name: 'titre',
+      description: "Titre de l'embed",
+      required: true,
+      type: ApplicationCommandOptionType.String,
+    })
+    title: string,
+    @SlashOption({
+      name: 'description',
+      description: "Description de l'embed",
+      required: true,
+      type: ApplicationCommandOptionType.String,
+    })
+    description: string,
+    @SlashOption({
+      name: 'couleur',
+      description: 'Couleur hex (ex: #FF0000) — défaut: rouge RPB',
+      required: false,
+      type: ApplicationCommandOptionType.String,
+    })
+    color: string | undefined,
+    @SlashOption({
+      name: 'image',
+      description: "URL d'une image",
+      required: false,
+      type: ApplicationCommandOptionType.String,
+    })
+    image: string | undefined,
+    @SlashOption({
+      name: 'miniature',
+      description: "URL d'une miniature",
+      required: false,
+      type: ApplicationCommandOptionType.String,
+    })
+    thumbnail: string | undefined,
+    @SlashOption({
+      name: 'pied',
+      description: 'Texte en pied de page',
+      required: false,
+      type: ApplicationCommandOptionType.String,
+    })
+    footer: string | undefined,
+    interaction: CommandInteraction,
+  ) {
+    const colorInt = color
+      ? Number.parseInt(color.replace('#', ''), 16)
+      : Colors.Primary;
+
+    if (color && Number.isNaN(colorInt))
+      return interaction.reply({
+        content: '❌ Couleur invalide. Utilise le format hex (ex: #FF0000).',
+        ephemeral: true,
+      });
+
+    const embed = new EmbedBuilder()
+      .setTitle(title)
+      .setDescription(description)
+      .setColor(colorInt)
+      .setTimestamp();
+
+    if (image) embed.setImage(image);
+    if (thumbnail) embed.setThumbnail(thumbnail);
+    if (footer) embed.setFooter({ text: footer });
+
+    embed.setAuthor({
+      name: interaction.user.displayName,
+      iconURL: interaction.user.displayAvatarURL(),
+    });
+
+    await (interaction.channel as TextChannel).send({ embeds: [embed] });
+    return interaction.reply({
+      content: '✅ Embed envoyé !',
+      ephemeral: true,
+    });
   }
 }

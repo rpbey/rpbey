@@ -916,3 +916,32 @@ model AnimeWatchProgress {
   @@index([episodeId])
   @@map("anime_watch_progress")
 }
+
+// ─── Moderation ─────────────────────────────────────────────────────────────
+
+model Warning {
+  id        String   @id @default(cuid())
+  discordId String
+  moderator String
+  reason    String
+  createdAt DateTime @default(now())
+
+  @@index([discordId])
+  @@map("warnings")
+}
+
+// ─── Reminders ──────────────────────────────────────────────────────────────
+
+model Reminder {
+  id        String   @id @default(cuid())
+  discordId String
+  channelId String
+  message   String
+  expiresAt DateTime
+  fired     Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([discordId])
+  @@index([expiresAt])
+  @@map("reminders")
+}
