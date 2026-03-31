@@ -75,62 +75,64 @@ export function IconNav() {
   return (
     <Box
       component="nav"
+      aria-label="Navigation principale"
       sx={{
         position: 'fixed',
-        top: 'calc(16px + env(safe-area-inset-top))',
+        top: 0,
         left: 0,
-        bottom: 'calc(16px + env(safe-area-inset-bottom))',
+        bottom: 0,
         zIndex: 1200,
         display: { xs: 'none', md: 'flex' },
         flexDirection: 'column',
         alignItems: 'center',
-        gap: 1.5,
-        p: 1.5,
-        borderRadius: 0,
-        borderTopRightRadius: 24,
-        borderBottomRightRadius: 24,
-        bgcolor: (theme) => alpha(theme.palette.background.paper, 0.9),
-        backdropFilter: 'blur(20px)',
-        boxShadow:
-          '0 8px 32px rgba(0,0,0,0.3), inset 0 -1px 0 0 rgba(220,38,38,0.1)',
-        border: '1px solid',
-        borderColor: 'divider',
-        borderRight: '1px solid rgba(220,38,38,0.08)',
+        gap: 0.5,
+        p: 1,
+        pt: 'calc(12px + env(safe-area-inset-top))',
+        pb: 'calc(12px + env(safe-area-inset-bottom))',
+        bgcolor: (theme) => alpha(theme.palette.background.paper, 0.92),
+        backdropFilter: 'blur(24px)',
+        boxShadow: (theme) =>
+          `1px 0 0 ${alpha(theme.palette.divider, 0.5)}, 4px 0 24px rgba(0,0,0,0.2)`,
+        borderRight: '1px solid',
+        borderColor: (theme) => alpha(theme.palette.primary.main, 0.1),
         width: ICON_NAV_WIDTH,
-        '&::after': {
-          content: '""',
-          position: 'absolute',
-          bottom: 0,
-          left: '50%',
-          transform: 'translateX(-50%)',
-          width: 24,
-          height: 3,
-          borderRadius: 2,
-          bgcolor: 'rgba(220,38,38,0.3)',
-        },
       }}
     >
       {/* Logo */}
-      <Tooltip title="RPB" placement="right">
-        <Link href="/" style={{ display: 'block', marginBottom: 12 }}>
+      <Tooltip title="RPB — Accueil" placement="right">
+        <Link
+          href="/"
+          aria-label="RPB — Retour à l'accueil"
+          style={{ display: 'block', marginBottom: 8 }}
+        >
           <Box
             sx={{
-              width: 56,
-              height: 56,
+              width: 52,
+              height: 52,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
+              position: 'relative',
+              transition: 'transform 0.2s ease',
               '&:hover': {
-                transform: 'scale(1.15) rotate(5deg)',
+                transform: 'scale(1.1)',
+              },
+              '&::after': {
+                content: '""',
+                position: 'absolute',
+                bottom: -6,
+                left: '20%',
+                right: '20%',
+                height: 2,
+                bgcolor: (theme) => alpha(theme.palette.primary.main, 0.4),
               },
             }}
           >
             <Image
               src="/logo.png"
               alt="RPB Logo"
-              width={56}
-              height={56}
+              width={48}
+              height={48}
               style={{ objectFit: 'contain' }}
               priority
             />
@@ -139,7 +141,13 @@ export function IconNav() {
       </Tooltip>
 
       <Box
-        sx={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 1 }}
+        sx={{
+          width: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 0.25,
+          mt: 1,
+        }}
       >
         {/* Nav items */}
         {navItems.map((item) => {
@@ -154,34 +162,53 @@ export function IconNav() {
               <IconButton
                 component={Link}
                 href={item.href}
+                aria-label={item.label}
+                aria-current={isActive ? 'page' : undefined}
                 sx={{
-                  width: 56,
+                  width: '100%',
                   height: 48,
-                  borderRadius: 24,
+                  borderRadius: 0,
                   position: 'relative',
-                  transition: 'all 0.2s ease',
+                  transition: 'all 0.15s ease',
                   '&:hover': {
-                    bgcolor: 'rgba(255,255,255,0.05)',
+                    bgcolor: (theme) => alpha(theme.palette.primary.main, 0.08),
                     '& img': {
-                      filter: 'none',
-                      transform: 'scale(1.15)',
+                      filter: 'brightness(1.2)',
+                      transform: 'scale(1.12)',
                     },
+                  },
+                  '&:focus-visible': {
+                    outline: '2px solid',
+                    outlineColor: 'primary.main',
+                    outlineOffset: -2,
                   },
                 }}
               >
+                {/* Active indicator — left accent bar */}
                 {isActive && (
                   <Box
                     component={motion.div}
                     layoutId="desktop-nav-active"
                     sx={{
                       position: 'absolute',
-                      top: 4,
-                      left: 4,
-                      right: 4,
-                      bottom: 4,
+                      top: 6,
+                      left: 0,
+                      bottom: 6,
+                      width: 3,
+                      bgcolor: 'primary.main',
+                      boxShadow: (theme) =>
+                        `0 0 8px ${alpha(theme.palette.primary.main, 0.5)}`,
+                    }}
+                  />
+                )}
+                {/* Active background */}
+                {isActive && (
+                  <Box
+                    sx={{
+                      position: 'absolute',
+                      inset: 0,
                       bgcolor: (theme) =>
-                        alpha(theme.palette.primary.main, 0.15),
-                      borderRadius: 20,
+                        alpha(theme.palette.primary.main, 0.1),
                       zIndex: -1,
                     }}
                   />
@@ -189,13 +216,15 @@ export function IconNav() {
                 <Box
                   component="img"
                   src={iconSrcFinal}
-                  alt={item.label}
+                  alt=""
                   sx={{
-                    width: 26,
-                    height: 26,
+                    width: 30,
+                    height: 30,
                     objectFit: 'contain',
-                    filter: isActive ? 'none' : 'grayscale(0.5) opacity(0.6)',
-                    transition: 'all 0.2s ease',
+                    filter: isActive
+                      ? 'drop-shadow(0 0 4px rgba(var(--rpb-primary-rgb), 0.4))'
+                      : 'grayscale(0.3) opacity(0.55)',
+                    transition: 'all 0.15s ease',
                   }}
                 />
               </IconButton>
@@ -211,7 +240,7 @@ export function IconNav() {
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          gap: 1,
+          gap: 0.5,
           width: '100%',
         }}
       >
@@ -223,25 +252,30 @@ export function IconNav() {
             onClick={handleMenuOpen}
             aria-label="Menu compte"
             sx={{
-              width: 56,
-              height: 56,
-              borderRadius: 28,
+              width: '100%',
+              height: 48,
+              borderRadius: 0,
               color: session?.user ? 'primary.main' : 'text.secondary',
               bgcolor: session?.user
-                ? (theme) => alpha(theme.palette.primary.main, 0.1)
+                ? (theme) => alpha(theme.palette.primary.main, 0.08)
                 : 'transparent',
-              transition: 'all 0.2s ease',
+              transition: 'all 0.15s ease',
               '&:hover': {
-                bgcolor: (theme) => alpha(theme.palette.primary.main, 0.15),
+                bgcolor: (theme) => alpha(theme.palette.primary.main, 0.12),
+              },
+              '&:focus-visible': {
+                outline: '2px solid',
+                outlineColor: 'primary.main',
+                outlineOffset: -2,
               },
             }}
           >
-            <AccountCircle sx={{ fontSize: 32 }} />
+            <AccountCircle sx={{ fontSize: 28 }} />
           </IconButton>
         </Tooltip>
       </Box>
 
-      {/* Menu remains same but with M3 Paper */}
+      {/* Account Menu */}
       <Menu
         anchorEl={anchorEl}
         open={open}
@@ -250,13 +284,13 @@ export function IconNav() {
         PaperProps={{
           elevation: 0,
           sx: {
-            borderRadius: 6, // 24px
             minWidth: 200,
             overflow: 'visible',
             mt: 1.5,
             ml: 2,
             bgcolor: 'surface.high',
-            boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
+            boxShadow:
+              '0 4px 24px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.06)',
             border: '1px solid',
             borderColor: 'divider',
           },
@@ -270,7 +304,7 @@ export function IconNav() {
                 key="profile"
                 component={Link}
                 href={`/dashboard/profile/${session.user.id}`}
-                sx={{ borderRadius: 1.5, m: 0.5 }}
+                sx={{ m: 0.5 }}
               >
                 <ListItemIcon>
                   <AccountCircle fontSize="small" />
@@ -281,7 +315,7 @@ export function IconNav() {
                 key="settings"
                 component={Link}
                 href="/profile"
-                sx={{ borderRadius: 1.5, m: 0.5 }}
+                sx={{ m: 0.5 }}
               >
                 <ListItemIcon>
                   <Settings fontSize="small" />
@@ -295,7 +329,7 @@ export function IconNav() {
                   key="admin"
                   component={Link}
                   href="/admin"
-                  sx={{ borderRadius: 1.5, m: 0.5 }}
+                  sx={{ m: 0.5 }}
                 >
                   <ListItemIcon>
                     <AdminPanelSettings fontSize="small" />
@@ -310,7 +344,7 @@ export function IconNav() {
               <MenuItem
                 key="logout"
                 onClick={handleLogout}
-                sx={{ borderRadius: 1.5, m: 0.5, color: 'error.main' }}
+                sx={{ m: 0.5, color: 'error.main' }}
               >
                 <ListItemIcon>
                   <Logout fontSize="small" color="error" />
@@ -323,7 +357,7 @@ export function IconNav() {
                 key="login"
                 component={Link}
                 href="/sign-in"
-                sx={{ borderRadius: 1.5, m: 0.5 }}
+                sx={{ m: 0.5 }}
               >
                 <ListItemIcon>
                   <Login fontSize="small" />
@@ -334,7 +368,7 @@ export function IconNav() {
                 key="register"
                 component={Link}
                 href="/sign-up"
-                sx={{ borderRadius: 1.5, m: 0.5 }}
+                sx={{ m: 0.5 }}
               >
                 <ListItemIcon>
                   <PersonAdd fontSize="small" />
@@ -417,7 +451,7 @@ export function MobileNav() {
             gap: 0,
             color: 'text.secondary',
             position: 'relative',
-            transition: 'color 0.2s ease',
+            transition: 'color 0.15s ease',
             '&.Mui-selected': {
               color: 'primary.main',
               '& .MuiSvgIcon-root': {
@@ -426,18 +460,27 @@ export function MobileNav() {
               '&::before': {
                 content: '""',
                 position: 'absolute',
-                top: 4,
+                top: 0,
                 left: '50%',
                 transform: 'translateX(-50%)',
-                width: 48,
-                height: 28,
-                bgcolor: (theme) => alpha(theme.palette.primary.main, 0.15),
-                borderRadius: 14,
-                zIndex: 1,
+                width: 2,
+                height: '100%',
+                bgcolor: 'transparent',
+              },
+              '&::after': {
+                content: '""',
+                position: 'absolute',
+                top: 0,
+                left: '15%',
+                right: '15%',
+                height: 2,
+                bgcolor: 'primary.main',
+                boxShadow: (theme) =>
+                  `0 0 6px ${alpha(theme.palette.primary.main, 0.5)}`,
               },
             },
             '& .MuiSvgIcon-root': {
-              fontSize: 22,
+              fontSize: 24,
             },
             '& .MuiBottomNavigationAction-label': {
               mt: 0.25,
@@ -464,7 +507,7 @@ export function MobileNav() {
                   : '/bbx-icons/home-icon-3home-off.webp'
               }
               alt=""
-              sx={{ width: 22, height: 22, objectFit: 'contain' }}
+              sx={{ width: 24, height: 24, objectFit: 'contain' }}
             />
           }
         />
@@ -480,7 +523,7 @@ export function MobileNav() {
                   : '/bbx-icons/icon-trophy.webp'
               }
               alt=""
-              sx={{ width: 22, height: 22, objectFit: 'contain' }}
+              sx={{ width: 24, height: 24, objectFit: 'contain' }}
             />
           }
         />
@@ -493,13 +536,13 @@ export function MobileNav() {
               src="/bbx-icons/ICN_Rank.webp"
               alt=""
               sx={{
-                width: 22,
-                height: 22,
+                width: 24,
+                height: 24,
                 objectFit: 'contain',
                 filter:
                   activeValue === '/rankings'
                     ? 'none'
-                    : 'grayscale(0.5) opacity(0.6)',
+                    : 'grayscale(0.3) opacity(0.55)',
               }}
             />
           }
@@ -513,13 +556,13 @@ export function MobileNav() {
               src="/bbx-icons/BBX-AttackType.webp"
               alt=""
               sx={{
-                width: 22,
-                height: 22,
+                width: 24,
+                height: 24,
                 objectFit: 'contain',
                 filter:
                   activeValue === '/meta'
                     ? 'none'
-                    : 'grayscale(0.5) opacity(0.6)',
+                    : 'grayscale(0.3) opacity(0.55)',
               }}
             />
           }
@@ -533,13 +576,13 @@ export function MobileNav() {
               src="/bbx-icons/icon-video-play.webp"
               alt=""
               sx={{
-                width: 22,
-                height: 22,
+                width: 24,
+                height: 24,
                 objectFit: 'contain',
                 filter:
                   activeValue === '/anime'
                     ? 'none'
-                    : 'grayscale(0.5) opacity(0.6)',
+                    : 'grayscale(0.3) opacity(0.55)',
               }}
             />
           }
