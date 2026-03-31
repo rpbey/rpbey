@@ -8,9 +8,6 @@ interface DeckBoxDisplayProps {
   deck: Deck;
 }
 
-const RPB_RED = '#dc2626';
-const RPB_GOLD = '#fbbf24';
-
 export function DeckBoxDisplay({ deck }: DeckBoxDisplayProps) {
   // We extract the three beys from the deck, sorted by position
   const sortedBeys = deck?.beys
@@ -33,7 +30,7 @@ export function DeckBoxDisplay({ deck }: DeckBoxDisplayProps) {
           variant="h5"
           fontWeight="900"
           sx={{
-            color: RPB_RED,
+            color: 'primary.main',
             textTransform: 'uppercase',
             letterSpacing: 1.5,
             textShadow: '0 2px 4px rgba(0,0,0,0.3)',
@@ -46,7 +43,7 @@ export function DeckBoxDisplay({ deck }: DeckBoxDisplayProps) {
               left: '10%',
               width: '80%',
               height: 3,
-              bgcolor: RPB_GOLD,
+              bgcolor: 'secondary.main',
               borderRadius: 1,
             },
           }}
@@ -81,7 +78,7 @@ export function DeckBoxDisplay({ deck }: DeckBoxDisplayProps) {
             content: '""',
             position: 'absolute',
             inset: 0,
-            boxShadow: 'inset 0 0 100px rgba(220, 38, 38, 0.15)',
+            boxShadow: 'inset 0 0 100px rgba(var(--rpb-primary-rgb), 0.15)',
             zIndex: 1,
             pointerEvents: 'none',
           },
@@ -168,7 +165,7 @@ export function DeckBoxDisplay({ deck }: DeckBoxDisplayProps) {
                   </Typography>
                   <Typography
                     variant="caption"
-                    sx={{ color: RPB_GOLD, display: 'block' }}
+                    sx={{ color: 'secondary.main', display: 'block' }}
                   >
                     {bey.blade.beyType || 'TYPE INCONNU'}
                   </Typography>

@@ -131,7 +131,7 @@ export function TournamentLiveCarousel({
             variant="outlined"
             sx={{
               height: '100%',
-              borderRadius: '32px',
+              borderRadius: 0,
               bgcolor: alpha(theme.palette.background.paper, 0.6),
               backdropFilter: 'blur(20px)',
               border: '1px solid',

@@ -142,9 +142,9 @@ export function GameData() {
           p: 3,
           mb: 4,
           borderRadius: 3,
-          bgcolor: alpha('#dc2626', 0.04),
+          bgcolor: (t) => alpha(t.palette.primary.main, 0.04),
           border: '1px solid',
-          borderColor: alpha('#dc2626', 0.15),
+          borderColor: (t) => alpha(t.palette.primary.main, 0.15),
         }}
       >
         <Typography variant="h5" fontWeight="900" sx={{ mb: 1 }}>

@@ -639,7 +639,7 @@ function RevealedCard({
         sx={{
           position: 'relative',
           aspectRatio: '63/88', // Standard TCG card ratio
-          borderRadius: '14px',
+          borderRadius: 0,
           overflow: 'hidden',
           border: '3px solid',
           borderColor: theme.border,
@@ -671,7 +671,7 @@ function RevealedCard({
           sx={{
             position: 'absolute',
             inset: 5,
-            borderRadius: '10px',
+            borderRadius: 0,
             border: '1px solid',
             borderColor: alpha(theme.border, 0.3),
             pointerEvents: 'none',
@@ -723,7 +723,7 @@ function RevealedCard({
         <Box
           sx={{
             mx: 1.2,
-            borderRadius: '8px',
+            borderRadius: 0,
             overflow: 'hidden',
             border: '2px solid',
             borderColor: theme.frame,
@@ -782,7 +782,7 @@ function RevealedCard({
               position: 'absolute',
               inset: 0,
               boxShadow: 'inset 0 0 20px rgba(0,0,0,0.5)',
-              borderRadius: '6px',
+              borderRadius: 0,
               pointerEvents: 'none',
               zIndex: 2,
             }}
@@ -937,7 +937,7 @@ function RevealedCard({
                 height: 16,
                 borderTop: `1.5px solid ${alpha(rc, 0.4)}`,
                 borderLeft: `1.5px solid ${alpha(rc, 0.4)}`,
-                borderRadius: '3px 0 0 0',
+                borderRadius: 0,
               }}
             />
             {/* Top-right */}
@@ -950,7 +950,7 @@ function RevealedCard({
                 height: 16,
                 borderTop: `1.5px solid ${alpha(rc, 0.4)}`,
                 borderRight: `1.5px solid ${alpha(rc, 0.4)}`,
-                borderRadius: '0 3px 0 0',
+                borderRadius: 0,
               }}
             />
             {/* Bottom-left */}
@@ -963,7 +963,7 @@ function RevealedCard({
                 height: 16,
                 borderBottom: `1.5px solid ${alpha(rc, 0.4)}`,
                 borderLeft: `1.5px solid ${alpha(rc, 0.4)}`,
-                borderRadius: '0 0 0 3px',
+                borderRadius: 0,
               }}
             />
             {/* Bottom-right */}
@@ -976,7 +976,7 @@ function RevealedCard({
                 height: 16,
                 borderBottom: `1.5px solid ${alpha(rc, 0.4)}`,
                 borderRight: `1.5px solid ${alpha(rc, 0.4)}`,
-                borderRadius: '0 0 3px 0',
+                borderRadius: 0,
               }}
             />
           </Box>

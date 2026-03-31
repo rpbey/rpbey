@@ -29,7 +29,7 @@ export function WbTabs({
   };
 
   const stats = [
-    { label: 'BLADERS', value: totalBladers, color: '#f87171' },
+    { label: 'BLADERS', value: totalBladers, color: 'var(--rpb-primary)' },
     {
       label: 'MATCHS',
       value: totalMatches.toLocaleString(),
@@ -64,9 +64,9 @@ export function WbTabs({
           minHeight: 48,
           '& .MuiTabs-indicator': {
             height: 3,
-            borderRadius: '3px 3px 0 0',
-            bgcolor: '#f87171',
-            boxShadow: '0 0 12px rgba(248, 113, 113, 0.5)',
+            borderRadius: 0,
+            bgcolor: 'primary.main',
+            boxShadow: '0 0 12px rgba(var(--rpb-primary-rgb), 0.5)',
           },
         }}
       >

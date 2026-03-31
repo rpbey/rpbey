@@ -29,7 +29,7 @@ export function SatrTabs({
   };
 
   const stats = [
-    { label: 'BLADERS', value: totalBladers, color: '#fbbf24' },
+    { label: 'BLADERS', value: totalBladers, color: 'var(--rpb-secondary)' },
     {
       label: 'MATCHS',
       value: totalMatches.toLocaleString(),
@@ -64,9 +64,9 @@ export function SatrTabs({
           minHeight: 48,
           '& .MuiTabs-indicator': {
             height: 3,
-            borderRadius: '3px 3px 0 0',
-            bgcolor: '#fbbf24',
-            boxShadow: '0 0 12px rgba(251, 191, 36, 0.5)',
+            borderRadius: 0,
+            bgcolor: 'secondary.main',
+            boxShadow: '0 0 12px rgba(var(--rpb-secondary-rgb), 0.5)',
           },
         }}
       >

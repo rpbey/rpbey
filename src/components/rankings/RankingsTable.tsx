@@ -381,11 +381,11 @@ export function RankingsTable({
           '&::-webkit-scrollbar': { height: '6px', width: '6px' },
           '&::-webkit-scrollbar-track': {
             bgcolor: alpha(theme.palette.background.default, 0.3),
-            borderRadius: '4px',
+            borderRadius: 0,
           },
           '&::-webkit-scrollbar-thumb': {
             bgcolor: alpha(theme.palette.text.secondary, 0.3),
-            borderRadius: '4px',
+            borderRadius: 0,
             '&:hover': {
               bgcolor: alpha(theme.palette.text.secondary, 0.5),
             },

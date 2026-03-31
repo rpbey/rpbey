@@ -50,7 +50,7 @@ a {
 }
 
 .glass-morphism {
-  background: rgba(20, 20, 20, 0.6);
+  background: color-mix(in srgb, var(--rpb-bg, #141414) 60%, transparent);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -66,7 +66,7 @@ a {
 }
 ::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
+  border-radius: 0;
 }
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.2);
@@ -167,21 +167,21 @@ a {
     -45deg,
     transparent,
     transparent 20px,
-    rgba(220, 38, 38, 0.3) 20px,
-    rgba(220, 38, 38, 0.3) 21px
+    rgba(var(--rpb-primary-rgb), 0.3) 20px,
+    rgba(var(--rpb-primary-rgb), 0.3) 21px
   );
 }
 
-/* BBX glow accent — red bottom-edge glow */
+/* BBX glow accent — themed bottom-edge glow */
 .bbx-glow-red {
   box-shadow:
-    0 2px 20px -5px rgba(220, 38, 38, 0.15),
-    inset 0 -1px 0 0 rgba(220, 38, 38, 0.1);
+    0 2px 20px -5px rgba(var(--rpb-primary-rgb), 0.15),
+    inset 0 -1px 0 0 rgba(var(--rpb-primary-rgb), 0.1);
 }
 
 /* BBX card with type accent */
 .bbx-card-attack {
-  border-left: 3px solid #ef4444;
+  border-left: 3px solid var(--rpb-primary);
 }
 .bbx-card-defense {
   border-left: 3px solid #3b82f6;
@@ -239,9 +239,9 @@ a {
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(220, 38, 38, 0.3) 20%,
-    rgba(220, 38, 38, 0.5) 50%,
-    rgba(220, 38, 38, 0.3) 80%,
+    rgba(var(--rpb-primary-rgb), 0.3) 20%,
+    rgba(var(--rpb-primary-rgb), 0.5) 50%,
+    rgba(var(--rpb-primary-rgb), 0.3) 80%,
     transparent 100%
   );
   margin: 32px 0;

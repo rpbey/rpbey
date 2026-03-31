@@ -136,7 +136,7 @@ export function YouTubePlayer({ videoId, title }: YouTubePlayerProps) {
             width: 68,
             height: 48,
             bgcolor: 'rgba(23, 23, 23, 0.8)',
-            borderRadius: '14px',
+            borderRadius: 0,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',

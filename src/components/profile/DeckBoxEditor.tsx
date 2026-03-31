@@ -31,13 +31,23 @@ interface Sticker {
   color: string;
 }
 
+// Brand colors reference CSS variables so they adapt to the active theme
 const COLORS = [
-  { name: 'Rouge', value: '#dc2626' },
-  { name: 'Or', value: '#fbbf24' },
-  { name: 'Blanc', value: '#ffffff' },
-  { name: 'Noir', value: '#000000' },
-  { name: 'Bleu', value: '#3b82f6' },
+  { name: 'Primaire', cssVar: '--rpb-primary' },
+  { name: 'Secondaire', cssVar: '--rpb-secondary' },
+  { name: 'Blanc', cssVar: null, hex: '#ffffff' },
+  { name: 'Noir', cssVar: null, hex: '#000000' },
+  { name: 'Bleu', cssVar: null, hex: '#3b82f6' },
 ];
+
+function resolveColor(c: (typeof COLORS)[number]): string {
+  if (c.cssVar) {
+    return getComputedStyle(document.documentElement)
+      .getPropertyValue(c.cssVar)
+      .trim();
+  }
+  return c.hex!;
+}
 
 export function DeckBoxEditor({
   open,
@@ -291,12 +301,12 @@ export function DeckBoxEditor({
               {COLORS.map((c) => (
                 <Box
                   key={c.name}
-                  onClick={() => addSticker(c.value)}
+                  onClick={() => addSticker(resolveColor(c))}
                   sx={{
                     width: 32,
                     height: 32,
                     borderRadius: '50%',
-                    bgcolor: c.value,
+                    bgcolor: c.cssVar ? `var(${c.cssVar})` : c.hex,
                     border: '2px solid white',
                     boxShadow: '0 2px 4px rgba(0,0,0,0.3)',
                     cursor: 'pointer',

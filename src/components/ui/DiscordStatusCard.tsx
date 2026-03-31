@@ -165,7 +165,7 @@ export function DiscordStatusCard({
           '&::-webkit-scrollbar': { width: '4px' },
           '&::-webkit-scrollbar-thumb': {
             bgcolor: 'divider',
-            borderRadius: '4px',
+            borderRadius: 0,
           },
         }}
       >

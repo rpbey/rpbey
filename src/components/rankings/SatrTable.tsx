@@ -1,6 +1,13 @@
 'use client';
 
-import { alpha, useMediaQuery, useTheme } from '@mui/material';
+import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
+import {
+  alpha,
+  Checkbox,
+  Tooltip,
+  useMediaQuery,
+  useTheme,
+} from '@mui/material';
 import Box from '@mui/material/Box';
 import Pagination from '@mui/material/Pagination';
 import Paper from '@mui/material/Paper';
@@ -14,10 +21,11 @@ import Typography from '@mui/material/Typography';
 import type { SatrBlader, SatrRanking } from '@prisma/client';
 import { motion } from 'framer-motion';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { toast } from 'sonner';
 import { getSatrBladerByName } from '@/server/actions/satr';
 import { SatrBladerDialog } from './SatrBladerDialog';
+import { SatrComparator } from './SatrComparator';
 
 interface SatrTableProps {
   rankings: SatrRanking[];
@@ -37,6 +45,28 @@ export function SatrTable({
   const searchParams = useSearchParams();
   const [selectedBlader, setSelectedBlader] = useState<SatrBlader | null>(null);
   const [loadingBlader, setLoadingBlader] = useState(false);
+  const [compareList, setCompareList] = useState<SatrRanking[]>([]);
+
+  const isSelected = useCallback(
+    (id: string) => compareList.some((r) => r.id === id),
+    [compareList],
+  );
+
+  const toggleCompare = useCallback(
+    (ranking: SatrRanking, e: React.MouseEvent) => {
+      e.stopPropagation();
+      setCompareList((prev) => {
+        if (prev.some((r) => r.id === ranking.id)) {
+          return prev.filter((r) => r.id !== ranking.id);
+        }
+        if (prev.length >= 2) {
+          return [prev[1]!, ranking];
+        }
+        return [...prev, ranking];
+      });
+    },
+    [],
+  );
 
   const handlePageChange = (
     _event: React.ChangeEvent<unknown>,
@@ -120,13 +150,27 @@ export function SatrTable({
           '&::-webkit-scrollbar': { height: '4px' },
           '&::-webkit-scrollbar-thumb': {
             bgcolor: 'rgba(255,255,255,0.1)',
-            borderRadius: '4px',
+            borderRadius: 0,
           },
         }}
       >
         <Table size="small" sx={{ minWidth: { xs: 450, md: '100%' } }}>
           <TableHead>
             <TableRow sx={{ bgcolor: 'rgba(255,255,255,0.03)' }}>
+              <TableCell
+                width={40}
+                align="center"
+                sx={{ py: 2, px: { xs: 0.5, md: 1 } }}
+              >
+                <Tooltip title="Sélectionnez 2 bladers pour comparer">
+                  <CompareArrowsIcon
+                    sx={{
+                      fontSize: 16,
+                      color: 'rgba(255,255,255,0.3)',
+                    }}
+                  />
+                </Tooltip>
+              </TableCell>
               <TableCell
                 width={60}
                 align="center"
@@ -234,6 +278,18 @@ export function SatrTable({
                     cursor: loadingBlader ? 'wait' : 'pointer',
                   }}
                 >
+                  <TableCell align="center" sx={{ px: { xs: 0.5, md: 1 } }}>
+                    <Checkbox
+                      size="small"
+                      checked={isSelected(row.id)}
+                      onClick={(e) => toggleCompare(row, e)}
+                      sx={{
+                        p: 0.5,
+                        color: 'rgba(255,255,255,0.15)',
+                        '&.Mui-checked': { color: '#fbbf24' },
+                      }}
+                    />
+                  </TableCell>
                   <TableCell align="center">{getRankBadge(row.rank)}</TableCell>
                   <TableCell>
                     <Typography
@@ -252,7 +308,7 @@ export function SatrTable({
                       fontWeight="900"
                       sx={{
                         fontSize: { xs: '0.85rem', md: '1rem' },
-                        color: '#fbbf24',
+                        color: 'secondary.main',
                       }}
                     >
                       {row.score.toLocaleString()}
@@ -310,7 +366,7 @@ export function SatrTable({
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={7} align="center" sx={{ py: 10 }}>
+                <TableCell colSpan={8} align="center" sx={{ py: 10 }}>
                   <Typography variant="body2" color="text.secondary">
                     Aucun blader trouvé
                   </Typography>
@@ -337,9 +393,9 @@ export function SatrTable({
                 borderRadius: 2,
                 border: '1px solid rgba(255,255,255,0.1)',
                 '&.Mui-selected': {
-                  bgcolor: '#fbbf24',
+                  bgcolor: 'secondary.main',
                   color: '#000',
-                  '&:hover': { bgcolor: '#f59e0b' },
+                  '&:hover': { bgcolor: 'secondary.dark' },
                 },
               },
             }}
@@ -351,6 +407,14 @@ export function SatrTable({
         blader={selectedBlader}
         open={!!selectedBlader}
         onClose={() => setSelectedBlader(null)}
+      />
+
+      <SatrComparator
+        selected={compareList}
+        onRemove={(id) =>
+          setCompareList((prev) => prev.filter((r) => r.id !== id))
+        }
+        onClear={() => setCompareList([])}
       />
     </Box>
   );

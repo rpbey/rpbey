@@ -82,7 +82,7 @@ export function WbHallOfFame({
         spacing={1}
         sx={{ mb: 1.5, px: 1 }}
       >
-        <Box sx={{ display: 'flex', color: '#f87171' }}>
+        <Box sx={{ display: 'flex', color: 'primary.main' }}>
           <TrophyIcon size={18} />
         </Box>
         <Typography
@@ -90,7 +90,7 @@ export function WbHallOfFame({
           sx={{
             fontWeight: 900,
             letterSpacing: 1.5,
-            color: '#f87171',
+            color: 'primary.main',
             fontSize: '0.65rem',
           }}
         >
@@ -108,8 +108,8 @@ export function WbHallOfFame({
           pt: 0.5,
           '&::-webkit-scrollbar': { height: '3px' },
           '&::-webkit-scrollbar-thumb': {
-            bgcolor: 'rgba(248, 113, 113, 0.3)',
-            borderRadius: '4px',
+            bgcolor: 'rgba(var(--rpb-primary-rgb), 0.3)',
+            borderRadius: 0,
           },
           maskImage: 'linear-gradient(to right, black 90%, transparent 100%)',
         }}
@@ -128,7 +128,7 @@ export function WbHallOfFame({
                 position: 'relative',
                 background: 'linear-gradient(145deg, #1a1a1a 0%, #0a0a0a 100%)',
                 border: '1px solid',
-                borderColor: 'rgba(248, 113, 113, 0.2)',
+                borderColor: 'rgba(var(--rpb-primary-rgb), 0.2)',
                 boxShadow: '0 4px 15px rgba(0,0,0,0.4)',
                 overflow: 'hidden',
                 '&::before': {
@@ -139,7 +139,7 @@ export function WbHallOfFame({
                   right: 0,
                   height: '1px',
                   background:
-                    'linear-gradient(90deg, transparent, #f87171, transparent)',
+                    'linear-gradient(90deg, transparent, var(--rpb-primary), transparent)',
                   opacity: 0.4,
                 },
               }}
@@ -151,7 +151,7 @@ export function WbHallOfFame({
                   right: -10,
                   opacity: 0.05,
                   transform: 'rotate(15deg)',
-                  color: '#f87171',
+                  color: 'primary.main',
                 }}
               >
                 <TrophyIcon size={60} />
@@ -161,7 +161,7 @@ export function WbHallOfFame({
                 variant="caption"
                 sx={{
                   display: 'block',
-                  color: 'rgba(248, 113, 113, 0.7)',
+                  color: 'rgba(var(--rpb-primary-rgb), 0.7)',
                   fontWeight: 800,
                   mb: 0.25,
                   fontSize: '0.6rem',
@@ -182,7 +182,7 @@ export function WbHallOfFame({
                   whiteSpace: 'nowrap',
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
-                  '&:hover': { color: '#f87171' },
+                  '&:hover': { color: 'primary.main' },
                 }}
               >
                 {c.winner}
@@ -215,7 +215,7 @@ export function WbHallOfFame({
                   color: 'rgba(255,255,255,0.3)',
                   minHeight: 0,
                   p: 0,
-                  '&:hover': { color: '#f87171', bgcolor: 'transparent' },
+                  '&:hover': { color: 'primary.main', bgcolor: 'transparent' },
                 }}
               >
                 TOP 10
@@ -249,7 +249,7 @@ export function WbHallOfFame({
             <Typography
               variant="subtitle1"
               fontWeight="900"
-              color="#f87171"
+              color="primary.main"
               sx={{ fontSize: '0.9rem', letterSpacing: 0.5 }}
             >
               TOP 10 • {selectedTournament?.replace('WB_', '').toUpperCase()}
@@ -280,7 +280,7 @@ export function WbHallOfFame({
                     borderRadius: 1.5,
                     bgcolor:
                       p.rank === 1
-                        ? 'rgba(248, 113, 113, 0.1)'
+                        ? 'rgba(var(--rpb-primary-rgb), 0.1)'
                         : 'rgba(255,255,255,0.02)',
                   }}
                 >
@@ -293,7 +293,9 @@ export function WbHallOfFame({
                   >
                     {p.rank}. {p.name}
                   </Typography>
-                  {p.rank === 1 && <TrophyIcon size={14} color="#f87171" />}
+                  {p.rank === 1 && (
+                    <TrophyIcon size={14} color="var(--rpb-primary)" />
+                  )}
                 </Box>
               ))}
             </Stack>

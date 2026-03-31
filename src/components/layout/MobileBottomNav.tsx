@@ -38,7 +38,7 @@ export function MobileBottomNav() {
             pb: 'env(safe-area-inset-bottom)', // Support for notch phones
             borderTop: 1,
             borderColor: 'divider',
-            borderRadius: '16px 16px 0 0',
+            borderRadius: 0,
             overflow: 'hidden',
             boxShadow: '0 -4px 16px rgba(0,0,0,0.08)',
           }}

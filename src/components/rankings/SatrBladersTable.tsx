@@ -296,7 +296,7 @@ export function SatrBladersTable({
                               sx={{
                                 width: 10,
                                 height: 10,
-                                borderRadius: '2px',
+                                borderRadius: 0,
                                 rotate: '45deg',
                                 bgcolor:
                                   h.wins > h.losses
@@ -344,9 +344,9 @@ export function SatrBladersTable({
                 borderRadius: 2,
                 border: '1px solid rgba(255,255,255,0.1)',
                 '&.Mui-selected': {
-                  bgcolor: '#fbbf24',
+                  bgcolor: 'secondary.main',
                   color: '#000',
-                  '&:hover': { bgcolor: '#f59e0b' },
+                  '&:hover': { bgcolor: 'secondary.dark' },
                 },
               },
             }}

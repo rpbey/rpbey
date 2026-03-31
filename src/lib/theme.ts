@@ -30,8 +30,12 @@ declare module '@mui/material/styles' {
     container?: string;
     onContainer?: string;
   }
+  interface PaletteColor {
+    container?: string;
+    onContainer?: string;
+  }
   interface ColorSchemeOverrides {
-    tournament: true;
+    blue: true;
   }
 }
 
@@ -193,13 +197,13 @@ const commonOptions: ThemeOptions = {
     },
   },
   shape: {
-    borderRadius: 8,
+    borderRadius: 0,
   },
   components: {
     MuiButton: {
       styleOverrides: {
         root: {
-          borderRadius: 8,
+          borderRadius: 0,
           padding: '10px 24px',
           fontWeight: 600,
           minHeight: 44,
@@ -230,7 +234,7 @@ const commonOptions: ThemeOptions = {
         {
           props: { variant: 'elevated' },
           style: {
-            backgroundColor: SURFACE_DARK.low,
+            backgroundColor: 'var(--rpb-surface-low)',
             boxShadow:
               '0px 1px 3px 1px rgba(0, 0, 0, 0.15), 0px 1px 2px rgba(0, 0, 0, 0.3)',
             border: 'none',
@@ -239,7 +243,7 @@ const commonOptions: ThemeOptions = {
         {
           props: { variant: 'filled' },
           style: {
-            backgroundColor: SURFACE_DARK.main,
+            backgroundColor: 'var(--rpb-surface-main)',
             boxShadow: 'none',
             border: 'none',
           },
@@ -247,7 +251,7 @@ const commonOptions: ThemeOptions = {
         {
           props: { variant: 'outlined' },
           style: {
-            backgroundColor: SURFACE_DARK.lowest,
+            backgroundColor: 'var(--rpb-surface-lowest)',
             boxShadow: 'none',
             border: '1px solid',
             borderColor: 'rgba(255, 255, 255, 0.12)',
@@ -256,7 +260,7 @@ const commonOptions: ThemeOptions = {
       ],
       styleOverrides: {
         root: {
-          borderRadius: 16,
+          borderRadius: 0,
           backgroundImage: 'none',
           transition: 'all 0.2s ease-in-out',
         },
@@ -272,7 +276,7 @@ const commonOptions: ThemeOptions = {
     MuiAppBar: {
       styleOverrides: {
         root: {
-          backgroundColor: 'rgba(15, 15, 15, 0.8)',
+          backgroundColor: 'color-mix(in srgb, var(--rpb-bg) 80%, transparent)',
           backdropFilter: 'blur(20px)',
           boxShadow: 'none',
           borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
@@ -284,9 +288,9 @@ const commonOptions: ThemeOptions = {
     MuiBottomNavigation: {
       styleOverrides: {
         root: {
-          backgroundColor: SURFACE_DARK.main,
+          backgroundColor: 'var(--rpb-surface-main)',
           height: 80,
-          borderRadius: '16px 16px 0 0',
+          borderRadius: 0,
         },
       },
     },
@@ -297,7 +301,7 @@ const commonOptions: ThemeOptions = {
           '&::-webkit-scrollbar': { height: '6px' },
           '&::-webkit-scrollbar-thumb': {
             backgroundColor: 'rgba(255, 255, 255, 0.1)',
-            borderRadius: '10px',
+            borderRadius: 0,
           },
         },
       },
@@ -331,7 +335,7 @@ const commonOptions: ThemeOptions = {
 // Theme Creation
 // ----------------------------------------------------------------------
 
-export const darkTheme = createTheme({
+export const redTheme = createTheme({
   ...commonOptions,
   palette: {
     mode: 'dark',
@@ -360,7 +364,7 @@ export const darkTheme = createTheme({
   },
 });
 
-export const tournamentTheme = createTheme({
+export const blueTheme = createTheme({
   ...commonOptions,
   palette: {
     mode: 'dark',
@@ -396,6 +400,6 @@ export const tournamentTheme = createTheme({
 });
 
 // For backward compatibility if needed, though we should prefer the exports above
-export const theme = darkTheme;
+export const theme = redTheme;
 
 export type { ThemeMode } from '@/components/theme/ThemeRegistry';

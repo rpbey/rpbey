@@ -8,9 +8,9 @@ import { StatRadar } from '@/components/ui/StatRadar';
 import { type BuilderStep, isCXBlade, useBuilder } from './BuilderContext';
 
 const pulse = keyframes`
-  0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.4); }
-  70% { box-shadow: 0 0 0 10px rgba(220, 38, 38, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
+  0% { box-shadow: 0 0 0 0 rgba(var(--rpb-primary-rgb), 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(var(--rpb-primary-rgb), 0); }
+  100% { box-shadow: 0 0 0 0 rgba(var(--rpb-primary-rgb), 0); }
 `;
 
 function parseStat(stat: string | number | null | undefined): number {
@@ -136,7 +136,9 @@ export function BeySlotCard({ slotIndex }: BeySlotCardProps) {
         bgcolor: isActive
           ? (theme) => alpha(theme.palette.error.main, 0.02)
           : 'background.paper',
-        boxShadow: isActive ? '0 10px 30px rgba(220,38,38,0.08)' : 'none',
+        boxShadow: isActive
+          ? '0 10px 30px rgba(var(--rpb-primary-rgb),0.08)'
+          : 'none',
         animation: isActive ? `${pulse} 2s infinite` : 'none',
         cursor: 'pointer',
         transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',

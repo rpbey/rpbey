@@ -70,7 +70,7 @@ const APP_TABS = [
   {
     label: 'Game Data',
     icon: '/bbx-icons/home-icon-2beylocker-on.webp',
-    color: '#dc2626',
+    color: 'var(--rpb-primary)',
   },
 ];
 
@@ -177,7 +177,7 @@ export function AppClient({
             borderRadius: 3,
             overflow: 'hidden',
             background:
-              'linear-gradient(180deg, rgba(15,23,42,0.95) 0%, rgba(15,23,42,0.8) 100%)',
+              'linear-gradient(180deg, color-mix(in srgb, var(--rpb-paper) 95%, transparent) 0%, color-mix(in srgb, var(--rpb-paper) 80%, transparent) 100%)',
             border: '1px solid',
             borderColor: alpha('#fff', 0.08),
             backdropFilter: 'blur(12px)',
@@ -192,7 +192,7 @@ export function AppClient({
               minHeight: 64,
               '& .MuiTabs-indicator': {
                 height: 3,
-                borderRadius: '3px 3px 0 0',
+                borderRadius: 0,
                 background: _activeColor,
                 boxShadow: `0 0 12px ${_activeColor}`,
               },

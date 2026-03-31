@@ -84,7 +84,7 @@ export function CatalogPartCard({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        borderRadius: '16px',
+        borderRadius: 0,
       }}
     >
       <Typography

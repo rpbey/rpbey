@@ -227,7 +227,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                     px: 3,
                     py: 1.5,
                     minHeight: 56,
-                    borderRadius: '28px',
+                    borderRadius: 0,
                     gap: 1.5,
                     bgcolor: isActive
                       ? alpha(theme.palette.primary.main, 0.12)
@@ -302,7 +302,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                       px: 3,
                       py: 1.5,
                       minHeight: 56,
-                      borderRadius: '28px',
+                      borderRadius: 0,
                       gap: 1.5,
                       color: 'primary.main',
                       '&:hover': {

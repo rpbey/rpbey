@@ -296,7 +296,7 @@ export function WbBladersTable({
                               sx={{
                                 width: 10,
                                 height: 10,
-                                borderRadius: '2px',
+                                borderRadius: 0,
                                 rotate: '45deg',
                                 bgcolor:
                                   h.wins > h.losses
@@ -344,9 +344,9 @@ export function WbBladersTable({
                 borderRadius: 2,
                 border: '1px solid rgba(255,255,255,0.1)',
                 '&.Mui-selected': {
-                  bgcolor: '#f87171',
+                  bgcolor: 'primary.main',
                   color: '#fff',
-                  '&:hover': { bgcolor: '#ef4444' },
+                  '&:hover': { bgcolor: 'primary.dark' },
                 },
               },
             }}

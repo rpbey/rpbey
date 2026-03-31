@@ -18,6 +18,7 @@ import {
 import {
   AppBar,
   Avatar,
+  alpha,
   Box,
   Button,
   Drawer,
@@ -165,20 +166,24 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                     px: 3,
                     py: 1.5,
                     minHeight: 48,
-                    borderRadius: '12px',
+                    borderRadius: 0,
                     gap: 1.5,
-                    color: isActive ? '#fbbf24' : 'rgba(255,255,255,0.7)', // RPB Gold for active
+                    color: isActive
+                      ? 'secondary.main'
+                      : 'rgba(255,255,255,0.7)',
                     bgcolor: isActive
-                      ? 'rgba(251, 191, 36, 0.1)'
+                      ? (theme) => alpha(theme.palette.secondary.main, 0.1)
                       : 'transparent',
                     '&:hover': {
                       bgcolor: 'rgba(255,255,255,0.05)',
                       color: 'white',
                     },
                     '&.Mui-selected': {
-                      bgcolor: 'rgba(251, 191, 36, 0.15)',
+                      bgcolor: (theme) =>
+                        alpha(theme.palette.secondary.main, 0.15),
                       '&:hover': {
-                        bgcolor: 'rgba(251, 191, 36, 0.2)',
+                        bgcolor: (theme) =>
+                          alpha(theme.palette.secondary.main, 0.2),
                       },
                     },
                   }}
@@ -217,10 +222,12 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
           onClick={handleSignOut}
           sx={{
             borderRadius: 2,
-            color: '#ef4444', // Red-500
+            color: 'error.main',
             py: 1.5,
             px: 2,
-            '&:hover': { bgcolor: 'rgba(239, 68, 68, 0.1)' },
+            '&:hover': {
+              bgcolor: (theme) => alpha(theme.palette.error.main, 0.1),
+            },
           }}
         >
           <ListItemIcon sx={{ minWidth: 40, color: 'inherit' }}>

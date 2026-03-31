@@ -10,6 +10,7 @@ import Chip from '@mui/material/Chip';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
+import { alpha } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import { domAnimation, LazyMotion, type MotionStyle, m } from 'framer-motion';
 import dynamic from 'next/dynamic';
@@ -109,7 +110,7 @@ export default function HomeClient({
               position: 'absolute',
               inset: 0,
               background:
-                mode === 'tournament'
+                mode === 'blue'
                   ? 'linear-gradient(to bottom, rgba(15,23,42,0.4) 0%, rgba(15,23,42,0.9) 50%, #020617 100%)'
                   : `linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.7) 50%, var(--rpb-bg, #0F0F0F) 100%)`,
               zIndex: 2,
@@ -186,16 +187,17 @@ export default function HomeClient({
                         mb: 3,
                         px: 1,
                         py: 2.5,
-                        borderRadius: '24px',
-                        bgcolor: 'rgba(220, 38, 38, 0.1)',
-                        color: '#ef4444',
+                        borderRadius: 0,
+                        bgcolor: (t) => alpha(t.palette.primary.main, 0.1),
+                        color: 'primary.main',
                         fontWeight: 800,
-                        border: '1px solid rgba(220, 38, 38, 0.3)',
+                        border: (t) =>
+                          `1px solid ${alpha(t.palette.primary.main, 0.3)}`,
                         backdropFilter: 'blur(8px)',
                         cursor: 'pointer',
                         '&:hover': {
-                          bgcolor: 'rgba(220, 38, 38, 0.2)',
-                          borderColor: '#ef4444',
+                          bgcolor: (t) => alpha(t.palette.primary.main, 0.2),
+                          borderColor: 'primary.main',
                         },
                         '@keyframes pulse': {
                           '0%': { opacity: 1 },
@@ -275,7 +277,7 @@ export default function HomeClient({
                       width: { xs: '100%', sm: 'auto' },
                       height: { xs: 48, sm: 64 },
                       px: { xs: 4, sm: 6 },
-                      borderRadius: '32px', // MD3 Full Round
+                      borderRadius: 0, // MD3 Full Round
                       fontSize: { xs: '0.95rem', sm: '1.1rem' },
                       fontWeight: 800,
                       bgcolor: 'primary.main',
@@ -300,7 +302,7 @@ export default function HomeClient({
                       width: { xs: '100%', sm: 'auto' },
                       height: { xs: 48, sm: 64 },
                       px: 4,
-                      borderRadius: '32px',
+                      borderRadius: 0,
                       borderWidth: 2,
                       borderColor: 'rgba(255,255,255,0.2)',
                       color: 'white',
@@ -324,7 +326,7 @@ export default function HomeClient({
                   <Box
                     sx={{
                       position: 'relative',
-                      borderRadius: '48px', // MD3 Large Container
+                      borderRadius: 0, // MD3 Large Container
                       overflow: 'hidden',
                       boxShadow: '0 40px 100px rgba(0,0,0,0.6)',
                       border: '1px solid rgba(255,255,255,0.1)',
@@ -378,7 +380,7 @@ export default function HomeClient({
                   variant="elevation"
                   sx={{
                     bgcolor: 'surface.high',
-                    borderRadius: '32px',
+                    borderRadius: 0,
                     height: '100%',
                     p: 1,
                     overflow: 'hidden',

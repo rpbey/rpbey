@@ -116,7 +116,7 @@ export function WbTable({ rankings, totalPages, currentPage }: WbTableProps) {
           '&::-webkit-scrollbar': { height: '4px' },
           '&::-webkit-scrollbar-thumb': {
             bgcolor: 'rgba(255,255,255,0.1)',
-            borderRadius: '4px',
+            borderRadius: 0,
           },
         }}
       >
@@ -248,7 +248,7 @@ export function WbTable({ rankings, totalPages, currentPage }: WbTableProps) {
                       fontWeight="900"
                       sx={{
                         fontSize: { xs: '0.85rem', md: '1rem' },
-                        color: '#f87171',
+                        color: 'primary.main',
                       }}
                     >
                       {row.score.toLocaleString()}
@@ -333,9 +333,9 @@ export function WbTable({ rankings, totalPages, currentPage }: WbTableProps) {
                 borderRadius: 2,
                 border: '1px solid rgba(255,255,255,0.1)',
                 '&.Mui-selected': {
-                  bgcolor: '#f87171',
+                  bgcolor: 'primary.main',
                   color: '#fff',
-                  '&:hover': { bgcolor: '#ef4444' },
+                  '&:hover': { bgcolor: 'primary.dark' },
                 },
               },
             }}

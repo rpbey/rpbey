@@ -25,11 +25,6 @@ export const metadata: Metadata = {
   title: 'Tournois | RPB',
   description:
     'Découvrez les tournois Beyblade X organisés par la République Populaire du Beyblade. Inscrivez-vous et participez !',
-  openGraph: {
-    title: 'Tournois Beyblade X | RPB',
-    description:
-      'Résultats, classements et inscriptions aux tournois officiels RPB.',
-  },
 };
 
 function mapDbStatus(status: string): TournamentStatus {
@@ -45,7 +40,7 @@ function mapDbStatus(status: string): TournamentStatus {
   return mapping[status] || 'pending';
 }
 
-// ── BTS editions (scraped from Challonge exports) ──
+// ── Data ──
 
 const BTS_EDITIONS = [
   {
@@ -64,22 +59,28 @@ const BTS_EDITIONS = [
     poster: '/tournaments/BTS2_optimized.webp',
     fallbackCount: 60,
   },
+  {
+    id: 'bts1',
+    file: 'B_TS1.json',
+    name: 'Bey-Tamashii Séries #1',
+    date: '2026-01-11',
+    poster: '/tournaments/BTS1_poster.png',
+    fallbackCount: 69,
+  },
 ];
 
-// ── Partner series (SATR, WB) ──
-
 const PARTNER_SERIES = [
-  // {
-  //   id: 'satr',
-  //   name: 'Sun After The Reign',
-  //   subtitle: 'Beyblade Battle Tournament',
-  //   href: '/tournaments/satr',
-  //   logo: '/satr-logo.webp',
-  //   logoWidth: 56,
-  //   logoHeight: 28,
-  //   logoRounded: false,
-  //   color: '#fbbf24',
-  // },
+  {
+    id: 'satr',
+    name: 'Sun After The Reign',
+    subtitle: 'Beyblade Battle Tournament',
+    href: '/tournaments/satr',
+    logo: '/satr-logo.webp',
+    logoWidth: 56,
+    logoHeight: 28,
+    logoRounded: false,
+    color: '#fbbf24',
+  },
   {
     id: 'wb',
     name: 'Wild Breakers',
@@ -93,13 +94,39 @@ const PARTNER_SERIES = [
   },
 ] as const;
 
+const _ALL_STAR_EVENTS = [
+  {
+    id: 'allstar-paris',
+    city: 'Paris',
+    date: '2026-04-19',
+    time: '14h00',
+    venue: 'Saiba Café (étage E-Spot)',
+    count: 16,
+    format: 'Poules + Double Élim BO3',
+    note: 'Spectateurs bienvenus · Twitch',
+    color: '#fbbf24',
+  },
+  {
+    id: 'allstar-marseille',
+    city: 'Marseille',
+    date: '2026-04-11',
+    time: '14h30',
+    venue: 'Chaperon Rouge Bar',
+    count: 16,
+    format: 'Poules + Arbre',
+    note: null,
+    color: '#f87171',
+  },
+] as const;
+
+// ── Page ──
+
 export default async function TournamentsPage() {
   const dbTournaments = await prisma.tournament.findMany({
     orderBy: { date: 'desc' },
     include: { _count: { select: { participants: true } } },
   });
 
-  // Load BTS data from scraped JSON exports
   const exportDir = join(process.cwd(), 'data/exports');
   const btsCards: Array<{
     id: string;
@@ -122,11 +149,10 @@ export default async function TournamentsPage() {
         participants: data.participantsCount || edition.fallbackCount,
       });
     } catch {
-      // skip missing files
+      // skip missing
     }
   }
 
-  // Map DB tournaments to card format
   const dbScrapedIds = new Set(BTS_EDITIONS.map((e) => e.id));
   const dbCards = dbTournaments
     .filter((t) => !dbScrapedIds.has(t.id))
@@ -159,17 +185,18 @@ export default async function TournamentsPage() {
     <Box
       sx={{
         minHeight: '100vh',
-        position: 'relative',
         bgcolor: 'background.default',
         pb: 8,
+        position: 'relative',
         '&::before': {
           content: '""',
           position: 'absolute',
           top: 0,
           left: 0,
           right: 0,
-          height: { xs: '50vh', md: '60vh' },
-          background: `radial-gradient(ellipse 80% 50% at 50% -10%, ${alpha('#dc2626', 0.12)} 0%, transparent 70%)`,
+          height: { xs: '40vh', md: '50vh' },
+          background:
+            'radial-gradient(ellipse 80% 50% at 50% -10%, rgba(var(--rpb-primary-rgb), 0.12) 0%, transparent 70%)',
           pointerEvents: 'none',
         },
       }}
@@ -178,11 +205,11 @@ export default async function TournamentsPage() {
         maxWidth="lg"
         sx={{ position: 'relative', px: { xs: 2, sm: 3 } }}
       >
-        {/* ── Hero ── */}
+        {/* ═══ HERO ═══ */}
         <Box
           sx={{
-            pt: { xs: 2, md: 8 },
-            pb: { xs: 2, md: 6 },
+            pt: { xs: 2, md: 6 },
+            pb: { xs: 3, md: 5 },
             textAlign: 'center',
           }}
         >
@@ -192,7 +219,7 @@ export default async function TournamentsPage() {
             sx={{
               fontWeight: 900,
               letterSpacing: '-0.03em',
-              fontSize: { xs: '1.8rem', md: '3.5rem' },
+              fontSize: { xs: '1.8rem', md: '3rem' },
               mb: 1,
             }}
           >
@@ -200,131 +227,121 @@ export default async function TournamentsPage() {
             <Box
               component="span"
               sx={{
-                background: 'linear-gradient(135deg, #dc2626 0%, #fbbf24 100%)',
+                background:
+                  'linear-gradient(135deg, var(--rpb-primary) 0%, var(--rpb-secondary) 100%)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
-                filter: 'drop-shadow(0 4px 12px rgba(220, 38, 38, 0.3))',
               }}
             >
               Tournois
             </Box>
           </Typography>
           <Typography
-            variant="h6"
+            variant="body1"
             color="text.secondary"
             sx={{
-              maxWidth: 600,
+              maxWidth: 520,
               mx: 'auto',
-              fontWeight: 400,
-              fontSize: { xs: '0.95rem', md: '1.1rem' },
-              lineHeight: 1.6,
-              opacity: 0.7,
+              fontSize: { xs: '0.9rem', md: '1rem' },
+              opacity: 0.6,
             }}
           >
-            Participez aux tournois Beyblade X organisés par la communauté RPB.
-            Classements, résultats et inscriptions.
+            Compétitions officielles RPB et séries partenaires
           </Typography>
+
+          {/* Stats */}
+          <Stack
+            direction="row"
+            spacing={{ xs: 1.5, md: 3 }}
+            justifyContent="center"
+            sx={{ mt: 3 }}
+          >
+            {[
+              {
+                label: 'Tournois',
+                value: totalTournaments,
+                icon: EmojiEventsIcon,
+                color: 'secondary.main',
+              },
+              {
+                label: 'Joueurs',
+                value: totalParticipants,
+                icon: GroupsIcon,
+                color: 'primary.main',
+              },
+              {
+                label: 'Séries',
+                value: 1 + PARTNER_SERIES.length,
+                icon: EventIcon,
+                color: '#60a5fa',
+              },
+            ].map((stat) => (
+              <Paper
+                key={stat.label}
+                elevation={0}
+                sx={{
+                  px: { xs: 2, md: 3 },
+                  py: { xs: 1, md: 1.5 },
+                  borderRadius: 2.5,
+                  bgcolor: 'rgba(255,255,255,0.03)',
+                  border: '1px solid rgba(255,255,255,0.06)',
+                  textAlign: 'center',
+                  minWidth: { xs: 80, md: 110 },
+                }}
+              >
+                <stat.icon
+                  sx={{
+                    fontSize: { xs: 18, md: 22 },
+                    color: stat.color,
+                    mb: 0.25,
+                    opacity: 0.7,
+                  }}
+                />
+                <Typography
+                  fontWeight="900"
+                  sx={{
+                    color: stat.color,
+                    fontSize: { xs: '1.2rem', md: '1.4rem' },
+                    lineHeight: 1,
+                  }}
+                >
+                  {stat.value}
+                </Typography>
+                <Typography
+                  variant="caption"
+                  color="text.secondary"
+                  sx={{
+                    fontSize: { xs: '0.55rem', md: '0.65rem' },
+                    textTransform: 'uppercase',
+                    letterSpacing: 1,
+                    fontWeight: 600,
+                  }}
+                >
+                  {stat.label}
+                </Typography>
+              </Paper>
+            ))}
+          </Stack>
         </Box>
 
-        {/* ── Stats ── */}
-        <Stack
-          direction="row"
-          spacing={{ xs: 1.5, md: 3 }}
-          justifyContent="center"
-          sx={{ mb: { xs: 5, md: 7 } }}
-        >
-          {[
-            {
-              label: 'Tournois',
-              value: totalTournaments,
-              icon: EmojiEventsIcon,
-              color: '#fbbf24',
-            },
-            {
-              label: 'Participations',
-              value: totalParticipants,
-              icon: GroupsIcon,
-              color: '#dc2626',
-            },
-            {
-              label: 'Séries',
-              value: 1 + PARTNER_SERIES.length,
-              icon: EventIcon,
-              color: '#60a5fa',
-            },
-          ].map((stat) => (
-            <Paper
-              key={stat.label}
-              elevation={0}
-              sx={{
-                px: { xs: 2, md: 3.5 },
-                py: { xs: 1.5, md: 2 },
-                borderRadius: 3,
-                bgcolor: 'rgba(255,255,255,0.03)',
-                border: '1px solid rgba(255,255,255,0.06)',
-                textAlign: 'center',
-                minWidth: { xs: 90, md: 130 },
-                transition: 'all 0.2s ease',
-                '&:hover': {
-                  bgcolor: 'rgba(255,255,255,0.05)',
-                  borderColor: alpha(stat.color, 0.2),
-                  transform: 'translateY(-2px)',
-                },
-              }}
-            >
-              <stat.icon
-                sx={{
-                  fontSize: { xs: 20, md: 24 },
-                  color: stat.color,
-                  mb: 0.5,
-                  opacity: 0.8,
-                }}
-              />
-              <Typography
-                variant="h5"
-                fontWeight="900"
-                sx={{
-                  color: stat.color,
-                  fontSize: { xs: '1.3rem', md: '1.6rem' },
-                  lineHeight: 1,
-                }}
-              >
-                {stat.value}
-              </Typography>
-              <Typography
-                variant="caption"
-                color="text.secondary"
-                sx={{
-                  fontSize: { xs: '0.6rem', md: '0.7rem' },
-                  textTransform: 'uppercase',
-                  letterSpacing: 1,
-                  fontWeight: 600,
-                }}
-              >
-                {stat.label}
-              </Typography>
-            </Paper>
-          ))}
-        </Stack>
-
-        {/* ══════════════════════════════════════════════
-            SECTION 1 — Bey-Tamashii Séries (officiel RPB)
-            ══════════════════════════════════════════════ */}
+        {/* ═══════════════════════════════════════
+            SECTION 1 — BEY-TAMASHII SÉRIES (NOS TOURNOIS)
+            ═══════════════════════════════════════ */}
         {btsCards.length > 0 && (
-          <Box sx={{ mb: { xs: 5, md: 6 } }}>
-            <SectionHeading
-              gradient="linear-gradient(180deg, #dc2626 0%, #991b1b 100%)"
-              title="Bey-Tamashii"
-              accent="Séries"
-              accentColor="#dc2626"
-              badge="OFFICIEL RPB"
-              badgeColor="#dc2626"
+          <Box sx={{ mb: { xs: 6, md: 8 } }}>
+            <Heading
+              title="Bey-Tamashii Séries"
+              accent="OFFICIEL RPB"
+              accentColor="var(--rpb-primary)"
               logo="/logo.png"
             />
 
-            <Grid container spacing={{ xs: 2, md: 3 }}>
-              {btsCards.map((bts) => (
-                <Grid key={bts.id} size={{ xs: 12, md: 6 }}>
+            <Grid container spacing={{ xs: 1.5, md: 2.5 }}>
+              {btsCards.map((bts, i) => (
+                <Grid
+                  key={bts.id}
+                  size={{ xs: 12, sm: i === 0 ? 12 : 6, md: i === 0 ? 12 : 6 }}
+                >
                   <Link
                     href={`/tournaments/${bts.id}`}
                     style={{ textDecoration: 'none', color: 'inherit' }}
@@ -332,23 +349,27 @@ export default async function TournamentsPage() {
                     <Paper
                       elevation={0}
                       sx={{
-                        borderRadius: 4,
+                        borderRadius: { xs: 3, md: 4 },
                         overflow: 'hidden',
-                        bgcolor: alpha('#dc2626', 0.04),
-                        border: `1px solid ${alpha('#dc2626', 0.15)}`,
+                        bgcolor: 'rgba(var(--rpb-primary-rgb), 0.03)',
+                        border: '1px solid rgba(var(--rpb-primary-rgb), 0.1)',
                         transition:
                           'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
                         '&:hover': {
-                          borderColor: alpha('#dc2626', 0.4),
-                          transform: 'translateY(-4px)',
-                          boxShadow: `0 12px 32px ${alpha('#dc2626', 0.2)}`,
+                          borderColor: 'rgba(var(--rpb-primary-rgb), 0.35)',
+                          transform: 'translateY(-3px)',
+                          boxShadow:
+                            '0 12px 32px rgba(var(--rpb-primary-rgb), 0.15)',
                         },
                       }}
                     >
                       <Box
                         sx={{
                           position: 'relative',
-                          height: { xs: 160, md: 200 },
+                          height: {
+                            xs: i === 0 ? 180 : 140,
+                            md: i === 0 ? 240 : 180,
+                          },
                           overflow: 'hidden',
                         }}
                       >
@@ -361,17 +382,13 @@ export default async function TournamentsPage() {
                         <Box
                           sx={{
                             position: 'absolute',
-                            bottom: 0,
-                            left: 0,
-                            right: 0,
-                            height: '50%',
+                            inset: 0,
                             background:
-                              'linear-gradient(transparent, rgba(0,0,0,0.8))',
+                              'linear-gradient(transparent 40%, rgba(0,0,0,0.8))',
                           }}
                         />
                       </Box>
-
-                      <Box sx={{ p: { xs: 2, md: 2.5 } }}>
+                      <Box sx={{ p: { xs: 1.5, md: 2 } }}>
                         <Stack
                           direction="row"
                           alignItems="center"
@@ -379,28 +396,34 @@ export default async function TournamentsPage() {
                         >
                           <Box>
                             <Typography
-                              variant="subtitle1"
                               fontWeight="900"
-                              sx={{ lineHeight: 1.3 }}
+                              sx={{
+                                fontSize: {
+                                  xs: i === 0 ? '1rem' : '0.9rem',
+                                  md: i === 0 ? '1.1rem' : '0.95rem',
+                                },
+                                lineHeight: 1.3,
+                              }}
                             >
                               {bts.name}
                             </Typography>
                             <Typography
                               variant="caption"
                               color="text.secondary"
+                              sx={{ fontSize: { xs: '0.7rem', md: '0.75rem' } }}
                             >
                               {new Date(bts.date).toLocaleDateString('fr-FR', {
                                 day: 'numeric',
                                 month: 'long',
                                 year: 'numeric',
                               })}{' '}
-                              • {bts.participants} joueurs
+                              · {bts.participants} joueurs
                             </Typography>
                           </Box>
                           <NavigateNextIcon
                             sx={{
-                              color: alpha('#dc2626', 0.4),
-                              fontSize: 24,
+                              color: 'rgba(var(--rpb-primary-rgb), 0.3)',
+                              fontSize: 22,
                             }}
                           />
                         </Stack>
@@ -413,20 +436,16 @@ export default async function TournamentsPage() {
           </Box>
         )}
 
-        {/* ══════════════════════════════════════════════
-            SECTION 2 — Séries Partenaires (SATR, WB)
-            ══════════════════════════════════════════════ */}
-        <Box sx={{ mb: { xs: 5, md: 6 } }}>
-          <SectionHeading
-            gradient="linear-gradient(180deg, #fbbf24 0%, #f87171 100%)"
-            title="Séries"
-            accent="Partenaires"
-            accentColor="#fbbf24"
-          />
+        {/* ═══════════════════════════════════════
+            SECTION 2 — SÉRIES PARTENAIRES
+            ═══════════════════════════════════════ */}
+        <Box sx={{ mb: { xs: 6, md: 8 } }}>
+          <Heading title="Séries Partenaires" />
 
-          <Grid container spacing={{ xs: 2, md: 3 }}>
+          {/* Partner links */}
+          <Grid container spacing={{ xs: 1.5, md: 2 }} sx={{ mb: 3 }}>
             {PARTNER_SERIES.map((series) => (
-              <Grid key={series.id} size={{ xs: 12, md: 6 }}>
+              <Grid key={series.id} size={{ xs: 12, sm: 6 }}>
                 <Link
                   href={series.href}
                   style={{ textDecoration: 'none', color: 'inherit' }}
@@ -434,33 +453,18 @@ export default async function TournamentsPage() {
                   <Paper
                     elevation={0}
                     sx={{
-                      p: { xs: 2.5, md: 3 },
+                      p: { xs: 2, md: 2.5 },
                       display: 'flex',
                       alignItems: 'center',
-                      gap: { xs: 2, md: 2.5 },
-                      borderRadius: 4,
-                      bgcolor: alpha(series.color, 0.04),
-                      border: `1px solid ${alpha(series.color, 0.12)}`,
-                      position: 'relative',
-                      overflow: 'hidden',
-                      transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
-                      '&::before': {
-                        content: '""',
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        background: `radial-gradient(circle at 0% 50%, ${alpha(series.color, 0.08)} 0%, transparent 60%)`,
-                        opacity: 0,
-                        transition: 'opacity 0.3s ease',
-                      },
+                      gap: 2,
+                      borderRadius: 3,
+                      bgcolor: alpha(series.color, 0.03),
+                      border: `1px solid ${alpha(series.color, 0.1)}`,
+                      transition: 'all 0.25s ease',
                       '&:hover': {
-                        bgcolor: alpha(series.color, 0.08),
-                        borderColor: alpha(series.color, 0.3),
-                        transform: 'translateY(-3px)',
-                        boxShadow: `0 8px 24px ${alpha(series.color, 0.15)}`,
-                        '&::before': { opacity: 1 },
+                        bgcolor: alpha(series.color, 0.07),
+                        borderColor: alpha(series.color, 0.25),
+                        transform: 'translateY(-2px)',
                       },
                     }}
                   >
@@ -470,7 +474,6 @@ export default async function TournamentsPage() {
                         width: series.logoWidth,
                         height: series.logoHeight,
                         flexShrink: 0,
-                        zIndex: 1,
                       }}
                     >
                       <Image
@@ -483,32 +486,27 @@ export default async function TournamentsPage() {
                         }}
                       />
                     </Box>
-                    <Box sx={{ flex: 1, minWidth: 0, zIndex: 1 }}>
+                    <Box sx={{ flex: 1, minWidth: 0 }}>
                       <Typography
-                        variant="subtitle1"
                         fontWeight="900"
-                        sx={{ color: series.color, lineHeight: 1.3 }}
+                        sx={{
+                          color: series.color,
+                          fontSize: { xs: '0.95rem', md: '1rem' },
+                          lineHeight: 1.3,
+                        }}
                       >
                         {series.name}
                       </Typography>
                       <Typography
                         variant="caption"
                         color="text.secondary"
-                        sx={{ fontSize: { xs: '0.7rem', md: '0.75rem' } }}
+                        sx={{ fontSize: '0.7rem' }}
                       >
-                        {series.subtitle} • Classement & Historique
+                        {series.subtitle} · Classement & Historique
                       </Typography>
                     </Box>
                     <NavigateNextIcon
-                      sx={{
-                        color: alpha(series.color, 0.4),
-                        fontSize: 28,
-                        zIndex: 1,
-                        transition: 'transform 0.2s ease',
-                        '.MuiPaper-root:hover &': {
-                          transform: 'translateX(4px)',
-                        },
-                      }}
+                      sx={{ color: alpha(series.color, 0.3), fontSize: 24 }}
                     />
                   </Paper>
                 </Link>
@@ -517,76 +515,43 @@ export default async function TournamentsPage() {
           </Grid>
         </Box>
 
-        {/* ══════════════════════════════════════════════
-            SECTION 3 — Prochains Tournois
-            ══════════════════════════════════════════════ */}
-        {upcoming.length > 0 ? (
+        {/* ═══════════════════════════════════════
+            SECTION 3 — PROCHAINS TOURNOIS / HISTORIQUE
+            ═══════════════════════════════════════ */}
+        {upcoming.length > 0 && (
           <Box sx={{ mb: { xs: 5, md: 6 } }}>
-            <SectionHeading
-              gradient="#60a5fa"
-              title="Prochains"
-              accent="Tournois"
-              accentColor="#60a5fa"
-              count={upcoming.length}
-            />
+            <Heading title="Prochains Tournois" accentColor="#60a5fa" />
             <TournamentCardGrid tournaments={upcoming} />
           </Box>
-        ) : (
+        )}
+
+        {completed.length > 0 && (
+          <Box sx={{ mb: 4 }}>
+            <Heading title="Historique" />
+            <TournamentCardGrid tournaments={completed} />
+          </Box>
+        )}
+
+        {upcoming.length === 0 && completed.length === 0 && (
           <Paper
             elevation={0}
             sx={{
               textAlign: 'center',
-              py: { xs: 4, md: 6 },
+              py: { xs: 4, md: 5 },
               px: 3,
-              mb: { xs: 5, md: 6 },
-              borderRadius: 4,
+              mb: 4,
+              borderRadius: 3,
               bgcolor: 'rgba(255,255,255,0.02)',
               border: '1px dashed rgba(255,255,255,0.08)',
             }}
           >
             <EventIcon
-              sx={{
-                fontSize: { xs: 40, md: 48 },
-                color: alpha('#60a5fa', 0.3),
-                mb: 1.5,
-              }}
+              sx={{ fontSize: 40, color: 'rgba(255,255,255,0.15)', mb: 1 }}
             />
-            <Typography
-              variant="h6"
-              fontWeight="700"
-              color="text.secondary"
-              sx={{ mb: 0.5 }}
-            >
-              Aucun tournoi à venir
-            </Typography>
-            <Typography
-              variant="body2"
-              sx={{
-                color: 'rgba(255,255,255,0.35)',
-                maxWidth: 360,
-                mx: 'auto',
-              }}
-            >
-              Rejoignez notre Discord pour être informé des prochains
-              événements.
+            <Typography variant="body2" color="text.secondary">
+              Aucun autre tournoi pour le moment
             </Typography>
           </Paper>
-        )}
-
-        {/* ══════════════════════════════════════════════
-            SECTION 4 — Historique
-            ══════════════════════════════════════════════ */}
-        {completed.length > 0 && (
-          <Box sx={{ mb: 4 }}>
-            <SectionHeading
-              gradient="rgba(255,255,255,0.2)"
-              title="Tournois"
-              accent="Terminés"
-              accentColor="text.secondary"
-              count={completed.length}
-            />
-            <TournamentCardGrid tournaments={completed} />
-          </Box>
         )}
 
         {/* Footer */}
@@ -597,56 +562,40 @@ export default async function TournamentsPage() {
             display: 'block',
             textAlign: 'center',
             mt: 6,
-            opacity: 0.15,
+            opacity: 0.12,
             letterSpacing: 2,
             fontWeight: 900,
             fontSize: { xs: '0.55rem', md: '0.7rem' },
           }}
         >
-          RÉPUBLIQUE POPULAIRE DU BEYBLADE • TOURNOIS OFFICIELS
+          RÉPUBLIQUE POPULAIRE DU BEYBLADE · TOURNOIS OFFICIELS
         </Typography>
       </Container>
     </Box>
   );
 }
 
-// ── Reusable section heading ──
+// ── Section heading ──
 
-function SectionHeading({
-  gradient,
+function Heading({
   title,
   accent,
   accentColor,
-  badge,
-  badgeColor,
-  count,
   logo,
 }: {
-  gradient: string;
   title: string;
-  accent: string;
-  accentColor: string;
-  badge?: string;
-  badgeColor?: string;
-  count?: number;
+  accent?: string;
+  accentColor?: string;
   logo?: string;
 }) {
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: 1.5,
-        mb: 3,
-        flexWrap: 'wrap',
-      }}
-    >
+    <Stack direction="row" alignItems="center" spacing={1.5} sx={{ mb: 2.5 }}>
       <Box
         sx={{
-          width: 4,
-          height: 28,
+          width: 3,
+          height: 24,
           borderRadius: 2,
-          background: gradient,
+          bgcolor: accentColor || 'rgba(255,255,255,0.2)',
           flexShrink: 0,
         }}
       />
@@ -654,44 +603,32 @@ function SectionHeading({
         <Image
           src={logo}
           alt=""
-          width={28}
-          height={28}
+          width={24}
+          height={24}
           style={{ borderRadius: '50%' }}
         />
       )}
-      <Typography variant="h5" fontWeight="900" sx={{ letterSpacing: -0.5 }}>
-        {title}{' '}
-        <Box component="span" sx={{ color: accentColor }}>
-          {accent}
-        </Box>
+      <Typography
+        variant="h6"
+        fontWeight="900"
+        sx={{ fontSize: { xs: '1rem', md: '1.15rem' }, letterSpacing: -0.3 }}
+      >
+        {title}
       </Typography>
-      {badge && badgeColor && (
+      {accent && accentColor && (
         <Chip
-          label={badge}
+          label={accent}
           size="small"
           sx={{
             fontWeight: 900,
-            fontSize: '0.6rem',
-            height: 22,
-            bgcolor: alpha(badgeColor, 0.15),
-            color: badgeColor,
-            border: `1px solid ${alpha('#fbbf24', 0.3)}`,
-          }}
-        />
-      )}
-      {count !== undefined && (
-        <Chip
-          label={count}
-          size="small"
-          sx={{
-            fontWeight: 800,
-            fontSize: '0.7rem',
-            height: 22,
-            bgcolor: alpha(accentColor, 0.15),
+            fontSize: '0.55rem',
+            height: 20,
+            bgcolor: `color-mix(in srgb, ${accentColor} 15%, transparent)`,
             color: accentColor,
+            border: `1px solid color-mix(in srgb, ${accentColor} 25%, transparent)`,
           }}
         />
       )}
-    </Box>
+    </Stack>
   );
 }

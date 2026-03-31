@@ -397,7 +397,7 @@ export function BladerProfileHeader({
                   textTransform: 'none',
                   fontWeight: 600,
                   background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
-                  boxShadow: '0 4px 12px rgba(220, 38, 38, 0.3)',
+                  boxShadow: '0 4px 12px rgba(var(--rpb-primary-rgb), 0.3)',
                 }}
               >
                 Carte Blader

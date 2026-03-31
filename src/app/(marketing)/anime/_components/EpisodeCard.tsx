@@ -171,7 +171,7 @@ export function EpisodeCard({
                   sx={{
                     height: '100%',
                     width: `${Math.min(progress * 100, 100)}%`,
-                    bgcolor: isCompleted ? '#22c55e' : '#dc2626',
+                    bgcolor: isCompleted ? '#22c55e' : 'var(--rpb-primary)',
                   }}
                 />
               </Box>
@@ -410,8 +410,8 @@ export function EpisodeCard({
                 sx={{
                   height: '100%',
                   width: `${Math.min(progress * 100, 100)}%`,
-                  bgcolor: isCompleted ? '#22c55e' : '#dc2626',
-                  borderRadius: '0 1px 0 0',
+                  bgcolor: isCompleted ? '#22c55e' : 'var(--rpb-primary)',
+                  borderRadius: 0,
                 }}
               />
             </Box>
