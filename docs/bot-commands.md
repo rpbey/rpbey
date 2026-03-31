@@ -149,9 +149,9 @@ Parcourir la base de données complète des Beyblades avec filtres par type et r
 
 ## ⚔️ Duels
 
-### `/duel` — Duel strategique Best-of-3
+### `/duel combat` — Duel strategique Best-of-3
 
-Defie un adversaire dans un combat de cartes tactique !
+Defie un adversaire dans un combat de cartes tactique avec systeme ELO !
 
 | Option | Description | Requis |
 |--------|-------------|--------|
@@ -159,10 +159,11 @@ Defie un adversaire dans un combat de cartes tactique !
 | `mise` | Mise en pieces (0-5000, defaut: 0) | Non |
 
 **Deroulement :**
-1. **Defi** — L'adversaire accepte ou refuse (60s)
+1. **Defi** — L'adversaire voit les stats ELO/W-L des deux joueurs, accepte ou refuse (60s)
 2. **Selection** — Chaque joueur choisit 3 cartes de sa collection (90s)
-3. **Combat** — 3 rounds, cartes matchees par rang de puissance
-4. **Resultat** — Image canvas d'arene + recompenses
+3. **Bonus** — Synergie/Underdog affiches si actifs
+4. **Combat** — Best of 3, cartes matchees par rang de puissance, victoire anticipee en 2-0
+5. **Resultat** — Canvas d'arene + ELO + MVP + bouton Revanche
 
 **Moteur de combat :**
 
@@ -175,7 +176,26 @@ Defie un adversaire dans un combat de cartes tactique !
 | Coup critique | 12% de chance → ×1.4 |
 | Attaque speciale | 10% si la carte en a une → ×1.35 |
 | Mur de defense | 8% si DEF > 60 → ×0.7 (absorbe) |
+| Synergie | 3 cartes meme element → +10% equipe |
+| Underdog | Equipe 20%+ plus faible → +12% |
+| Momentum | A gagne le round precedent → +6% |
+| Dernier souffle | Perd 0-1 au round 3 → +15% |
 | Variance | ±15% aleatoire |
+
+**Systeme ELO :**
+
+| Rang | ELO minimum | Emoji |
+|------|-------------|-------|
+| Maitre | 1800+ | 👑 |
+| Diamant | 1500+ | 💎 |
+| Platine | 1300+ | 🔷 |
+| Or | 1100+ | 🥇 |
+| Argent | 900+ | 🥈 |
+| Bronze | 0+ | 🥉 |
+
+ELO de depart : 1000. K-factor : 32.
+
+**Bonus de serie :** +20 🪙 a 3 victoires consecutives, +50 🪙 a 5.
 
 **Finishers :**
 - ⚡ X-TREME FINISH — domination totale
@@ -185,9 +205,25 @@ Defie un adversaire dans un combat de cartes tactique !
 
 **Conditions :** Minimum 3 cartes en collection. Cooldown de 3 minutes entre les duels.
 
+### `/duel stats` — Statistiques de duel
+
+| Option | Description | Requis |
+|--------|-------------|--------|
+| `joueur` | Le joueur (toi par defaut) | Non |
+
+Affiche : rang ELO, W/L ratio, serie actuelle et record, element favori, 5 derniers matchs.
+
+### `/duel classement` — Top 10 duellistes
+
+Classement par ELO avec rang, W/L, et series en cours.
+
+### `/duel historique` — Derniers duels du serveur
+
+Les 10 derniers matchs avec scores, joueurs et finish types.
+
 ### `/gacha duel` — Duel rapide (1v1)
 
-Version rapide : une carte aleatoire de chaque joueur s'affronte.
+Version rapide : une carte aleatoire de chaque joueur s'affronte. Pas d'ELO, pas de selection.
 
 | Option | Description | Requis |
 |--------|-------------|--------|
