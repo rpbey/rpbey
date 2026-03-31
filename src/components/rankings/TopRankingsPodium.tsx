@@ -43,6 +43,8 @@ export default function TopRankingsPodium({
 
   return (
     <Box
+      role="region"
+      aria-label="Podium des 3 meilleurs bladers"
       sx={{
         display: 'flex',
         flexDirection: { xs: 'column', md: 'row' },
@@ -70,6 +72,7 @@ export default function TopRankingsPodium({
             <Card
               component={Link}
               href={`/profile/${profile.userId}`}
+              aria-label={`${profile.rank === 1 ? '1er' : `${profile.rank}ème`} — ${profile.bladerName || profile.user?.name || 'Anonyme'} — ${profile.rankingPoints} points`}
               sx={{
                 position: 'relative',
                 overflow: 'visible',
@@ -99,6 +102,17 @@ export default function TopRankingsPodium({
                   transform: { xs: 'none', md: 'translateY(-8px)' },
                   borderColor: alpha(rankColor, 0.6),
                   boxShadow: `0 0 30px ${alpha(rankColor, 0.3)}`,
+                },
+                '&:focus-visible': {
+                  outline: '2px solid',
+                  outlineColor: rankColor,
+                  outlineOffset: 2,
+                },
+                '@media (prefers-reduced-motion: reduce)': {
+                  transition: 'none',
+                  '&:hover': {
+                    transform: 'none',
+                  },
                 },
               }}
             >

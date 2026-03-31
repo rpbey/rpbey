@@ -24,6 +24,7 @@ import {
   MuiTwitchIcon as TwitchIcon,
   MuiXIcon as XIcon,
 } from '@/components/ui/MuiIcons';
+import { ScrollToTop } from '@/components/ui/ScrollToTop';
 import { prisma } from '@/lib/prisma';
 import { getSeasonStandings, getSeasons } from '@/server/actions/season';
 
@@ -254,7 +255,7 @@ export default async function RankingsPage({
           left: 0,
           right: 0,
           height: { xs: '40vh', md: '50vh' },
-          background: `radial-gradient(ellipse 80% 60% at 50% -10%, ${alpha('#dc2626', 0.15)} 0%, transparent 70%)`,
+          background: `radial-gradient(ellipse 80% 60% at 50% -10%, rgba(var(--rpb-primary-rgb), 0.15) 0%, transparent 70%)`,
           pointerEvents: 'none',
         },
       }}
@@ -263,6 +264,24 @@ export default async function RankingsPage({
         maxWidth="lg"
         sx={{ position: 'relative', px: { xs: 1.5, sm: 2, md: 3 } }}
       >
+        {/* Visually hidden heading for screen readers */}
+        <Typography
+          component="h1"
+          sx={{
+            position: 'absolute',
+            width: 1,
+            height: 1,
+            padding: 0,
+            margin: -1,
+            overflow: 'hidden',
+            clip: 'rect(0, 0, 0, 0)',
+            whiteSpace: 'nowrap',
+            borderWidth: 0,
+          }}
+        >
+          Classement officiel RPB
+        </Typography>
+
         {/* Header */}
         <Box
           sx={{
@@ -314,6 +333,8 @@ export default async function RankingsPage({
                     component="a"
                     href={s.url}
                     target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`Suivre RPB sur ${s.name}`}
                     size="small"
                     sx={{
                       color: 'rgba(255,255,255,0.4)',
@@ -326,6 +347,11 @@ export default async function RankingsPage({
                         bgcolor: 'rgba(255,255,255,0.08)',
                         transform: 'translateY(-2px)',
                         boxShadow: `0 4px 12px ${alpha(s.color, 0.2)}`,
+                      },
+                      '&:focus-visible': {
+                        outline: '2px solid',
+                        outlineColor: s.color,
+                        outlineOffset: 2,
                       },
                       transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
                     }}
@@ -367,14 +393,19 @@ export default async function RankingsPage({
                 component="a"
                 href="/api/leaderboard/card"
                 download="classement-rpb.png"
+                aria-label="Télécharger le classement en image"
                 size="small"
                 sx={{
                   color: 'rgba(255,255,255,0.4)',
                   bgcolor: 'rgba(255,255,255,0.03)',
                   border: '1px solid rgba(255,255,255,0.05)',
                   '&:hover': {
-                    color: '#fbbf24',
+                    color: 'var(--rpb-secondary)',
                     bgcolor: 'rgba(255,255,255,0.08)',
+                  },
+                  '&:focus-visible': {
+                    outline: '2px solid var(--rpb-secondary)',
+                    outlineOffset: 2,
                   },
                 }}
               >
@@ -440,6 +471,8 @@ export default async function RankingsPage({
           RÉPUBLIQUE POPULAIRE DU BEYBLADE • CLASSEMENT OFFICIEL
         </Typography>
       </Container>
+
+      <ScrollToTop />
     </Box>
   );
 }

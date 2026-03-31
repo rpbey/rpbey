@@ -159,6 +159,9 @@ export function RankingsTable({
   const searchParams = useSearchParams();
   const { data: session } = authClient.useSession();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const prefersReducedMotion = useMediaQuery(
+    '(prefers-reduced-motion: reduce)',
+  );
 
   // Comparator state
   const [compareSelection, setCompareSelection] = useState<ProfileWithUser[]>(
@@ -339,27 +342,62 @@ export function RankingsTable({
       <TableContainer
         component={Paper}
         elevation={0}
+        role="region"
+        aria-label="Tableau des classements"
+        tabIndex={0}
         sx={{
           border: '1px solid',
           borderColor: 'divider',
           borderRadius: { xs: 2, sm: 3 },
           overflowX: 'auto',
+          WebkitOverflowScrolling: 'touch',
           maxHeight: { xs: 'none', md: '80vh' },
           mb: { xs: 2, sm: 4 },
           bgcolor: alpha(theme.palette.background.paper, 0.6),
           backdropFilter: 'blur(8px)',
-          '&::-webkit-scrollbar': { height: '4px', width: '4px' },
-          '&::-webkit-scrollbar-thumb': {
-            bgcolor: 'divider',
+          // Scroll indicators
+          background: {
+            xs: `linear-gradient(to right, ${alpha(theme.palette.background.paper, 0.6)}, ${alpha(theme.palette.background.paper, 0.6)}), linear-gradient(to right, ${alpha(theme.palette.background.paper, 0.6)}, ${alpha(theme.palette.background.paper, 0.6)}), linear-gradient(to right, rgba(0,0,0,0.15), transparent), linear-gradient(to left, rgba(0,0,0,0.15), transparent)`,
+            md: 'none',
+          },
+          backgroundPosition: {
+            xs: 'left center, right center, left center, right center',
+            md: undefined,
+          },
+          backgroundRepeat: { xs: 'no-repeat', md: undefined },
+          backgroundSize: {
+            xs: '20px 100%, 20px 100%, 10px 100%, 10px 100%',
+            md: undefined,
+          },
+          backgroundAttachment: {
+            xs: 'local, local, scroll, scroll',
+            md: undefined,
+          },
+          '&:focus-visible': {
+            outline: '2px solid',
+            outlineColor: 'primary.main',
+            outlineOffset: 2,
+          },
+          '&::-webkit-scrollbar': { height: '6px', width: '6px' },
+          '&::-webkit-scrollbar-track': {
+            bgcolor: alpha(theme.palette.background.default, 0.3),
             borderRadius: '4px',
+          },
+          '&::-webkit-scrollbar-thumb': {
+            bgcolor: alpha(theme.palette.text.secondary, 0.3),
+            borderRadius: '4px',
+            '&:hover': {
+              bgcolor: alpha(theme.palette.text.secondary, 0.5),
+            },
           },
         }}
       >
-        <Table size="small" stickyHeader>
+        <Table size="small" stickyHeader aria-label="Classement des bladers">
           <TableHead>
             <TableRow>
               {!isMobile && (
                 <TableCell
+                  scope="col"
                   align="center"
                   sx={{
                     width: 40,
@@ -369,11 +407,15 @@ export function RankingsTable({
                   }}
                 >
                   <Tooltip title="Sélectionner pour comparer">
-                    <CompareIcon sx={{ fontSize: '1rem', opacity: 0.5 }} />
+                    <CompareIcon
+                      sx={{ fontSize: '1rem', opacity: 0.5 }}
+                      aria-label="Comparer"
+                    />
                   </Tooltip>
                 </TableCell>
               )}
               <TableCell
+                scope="col"
                 align="center"
                 sx={{
                   width: { xs: 36, sm: 60 },
@@ -382,9 +424,10 @@ export function RankingsTable({
                   fontWeight: 'bold',
                 }}
               >
-                #
+                <abbr title="Rang">#</abbr>
               </TableCell>
               <TableCell
+                scope="col"
                 sx={{
                   px: { xs: 1, sm: 2 },
                   bgcolor: 'background.paper',
@@ -394,6 +437,7 @@ export function RankingsTable({
                 Blader
               </TableCell>
               <TableCell
+                scope="col"
                 align="center"
                 sx={{
                   px: { xs: 0.5, sm: 2 },
@@ -401,9 +445,12 @@ export function RankingsTable({
                   fontWeight: 'bold',
                 }}
               >
-                Pts
+                <Tooltip title="Points de classement">
+                  <span>Pts</span>
+                </Tooltip>
               </TableCell>
               <TableCell
+                scope="col"
                 align="center"
                 sx={{
                   px: { xs: 0.5, sm: 2 },
@@ -413,10 +460,11 @@ export function RankingsTable({
                 }}
               >
                 <Tooltip title="Nombre de tournois officiels disputés">
-                  <span>T.</span>
+                  <abbr title="Tournois">T.</abbr>
                 </Tooltip>
               </TableCell>
               <TableCell
+                scope="col"
                 align="center"
                 sx={{
                   px: { xs: 0.5, sm: 2 },
@@ -425,10 +473,11 @@ export function RankingsTable({
                 }}
               >
                 <Tooltip title="Victoires / Défaites">
-                  <span>V/D</span>
+                  <abbr title="Victoires / Défaites">V/D</abbr>
                 </Tooltip>
               </TableCell>
               <TableCell
+                scope="col"
                 align="center"
                 sx={{
                   px: { xs: 0.5, sm: 2 },
@@ -438,7 +487,7 @@ export function RankingsTable({
                 }}
               >
                 <Tooltip title="Taux de victoire (Win Rate)">
-                  <span>WR</span>
+                  <abbr title="Taux de victoire">WR</abbr>
                 </Tooltip>
               </TableCell>
             </TableRow>
@@ -461,13 +510,19 @@ export function RankingsTable({
                   return (
                     <MotionTableRow
                       key={profile.id}
-                      initial={{ opacity: 0, y: 8 }}
+                      initial={
+                        prefersReducedMotion ? false : { opacity: 0, y: 8 }
+                      }
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{
-                        duration: 0.25,
-                        delay: Math.min(index * 0.02, 0.5),
-                        ease: 'easeOut',
-                      }}
+                      transition={
+                        prefersReducedMotion
+                          ? { duration: 0 }
+                          : {
+                              duration: 0.25,
+                              delay: Math.min(index * 0.02, 0.5),
+                              ease: 'easeOut',
+                            }
+                      }
                       hover
                       sx={{
                         '&:last-child td, &:last-child th': { border: 0 },
@@ -501,6 +556,10 @@ export function RankingsTable({
                           <Checkbox
                             size="small"
                             checked={isSelected}
+                            aria-label={`Comparer ${profile.bladerName || profile.user?.name || 'ce blader'}`}
+                            inputProps={{
+                              'aria-describedby': undefined,
+                            }}
                             sx={{
                               p: 0,
                               '& .MuiSvgIcon-root': { fontSize: '1.1rem' },
@@ -520,6 +579,7 @@ export function RankingsTable({
                           <Link
                             href={`${profileUrlPrefix}/${profile.userId}`}
                             style={{ textDecoration: 'none', color: 'inherit' }}
+                            aria-label={`Voir le profil de ${profile.bladerName || profile.user?.name || 'ce blader'}`}
                           >
                             <BladerInfo profile={profile} theme={theme} />
                           </Link>
@@ -633,6 +693,15 @@ export function RankingsTable({
             showFirstButton={!isMobile}
             showLastButton={!isMobile}
             shape="rounded"
+            aria-label="Navigation entre les pages du classement"
+            getItemAriaLabel={(type, page, selected) => {
+              if (type === 'page')
+                return `${selected ? 'Page actuelle, ' : ''}Page ${page}`;
+              if (type === 'first') return 'Première page';
+              if (type === 'last') return 'Dernière page';
+              if (type === 'next') return 'Page suivante';
+              return 'Page précédente';
+            }}
           />
         </Box>
       )}
