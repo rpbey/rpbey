@@ -96,4 +96,25 @@ export const ROLE_PANELS: RolePanelConfig[] = [
       },
     ],
   },
+  {
+    title: '📜 Règles Mudae',
+    description: [
+      'Validez les règles pour accéder aux salons Mudae.\n',
+      "**1.** Comptes secondaires interdits sous peine d'être blacklist des salons bot.",
+      "**2.** Lorsque quelqu'un roll un personnage souhaité, ce personnage ne peut pas être claim pendant 8 secondes **SAUF** par ceux qui ont souhaité ce personnage (et celui qui a roll).",
+      '**3.** Les conflits se règlent en 1v1 Beyblade !',
+    ].join('\n'),
+    color: 0x9b59b6,
+    buttons: [
+      {
+        customId: 'role-mudae',
+        label: 'Valider les règles',
+        emoji: '✅',
+        style: ButtonStyle.Success,
+        roleKey: 'Mudae',
+        description:
+          'Vous avez accepté les règles Mudae et avez désormais accès aux salons.',
+      },
+    ],
+  },
 ];
