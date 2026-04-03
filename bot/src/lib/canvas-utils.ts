@@ -648,111 +648,296 @@ export interface ComboCardData {
 }
 
 export async function generateComboCard(data: ComboCardData) {
-  const width = 800;
-  const height = 550;
+  const width = 900;
+  const height = 520;
   const canvas = createCanvas(width, height);
   const ctx = canvas.getContext('2d');
   const hexColor = `#${data.color.toString(16).padStart(6, '0')}`;
 
-  const [background, bladeImg] = await Promise.all([
-    safeLoadImage('/background-seasson-2.webp'),
-    safeLoadImage(data.bladeImageUrl),
-  ]);
+  // ── Type color mapping ──
+  const typeColors: Record<string, string> = {
+    ATTACK: '#ef4444',
+    ATTAQUE: '#ef4444',
+    DEFENSE: '#3b82f6',
+    DÉFENSE: '#3b82f6',
+    STAMINA: '#22c55e',
+    ENDURANCE: '#22c55e',
+    BALANCE: '#a855f7',
+    ÉQUILIBRE: '#a855f7',
+  };
+  const typeColor = typeColors[data.type.toUpperCase()] ?? hexColor;
 
-  if (background) ctx.drawImage(background, 0, 0, width, height);
-  else {
-    ctx.fillStyle = '#111';
-    ctx.fillRect(0, 0, width, height);
+  const [background, arenaOverlay, bladeImg, typeIcon, ringGlow] =
+    await Promise.all([
+      safeLoadImage('/background-seasson-2.webp'),
+      safeLoadImage(getAssetPath('bot/assets/backgrounds/arena.png')),
+      safeLoadImage(data.bladeImageUrl),
+      safeLoadImage(
+        getAssetPath(`bot/assets/types/${data.type.toLowerCase()}.png`),
+      ),
+      safeLoadImage(getAssetPath('bot/assets/vfx/ring-glow.png')),
+    ]);
+
+  // ── Background: warm dark + arena overlay ──
+  ctx.fillStyle = '#141111';
+  ctx.fillRect(0, 0, width, height);
+
+  if (arenaOverlay) {
+    ctx.globalAlpha = 0.1;
+    ctx.drawImage(arenaOverlay, 0, 0, width, height);
+    ctx.globalAlpha = 1;
+  } else if (background) {
+    ctx.globalAlpha = 0.15;
+    ctx.drawImage(background, 0, 0, width, height);
+    ctx.globalAlpha = 1;
   }
 
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-  ctx.fillRect(0, 0, width, height);
-  ctx.strokeStyle = hexColor;
-  ctx.lineWidth = 15;
-  ctx.strokeRect(0, 0, width, height);
-
-  ctx.font = 'bold 50px GoogleSans';
-  ctx.fillStyle = '#ffffff';
-  ctx.textAlign = 'center';
-  ctx.fillText(data.name.toUpperCase(), width / 2, 80);
-
-  ctx.fillStyle = hexColor;
-  ctx.beginPath();
-  ctx.roundRect(width / 2 - 100, 100, 200, 40, 20);
-  ctx.fill();
-  ctx.font = 'bold 24px GoogleSans';
-  ctx.fillStyle = '#ffffff';
-  ctx.fillText(data.type.toUpperCase(), width / 2, 128);
-
-  if (bladeImg) {
-    ctx.save();
+  // ── Speed lines ──
+  ctx.save();
+  ctx.globalAlpha = 0.025;
+  ctx.strokeStyle = '#ffffff';
+  ctx.lineWidth = 1;
+  for (let i = -height; i < width + height; i += 16) {
     ctx.beginPath();
-    ctx.arc(150, 275, 100, 0, Math.PI * 2, true);
-    ctx.clip();
-    ctx.drawImage(bladeImg, 50, 175, 200, 200);
-    ctx.restore();
-    ctx.strokeStyle = hexColor;
-    ctx.lineWidth = 5;
-    ctx.beginPath();
-    ctx.arc(150, 275, 100, 0, Math.PI * 2, true);
+    ctx.moveTo(i, 0);
+    ctx.lineTo(i + height * 0.5, height);
     ctx.stroke();
   }
+  ctx.restore();
 
-  const partsX = data.bladeImageUrl ? 500 : width / 2;
-  const drawPart = (label: string, value: string, y: number) => {
-    ctx.textAlign = 'right';
-    ctx.font = '24px GoogleSans';
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
-    ctx.fillText(label, partsX - 20, y);
+  // ── Main card surface (rounded) ──
+  ctx.fillStyle = '#1d1b1b';
+  ctx.beginPath();
+  ctx.roundRect(20, 20, width - 40, height - 40, 16);
+  ctx.fill();
+
+  // ── Top gradient accent ──
+  const topGrad = ctx.createLinearGradient(20, 20, width - 20, 20);
+  topGrad.addColorStop(0, typeColor);
+  topGrad.addColorStop(1, `${typeColor}40`);
+  ctx.fillStyle = topGrad;
+  ctx.beginPath();
+  ctx.roundRect(20, 20, width - 40, 4, [16, 16, 0, 0]);
+  ctx.fill();
+
+  // ── Radial glow behind blade (type-colored) ──
+  const glowX = 180;
+  const glowY = 250;
+  const glow = ctx.createRadialGradient(glowX, glowY, 0, glowX, glowY, 160);
+  glow.addColorStop(0, `${typeColor}20`);
+  glow.addColorStop(0.6, `${typeColor}08`);
+  glow.addColorStop(1, 'transparent');
+  ctx.fillStyle = glow;
+  ctx.fillRect(0, 0, width, height);
+
+  // ── Blade image (left, circular with glow ring) ──
+  const bladeX = 180;
+  const bladeY = 240;
+  const bladeR = 95;
+
+  // Ring glow VFX
+  if (ringGlow) {
+    ctx.globalAlpha = 0.3;
+    ctx.drawImage(
+      ringGlow,
+      bladeX - bladeR - 30,
+      bladeY - bladeR - 30,
+      (bladeR + 30) * 2,
+      (bladeR + 30) * 2,
+    );
+    ctx.globalAlpha = 1;
+  }
+
+  // Dark circle bg
+  ctx.fillStyle = '#252222';
+  ctx.beginPath();
+  ctx.arc(bladeX, bladeY, bladeR + 5, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Blade clip
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(bladeX, bladeY, bladeR, 0, Math.PI * 2, true);
+  ctx.clip();
+  if (bladeImg)
+    ctx.drawImage(
+      bladeImg,
+      bladeX - bladeR,
+      bladeY - bladeR,
+      bladeR * 2,
+      bladeR * 2,
+    );
+  else {
+    ctx.fillStyle = '#1d1b1b';
+    ctx.fill();
+  }
+  ctx.restore();
+
+  // Type-colored ring
+  ctx.save();
+  ctx.shadowColor = typeColor;
+  ctx.shadowBlur = 15;
+  ctx.strokeStyle = typeColor;
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.arc(bladeX, bladeY, bladeR, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.restore();
+
+  // ── Combo name (top center) ──
+  ctx.textAlign = 'left';
+  const nameX = 310;
+  ctx.font = _FONT('bold', 38);
+  ctx.fillStyle = '#f5f0f0';
+  const nameText =
+    data.name.length > 20
+      ? `${data.name.substring(0, 20).toUpperCase()}…`
+      : data.name.toUpperCase();
+  ctx.fillText(nameText, nameX, 75);
+
+  // ── Type badge pill ──
+  ctx.font = _FONT('bold', 14);
+  const typeLabel = data.type.toUpperCase();
+  const typeBadgeW = ctx.measureText(typeLabel).width + 40;
+  ctx.fillStyle = typeColor;
+  ctx.beginPath();
+  ctx.roundRect(nameX, 88, typeBadgeW, 28, 14);
+  ctx.fill();
+
+  // Type icon in pill
+  if (typeIcon) {
+    ctx.drawImage(typeIcon, nameX + 6, 90, 24, 24);
+  }
+  ctx.fillStyle = '#ffffff';
+  ctx.font = _FONT('bold', 13);
+  ctx.fillText(typeLabel, nameX + (typeIcon ? 34 : 12), 107);
+
+  // Weight badge
+  ctx.font = _FONT('bold', 13);
+  const weightText = `${data.weight}g`;
+  const weightW = ctx.measureText(weightText).width + 20;
+  ctx.fillStyle = '#2d2929';
+  ctx.beginPath();
+  ctx.roundRect(nameX + typeBadgeW + 12, 88, weightW, 28, 14);
+  ctx.fill();
+  ctx.strokeStyle = '#433d3d';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.roundRect(nameX + typeBadgeW + 12, 88, weightW, 28, 14);
+  ctx.stroke();
+  ctx.fillStyle = '#a89999';
+  ctx.fillText(weightText, nameX + typeBadgeW + 22, 107);
+
+  // ── Parts list (right side, aligned) ──
+  const partsStartY = 148;
+  const partGap = 52;
+
+  const drawPartRow = (
+    label: string,
+    value: string,
+    y: number,
+    partColor: string,
+  ) => {
+    // Label
+    ctx.font = _FONT('bold', 12);
+    ctx.fillStyle = '#64748b';
     ctx.textAlign = 'left';
-    ctx.font = 'bold 32px GoogleSans';
-    ctx.fillStyle = '#fbbf24';
-    ctx.fillText(value, partsX + 20, y);
+    ctx.fillText(label, nameX, y);
+    // Value
+    ctx.font = _FONT('bold', 24);
+    ctx.fillStyle = '#f5f0f0';
+    ctx.fillText(value, nameX, y + 28);
+    // Subtle dot
+    ctx.fillStyle = partColor;
+    ctx.beginPath();
+    ctx.arc(nameX - 12, y + 16, 4, 0, Math.PI * 2);
+    ctx.fill();
   };
 
-  drawPart('BLADE', data.blade, 200);
-  drawPart('RATCHET', data.ratchet, 260);
-  drawPart('BIT', data.bit, 320);
+  drawPartRow('BLADE', data.blade, partsStartY, '#ce0c07');
+  drawPartRow('RATCHET', data.ratchet, partsStartY + partGap, '#e68002');
+  drawPartRow('BIT', data.bit, partsStartY + partGap * 2, '#f7d301');
 
-  const drawProgressBar = (
+  // ── Stat bars (bottom section, full width) ──
+  const barStartY = 380;
+  const barX = 50;
+  const barTotalW = width - 100;
+  const barH = 10;
+  const barGap = 32;
+
+  const drawStatBar = (
     label: string,
     value: number,
     y: number,
     color: string,
   ) => {
+    const maxVal = 100;
+    const ratio = Math.min(value / maxVal, 1);
+
+    // Label
+    ctx.font = _FONT('bold', 12);
+    ctx.fillStyle = '#a89999';
     ctx.textAlign = 'left';
-    ctx.font = 'bold 20px GoogleSans';
-    ctx.fillStyle = '#ffffff';
-    ctx.fillText(label, 100, y);
-    const barWidth = 350;
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+    ctx.fillText(label, barX, y - 2);
+
+    // Value
+    ctx.textAlign = 'right';
+    ctx.fillStyle = color;
+    ctx.fillText(value.toString(), barX + barTotalW, y - 2);
+
+    // Track
+    ctx.fillStyle = '#252222';
     ctx.beginPath();
-    ctx.roundRect(220, y - 15, barWidth, 20, 10);
+    ctx.roundRect(barX, y + 4, barTotalW, barH, barH / 2);
     ctx.fill();
+
+    // Fill with glow
+    ctx.save();
+    ctx.shadowColor = color;
+    ctx.shadowBlur = 8;
     ctx.fillStyle = color;
     ctx.beginPath();
-    ctx.roundRect(
-      220,
-      y - 15,
-      Math.min((value / 100) * barWidth, barWidth),
-      20,
-      10,
-    );
+    ctx.roundRect(barX, y + 4, barTotalW * ratio, barH, barH / 2);
     ctx.fill();
-    ctx.font = 'bold 20px GoogleSans';
-    ctx.fillStyle = '#ffffff';
-    ctx.fillText(value.toString(), 220 + barWidth + 20, y);
+    ctx.restore();
+
+    // Bright tip
+    if (ratio > 0.05) {
+      const tipX = barX + barTotalW * ratio;
+      ctx.fillStyle = '#ffffff';
+      ctx.globalAlpha = 0.6;
+      ctx.beginPath();
+      ctx.arc(tipX - 2, y + 4 + barH / 2, barH / 2 - 1, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    }
   };
 
-  drawProgressBar('ATTAQUE', data.attack, 380, '#ef4444');
-  drawProgressBar('DÉFENSE', data.defense, 420, '#3b82f6');
-  drawProgressBar('ENDURANCE', data.stamina, 460, '#22c55e');
-  drawProgressBar('DASH', data.dash, 500, '#eab308');
+  drawStatBar('ATK', data.attack, barStartY, '#ef4444');
+  drawStatBar('DEF', data.defense, barStartY + barGap, '#3b82f6');
+  drawStatBar('STA', data.stamina, barStartY + barGap * 2, '#22c55e');
+  drawStatBar('DSH', data.dash, barStartY + barGap * 3, '#eab308');
 
-  ctx.textAlign = 'center';
-  ctx.font = 'bold 30px GoogleSans';
-  ctx.fillStyle = '#ffffff';
-  ctx.fillText(`${data.weight}g`, partsX, 350);
+  // ── Bottom branding ──
+  ctx.font = _FONT('bold', 11);
+  ctx.fillStyle = '#a8999940';
+  ctx.textAlign = 'left';
+  ctx.fillText('RPB • BEYBLADE X COMBO', 50, height - 28);
+
+  // ── Bottom border accent ──
+  const btmGrad = ctx.createLinearGradient(
+    20,
+    height - 20,
+    width - 20,
+    height - 20,
+  );
+  btmGrad.addColorStop(0, '#ce0c07');
+  btmGrad.addColorStop(0.5, '#e68002');
+  btmGrad.addColorStop(1, '#f7d301');
+  ctx.fillStyle = btmGrad;
+  ctx.beginPath();
+  ctx.roundRect(20, height - 24, width - 40, 4, [0, 0, 16, 16]);
+  ctx.fill();
 
   return canvas.toBuffer('image/png');
 }
@@ -1331,107 +1516,258 @@ export interface LeaderboardEntry {
 }
 
 export async function generateLeaderboardCard(entries: LeaderboardEntry[]) {
-  const width = 1000;
-  const height = 1200;
+  const width = 1050;
+  const rowH = 80;
+  const headerH = 160;
+  const footerH = 50;
+  const height = headerH + entries.length * rowH + footerH;
   const canvas = createCanvas(width, height);
   const ctx = canvas.getContext('2d');
 
-  const [background, ...avatars] = await Promise.all([
-    safeLoadImage('/canvas.png'),
-    ...entries.map((e) => safeLoadImage(e.avatarUrl)),
-  ]);
+  const avatars = await Promise.all(
+    entries.map((e) => safeLoadImage(e.avatarUrl)),
+  );
 
-  if (background) ctx.drawImage(background, 0, 0, width, height);
-  else {
-    ctx.fillStyle = '#1e1b4b';
-    ctx.fillRect(0, 0, width, height);
-  }
-
-  const gradient = ctx.createLinearGradient(0, 0, 0, height);
-  gradient.addColorStop(0, 'rgba(0, 0, 0, 0.65)');
-  gradient.addColorStop(1, 'rgba(0, 0, 0, 0.85)');
-  ctx.fillStyle = gradient;
+  // ── Background ──
+  ctx.fillStyle = '#141111';
   ctx.fillRect(0, 0, width, height);
 
-  ctx.font = 'bold 60px GoogleSans';
-  ctx.fillStyle = '#fbbf24';
+  // Speed lines
+  ctx.save();
+  ctx.globalAlpha = 0.02;
+  ctx.strokeStyle = '#ffffff';
+  ctx.lineWidth = 1;
+  for (let i = -height; i < width + height; i += 18) {
+    ctx.beginPath();
+    ctx.moveTo(i, 0);
+    ctx.lineTo(i + height * 0.4, height);
+    ctx.stroke();
+  }
+  ctx.restore();
+
+  // ── Main card surface ──
+  ctx.fillStyle = '#1d1b1b';
+  ctx.beginPath();
+  ctx.roundRect(16, 16, width - 32, height - 32, 16);
+  ctx.fill();
+
+  // Top gradient bar
+  const topBar = ctx.createLinearGradient(16, 16, width - 16, 16);
+  topBar.addColorStop(0, '#ce0c07');
+  topBar.addColorStop(0.5, '#e68002');
+  topBar.addColorStop(1, '#f7d301');
+  ctx.fillStyle = topBar;
+  ctx.beginPath();
+  ctx.roundRect(16, 16, width - 32, 4, [16, 16, 0, 0]);
+  ctx.fill();
+
+  // ── Header — Title + trophy ──
+  ctx.font = _FONT('bold', 42);
   ctx.textAlign = 'center';
-  ctx.fillText('CLASSEMENT OFFICIEL RPB', width / 2, 80);
+  // Gradient-like text: R red, P orange, B yellow
+  const titleY = 80;
+  const titleText = 'CLASSEMENT OFFICIEL';
+  const titleW = ctx.measureText(titleText).width;
+  const titleGrad = ctx.createLinearGradient(
+    width / 2 - titleW / 2,
+    0,
+    width / 2 + titleW / 2,
+    0,
+  );
+  titleGrad.addColorStop(0, '#ce0c07');
+  titleGrad.addColorStop(0.5, '#e68002');
+  titleGrad.addColorStop(1, '#f7d301');
+  ctx.fillStyle = titleGrad;
+  ctx.fillText(titleText, width / 2, titleY);
 
-  const startY = 160;
-  const rowHeight = 100;
+  ctx.font = _FONT('bold', 16);
+  ctx.fillStyle = '#a89999';
+  ctx.fillText('RÉPUBLIQUE POPULAIRE DU BEYBLADE', width / 2, titleY + 28);
 
+  // Column headers
+  const colHeaderY = headerH - 15;
+  ctx.font = _FONT('bold', 11);
+  ctx.fillStyle = '#64748b';
+  ctx.textAlign = 'left';
+  ctx.fillText('RANG', 45, colHeaderY);
+  ctx.fillText('BLADER', 160, colHeaderY);
+  ctx.textAlign = 'right';
+  ctx.fillText('POINTS', 760, colHeaderY);
+  ctx.fillText('WIN RATE', 950, colHeaderY);
+
+  // Header separator
+  ctx.fillStyle = '#252222';
+  ctx.fillRect(40, headerH - 2, width - 80, 1);
+
+  // ── Rows ──
   for (let i = 0; i < entries.length; i++) {
-    const entry = entries[i];
+    const entry = entries[i]!;
     const avatar = avatars[i];
-    const y = startY + i * rowHeight;
+    const y = headerH + i * rowH;
+    const cy = y + rowH / 2;
 
+    // Alternating row backgrounds
     if (i % 2 === 0) {
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.03)';
-      ctx.fillRect(50, y - 60, width - 100, rowHeight - 10);
+      ctx.fillStyle = '#252222';
+      ctx.beginPath();
+      ctx.roundRect(30, y + 4, width - 60, rowH - 8, 8);
+      ctx.fill();
     }
 
-    let rankColor = '#94a3b8';
-    if (entry.rank === 1) rankColor = '#fbbf24';
-    if (entry.rank === 2) rankColor = '#e2e8f0';
-    if (entry.rank === 3) rankColor = '#cd7f32';
+    // Top 3 special glow
+    if (entry.rank <= 3) {
+      const glowColors = ['#f7d301', '#C0C0C0', '#CD7F32'];
+      const gc = glowColors[entry.rank - 1]!;
+      ctx.save();
+      ctx.globalAlpha = 0.06;
+      const rowGlow = ctx.createLinearGradient(30, y, 300, y);
+      rowGlow.addColorStop(0, gc);
+      rowGlow.addColorStop(1, 'transparent');
+      ctx.fillStyle = rowGlow;
+      ctx.beginPath();
+      ctx.roundRect(30, y + 4, width - 60, rowH - 8, 8);
+      ctx.fill();
+      ctx.restore();
+    }
 
-    ctx.fillStyle = rankColor;
+    // Rank badge
+    let rankColor = '#64748b';
+    let rankBg = '#2d2929';
+    if (entry.rank === 1) {
+      rankColor = '#f7d301';
+      rankBg = '#3d2a10';
+    } else if (entry.rank === 2) {
+      rankColor = '#C0C0C0';
+      rankBg = '#2a2a2a';
+    } else if (entry.rank === 3) {
+      rankColor = '#CD7F32';
+      rankBg = '#2d2010';
+    }
+
+    // Rank circle
+    ctx.fillStyle = rankBg;
     ctx.beginPath();
-    ctx.arc(100, y - 15, 30, 0, Math.PI * 2);
+    ctx.arc(75, cy, 22, 0, Math.PI * 2);
     ctx.fill();
-    ctx.font = 'bold 32px GoogleSans';
-    ctx.fillStyle = '#000';
-    ctx.fillText(`#${entry.rank}`, 100, y - 5);
 
     ctx.save();
+    if (entry.rank <= 3) {
+      ctx.shadowColor = rankColor;
+      ctx.shadowBlur = 10;
+    }
+    ctx.strokeStyle = rankColor;
+    ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.arc(200, y - 15, 40, 0, Math.PI * 2, true);
+    ctx.arc(75, cy, 22, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.restore();
+
+    ctx.font = _FONT('bold', entry.rank <= 3 ? 18 : 16);
+    ctx.fillStyle = rankColor;
+    ctx.textAlign = 'center';
+    ctx.fillText(`${entry.rank}`, 75, cy + 6);
+
+    // Avatar
+    const avR = entry.rank <= 3 ? 28 : 24;
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(140, cy, avR, 0, Math.PI * 2, true);
     ctx.clip();
-    if (avatar) ctx.drawImage(avatar, 160, y - 55, 80, 80);
+    if (avatar) ctx.drawImage(avatar, 140 - avR, cy - avR, avR * 2, avR * 2);
     else {
-      ctx.fillStyle = '#444';
+      ctx.fillStyle = '#2d2929';
       ctx.fill();
     }
     ctx.restore();
 
+    // Avatar ring for top 3
     if (entry.rank <= 3) {
       ctx.strokeStyle = rankColor;
-      ctx.lineWidth = 4;
+      ctx.lineWidth = 2.5;
       ctx.beginPath();
-      ctx.arc(200, y - 15, 40, 0, Math.PI * 2);
+      ctx.arc(140, cy, avR, 0, Math.PI * 2);
       ctx.stroke();
     }
 
+    // Name
     ctx.textAlign = 'left';
-    ctx.font = 'bold 36px GoogleSans';
-    ctx.fillStyle = entry.rank === 1 ? '#fbbf24' : '#ffffff';
-    ctx.fillText(entry.name.toUpperCase(), 280, y);
+    ctx.font = _FONT('bold', entry.rank <= 3 ? 24 : 20);
+    ctx.fillStyle = entry.rank === 1 ? '#f7d301' : '#f5f0f0';
+    const displayName =
+      entry.name.length > 18
+        ? `${entry.name.substring(0, 18).toUpperCase()}…`
+        : entry.name.toUpperCase();
+    ctx.fillText(displayName, 185, cy + (entry.rank <= 3 ? 8 : 7));
 
+    // Points
     ctx.textAlign = 'right';
-    ctx.font = 'bold 40px GoogleSans';
+    ctx.font = _FONT('bold', entry.rank <= 3 ? 28 : 22);
     ctx.fillStyle = rankColor;
-    ctx.fillText(`${entry.points}`, 750, y);
-    ctx.font = '20px GoogleSans';
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
-    ctx.fillText('PTS', 750, y + 25);
+    ctx.fillText(`${entry.points}`, 740, cy + 4);
+    ctx.font = _FONT('bold', 11);
+    ctx.fillStyle = '#64748b';
+    ctx.fillText('PTS', 740, cy + 20);
 
-    ctx.font = 'bold 28px GoogleSans';
-    ctx.fillStyle = '#ffffff';
-    ctx.fillText(`${entry.winRate}%`, 900, y);
-    ctx.font = '20px GoogleSans';
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
-    ctx.fillText('WR', 900, y + 25);
+    // Win rate with mini progress arc
+    const wrStr =
+      typeof entry.winRate === 'number' ? `${entry.winRate}` : entry.winRate;
+    const wrVal = parseFloat(wrStr.toString()) || 0;
+    const arcCx = 870;
+    const arcR = 18;
+
+    // Background arc
+    ctx.strokeStyle = '#252222';
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.arc(arcCx, cy, arcR, -Math.PI / 2, Math.PI * 1.5);
+    ctx.stroke();
+
+    // Progress arc (colored by win rate)
+    const wrColor =
+      wrVal >= 70 ? '#22c55e' : wrVal >= 50 ? '#e68002' : '#ef4444';
+    const wrAngle = -Math.PI / 2 + (Math.PI * 2 * wrVal) / 100;
+    ctx.strokeStyle = wrColor;
+    ctx.lineWidth = 4;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.arc(arcCx, cy, arcR, -Math.PI / 2, wrAngle);
+    ctx.stroke();
+    ctx.lineCap = 'butt';
+
+    // WR text
+    ctx.font = _FONT('bold', 13);
+    ctx.fillStyle = '#f5f0f0';
+    ctx.textAlign = 'center';
+    ctx.fillText(`${wrStr}%`, arcCx, cy + 5);
+
+    // WR label
+    ctx.font = _FONT('bold', 10);
+    ctx.fillStyle = '#64748b';
+    ctx.fillText('WR', arcCx + 42, cy + 4);
   }
 
+  // ── Footer ──
+  const footerY = height - footerH;
+  ctx.fillStyle = '#252222';
+  ctx.fillRect(40, footerY, width - 80, 1);
+  ctx.font = _FONT('', 13);
+  ctx.fillStyle = '#a8999950';
   ctx.textAlign = 'center';
-  ctx.font = 'italic 20px GoogleSans';
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
   ctx.fillText(
-    'rpbey.fr/rankings - Mis à jour en temps réel',
+    'rpbey.fr/rankings • Mis à jour en temps réel',
     width / 2,
-    height - 30,
+    footerY + 25,
   );
+
+  // Bottom gradient bar
+  const btmBar = ctx.createLinearGradient(16, 0, width - 16, 0);
+  btmBar.addColorStop(0, '#ce0c07');
+  btmBar.addColorStop(0.5, '#e68002');
+  btmBar.addColorStop(1, '#f7d301');
+  ctx.fillStyle = btmBar;
+  ctx.beginPath();
+  ctx.roundRect(16, height - 20, width - 32, 4, [0, 0, 16, 16]);
+  ctx.fill();
 
   return canvas.toBuffer('image/png');
 }
@@ -1786,64 +2122,64 @@ const RARITY_THEMES: Record<
   }
 > = {
   COMMON: {
-    borderColor: '#6b7280',
-    borderGradient: ['#6b7280', '#9ca3af', '#6b7280'],
-    glowColor: 'rgba(107,114,128,0.25)',
-    bgGradient: ['#e8e6e1', '#d4d0c8', '#c4c0b8'],
-    accentColor: '#9ca3af',
+    borderColor: '#64748b',
+    borderGradient: ['#64748b', '#94a3b8', '#64748b'],
+    glowColor: 'rgba(100,116,139,0.25)',
+    bgGradient: ['#252222', '#1d1b1b', '#252222'],
+    accentColor: '#94a3b8',
     label: 'COMMUNE',
     stars: 1,
     particleCount: 0,
-    frameColor: '#8a8a8a',
-    headerBg: '#4b5563',
+    frameColor: '#64748b',
+    headerBg: '#2d2929',
   },
   RARE: {
     borderColor: '#3b82f6',
     borderGradient: ['#2563eb', '#60a5fa', '#2563eb'],
     glowColor: 'rgba(59,130,246,0.35)',
-    bgGradient: ['#c7d9f0', '#a8c4e8', '#8db0e0'],
+    bgGradient: ['#1a2236', '#152040', '#1a2236'],
     accentColor: '#60a5fa',
     label: 'RARE',
     stars: 2,
     particleCount: 4,
     frameColor: '#2563eb',
-    headerBg: '#1e40af',
+    headerBg: '#1e3a8a',
   },
   SUPER_RARE: {
     borderColor: '#8b5cf6',
     borderGradient: ['#7c3aed', '#a78bfa', '#7c3aed'],
     glowColor: 'rgba(139,92,246,0.4)',
-    bgGradient: ['#ddd0f5', '#c4b0f0', '#b098e8'],
+    bgGradient: ['#1e1530', '#2a1f40', '#1e1530'],
     accentColor: '#a78bfa',
     label: 'SUPER RARE',
     stars: 3,
     particleCount: 8,
     frameColor: '#7c3aed',
-    headerBg: '#5b21b6',
+    headerBg: '#4c1d95',
   },
   LEGENDARY: {
-    borderColor: '#f59e0b',
-    borderGradient: ['#d97706', '#fbbf24', '#f59e0b'],
-    glowColor: 'rgba(251,191,36,0.5)',
-    bgGradient: ['#fef3c7', '#fde68a', '#fcd34d'],
-    accentColor: '#fcd34d',
+    borderColor: '#e68002',
+    borderGradient: ['#ce0c07', '#e68002', '#f7d301'],
+    glowColor: 'rgba(230,128,2,0.5)',
+    bgGradient: ['#2d2010', '#3d2a10', '#2d2010'],
+    accentColor: '#f7d301',
     label: 'LÉGENDAIRE',
     stars: 4,
     particleCount: 14,
-    frameColor: '#b45309',
-    headerBg: '#92400e',
+    frameColor: '#e68002',
+    headerBg: '#7c2d12',
   },
   SECRET: {
-    borderColor: '#ef4444',
-    borderGradient: ['#dc2626', '#f87171', '#ef4444'],
-    glowColor: 'rgba(239,68,68,0.55)',
-    bgGradient: ['#fecaca', '#fca5a5', '#f87171'],
-    accentColor: '#f87171',
+    borderColor: '#ce0c07',
+    borderGradient: ['#ce0c07', '#e68002', '#f7d301'],
+    glowColor: 'rgba(206,12,7,0.55)',
+    bgGradient: ['#2a1010', '#3a1515', '#2a1010'],
+    accentColor: '#f7d301',
     label: '✦ SECRÈTE ✦',
     stars: 5,
     particleCount: 20,
-    frameColor: '#dc2626',
-    headerBg: '#991b1b',
+    frameColor: '#ce0c07',
+    headerBg: '#7f1d1d',
   },
 };
 
@@ -2119,19 +2455,32 @@ export async function generateGachaCard(data: GachaCardData): Promise<Buffer> {
   );
 
   // ══════════════════════════════════════════════════════════════════════════
-  // 1. CARD BACKGROUND — Grey base + white text zone
+  // 1. CARD BACKGROUND — Dark warm base (RPB design system)
   // ══════════════════════════════════════════════════════════════════════════
   if (isFullArt) {
-    ctx.fillStyle = '#08060a';
+    ctx.fillStyle = '#0a0809';
     ctx.fillRect(0, 0, W, H);
   } else {
-    // Grey background
+    // Dark warm gradient background from theme
     const bgGrad = ctx.createLinearGradient(0, 0, 0, H);
-    bgGrad.addColorStop(0, '#e5e7eb');
-    bgGrad.addColorStop(0.5, '#d1d5db');
-    bgGrad.addColorStop(1, '#c8cbd0');
+    bgGrad.addColorStop(0, theme.bgGradient[0]);
+    bgGrad.addColorStop(0.5, theme.bgGradient[1]);
+    bgGrad.addColorStop(1, theme.bgGradient[2]);
     ctx.fillStyle = bgGrad;
     ctx.fillRect(0, 0, W, H);
+
+    // Subtle diagonal speed lines (Beyblade feel)
+    ctx.save();
+    ctx.globalAlpha = 0.02;
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 1;
+    for (let i = -H; i < W + H; i += 18) {
+      ctx.beginPath();
+      ctx.moveTo(i, 0);
+      ctx.lineTo(i + H * 0.5, H);
+      ctx.stroke();
+    }
+    ctx.restore();
   }
 
   // Element-tinted radial glow (non full-art only)
@@ -2182,8 +2531,8 @@ export async function generateGachaCard(data: GachaCardData): Promise<Buffer> {
   // ══════════════════════════════════════════════════════════════════════════
   const CORNER_R = 28;
 
-  // Grey border base
-  ctx.strokeStyle = '#9ca3af';
+  // Dark border base with subtle warmth
+  ctx.strokeStyle = '#383333';
   ctx.lineWidth = FRAME;
   ctx.beginPath();
   ctx.roundRect(FRAME / 2, FRAME / 2, W - FRAME, H - FRAME, CORNER_R);
@@ -2200,7 +2549,7 @@ export async function generateGachaCard(data: GachaCardData): Promise<Buffer> {
   ctx.globalAlpha = 0.18;
   for (let wave = 0; wave < 6; wave++) {
     const waveY0 = wave * (H / 5);
-    ctx.strokeStyle = wave % 2 === 0 ? '#6b7280' : '#b0b5bc';
+    ctx.strokeStyle = wave % 2 === 0 ? '#433d3d' : '#2d2929';
     ctx.lineWidth = 2;
     ctx.beginPath();
     for (let x = 0; x <= W; x += 2) {
@@ -2438,7 +2787,7 @@ export async function generateGachaCard(data: GachaCardData): Promise<Buffer> {
   const textZoneTop = typeY - 2;
   const textZoneBottom = H - FRAME - 6;
 
-  // White background for the entire text area below the art
+  // Dark surface background for text area below art
   if (!isFullArt) {
     drawBox(
       ctx,
@@ -2447,7 +2796,7 @@ export async function generateGachaCard(data: GachaCardData): Promise<Buffer> {
       INNER_W,
       textZoneBottom - textZoneTop,
       6,
-      '#ffffff',
+      '#1d1b1b',
     );
   }
 
@@ -2459,10 +2808,10 @@ export async function generateGachaCard(data: GachaCardData): Promise<Buffer> {
   ctx.roundRect(PAD + 2, typeY, INNER_W - 4, typeH, 3);
   ctx.fill();
 
-  // Text colors adapt: full-art = light on dark, others = dark on white
-  const textDark = isFullArt ? '#e0dcd4' : '#1f2937';
-  const textMuted = isFullArt ? '#a09888' : '#4b5563';
-  const textSubtle = isFullArt ? '#807868' : '#6b7280';
+  // Text colors — always light on dark now
+  const textDark = isFullArt ? '#e0dcd4' : '#f5f0f0';
+  const textMuted = isFullArt ? '#a09888' : '#a89999';
+  const textSubtle = isFullArt ? '#807868' : '#64748b';
 
   ctx.font = 'bold 12px GoogleSans';
   ctx.textAlign = 'left';
