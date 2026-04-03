@@ -1274,11 +1274,11 @@ export async function generateDeckCard(
   if (background) {
     ctx.drawImage(background, 0, 0, width, boxH);
   } else {
-    ctx.fillStyle = '#1a0a0a';
+    ctx.fillStyle = '#141111';
     ctx.fillRect(0, 0, width, boxH);
   }
 
-  // Red inner glow
+  // RPB radial glow (red→orange from center)
   const glowGrad = ctx.createRadialGradient(
     width / 2,
     boxH / 2,
@@ -1287,10 +1287,24 @@ export async function generateDeckCard(
     boxH / 2,
     width * 0.6,
   );
-  glowGrad.addColorStop(0, 'rgba(220, 38, 38, 0.08)');
+  glowGrad.addColorStop(0, 'rgba(206, 12, 7, 0.1)');
+  glowGrad.addColorStop(0.4, 'rgba(230, 128, 2, 0.04)');
   glowGrad.addColorStop(1, 'transparent');
   ctx.fillStyle = glowGrad;
   ctx.fillRect(0, 0, width, boxH);
+
+  // Subtle speed lines
+  ctx.save();
+  ctx.globalAlpha = 0.02;
+  ctx.strokeStyle = '#ffffff';
+  ctx.lineWidth = 1;
+  for (let i = -boxH; i < width + boxH; i += 20) {
+    ctx.beginPath();
+    ctx.moveTo(i, 0);
+    ctx.lineTo(i + boxH * 0.4, boxH);
+    ctx.stroke();
+  }
+  ctx.restore();
 
   // Draw Beys in slots (3D perspective)
   const positions = [
@@ -1353,31 +1367,44 @@ export async function generateDeckCard(
   }
 
   // === Info section (below deckbox) ===
-  ctx.fillStyle = '#0a0a0a';
+  ctx.fillStyle = '#1d1b1b';
   ctx.fillRect(0, boxH, width, infoH);
 
-  // Gradient separator
+  // RPB gradient separator
   const sepGrad = ctx.createLinearGradient(0, boxH, width, boxH);
-  sepGrad.addColorStop(0, '#dc2626');
-  sepGrad.addColorStop(0.5, '#fbbf24');
-  sepGrad.addColorStop(1, '#dc2626');
+  sepGrad.addColorStop(0, '#ce0c07');
+  sepGrad.addColorStop(0.5, '#e68002');
+  sepGrad.addColorStop(1, '#f7d301');
   ctx.fillStyle = sepGrad;
   ctx.fillRect(0, boxH, width, 3);
 
   // Deck name + owner
-  if (logo) ctx.drawImage(logo, 20, boxH + 15, 40, 40);
-  ctx.font = 'bold 26px GoogleSans';
-  ctx.fillStyle = '#fbbf24';
+  if (logo) {
+    ctx.globalAlpha = 0.7;
+    ctx.drawImage(logo, 20, boxH + 15, 40, 40);
+    ctx.globalAlpha = 1;
+  }
+  ctx.font = _FONT('bold', 26);
+  ctx.fillStyle = '#f7d301';
   ctx.textAlign = 'left';
   ctx.fillText(data.name.toUpperCase(), 70, boxH + 40);
 
-  ctx.font = '14px GoogleSans';
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
-  ctx.fillText(
-    `${data.ownerName}${data.isActive ? ' · DECK ACTIF' : ''}`,
-    70,
-    boxH + 58,
-  );
+  // Active deck pill
+  const ownerText = data.ownerName;
+  ctx.font = _FONT('', 14);
+  ctx.fillStyle = '#a89999';
+  ctx.fillText(ownerText, 70, boxH + 58);
+
+  if (data.isActive) {
+    const ownerW = ctx.measureText(ownerText).width;
+    ctx.font = _FONT('bold', 10);
+    ctx.fillStyle = '#22c55e20';
+    ctx.beginPath();
+    ctx.roundRect(70 + ownerW + 8, boxH + 47, 70, 18, 9);
+    ctx.fill();
+    ctx.fillStyle = '#22c55e';
+    ctx.fillText('ACTIF', 70 + ownerW + 18, boxH + 59);
+  }
 
   // Bey info columns
   const colW = (width - 40) / 3;
@@ -5625,27 +5652,27 @@ export async function generateDuelArenaCard(
   const canvas = createCanvas(W, H);
   const ctx = canvas.getContext('2d');
 
-  // ── Background ──
+  // ── Background — warm dark (RPB design system) ──
   const bg = ctx.createLinearGradient(0, 0, W, H);
-  bg.addColorStop(0, '#08001a');
-  bg.addColorStop(0.3, '#120a1e');
-  bg.addColorStop(0.6, '#140808');
-  bg.addColorStop(1, '#000814');
+  bg.addColorStop(0, '#141111');
+  bg.addColorStop(0.3, '#1a1515');
+  bg.addColorStop(0.6, '#161212');
+  bg.addColorStop(1, '#141111');
   ctx.fillStyle = bg;
   ctx.fillRect(0, 0, W, H);
 
-  // Center energy glow
+  // Center energy glow (RPB red→orange)
   const glow = ctx.createRadialGradient(W / 2, H / 2, 30, W / 2, H / 2, 500);
-  glow.addColorStop(0, 'rgba(220,38,38,0.10)');
-  glow.addColorStop(0.5, 'rgba(220,38,38,0.03)');
+  glow.addColorStop(0, 'rgba(206,12,7,0.12)');
+  glow.addColorStop(0.4, 'rgba(230,128,2,0.04)');
   glow.addColorStop(1, 'rgba(0,0,0,0)');
   ctx.fillStyle = glow;
   ctx.fillRect(0, 0, W, H);
 
   // Diagonal energy lines
   ctx.save();
-  ctx.globalAlpha = 0.025;
-  ctx.strokeStyle = '#dc2626';
+  ctx.globalAlpha = 0.02;
+  ctx.strokeStyle = '#ce0c07';
   ctx.lineWidth = 1;
   for (let i = -H; i < W + H; i += 40) {
     ctx.beginPath();
@@ -5658,21 +5685,21 @@ export async function generateDuelArenaCard(
   // Center vertical energy line
   ctx.save();
   const centerGrad = ctx.createLinearGradient(0, 0, 0, H);
-  centerGrad.addColorStop(0, 'rgba(220,38,38,0)');
-  centerGrad.addColorStop(0.3, 'rgba(220,38,38,0.07)');
-  centerGrad.addColorStop(0.7, 'rgba(220,38,38,0.07)');
-  centerGrad.addColorStop(1, 'rgba(220,38,38,0)');
+  centerGrad.addColorStop(0, 'rgba(206,12,7,0)');
+  centerGrad.addColorStop(0.3, 'rgba(206,12,7,0.06)');
+  centerGrad.addColorStop(0.7, 'rgba(206,12,7,0.06)');
+  centerGrad.addColorStop(1, 'rgba(206,12,7,0)');
   ctx.fillStyle = centerGrad;
   ctx.fillRect(W / 2 - 1.5, 0, 3, H);
   ctx.restore();
 
   drawNoise(ctx, W, H, 0.012);
 
-  // Border
+  // Border (RPB gradient)
   const brd = ctx.createLinearGradient(0, 0, W, H);
-  brd.addColorStop(0, 'rgba(220,38,38,0.18)');
-  brd.addColorStop(0.5, 'rgba(251,191,36,0.30)');
-  brd.addColorStop(1, 'rgba(220,38,38,0.18)');
+  brd.addColorStop(0, 'rgba(206,12,7,0.25)');
+  brd.addColorStop(0.5, 'rgba(230,128,2,0.35)');
+  brd.addColorStop(1, 'rgba(247,211,1,0.25)');
   ctx.strokeStyle = brd;
   ctx.lineWidth = 3;
   ctx.beginPath();
@@ -5695,12 +5722,12 @@ export async function generateDuelArenaCard(
   ) => {
     ctx.save();
     if (isWinner) {
-      ctx.shadowColor = 'rgba(251,191,36,0.7)';
+      ctx.shadowColor = 'rgba(247,211,1,0.6)';
       ctx.shadowBlur = 22;
     }
     ctx.beginPath();
     ctx.arc(cx, cy, r + 3, 0, Math.PI * 2);
-    ctx.fillStyle = isWinner ? '#fbbf24' : 'rgba(255,255,255,0.25)';
+    ctx.fillStyle = isWinner ? '#f7d301' : 'rgba(255,255,255,0.15)';
     ctx.fill();
     ctx.shadowBlur = 0;
 
@@ -5710,7 +5737,7 @@ export async function generateDuelArenaCard(
     if (img) {
       ctx.drawImage(img, cx - r, cy - r, r * 2, r * 2);
     } else {
-      ctx.fillStyle = '#374151';
+      ctx.fillStyle = '#2d2929';
       ctx.fill();
     }
     ctx.restore();
@@ -5738,11 +5765,11 @@ export async function generateDuelArenaCard(
 
   // Title
   ctx.textAlign = 'center';
-  ctx.font = 'italic bold 36px GoogleSans, NotoEmoji, sans-serif';
+  ctx.font = _FONT('italic bold', 36);
   const titleGrad = ctx.createLinearGradient(W / 2 - 120, 0, W / 2 + 120, 0);
-  titleGrad.addColorStop(0, '#dc2626');
-  titleGrad.addColorStop(0.5, '#fbbf24');
-  titleGrad.addColorStop(1, '#dc2626');
+  titleGrad.addColorStop(0, '#ce0c07');
+  titleGrad.addColorStop(0.5, '#e68002');
+  titleGrad.addColorStop(1, '#f7d301');
   ctx.fillStyle = titleGrad;
   ctx.fillText('RPB ARENA', W / 2, headerY + 10);
 
@@ -5754,14 +5781,14 @@ export async function generateDuelArenaCard(
     headerY + 34,
   );
 
-  // Header separator
+  // Header separator (RPB gradient)
   const sepY = HEADER_H - 6;
   const sep = ctx.createLinearGradient(50, 0, W - 50, 0);
-  sep.addColorStop(0, 'rgba(251,191,36,0)');
-  sep.addColorStop(0.3, 'rgba(251,191,36,0.45)');
-  sep.addColorStop(0.5, 'rgba(251,191,36,0.65)');
-  sep.addColorStop(0.7, 'rgba(251,191,36,0.45)');
-  sep.addColorStop(1, 'rgba(251,191,36,0)');
+  sep.addColorStop(0, 'rgba(206,12,7,0)');
+  sep.addColorStop(0.2, 'rgba(206,12,7,0.5)');
+  sep.addColorStop(0.5, 'rgba(230,128,2,0.7)');
+  sep.addColorStop(0.8, 'rgba(247,211,1,0.5)');
+  sep.addColorStop(1, 'rgba(247,211,1,0)');
   ctx.fillStyle = sep;
   ctx.fillRect(50, sepY, W - 100, 2);
 
