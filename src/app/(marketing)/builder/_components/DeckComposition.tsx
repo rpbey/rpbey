@@ -430,7 +430,7 @@ export function DeckComposition() {
             borderColor: 'primary.main',
             color: 'primary.main',
             '&:hover': {
-              bgcolor: alpha('#dc2626', 0.1),
+              bgcolor: (t) => alpha(t.palette.primary.main, 0.1),
             },
           }}
         >

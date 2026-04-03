@@ -7,6 +7,7 @@ import { headers } from 'next/headers';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
+import { isStaffUser } from '@/lib/auth-utils';
 import { getChallongeService } from '@/lib/challonge';
 import { prisma } from '@/lib/prisma';
 
@@ -120,9 +121,8 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       return NextResponse.json({ error: 'Match not found' }, { status: 404 });
     }
 
-    // Check authorization: admin/mod or one of the players
-    const isAdmin =
-      session.user.role === 'admin' || session.user.role === 'moderator';
+    // Check authorization: admin/mod/superadmin or one of the players
+    const isAdmin = isStaffUser(session.user);
     const isPlayer =
       match.player1Id === session.user.id ||
       match.player2Id === session.user.id;

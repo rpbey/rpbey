@@ -190,12 +190,13 @@ export default function TournamentDetail({
               label="OFFICIEL RPB"
               size="small"
               sx={{
-                bgcolor: 'rgba(251, 191, 36, 0.15)',
-                color: '#fbbf24',
+                bgcolor: (t) => alpha(t.palette.secondary.main, 0.15),
+                color: 'secondary.main',
                 fontWeight: 900,
                 fontSize: '0.65rem',
                 letterSpacing: 1,
-                border: '1px solid rgba(251, 191, 36, 0.3)',
+                border: (t) =>
+                  `1px solid ${alpha(t.palette.secondary.main, 0.3)}`,
               }}
             />
           )}
@@ -209,7 +210,7 @@ export default function TournamentDetail({
               label="LIVE"
               size="small"
               sx={{
-                bgcolor: '#dc2626',
+                bgcolor: 'primary.main',
                 color: 'white',
                 fontWeight: 900,
                 px: 1,
@@ -270,7 +271,9 @@ export default function TournamentDetail({
                 p: 4,
                 borderRadius: 6,
                 border: '1px solid',
-                borderColor: isBTS ? alpha('#dc2626', 0.4) : 'divider',
+                borderColor: isBTS
+                  ? (t) => alpha(t.palette.primary.main, 0.4)
+                  : 'divider',
                 background: isBTS
                   ? 'linear-gradient(135deg, #1a0a0a 0%, #0a0a0a 100%)'
                   : 'background.paper',
@@ -368,8 +371,8 @@ export default function TournamentDetail({
                           component={Link}
                           href={`/api/auth/challonge?returnTo=/tournaments/${tournament.id}`}
                           sx={{
-                            color: '#fbbf24',
-                            borderColor: '#fbbf24',
+                            color: 'secondary.main',
+                            borderColor: 'secondary.main',
                             fontWeight: 900,
                             fontSize: '0.7rem',
                           }}
@@ -388,7 +391,7 @@ export default function TournamentDetail({
                       sx={{
                         py: 2,
                         fontWeight: 900,
-                        bgcolor: '#dc2626',
+                        bgcolor: 'primary.main',
                         fontSize: '1.1rem',
                       }}
                     >
@@ -544,7 +547,9 @@ export default function TournamentDetail({
               mb: 4,
               borderRadius: 6,
               border: '1px solid',
-              borderColor: isBTS ? alpha('#fbbf24', 0.2) : 'divider',
+              borderColor: isBTS
+                ? (t) => alpha(t.palette.secondary.main, 0.2)
+                : 'divider',
               background: isBTS
                 ? 'linear-gradient(180deg, rgba(255,255,255,0.01) 0%, transparent 100%)'
                 : 'background.paper',
@@ -558,7 +563,7 @@ export default function TournamentDetail({
                 display: 'flex',
                 alignItems: 'center',
                 gap: 2,
-                color: isBTS ? '#fbbf24' : 'primary.main',
+                color: isBTS ? 'secondary.main' : 'primary.main',
                 letterSpacing: 1,
               }}
             >
@@ -579,9 +584,10 @@ export default function TournamentDetail({
                         sx={{
                           my: 2,
                           p: 2.5,
-                          bgcolor: 'rgba(251, 191, 36, 0.08)',
+                          bgcolor: (t) => alpha(t.palette.secondary.main, 0.08),
                           borderRadius: 3,
-                          borderLeft: '6px solid #fbbf24',
+                          borderLeft: (t) =>
+                            `6px solid ${t.palette.secondary.main}`,
                         }}
                       >
                         <Typography
@@ -600,15 +606,16 @@ export default function TournamentDetail({
                         sx={{
                           my: 3,
                           p: 3,
-                          bgcolor: 'rgba(239, 68, 68, 0.15)',
+                          bgcolor: (t) => alpha(t.palette.primary.main, 0.15),
                           borderRadius: 4,
-                          border: '2px solid rgba(239, 68, 68, 0.3)',
+                          border: (t) =>
+                            `2px solid ${alpha(t.palette.primary.main, 0.3)}`,
                         }}
                       >
                         <Typography
                           variant="body1"
                           fontWeight="800"
-                          sx={{ color: '#ef4444', m: 0, lineHeight: 1.6 }}
+                          sx={{ color: 'primary.main', m: 0, lineHeight: 1.6 }}
                         >
                           {children}
                         </Typography>

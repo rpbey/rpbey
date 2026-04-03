@@ -57,7 +57,7 @@ export default function TvHeader() {
             width: 32,
             height: 32,
             ml: 1,
-            bgcolor: '#fbbf24',
+            bgcolor: 'secondary.main',
             color: 'black',
             fontSize: '0.8rem',
             fontWeight: 'bold',

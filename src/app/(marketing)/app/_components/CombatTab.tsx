@@ -561,10 +561,10 @@ export function CombatTab({ blades, ratchets, bits }: CombatTabProps) {
               fontWeight: 900,
               fontSize: '0.75rem',
               borderRadius: 2,
-              bgcolor: mode === 'ai' ? '#dc2626' : 'transparent',
+              bgcolor: mode === 'ai' ? 'primary.main' : 'transparent',
               color: mode === 'ai' ? '#fff' : 'text.secondary',
               border: '1px solid',
-              borderColor: mode === 'ai' ? '#dc2626' : 'divider',
+              borderColor: mode === 'ai' ? 'primary.main' : 'divider',
             }}
           />
           <Chip
@@ -747,9 +747,9 @@ export function CombatTab({ blades, ratchets, bits }: CombatTabProps) {
             px: 6,
             py: 2,
             fontSize: '1.1rem',
-            bgcolor: '#dc2626',
+            bgcolor: 'primary.main',
             letterSpacing: 2,
-            '&:hover': { bgcolor: '#b91c1c' },
+            '&:hover': { bgcolor: 'primary.dark' },
           }}
         >
           LANCER LE COMBAT

@@ -1,0 +1,972 @@
+{
+  "url": "https://challonge.com/fr/B_TS1",
+  "scrapedAt": "2026-03-31T02:00:00.000Z",
+  "participantsCount": 69,
+  "matchesCount": 137,
+  "participants": [
+    {
+      "name": "Gelofy",
+      "rank": 1,
+      "challongeUsername": "Gelofy",
+      "challongeUrl": null,
+      "exactWins": 7,
+      "exactLosses": 1,
+      "matchHistory": [
+        "W",
+        "W",
+        "W",
+        "W",
+        "W",
+        "W",
+        "L",
+        "W"
+      ]
+    },
+    {
+      "name": "Xymoreee",
+      "rank": 2,
+      "challongeUsername": "Xymoreee",
+      "challongeUrl": null,
+      "exactWins": 7,
+      "exactLosses": 2,
+      "matchHistory": [
+        "W",
+        "W",
+        "W",
+        "W",
+        "W",
+        "L",
+        "W",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "Kiiro",
+      "rank": 3,
+      "challongeUsername": "Kiiroh",
+      "challongeUrl": null,
+      "exactWins": 7,
+      "exactLosses": 2,
+      "matchHistory": [
+        "W",
+        "W",
+        "W",
+        "W",
+        "W",
+        "L",
+        "W",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "Shio",
+      "rank": 4,
+      "challongeUsername": "Shio3",
+      "challongeUrl": null,
+      "exactWins": 5,
+      "exactLosses": 2,
+      "matchHistory": [
+        "W",
+        "W",
+        "W",
+        "W",
+        "L",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "Rorodela",
+      "rank": 5,
+      "challongeUsername": "Rorodela",
+      "challongeUrl": null,
+      "exactWins": 5,
+      "exactLosses": 2,
+      "matchHistory": [
+        "W",
+        "W",
+        "W",
+        "L",
+        "W",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "Darkhoumous",
+      "rank": 5,
+      "challongeUsername": "Darkhoumous",
+      "challongeUrl": null,
+      "exactWins": 6,
+      "exactLosses": 2,
+      "matchHistory": [
+        "W",
+        "W",
+        "L",
+        "W",
+        "W",
+        "W",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "MtS_95",
+      "rank": 7,
+      "challongeUsername": "MtS_95",
+      "challongeUrl": null,
+      "exactWins": 4,
+      "exactLosses": 2,
+      "matchHistory": [
+        "W",
+        "W",
+        "W",
+        "L",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "ilou",
+      "rank": 7,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "exactWins": 6,
+      "exactLosses": 2,
+      "matchHistory": [
+        "W",
+        "L",
+        "W",
+        "W",
+        "W",
+        "W",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "Nahil",
+      "rank": 9,
+      "challongeUsername": "Nahil12",
+      "challongeUrl": null,
+      "exactWins": 3,
+      "exactLosses": 2,
+      "matchHistory": [
+        "W",
+        "W",
+        "W",
+        "L",
+        "L"
+      ]
+    },
+    {
+      "name": "Sabo0451",
+      "rank": 9,
+      "challongeUsername": "Sabo0451",
+      "challongeUrl": null,
+      "exactWins": 5,
+      "exactLosses": 2,
+      "matchHistory": [
+        "W",
+        "L",
+        "W",
+        "W",
+        "W",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "Neymar",
+      "rank": 9,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "exactWins": 3,
+      "exactLosses": 2,
+      "matchHistory": [
+        "W",
+        "W",
+        "W",
+        "L",
+        "L"
+      ]
+    },
+    {
+      "name": "Yoorushi",
+      "rank": 9,
+      "challongeUsername": "Yoorushi",
+      "challongeUrl": null,
+      "exactWins": 5,
+      "exactLosses": 2,
+      "matchHistory": [
+        "W",
+        "L",
+        "W",
+        "W",
+        "W",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "Lady_Barbatrucc",
+      "rank": 13,
+      "challongeUsername": "Lady_Barbatrucc",
+      "challongeUrl": null,
+      "exactWins": 4,
+      "exactLosses": 2,
+      "matchHistory": [
+        "W",
+        "L",
+        "W",
+        "W",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "aigerakabane13",
+      "rank": 13,
+      "challongeUsername": "aigerakabane13",
+      "challongeUrl": null,
+      "exactWins": 4,
+      "exactLosses": 2,
+      "matchHistory": [
+        "W",
+        "L",
+        "W",
+        "W",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "SAtRMewxy",
+      "rank": 13,
+      "challongeUsername": "SAtRMewxy",
+      "challongeUrl": null,
+      "exactWins": 5,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "W",
+        "W",
+        "W",
+        "W",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "Zeln3090",
+      "rank": 13,
+      "challongeUsername": "Zeln3090",
+      "challongeUrl": null,
+      "exactWins": 3,
+      "exactLosses": 2,
+      "matchHistory": [
+        "W",
+        "W",
+        "L",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "Eiko",
+      "rank": 17,
+      "challongeUsername": "EikoLouis",
+      "challongeUrl": null,
+      "exactWins": 2,
+      "exactLosses": 2,
+      "matchHistory": [
+        "W",
+        "W",
+        "L",
+        "L"
+      ]
+    },
+    {
+      "name": "Nourix",
+      "rank": 17,
+      "challongeUsername": "Nourix",
+      "challongeUrl": null,
+      "exactWins": 2,
+      "exactLosses": 2,
+      "matchHistory": [
+        "W",
+        "W",
+        "L",
+        "L"
+      ]
+    },
+    {
+      "name": "OrO",
+      "rank": 17,
+      "challongeUsername": "Orotchi",
+      "challongeUrl": null,
+      "exactWins": 2,
+      "exactLosses": 2,
+      "matchHistory": [
+        "W",
+        "W",
+        "L",
+        "L"
+      ]
+    },
+    {
+      "name": "Qyub",
+      "rank": 17,
+      "challongeUsername": "Qyub",
+      "challongeUrl": null,
+      "exactWins": 4,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "W",
+        "W",
+        "W",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "Frednivrae",
+      "rank": 17,
+      "challongeUsername": "Frednivrae",
+      "challongeUrl": null,
+      "exactWins": 3,
+      "exactLosses": 2,
+      "matchHistory": [
+        "W",
+        "L",
+        "W",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "Shishi",
+      "rank": 17,
+      "challongeUsername": "Shishi4272",
+      "challongeUrl": null,
+      "exactWins": 2,
+      "exactLosses": 2,
+      "matchHistory": [
+        "W",
+        "W",
+        "L",
+        "L"
+      ]
+    },
+    {
+      "name": "Loup_",
+      "rank": 17,
+      "challongeUsername": "Loup_",
+      "challongeUrl": null,
+      "exactWins": 3,
+      "exactLosses": 2,
+      "matchHistory": [
+        "W",
+        "W",
+        "W",
+        "L",
+        "L"
+      ]
+    },
+    {
+      "name": "Berserk91",
+      "rank": 17,
+      "challongeUsername": "Berserk91",
+      "challongeUrl": null,
+      "exactWins": 3,
+      "exactLosses": 2,
+      "matchHistory": [
+        "W",
+        "W",
+        "W",
+        "L",
+        "L"
+      ]
+    },
+    {
+      "name": "Meiden_Meiko",
+      "rank": 25,
+      "challongeUsername": "Meiden_Meiko",
+      "challongeUrl": null,
+      "exactWins": 2,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "W",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "OMNIYAYA",
+      "rank": 25,
+      "challongeUsername": "Beyaya",
+      "challongeUrl": null,
+      "exactWins": 2,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "W",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "Paimy",
+      "rank": 25,
+      "challongeUsername": "Paimy",
+      "challongeUrl": null,
+      "exactWins": 2,
+      "exactLosses": 2,
+      "matchHistory": [
+        "W",
+        "L",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "sewpoo_0192",
+      "rank": 25,
+      "challongeUsername": "sewpoo_0192",
+      "challongeUrl": null,
+      "exactWins": 2,
+      "exactLosses": 2,
+      "matchHistory": [
+        "W",
+        "L",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "Po97",
+      "rank": 25,
+      "challongeUsername": "Emp97",
+      "challongeUrl": null,
+      "exactWins": 2,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "W",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "Stella5555",
+      "rank": 25,
+      "challongeUsername": "Stella5555",
+      "challongeUrl": null,
+      "exactWins": 2,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "W",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "KamenZ",
+      "rank": 25,
+      "challongeUsername": "KamenZ",
+      "challongeUrl": null,
+      "exactWins": 2,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "W",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "SAtR | Zeikuo",
+      "rank": 25,
+      "challongeUsername": "Zeikuo",
+      "challongeUrl": null,
+      "exactWins": 3,
+      "exactLosses": 2,
+      "matchHistory": [
+        "W",
+        "L",
+        "W",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "Ysn95",
+      "rank": 33,
+      "challongeUsername": "Ysn95",
+      "challongeUrl": null,
+      "exactWins": 1,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "Twimbler",
+      "rank": 33,
+      "challongeUsername": "deleted7907000",
+      "challongeUrl": null,
+      "exactWins": 1,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "A2ns",
+      "rank": 33,
+      "challongeUsername": "A2ns",
+      "challongeUrl": null,
+      "exactWins": 1,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "SAtR_Hoshi",
+      "rank": 33,
+      "challongeUsername": "Hane_Hoshi",
+      "challongeUrl": null,
+      "exactWins": 1,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "MIMIX94",
+      "rank": 33,
+      "challongeUsername": "MIMIX94",
+      "challongeUrl": null,
+      "exactWins": 2,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "W",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "Hisunu",
+      "rank": 33,
+      "challongeUsername": "3Hisunu",
+      "challongeUrl": null,
+      "exactWins": 1,
+      "exactLosses": 2,
+      "matchHistory": [
+        "W",
+        "L",
+        "L"
+      ]
+    },
+    {
+      "name": "Leirya",
+      "rank": 33,
+      "challongeUsername": "Leirya",
+      "challongeUrl": null,
+      "exactWins": 1,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "Waasabi213",
+      "rank": 33,
+      "challongeUsername": "Waasabi213",
+      "challongeUrl": null,
+      "exactWins": 1,
+      "exactLosses": 2,
+      "matchHistory": [
+        "W",
+        "L",
+        "L"
+      ]
+    },
+    {
+      "name": "tobss",
+      "rank": 33,
+      "challongeUsername": "tobss",
+      "challongeUrl": null,
+      "exactWins": 1,
+      "exactLosses": 2,
+      "matchHistory": [
+        "W",
+        "L",
+        "L"
+      ]
+    },
+    {
+      "name": "AliceG",
+      "rank": 33,
+      "challongeUsername": "AliceG",
+      "challongeUrl": null,
+      "exactWins": 1,
+      "exactLosses": 2,
+      "matchHistory": [
+        "W",
+        "L",
+        "L"
+      ]
+    },
+    {
+      "name": "Tigre Ss",
+      "rank": 33,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "exactWins": 1,
+      "exactLosses": 2,
+      "matchHistory": [
+        "W",
+        "L",
+        "L"
+      ]
+    },
+    {
+      "name": "DarkSpirit4",
+      "rank": 33,
+      "challongeUsername": "DarkSpirit4",
+      "challongeUrl": null,
+      "exactWins": 1,
+      "exactLosses": 2,
+      "matchHistory": [
+        "W",
+        "L",
+        "L"
+      ]
+    },
+    {
+      "name": "JojoKirino",
+      "rank": 33,
+      "challongeUsername": "JojoKirino",
+      "challongeUrl": null,
+      "exactWins": 1,
+      "exactLosses": 2,
+      "matchHistory": [
+        "W",
+        "L",
+        "L"
+      ]
+    },
+    {
+      "name": "Geats",
+      "rank": 33,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "exactWins": 1,
+      "exactLosses": 2,
+      "matchHistory": [
+        "W",
+        "L",
+        "L"
+      ]
+    },
+    {
+      "name": "Team Arc_Kreepy",
+      "rank": 33,
+      "challongeUsername": "Kreepy95",
+      "challongeUrl": null,
+      "exactWins": 2,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "W",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "Rayou_95",
+      "rank": 33,
+      "challongeUsername": "Rayou95",
+      "challongeUrl": null,
+      "exactWins": 2,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "W",
+        "W",
+        "L"
+      ]
+    },
+    {
+      "name": "Snipblast",
+      "rank": 49,
+      "challongeUsername": "Snipblast",
+      "challongeUrl": null,
+      "exactWins": 0,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "L"
+      ]
+    },
+    {
+      "name": "Kaiouss",
+      "rank": 49,
+      "challongeUsername": "Kaiouss",
+      "challongeUrl": null,
+      "exactWins": 0,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "L"
+      ]
+    },
+    {
+      "name": "SAtR_Younsi",
+      "rank": 49,
+      "challongeUsername": "SAtR_Younsi",
+      "challongeUrl": null,
+      "exactWins": 0,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "L"
+      ]
+    },
+    {
+      "name": "MiNiGeLoFy",
+      "rank": 49,
+      "challongeUsername": "MiNiGeLoFy",
+      "challongeUrl": null,
+      "exactWins": 0,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "L"
+      ]
+    },
+    {
+      "name": "_Equalizer_",
+      "rank": 49,
+      "challongeUsername": "_Equalizer_",
+      "challongeUrl": null,
+      "exactWins": 0,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "L"
+      ]
+    },
+    {
+      "name": "WBFulguris",
+      "rank": 49,
+      "challongeUsername": "WBFulguris",
+      "challongeUrl": null,
+      "exactWins": 0,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "L"
+      ]
+    },
+    {
+      "name": "LeKingJoker",
+      "rank": 49,
+      "challongeUsername": "LeKingJoker",
+      "challongeUrl": null,
+      "exactWins": 0,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "L"
+      ]
+    },
+    {
+      "name": "Mimiwee",
+      "rank": 49,
+      "challongeUsername": "Mimiwee",
+      "challongeUrl": null,
+      "exactWins": 0,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "L"
+      ]
+    },
+    {
+      "name": "Soa075",
+      "rank": 49,
+      "challongeUsername": "Soa075",
+      "challongeUrl": null,
+      "exactWins": 0,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "L"
+      ]
+    },
+    {
+      "name": "Elliott",
+      "rank": 49,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "exactWins": 0,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "L"
+      ]
+    },
+    {
+      "name": "Sosso014",
+      "rank": 49,
+      "challongeUsername": "Sosso014",
+      "challongeUrl": null,
+      "exactWins": 0,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "L"
+      ]
+    },
+    {
+      "name": "Narugo",
+      "rank": 49,
+      "challongeUsername": "Narugo",
+      "challongeUrl": null,
+      "exactWins": 0,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "L"
+      ]
+    },
+    {
+      "name": "sacha15",
+      "rank": 49,
+      "challongeUsername": "sacha15",
+      "challongeUrl": null,
+      "exactWins": 0,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "L"
+      ]
+    },
+    {
+      "name": "LUrssafveutsonargent",
+      "rank": 49,
+      "challongeUsername": "LUrssafveutsonargent",
+      "challongeUrl": null,
+      "exactWins": 0,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "L"
+      ]
+    },
+    {
+      "name": "Yumetoo",
+      "rank": 49,
+      "challongeUsername": "RNSX_Yumetoo",
+      "challongeUrl": null,
+      "exactWins": 0,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "L"
+      ]
+    },
+    {
+      "name": "NLN",
+      "rank": 49,
+      "challongeUsername": null,
+      "challongeUrl": null,
+      "exactWins": 1,
+      "exactLosses": 2,
+      "matchHistory": [
+        "W",
+        "L",
+        "L"
+      ]
+    },
+    {
+      "name": "Vincent___",
+      "rank": 65,
+      "challongeUsername": "Vincent___",
+      "challongeUrl": null,
+      "exactWins": 0,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "L"
+      ]
+    },
+    {
+      "name": "azurekun",
+      "rank": 65,
+      "challongeUsername": "azurekun",
+      "challongeUrl": null,
+      "exactWins": 0,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "L"
+      ]
+    },
+    {
+      "name": "Masamune_Kadoya",
+      "rank": 65,
+      "challongeUsername": "Masamune_Kadoya",
+      "challongeUrl": null,
+      "exactWins": 0,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "L"
+      ]
+    },
+    {
+      "name": "Vilaine_Thob",
+      "rank": 65,
+      "challongeUsername": "Vilaine_Thob",
+      "challongeUrl": null,
+      "exactWins": 0,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "L"
+      ]
+    },
+    {
+      "name": "09Illu",
+      "rank": 65,
+      "challongeUsername": "09Illu",
+      "challongeUrl": null,
+      "exactWins": 0,
+      "exactLosses": 2,
+      "matchHistory": [
+        "L",
+        "L"
+      ]
+    }
+  ]
+}

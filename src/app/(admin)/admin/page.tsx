@@ -15,7 +15,6 @@ import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { headers } from 'next/headers';
 import { QuickActions } from '@/components/admin/QuickActions';
 import { StatsCharts } from '@/components/admin/StatsCharts';
 import { FadeIn } from '@/components/ui/FadeIn';
@@ -25,9 +24,9 @@ import { prisma } from '@/lib/prisma';
 import { formatDateTime } from '@/lib/utils';
 import AdminOverviewIntegrations from './_components/AdminOverviewIntegrations';
 
-export default async function AdminDashboardPage() {
-  await headers();
+export const dynamic = 'force-dynamic';
 
+export default async function AdminDashboardPage() {
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
@@ -140,7 +139,7 @@ export default async function AdminDashboardPage() {
       value: tournamentTotalCount.toString(),
       change: `${activeTournamentCount} actifs`,
       icon: TrophyIcon,
-      color: '#fbbf24',
+      color: 'var(--rpb-secondary)',
     },
     {
       label: 'Membres Discord',
@@ -154,7 +153,7 @@ export default async function AdminDashboardPage() {
       value: profileCount.toLocaleString(),
       change: `${calculateTrend(profileCount, profilesLastMonth)} (30j)`,
       icon: Visibility,
-      color: '#dc2626',
+      color: 'var(--rpb-primary)',
     },
   ];
 

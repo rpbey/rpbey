@@ -5,7 +5,7 @@ import { resolve } from 'node:path';
 
 (puppeteerExtra as any).use(StealthPlugin());
 
-const DEFAULT_COOKIE_PATH = resolve(process.cwd(), 'challonge_cookie.json');
+const DEFAULT_COOKIE_PATH = resolve(process.cwd(), 'storage/cookies/challonge_cookie.json');
 
 async function run() {
   console.log('🔍 Découverte des tournois Wild Breakers sur Challonge...\n');

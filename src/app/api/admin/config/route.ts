@@ -1,16 +1,8 @@
-import { headers } from 'next/headers';
 import { NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
+import { requireAdmin } from '@/lib/auth-utils';
 
 export async function GET() {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-
-  if (
-    !session ||
-    (session.user.role !== 'admin' && session.user.role !== 'superadmin')
-  ) {
+  if (!(await requireAdmin())) {
     return new NextResponse('Unauthorized', { status: 401 });
   }
 

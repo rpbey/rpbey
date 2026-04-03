@@ -51,7 +51,6 @@ interface BladerComparatorProps {
   allProfiles: ProfileWithUser[];
 }
 
-const COLOR_A = '#dc2626';
 const COLOR_B = '#3b82f6';
 
 function CompareRadar({
@@ -123,8 +122,8 @@ function CompareRadar({
           <Radar
             name={nameA}
             dataKey="A"
-            stroke={COLOR_A}
-            fill={COLOR_A}
+            stroke="var(--rpb-primary)"
+            fill="var(--rpb-primary)"
             fillOpacity={0.25}
             strokeWidth={2}
           />
@@ -320,7 +319,7 @@ function CompareTable({
                 flex: 1,
                 textAlign: 'right',
                 fontWeight: aWins ? 800 : 500,
-                color: aWins ? COLOR_A : 'text.secondary',
+                color: aWins ? 'primary.main' : 'text.secondary',
                 fontSize: { xs: '0.8rem', sm: '0.9rem' },
                 fontVariantNumeric: 'tabular-nums',
               }}
@@ -351,11 +350,11 @@ function CompareTable({
                 sx={{
                   fontSize: { xs: '0.6rem', sm: '0.65rem' },
                   fontWeight: 600,
-                  color:
+                  color: (t) =>
                     diff === 0
-                      ? 'text.disabled'
+                      ? t.palette.text.disabled
                       : diff > 0
-                        ? alpha(COLOR_A, 0.7)
+                        ? alpha(t.palette.primary.main, 0.7)
                         : alpha(COLOR_B, 0.7),
                   fontVariantNumeric: 'tabular-nums',
                 }}
@@ -597,7 +596,8 @@ export default function BladerComparator({
                 }}
               >
                 {selectedBladers.map((blader, idx) => {
-                  const bladerColor = idx === 0 ? COLOR_A : COLOR_B;
+                  const bladerColor =
+                    idx === 0 ? theme.palette.primary.main : COLOR_B;
                   const rank = getRank(blader);
                   return (
                     <Box key={blader.id} sx={{ flex: 1, minWidth: 0 }}>
@@ -725,8 +725,10 @@ export default function BladerComparator({
                         fontWeight={700}
                         sx={{ fontSize: { xs: '0.8rem', sm: '0.875rem' } }}
                       >
-                        <span style={{ color: COLOR_A }}>{nameA}</span> domine
-                        dans {scoreA} catégorie
+                        <span style={{ color: 'var(--rpb-primary)' }}>
+                          {nameA}
+                        </span>{' '}
+                        domine dans {scoreA} catégorie
                         {scoreA > 1 ? 's' : ''} sur {total}
                       </Typography>
                     );

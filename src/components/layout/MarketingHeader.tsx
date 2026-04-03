@@ -1,6 +1,10 @@
 'use client';
 
-import { AccountCircle, Palette, SportsEsports } from '@mui/icons-material';
+import {
+  AccountCircle,
+  AcUnit,
+  LocalFireDepartment,
+} from '@mui/icons-material';
 import {
   Avatar,
   alpha,
@@ -27,7 +31,7 @@ export function MarketingHeader() {
         display: { xs: 'flex', md: 'none' },
         height: 64,
         alignItems: 'center',
-        bgcolor: alpha('#000', 0.7),
+        bgcolor: (t) => alpha(t.palette.background.default, 0.7),
         borderBottom: '1px solid',
         borderColor: (t) => alpha(t.palette.secondary.main, 0.2),
         position: 'fixed',
@@ -73,7 +77,11 @@ export function MarketingHeader() {
           </Link>
 
           <Stack direction="row" spacing={0.5} alignItems="center">
-            <Tooltip title={mode === 'dark' ? 'Mode Tournoi' : 'Mode RPB'}>
+            <Tooltip
+              title={
+                mode === 'red' ? 'Passer en Mode Bleu' : 'Passer en Mode Rouge'
+              }
+            >
               <IconButton
                 onClick={toggleTheme}
                 aria-label="Changer de thème"
@@ -85,10 +93,10 @@ export function MarketingHeader() {
                   },
                 }}
               >
-                {mode === 'dark' ? (
-                  <Palette sx={{ fontSize: 22 }} />
+                {mode === 'red' ? (
+                  <LocalFireDepartment sx={{ fontSize: 22 }} />
                 ) : (
-                  <SportsEsports sx={{ fontSize: 22 }} />
+                  <AcUnit sx={{ fontSize: 22 }} />
                 )}
               </IconButton>
             </Tooltip>

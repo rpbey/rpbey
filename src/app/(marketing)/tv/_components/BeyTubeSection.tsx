@@ -35,7 +35,7 @@ export function BeyTubeSection() {
           sx={{ mb: 1, textTransform: 'uppercase', letterSpacing: '-0.05em' }}
         >
           BeyTube{' '}
-          <Box component="span" sx={{ color: '#dc2626' }}>
+          <Box component="span" sx={{ color: 'primary.main' }}>
             FR
           </Box>
         </Typography>

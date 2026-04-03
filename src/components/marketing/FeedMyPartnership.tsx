@@ -74,7 +74,7 @@ export function FeedMyPartnership() {
           position: 'absolute',
           top: { xs: 12, sm: 20 },
           right: { xs: -30, sm: -35 },
-          bgcolor: '#fbbf24',
+          bgcolor: 'secondary.main',
           color: '#000',
           px: { xs: 5, sm: 6 },
           py: 0.5,

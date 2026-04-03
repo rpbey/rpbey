@@ -30,6 +30,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
+import { alpha } from '@mui/material/styles';
 import { useCallback, useEffect, useState } from 'react';
 import { useToast } from '@/components/ui';
 import {
@@ -329,7 +330,7 @@ export default function StreamConfigPage() {
                   <Typography
                     variant="h5"
                     fontWeight="900"
-                    sx={{ color: '#dc2626' }}
+                    sx={{ color: 'primary.main' }}
                     noWrap
                   >
                     {player1 || '—'}
@@ -339,7 +340,10 @@ export default function StreamConfigPage() {
                       size="small"
                       onClick={() => handleScoreChange('1', -1)}
                       disabled={score1 <= 0}
-                      sx={{ bgcolor: 'rgba(220,38,38,0.1)' }}
+                      sx={{
+                        bgcolor: (theme) =>
+                          alpha(theme.palette.primary.main, 0.1),
+                      }}
                     >
                       <Remove fontSize="small" />
                     </IconButton>
@@ -347,7 +351,7 @@ export default function StreamConfigPage() {
                       variant="h3"
                       fontWeight="900"
                       sx={{
-                        color: '#dc2626',
+                        color: 'primary.main',
                         minWidth: 50,
                         textAlign: 'center',
                       }}
@@ -357,7 +361,10 @@ export default function StreamConfigPage() {
                     <IconButton
                       size="small"
                       onClick={() => handleScoreChange('1', 1)}
-                      sx={{ bgcolor: 'rgba(220,38,38,0.1)' }}
+                      sx={{
+                        bgcolor: (theme) =>
+                          alpha(theme.palette.primary.main, 0.1),
+                      }}
                     >
                       <Add fontSize="small" />
                     </IconButton>
@@ -403,7 +410,7 @@ export default function StreamConfigPage() {
                   <Typography
                     variant="h5"
                     fontWeight="900"
-                    sx={{ color: '#fbbf24' }}
+                    sx={{ color: 'secondary.main' }}
                     noWrap
                   >
                     {player2 || '—'}
@@ -413,7 +420,10 @@ export default function StreamConfigPage() {
                       size="small"
                       onClick={() => handleScoreChange('2', -1)}
                       disabled={score2 <= 0}
-                      sx={{ bgcolor: 'rgba(251,191,36,0.1)' }}
+                      sx={{
+                        bgcolor: (theme) =>
+                          alpha(theme.palette.secondary.main, 0.1),
+                      }}
                     >
                       <Remove fontSize="small" />
                     </IconButton>
@@ -421,7 +431,7 @@ export default function StreamConfigPage() {
                       variant="h3"
                       fontWeight="900"
                       sx={{
-                        color: '#fbbf24',
+                        color: 'secondary.main',
                         minWidth: 50,
                         textAlign: 'center',
                       }}
@@ -431,7 +441,10 @@ export default function StreamConfigPage() {
                     <IconButton
                       size="small"
                       onClick={() => handleScoreChange('2', 1)}
-                      sx={{ bgcolor: 'rgba(251,191,36,0.1)' }}
+                      sx={{
+                        bgcolor: (theme) =>
+                          alpha(theme.palette.secondary.main, 0.1),
+                      }}
                     >
                       <Add fontSize="small" />
                     </IconButton>
@@ -466,7 +479,9 @@ export default function StreamConfigPage() {
                       label="Joueur 1 (Rouge)"
                       size="small"
                       sx={{
-                        '& .MuiOutlinedInput-root': { borderColor: '#dc2626' },
+                        '& .MuiOutlinedInput-root': {
+                          borderColor: 'primary.main',
+                        },
                       }}
                     />
                   )}
@@ -540,8 +555,8 @@ export default function StreamConfigPage() {
                 py: 1.5,
                 fontWeight: 700,
                 fontSize: '1rem',
-                bgcolor: '#dc2626',
-                '&:hover': { bgcolor: '#b91c1c' },
+                bgcolor: 'primary.main',
+                '&:hover': { bgcolor: 'primary.dark' },
               }}
             >
               Appliquer le match

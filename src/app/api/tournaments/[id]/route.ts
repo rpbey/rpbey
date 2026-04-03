@@ -4,15 +4,24 @@
  */
 
 import type { TournamentStatus } from '@prisma/client';
-import { headers } from 'next/headers';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
+import { requireAdmin, requireStaff } from '@/lib/auth-utils';
 import { getChallongeService } from '@/lib/challonge';
 import { prisma } from '@/lib/prisma';
 
 interface RouteParams {
   params: Promise<{ id: string }>;
+}
+
+function isOffline(tournament: {
+  challongeId: string | null;
+  challongeUrl: string | null;
+}) {
+  return (
+    tournament.challongeId === '17261774' ||
+    tournament.challongeUrl?.includes('B_TS1')
+  );
 }
 
 // GET - Get single tournament with full details
@@ -76,14 +85,7 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
 // PUT - Update tournament
 export async function PUT(request: NextRequest, { params }: RouteParams) {
   try {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
-
-    if (
-      !session?.user ||
-      (session.user.role !== 'admin' && session.user.role !== 'moderator')
-    ) {
+    if (!(await requireStaff())) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -108,16 +110,11 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    // SKIP API for B_TS1 (Imported locally)
-    const isOfflineTournament =
-      existing.challongeId === '17261774' ||
-      existing.challongeUrl?.includes('B_TS1');
-
     // Update on Challonge if linked AND not offline
     if (
       existing.challongeId &&
       (name || description || date) &&
-      !isOfflineTournament
+      !isOffline(existing)
     ) {
       try {
         const challonge = getChallongeService();
@@ -157,11 +154,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 // DELETE - Delete tournament
 export async function DELETE(_request: NextRequest, { params }: RouteParams) {
   try {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
-
-    if (!session?.user || session.user.role !== 'admin') {
+    if (!(await requireAdmin())) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -176,11 +169,7 @@ export async function DELETE(_request: NextRequest, { params }: RouteParams) {
     }
 
     // Delete from Challonge if linked
-    const isOfflineTournament =
-      tournament.challongeId === '17261774' ||
-      tournament.challongeUrl?.includes('B_TS1');
-
-    if (tournament.challongeId && !isOfflineTournament) {
+    if (tournament.challongeId && !isOffline(tournament)) {
       try {
         const challonge = getChallongeService();
         await challonge.deleteTournament(tournament.challongeId);
@@ -189,12 +178,12 @@ export async function DELETE(_request: NextRequest, { params }: RouteParams) {
       }
     }
 
-    // Delete related data first
-    await prisma.tournamentMatch.deleteMany({ where: { tournamentId: id } });
-    await prisma.tournamentParticipant.deleteMany({
-      where: { tournamentId: id },
-    });
-    await prisma.tournament.delete({ where: { id } });
+    // Delete related data atomically
+    await prisma.$transaction([
+      prisma.tournamentMatch.deleteMany({ where: { tournamentId: id } }),
+      prisma.tournamentParticipant.deleteMany({ where: { tournamentId: id } }),
+      prisma.tournament.delete({ where: { id } }),
+    ]);
 
     return NextResponse.json({ success: true });
   } catch (error) {
@@ -209,14 +198,7 @@ export async function DELETE(_request: NextRequest, { params }: RouteParams) {
 // PATCH - Special actions (start, finalize, sync)
 export async function PATCH(request: NextRequest, { params }: RouteParams) {
   try {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
-
-    if (
-      !session?.user ||
-      (session.user.role !== 'admin' && session.user.role !== 'moderator')
-    ) {
+    if (!(await requireStaff())) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -249,10 +231,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     }
 
     // SKIP API for B_TS1
-    if (
-      tournament.challongeId === '17261774' ||
-      tournament.challongeUrl?.includes('B_TS1')
-    ) {
+    if (isOffline(tournament)) {
       return NextResponse.json({
         success: true,
         action,

@@ -258,7 +258,7 @@ export function BeyBuilder({
               height: 200,
               display: 'flex',
               justifyContent: 'center',
-              filter: 'drop-shadow(0 0 15px rgba(220, 38, 38, 0.2))',
+              filter: 'drop-shadow(0 0 15px rgba(var(--rpb-primary-rgb), 0.2))',
             }}
           >
             <StatRadar stats={stats} size={200} />
@@ -320,7 +320,12 @@ export function BeyBuilder({
                 value={stats.stamina}
                 color="#22c55e"
               />
-              <StatBar label="DASH" value={stats.dash} color="#fbbf24" />
+              <StatBar
+                label="DASH"
+                value={stats.dash}
+                color="var(--rpb-secondary)"
+                colorRgb="var(--rpb-secondary-rgb)"
+              />
             </Box>
           </Box>
         </Box>
@@ -333,11 +338,19 @@ function StatBar({
   label,
   value,
   color,
+  colorRgb,
 }: {
   label: string;
   value: number;
   color: string;
+  colorRgb?: string;
 }) {
+  // For CSS variable colors, use rgba() with the rgb variable for the glow
+  // For hex colors, append alpha hex directly
+  const glowShadow = colorRgb
+    ? `0 0 12px rgba(${colorRgb}, 0.4)`
+    : `0 0 12px ${color}66`;
+
   return (
     <Box sx={{ width: '100%' }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
@@ -371,7 +384,7 @@ function StatBar({
             height: '100%',
             width: `${Math.min(value, 100)}%`,
             bgcolor: color,
-            boxShadow: `0 0 12px ${color}66`,
+            boxShadow: glowShadow,
             transition: 'width 1s cubic-bezier(0.4, 0, 0.2, 1)',
           }}
         />

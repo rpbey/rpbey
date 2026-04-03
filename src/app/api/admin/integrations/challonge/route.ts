@@ -1,19 +1,11 @@
-import { headers } from 'next/headers';
 import { NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
+import { requireAdmin } from '@/lib/auth-utils';
 import { getChallongeService } from '@/lib/challonge';
 
 export async function POST() {
   try {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
-
-    if (
-      !session ||
-      (session.user.role !== 'admin' && session.user.role !== 'superadmin')
-    ) {
-      return new NextResponse('Unauthorized', { status: 401 });
+    if (!(await requireAdmin())) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const challongeService = getChallongeService();

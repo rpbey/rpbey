@@ -1,6 +1,6 @@
 'use client';
 
-import { Palette, SportsEsports } from '@mui/icons-material';
+import { AcUnit, LocalFireDepartment } from '@mui/icons-material';
 import MenuIcon from '@mui/icons-material/Menu';
 import {
   AppBar,
@@ -149,18 +149,22 @@ export function Header() {
               gap: 0.5,
             }}
           >
-            <Tooltip title={mode === 'dark' ? 'Mode Tournoi' : 'Mode RPB'}>
+            <Tooltip
+              title={
+                mode === 'red' ? 'Passer en Mode Bleu' : 'Passer en Mode Rouge'
+              }
+            >
               <IconButton
                 onClick={toggleTheme}
                 aria-label="Changer de thème"
                 sx={{
-                  color: mode === 'dark' ? 'primary.main' : 'secondary.main',
+                  color: mode === 'red' ? 'primary.main' : 'secondary.main',
                 }}
               >
-                {mode === 'dark' ? (
-                  <Palette sx={{ fontSize: 22 }} />
+                {mode === 'red' ? (
+                  <LocalFireDepartment sx={{ fontSize: 22 }} />
                 ) : (
-                  <SportsEsports sx={{ fontSize: 22 }} />
+                  <AcUnit sx={{ fontSize: 22 }} />
                 )}
               </IconButton>
             </Tooltip>

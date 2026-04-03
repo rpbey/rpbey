@@ -80,7 +80,7 @@ export function NextEpisodeOverlay({
             borderRadius: 2,
             bgcolor: 'rgba(255,255,255,0.08)',
             '& .MuiLinearProgress-bar': {
-              bgcolor: '#dc2626',
+              bgcolor: 'primary.main',
               borderRadius: 2,
             },
           }}
@@ -108,13 +108,13 @@ export function NextEpisodeOverlay({
           size="small"
           endIcon={<SkipNext />}
           sx={{
-            bgcolor: '#dc2626',
+            bgcolor: 'primary.main',
             color: 'white',
             fontWeight: 700,
             borderRadius: 2,
             textTransform: 'none',
             fontSize: '0.8rem',
-            '&:hover': { bgcolor: '#b91c1c' },
+            '&:hover': { bgcolor: 'primary.dark' },
           }}
         >
           Lancer

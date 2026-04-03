@@ -1,14 +1,22 @@
 'use client';
 
 import { Box, Grid, Typography } from '@mui/material';
-import { alpha } from '@mui/material/styles';
+import { alpha, useTheme } from '@mui/material/styles';
 
 import { PartRankCard } from './PartRankCard';
 import type { CategoryData } from './types';
-import { CATEGORY_COLORS } from './types';
+import { CATEGORY_COLORS, CATEGORY_PALETTE_KEY } from './types';
 
 export function CategorySection({ category }: { category: CategoryData }) {
-  const color = CATEGORY_COLORS[category.category] || '#6b7280';
+  const theme = useTheme();
+  const paletteKey = CATEGORY_PALETTE_KEY[category.category];
+  const color = paletteKey
+    ? ((theme.palette as unknown as Record<string, { main: string }>)[
+        paletteKey
+      ]?.main ??
+      CATEGORY_COLORS[category.category] ??
+      '#6b7280')
+    : CATEGORY_COLORS[category.category] || '#6b7280';
   const maxScore = Math.max(...category.components.map((c) => c.score), 1);
 
   return (

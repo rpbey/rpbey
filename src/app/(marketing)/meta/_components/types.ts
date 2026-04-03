@@ -50,6 +50,12 @@ export interface BbxWeeklyData {
 
 export type PeriodKey = '2weeks' | '4weeks';
 
+/** Palette key for categories that use theme colors, hex for the rest */
+export const CATEGORY_PALETTE_KEY: Record<string, string | undefined> = {
+  Blade: 'primary',
+  Ratchet: 'secondary',
+};
+
 export const CATEGORY_COLORS: Record<string, string> = {
   Blade: '#dc2626',
   Ratchet: '#fbbf24',

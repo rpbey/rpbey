@@ -67,7 +67,7 @@ export function StatsCharts({
                     {
                       data: tournaments.map((d) => d.count),
                       label: 'Tournois Créés',
-                      color: '#fbbf24',
+                      color: theme.palette.secondary.main,
                     },
                   ]}
                   height={isMobile ? 250 : 300}

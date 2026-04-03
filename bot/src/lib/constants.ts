@@ -68,6 +68,7 @@ export const RPB = {
     Events: '1456751317342224525',
     Leaks: '1456768275731058708',
     Restock: '1468310668716544061',
+    Mudae: '1487686717711454340',
     Blader: '1323819786181804112',
     // Notification Roles
     TournoiNotification: '1451549606608371814',

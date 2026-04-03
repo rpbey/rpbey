@@ -7,6 +7,7 @@ import { headers } from 'next/headers';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
+import { isStaffUser } from '@/lib/auth-utils';
 import { getChallongeService } from '@/lib/challonge';
 import { prisma } from '@/lib/prisma';
 
@@ -71,8 +72,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
     // Admin can register anyone, users can only register themselves
     const targetUserId = userId ?? session.user.id;
-    const isAdmin =
-      session.user.role === 'admin' || session.user.role === 'moderator';
+    const isAdmin = isStaffUser(session.user);
 
     if (targetUserId !== session.user.id && !isAdmin) {
       return NextResponse.json(
@@ -187,8 +187,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
     const { searchParams } = new URL(request.url);
     const targetUserId = searchParams.get('userId') ?? session.user.id;
 
-    const isAdmin =
-      session.user.role === 'admin' || session.user.role === 'moderator';
+    const isAdmin = isStaffUser(session.user);
 
     if (targetUserId !== session.user.id && !isAdmin) {
       return NextResponse.json(

@@ -177,8 +177,8 @@ export function EpisodePlayer({
         overflow: 'hidden',
         bgcolor: '#000',
         '& media-player': {
-          '--media-brand': '#dc2626',
-          '--media-focus-ring-color': '#dc2626',
+          '--media-brand': 'var(--rpb-primary)',
+          '--media-focus-ring-color': 'var(--rpb-primary)',
         },
       }}
     >
@@ -196,8 +196,8 @@ export function EpisodePlayer({
         }
         onEnded={handleEnded}
         style={{
-          '--video-brand': '#dc2626',
-          '--video-focus-ring-color': '#dc2626',
+          '--video-brand': 'var(--rpb-primary)',
+          '--video-focus-ring-color': 'var(--rpb-primary)',
           '--video-border-radius': '12px',
         }}
       >

@@ -3,7 +3,7 @@
 import { Box, Chip } from '@mui/material';
 
 const GENERATIONS = [
-  { value: '', label: 'Toutes', color: '#dc2626' },
+  { value: '', label: 'Toutes', color: 'var(--rpb-primary)' },
   { value: 'ORIGINAL', label: 'Original', color: '#1565C0' },
   { value: 'METAL', label: 'Metal', color: '#E65100' },
   { value: 'BURST', label: 'Burst', color: '#C62828' },

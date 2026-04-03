@@ -24,9 +24,23 @@ export const ROUTES = {
   PROFILE: '/dashboard/profile',
 } as const;
 
+/** Discord IDs that always have superadmin access regardless of DB role. */
+export const SUPERADMIN_DISCORD_IDS = ['790281823212273734'] as const;
+
+/** Static brand colors for server-side / canvas contexts (no theme). */
+export const RPB_BRAND = {
+  red: '#dc2626',
+  gold: '#fbbf24',
+} as const;
+
+/**
+ * Theme-aware CSS variable references for client components.
+ * Use these instead of hardcoded hex values.
+ */
 export const RPB_COLORS = {
-  primary: '#dc2626', // Rouge RPB
-  secondary: '#fbbf24', // Or
-  background: '#121212',
-  surface: '#1e1e1e',
+  primary: 'var(--rpb-primary)',
+  secondary: 'var(--rpb-secondary)',
+  background: 'var(--rpb-bg)',
+  paper: 'var(--rpb-paper)',
+  surface: 'var(--rpb-surface-main)',
 } as const;

@@ -11,7 +11,7 @@ export default function NotFound() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        bgcolor: '#000',
+        bgcolor: 'background.default',
       }}
     >
       <Container maxWidth="sm">
@@ -29,7 +29,7 @@ export default function NotFound() {
           <Typography
             variant="h1"
             fontWeight="bold"
-            sx={{ color: '#dc2626', mb: 2 }}
+            sx={{ color: 'primary.main', mb: 2 }}
           >
             404
           </Typography>
@@ -37,15 +37,12 @@ export default function NotFound() {
             variant="h4"
             component="h2"
             gutterBottom
-            sx={{ color: 'white' }}
+            sx={{ color: 'text.primary' }}
           >
             Page introuvable
           </Typography>
           <Link href="/" passHref style={{ textDecoration: 'none' }}>
-            <Button
-              variant="contained"
-              sx={{ mt: 2, bgcolor: '#fbbf24', color: 'black' }}
-            >
+            <Button variant="contained" color="secondary" sx={{ mt: 2 }}>
               Retour à l&apos;accueil
             </Button>
           </Link>

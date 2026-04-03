@@ -1,14 +1,9 @@
-import { headers } from 'next/headers';
 import { type NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
+import { requireAdmin } from '@/lib/auth-utils';
 import { prisma } from '@/lib/prisma';
 
 export async function GET(req: NextRequest) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-
-  if (!session?.user || session.user.role !== 'admin') {
+  if (!(await requireAdmin())) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -84,8 +79,7 @@ export async function GET(req: NextRequest) {
   const csvRows = data.map((row) =>
     csvHeaders
       .map((header) => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const val = (row as any)[header];
+        const val = row[header as keyof typeof row];
         if (typeof val === 'string') {
           return `"${val.replace(/"/g, '""')}"`;
         }

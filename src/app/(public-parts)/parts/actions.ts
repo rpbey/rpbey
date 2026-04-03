@@ -2,28 +2,7 @@
 
 import type { Part, PartType } from '@prisma/client';
 import { revalidatePath } from 'next/cache';
-import { headers } from 'next/headers';
-import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-
-async function checkAdmin() {
-  const session = await auth.api.getSession({ headers: await headers() });
-  if (!session?.user)
-    throw new Error('Non connecté — veuillez vous identifier');
-
-  // Try role from session first (set by session callback)
-  const sessionRole = (session.user as { role?: string }).role;
-  if (sessionRole === 'admin' || sessionRole === 'superadmin') return;
-
-  // Fallback: check role directly in the database
-  const dbUser = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    select: { role: true },
-  });
-  if (dbUser?.role === 'admin' || dbUser?.role === 'superadmin') return;
-
-  throw new Error('Accès réservé aux administrateurs');
-}
 
 export async function getPartsStats() {
   const [total, byType, bySystem, byBeyType, missingImage, recentlyUpdated] =
@@ -104,8 +83,6 @@ export async function getParts(
 }
 
 export async function upsertPart(data: Partial<Part>) {
-  await checkAdmin();
-
   if (!data.name || !data.type) throw new Error('Name and Type are required');
 
   const generatedId = `${data.type}-${data.name}`
@@ -148,21 +125,18 @@ export async function upsertPart(data: Partial<Part>) {
     });
   }
 
-  revalidatePath('/admin/parts');
+  revalidatePath('/parts');
   return { success: true };
 }
 
 export async function deletePart(id: string) {
-  await checkAdmin();
   await prisma.part.delete({ where: { id } });
-  revalidatePath('/admin/parts');
+  revalidatePath('/parts');
 }
 
 export async function bulkImportParts(
   partsData: Partial<Part>[],
 ): Promise<{ created: number; updated: number; errors: string[] }> {
-  await checkAdmin();
-
   let created = 0;
   let updated = 0;
   const errors: string[] = [];
@@ -219,12 +193,11 @@ export async function bulkImportParts(
     }
   }
 
-  revalidatePath('/admin/parts');
+  revalidatePath('/parts');
   return { created, updated, errors };
 }
 
 export async function duplicatePart(id: string) {
-  await checkAdmin();
   const original = await prisma.part.findUniqueOrThrow({ where: { id } });
   const newName = `${original.name} (copie)`;
   const externalId = `${original.type}-${newName}`
@@ -256,7 +229,7 @@ export async function duplicatePart(id: string) {
     },
   });
 
-  revalidatePath('/admin/parts');
+  revalidatePath('/parts');
   return { success: true };
 }
 
@@ -291,8 +264,6 @@ export async function upsertBeyblade(data: {
   beyType?: string;
   imageUrl?: string;
 }) {
-  await checkAdmin();
-
   // Calculate aggregated stats
   const [blade, ratchet, bit] = await Promise.all([
     prisma.part.findUniqueOrThrow({ where: { id: data.bladeId } }),
@@ -332,14 +303,13 @@ export async function upsertBeyblade(data: {
     await prisma.beyblade.create({ data: beyData });
   }
 
-  revalidatePath('/admin/parts');
+  revalidatePath('/parts');
   return { success: true };
 }
 
 export async function deleteBeyblade(id: string) {
-  await checkAdmin();
   await prisma.beyblade.delete({ where: { id } });
-  revalidatePath('/admin/parts');
+  revalidatePath('/parts');
 }
 
 // Products management

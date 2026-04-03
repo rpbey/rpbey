@@ -1,7 +1,7 @@
 'use client';
 
 import { GitHub, X as XIcon } from '@mui/icons-material';
-import { Box, IconButton, Tooltip, Typography } from '@mui/material';
+import { alpha, Box, IconButton, Tooltip, Typography } from '@mui/material';
 import { DiscordIcon, TikTokIcon, TwitchIcon } from '@/components/ui/Icons';
 
 export function IconFooter() {
@@ -25,8 +25,8 @@ export function IconFooter() {
           left: '10%',
           right: '10%',
           height: '1px',
-          background:
-            'linear-gradient(90deg, transparent, rgba(220,38,38,0.3) 30%, rgba(220,38,38,0.5) 50%, rgba(220,38,38,0.3) 70%, transparent)',
+          background: (theme) =>
+            `linear-gradient(90deg, transparent, ${alpha(theme.palette.primary.main, 0.3)} 30%, ${alpha(theme.palette.primary.main, 0.5)} 50%, ${alpha(theme.palette.primary.main, 0.3)} 70%, transparent)`,
         },
       }}
     >

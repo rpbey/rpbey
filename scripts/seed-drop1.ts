@@ -45,7 +45,7 @@ interface CharacterData {
   specialMove: string;
   pngRarity: string;
   artistRarity: string;
-  stats: { atk: number; def: number; spd: number; hp: number };
+  stats: { att: number; def: number; end: number; equilibre: number };
   description: string;
 }
 
@@ -72,10 +72,10 @@ function slugify(name: string): string {
 // Slightly reduce stats for PNG (COMMON) versions vs ARTIST
 function pngStats(stats: CharacterData['stats']) {
   return {
-    atk: Math.round(stats.atk * 0.65),
+    att: Math.round(stats.att * 0.65),
     def: Math.round(stats.def * 0.65),
-    spd: Math.round(stats.spd * 0.65),
-    hp: Math.round(stats.hp * 0.7),
+    end: Math.round(stats.end * 0.65),
+    equilibre: Math.round(stats.equilibre * 0.7),
   };
 }
 
@@ -188,10 +188,10 @@ async function main() {
     if (DRY_RUN) {
       const pStats = pngStats(char.stats);
       console.log(
-        `  📄 ${char.name} PNG [COMMON] — ATK:${pStats.atk} DEF:${pStats.def} SPD:${pStats.spd} HP:${pStats.hp}`,
+        `  📄 ${char.name} PNG [COMMON] — ATT:${pStats.att} DEF:${pStats.def} END:${pStats.end} ÉQU:${pStats.equilibre}`,
       );
       console.log(
-        `  🎨 ${char.name} ARTIST [${char.artistRarity}] — ATK:${char.stats.atk} DEF:${char.stats.def} SPD:${char.stats.spd} HP:${char.stats.hp}`,
+        `  🎨 ${char.name} ARTIST [${char.artistRarity}] — ATT:${char.stats.att} DEF:${char.stats.def} END:${char.stats.end} ÉQU:${char.stats.equilibre}`,
       );
       created += 2;
     } else {

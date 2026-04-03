@@ -7,9 +7,9 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import * as React from 'react';
 import 'dayjs/locale/fr';
 import { ToastProvider } from '@/components/ui';
-import { darkTheme, tournamentTheme } from '@/lib/theme';
+import { blueTheme, redTheme } from '@/lib/theme';
 
-export type ThemeMode = 'dark' | 'tournament';
+export type ThemeMode = 'red' | 'blue';
 
 interface ThemeContextType {
   mode: ThemeMode;
@@ -35,11 +35,18 @@ export default function ThemeRegistry({
 }: {
   children: React.ReactNode;
 }) {
-  const [mode, setModeState] = React.useState<ThemeMode>('dark');
+  const [mode, setModeState] = React.useState<ThemeMode>('red');
   // Load theme from localStorage on mount
   React.useEffect(() => {
-    const savedMode = localStorage.getItem('rpb-theme-mode') as ThemeMode;
-    if (savedMode && (savedMode === 'dark' || savedMode === 'tournament')) {
+    const savedMode = localStorage.getItem('rpb-theme-mode');
+    // Migrate legacy values
+    if (savedMode === 'dark') {
+      setModeState('red');
+      localStorage.setItem('rpb-theme-mode', 'red');
+    } else if (savedMode === 'tournament') {
+      setModeState('blue');
+      localStorage.setItem('rpb-theme-mode', 'blue');
+    } else if (savedMode === 'red' || savedMode === 'blue') {
       setModeState(savedMode);
     }
   }, []);
@@ -50,13 +57,13 @@ export default function ThemeRegistry({
   }, []);
 
   const toggleTheme = React.useCallback(() => {
-    const newMode = mode === 'dark' ? 'tournament' : 'dark';
+    const newMode = mode === 'red' ? 'blue' : 'red';
     setTheme(newMode);
   }, [mode, setTheme]);
 
-  const backgroundImage = mode === 'tournament' ? '/blue.webp' : '/red.webp';
+  const backgroundImage = mode === 'blue' ? '/blue.webp' : '/red.webp';
 
-  const activeTheme = mode === 'tournament' ? tournamentTheme : darkTheme;
+  const activeTheme = mode === 'blue' ? blueTheme : redTheme;
 
   // Apply theme colors to body + CSS variables for global reach
   React.useEffect(() => {
@@ -66,13 +73,38 @@ export default function ThemeRegistry({
     document.body.style.color = p.text.primary;
     document.body.style.transition =
       'background-color 0.3s ease, color 0.3s ease';
+
+    // Helper: hex → "r, g, b" string for rgba() usage
+    const hexToRgb = (hex: string) => {
+      const n = Number.parseInt(hex.replace('#', ''), 16);
+      return `${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}`;
+    };
+
     // CSS custom properties so hardcoded colors can reference the theme
     root.style.setProperty('--rpb-primary', p.primary.main);
+    root.style.setProperty('--rpb-primary-rgb', hexToRgb(p.primary.main));
     root.style.setProperty('--rpb-secondary', p.secondary.main);
+    root.style.setProperty('--rpb-secondary-rgb', hexToRgb(p.secondary.main));
     root.style.setProperty('--rpb-bg', p.background.default);
     root.style.setProperty('--rpb-paper', p.background.paper);
     root.style.setProperty('--rpb-text', p.text.primary);
     root.style.setProperty('--rpb-text-secondary', p.text.secondary);
+    root.style.setProperty('--rpb-divider', p.divider);
+    // Surface tones
+    root.style.setProperty('--rpb-surface-lowest', p.surface.lowest);
+    root.style.setProperty('--rpb-surface-low', p.surface.low);
+    root.style.setProperty('--rpb-surface-main', p.surface.main);
+    root.style.setProperty('--rpb-surface-high', p.surface.high);
+    root.style.setProperty('--rpb-surface-highest', p.surface.highest);
+    // Container colors
+    root.style.setProperty(
+      '--rpb-primary-container',
+      p.primary.container ?? p.primary.dark,
+    );
+    root.style.setProperty(
+      '--rpb-primary-on-container',
+      p.primary.onContainer ?? p.primary.light,
+    );
   }, [activeTheme]);
 
   const value = React.useMemo(

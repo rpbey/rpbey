@@ -12,6 +12,7 @@ import {
   List,
   ListItem,
   Typography,
+  useTheme,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { getMetaStats } from '@/server/actions/admin-meta';
@@ -20,6 +21,7 @@ type MetaStats = Awaited<ReturnType<typeof getMetaStats>>;
 type MetaItem = MetaStats['blades'][number];
 
 export default function AdminMetaPage() {
+  const theme = useTheme();
   const [stats, setStats] = useState<MetaStats | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -33,7 +35,7 @@ export default function AdminMetaPage() {
   if (loading || !stats) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', py: 10 }}>
-        <CircularProgress color="error" />
+        <CircularProgress color="primary" />
       </Box>
     );
   }
@@ -53,11 +55,11 @@ export default function AdminMetaPage() {
           sx={{
             p: 1.5,
             borderRadius: 3,
-            bgcolor: 'rgba(220, 38, 38, 0.1)',
+            bgcolor: alpha(theme.palette.primary.main, 0.1),
             display: 'flex',
           }}
         >
-          <Hub sx={{ fontSize: { xs: 32, md: 40 }, color: 'error.main' }} />
+          <Hub sx={{ fontSize: { xs: 32, md: 40 }, color: 'primary.main' }} />
         </Box>
         <Box>
           <Typography variant="h4" fontWeight="900">
@@ -75,13 +77,13 @@ export default function AdminMetaPage() {
           title="Top Blades"
           data={stats.blades}
           icon={<BarChart />}
-          color="#ef4444"
+          color={theme.palette.primary.main}
         />
         <StatSection
           title="Top Ratchets"
           data={stats.ratchets}
           icon={<TrendingUp />}
-          color="#fbbf24"
+          color={theme.palette.secondary.main}
         />
         <StatSection
           title="Top Bits"

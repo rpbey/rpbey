@@ -92,7 +92,7 @@ export function WbCharts({ bladers, allTournamentMetas = [] }: WbChartsProps) {
               sx={{
                 fontWeight: 900,
                 mb: 2,
-                color: '#f87171',
+                color: 'primary.main',
                 textTransform: 'uppercase',
                 letterSpacing: 1,
               }}
@@ -104,7 +104,11 @@ export function WbCharts({ bladers, allTournamentMetas = [] }: WbChartsProps) {
                 dataset={topWinsData}
                 xAxis={[{ scaleType: 'band', dataKey: 'name' }]}
                 series={[
-                  { dataKey: 'wins', color: '#f87171', label: 'Victoires' },
+                  {
+                    dataKey: 'wins',
+                    color: 'var(--rpb-primary)',
+                    label: 'Victoires',
+                  },
                 ]}
                 slotProps={{ legend: { hidden: true } } as never}
                 sx={{

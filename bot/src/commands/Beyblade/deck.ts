@@ -499,44 +499,75 @@ export class DeckCommand {
     interaction: CommandInteraction,
   ) {
     await interaction.deferReply();
-    const user = await this.prisma.user.findUnique({
-      where: { discordId: interaction.user.id },
-      include: {
-        decks: {
-          where: { isActive: true },
-          include: { items: { orderBy: { position: 'asc' } } },
+    try {
+      const user = await this.prisma.user.findUnique({
+        where: { discordId: interaction.user.id },
+        include: {
+          decks: {
+            where: { isActive: true },
+            include: { items: { orderBy: { position: 'asc' } } },
+          },
         },
-      },
-    });
-    if (!user || !user.decks[0])
-      return interaction.editReply(
-        '❌ Pas de deck actif. Crée-en un avec `/deck creer`.',
-      );
+      });
+      if (!user || !user.decks[0])
+        return interaction.editReply(
+          '❌ Pas de deck actif. Crée-en un avec `/deck creer`.',
+        );
 
-    const deck = user.decks[0];
-    const emptySlot = deck.items.find((i) => !i.bladeId);
-    if (!emptySlot)
-      return interaction.editReply(
-        '❌ Deck plein ! Utilise `/deck modifier` pour remplacer un slot.',
-      );
+      const deck = user.decks[0];
+      const emptySlot = deck.items.find((i) => !i.bladeId);
+      if (!emptySlot)
+        return interaction.editReply(
+          '❌ Deck plein ! Utilise `/deck modifier` pour remplacer un slot.',
+        );
 
-    const isCX = await this.isCXBlade(bladeId);
-    const data: Record<string, string> = { bladeId, ratchetId, bitId };
-    if (isCX) {
-      if (overBladeId) data.overBladeId = overBladeId;
-      if (lockChipId) data.lockChipId = lockChipId;
-      if (assistBladeId) data.assistBladeId = assistBladeId;
+      // Validate parts exist before updating
+      const [blade, ratchet, bit] = await Promise.all([
+        this.prisma.part.findUnique({
+          where: { id: bladeId },
+          select: { name: true, system: true },
+        }),
+        this.prisma.part.findUnique({
+          where: { id: ratchetId },
+          select: { name: true },
+        }),
+        this.prisma.part.findUnique({
+          where: { id: bitId },
+          select: { name: true },
+        }),
+      ]);
+      if (!blade)
+        return interaction.editReply(
+          "❌ Blade introuvable. Utilise l'autocomplétion.",
+        );
+      if (!ratchet)
+        return interaction.editReply(
+          "❌ Ratchet introuvable. Utilise l'autocomplétion.",
+        );
+      if (!bit)
+        return interaction.editReply(
+          "❌ Bit introuvable. Utilise l'autocomplétion.",
+        );
+
+      const isCX = blade.system === 'CX';
+      const data: Record<string, string> = { bladeId, ratchetId, bitId };
+      if (isCX) {
+        if (overBladeId) data.overBladeId = overBladeId;
+        if (lockChipId) data.lockChipId = lockChipId;
+        if (assistBladeId) data.assistBladeId = assistBladeId;
+      }
+
+      await this.prisma.deckItem.update({ where: { id: emptySlot.id }, data });
+
+      return interaction.editReply(
+        `✅ **${blade.name}** ajouté au slot ${emptySlot.position} de **${deck.name}** !`,
+      );
+    } catch (error) {
+      logger.error('[Deck] Add error:', error);
+      return interaction.editReply(
+        "❌ Erreur lors de l'ajout. Vérifie tes pièces.",
+      );
     }
-
-    await this.prisma.deckItem.update({ where: { id: emptySlot.id }, data });
-
-    const blade = await this.prisma.part.findUnique({
-      where: { id: bladeId },
-      select: { name: true },
-    });
-    return interaction.editReply(
-      `✅ **${blade?.name || 'Bey'}** ajouté au slot ${emptySlot.position} de **${deck.name}** !`,
-    );
   }
 
   // =============================================

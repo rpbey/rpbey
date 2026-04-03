@@ -83,7 +83,7 @@ export function SponsorBanner() {
                 ANNONCE : FeedMy sponsorise la RPB ! -10% code{' '}
                 <Box
                   component="span"
-                  sx={{ color: '#fbbf24', fontWeight: 900 }}
+                  sx={{ color: 'secondary.main', fontWeight: 900 }}
                 >
                   RPB10
                 </Box>

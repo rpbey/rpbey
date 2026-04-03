@@ -14,7 +14,7 @@ export default function Loading() {
         width: '100%',
       }}
     >
-      <CircularProgress size={40} sx={{ color: '#dc2626' }} />
+      <CircularProgress size={40} color="primary" />
     </Box>
   );
 }

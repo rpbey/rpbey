@@ -11,7 +11,9 @@ import { resolveRootPath } from '../paths.js';
 (puppeteerExtra as any).use(StealthPlugin());
 
 // Chemin par défaut du fichier de cookies
-const DEFAULT_COOKIE_PATH = resolveRootPath('challonge_cookie.json');
+const DEFAULT_COOKIE_PATH = resolveRootPath(
+  'storage/cookies/challonge_cookie.json',
+);
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 

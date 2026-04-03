@@ -292,9 +292,9 @@ export function AssetGallery() {
             py: 3,
             mt: 2,
             borderRadius: 3,
-            bgcolor: alpha('#dc2626', 0.03),
+            bgcolor: (t) => alpha(t.palette.primary.main, 0.03),
             border: '1px solid',
-            borderColor: alpha('#dc2626', 0.1),
+            borderColor: (t) => alpha(t.palette.primary.main, 0.1),
           }}
         >
           <Typography variant="body2" color="text.secondary">

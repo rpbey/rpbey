@@ -62,6 +62,7 @@
     "scripts",
     "bot",
     "data",
-    "docs"
+    "docs",
+    "mobile"
   ]
 }

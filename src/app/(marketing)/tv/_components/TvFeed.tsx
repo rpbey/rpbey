@@ -28,22 +28,24 @@ interface TvFeedProps {
   domain: string;
 }
 
-function SectionSkeleton() {
+function CardSkeleton({ count = 4 }: { count?: number }) {
   return (
-    <Stack spacing={2}>
-      {[1, 2, 3].map((i) => (
-        <Skeleton
-          key={i}
-          variant="rectangular"
-          height={160}
-          sx={{ borderRadius: 2 }}
-        />
+    <Grid container spacing={2}>
+      {Array.from({ length: count }).map((_, i) => (
+        <Grid key={i} size={{ xs: 6, md: 3 }}>
+          <Skeleton
+            variant="rectangular"
+            sx={{ aspectRatio: '16/9', borderRadius: 2 }}
+          />
+          <Skeleton width="80%" sx={{ mt: 1 }} />
+          <Skeleton width="50%" />
+        </Grid>
       ))}
-    </Stack>
+    </Grid>
   );
 }
 
-function ClipsContent({
+function ClipsGrid({
   promise,
   onVideoClick,
 }: {
@@ -51,27 +53,29 @@ function ClipsContent({
   onVideoClick: (v: VideoInfo) => void;
 }) {
   const clips = use(promise);
+  if (clips.length === 0) {
+    return (
+      <Typography textAlign="center" color="text.secondary" py={4}>
+        Aucun clip disponible.
+      </Typography>
+    );
+  }
   return (
-    <Stack spacing={3}>
-      {clips.length > 0 ? (
-        clips.map((clip) => (
+    <Grid container spacing={{ xs: 1.5, md: 2 }}>
+      {clips.map((clip) => (
+        <Grid key={clip.id} size={{ xs: 6, sm: 4, md: 3 }}>
           <MediaCard
-            key={clip.id}
             video={clip}
             type="twitch"
             onClick={() => onVideoClick(clip)}
           />
-        ))
-      ) : (
-        <Typography textAlign="center" color="text.secondary" py={4}>
-          Aucun clip disponible.
-        </Typography>
-      )}
-    </Stack>
+        </Grid>
+      ))}
+    </Grid>
   );
 }
 
-function VideosContent({
+function VideosGrid({
   promise,
   onVideoClick,
 }: {
@@ -79,34 +83,42 @@ function VideosContent({
   onVideoClick: (v: VideoInfo) => void;
 }) {
   const videos = use(promise);
+  if (videos.length === 0) {
+    return (
+      <Typography textAlign="center" color="text.secondary" py={4}>
+        Aucune rediffusion disponible.
+      </Typography>
+    );
+  }
   return (
-    <Stack spacing={3}>
-      {videos.length > 0 ? (
-        videos.map((video) => (
+    <Grid container spacing={{ xs: 1.5, md: 2 }}>
+      {videos.map((video) => (
+        <Grid key={video.id} size={{ xs: 6, sm: 4, md: 3 }}>
           <MediaCard
-            key={video.id}
             video={video}
             type="youtube"
             onClick={() => onVideoClick(video)}
           />
-        ))
-      ) : (
-        <Typography textAlign="center" color="text.secondary" py={4}>
-          Aucune vidéo disponible.
-        </Typography>
-      )}
-    </Stack>
+        </Grid>
+      ))}
+    </Grid>
   );
 }
 
-function BeyTubeContent({ promise }: { promise: Promise<BeyTubeVideo[]> }) {
+function BeyTubeGrid({ promise }: { promise: Promise<BeyTubeVideo[]> }) {
   const videos = use(promise);
+  if (videos.length === 0) {
+    return (
+      <Typography textAlign="center" color="text.secondary" py={4}>
+        Aucune vidéo communautaire disponible.
+      </Typography>
+    );
+  }
   return (
-    <Stack spacing={3}>
-      {videos.length > 0 ? (
-        videos.map((video) => (
+    <Grid container spacing={{ xs: 1.5, md: 2 }}>
+      {videos.map((video) => (
+        <Grid key={video.id} size={{ xs: 12, sm: 6, md: 4 }}>
           <YouTubeMobileCard
-            key={video.id}
             video={{
               title: video.title,
               thumbnail: video.thumbnail,
@@ -118,28 +130,56 @@ function BeyTubeContent({ promise }: { promise: Promise<BeyTubeVideo[]> }) {
               url: video.url,
             }}
           />
-        ))
-      ) : (
-        <Typography textAlign="center" color="text.secondary" py={4}>
-          Aucune vidéo communautaire disponible.
-        </Typography>
-      )}
-    </Stack>
+        </Grid>
+      ))}
+    </Grid>
   );
 }
 
-function TikTokContent({ promise }: { promise: Promise<TikTokVideo[]> }) {
+function TikTokGrid({ promise }: { promise: Promise<TikTokVideo[]> }) {
   const videos = use(promise);
+  if (videos.length === 0) {
+    return (
+      <Typography textAlign="center" color="text.secondary" py={4}>
+        Aucune vidéo TikTok disponible.
+      </Typography>
+    );
+  }
   return (
-    <Stack spacing={3}>
-      {videos.length > 0 ? (
-        videos.map((video) => <TikTokVideoCard key={video.id} video={video} />)
-      ) : (
-        <Typography textAlign="center" color="text.secondary" py={4}>
-          Aucune vidéo TikTok disponible.
-        </Typography>
-      )}
-    </Stack>
+    <Grid container spacing={{ xs: 1.5, md: 2 }}>
+      {videos.map((video) => (
+        <Grid key={video.id} size={{ xs: 6, sm: 4, md: 3 }}>
+          <TikTokVideoCard video={video} />
+        </Grid>
+      ))}
+    </Grid>
+  );
+}
+
+function SectionTitle({ children }: { children: React.ReactNode }) {
+  return (
+    <Typography
+      variant="subtitle2"
+      fontWeight="900"
+      sx={{
+        textTransform: 'uppercase',
+        letterSpacing: 1,
+        fontSize: { xs: '0.75rem', md: '0.8rem' },
+        color: 'rgba(255,255,255,0.5)',
+        display: 'flex',
+        alignItems: 'center',
+        gap: 1,
+        '&::before': {
+          content: '""',
+          width: 3,
+          height: 16,
+          bgcolor: 'primary.main',
+          borderRadius: 1,
+        },
+      }}
+    >
+      {children}
+    </Typography>
   );
 }
 
@@ -151,7 +191,7 @@ export function TvFeed({
   domain,
 }: TvFeedProps) {
   const theme = useTheme();
-  const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [tab, setTab] = useState(0);
   const [selectedVideo, setSelectedVideo] = useState<VideoInfo | null>(null);
   const [videoType, setVideoType] = useState<'twitch' | 'youtube' | null>(null);
@@ -161,12 +201,12 @@ export function TvFeed({
     setVideoType(type);
   };
 
-  const Sections = [
+  const sections = [
     {
-      label: 'Clips Twitch',
+      label: 'Clips',
       content: (
-        <Suspense fallback={<SectionSkeleton />}>
-          <ClipsContent
+        <Suspense fallback={<CardSkeleton />}>
+          <ClipsGrid
             promise={clipsPromise}
             onVideoClick={(v) => handleVideoClick(v, 'twitch')}
           />
@@ -176,8 +216,8 @@ export function TvFeed({
     {
       label: 'Rediffusions',
       content: (
-        <Suspense fallback={<SectionSkeleton />}>
-          <VideosContent
+        <Suspense fallback={<CardSkeleton />}>
+          <VideosGrid
             promise={rpbVideosPromise}
             onVideoClick={(v) => handleVideoClick(v, 'youtube')}
           />
@@ -185,69 +225,60 @@ export function TvFeed({
       ),
     },
     {
-      label: 'BeyTube FR',
+      label: 'BeyTube',
       content: (
-        <Suspense fallback={<SectionSkeleton />}>
-          <BeyTubeContent promise={beyTubeVideosPromise} />
+        <Suspense fallback={<CardSkeleton count={3} />}>
+          <BeyTubeGrid promise={beyTubeVideosPromise} />
         </Suspense>
       ),
     },
     {
-      label: 'TikTok RPB',
+      label: 'TikTok',
       content: (
-        <Suspense fallback={<SectionSkeleton />}>
-          <TikTokContent promise={tikTokVideosPromise} />
+        <Suspense fallback={<CardSkeleton />}>
+          <TikTokGrid promise={tikTokVideosPromise} />
         </Suspense>
       ),
     },
   ];
 
-  if (isDesktop) {
+  if (isMobile) {
+    // Mobile: tabs
     return (
-      <Box sx={{ width: '100%', mb: 10 }}>
-        <Grid container spacing={3}>
-          {Sections.map((section, idx) => (
-            <Grid key={idx} size={{ xs: 12, md: 3 }}>
-              <Typography
-                variant="h6"
-                fontWeight="900"
-                sx={{
-                  mb: 3,
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 1.5,
-                  fontSize: '0.9rem',
-                  '&::before': {
-                    content: '""',
-                    width: 4,
-                    height: 20,
-                    bgcolor: 'primary.main',
-                    borderRadius: 1,
-                  },
-                }}
-              >
-                {section.label}
-              </Typography>
-              <Box
-                sx={{
-                  maxHeight: 'calc(100vh - 200px)',
-                  overflowY: 'auto',
-                  pr: 1,
-                  '&::-webkit-scrollbar': { width: '6px' },
-                  '&::-webkit-scrollbar-thumb': {
-                    bgcolor: 'divider',
-                    borderRadius: '3px',
-                  },
-                }}
-              >
-                {section.content}
-              </Box>
-            </Grid>
-          ))}
-        </Grid>
-
+      <Box sx={{ pb: 10 }}>
+        <Box
+          sx={{
+            borderBottom: 1,
+            borderColor: 'rgba(255,255,255,0.06)',
+            mb: 2,
+            position: 'sticky',
+            top: { xs: 56, md: 64 },
+            bgcolor: 'background.default',
+            zIndex: 100,
+          }}
+        >
+          <Tabs
+            value={tab}
+            onChange={(_, v) => setTab(v)}
+            variant="fullWidth"
+            textColor="primary"
+            indicatorColor="primary"
+            sx={{
+              '& .MuiTab-root': {
+                fontWeight: 800,
+                textTransform: 'uppercase',
+                fontSize: '0.72rem',
+                minHeight: 40,
+                letterSpacing: 0.5,
+              },
+            }}
+          >
+            {sections.map((s) => (
+              <Tab key={s.label} label={s.label} />
+            ))}
+          </Tabs>
+        </Box>
+        {sections[tab]?.content}
         <VideoPlayerModal
           open={!!selectedVideo}
           video={selectedVideo}
@@ -259,47 +290,15 @@ export function TvFeed({
     );
   }
 
-  // Mobile Version (Tabbed)
+  // Desktop: all sections stacked with grids
   return (
-    <Box sx={{ maxWidth: 600, mx: 'auto', width: '100%' }}>
-      {/* Sticky Tabs Header */}
-      <Box
-        sx={{
-          borderBottom: 1,
-          borderColor: 'divider',
-          mb: 3,
-          position: 'sticky',
-          top: { xs: 56, md: 64 },
-          bgcolor: 'background.default',
-          zIndex: 100,
-          pt: 1,
-        }}
-      >
-        <Tabs
-          value={tab}
-          onChange={(_, v) => setTab(v)}
-          variant="scrollable"
-          scrollButtons="auto"
-          textColor="primary"
-          indicatorColor="primary"
-          sx={{
-            '& .MuiTab-root': {
-              fontWeight: 800,
-              textTransform: 'uppercase',
-              fontSize: '0.8rem',
-              minWidth: 100,
-            },
-          }}
-        >
-          <Tab label="Clips" />
-          <Tab label="Rediff" />
-          <Tab label="BeyTube" />
-          <Tab label="TikTok" />
-        </Tabs>
-      </Box>
-
-      <Box sx={{ pb: 10 }}>{Sections[tab]?.content}</Box>
-
+    <Stack spacing={5} sx={{ pb: 10 }}>
+      {sections.map((section) => (
+        <Box key={section.label}>
+          <SectionTitle>{section.label}</SectionTitle>
+          <Box sx={{ mt: 2 }}>{section.content}</Box>
+        </Box>
+      ))}
       <VideoPlayerModal
         open={!!selectedVideo}
         video={selectedVideo}
@@ -307,6 +306,6 @@ export function TvFeed({
         onClose={() => setSelectedVideo(null)}
         domain={domain}
       />
-    </Box>
+    </Stack>
   );
 }

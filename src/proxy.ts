@@ -11,7 +11,7 @@ const authRoutes = ['/sign-in', '/sign-up'];
 const passwordRoutes = ['/reset-password', '/forgot-password'];
 const privateRoutes = ['/dashboard'];
 // Admin routes that should be publicly accessible (no auth required)
-const publicAdminRoutes = ['/admin-login', '/admin/parts'];
+const publicAdminRoutes = ['/admin-login'];
 
 export default async function proxy(request: NextRequest) {
   const pathName = request.nextUrl.pathname;

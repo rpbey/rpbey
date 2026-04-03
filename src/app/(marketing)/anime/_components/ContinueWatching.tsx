@@ -51,7 +51,7 @@ export function ContinueWatching() {
             content: '""',
             width: 4,
             height: 24,
-            bgcolor: '#dc2626',
+            bgcolor: 'primary.main',
             borderRadius: 1,
             display: 'inline-block',
           },

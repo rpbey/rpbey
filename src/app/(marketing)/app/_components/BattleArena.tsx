@@ -923,7 +923,7 @@ export function BattleArena({
                 sx={{
                   fontWeight: 900,
                   borderRadius: 3,
-                  bgcolor: '#dc2626',
+                  bgcolor: 'primary.main',
                   px: 3,
                 }}
               >

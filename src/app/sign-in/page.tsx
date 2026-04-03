@@ -26,6 +26,7 @@ function SignInContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const error = searchParams.get('error');
+  const callbackURL = searchParams.get('callbackUrl') || '/dashboard';
   const [isLoading, setIsLoading] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -50,7 +51,7 @@ function SignInContent() {
     try {
       await signIn.social({
         provider: 'discord',
-        callbackURL: '/dashboard',
+        callbackURL,
       });
     } catch (err) {
       console.error('Login failed', err);
@@ -73,14 +74,14 @@ function SignInContent() {
             email: emailOrUsername,
             password,
             name,
-            callbackURL: '/dashboard',
+            callbackURL,
           },
           {
             onRequest: () => {
               // Optional: Loading state handled globally
             },
             onSuccess: () => {
-              router.push('/dashboard');
+              router.push(callbackURL);
             },
             onError: (ctx) => {
               setAuthError(ctx.error.message);
@@ -96,11 +97,11 @@ function SignInContent() {
             {
               email: emailOrUsername,
               password,
-              callbackURL: '/dashboard',
+              callbackURL,
             },
             {
               onSuccess: () => {
-                router.push('/dashboard');
+                router.push(callbackURL);
               },
               onError: (ctx) => {
                 setAuthError(ctx.error.message);
@@ -114,11 +115,11 @@ function SignInContent() {
             {
               username: emailOrUsername,
               password,
-              callbackURL: '/dashboard',
+              callbackURL,
             },
             {
               onSuccess: () => {
-                router.push('/dashboard');
+                router.push(callbackURL);
               },
               onError: (ctx) => {
                 setAuthError(ctx.error.message);
@@ -197,7 +198,7 @@ function SignInContent() {
                 {isLoading ? 'Chargement...' : 'Continuer avec Discord'}
               </Button>
 
-              <TwitchButton callbackURL="/dashboard" />
+              <TwitchButton callbackURL={callbackURL} />
             </Stack>
 
             <Divider sx={{ my: 3 }}>

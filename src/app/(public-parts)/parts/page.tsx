@@ -76,8 +76,9 @@ const TYPE_LABELS: Record<string, string> = {
   ASSIST_BLADE: 'Assist Blades',
 };
 
+// Category colors - BLADE and ATTACK use theme primary via CSS variable
 const TYPE_COLORS: Record<string, string> = {
-  BLADE: '#dc2626',
+  BLADE: 'var(--rpb-primary)',
   RATCHET: '#f59e0b',
   BIT: '#3b82f6',
   OVER_BLADE: '#8b5cf6',
@@ -85,12 +86,24 @@ const TYPE_COLORS: Record<string, string> = {
   ASSIST_BLADE: '#06b6d4',
 };
 
+// Helper to get alpha-safe background color for category colors
+// CSS variables can't use hex-alpha concatenation, so we use rgba() with --rgb variant
+const getTypeBg = (type: string) =>
+  type === 'BLADE'
+    ? 'rgba(var(--rpb-primary-rgb), 0.13)'
+    : `${TYPE_COLORS[type] || '#666'}22`;
+
 const BEYTYPE_COLORS: Record<string, string> = {
-  ATTACK: '#ef4444',
+  ATTACK: 'var(--rpb-primary)',
   DEFENSE: '#3b82f6',
   STAMINA: '#22c55e',
   BALANCE: '#a855f7',
 };
+
+const getBeyTypeBg = (type: string) =>
+  type === 'ATTACK'
+    ? 'rgba(var(--rpb-primary-rgb), 0.13)'
+    : `${BEYTYPE_COLORS[type] || '#666'}22`;
 
 // ──── Main Page ────
 
@@ -99,7 +112,9 @@ export default function AdminPartsPage() {
   const [stats, setStats] = useState<PartStats | null>(null);
 
   useEffect(() => {
-    void getPartsStats().then(setStats);
+    void getPartsStats()
+      .then(setStats)
+      .catch(() => {});
   }, []);
 
   return (
@@ -349,7 +364,7 @@ function PartsTab({ onStatsChange }: { onStatsChange: () => void }) {
             label={TYPE_LABELS[params.value] || params.value}
             size="small"
             sx={{
-              bgcolor: `${TYPE_COLORS[params.value] || '#666'}22`,
+              bgcolor: getTypeBg(params.value),
               color: TYPE_COLORS[params.value] || '#666',
               fontWeight: 600,
               fontSize: '0.7rem',
@@ -371,7 +386,7 @@ function PartsTab({ onStatsChange }: { onStatsChange: () => void }) {
               label={params.value.slice(0, 3)}
               size="small"
               sx={{
-                bgcolor: `${BEYTYPE_COLORS[params.value] || '#666'}22`,
+                bgcolor: getBeyTypeBg(params.value),
                 color: BEYTYPE_COLORS[params.value],
                 fontWeight: 700,
                 fontSize: '0.7rem',
@@ -671,7 +686,7 @@ function BeybladesTab() {
               label={params.value.slice(0, 3)}
               size="small"
               sx={{
-                bgcolor: `${BEYTYPE_COLORS[params.value] || '#666'}22`,
+                bgcolor: getBeyTypeBg(params.value),
                 color: BEYTYPE_COLORS[params.value],
                 fontWeight: 700,
               }}

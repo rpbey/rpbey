@@ -31,3 +31,8 @@ export const DynamicRadarChart = dynamic(
   () => import('@mui/x-charts/RadarChart').then((mod) => mod.RadarChart),
   { ssr: false, loading: () => <ChartSkeleton /> },
 );
+
+export const DynamicScatterChart = dynamic(
+  () => import('@mui/x-charts/ScatterChart').then((mod) => mod.ScatterChart),
+  { ssr: false, loading: () => <ChartSkeleton /> },
+);

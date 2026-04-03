@@ -150,7 +150,7 @@ export default function AdminAnimePage() {
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', py: 10 }}>
-        <CircularProgress sx={{ color: '#dc2626' }} />
+        <CircularProgress color="primary" />
       </Box>
     );
   }
@@ -227,7 +227,7 @@ export default function AdminAnimePage() {
                 <td>
                   <Link
                     href={`/admin/anime/${s.id}`}
-                    style={{ color: '#dc2626', fontWeight: 600 }}
+                    style={{ color: 'var(--rpb-primary)', fontWeight: 600 }}
                   >
                     {s._count.episodes} / {s.episodeCount}
                   </Link>
@@ -407,7 +407,7 @@ export default function AdminAnimePage() {
           <Button
             variant="contained"
             onClick={handleSave}
-            sx={{ bgcolor: '#dc2626' }}
+            sx={{ bgcolor: 'primary.main' }}
           >
             {editId ? 'Enregistrer' : 'Créer'}
           </Button>

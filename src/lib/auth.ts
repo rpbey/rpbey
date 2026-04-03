@@ -103,6 +103,7 @@ export const auth = betterAuth({
     'https://rpbey.fr',
     'http://localhost:3000',
     'http://localhost:8000',
+    'rpb-tcg://',
   ],
 });
 

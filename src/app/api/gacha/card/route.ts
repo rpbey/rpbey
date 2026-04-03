@@ -365,7 +365,7 @@ export async function GET(request: NextRequest) {
     };
 
     const statsW = (W - 72 - 16) / 2;
-    drawBar(36, contentY, statsW, card.atk, 100, 'ATK', '#ef4444');
+    drawBar(36, contentY, statsW, card.att, 100, 'ATT', '#ef4444');
     drawBar(
       36 + statsW + 16,
       contentY,
@@ -376,16 +376,16 @@ export async function GET(request: NextRequest) {
       '#3b82f6',
     );
     contentY += 20;
-    drawBar(36, contentY, statsW, card.spd, 100, 'SPD', '#22d3ee');
-    drawBar(36 + statsW + 16, contentY, statsW, card.hp, 100, 'HP', '#22c55e');
-
-    if (card.specialMove) {
-      contentY += 24;
-      ctx.font = '11px GoogleSans';
-      ctx.fillStyle = 'rgba(255,255,255,0.35)';
-      ctx.textAlign = 'center';
-      ctx.fillText(`⚡ ${card.specialMove}`, W / 2, contentY + 10);
-    }
+    drawBar(36, contentY, statsW, card.end, 100, 'END', '#22d3ee');
+    drawBar(
+      36 + statsW + 16,
+      contentY,
+      statsW,
+      card.equilibre,
+      100,
+      'ÉQU',
+      '#22c55e',
+    );
 
     // Footer
     ctx.fillStyle = 'rgba(0,0,0,0.35)';

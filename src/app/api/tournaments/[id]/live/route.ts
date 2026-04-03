@@ -4,10 +4,9 @@
  * GET: Return stored live data (standings, stations, activityLog)
  */
 
-import { headers } from 'next/headers';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
+import { requireStaff } from '@/lib/auth-utils';
 import { prisma } from '@/lib/prisma';
 
 interface RouteParams {
@@ -82,14 +81,7 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
 // POST - Trigger live scrape (admin/moderator only)
 export async function POST(_request: NextRequest, { params }: RouteParams) {
   try {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
-
-    if (
-      !session?.user ||
-      (session.user.role !== 'admin' && session.user.role !== 'moderator')
-    ) {
+    if (!(await requireStaff())) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 

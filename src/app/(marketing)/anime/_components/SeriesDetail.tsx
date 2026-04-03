@@ -330,7 +330,7 @@ export function SeriesDetail({ series }: { series: SeriesData }) {
                         lang === 'VF'
                           ? 'rgba(59,130,246,0.25)'
                           : lang === 'VOSTFR'
-                            ? 'rgba(220,38,38,0.25)'
+                            ? 'rgba(var(--rpb-primary-rgb),0.25)'
                             : 'rgba(255,255,255,0.08)',
                       color: 'rgba(255,255,255,0.8)',
                       border: '1px solid rgba(255,255,255,0.08)',
@@ -580,7 +580,7 @@ export function SeriesDetail({ series }: { series: SeriesData }) {
                           lang === 'VF'
                             ? 'rgba(59,130,246,0.25)'
                             : lang === 'VOSTFR'
-                              ? 'rgba(220,38,38,0.25)'
+                              ? 'rgba(var(--rpb-primary-rgb),0.25)'
                               : 'rgba(255,255,255,0.08)',
                         color: 'rgba(255,255,255,0.8)',
                         border: '1px solid rgba(255,255,255,0.08)',

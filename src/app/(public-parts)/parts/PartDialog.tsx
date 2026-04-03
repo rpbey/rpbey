@@ -31,7 +31,7 @@ interface PartDialogProps {
 const STAT_FIELDS = ['attack', 'defense', 'stamina', 'dash', 'burst'] as const;
 
 const STAT_COLORS: Record<string, string> = {
-  attack: '#ef4444',
+  attack: 'var(--rpb-primary)',
   defense: '#3b82f6',
   stamina: '#22c55e',
   dash: '#f59e0b',

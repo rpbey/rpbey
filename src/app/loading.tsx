@@ -14,7 +14,7 @@ export default function Loading() {
         zIndex: 9999,
       }}
     >
-      <CircularProgress size={60} sx={{ color: '#dc2626' }} />
+      <CircularProgress size={60} color="primary" />
     </Box>
   );
 }

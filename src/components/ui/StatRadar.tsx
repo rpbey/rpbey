@@ -18,9 +18,10 @@ interface StatRadarProps {
 export function StatRadar({
   stats,
   size = 200,
-  color = '#dc2626',
+  color: colorProp,
 }: StatRadarProps) {
   const theme = useTheme();
+  const color = colorProp ?? theme.palette.primary.main;
 
   /**
    * Normalization Strategy:

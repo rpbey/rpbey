@@ -150,18 +150,18 @@ export function EpisodeViewer({
                     fontSize: '0.7rem',
                     bgcolor:
                       selectedLang === lang
-                        ? '#dc2626'
+                        ? 'var(--rpb-primary)'
                         : 'rgba(255,255,255,0.06)',
                     color:
                       selectedLang === lang ? 'white' : 'rgba(255,255,255,0.5)',
                     border:
                       selectedLang === lang
-                        ? '1px solid #dc2626'
+                        ? '1px solid var(--rpb-primary)'
                         : '1px solid rgba(255,255,255,0.08)',
                     '&:hover': {
                       bgcolor:
                         selectedLang === lang
-                          ? '#dc2626'
+                          ? 'var(--rpb-primary)'
                           : 'rgba(255,255,255,0.1)',
                     },
                   }}

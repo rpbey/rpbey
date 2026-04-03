@@ -119,15 +119,15 @@ export function EpisodeSidebar({
                   py: 1,
                   cursor: 'pointer',
                   bgcolor: isCurrent
-                    ? 'rgba(220, 38, 38, 0.12)'
+                    ? 'rgba(var(--rpb-primary-rgb), 0.12)'
                     : 'transparent',
                   borderLeft: isCurrent
-                    ? '3px solid #dc2626'
+                    ? '3px solid var(--rpb-primary)'
                     : '3px solid transparent',
                   transition: 'all 0.15s ease',
                   '&:hover': {
                     bgcolor: isCurrent
-                      ? 'rgba(220, 38, 38, 0.15)'
+                      ? 'rgba(var(--rpb-primary-rgb), 0.15)'
                       : 'rgba(255,255,255,0.04)',
                   },
                 }}
@@ -214,7 +214,9 @@ export function EpisodeSidebar({
                   <Typography
                     variant="caption"
                     sx={{
-                      color: isCurrent ? '#dc2626' : 'rgba(255,255,255,0.4)',
+                      color: isCurrent
+                        ? 'var(--rpb-primary)'
+                        : 'rgba(255,255,255,0.4)',
                       fontWeight: 700,
                       fontSize: '0.65rem',
                     }}

@@ -231,7 +231,7 @@ export default function AdminAnimeSeriesPage() {
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', py: 10 }}>
-        <CircularProgress sx={{ color: '#dc2626' }} />
+        <CircularProgress color="primary" />
       </Box>
     );
   }
@@ -268,7 +268,7 @@ export default function AdminAnimeSeriesPage() {
             variant="contained"
             startIcon={<Add />}
             onClick={handleNewEpisode}
-            sx={{ bgcolor: '#dc2626', borderRadius: 2 }}
+            sx={{ bgcolor: 'primary.main', borderRadius: 2 }}
           >
             Nouvel épisode
           </Button>
@@ -481,7 +481,7 @@ export default function AdminAnimeSeriesPage() {
           <Button
             variant="contained"
             onClick={handleSaveEpisode}
-            sx={{ bgcolor: '#dc2626' }}
+            sx={{ bgcolor: 'primary.main' }}
           >
             {editEpId ? 'Enregistrer' : 'Créer'}
           </Button>
@@ -583,7 +583,7 @@ export default function AdminAnimeSeriesPage() {
           <Button
             variant="contained"
             onClick={handleSaveSource}
-            sx={{ bgcolor: '#dc2626' }}
+            sx={{ bgcolor: 'primary.main' }}
           >
             {editSourceId ? 'Enregistrer' : 'Créer'}
           </Button>
@@ -619,7 +619,7 @@ export default function AdminAnimeSeriesPage() {
           <Button
             variant="contained"
             onClick={handleBulkImport}
-            sx={{ bgcolor: '#dc2626' }}
+            sx={{ bgcolor: 'primary.main' }}
           >
             Importer
           </Button>

@@ -6,7 +6,7 @@ import { resolve } from 'path';
 puppeteer.use(StealthPlugin());
 
 async function deepScrape() {
-    const cookiePath = resolve(process.cwd(), 'challonge_cookie.json');
+    const cookiePath = resolve(process.cwd(), 'storage/cookies/challonge_cookie.json');
     let cookies = [];
     try {
         const raw = JSON.parse(readFileSync(cookiePath, 'utf-8'));

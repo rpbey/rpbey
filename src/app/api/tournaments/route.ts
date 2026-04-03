@@ -3,10 +3,9 @@
  * Complete CRUD for tournaments with Challonge sync
  */
 
-import { headers } from 'next/headers';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
+import { requireAdmin, requireStaff } from '@/lib/auth-utils';
 import { getChallongeService } from '@/lib/challonge';
 import { prisma } from '@/lib/prisma';
 
@@ -70,14 +69,7 @@ export async function GET(request: NextRequest) {
 // POST - Create tournament
 export async function POST(request: NextRequest) {
   try {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
-
-    if (
-      !session?.user ||
-      (session.user.role !== 'admin' && session.user.role !== 'moderator')
-    ) {
+    if (!(await requireStaff())) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -160,11 +152,7 @@ export async function POST(request: NextRequest) {
 // DELETE - Delete fake tournaments (admin only)
 export async function DELETE(request: NextRequest) {
   try {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
-
-    if (!session?.user || session.user.role !== 'admin') {
+    if (!(await requireAdmin())) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 

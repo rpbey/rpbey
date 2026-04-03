@@ -165,14 +165,16 @@ export function AnimeCarousel({ generation, series }: AnimeCarouselProps) {
               zIndex: 10,
               width: 40,
               height: 40,
-              bgcolor: 'rgba(20,20,20,0.85)',
+              bgcolor:
+                'color-mix(in srgb, var(--rpb-surface-main) 85%, transparent)',
               backdropFilter: 'blur(8px)',
               color: 'white',
               border: '1px solid rgba(255,255,255,0.1)',
               opacity: { xs: 0.8, md: 0 },
               transition: 'all 0.2s',
               '&:hover': {
-                bgcolor: 'rgba(40,40,40,0.95)',
+                bgcolor:
+                  'color-mix(in srgb, var(--rpb-surface-high) 95%, transparent)',
                 transform: 'translateY(-50%) scale(1.1)',
               },
             }}
@@ -194,14 +196,16 @@ export function AnimeCarousel({ generation, series }: AnimeCarouselProps) {
               zIndex: 10,
               width: 40,
               height: 40,
-              bgcolor: 'rgba(20,20,20,0.85)',
+              bgcolor:
+                'color-mix(in srgb, var(--rpb-surface-main) 85%, transparent)',
               backdropFilter: 'blur(8px)',
               color: 'white',
               border: '1px solid rgba(255,255,255,0.1)',
               opacity: { xs: 0.8, md: 0 },
               transition: 'all 0.2s',
               '&:hover': {
-                bgcolor: 'rgba(40,40,40,0.95)',
+                bgcolor:
+                  'color-mix(in srgb, var(--rpb-surface-high) 95%, transparent)',
                 transform: 'translateY(-50%) scale(1.1)',
               },
             }}

@@ -6,7 +6,10 @@ import puppeteerExtra from 'puppeteer-extra';
 import StealthPlugin from 'puppeteer-extra-plugin-stealth';
 
 (puppeteerExtra as any).use(StealthPlugin());
-const DEFAULT_COOKIE_PATH = resolve(process.cwd(), 'challonge_cookie.json');
+const DEFAULT_COOKIE_PATH = resolve(
+  process.cwd(),
+  'storage/cookies/challonge_cookie.json',
+);
 
 export interface ScrapedStanding {
   rank: number;

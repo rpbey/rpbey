@@ -1,6 +1,5 @@
-import { headers } from 'next/headers';
 import { NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
+import { requireAdmin } from '@/lib/auth-utils';
 import { generateTournamentExport } from '@/lib/csv-export';
 import { prisma } from '@/lib/prisma';
 
@@ -9,8 +8,7 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const session = await auth.api.getSession({ headers: await headers() });
-    if (session?.user?.role !== 'admin') {
+    if (!(await requireAdmin())) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 

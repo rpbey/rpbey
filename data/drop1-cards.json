@@ -18,7 +18,7 @@
       "specialMove": "Tempête du Dragon",
       "pngRarity": "COMMON",
       "artistRarity": "SUPER_RARE",
-      "stats": { "atk": 95, "def": 65, "spd": 88, "hp": 580 },
+      "stats": { "att": 95, "def": 65, "end": 88, "equilibre": 580 },
       "description": "Le champion du monde de Beyblade. Son esprit combatif et son lien avec Dragoon sont sans egaux."
     },
     {
@@ -31,7 +31,7 @@
       "specialMove": "Lame Ardente du Phenix",
       "pngRarity": "COMMON",
       "artistRarity": "SUPER_RARE",
-      "stats": { "atk": 110, "def": 70, "spd": 92, "hp": 540 },
+      "stats": { "att": 110, "def": 70, "end": 92, "equilibre": 540 },
       "description": "Le rival solitaire. Maitre du phenix Dranzer, sa puissance de feu est devastatrice."
     },
     {
@@ -44,7 +44,7 @@
       "specialMove": "Griffe du Tigre Blanc",
       "pngRarity": "COMMON",
       "artistRarity": "RARE",
-      "stats": { "atk": 78, "def": 60, "spd": 98, "hp": 480 },
+      "stats": { "att": 78, "def": 60, "end": 98, "equilibre": 480 },
       "description": "Le tigre blanc du village Bai Hu. Sa vitesse et sa precision sont legendaires."
     },
     {
@@ -57,7 +57,7 @@
       "specialMove": "Forteresse Aquatique",
       "pngRarity": "COMMON",
       "artistRarity": "RARE",
-      "stats": { "atk": 55, "def": 120, "spd": 50, "hp": 650 },
+      "stats": { "att": 55, "def": 120, "end": 50, "equilibre": 650 },
       "description": "Le defenseur supreme. Son Draciel est une forteresse impenetrable."
     },
     {
@@ -70,7 +70,7 @@
       "specialMove": "Starblast Attack",
       "pngRarity": "COMMON",
       "artistRarity": "LEGENDARY",
-      "stats": { "atk": 130, "def": 75, "spd": 125, "hp": 700 },
+      "stats": { "att": 130, "def": 75, "end": 125, "equilibre": 700 },
       "description": "Le blader legendaire de Metal Fight. Pegasus et lui ne font qu'un, portant l'esprit du Beyblade."
     },
     {
@@ -83,7 +83,7 @@
       "specialMove": "Crocs du Lion Sauvage",
       "pngRarity": "COMMON",
       "artistRarity": "SUPER_RARE",
-      "stats": { "atk": 105, "def": 85, "spd": 80, "hp": 600 },
+      "stats": { "att": 105, "def": 85, "end": 80, "equilibre": 600 },
       "description": "Le lion solitaire. Sa feroce determination et Leone font trembler tous les stadiums."
     },
     {
@@ -96,7 +96,7 @@
       "specialMove": "Fleche Enflammee",
       "pngRarity": "COMMON",
       "artistRarity": "RARE",
-      "stats": { "atk": 65, "def": 70, "spd": 75, "hp": 520 },
+      "stats": { "att": 65, "def": 70, "end": 75, "equilibre": 520 },
       "description": "Le jeune archer au coeur pur. Sa tenacite compense sa petite taille."
     },
     {
@@ -109,7 +109,7 @@
       "specialMove": "Plongeon de l'Aigle Royal",
       "pngRarity": "COMMON",
       "artistRarity": "RARE",
-      "stats": { "atk": 72, "def": 88, "spd": 95, "hp": 550 },
+      "stats": { "att": 72, "def": 88, "end": 95, "equilibre": 550 },
       "description": "L'agent secret devenu allie. Eagle vole haut et frappe avec precision."
     },
     {
@@ -122,7 +122,7 @@
       "specialMove": "Rush Shoot",
       "pngRarity": "COMMON",
       "artistRarity": "SUPER_RARE",
-      "stats": { "atk": 100, "def": 60, "spd": 105, "hp": 560 },
+      "stats": { "att": 100, "def": 60, "end": 105, "equilibre": 560 },
       "description": "L'enthousiaste numero 1 du Beyblade Burst. Son energie est contagieuse et Valtryek la canalise."
     },
     {
@@ -135,7 +135,7 @@
       "specialMove": "Requiem Slash",
       "pngRarity": "COMMON",
       "artistRarity": "RARE",
-      "stats": { "atk": 90, "def": 80, "spd": 85, "hp": 570 },
+      "stats": { "att": 90, "def": 80, "end": 85, "equilibre": 570 },
       "description": "Le prodige dechire entre lumiere et tenebres. Spryzen tourne dans les deux sens, comme son destin."
     },
     {
@@ -148,7 +148,7 @@
       "specialMove": "Charge du Taureau",
       "pngRarity": "COMMON",
       "artistRarity": "RARE",
-      "stats": { "atk": 85, "def": 75, "spd": 60, "hp": 530 },
+      "stats": { "att": 85, "def": 75, "end": 60, "equilibre": 530 },
       "description": "Le gros mangeur au grand coeur. Roktavor fonce comme un taureau enrage."
     },
     {
@@ -161,7 +161,7 @@
       "specialMove": "Garde du Chien des Enfers",
       "pngRarity": "COMMON",
       "artistRarity": "RARE",
-      "stats": { "atk": 55, "def": 110, "spd": 55, "hp": 620 },
+      "stats": { "att": 55, "def": 110, "end": 55, "equilibre": 620 },
       "description": "Le ventriloque et son fidele Kerbeus. Sa defense est aussi tenace que sa loyaute."
     },
     {
@@ -174,7 +174,7 @@
       "specialMove": "X-treme Dash",
       "pngRarity": "COMMON",
       "artistRarity": "LEGENDARY",
-      "stats": { "atk": 135, "def": 80, "spd": 130, "hp": 720 },
+      "stats": { "att": 135, "def": 80, "end": 130, "equilibre": 720 },
       "description": "Le heros de la generation X. Avec Dran Sword, il repousse les limites de l'Xtreme."
     },
     {
@@ -187,7 +187,7 @@
       "specialMove": "Flamme Celeste",
       "pngRarity": "COMMON",
       "artistRarity": "RARE",
-      "stats": { "atk": 80, "def": 65, "spd": 100, "hp": 500 },
+      "stats": { "att": 80, "def": 65, "end": 100, "equilibre": 500 },
       "description": "Le blader mysterieux au phenix de feu. Son style aerien defie la gravite."
     },
     {
@@ -200,7 +200,7 @@
       "specialMove": "Chaine des Tenebres",
       "pngRarity": "COMMON",
       "artistRarity": "RARE",
-      "stats": { "atk": 70, "def": 95, "spd": 72, "hp": 560 },
+      "stats": { "att": 70, "def": 95, "end": 72, "equilibre": 560 },
       "description": "Le visage mignon cache une force redoutable. Hells Chain emprisonne ses adversaires."
     },
     {
@@ -213,7 +213,7 @@
       "specialMove": "Faux de l'Ombre Elegante",
       "pngRarity": "COMMON",
       "artistRarity": "RARE",
-      "stats": { "atk": 88, "def": 68, "spd": 90, "hp": 510 },
+      "stats": { "att": 88, "def": 68, "end": 90, "equilibre": 510 },
       "description": "L'autre facette de Multi, froide et calculatrice. Hells Scythe tranche sans pitie."
     }
   ],
