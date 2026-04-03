@@ -149,6 +149,70 @@ La version Hasbro laisse tous ses sprites, textures et modeles 3D en clair.
 
 ## 5. Resume comparatif des 3 plateformes
 
+## 6. Assets extraits du bundle Customize (VFX)
+
+Les bundles Takara sont chiffres mais on a reussi a extraire 56 assets via UnityPy.
+
+### Textures VFX de customisation (effets de combat/toupies)
+
+| Asset                    | Description                                               |
+| ------------------------ | --------------------------------------------------------- |
+| `Tex_fx_slash_set.png`   | **Sprite sheet VFX** — 30+ effets : flammes orange/jaune, eclairs cyan, explosions, energy bursts, trainées. C'est la reference visuelle principale. |
+| `Electric_sheet.png`     | 4 variantes de lignes electriques (EKG-like) pour effets d'energie |
+| `Crack_circle_01.png`    | Cercle de fissures/eclairs — effet d'impact au sol d'arene |
+| `Ring.png`               | Halo lumineux circulaire — aura de toupie                 |
+| `Trail.png`              | Trainee en forme de goutte — trail de mouvement           |
+| `Caustic_noise_01.png`   | Texture caustic (reflets d'eau/metal) — overlay de surface |
+| `1_noise_2.png`          | Bruit perlin — distorsion d'effets                        |
+| `Mask_06.png`            | Masque alpha pour effets de particules                    |
+
+### Rendus de toupies (systeme produit Takara)
+
+| Asset                    | Description                                               |
+| ------------------------ | --------------------------------------------------------- |
+| `BL-PRD-910381-00.png`  | Render complet d'une toupie assemblee (blade)              |
+| `RC-PRD-910381-00.png`  | Render du ratchet correspondant                           |
+| `BT-PRD-910381-00.png`  | Render du bit correspondant                               |
+| `Mob_[A-D]_Blade.png`   | 4 silhouettes generiques de blades (adversaires NPC)      |
+| `Mob_[A-D]_Ratchet.png` | 4 silhouettes generiques de ratchets                      |
+| `Mob_[A-D]_Bit.png`     | 4 silhouettes generiques de bits                          |
+
+> Le format `PRD-XXXXXX` correspond au code produit Takara Tomy interne.
+
+### Bundles par taille et contenu
+
+| Bundle                   | Objets  | Contenu principal                                        |
+| ------------------------ | ------- | -------------------------------------------------------- |
+| `massprotimelines`       | 31 515  | 28 844 MonoBehaviours + 1 396 AnimationClips = timelines de production animees |
+| `beyblades_prefabs`      | 13 686  | 4 379 GameObjects + 2 249 SkinnedMeshRenderers = modeles 3D de toutes les toupies |
+| `beyblades_customize`    | 228     | 32 textures + 24 sprites + 30 ParticleSystems = VFX de customisation |
+| `rarebeygetbattlevideos` | 38      | **37 VideoClips** = videos de "Rare Bey Get" (ouverture de toupies rares) |
+| `bgms`                   | 8       | Musiques de fond                                         |
+| `ses`                    | 59      | Effets sonores                                           |
+| `fonts`                  | 87      | Polices (dont probablement la typo japonaise custom)     |
+
+### Palette VFX Takara (extraite de `Tex_fx_slash_set.png`)
+
+La sprite sheet VFX revele la palette d'effets Takara :
+- **Orange vif** `~#ff8800` — flammes, explosions principales
+- **Jaune intense** `~#ffcc00` — coeurs d'explosion, energie
+- **Cyan/vert** `~#00ff88` — eclairs, effets electriques
+- **Rouge profond** `~#cc2200` — base des flammes
+- **Bleu electrique** `~#0044ff` — spheres d'energie
+- **Noir pur** — fond (ces textures sont additives en rendu)
+
+> **Observation** : La palette Takara (orange/jaune/rouge) est tres proche de nos couleurs RPB (#ce0c07/#e68002/#f7d301). C'est une validation naturelle de notre choix de palette.
+
+### Design system icon Takara
+
+L'icone de l'app revele le design language :
+- **Fond blanc** avec logo B noir bold
+- **Speed lines diagonales** vert lime + cyan en arriere-plan
+- Traits **angulaires et tranchants** (pas de rondeur)
+- Le "X" de Beyblade X est integre dans le branding
+
+---
+
 | Feature              | Hasbro App      | Takara App      | RPB Dashboard       |
 | -------------------- | --------------- | --------------- | ------------------- |
 | Type                 | App Unity       | App Unity       | **Web app Next.js** |
