@@ -3876,7 +3876,7 @@ export async function generateGachaMissCard(
   return canvas.toBuffer('image/png');
 }
 
-// ─── Multi-Pull Canvas (v3 — TCG Layout) ────────────────────────────────────
+// ─── Multi-Pull Canvas (v4 — RPB Dark Arena) ────────────────────────────────
 
 export interface MultiPullSlot {
   rarity: string | null; // null = miss
@@ -3898,333 +3898,495 @@ export async function generateMultiPullCard(
 ): Promise<Buffer> {
   const COLS = 5;
   const ROWS = 2;
-  const CARD_W = 190;
-  const CARD_H = 270;
-  const GAP = 12;
-  const PAD = 28;
-  const HEADER = 76;
-  const FOOTER = 56;
+  const CARD_W = 200;
+  const CARD_H = 280;
+  const GAP = 14;
+  const PAD = 32;
+  const HEADER = 92;
+  const FOOTER = 76;
   const W = PAD * 2 + COLS * CARD_W + (COLS - 1) * GAP;
   const H = HEADER + ROWS * CARD_H + (ROWS - 1) * GAP + FOOTER + PAD;
   const canvas = createCanvas(W, H);
   const ctx = canvas.getContext('2d');
 
-  // ── TCG table background (dark felt green) ──
-  const bgGrad = ctx.createLinearGradient(0, 0, W * 0.3, H);
-  bgGrad.addColorStop(0, '#0f1a14');
-  bgGrad.addColorStop(0.5, '#0c1610');
-  bgGrad.addColorStop(1, '#08100c');
-  ctx.fillStyle = bgGrad;
+  // ── Load VFX assets ──
+  const [arenaOverlay, crackVfx] = await Promise.all([
+    safeLoadImage(getAssetPath('bot/assets/backgrounds/arena.png')),
+    safeLoadImage(getAssetPath('bot/assets/vfx/crack-circle.png')),
+  ]);
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // BACKGROUND — dark warm arena with energy
+  // ══════════════════════════════════════════════════════════════════════════
+  ctx.fillStyle = '#111010';
   ctx.fillRect(0, 0, W, H);
 
-  // Subtle radial light
-  const radGrad = ctx.createRadialGradient(
+  // Arena hex grid overlay
+  if (arenaOverlay) {
+    ctx.globalAlpha = 0.06;
+    ctx.drawImage(arenaOverlay, 0, 0, W, H);
+    ctx.globalAlpha = 1;
+  }
+
+  // Center energy glow (RPB red→orange→yellow)
+  const cGlow = ctx.createRadialGradient(
     W / 2,
     H / 2,
-    50,
+    0,
     W / 2,
     H / 2,
-    W * 0.55,
+    W * 0.5,
   );
-  radGrad.addColorStop(0, 'rgba(251,191,36,0.04)');
-  radGrad.addColorStop(1, 'rgba(0,0,0,0)');
-  ctx.fillStyle = radGrad;
+  cGlow.addColorStop(0, 'rgba(206,12,7,0.08)');
+  cGlow.addColorStop(0.3, 'rgba(230,128,2,0.04)');
+  cGlow.addColorStop(0.6, 'rgba(247,211,1,0.02)');
+  cGlow.addColorStop(1, 'transparent');
+  ctx.fillStyle = cGlow;
   ctx.fillRect(0, 0, W, H);
 
-  drawNoise(ctx, W, H, 0.015);
+  // Diagonal speed lines
+  ctx.save();
+  ctx.globalAlpha = 0.018;
+  ctx.strokeStyle = '#ce0c07';
+  ctx.lineWidth = 1;
+  for (let i = -H; i < W + H; i += 28) {
+    ctx.beginPath();
+    ctx.moveTo(i, 0);
+    ctx.lineTo(i + H * 0.5, H);
+    ctx.stroke();
+  }
+  ctx.restore();
 
-  // Gold border frame
-  const borderG = ctx.createLinearGradient(0, 0, W, H);
-  borderG.addColorStop(0, 'rgba(180,83,9,0.4)');
-  borderG.addColorStop(0.5, 'rgba(251,191,36,0.3)');
-  borderG.addColorStop(1, 'rgba(180,83,9,0.4)');
-  ctx.strokeStyle = borderG;
+  // Crack circle VFX overlay (subtle impact feel behind the grid)
+  if (crackVfx) {
+    ctx.globalAlpha = 0.035;
+    const ccS = Math.min(W, H) * 0.8;
+    ctx.drawImage(crackVfx, (W - ccS) / 2, (H - ccS) / 2, ccS, ccS);
+    ctx.globalAlpha = 1;
+  }
+
+  drawNoise(ctx, W, H, 0.01);
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // OUTER FRAME — RPB gradient border
+  // ══════════════════════════════════════════════════════════════════════════
+  const brdG = ctx.createLinearGradient(0, 0, W, H);
+  brdG.addColorStop(0, 'rgba(206,12,7,0.35)');
+  brdG.addColorStop(0.5, 'rgba(230,128,2,0.25)');
+  brdG.addColorStop(1, 'rgba(247,211,1,0.35)');
+  ctx.strokeStyle = brdG;
   ctx.lineWidth = 3;
   ctx.beginPath();
   ctx.roundRect(6, 6, W - 12, H - 12, 16);
   ctx.stroke();
 
-  // Header
-  ctx.font = 'bold 30px GoogleSans';
-  ctx.fillStyle = '#fbbf24';
+  // ══════════════════════════════════════════════════════════════════════════
+  // HEADER — RPB gradient title + pull count badge
+  // ══════════════════════════════════════════════════════════════════════════
   ctx.textAlign = 'center';
-  ctx.shadowColor = 'rgba(251,191,36,0.25)';
-  ctx.shadowBlur = 10;
-  ctx.fillText('MULTI-PULL  \u00d710', W / 2, 48);
-  ctx.shadowBlur = 0;
+  ctx.font = _FONT('bold', 34);
+  const tGrad = ctx.createLinearGradient(W / 2 - 160, 0, W / 2 + 160, 0);
+  tGrad.addColorStop(0, '#ce0c07');
+  tGrad.addColorStop(0.5, '#e68002');
+  tGrad.addColorStop(1, '#f7d301');
+  ctx.fillStyle = tGrad;
+  ctx.save();
+  ctx.shadowColor = 'rgba(230,128,2,0.3)';
+  ctx.shadowBlur = 15;
+  ctx.fillText('MULTI-PULL', W / 2 - 40, 52);
+  ctx.restore();
+
+  // ×10 pill badge
+  ctx.font = _FONT('bold', 20);
+  const bText = `\u00d7${data.slots.length}`;
+  const bW = ctx.measureText(bText).width + 24;
+  const bX = W / 2 + 80;
+  ctx.fillStyle = '#ce0c07';
+  ctx.beginPath();
+  ctx.roundRect(bX, 34, bW, 28, 14);
+  ctx.fill();
+  ctx.fillStyle = '#ffffff';
+  ctx.font = _FONT('bold', 17);
+  ctx.fillText(bText, bX + bW / 2, 53);
 
   // Subtitle
-  ctx.font = 'bold 12px GoogleSans';
-  ctx.fillStyle = '#6b5e50';
-  ctx.fillText('RPB TCG \u2022 Drop 1', W / 2, 66);
+  ctx.font = _FONT('bold', 13);
+  ctx.fillStyle = '#64748b';
+  ctx.fillText('RPB TCG \u2022 Drop 1', W / 2, 78);
 
-  drawSeparator(ctx, PAD, HEADER - 4, W - PAD * 2, '#b45309');
+  // Header separator (RPB gradient)
+  const hSep = ctx.createLinearGradient(PAD, 0, W - PAD, 0);
+  hSep.addColorStop(0, 'rgba(206,12,7,0)');
+  hSep.addColorStop(0.15, 'rgba(206,12,7,0.4)');
+  hSep.addColorStop(0.5, 'rgba(230,128,2,0.5)');
+  hSep.addColorStop(0.85, 'rgba(247,211,1,0.4)');
+  hSep.addColorStop(1, 'rgba(247,211,1,0)');
+  ctx.strokeStyle = hSep;
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(PAD, HEADER - 4);
+  ctx.lineTo(W - PAD, HEADER - 4);
+  ctx.stroke();
 
-  // ── Draw 10 mini TCG cards ──
+  // ══════════════════════════════════════════════════════════════════════════
+  // CARD GRID — 10 mini TCG cards (5×2)
+  // ══════════════════════════════════════════════════════════════════════════
   for (let i = 0; i < data.slots.length; i++) {
     const slot = data.slots[i]!;
     const col = i % COLS;
     const row = Math.floor(i / COLS);
     const x = PAD + col * (CARD_W + GAP);
     const y = HEADER + row * (CARD_H + GAP);
-    const FR = 4; // mini frame
+    const FR = 4;
 
     if (!slot.rarity) {
-      // ── MISS — greyed out TCG card ──
-      // Parchment bg
-      drawBox(ctx, x, y, CARD_W, CARD_H, 8, '#2a2a28', '#4b4b4840', 1.5);
+      // ── MISS — dark empty card with ghosted X ──
+      drawBox(ctx, x, y, CARD_W, CARD_H, 10, '#1a1818', '#2d292940', 1.5);
 
       // Faded X watermark
       ctx.save();
-      ctx.globalAlpha = 0.06;
-      ctx.font = 'bold 90px GoogleSans';
-      ctx.fillStyle = '#888888';
+      ctx.globalAlpha = 0.04;
+      ctx.font = _FONT('bold', 100);
+      ctx.fillStyle = '#a89999';
       ctx.textAlign = 'center';
-      ctx.fillText('\u2715', x + CARD_W / 2, y + CARD_H / 2 + 20);
+      ctx.fillText('\u2715', x + CARD_W / 2, y + CARD_H / 2 + 30);
       ctx.restore();
 
-      // Grey header bar
+      // Dark header bar
       drawBox(
         ctx,
         x + FR,
         y + FR,
         CARD_W - FR * 2,
-        22,
-        [6, 6, 0, 0],
-        '#3a3a38',
+        24,
+        [7, 7, 0, 0],
+        '#252222',
       );
-      ctx.font = 'bold 11px GoogleSans';
-      ctx.fillStyle = '#6b7280';
+      ctx.font = _FONT('bold', 11);
+      ctx.fillStyle = '#433d3d';
       ctx.textAlign = 'center';
-      ctx.fillText('BURST OUT', x + CARD_W / 2, y + FR + 16);
+      ctx.fillText('BURST OUT', x + CARD_W / 2, y + FR + 17);
 
       // Bottom label
-      ctx.font = 'bold 13px GoogleSans';
-      ctx.fillStyle = '#4b5563';
+      ctx.font = _FONT('bold', 13);
+      ctx.fillStyle = '#383333';
       ctx.fillText('RAT\u00c9', x + CARD_W / 2, y + CARD_H - 16);
     } else {
       // ── Card drop — mini TCG card ──
       const t = RARITY_THEMES[slot.rarity] || RARITY_THEMES.COMMON!;
-
-      // Card parchment background
-      const cardGrad = ctx.createLinearGradient(
-        x,
-        y,
-        x + CARD_W * 0.3,
-        y + CARD_H,
+      const isHigh = ['SUPER_RARE', 'LEGENDARY', 'SECRET'].includes(
+        slot.rarity,
       );
-      cardGrad.addColorStop(0, t.bgGradient[0]);
-      cardGrad.addColorStop(0.5, t.bgGradient[1]);
-      cardGrad.addColorStop(1, t.bgGradient[2]);
-      ctx.fillStyle = cardGrad;
+      const isTop = slot.rarity === 'LEGENDARY' || slot.rarity === 'SECRET';
+
+      // Card background (dark themed from rarity)
+      const cG = ctx.createLinearGradient(x, y, x + CARD_W * 0.3, y + CARD_H);
+      cG.addColorStop(0, t.bgGradient[0]);
+      cG.addColorStop(0.5, t.bgGradient[1]);
+      cG.addColorStop(1, t.bgGradient[2]);
+      ctx.fillStyle = cG;
       ctx.beginPath();
-      ctx.roundRect(x, y, CARD_W, CARD_H, 8);
+      ctx.roundRect(x, y, CARD_W, CARD_H, 10);
       ctx.fill();
 
-      // Rarity border frame with glow
+      // Rarity border with glow
+      ctx.save();
       ctx.shadowColor = t.glowColor;
-      ctx.shadowBlur =
-        slot.rarity === 'SECRET' || slot.rarity === 'LEGENDARY' ? 16 : 6;
-      const bGrad = ctx.createLinearGradient(x, y, x + CARD_W, y + CARD_H);
-      bGrad.addColorStop(0, t.borderGradient[0]);
-      bGrad.addColorStop(0.5, t.borderGradient[1]);
-      bGrad.addColorStop(1, t.borderGradient[2]);
-      ctx.strokeStyle = bGrad;
-      ctx.lineWidth = FR;
+      ctx.shadowBlur = isTop ? 20 : isHigh ? 10 : 0;
+      const rbG = ctx.createLinearGradient(x, y, x + CARD_W, y + CARD_H);
+      rbG.addColorStop(0, t.borderGradient[0]);
+      rbG.addColorStop(0.5, t.borderGradient[1]);
+      rbG.addColorStop(1, t.borderGradient[2]);
+      ctx.strokeStyle = rbG;
+      ctx.lineWidth = isTop ? 3.5 : FR;
       ctx.beginPath();
-      ctx.roundRect(x + FR / 2, y + FR / 2, CARD_W - FR, CARD_H - FR, 7);
+      ctx.roundRect(x + FR / 2, y + FR / 2, CARD_W - FR, CARD_H - FR, 9);
       ctx.stroke();
-      ctx.shadowBlur = 0;
+      ctx.restore();
 
-      // Name header bar (dark, like TCG)
-      const hdrH = 26;
+      // Name header bar
+      const hH = 28;
       ctx.fillStyle = t.headerBg;
       ctx.beginPath();
-      ctx.roundRect(x + FR, y + FR, CARD_W - FR * 2, hdrH, [5, 5, 0, 0]);
+      ctx.roundRect(x + FR, y + FR, CARD_W - FR * 2, hH, [7, 7, 0, 0]);
       ctx.fill();
 
-      // Card name in header
-      ctx.font = 'bold 12px GoogleSans';
-      ctx.fillStyle = '#ffffff';
+      // Card name (left)
+      ctx.font = _FONT('bold', 13);
+      ctx.fillStyle = '#f5f0f0';
       ctx.textAlign = 'left';
-      let name = slot.name || '???';
-      if (ctx.measureText(name).width > CARD_W - 30)
-        name = `${name.substring(0, 13)}\u2026`;
-      ctx.fillText(name, x + FR + 8, y + FR + 18);
+      let nm = slot.name || '???';
+      const maxNm = CARD_W - 54;
+      if (ctx.measureText(nm).width > maxNm)
+        nm = `${nm.substring(0, 14)}\u2026`;
+      ctx.fillText(nm, x + FR + 10, y + FR + 19);
 
-      // Rarity stars (right of header)
+      // Rarity stars (right)
       ctx.textAlign = 'right';
-      ctx.font = '10px GoogleSans';
+      ctx.font = _FONT('bold', 10);
       ctx.fillStyle = t.accentColor;
-      ctx.fillText('\u2605'.repeat(t.stars), x + CARD_W - FR - 6, y + FR + 17);
+      ctx.fillText('\u2605'.repeat(t.stars), x + CARD_W - FR - 8, y + FR + 19);
 
-      // Art window
-      const imgY2 = y + FR + hdrH + 3;
-      const imgH2 = 150;
+      // Art window (dark inner)
+      const imgY = y + FR + hH + 4;
+      const imgH = 155;
+      const imgX = x + FR + 4;
+      const imgW = CARD_W - FR * 2 - 8;
       drawBox(
         ctx,
-        x + FR + 3,
-        imgY2,
-        CARD_W - FR * 2 - 6,
-        imgH2,
-        3,
-        '#0a0a12',
-        `${t.frameColor}40`,
+        imgX,
+        imgY,
+        imgW,
+        imgH,
+        4,
+        '#0a0a0c',
+        `${t.frameColor}30`,
         1.5,
       );
 
+      // Radial spotlight for high rarity
+      if (isHigh) {
+        const sp = ctx.createRadialGradient(
+          x + CARD_W / 2,
+          imgY + imgH * 0.4,
+          5,
+          x + CARD_W / 2,
+          imgY + imgH * 0.4,
+          imgH * 0.6,
+        );
+        sp.addColorStop(0, `${t.borderColor}15`);
+        sp.addColorStop(1, 'transparent');
+        ctx.fillStyle = sp;
+        ctx.save();
+        ctx.beginPath();
+        ctx.roundRect(imgX + 1, imgY + 1, imgW - 2, imgH - 2, 3);
+        ctx.clip();
+        ctx.fillRect(imgX, imgY, imgW, imgH);
+        ctx.restore();
+      }
+
+      // Character image
       if (slot.imageUrl) {
         const img = await _loadImageNoWhiteBg(slot.imageUrl);
         if (img) {
           ctx.save();
           ctx.beginPath();
-          ctx.roundRect(
-            x + FR + 4,
-            imgY2 + 1,
-            CARD_W - FR * 2 - 8,
-            imgH2 - 2,
-            2,
-          );
+          ctx.roundRect(imgX + 1, imgY + 1, imgW - 2, imgH - 2, 3);
           ctx.clip();
-          const aspect = img.width / img.height;
-          let dw = CARD_W - FR * 2 - 8,
-            dh = imgH2 - 2;
-          if (aspect > dw / dh) dh = dw / aspect;
-          else dw = dh * aspect;
+          const asp = img.width / img.height;
+          let dw = imgW - 2,
+            dh = imgH - 2;
+          if (asp > dw / dh) dh = dw / asp;
+          else dw = dh * asp;
           ctx.drawImage(
             img,
-            x + FR + 4 + (CARD_W - FR * 2 - 8 - dw) / 2,
-            imgY2 + 1 + (imgH2 - 2 - dh) / 2,
+            imgX + 1 + (imgW - 2 - dw) / 2,
+            imgY + 1 + (imgH - 2 - dh) / 2,
             dw,
             dh,
           );
           // Bottom vignette
-          const vig = ctx.createLinearGradient(0, imgY2, 0, imgY2 + imgH2);
+          const vig = ctx.createLinearGradient(0, imgY, 0, imgY + imgH);
           vig.addColorStop(0, 'rgba(0,0,0,0)');
-          vig.addColorStop(0.8, 'rgba(0,0,0,0)');
-          vig.addColorStop(1, 'rgba(0,0,0,0.5)');
+          vig.addColorStop(0.75, 'rgba(0,0,0,0)');
+          vig.addColorStop(1, 'rgba(0,0,0,0.55)');
           ctx.fillStyle = vig;
-          ctx.fillRect(x + FR + 4, imgY2, CARD_W - FR * 2 - 8, imgH2);
+          ctx.fillRect(imgX, imgY, imgW, imgH);
           ctx.restore();
         }
       }
 
+      // Holo foil for high rarity
+      if (isHigh) {
+        drawHoloFoil(ctx, imgX, imgY, imgW, imgH, isTop ? 0.18 : 0.1);
+      }
+
+      // Inner art frame highlight
+      if (isHigh) {
+        const ifG = ctx.createLinearGradient(
+          imgX,
+          imgY,
+          imgX + imgW,
+          imgY + imgH,
+        );
+        ifG.addColorStop(0, `${t.borderColor}50`);
+        ifG.addColorStop(0.3, `${t.borderColor}10`);
+        ifG.addColorStop(0.7, `${t.borderColor}10`);
+        ifG.addColorStop(1, `${t.borderColor}50`);
+        ctx.strokeStyle = ifG;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.roundRect(imgX, imgY, imgW, imgH, 4);
+        ctx.stroke();
+      }
+
       // Rarity label below art
-      const labelY2 = imgY2 + imgH2 + 6;
-      ctx.font = 'bold 10px GoogleSans';
+      const lbY = imgY + imgH + 8;
+      ctx.font = _FONT('bold', 10);
       ctx.fillStyle = t.borderColor;
       ctx.textAlign = 'center';
-      ctx.fillText(t.label, x + CARD_W / 2, labelY2 + 4);
+      ctx.fillText(t.label, x + CARD_W / 2, lbY + 4);
 
-      // Status badge (WISHED / DOUBLON)
-      const statusY2 = labelY2 + 18;
+      // Status badges (WISHED / DOUBLON)
+      const stY = lbY + 16;
       if (slot.isWished) {
         drawBox(
           ctx,
-          x + CARD_W / 2 - 38,
-          statusY2,
-          76,
-          18,
-          9,
-          '#fbbf2420',
-          '#fbbf24',
+          x + CARD_W / 2 - 42,
+          stY,
+          84,
+          20,
+          10,
+          '#f7d30118',
+          '#f7d301',
           1,
         );
-        ctx.font = 'bold 10px GoogleSans';
-        ctx.fillStyle = '#b45309';
+        ctx.font = _FONT('bold', 10);
+        ctx.fillStyle = '#f7d301';
         ctx.textAlign = 'center';
-        ctx.fillText('WISHED', x + CARD_W / 2, statusY2 + 13);
+        ctx.fillText('\u2764 WISHED', x + CARD_W / 2, stY + 14);
       } else if (slot.isDuplicate) {
         drawBox(
           ctx,
-          x + CARD_W / 2 - 38,
-          statusY2,
-          76,
-          18,
-          9,
-          'rgba(107,114,128,0.12)',
-          '#9ca3af80',
+          x + CARD_W / 2 - 42,
+          stY,
+          84,
+          20,
+          10,
+          '#64748b12',
+          '#64748b',
           1,
         );
-        ctx.font = 'bold 10px GoogleSans';
-        ctx.fillStyle = '#6b7280';
+        ctx.font = _FONT('bold', 10);
+        ctx.fillStyle = '#64748b';
         ctx.textAlign = 'center';
-        ctx.fillText('DOUBLON', x + CARD_W / 2, statusY2 + 13);
+        ctx.fillText('DOUBLON', x + CARD_W / 2, stY + 14);
       }
 
-      // Bottom accent bar
-      const accentGrad = ctx.createLinearGradient(x, 0, x + CARD_W, 0);
-      accentGrad.addColorStop(0, `${t.borderColor}00`);
-      accentGrad.addColorStop(0.5, t.borderColor);
-      accentGrad.addColorStop(1, `${t.borderColor}00`);
-      ctx.fillStyle = accentGrad;
+      // Bottom accent line
+      const acG = ctx.createLinearGradient(x, 0, x + CARD_W, 0);
+      acG.addColorStop(0, `${t.borderColor}00`);
+      acG.addColorStop(0.5, t.borderColor);
+      acG.addColorStop(1, `${t.borderColor}00`);
+      ctx.fillStyle = acG;
       ctx.beginPath();
       ctx.roundRect(
-        x + FR + 4,
+        x + FR + 6,
         y + CARD_H - FR - 4,
-        CARD_W - FR * 2 - 8,
-        2.5,
+        CARD_W - FR * 2 - 12,
+        2,
         1,
       );
       ctx.fill();
 
-      // Sparkles for high rarity
-      if (slot.rarity === 'LEGENDARY' || slot.rarity === 'SECRET') {
-        for (let s = 0; s < 4; s++) {
+      // Sparkles for top rarity
+      if (isTop) {
+        for (let s = 0; s < 5; s++) {
           drawSparkle(
             ctx,
-            x + 12 + Math.random() * (CARD_W - 24),
-            y + 30 + Math.random() * (CARD_H - 55),
-            2 + Math.random() * 3,
+            x + 14 + Math.random() * (CARD_W - 28),
+            y + 35 + Math.random() * (CARD_H - 60),
+            2 + Math.random() * 3.5,
             t.accentColor,
-            0.3 + Math.random() * 0.35,
+            0.25 + Math.random() * 0.4,
           );
         }
       }
     }
   }
 
-  // ── Footer ──
-  const footY = H - FOOTER - 6;
-  drawSeparator(ctx, PAD, footY - 2, W - PAD * 2, '#b45309');
-  drawBox(
-    ctx,
-    PAD,
-    footY,
-    W - PAD * 2,
-    FOOTER,
-    [0, 0, 10, 10],
-    'rgba(0,0,0,0.2)',
-  );
+  // ══════════════════════════════════════════════════════════════════════════
+  // FOOTER — Stats summary + balance
+  // ══════════════════════════════════════════════════════════════════════════
+  const footY = H - FOOTER - PAD + 8;
 
-  ctx.font = 'bold 15px GoogleSans';
-  ctx.textAlign = 'left';
+  // Footer separator
+  const fSep = ctx.createLinearGradient(PAD, 0, W - PAD, 0);
+  fSep.addColorStop(0, 'rgba(206,12,7,0)');
+  fSep.addColorStop(0.3, 'rgba(206,12,7,0.3)');
+  fSep.addColorStop(0.5, 'rgba(230,128,2,0.4)');
+  fSep.addColorStop(0.7, 'rgba(247,211,1,0.3)');
+  fSep.addColorStop(1, 'rgba(247,211,1,0)');
+  ctx.strokeStyle = fSep;
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(PAD, footY);
+  ctx.lineTo(W - PAD, footY);
+  ctx.stroke();
+
+  // Footer surface
+  ctx.fillStyle = '#1a1818';
+  ctx.beginPath();
+  ctx.roundRect(PAD, footY + 4, W - PAD * 2, FOOTER - 8, [0, 0, 10, 10]);
+  ctx.fill();
+
+  // Hits count (green pill)
+  const hitsLabel = `${data.hitsCount} carte${data.hitsCount > 1 ? 's' : ''}`;
+  ctx.font = _FONT('bold', 15);
+  const hitsW = ctx.measureText(hitsLabel).width + 24;
+  ctx.fillStyle = '#22c55e18';
+  ctx.beginPath();
+  ctx.roundRect(PAD + 16, footY + 16, hitsW, 28, 14);
+  ctx.fill();
   ctx.fillStyle = '#22c55e';
-  ctx.fillText(`${data.hitsCount} cartes`, PAD + 20, footY + 24);
-  ctx.fillStyle = '#6b7280';
-  ctx.fillText(`${data.missCount} rat\u00e9s`, PAD + 140, footY + 24);
+  ctx.textAlign = 'left';
+  ctx.fillText(hitsLabel, PAD + 28, footY + 35);
 
+  // Miss count (muted pill)
+  const missLabel = `${data.missCount} rat\u00e9${data.missCount > 1 ? 's' : ''}`;
+  const missX = PAD + 16 + hitsW + 12;
+  const missW = ctx.measureText(missLabel).width + 24;
+  ctx.fillStyle = '#64748b12';
+  ctx.beginPath();
+  ctx.roundRect(missX, footY + 16, missW, 28, 14);
+  ctx.fill();
+  ctx.fillStyle = '#64748b';
+  ctx.fillText(missLabel, missX + 12, footY + 35);
+
+  // Best pull indicator
+  const bestRarity = data.slots
+    .filter((s) => s.rarity)
+    .sort((a, b) => {
+      const order = ['SECRET', 'LEGENDARY', 'SUPER_RARE', 'RARE', 'COMMON'];
+      return order.indexOf(a.rarity!) - order.indexOf(b.rarity!);
+    })[0];
+  if (bestRarity?.rarity) {
+    const bt = RARITY_THEMES[bestRarity.rarity];
+    if (bt) {
+      ctx.font = _FONT('bold', 12);
+      ctx.fillStyle = bt.borderColor;
+      ctx.textAlign = 'center';
+      ctx.fillText(`\u2728 Meilleur pull : ${bt.label}`, W / 2, footY + 58);
+    }
+  }
+
+  // Balance (right side)
   ctx.textAlign = 'right';
-  ctx.fillStyle = '#b4530990';
-  ctx.font = 'bold 14px GoogleSans';
+  ctx.font = _FONT('bold', 14);
+  ctx.fillStyle = '#a89999';
   ctx.fillText(
     `${data.balance.toLocaleString('fr-FR')} coins`,
     W - PAD - 20,
-    footY + 24,
+    footY + 30,
   );
 
-  ctx.textAlign = 'center';
-  ctx.font = '11px GoogleSans';
-  ctx.fillStyle = 'rgba(180,83,9,0.35)';
+  // Economy note
+  ctx.font = _FONT('', 11);
+  ctx.fillStyle = '#64748b40';
   ctx.fillText(
     '\u00c9conomie : 50 coins vs tirages individuels',
-    W / 2,
-    footY + 46,
+    W - PAD - 20,
+    footY + 50,
   );
+
+  // Bottom branding
+  ctx.textAlign = 'left';
+  ctx.font = _FONT('bold', 11);
+  ctx.fillStyle = '#a8999925';
+  ctx.fillText('RPB TCG', PAD + 16, footY + 66);
 
   return canvas.toBuffer('image/png');
 }
-
 // ─── Collection Canvas (v2 — HD) ────────────────────────────────────────────
 
 export interface CollectionCardData {
