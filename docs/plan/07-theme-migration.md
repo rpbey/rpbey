@@ -34,26 +34,29 @@
 --rpb-primary-on-container
 ```
 
-### Couleurs Red Theme
+### Couleurs Red Theme (NOUVELLES COULEURS)
 | Token             | Hex       | Usage                    |
 | ----------------- | --------- | ------------------------ |
-| primary           | #dc2626   | Boutons, liens, accents  |
-| secondary         | #fbbf24   | Or, badges, highlights   |
-| background        | #0f0f0f   | Fond principal           |
-| paper             | #1a1a1a   | Cartes, surfaces         |
-| text.primary      | #ffffff   | Texte principal          |
-| text.secondary    | #a0a0a0   | Texte secondaire         |
-| surface.lowest    | #121215   | Niveau le plus sombre    |
-| surface.low       | #1a1a1f   |                          |
-| surface.main      | #222228   |                          |
-| surface.high      | #2a2a32   |                          |
-| surface.highest   | #333340   | Niveau le plus clair     |
+| rpb-red           | #ce0c07   | Primary, CTAs            |
+| rpb-orange        | #e68002   | Secondary, highlights    |
+| rpb-yellow        | #f7d301   | Tertiary, or, rewards    |
+| background        | #141111   | Fond principal (pas de noir pur) |
+| surface-lowest    | #1d1b1b   | Surface de base          |
+| surface-low       | #252222   | Cards, panels            |
+| surface           | #2d2929   | Cards elevees            |
+| surface-high      | #383333   | Menus, popovers          |
+| surface-highest   | #433d3d   | Tooltips, top layer      |
+| text.primary      | #f5f0f0   | Texte principal          |
+| text.secondary    | #a89999   | Texte secondaire         |
 
 ### Couleurs Blue Theme
 | Token             | Hex       | Usage                    |
 | ----------------- | --------- | ------------------------ |
 | primary           | #60A5FA   | Boutons, liens, accents  |
 | secondary         | #93c5fd   | Highlights               |
+| background        | #0f1420   | Fond bleu sombre         |
+
+> Voir `08-design-system.md` pour le design system complet avec MD3 Expressive, motion, shapes, et animations Beyblade.
 
 ## Theme cible (shadcn/ui + Tailwind)
 

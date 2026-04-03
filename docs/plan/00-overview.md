@@ -80,6 +80,24 @@ dayjs                   (deja installe)
 | 3     | MUI X (Charts, DataGrid, DatePicker)| ~15     | Eleve  |
 | 4     | Cleanup & suppression MUI          | ~10      | Faible |
 
+## Nouvelle direction design
+
+**Style** : Material Design 3 Expressive — formes pill/arrondies, animations spring avec rebond, typographie bold.
+
+**Univers** : Beyblade X — speed lines, glows, energie, impact.
+
+**Couleurs** :
+- Rouge : `#ce0c07` (primary)
+- Orange : `#e68002` (secondary)
+- Jaune : `#f7d301` (tertiary / or)
+- Fond : `#1d1b1b` (gris fonce chaud, PAS de noir pur)
+
+**Shapes** : Boutons pill (border-radius: 9999px), cards 16px, dialogs 28px, hero cards 48px.
+
+**Motion** : Spring physics avec overshoot (cubic-bezier(0.42, 1.85, 0.21, 0.90)), stagger reveals, page transitions fluides.
+
+> Voir `08-design-system.md` pour le design system complet.
+
 ## Risques
 
 1. **Le `sx` prop est partout (198 fichiers)** - Chaque usage doit etre converti en classes Tailwind
