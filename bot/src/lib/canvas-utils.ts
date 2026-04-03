@@ -667,16 +667,26 @@ export async function generateComboCard(data: ComboCardData) {
   };
   const typeColor = typeColors[data.type.toUpperCase()] ?? hexColor;
 
-  const [background, arenaOverlay, bladeImg, typeIcon, ringGlow] =
-    await Promise.all([
-      safeLoadImage('/background-seasson-2.webp'),
-      safeLoadImage(getAssetPath('bot/assets/backgrounds/arena.png')),
-      safeLoadImage(data.bladeImageUrl),
-      safeLoadImage(
-        getAssetPath(`bot/assets/types/${data.type.toLowerCase()}.png`),
-      ),
-      safeLoadImage(getAssetPath('bot/assets/vfx/ring-glow.png')),
-    ]);
+  // Normalize type name to English for asset path
+  const typeNameMap: Record<string, string> = {
+    ATTACK: 'attack',
+    ATTAQUE: 'attack',
+    DEFENSE: 'defense',
+    DÉFENSE: 'defense',
+    STAMINA: 'stamina',
+    ENDURANCE: 'stamina',
+    BALANCE: 'balance',
+    ÉQUILIBRE: 'balance',
+  };
+  const typeAssetName =
+    typeNameMap[data.type.toUpperCase()] ?? data.type.toLowerCase();
+
+  const [arenaOverlay, bladeImg, typeIcon, ringGlow] = await Promise.all([
+    safeLoadImage(getAssetPath('bot/assets/backgrounds/arena.png')),
+    safeLoadImage(data.bladeImageUrl),
+    safeLoadImage(getAssetPath(`bot/assets/types/${typeAssetName}.png`)),
+    safeLoadImage(getAssetPath('bot/assets/vfx/ring-glow.png')),
+  ]);
 
   // ── Background: warm dark + arena overlay ──
   ctx.fillStyle = '#141111';
@@ -685,10 +695,6 @@ export async function generateComboCard(data: ComboCardData) {
   if (arenaOverlay) {
     ctx.globalAlpha = 0.1;
     ctx.drawImage(arenaOverlay, 0, 0, width, height);
-    ctx.globalAlpha = 1;
-  } else if (background) {
-    ctx.globalAlpha = 0.15;
-    ctx.drawImage(background, 0, 0, width, height);
     ctx.globalAlpha = 1;
   }
 
