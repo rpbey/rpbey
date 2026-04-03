@@ -163,55 +163,161 @@ export async function generateWelcomeImage(
   avatarUrl: string,
   memberCount: number,
 ) {
-  const width = 800;
-  const height = 400;
+  const width = 900;
+  const height = 420;
   const canvas = createCanvas(width, height);
   const ctx = canvas.getContext('2d');
 
-  const [background, avatar] = await Promise.all([
+  const [background, splashLines, avatar] = await Promise.all([
     safeLoadImage('/banner.png'),
+    safeLoadImage(getAssetPath('bot/assets/backgrounds/splash-lines.png')),
     safeLoadImage(avatarUrl),
   ]);
 
-  if (background) ctx.drawImage(background, 0, 0, width, height);
-  else {
-    ctx.fillStyle = '#dc2626';
-    ctx.fillRect(0, 0, width, height);
-  }
-
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+  // ── Dark warm background ──
+  ctx.fillStyle = '#1d1b1b';
   ctx.fillRect(0, 0, width, height);
 
+  if (background) {
+    ctx.globalAlpha = 0.25;
+    ctx.drawImage(background, 0, 0, width, height);
+    ctx.globalAlpha = 1;
+  }
+
+  // ── Speed lines overlay ──
+  if (splashLines) {
+    ctx.globalAlpha = 0.08;
+    ctx.drawImage(splashLines, 0, 0, width, height);
+    ctx.globalAlpha = 1;
+  }
+
+  // ── Diagonal speed lines (subtle) ──
+  ctx.save();
+  ctx.globalAlpha = 0.03;
+  ctx.strokeStyle = '#ffffff';
+  ctx.lineWidth = 1;
+  for (let i = -height; i < width + height; i += 14) {
+    ctx.beginPath();
+    ctx.moveTo(i, 0);
+    ctx.lineTo(i + height * 0.5, height);
+    ctx.stroke();
+  }
+  ctx.restore();
+
+  // ── Left radial glow (red/orange) ──
+  const glow = ctx.createRadialGradient(
+    160,
+    height / 2,
+    0,
+    160,
+    height / 2,
+    220,
+  );
+  glow.addColorStop(0, 'rgba(206, 12, 7, 0.15)');
+  glow.addColorStop(0.6, 'rgba(230, 128, 2, 0.05)');
+  glow.addColorStop(1, 'transparent');
+  ctx.fillStyle = glow;
+  ctx.fillRect(0, 0, width, height);
+
+  // ── Avatar with glow ring ──
+  const avatarX = 160;
+  const avatarY = height / 2;
+  const avatarR = 95;
+
+  // Outer glow
+  ctx.save();
+  ctx.shadowColor = '#ce0c07';
+  ctx.shadowBlur = 25;
+  ctx.beginPath();
+  ctx.arc(avatarX, avatarY, avatarR + 4, 0, Math.PI * 2);
+  ctx.strokeStyle = '#ce0c07';
+  ctx.lineWidth = 4;
+  ctx.stroke();
+  ctx.restore();
+
+  // Avatar clip
   ctx.save();
   ctx.beginPath();
-  ctx.arc(150, 200, 100, 0, Math.PI * 2, true);
+  ctx.arc(avatarX, avatarY, avatarR, 0, Math.PI * 2, true);
   ctx.closePath();
   ctx.clip();
-  if (avatar) ctx.drawImage(avatar, 50, 100, 200, 200);
+  if (avatar)
+    ctx.drawImage(
+      avatar,
+      avatarX - avatarR,
+      avatarY - avatarR,
+      avatarR * 2,
+      avatarR * 2,
+    );
   else {
-    ctx.fillStyle = '#ffffff';
+    ctx.fillStyle = '#2d2929';
     ctx.fill();
   }
   ctx.restore();
 
-  ctx.strokeStyle = '#fbbf24';
-  ctx.lineWidth = 8;
+  // Gradient border ring (red → orange → yellow)
+  ctx.lineWidth = 5;
+  const ringGrad = ctx.createConicGradient(0, avatarX, avatarY);
+  ringGrad.addColorStop(0, '#ce0c07');
+  ringGrad.addColorStop(0.33, '#e68002');
+  ringGrad.addColorStop(0.66, '#f7d301');
+  ringGrad.addColorStop(1, '#ce0c07');
+  ctx.strokeStyle = ringGrad;
   ctx.beginPath();
-  ctx.arc(150, 200, 100, 0, Math.PI * 2, true);
+  ctx.arc(avatarX, avatarY, avatarR, 0, Math.PI * 2, true);
   ctx.stroke();
 
-  ctx.font = 'bold 48px GoogleSans';
-  ctx.fillStyle = '#ffffff';
-  ctx.fillText('BIENVENUE À LA', 300, 150);
-  ctx.font = 'bold 64px GoogleSans';
-  ctx.fillStyle = '#fbbf24';
-  ctx.fillText('RPB !', 300, 210);
-  ctx.font = '32px GoogleSans';
-  ctx.fillStyle = '#ffffff';
-  ctx.fillText(displayName.toUpperCase(), 300, 270);
-  ctx.font = '24px GoogleSans';
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-  ctx.fillText(`MEMBRE #${memberCount}`, 300, 310);
+  // ── Text content (right side) ──
+  const textX = 310;
+
+  ctx.font = _FONT('bold', 40);
+  ctx.fillStyle = '#f5f0f0';
+  ctx.fillText('BIENVENUE À LA', textX, 145);
+
+  // RPB with gradient-like effect
+  ctx.font = _FONT('bold', 72);
+  ctx.fillStyle = '#ce0c07';
+  ctx.fillText('R', textX, 220);
+  const rW = ctx.measureText('R').width;
+  ctx.fillStyle = '#e68002';
+  ctx.fillText('P', textX + rW, 220);
+  const pW = ctx.measureText('P').width;
+  ctx.fillStyle = '#f7d301';
+  ctx.fillText('B !', textX + rW + pW, 220);
+
+  // Username
+  const nameText =
+    displayName.length > 22
+      ? `${displayName.substring(0, 22).toUpperCase()}…`
+      : displayName.toUpperCase();
+  ctx.font = _FONT('bold', 30);
+  ctx.fillStyle = '#f5f0f0';
+  ctx.fillText(nameText, textX, 275);
+
+  // Member count pill
+  const memberText = `MEMBRE #${memberCount}`;
+  ctx.font = _FONT('bold', 16);
+  const memberW = ctx.measureText(memberText).width + 24;
+  ctx.fillStyle = 'rgba(206, 12, 7, 0.2)';
+  ctx.beginPath();
+  ctx.roundRect(textX, 290, memberW, 30, 15);
+  ctx.fill();
+  ctx.fillStyle = '#a89999';
+  ctx.fillText(memberText, textX + 12, 310);
+
+  // ── Bottom branding line ──
+  ctx.font = _FONT('bold', 12);
+  ctx.fillStyle = '#a8999950';
+  ctx.fillText('RÉPUBLIQUE POPULAIRE DU BEYBLADE', textX, height - 25);
+
+  // ── Subtle top/bottom border lines ──
+  const borderGrad = ctx.createLinearGradient(0, 0, width, 0);
+  borderGrad.addColorStop(0, '#ce0c07');
+  borderGrad.addColorStop(0.5, '#e68002');
+  borderGrad.addColorStop(1, '#f7d301');
+  ctx.fillStyle = borderGrad;
+  ctx.fillRect(0, 0, width, 3);
+  ctx.fillRect(0, height - 3, width, 3);
 
   return canvas.toBuffer('image/png');
 }
@@ -237,8 +343,8 @@ export interface ProfileCardData {
 }
 
 export async function generateProfileCard(data: ProfileCardData) {
-  const width = 1000;
-  const height = 750;
+  const width = 1100;
+  const height = 700;
   const canvas = createCanvas(width, height);
   const ctx = canvas.getContext('2d');
 
@@ -249,154 +355,279 @@ export async function generateProfileCard(data: ProfileCardData) {
     ...(data.activeDeck?.blades.map((b) => safeLoadImage(b.imageUrl)) || []),
   ]);
 
-  if (background) ctx.drawImage(background, 0, 0, width, height);
-  else {
-    ctx.fillStyle = '#1e1b4b';
-    ctx.fillRect(0, 0, width, height);
-  }
-
-  const gradient = ctx.createLinearGradient(0, 0, width, 0);
-  gradient.addColorStop(0, 'rgba(0, 0, 0, 0.75)');
-  gradient.addColorStop(1, 'rgba(0, 0, 0, 0.45)');
-  ctx.fillStyle = gradient;
+  // ── Dark warm background ──
+  ctx.fillStyle = '#141111';
   ctx.fillRect(0, 0, width, height);
 
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+  if (background) {
+    ctx.globalAlpha = 0.15;
+    ctx.drawImage(background, 0, 0, width, height);
+    ctx.globalAlpha = 1;
+  }
+
+  // ── Subtle diagonal speed lines ──
+  ctx.save();
+  ctx.globalAlpha = 0.025;
+  ctx.strokeStyle = '#ffffff';
+  ctx.lineWidth = 1;
+  for (let i = -height; i < width + height; i += 16) {
+    ctx.beginPath();
+    ctx.moveTo(i, 0);
+    ctx.lineTo(i + height * 0.5, height);
+    ctx.stroke();
+  }
+  ctx.restore();
+
+  // ── Main card container (rounded, elevated surface) ──
+  ctx.fillStyle = '#1d1b1b';
   ctx.beginPath();
-  ctx.roundRect(20, 20, width - 40, height - 40, 20);
+  ctx.roundRect(24, 24, width - 48, height - 48, 16);
   ctx.fill();
 
+  // Inner subtle border
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.04)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.roundRect(24, 24, width - 48, height - 48, 16);
+  ctx.stroke();
+
+  // ── Top gradient accent bar (RPB colors) ──
+  const topGrad = ctx.createLinearGradient(24, 0, width - 24, 0);
+  topGrad.addColorStop(0, '#ce0c07');
+  topGrad.addColorStop(0.5, '#e68002');
+  topGrad.addColorStop(1, '#f7d301');
+  ctx.fillStyle = topGrad;
+  ctx.beginPath();
+  ctx.roundRect(24, 24, width - 48, 4, [16, 16, 0, 0]);
+  ctx.fill();
+
+  // ── Avatar with gradient ring ──
+  const avX = 160;
+  const avY = 190;
+  const avR = 100;
+
+  // Glow
+  ctx.save();
+  ctx.shadowColor = '#ce0c0740';
+  ctx.shadowBlur = 30;
+  ctx.beginPath();
+  ctx.arc(avX, avY, avR + 5, 0, Math.PI * 2);
+  ctx.strokeStyle = '#ce0c07';
+  ctx.lineWidth = 3;
+  ctx.stroke();
+  ctx.restore();
+
+  // Avatar clip
   ctx.save();
   ctx.beginPath();
-  ctx.arc(180, 180, 130, 0, Math.PI * 2, true);
+  ctx.arc(avX, avY, avR, 0, Math.PI * 2, true);
   ctx.closePath();
   ctx.clip();
-  if (avatar) ctx.drawImage(avatar, 50, 50, 260, 260);
+  if (avatar) ctx.drawImage(avatar, avX - avR, avY - avR, avR * 2, avR * 2);
   else {
-    ctx.fillStyle = '#444';
+    ctx.fillStyle = '#2d2929';
     ctx.fill();
   }
   ctx.restore();
 
-  ctx.strokeStyle = '#fbbf24';
-  ctx.lineWidth = 10;
+  // Gradient ring
+  const ringG = ctx.createConicGradient(0, avX, avY);
+  ringG.addColorStop(0, '#ce0c07');
+  ringG.addColorStop(0.33, '#e68002');
+  ringG.addColorStop(0.66, '#f7d301');
+  ringG.addColorStop(1, '#ce0c07');
+  ctx.strokeStyle = ringG;
+  ctx.lineWidth = 5;
   ctx.beginPath();
-  ctx.arc(180, 180, 130, 0, Math.PI * 2, true);
+  ctx.arc(avX, avY, avR, 0, Math.PI * 2, true);
   ctx.stroke();
 
-  ctx.font = 'bold 64px GoogleSans';
-  ctx.fillStyle = '#ffffff';
-  ctx.fillText(data.bladerName.toUpperCase(), 350, 100);
+  // ── Blader name ──
+  const nameX = 300;
+  const nameText =
+    data.bladerName.length > 18
+      ? `${data.bladerName.substring(0, 18).toUpperCase()}…`
+      : data.bladerName.toUpperCase();
+  ctx.font = _FONT('bold', 48);
+  ctx.fillStyle = '#f5f0f0';
+  ctx.fillText(nameText, nameX, 110);
 
-  let badgeColor = '#ffffff';
-  if (data.rank === 1) badgeColor = '#FFD700';
-  else if (data.rank === 2) badgeColor = '#C0C0C0';
-  else if (data.rank === 3) badgeColor = '#CD7F32';
-  else if (data.rankTitle === 'Champion') badgeColor = '#fbbf24';
-  else if (data.rankTitle === 'Expert') badgeColor = '#f472b6';
-  else badgeColor = '#94a3b8';
+  // ── Rank badge pill ──
+  let badgeColor = '#64748b';
+  let badgeText = '#ffffff';
+  if (data.rank === 1) {
+    badgeColor = '#f7d301';
+    badgeText = '#000000';
+  } else if (data.rank === 2) {
+    badgeColor = '#C0C0C0';
+    badgeText = '#000000';
+  } else if (data.rank === 3) {
+    badgeColor = '#CD7F32';
+    badgeText = '#000000';
+  } else if (data.rankTitle === 'Champion') {
+    badgeColor = '#ce0c07';
+    badgeText = '#ffffff';
+  } else if (data.rankTitle === 'Expert') {
+    badgeColor = '#e68002';
+    badgeText = '#000000';
+  }
 
+  const rankLabel = `RANG #${data.rank} • ${data.rankTitle.toUpperCase()}`;
+  ctx.font = _FONT('bold', 16);
+  const rankW = ctx.measureText(rankLabel).width + 30;
   ctx.fillStyle = badgeColor;
   ctx.beginPath();
-  ctx.roundRect(350, 120, 400, 40, 10);
+  ctx.roundRect(nameX, 125, rankW, 32, 16);
   ctx.fill();
-  ctx.font = 'bold 24px GoogleSans';
-  ctx.fillStyle = '#000000';
-  ctx.textAlign = 'center';
-  ctx.fillText(
-    `RANG #${data.rank} • ${data.rankTitle.toUpperCase()}`,
-    350 + 200,
-    148,
-  );
-  ctx.textAlign = 'start';
+  ctx.fillStyle = badgeText;
+  ctx.fillText(rankLabel, nameX + 15, 146);
 
+  // ── Stats grid (2 rows × 3 cols) ──
   const drawStat = (
     label: string,
     value: string | number,
     x: number,
     y: number,
-    color = '#fbbf24',
-    size = 42,
+    color = '#f7d301',
   ) => {
-    ctx.font = '20px GoogleSans';
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+    // Label
+    ctx.font = _FONT('bold', 13);
+    ctx.fillStyle = '#a89999';
     ctx.fillText(label, x, y);
-    ctx.font = `bold ${size}px GoogleSans`;
+    // Value
+    ctx.font = _FONT('bold', 36);
     ctx.fillStyle = color;
-    ctx.fillText(value.toString(), x, y + size + 8);
+    ctx.fillText(value.toString(), x, y + 40);
   };
 
-  const startY = 230;
-  drawStat('POINTS', data.rankingPoints.toLocaleString(), 350, startY);
-  drawStat('WIN RATE', data.winRate, 550, startY, '#ffffff');
+  const gridX = nameX;
+  const gridY = 185;
+  const colW = 190;
+  const rowH = 85;
+
+  drawStat(
+    'POINTS',
+    data.rankingPoints.toLocaleString(),
+    gridX,
+    gridY,
+    '#f7d301',
+  );
+  drawStat('WIN RATE', data.winRate, gridX + colW, gridY, '#f5f0f0');
   drawStat(
     'TOURNOIS',
     `${data.tournamentWins}/${data.tournamentsPlayed}`,
-    750,
-    startY,
-    '#f472b6',
+    gridX + colW * 2,
+    gridY,
+    '#e68002',
   );
-  drawStat('VICTOIRES', data.wins, 350, startY + 100, '#4ade80');
-  drawStat('DÉFAITES', data.losses, 550, startY + 100, '#f87171');
-  drawStat('TOTAL', data.wins + data.losses, 750, startY + 100, '#ffffff');
+  drawStat('VICTOIRES', data.wins, gridX, gridY + rowH, '#22c55e');
+  drawStat('DÉFAITES', data.losses, gridX + colW, gridY + rowH, '#ef4444');
+  drawStat(
+    'TOTAL',
+    data.wins + data.losses,
+    gridX + colW * 2,
+    gridY + rowH,
+    '#f5f0f0',
+  );
 
-  if (data.activeDeck) {
-    const deckY = 520;
-    ctx.font = 'bold 24px GoogleSans';
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+  // ── Streak info (small, below stats) ──
+  if (data.currentStreak > 0 || data.bestStreak > 0) {
+    ctx.font = _FONT('bold', 14);
+    ctx.fillStyle = '#a89999';
+    const streakY = gridY + rowH * 2 + 10;
     ctx.fillText(
-      `EQUIPEMENT ACTIF : ${data.activeDeck.name.toUpperCase()}`,
+      `🔥 Série actuelle: ${data.currentStreak}  •  Meilleure: ${data.bestStreak}`,
+      gridX,
+      streakY,
+    );
+  }
+
+  // ── Separator line ──
+  const sepY = 440;
+  ctx.fillStyle = '#252222';
+  ctx.fillRect(50, sepY, width - 100, 2);
+
+  // ── Active deck section ──
+  if (data.activeDeck) {
+    const deckY = sepY + 25;
+    ctx.font = _FONT('bold', 15);
+    ctx.fillStyle = '#a89999';
+    ctx.fillText(
+      `DECK ACTIF — ${data.activeDeck.name.toUpperCase()}`,
       50,
       deckY,
     );
 
-    const bladeSize = 100;
-    const spacing = 300;
-    for (let i = 0; i < data.activeDeck.blades.length; i++) {
+    const bladeSize = 110;
+    const totalBlades = data.activeDeck.blades.length;
+    const deckSpacing = Math.min(300, (width - 100) / Math.max(totalBlades, 1));
+
+    for (let i = 0; i < totalBlades; i++) {
       const blade = data.activeDeck.blades[i];
       const bladeImg = bladeImages[i];
-      const x = 100 + i * spacing;
-      const y = deckY + 40;
+      const cx = 110 + i * deckSpacing;
+      const cy = deckY + 85;
 
+      // Dark circle bg
+      ctx.fillStyle = '#252222';
+      ctx.beginPath();
+      ctx.arc(cx, cy, bladeSize / 2 + 6, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Blade image
       ctx.save();
       ctx.beginPath();
-      ctx.arc(
-        x + bladeSize / 2,
-        y + bladeSize / 2,
-        bladeSize / 2,
-        0,
-        Math.PI * 2,
-      );
+      ctx.arc(cx, cy, bladeSize / 2, 0, Math.PI * 2);
       ctx.clip();
-      if (bladeImg) ctx.drawImage(bladeImg, x, y, bladeSize, bladeSize);
+      if (bladeImg)
+        ctx.drawImage(
+          bladeImg,
+          cx - bladeSize / 2,
+          cy - bladeSize / 2,
+          bladeSize,
+          bladeSize,
+        );
       else {
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+        ctx.fillStyle = '#1d1b1b';
         ctx.fill();
       }
       ctx.restore();
 
-      ctx.strokeStyle = badgeColor;
-      ctx.lineWidth = 3;
+      // Subtle ring
+      ctx.strokeStyle = `${badgeColor}60`;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(cx, cy, bladeSize / 2, 0, Math.PI * 2);
       ctx.stroke();
 
-      ctx.font = 'bold 18px GoogleSans';
-      ctx.fillStyle = '#ffffff';
+      // Blade name
+      ctx.font = _FONT('bold', 14);
+      ctx.fillStyle = '#f5f0f0';
       ctx.textAlign = 'center';
-      ctx.fillText(
-        blade.name.toUpperCase(),
-        x + bladeSize / 2,
-        y + bladeSize + 30,
-      );
+      const bladeName =
+        blade.name.length > 14
+          ? `${blade.name.substring(0, 14).toUpperCase()}…`
+          : blade.name.toUpperCase();
+      ctx.fillText(bladeName, cx, cy + bladeSize / 2 + 25);
       ctx.textAlign = 'start';
     }
   }
 
-  ctx.font = 'italic 20px GoogleSans';
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
-  ctx.textAlign = 'right';
-  ctx.fillText(`Membre depuis le ${data.joinedAt}`, width - 40, height - 30);
+  // ── Footer: join date + logo ──
+  ctx.font = _FONT('', 14);
+  ctx.fillStyle = '#a8999960';
+  ctx.textAlign = 'left';
+  ctx.fillText(`Membre depuis le ${data.joinedAt}`, 50, height - 42);
 
-  if (logo) ctx.drawImage(logo, width - 130, 30, 100, 100);
+  ctx.font = _FONT('bold', 12);
+  ctx.fillStyle = '#a8999940';
+  ctx.fillText('RÉPUBLIQUE POPULAIRE DU BEYBLADE', 50, height - 22);
+
+  if (logo) {
+    ctx.globalAlpha = 0.6;
+    ctx.drawImage(logo, width - 120, height - 110, 80, 80);
+    ctx.globalAlpha = 1;
+  }
 
   return canvas.toBuffer('image/png');
 }
@@ -534,78 +765,258 @@ export interface BattleCardData {
   finishType: string;
   finishMessage: string;
   finishEmoji: string;
+  // New fields (optional for backward compat)
+  winnerType?: string;
+  loserType?: string;
+  winnerStats?: {
+    attack: number;
+    defense: number;
+    stamina: number;
+    dash: number;
+    power: number;
+  };
+  loserStats?: {
+    attack: number;
+    defense: number;
+    stamina: number;
+    dash: number;
+    power: number;
+  };
+  narrative?: string[];
+  finishColor?: string;
 }
 
 export async function generateBattleCard(data: BattleCardData) {
-  const width = 1000;
-  const height = 400;
+  const width = 1100;
+  const height = 500;
   const canvas = createCanvas(width, height);
   const ctx = canvas.getContext('2d');
 
-  const [background, winnerAvatar, loserAvatar] = await Promise.all([
-    safeLoadImage('/banner.png'),
-    safeLoadImage(data.winnerAvatarUrl),
-    safeLoadImage(data.loserAvatarUrl),
-  ]);
+  const finishColor = data.finishColor ?? '#ce0c07';
 
-  if (background) ctx.drawImage(background, 0, 0, width, height);
-  else {
-    ctx.fillStyle = '#dc2626';
-    ctx.fillRect(0, 0, width, height);
-  }
+  // ── Type color mapping ──
+  const typeColors: Record<string, string> = {
+    ATTACK: '#ef4444',
+    DEFENSE: '#3b82f6',
+    STAMINA: '#22c55e',
+    BALANCE: '#a855f7',
+  };
+  const winnerColor = typeColors[data.winnerType ?? ''] ?? '#f7d301';
+  const loserColor = typeColors[data.loserType ?? ''] ?? '#64748b';
 
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+  // ── Load assets ──
+  const [background, arenaOverlay, sparks, flare, winnerAvatar, loserAvatar] =
+    await Promise.all([
+      safeLoadImage('/banner.png'),
+      safeLoadImage(getAssetPath('bot/assets/backgrounds/arena.png')),
+      safeLoadImage(getAssetPath('bot/assets/battle/sparks-0.png')),
+      safeLoadImage(getAssetPath('bot/assets/battle/flare.png')),
+      safeLoadImage(data.winnerAvatarUrl),
+      safeLoadImage(data.loserAvatarUrl),
+    ]);
+
+  // ── Background: dark warm gray + arena overlay ──
+  ctx.fillStyle = '#1d1b1b';
   ctx.fillRect(0, 0, width, height);
 
-  ctx.font = 'italic bold 80px GoogleSans';
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
-  ctx.textAlign = 'center';
-  ctx.fillText('VS', width / 2, height / 2 + 30);
+  if (arenaOverlay) {
+    ctx.globalAlpha = 0.15;
+    ctx.drawImage(arenaOverlay, 0, 0, width, height);
+    ctx.globalAlpha = 1;
+  } else if (background) {
+    ctx.globalAlpha = 0.3;
+    ctx.drawImage(background, 0, 0, width, height);
+    ctx.globalAlpha = 1;
+  }
 
+  // ── Radial glow behind center (arena energy) ──
+  const glow = ctx.createRadialGradient(
+    width / 2,
+    height / 2,
+    0,
+    width / 2,
+    height / 2,
+    300,
+  );
+  glow.addColorStop(0, `${finishColor}25`);
+  glow.addColorStop(0.5, `${finishColor}08`);
+  glow.addColorStop(1, 'transparent');
+  ctx.fillStyle = glow;
+  ctx.fillRect(0, 0, width, height);
+
+  // ── Diagonal speed lines (halftone-style, subtle) ──
+  ctx.save();
+  ctx.globalAlpha = 0.04;
+  ctx.strokeStyle = '#ffffff';
+  ctx.lineWidth = 1;
+  for (let i = -height; i < width + height; i += 12) {
+    ctx.beginPath();
+    ctx.moveTo(i, 0);
+    ctx.lineTo(i + height * 0.6, height);
+    ctx.stroke();
+  }
+  ctx.restore();
+
+  // ── Spark VFX overlay at center ──
+  if (sparks) {
+    ctx.globalAlpha = 0.6;
+    ctx.drawImage(sparks, width / 2 - 100, height / 2 - 80, 200, 160);
+    ctx.globalAlpha = 1;
+  }
+
+  // ── Flare behind winner ──
+  if (flare) {
+    ctx.globalAlpha = 0.3;
+    ctx.drawImage(flare, 50, 40, 400, 350);
+    ctx.globalAlpha = 1;
+  }
+
+  // ── Helper: draw circular avatar with glow ──
   const drawAvatar = (
     avatar: CanvasImage | null,
     x: number,
     y: number,
     r: number,
-    border: string,
+    borderColor: string,
     lw: number,
+    glowColor: string,
   ) => {
+    // Outer glow
+    ctx.save();
+    ctx.shadowColor = glowColor;
+    ctx.shadowBlur = 30;
+    ctx.beginPath();
+    ctx.arc(x, y, r + 2, 0, Math.PI * 2);
+    ctx.strokeStyle = borderColor;
+    ctx.lineWidth = lw;
+    ctx.stroke();
+    ctx.restore();
+
+    // Clip and draw avatar
     ctx.save();
     ctx.beginPath();
     ctx.arc(x, y, r, 0, Math.PI * 2, true);
+    ctx.closePath();
     ctx.clip();
     if (avatar) ctx.drawImage(avatar, x - r, y - r, r * 2, r * 2);
     else {
-      ctx.fillStyle = border;
+      ctx.fillStyle = '#2d2929';
       ctx.fill();
     }
     ctx.restore();
-    ctx.strokeStyle = border;
+
+    // Border
+    ctx.strokeStyle = borderColor;
     ctx.lineWidth = lw;
     ctx.beginPath();
     ctx.arc(x, y, r, 0, Math.PI * 2, true);
     ctx.stroke();
   };
 
-  drawAvatar(winnerAvatar, 250, 200, 120, '#fbbf24', 10);
-  drawAvatar(loserAvatar, 750, 200, 100, '#94a3b8', 5);
+  // ── Winner avatar (left, larger, golden glow) ──
+  drawAvatar(winnerAvatar, 220, 210, 110, winnerColor, 6, winnerColor);
 
-  ctx.font = '40px GoogleSans';
-  ctx.fillText('🏆', 250, 70);
-  ctx.font = 'bold 32px GoogleSans';
-  ctx.fillStyle = '#fbbf24';
-  ctx.fillText(data.winnerName.toUpperCase(), 250, 360);
-  ctx.font = 'bold 24px GoogleSans';
-  ctx.fillStyle = '#94a3b8';
-  ctx.fillText(data.loserName.toUpperCase(), 750, 360);
+  // ── Loser avatar (right, smaller, dimmed) ──
+  drawAvatar(loserAvatar, 880, 210, 90, loserColor, 4, `${loserColor}40`);
 
-  ctx.font = 'bold 40px GoogleSans';
+  // ── VS text at center ──
+  ctx.textAlign = 'center';
+  ctx.font = _FONT('italic bold', 72);
+  ctx.fillStyle = `${finishColor}30`;
+  ctx.fillText('VS', width / 2, height / 2 + 20);
+
+  // ── Winner crown + name ──
+  ctx.font = _FONT('bold', 28);
+  ctx.fillStyle = winnerColor;
+  ctx.fillText(`🏆 ${data.winnerName.toUpperCase()}`, 220, 355);
+
+  // ── Loser name ──
+  ctx.font = _FONT('bold', 22);
+  ctx.fillStyle = '#64748b';
+  ctx.fillText(data.loserName.toUpperCase(), 880, 335);
+
+  // ── Stat bars (if provided) ──
+  if (data.winnerStats && data.loserStats) {
+    const statBarY = 400;
+    const barW = 160;
+    const barH = 8;
+    const statNames = ['ATK', 'DEF', 'STA', 'DSH'] as const;
+    const statKeys = ['attack', 'defense', 'stamina', 'dash'] as const;
+    const statColors = ['#ef4444', '#3b82f6', '#22c55e', '#eab308'];
+
+    // Winner stats
+    for (let i = 0; i < 4; i++) {
+      const sx = 70 + i * 80;
+      const val = data.winnerStats[statKeys[i]];
+      const maxVal = Math.max(val, data.loserStats[statKeys[i]], 200);
+      const ratio = val / maxVal;
+
+      ctx.font = _FONT('bold', 11);
+      ctx.fillStyle = '#a89999';
+      ctx.textAlign = 'center';
+      ctx.fillText(statNames[i], sx + barW / 8, statBarY);
+      ctx.fillStyle = '#2d2929';
+      ctx.beginPath();
+      ctx.roundRect(sx - barW / 8, statBarY + 4, barW / 4, barH, 4);
+      ctx.fill();
+      ctx.fillStyle = statColors[i]!;
+      ctx.beginPath();
+      ctx.roundRect(sx - barW / 8, statBarY + 4, (barW / 4) * ratio, barH, 4);
+      ctx.fill();
+    }
+
+    // Loser stats
+    for (let i = 0; i < 4; i++) {
+      const sx = 730 + i * 80;
+      const val = data.loserStats[statKeys[i]];
+      const maxVal = Math.max(val, data.winnerStats[statKeys[i]], 200);
+      const ratio = val / maxVal;
+
+      ctx.font = _FONT('bold', 11);
+      ctx.fillStyle = '#64748b';
+      ctx.textAlign = 'center';
+      ctx.fillText(statNames[i], sx + barW / 8, statBarY);
+      ctx.fillStyle = '#2d2929';
+      ctx.beginPath();
+      ctx.roundRect(sx - barW / 8, statBarY + 4, barW / 4, barH, 4);
+      ctx.fill();
+      ctx.fillStyle = `${statColors[i]!}80`;
+      ctx.beginPath();
+      ctx.roundRect(sx - barW / 8, statBarY + 4, (barW / 4) * ratio, barH, 4);
+      ctx.fill();
+    }
+  }
+
+  // ── Finish banner (bottom center, pill shape with glow) ──
+  const finishText = data.finishMessage.replace(/\*\*/g, '').toUpperCase();
+  ctx.font = _FONT('bold', 32);
+  const textMetrics = ctx.measureText(finishText);
+  const bannerW = textMetrics.width + 60;
+  const bannerH = 52;
+  const bannerX = (width - bannerW) / 2;
+  const bannerY = height - bannerH - 25;
+
+  // Pill background with glow
+  ctx.save();
+  ctx.shadowColor = finishColor;
+  ctx.shadowBlur = 20;
+  ctx.fillStyle = finishColor;
+  ctx.beginPath();
+  ctx.roundRect(bannerX, bannerY, bannerW, bannerH, bannerH / 2);
+  ctx.fill();
+  ctx.restore();
+
+  // Finish text
+  ctx.textAlign = 'center';
+  ctx.font = _FONT('bold', 28);
   ctx.fillStyle = '#ffffff';
-  ctx.fillText(
-    data.finishMessage.replace(/\*\*/g, '').toUpperCase(),
-    width / 2,
-    height - 40,
-  );
+  ctx.fillText(finishText, width / 2, bannerY + 34);
+
+  // ── Top-left: RPB branding ──
+  ctx.textAlign = 'left';
+  ctx.font = _FONT('bold', 14);
+  ctx.fillStyle = '#a8999980';
+  ctx.fillText('RPB • BEYBLADE X BATTLE', 20, 25);
 
   return canvas.toBuffer('image/png');
 }
