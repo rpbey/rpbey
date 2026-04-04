@@ -9,14 +9,13 @@ import { prisma } from '@/lib/prisma';
 const SEASON_CONFIG: Record<number, { ub: number[]; hs: string[] }> = {
   1: {
     ub: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
-    hs: ['patoo', 'jgf', 'phase2'],
+    hs: ['patoo', 'phase2'],
   },
 };
 
 // Display labels for hors-série tournaments
 const HS_LABELS: Record<string, string> = {
   patoo: 'HS: Défi Patoo',
-  jgf: 'HS: Japan Geek',
   phase2: 'HS: Phase 2',
 };
 

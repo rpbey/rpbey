@@ -76,7 +76,6 @@ export function WbBladerDialog({ blader, open, onClose }: WbBladerDialogProps) {
 
   const HS_DISPLAY_NAMES: Record<string, string> = {
     wb_hs_patoo: 'HS: Défi Patoo',
-    wb_hs_jgf: 'HS: Japan Geek',
     wb_hs_phase2: 'HS: Phase 2',
   };
 

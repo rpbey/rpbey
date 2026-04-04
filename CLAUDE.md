@@ -138,19 +138,22 @@ Required:
 
 ## Deployment
 - **Dashboard**: Docker Compose (Production) via `docker-compose.prod.yml`
-- **Bot**: Runs in Docker (same compose file)
+- **Bot**: Runs via systemd (`rpb-bot.service`), NOT Docker
 - Production URL: `https://rpbey.fr`
 - Hosted on Hetzner dedicated server (root access)
 
 ### Deploy Commands
 ```bash
-# Build
-docker compose -f docker-compose.prod.yml build dashboard bot --no-cache
-# Deploy
-docker compose -f docker-compose.prod.yml up -d dashboard bot
-# Logs
+# Dashboard — Build & Deploy
+docker compose -f docker-compose.prod.yml build dashboard --no-cache
+docker compose -f docker-compose.prod.yml up -d dashboard
 docker compose -f docker-compose.prod.yml logs -f dashboard
-docker compose -f docker-compose.prod.yml logs -f bot
+
+# Bot — Build & Deploy (systemd)
+pnpm bot:build
+systemctl restart rpb-bot
+systemctl status rpb-bot
+journalctl -u rpb-bot -f    # Logs
 ```
 
 ## Autonomous Mode Instructions

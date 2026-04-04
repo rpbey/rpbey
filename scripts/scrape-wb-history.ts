@@ -30,7 +30,6 @@ const TOURNAMENT_MAP: Record<string, number> = {
 // Hors-Série tournaments: Challonge slug → { file key, label }
 const HS_TOURNAMENT_MAP: Record<string, { key: string; label: string }> = {
   lif1eofk: { key: 'patoo', label: 'Ultime Défi de Patoo' },
-  l6zda4qm: { key: 'jgf', label: 'Japan Geek Festival' },
   UltimeBatailleHS: { key: 'phase2', label: 'UB Hors-Série Phase 2' },
 };
 
