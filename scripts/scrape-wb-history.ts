@@ -12,6 +12,8 @@ import { ChallongeScraper } from '../bot/src/lib/scrapers/challonge-scraper.js';
 
 // Mapping: Challonge slug → UB number (for consistent file naming)
 const TOURNAMENT_MAP: Record<string, number> = {
+  WildBreakersUltimeBataille: 1,
+  WildBreakersUltimeBataille2: 2,
   WildBreakersUltimeBataille3: 3,
   WildBreakersUltimeBataille4: 4,
   WildBreakersUltimeBataille5: 5,

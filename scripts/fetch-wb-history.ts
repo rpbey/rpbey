@@ -10,6 +10,8 @@ import 'dotenv/config';
 const API_KEY = process.env.CHALLONGE_API_KEY || 'e41242ded972296d1fddf85f9879b20a3718f6eaeee6f0df';
 
 const TOURNAMENT_MAP: Record<string, number> = {
+  WildBreakersUltimeBataille: 1,
+  WildBreakersUltimeBataille2: 2,
   WildBreakersUltimeBataille3: 3,
   WildBreakersUltimeBataille4: 4,
   WildBreakersUltimeBataille5: 5,
