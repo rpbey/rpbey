@@ -6,6 +6,7 @@ import { dailyStatsTask } from './tasks/DailyStats.js';
 import { liveTournamentSyncTask } from './tasks/LiveTournamentSync.js';
 import { mentionsScanTask } from './tasks/MentionsScan.js';
 import { preTournamentSyncTask } from './tasks/PreTournamentSync.js';
+import { rankingPostTask } from './tasks/RankingPost.js';
 import { satrSyncTask } from './tasks/SatrSync.js';
 import { sessionCleanupTask } from './tasks/SessionCleanup.js';
 import { syncRankingRolesTask } from './tasks/SyncRankingRoles.js';
@@ -107,6 +108,18 @@ export function setupCronJobs() {
       timezone: 'Europe/Paris',
     },
   );
+
+  // Ranking Post: Every day at 10:00 AM Paris + run once at startup after 60s
+  cron.schedule(
+    '0 10 * * *',
+    () => {
+      rankingPostTask();
+    },
+    {
+      timezone: 'Europe/Paris',
+    },
+  );
+  setTimeout(() => rankingPostTask(), 60_000);
 
   logger.info('[Cron] Tasks scheduled.');
 }
