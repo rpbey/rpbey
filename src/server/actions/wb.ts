@@ -82,14 +82,15 @@ function normalizeName(rawName: string): string {
 }
 
 /**
- * Parse loser score from a score string.
+ * Parse match scores from a score string.
  * Handles formats: "4-2", "0-5", "5-2,0-0" (multi-set: take first set)
- * Returns the loser's game wins (the minimum of the two scores).
+ * Returns { winnerScore, loserScore } or null if unparseable.
  */
-function getLoserScore(scores: string): number | null {
+function parseMatchScores(
+  scores: string,
+): { winnerScore: number; loserScore: number } | null {
   if (!scores || scores === '0-0') return null;
 
-  // Handle multi-set scores like "5-2,0-0" — take the first set
   const [firstSet] = scores.split(',');
   if (!firstSet) return null;
 
@@ -100,7 +101,13 @@ function getLoserScore(scores: string): number | null {
   if (a === undefined || b === undefined || Number.isNaN(a) || Number.isNaN(b))
     return null;
   if (a === 0 && b === 0) return null;
-  return Math.min(a, b);
+  return { winnerScore: Math.max(a, b), loserScore: Math.min(a, b) };
+}
+
+/** Backwards-compatible wrapper */
+function _getLoserScore(scores: string): number | null {
+  const parsed = parseMatchScores(scores);
+  return parsed ? parsed.loserScore : null;
 }
 
 /**
@@ -165,14 +172,25 @@ function buildNameMap(
 }
 
 /**
- * Compute WB ranking using the Ichigo algorithm with name normalization.
+ * Compute WB ranking using the Ichigo v2 algorithm.
+ *
+ * Improvements over v1:
+ * 1. Winner points scale with actual score (not flat 4)
+ * 2. Punish uses only participation rate (decoupled from pointAvg)
+ * 3. Punishment coefficient is stable across tournament counts
+ * 4. Recency weighting: recent tournaments count more (0.6→1.0 linear)
  */
 function computeRanking(tournaments: TournamentData[]) {
   const playerStats = new Map<string, PlayerStats>();
   const canonicalNames = new Map<string, string>();
+  const nbTournois = tournaments.length;
 
-  for (const tournament of tournaments) {
+  for (let tIdx = 0; tIdx < tournaments.length; tIdx++) {
+    const tournament = tournaments[tIdx]!;
     const idToName = buildNameMap(tournament.participants, canonicalNames);
+
+    // Recency weight: oldest = 0.6, newest = 1.0 (linear)
+    const recency = nbTournois > 1 ? 0.6 + (0.4 * tIdx) / (nbTournois - 1) : 1;
 
     for (const match of tournament.matches || []) {
       if (match.state !== 'complete' || !match.winnerId || !match.loserId)
@@ -182,7 +200,6 @@ function computeRanking(tournaments: TournamentData[]) {
       const loserName = idToName.get(match.loserId);
       if (!winnerName || !loserName) continue;
 
-      // Use lowercase key for stat merging
       const wKey = winnerName.toLowerCase();
       const lKey = loserName.toLowerCase();
 
@@ -196,10 +213,6 @@ function computeRanking(tournaments: TournamentData[]) {
           displayName: winnerName,
         });
       }
-      const winner = playerStats.get(wKey)!;
-      winner.wins += 1;
-      winner.points += 4;
-
       if (!playerStats.has(lKey)) {
         playerStats.set(lKey, {
           wins: 0,
@@ -210,10 +223,23 @@ function computeRanking(tournaments: TournamentData[]) {
           displayName: loserName,
         });
       }
+
+      const winner = playerStats.get(wKey)!;
       const loser = playerStats.get(lKey)!;
+
+      const parsed = parseMatchScores(match.scores);
+      if (parsed) {
+        // Winner gets their actual score (e.g. 4 or 5), weighted by recency
+        winner.points += Math.round(parsed.winnerScore * recency * 100) / 100;
+        // Loser gets their rounds won, weighted by recency
+        loser.points += Math.round(parsed.loserScore * recency * 100) / 100;
+      } else {
+        // Fallback: flat 4 for winner, 0 for loser
+        winner.points += Math.round(4 * recency * 100) / 100;
+      }
+
+      winner.wins += 1;
       loser.losses += 1;
-      const loserScore = getLoserScore(match.scores);
-      if (loserScore !== null) loser.points += loserScore;
     }
 
     const slug = tournament.metadata.url.split('/').pop() || '';
@@ -228,7 +254,6 @@ function computeRanking(tournaments: TournamentData[]) {
     }
   }
 
-  const nbTournois = tournaments.length;
   const rankings: Array<{
     rank: number;
     playerName: string;
@@ -248,16 +273,10 @@ function computeRanking(tournaments: TournamentData[]) {
     const winrate = stats.wins / totalMatches;
     const winscore = winrate + pointAvg / 100;
 
-    let punish = 1;
-    if (stats.participations > 0 && pointAvg > 0) {
-      punish =
-        1 /
-        (1 +
-          (Math.floor(nbTournois / 1.25) + 2) *
-            (1 / (stats.participations * pointAvg)));
-    } else {
-      punish = 0;
-    }
+    // Participation-only punish: gentle power curve (0→1)
+    // Decoupled from pointAvg to avoid double-counting
+    const participationRate = stats.participations / nbTournois;
+    const punish = participationRate ** 0.6;
 
     const score = Math.round(punish * winscore * 100000);
 
