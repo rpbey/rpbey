@@ -158,20 +158,22 @@ export class RankingGroup {
   @Slash({ description: 'Afficher le top des bladers', name: 'top' })
   @SlashGroup('classement')
   async leaderboard(
-    @SlashChoice({ name: 'Global', value: 'global' })
-    @SlashChoice({ name: 'SATR', value: 'satr' })
+    @SlashChoice({ name: 'RPB', value: 'global' })
+    @SlashChoice({ name: 'BBT', value: 'bbt' })
+    @SlashChoice({ name: 'UB', value: 'ub' })
     @SlashOption({
       name: 'type',
       required: false,
       type: ApplicationCommandOptionType.String,
-      description: 'Type de top',
+      description: 'Type de classement',
     })
     type: string = 'global',
     interaction: CommandInteraction,
   ) {
     await interaction.deferReply();
     try {
-      if (type === 'satr') {
+      // ── BBT (SATR) ──
+      if (type === 'bbt') {
         const satrEntries = await this.prisma.seasonEntry.findMany({
           take: 10,
           orderBy: { points: 'desc' },
@@ -181,7 +183,7 @@ export class RankingGroup {
           include: { user: true },
         });
         if (satrEntries.length === 0) {
-          return interaction.editReply('❌ Aucune donnée SATR disponible.');
+          return interaction.editReply('❌ Aucune donnée BBT disponible.');
         }
         const entries = satrEntries.map((e, i) => ({
           avatarUrl: e.user?.image || '',
@@ -192,10 +194,47 @@ export class RankingGroup {
         }));
         const buffer = await generateLeaderboardCard(entries);
         return interaction.editReply({
-          files: [new AttachmentBuilder(buffer, { name: 'top10-satr.png' })],
+          embeds: [
+            new EmbedBuilder()
+              .setColor(Colors.Primary)
+              .setTitle('🏆 Top 10 — BBT')
+              .setImage('attachment://top10-bbt.png')
+              .setFooter({ text: 'rpbey.fr/tournaments/satr' }),
+          ],
+          files: [new AttachmentBuilder(buffer, { name: 'top10-bbt.png' })],
         });
       }
 
+      // ── UB (Ultime Bataille) ──
+      if (type === 'ub') {
+        const ubRankings = await this.prisma.wbRanking.findMany({
+          take: 10,
+          orderBy: { rank: 'asc' },
+        });
+        if (ubRankings.length === 0) {
+          return interaction.editReply('❌ Aucune donnée UB disponible.');
+        }
+        const entries = ubRankings.map((r) => ({
+          avatarUrl: '',
+          name: r.playerName,
+          points: r.score,
+          rank: r.rank,
+          winRate: r.winRate,
+        }));
+        const buffer = await generateLeaderboardCard(entries);
+        return interaction.editReply({
+          embeds: [
+            new EmbedBuilder()
+              .setColor(0x8b5cf6)
+              .setTitle('🏆 Top 10 — Ultime Bataille')
+              .setImage('attachment://top10-ub.png')
+              .setFooter({ text: 'rpbey.fr/tournaments/wb' }),
+          ],
+          files: [new AttachmentBuilder(buffer, { name: 'top10-ub.png' })],
+        });
+      }
+
+      // ── Global ──
       const rankings = await this.prisma.globalRanking.findMany({
         take: 10,
         orderBy: { points: 'desc' },
@@ -213,6 +252,13 @@ export class RankingGroup {
       }));
       const buffer = await generateLeaderboardCard(entries);
       return interaction.editReply({
+        embeds: [
+          new EmbedBuilder()
+            .setColor(Colors.Primary)
+            .setTitle('🏆 Top 10 — RPB')
+            .setImage('attachment://top10.png')
+            .setFooter({ text: 'rpbey.fr/rankings' }),
+        ],
         files: [new AttachmentBuilder(buffer, { name: 'top10.png' })],
       });
     } catch (error) {
