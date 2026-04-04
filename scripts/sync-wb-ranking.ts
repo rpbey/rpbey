@@ -49,11 +49,17 @@ async function run() {
   const tournaments: any[] = [];
 
   for (const file of files.sort()) {
-    const match = file.match(/wb_ub(\d+)\.json/);
-    if (!match?.[1]) continue;
-    const num = parseInt(match[1], 10);
-    if (!UB_NUMBERS.includes(num)) continue;
-    tournaments.push(JSON.parse(await readFile(join(dir, file), 'utf-8')));
+    const ubMatch = file.match(/wb_ub(\d+)\.json/);
+    if (ubMatch?.[1]) {
+      const num = parseInt(ubMatch[1], 10);
+      if (!UB_NUMBERS.includes(num)) continue;
+      tournaments.push(JSON.parse(await readFile(join(dir, file), 'utf-8')));
+      continue;
+    }
+    // Also load hors-série tournaments
+    if (file.match(/wb_hs_\w+\.json/)) {
+      tournaments.push(JSON.parse(await readFile(join(dir, file), 'utf-8')));
+    }
   }
   console.log(`Loaded ${tournaments.length} tournaments`);
 

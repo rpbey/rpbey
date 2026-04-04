@@ -27,6 +27,13 @@ const TOURNAMENT_MAP: Record<string, number> = {
   UB13: 13,
 };
 
+// Hors-Série tournaments: Challonge slug → { file key, label }
+const HS_TOURNAMENT_MAP: Record<string, { key: string; label: string }> = {
+  lif1eofk: { key: 'patoo', label: 'Ultime Défi de Patoo' },
+  l6zda4qm: { key: 'jgf', label: 'Japan Geek Festival' },
+  UltimeBatailleHS: { key: 'phase2', label: 'UB Hors-Série Phase 2' },
+};
+
 async function run() {
   const scraper = new ChallongeScraper();
   await scraper.init();
@@ -48,6 +55,24 @@ async function run() {
       console.log(`✅ ${data.participants.length} joueurs, ${data.matches.length} matchs → data/wb_history/${fileName}`);
     } catch (error) {
       console.error(`❌ Erreur pour UB #${ubNumber} (${slug}):`, error);
+    }
+  }
+
+  // Scrape hors-série tournaments
+  const hsSlugs = Object.keys(HS_TOURNAMENT_MAP);
+  console.log(`\n🎯 Tournois Hors-Série (${hsSlugs.length}) :`, hsSlugs);
+
+  for (const slug of hsSlugs) {
+    const hs = HS_TOURNAMENT_MAP[slug]!;
+    try {
+      console.log(`\n--- 🏆 Scraping HS: ${hs.label} (${slug}) ---`);
+      const data = await scraper.scrape(slug);
+
+      const fileName = `wb_hs_${hs.key}.json`;
+      await writeFile(join(resultsDir, fileName), JSON.stringify(data, null, 2));
+      console.log(`✅ ${data.participants.length} joueurs, ${data.matches.length} matchs → data/wb_history/${fileName}`);
+    } catch (error) {
+      console.error(`❌ Erreur pour HS ${hs.label} (${slug}):`, error);
     }
   }
 

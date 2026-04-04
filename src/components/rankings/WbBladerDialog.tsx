@@ -74,6 +74,19 @@ export function WbBladerDialog({ blader, open, onClose }: WbBladerDialogProps) {
       ? ((blader.totalWins / totalMatches) * 100).toFixed(1)
       : '0';
 
+  const HS_DISPLAY_NAMES: Record<string, string> = {
+    wb_hs_patoo: 'HS: Défi Patoo',
+    wb_hs_jgf: 'HS: Japan Geek',
+    wb_hs_phase2: 'HS: Phase 2',
+  };
+
+  const formatTournamentLabel = (slug: string) => {
+    if (HS_DISPLAY_NAMES[slug]) return HS_DISPLAY_NAMES[slug];
+    const ubMatch = slug.match(/wb_ub(\d+)/);
+    if (ubMatch?.[1]) return `UB ${ubMatch[1]}`;
+    return slug.toUpperCase().replace('_', ' ');
+  };
+
   const getChallongeUrl = (tournamentSlug: string) => {
     const slug = tournamentSlug.toLowerCase();
     return `https://challonge.com/fr/${slug}`;
@@ -206,7 +219,7 @@ export function WbBladerDialog({ blader, open, onClose }: WbBladerDialogProps) {
                   }
                 >
                   <ListItemText
-                    primary={h.tournament.toUpperCase().replace('_', ' ')}
+                    primary={formatTournamentLabel(h.tournament)}
                     secondary={`${h.wins}W - ${h.losses}L`}
                     primaryTypographyProps={{
                       fontWeight: 'bold',

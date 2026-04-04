@@ -5,9 +5,19 @@ import { join } from 'node:path';
 import { revalidatePath } from 'next/cache';
 import { prisma } from '@/lib/prisma';
 
-// Season config: which UB numbers belong to each season
-const SEASON_CONFIG: Record<number, number[]> = {
-  1: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
+// Season config: which UB numbers and HS keys belong to each season
+const SEASON_CONFIG: Record<number, { ub: number[]; hs: string[] }> = {
+  1: {
+    ub: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
+    hs: ['patoo', 'jgf', 'phase2'],
+  },
+};
+
+// Display labels for hors-série tournaments
+const HS_LABELS: Record<string, string> = {
+  patoo: 'HS: Défi Patoo',
+  jgf: 'HS: Japan Geek',
+  phase2: 'HS: Phase 2',
 };
 
 // Manual name overrides for known aliases/staff accounts
@@ -51,9 +61,11 @@ interface TournamentData {
 export interface WbTournamentMeta {
   slug: string;
   ubNumber: number;
+  label: string;
   participantsCount: number;
   matchesCount: number;
   format: string;
+  isHorsSerie?: boolean;
 }
 
 interface PlayerStats {
@@ -124,27 +136,53 @@ async function loadTournamentData(season: number) {
   } catch {
     return { tournaments: [], metas: [] };
   }
-  const ubNumbers = SEASON_CONFIG[season] || [];
+  const seasonConfig = SEASON_CONFIG[season];
+  const ubNumbers = seasonConfig?.ub || [];
+  const hsKeys = seasonConfig?.hs || [];
 
   const tournaments: TournamentData[] = [];
   const metas: WbTournamentMeta[] = [];
 
   for (const file of files.sort()) {
-    const match = file.match(/wb_ub(\d+)\.json/);
-    if (!match?.[1]) continue;
-    const ubNum = parseInt(match[1], 10);
-    if (ubNumbers.length > 0 && !ubNumbers.includes(ubNum)) continue;
+    // Match UB tournaments: wb_ub1.json, wb_ub2.json, etc.
+    const ubMatch = file.match(/wb_ub(\d+)\.json/);
+    if (ubMatch?.[1]) {
+      const ubNum = parseInt(ubMatch[1], 10);
+      if (ubNumbers.length > 0 && !ubNumbers.includes(ubNum)) continue;
 
-    const content = await readFile(join(historyDir, file), 'utf-8');
-    const data: TournamentData = JSON.parse(content);
-    tournaments.push(data);
-    metas.push({
-      slug: `wb_ub${ubNum}`,
-      ubNumber: ubNum,
-      participantsCount: data.metadata.participantsCount,
-      matchesCount: data.matches?.length || 0,
-      format: data.metadata.type || 'double elimination',
-    });
+      const content = await readFile(join(historyDir, file), 'utf-8');
+      const data: TournamentData = JSON.parse(content);
+      tournaments.push(data);
+      metas.push({
+        slug: `wb_ub${ubNum}`,
+        ubNumber: ubNum,
+        label: `UB ${ubNum}`,
+        participantsCount: data.metadata.participantsCount,
+        matchesCount: data.matches?.length || 0,
+        format: data.metadata.type || 'double elimination',
+      });
+      continue;
+    }
+
+    // Match HS tournaments: wb_hs_patoo.json, wb_hs_jgf.json, etc.
+    const hsMatch = file.match(/wb_hs_(\w+)\.json/);
+    if (hsMatch?.[1]) {
+      const hsKey = hsMatch[1];
+      if (hsKeys.length > 0 && !hsKeys.includes(hsKey)) continue;
+
+      const content = await readFile(join(historyDir, file), 'utf-8');
+      const data: TournamentData = JSON.parse(content);
+      tournaments.push(data);
+      metas.push({
+        slug: `wb_hs_${hsKey}`,
+        ubNumber: 0,
+        label: HS_LABELS[hsKey] || `HS: ${hsKey}`,
+        participantsCount: data.metadata.participantsCount,
+        matchesCount: data.matches?.length || 0,
+        format: data.metadata.type || 'single elimination',
+        isHorsSerie: true,
+      });
+    }
   }
 
   return { tournaments, metas };

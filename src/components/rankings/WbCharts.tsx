@@ -12,9 +12,11 @@ import {
 interface WbTournamentMeta {
   slug: string;
   ubNumber: number;
+  label: string;
   participantsCount: number;
   matchesCount: number;
   format: string;
+  isHorsSerie?: boolean;
 }
 
 interface WbChartsProps {
@@ -62,9 +64,14 @@ export function WbCharts({ bladers, allTournamentMetas = [] }: WbChartsProps) {
   }));
 
   const participantsEvolution = [...allTournamentMetas]
-    .sort((a, b) => a.ubNumber - b.ubNumber)
+    .sort((a, b) => {
+      // UB tournaments first (sorted by number), then HS at the end
+      if (a.isHorsSerie && !b.isHorsSerie) return 1;
+      if (!a.isHorsSerie && b.isHorsSerie) return -1;
+      return a.ubNumber - b.ubNumber;
+    })
     .map((m) => ({
-      ub: `UB ${m.ubNumber}`,
+      ub: m.label || `UB ${m.ubNumber}`,
       participants: m.participantsCount,
     }));
 

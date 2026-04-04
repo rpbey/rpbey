@@ -30,9 +30,11 @@ interface Champion {
 interface WbTournamentMeta {
   slug: string;
   ubNumber: number;
+  label: string;
   participantsCount: number;
   matchesCount: number;
   format: string;
+  isHorsSerie?: boolean;
 }
 
 interface TournamentInfo {

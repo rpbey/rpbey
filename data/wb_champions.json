@@ -1,8 +1,23 @@
 [
   {
+    "tournament": "wb_hs_phase2",
+    "winner": "Tategami",
+    "date": "HS: Phase 2"
+  },
+  {
     "tournament": "wb_ub13",
     "winner": "Lewis 973",
     "date": "UB #13"
+  },
+  {
+    "tournament": "wb_hs_jgf",
+    "winner": "GTO",
+    "date": "HS: Japan Geek"
+  },
+  {
+    "tournament": "wb_hs_patoo",
+    "winner": "Xymore",
+    "date": "HS: Défi Patoo"
   },
   {
     "tournament": "wb_ub12",
