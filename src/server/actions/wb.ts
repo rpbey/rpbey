@@ -63,6 +63,9 @@ interface PlayerStats {
   participations: number;
   tournaments: string[];
   displayName: string;
+  tournamentWins: number;
+  top3: number;
+  top5: number;
 }
 
 /**
@@ -185,6 +188,18 @@ function computeRanking(tournaments: TournamentData[]) {
   const canonicalNames = new Map<string, string>();
   const nbTournois = tournaments.length;
 
+  const initStats = (name: string): PlayerStats => ({
+    wins: 0,
+    losses: 0,
+    points: 0,
+    participations: 0,
+    tournaments: [],
+    displayName: name,
+    tournamentWins: 0,
+    top3: 0,
+    top5: 0,
+  });
+
   for (let tIdx = 0; tIdx < tournaments.length; tIdx++) {
     const tournament = tournaments[tIdx]!;
     const idToName = buildNameMap(tournament.participants, canonicalNames);
@@ -203,38 +218,17 @@ function computeRanking(tournaments: TournamentData[]) {
       const wKey = winnerName.toLowerCase();
       const lKey = loserName.toLowerCase();
 
-      if (!playerStats.has(wKey)) {
-        playerStats.set(wKey, {
-          wins: 0,
-          losses: 0,
-          points: 0,
-          participations: 0,
-          tournaments: [],
-          displayName: winnerName,
-        });
-      }
-      if (!playerStats.has(lKey)) {
-        playerStats.set(lKey, {
-          wins: 0,
-          losses: 0,
-          points: 0,
-          participations: 0,
-          tournaments: [],
-          displayName: loserName,
-        });
-      }
+      if (!playerStats.has(wKey)) playerStats.set(wKey, initStats(winnerName));
+      if (!playerStats.has(lKey)) playerStats.set(lKey, initStats(loserName));
 
       const winner = playerStats.get(wKey)!;
       const loser = playerStats.get(lKey)!;
 
       const parsed = parseMatchScores(match.scores);
       if (parsed) {
-        // Winner gets their actual score (e.g. 4 or 5), weighted by recency
         winner.points += Math.round(parsed.winnerScore * recency * 100) / 100;
-        // Loser gets their rounds won, weighted by recency
         loser.points += Math.round(parsed.loserScore * recency * 100) / 100;
       } else {
-        // Fallback: flat 4 for winner, 0 for loser
         winner.points += Math.round(4 * recency * 100) / 100;
       }
 
@@ -242,14 +236,27 @@ function computeRanking(tournaments: TournamentData[]) {
       loser.losses += 1;
     }
 
+    // Track participation + tournament placements
     const slug = tournament.metadata.url.split('/').pop() || '';
     for (const p of tournament.participants) {
       const normalized = normalizeName(p.name);
       const key = normalized.toLowerCase();
-      const stats = playerStats.get(key);
-      if (stats && !stats.tournaments.includes(slug)) {
+      if (!playerStats.has(key)) playerStats.set(key, initStats(normalized));
+      const stats = playerStats.get(key)!;
+      if (!stats.tournaments.includes(slug)) {
         stats.tournaments.push(slug);
         stats.participations += 1;
+      }
+      // Placement bonuses (weighted by recency)
+      if (p.finalRank === 1) {
+        stats.tournamentWins += 1;
+        stats.top3 += 1;
+        stats.top5 += 1;
+      } else if (p.finalRank && p.finalRank <= 3) {
+        stats.top3 += 1;
+        stats.top5 += 1;
+      } else if (p.finalRank && p.finalRank <= 5) {
+        stats.top5 += 1;
       }
     }
   }
@@ -273,12 +280,19 @@ function computeRanking(tournaments: TournamentData[]) {
     const winrate = stats.wins / totalMatches;
     const winscore = winrate + pointAvg / 100;
 
-    // Participation-only punish: gentle power curve (0→1)
-    // Decoupled from pointAvg to avoid double-counting
+    // Participation factor: gentle power curve
     const participationRate = stats.participations / nbTournois;
     const punish = participationRate ** 0.6;
 
-    const score = Math.round(punish * winscore * 100000);
+    // Placement bonus: rewards tournament victories and podiums
+    // 1st = +15%, top3 = +5%, top5 = +2% (per occurrence)
+    const placementBonus =
+      1 +
+      stats.tournamentWins * 0.15 +
+      (stats.top3 - stats.tournamentWins) * 0.05 +
+      (stats.top5 - stats.top3) * 0.02;
+
+    const score = Math.round(punish * winscore * placementBonus * 100000);
 
     rankings.push({
       rank: 0,

@@ -32,6 +32,17 @@ function parseMatchScores(scores: string | null) {
   return { winnerScore: Math.max(a, b), loserScore: Math.min(a, b) };
 }
 
+interface Stats {
+  name: string;
+  wins: number;
+  losses: number;
+  points: number;
+  tournaments: Set<string>;
+  tournamentWins: number;
+  top3: number;
+  top5: number;
+}
+
 async function run() {
   const dir = join(process.cwd(), 'data', 'wb_history');
   const files = await readdir(dir);
@@ -47,8 +58,19 @@ async function run() {
   console.log(`Loaded ${tournaments.length} tournaments`);
 
   const nbTournois = tournaments.length;
-  const playerStats = new Map<string, any>();
+  const playerStats = new Map<string, Stats>();
   const canonicalNames = new Map<string, string>();
+
+  const init = (name: string): Stats => ({
+    name,
+    wins: 0,
+    losses: 0,
+    points: 0,
+    tournaments: new Set(),
+    tournamentWins: 0,
+    top3: 0,
+    top5: 0,
+  });
 
   for (let tIdx = 0; tIdx < tournaments.length; tIdx++) {
     const t = tournaments[tIdx];
@@ -71,22 +93,8 @@ async function run() {
       const wKey = wName.toLowerCase();
       const lKey = lName.toLowerCase();
 
-      if (!playerStats.has(wKey))
-        playerStats.set(wKey, {
-          name: wName,
-          wins: 0,
-          losses: 0,
-          points: 0,
-          tournaments: new Set(),
-        });
-      if (!playerStats.has(lKey))
-        playerStats.set(lKey, {
-          name: lName,
-          wins: 0,
-          losses: 0,
-          points: 0,
-          tournaments: new Set(),
-        });
+      if (!playerStats.has(wKey)) playerStats.set(wKey, init(wName));
+      if (!playerStats.has(lKey)) playerStats.set(lKey, init(lName));
 
       const w = playerStats.get(wKey)!;
       const l = playerStats.get(lKey)!;
@@ -102,13 +110,25 @@ async function run() {
       l.losses++;
     }
 
+    // Track participation + placements
     const slug = t.metadata?.url?.split('/').pop() || t.metadata?.name || '';
     for (const p of t.participants) {
       const normalized = normalizeName(p.name);
       const key = normalized.toLowerCase();
-      const stats = playerStats.get(key);
-      if (stats && !stats.tournaments.has(slug)) {
+      if (!playerStats.has(key)) playerStats.set(key, init(normalized));
+      const stats = playerStats.get(key)!;
+      if (!stats.tournaments.has(slug)) {
         stats.tournaments.add(slug);
+      }
+      if (p.finalRank === 1) {
+        stats.tournamentWins++;
+        stats.top3++;
+        stats.top5++;
+      } else if (p.finalRank && p.finalRank <= 3) {
+        stats.top3++;
+        stats.top5++;
+      } else if (p.finalRank && p.finalRank <= 5) {
+        stats.top5++;
       }
     }
   }
@@ -122,7 +142,15 @@ async function run() {
       const winscore = winRate + pointsAvg / 100;
       const participationRate = p.tournaments.size / nbTournois;
       const punish = Math.pow(participationRate, 0.6);
-      const score = Math.round(punish * winscore * 100000);
+
+      // Placement bonus: 1st +15%, top3 +5%, top5 +2%
+      const placementBonus =
+        1 +
+        p.tournamentWins * 0.15 +
+        (p.top3 - p.tournamentWins) * 0.05 +
+        (p.top5 - p.top3) * 0.02;
+
+      const score = Math.round(punish * winscore * placementBonus * 100000);
       return {
         rank: 0,
         playerName: p.name,
@@ -132,6 +160,9 @@ async function run() {
         participation: p.tournaments.size,
         winRate: `${(winRate * 100).toFixed(1)}%`,
         pointsAverage: pointsAvg.toFixed(2),
+        _tw: p.tournamentWins,
+        _t3: p.top3,
+        _t5: p.top5,
       };
     })
     .sort(
@@ -142,11 +173,13 @@ async function run() {
     );
 
   ranked.forEach((r, i) => (r.rank = i + 1));
-  console.log(`Computed ${ranked.length} rankings (Ichigo v2)`);
+  console.log(`Computed ${ranked.length} rankings (Ichigo v3)`);
 
   await prisma.$transaction([
     prisma.wbRanking.deleteMany(),
-    prisma.wbRanking.createMany({ data: ranked }),
+    prisma.wbRanking.createMany({
+      data: ranked.map(({ _tw, _t3, _t5, ...r }) => r),
+    }),
   ]);
 
   console.log(`\n✅ DB updated! Top 15:`);
@@ -154,7 +187,7 @@ async function run() {
     .slice(0, 15)
     .forEach((r) =>
       console.log(
-        `  ${r.rank}. ${r.playerName} (score: ${r.score}, W/L: ${r.wins}/${r.losses}, UBs: ${r.participation}, avg: ${r.pointsAverage})`,
+        `  ${r.rank}. ${r.playerName} (score: ${r.score}, W/L: ${r.wins}/${r.losses}, UBs: ${r.participation}, 🏆${r._tw} 🥉${r._t3} top5:${r._t5})`,
       ),
     );
   await prisma.$disconnect();
