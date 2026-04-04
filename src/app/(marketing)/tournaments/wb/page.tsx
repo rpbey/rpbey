@@ -189,9 +189,19 @@ export default async function WbPage({ searchParams }: WbPageProps) {
       sx={{
         minHeight: '100vh',
         background:
-          'radial-gradient(circle at 50% -20%, #1a0a0a 0%, #050505 100%)',
+          'radial-gradient(ellipse at 50% 0%, #1a0a2e 0%, #0d0618 30%, #080410 60%, #050308 100%)',
         pt: { xs: 2, md: 4 },
         pb: 8,
+        position: 'relative',
+        '&::before': {
+          content: '""',
+          position: 'fixed',
+          inset: 0,
+          backgroundImage:
+            'repeating-linear-gradient(135deg, transparent, transparent 20px, rgba(120,60,200,0.015) 20px, rgba(120,60,200,0.015) 21px)',
+          pointerEvents: 'none',
+          zIndex: 0,
+        },
       }}
     >
       <Container maxWidth="lg" sx={{ px: { xs: 1, sm: 2, md: 3 } }}>
