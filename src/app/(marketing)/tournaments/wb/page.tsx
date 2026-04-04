@@ -19,6 +19,7 @@ import { WbCharts } from '@/components/rankings/WbCharts';
 import { WbHallOfFame } from '@/components/rankings/WbHallOfFame';
 import { WbTable } from '@/components/rankings/WbTable';
 import { WbTabs } from '@/components/rankings/WbTabs';
+import { WbTournamentShowcase } from '@/components/rankings/WbTournamentShowcase';
 import { prisma } from '@/lib/prisma';
 import { getWbSeasonStats } from '@/server/actions/wb';
 
@@ -302,6 +303,9 @@ export default async function WbPage({ searchParams }: WbPageProps) {
             tournamentMetas={allTournamentMetas}
           />
         )}
+
+        {/* Tournament Showcase */}
+        <WbTournamentShowcase />
 
         <Box sx={{ position: 'relative' }}>
           <WbTabs

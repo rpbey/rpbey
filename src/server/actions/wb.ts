@@ -7,7 +7,7 @@ import { prisma } from '@/lib/prisma';
 
 // Season config: which UB numbers belong to each season
 const SEASON_CONFIG: Record<number, number[]> = {
-  1: [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
+  1: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
 };
 
 // Manual name overrides for known aliases/staff accounts
