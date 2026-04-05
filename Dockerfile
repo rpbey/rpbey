@@ -1,8 +1,10 @@
-# RPB Dashboard - Dockerfile for Production
+# RPB Dashboard - Dockerfile for Production (Optimized)
 
+# ============================================
+# Base stage — shared runtime dependencies
+# ============================================
 FROM node:24-slim AS base
 
-# Install OpenSSL (required by Prisma) and runtime libs for canvas/puppeteer
 RUN apt-get update && apt-get install -y --no-install-recommends \
     openssl \
     ca-certificates \
@@ -14,19 +16,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libjpeg62-turbo \
     libgif7 \
     librsvg2-2 \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-# Enable corepack for pnpm
 RUN corepack enable && corepack prepare pnpm@10.27.0 --activate
 
 WORKDIR /app
 
 # ============================================
-# Builder stage
+# Dependencies stage — install all deps (cached layer)
 # ============================================
-FROM base AS builder
+FROM base AS deps
 
-# Install build essentials for native modules
 RUN apt-get update && apt-get install -y --no-install-recommends \
     python3 \
     build-essential \
@@ -36,20 +36,25 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libgif-dev \
     librsvg2-dev \
     pkg-config \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-ENV NEXT_TELEMETRY_DISABLED=1
-ENV NODE_OPTIONS="--max-old-space-size=8192"
-
-# Copy configs
+# Copy only package manifests first (maximizes layer cache)
 COPY .npmrc package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY bot/package.json ./bot/
-# COPY packages/rppb-api/package.json ./packages/rppb-api/ # Add if exists
 
-# Install ALL dependencies (including dev)
-RUN --mount=type=cache,target=/root/.local/share/pnpm/store pnpm install --frozen-lockfile
+# Install all dependencies (dev + prod) with pnpm store cache
+RUN --mount=type=cache,target=/root/.local/share/pnpm/store \
+    pnpm install --frozen-lockfile
 
-# Copy source
+# ============================================
+# Builder stage — build the app
+# ============================================
+FROM deps AS builder
+
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV NODE_OPTIONS="--max-old-space-size=4096"
+
+# Copy source code (deps already installed)
 COPY . .
 
 # Generate Prisma Client
@@ -61,9 +66,13 @@ ENV DATABASE_URL="postgresql://postgres:postgres@db:5432/rpb_dashboard"
 ENV PRISMA_CLIENT_ENGINE_TYPE=library
 RUN pnpm run build
 
-# Prepare a clean production node_modules
-# We do this in the builder because we have the build tools for native modules
-RUN rm -rf node_modules && pnpm install --prod --frozen-lockfile
+# ============================================
+# Prod-deps stage — production dependencies only
+# ============================================
+FROM deps AS prod-deps
+
+RUN --mount=type=cache,target=/root/.local/share/pnpm/store \
+    rm -rf node_modules && pnpm install --prod --frozen-lockfile
 
 # ============================================
 # Production runner stage
@@ -83,11 +92,10 @@ RUN addgroup --system --gid 1001 nodejs && \
 
 WORKDIR /app
 
-# Copy production dependencies
-COPY --from=builder --chown=nextjs:nodejs /app/node_modules ./node_modules
+# Copy production dependencies from dedicated stage
+COPY --from=prod-deps --chown=nextjs:nodejs /app/node_modules ./node_modules
 
 # Copy Next.js standalone build
-# Standalone includes its own node_modules but we might need the root ones for the bot
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=builder --chown=nextjs:nodejs /app/public ./public

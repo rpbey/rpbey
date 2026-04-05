@@ -16,7 +16,13 @@ export class PrismaService extends PrismaClient {
 
     // Removed auto-fallback for production internal networking since bot is on host.
 
-    const pool = new Pool({ connectionString });
+    const pool = new Pool({
+      connectionString,
+      max: 10,
+      min: 1,
+      idleTimeoutMillis: 30_000,
+      connectionTimeoutMillis: 10_000,
+    });
     const adapter = new PrismaPg(pool);
 
     super({ adapter });
@@ -33,7 +39,13 @@ function createPrismaClient() {
 
   // Removed auto-fallback for production internal networking since bot is on host.
 
-  const pool = new Pool({ connectionString });
+  const pool = new Pool({
+    connectionString,
+    max: 10,
+    min: 1,
+    idleTimeoutMillis: 30_000,
+    connectionTimeoutMillis: 10_000,
+  });
   const adapter = new PrismaPg(pool);
   return new PrismaClient({ adapter });
 }

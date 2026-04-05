@@ -14,6 +14,23 @@ services:
       - rpb-network
     ports:
       - "5432:5432"
+    deploy:
+      resources:
+        limits:
+          memory: 1g
+          cpus: "1.0"
+        reservations:
+          memory: 256m
+    command: >
+      postgres
+        -c shared_buffers=256MB
+        -c work_mem=8MB
+        -c maintenance_work_mem=128MB
+        -c effective_cache_size=512MB
+        -c max_connections=50
+        -c wal_buffers=8MB
+        -c checkpoint_completion_target=0.9
+    shm_size: 256mb
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
@@ -38,6 +55,13 @@ services:
     volumes:
       - ./public/uploads:/app/public/uploads
       - ./data:/app/data
+    deploy:
+      resources:
+        limits:
+          memory: 2g
+          cpus: "2.0"
+        reservations:
+          memory: 512m
     depends_on:
       db:
         condition: service_healthy
@@ -60,6 +84,13 @@ services:
       - ./certbot/conf:/etc/letsencrypt
       - ./certbot/www:/var/www/certbot
       - ./public/uploads:/app/public/uploads:ro # Nginx serves uploads directly (read-only)
+    deploy:
+      resources:
+        limits:
+          memory: 256m
+          cpus: "0.5"
+        reservations:
+          memory: 64m
     depends_on:
       - dashboard
     networks:

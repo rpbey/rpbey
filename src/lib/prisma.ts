@@ -14,7 +14,13 @@ const finalConnectionString =
     ? connectionString.replace(/localhost|127\.0\.0\.1/, 'db')
     : connectionString;
 
-const pool = new pg.Pool({ connectionString: finalConnectionString });
+const pool = new pg.Pool({
+  connectionString: finalConnectionString,
+  max: 20,
+  min: 2,
+  idleTimeoutMillis: 30_000,
+  connectionTimeoutMillis: 10_000,
+});
 const adapter = new PrismaPg(pool);
 
 export const prisma =

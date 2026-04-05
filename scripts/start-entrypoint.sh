@@ -14,6 +14,8 @@ echo ">>> Running database migrations..."
 ./node_modules/.bin/prisma migrate deploy || echo ">>> WARNING: Migrations failed or not needed."
 
 echo ">>> Starting Next.js dashboard..."
+export NODE_OPTIONS="--max-old-space-size=1024"
+
 if [ -f "server.js" ]; then
   exec node server.js
 elif [ -f ".next/standalone/server.js" ]; then
