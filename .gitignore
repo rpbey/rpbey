@@ -36,11 +36,6 @@ gha-creds-*.json
 *.swp
 *.swo
 
-# AI Agent configs
-.gemini/
-GEMINI.md
-bot/GEMINI.md
-
 # Logs
 *.log
 logs/
@@ -80,6 +75,13 @@ bird_cookie.json
 
 # Docker
 *.pid
+
+# SSL / Certbot (keep only renewal config)
+certbot/conf/archive/
+certbot/conf/accounts/
+certbot/conf/live/
+certbot/conf/options-ssl-nginx.conf
+certbot/conf/ssl-dhparams.pem
 
 # Docs archives & misc
 docs/archive/
