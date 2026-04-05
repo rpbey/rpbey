@@ -161,6 +161,9 @@ importers:
       html2canvas:
         specifier: ^1.4.1
         version: 1.4.1
+      imgur:
+        specifier: ^2.5.0
+        version: 2.5.0
       leaflet:
         specifier: ^1.9.4
         version: 1.9.4
@@ -7357,6 +7360,10 @@ packages:
     resolution: {integrity: sha512-rH+46sQJ2dlwfjfhCyNx5thzrv+dtmBIhPHk0zgRUukHzZ/kRueTJXoYYsclBaKcSMBWuGbOFXtioLpzTb5euw==}
     engines: {node: '>=16.x'}
     hasBin: true
+
+  imgur@2.5.0:
+    resolution: {integrity: sha512-GVbXqvn/Jap56u8cBx75CMmd6aYmABMI7HTo4+5g279gJ+JcXPlhH6d1bWlDRE0BbGgZCOkyFgPrxHHXLjDmkw==}
+    engines: {node: '>=14'}
 
   immediate@3.0.6:
     resolution: {integrity: sha512-XXOFtyqDjNDAQxVfYxuF7g9Il/IbWmmlQg2MYKOH8ExIT1qg6xc4zyS3HaEEATgs1btfzxq15ciUiY7gjSXRGQ==}
@@ -15078,9 +15085,7 @@ snapshots:
       metro-runtime: 0.83.3
     transitivePeerDependencies:
       - '@babel/core'
-      - bufferutil
       - supports-color
-      - utf-8-validate
 
   '@react-native/normalize-colors@0.81.5': {}
 
@@ -19864,6 +19869,14 @@ snapshots:
   image-size@1.2.1:
     dependencies:
       queue: 6.0.2
+
+  imgur@2.5.0:
+    dependencies:
+      axios: 1.13.2
+      form-data: 4.0.5
+      whatwg-url: 14.2.0
+    transitivePeerDependencies:
+      - debug
 
   immediate@3.0.6: {}
 

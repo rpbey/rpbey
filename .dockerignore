@@ -40,10 +40,6 @@ bot/dist/
 .DS_Store
 Thumbs.db
 
-# --- Gemini / Agent Artifacts ---
-.gemini/
-GEMINI.md
-bot/GEMINI.md
 data_bey_analysis.md
 fandom_dump.md
 llms-full.txt
