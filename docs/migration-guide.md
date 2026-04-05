@@ -498,14 +498,20 @@ redis-cli ping
 ### Restaurer les données Redis
 
 ```bash
+# Vérifier le data directory et le nom du fichier dump
+redis-cli CONFIG GET dir
+# Attendu : /var/lib/redis (défaut Ubuntu)
+redis-cli CONFIG GET dbfilename
+# Attendu : dump.rdb
+
 # Arrêter Redis
 sudo systemctl stop redis-server
 
-# Copier le dump RDB
+# Copier le dump RDB dans le data directory
 sudo cp /root/rpb_redis.rdb /var/lib/redis/dump.rdb
 sudo chown redis:redis /var/lib/redis/dump.rdb
 
-# Redémarrer Redis (charge automatiquement le dump)
+# Redémarrer Redis (charge automatiquement le dump au démarrage)
 sudo systemctl start redis-server
 
 # Vérifier les données restaurées
