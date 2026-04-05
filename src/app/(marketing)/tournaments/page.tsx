@@ -50,7 +50,7 @@ const BTS_EDITIONS = [
     file: 'B_TS3.json',
     name: 'Bey-Tamashii Séries #3',
     date: '2026-03-01',
-    poster: '/tournaments/BTS3_poster.gif',
+    poster: '/tournaments/BTS3_poster.webp',
     fallbackCount: 73,
   },
   {
@@ -58,7 +58,7 @@ const BTS_EDITIONS = [
     file: 'B_TS2.json',
     name: 'Bey-Tamashii Séries #2',
     date: '2026-02-08',
-    poster: '/tournaments/BTS2_optimized.webp',
+    poster: '/tournaments/BTS2.webp',
     fallbackCount: 60,
   },
   {
@@ -66,7 +66,7 @@ const BTS_EDITIONS = [
     file: 'B_TS1.json',
     name: 'Bey-Tamashii Séries #1',
     date: '2026-01-11',
-    poster: '/tournaments/BTS1_poster.png',
+    poster: '/tournaments/BTS1_poster.webp',
     fallbackCount: 69,
   },
 ];
@@ -88,7 +88,7 @@ const PARTNER_SERIES = [
     name: 'Wild Breakers',
     subtitle: 'Ultime Bataille',
     href: '/tournaments/wb',
-    logo: '/wb-logo.jpg',
+    logo: '/wb-logo.webp',
     logoWidth: 44,
     logoHeight: 44,
     logoRounded: true,
@@ -335,7 +335,7 @@ export default async function TournamentsPage() {
               title="Bey-Tamashii Séries"
               accent="OFFICIEL RPB"
               accentColor="var(--rpb-primary)"
-              logo="/logo.png"
+              logo="/logo.webp"
             />
 
             <Grid container spacing={{ xs: 1.5, md: 2.5 }}>

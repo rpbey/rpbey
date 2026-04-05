@@ -77,8 +77,8 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
     const load = (url: string | null) => safeLoadImage(loadImage, url);
     const bladeUrls = deck.items.map((item) => item.blade?.imageUrl ?? null);
     const [background, logo, ...beyImages] = (await Promise.all([
-      load('/deckbox.png'),
-      load('/logo.png'),
+      load('/deckbox.webp'),
+      load('/logo.webp'),
       ...bladeUrls.map(load),
     ])) as (ReturnType<typeof loadImage> extends Promise<infer T>
       ? T | null

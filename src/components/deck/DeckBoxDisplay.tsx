@@ -94,7 +94,7 @@ export function DeckBoxDisplay({ deck }: DeckBoxDisplayProps) {
           }}
         >
           <Image
-            src="/deckbox.png"
+            src="/deckbox.webp"
             alt="Deckbox"
             fill
             style={{ objectFit: 'cover' }}

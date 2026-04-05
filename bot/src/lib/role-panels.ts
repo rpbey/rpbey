@@ -24,7 +24,7 @@ export const ROLE_PANELS: RolePanelConfig[] = [
     title: 'Souhaitez-vous assister aux tournois RPB ?',
     description:
       'Choisissez votre rôle pour être notifié des tournois en tant que participant ou spectateur.',
-    image: 'https://rpbey.fr/tournoi.png',
+    image: 'https://rpbey.fr/tournoi.webp',
     color: RPB.Color, // Primary Red
     buttons: [
       {

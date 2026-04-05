@@ -232,7 +232,7 @@ export default async function WbPage({ searchParams }: WbPageProps) {
               }}
             >
               <Image
-                src="/wb-logo.jpg"
+                src="/wb-logo.webp"
                 alt="Wild Breakers Logo"
                 fill
                 style={{ objectFit: 'contain', borderRadius: '50%' }}

@@ -340,7 +340,7 @@ export async function generateMetaTopCanvas(
     }
   }
   const images = await loadImages(allNames);
-  const logo = await safeLoadImage('/logo.png');
+  const logo = await safeLoadImage('/logo.webp');
 
   // --- Header ---
   if (logo) ctx.drawImage(logo, 40, 18, 55, 55);
@@ -612,7 +612,7 @@ export async function generateMetaComboCanvas(
 
   const partNames = tops.map((t) => t.comp?.name).filter(Boolean) as string[];
   const images = await loadImages(partNames);
-  const logo = await safeLoadImage('/logo.png');
+  const logo = await safeLoadImage('/logo.webp');
 
   // Header
   if (logo) ctx.drawImage(logo, 40, 16, 48, 48);

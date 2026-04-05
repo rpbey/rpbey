@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     data.episode.synopsis ||
     `Épisode ${num} de ${data.series.titleFr || data.series.title}`;
   const image =
-    data.episode.thumbnailUrl || data.series.posterUrl || '/banner.png';
+    data.episode.thumbnailUrl || data.series.posterUrl || '/banner.webp';
 
   return {
     title,

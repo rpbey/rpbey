@@ -168,12 +168,12 @@ export default function TournamentDetail({
   const activityLog = (liveData?.activityLog || []) as LogEntry[];
 
   const posterUrl = isBTS3
-    ? '/tournaments/BTS3_poster.gif'
+    ? '/tournaments/BTS3_poster.webp'
     : isBTS2
-      ? '/tournaments/BTS2_optimized.webp'
+      ? '/tournaments/BTS2.webp'
       : isBTS1
         ? '/tournaments/B_TS1.svg'
-        : '/logo.png';
+        : '/logo.webp';
 
   return (
     <Box

@@ -108,6 +108,26 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "static.wikia.nocookie.net",
       },
+      {
+        protocol: "https",
+        hostname: "beyblade.takaratomy.co.jp",
+      },
+      {
+        protocol: "https",
+        hostname: "user-assets.challonge.com",
+      },
+      {
+        protocol: "https",
+        hostname: "secure.gravatar.com",
+      },
+      {
+        protocol: "https",
+        hostname: "beybladeplanner.com",
+      },
+      {
+        protocol: "https",
+        hostname: "i.imgur.com",
+      },
     ],
   },
 

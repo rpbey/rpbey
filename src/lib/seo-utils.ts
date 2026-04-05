@@ -22,7 +22,7 @@ export function createPageMetadata(opts: {
   type?: 'website' | 'article' | 'profile';
 }): Metadata {
   const { title, description, path, type = 'website' } = opts;
-  const image = opts.image || '/banner.png';
+  const image = opts.image || '/banner.webp';
   const url = `${baseUrl}${path}`;
 
   return {
@@ -82,7 +82,7 @@ export function generateTechArticleJsonLd(article: {
       name: 'République Populaire du Beyblade',
       logo: {
         '@type': 'ImageObject',
-        url: `${baseUrl}/logo.png`,
+        url: `${baseUrl}/logo.webp`,
       },
     },
     mainEntityOfPage: {
@@ -153,7 +153,7 @@ export function generateEventJsonLd(event: {
     },
     url: `${baseUrl}${event.url}`,
     maximumAttendeeCapacity: event.maxAttendees,
-    image: `${baseUrl}/banner.png`,
+    image: `${baseUrl}/banner.webp`,
   };
 }
 
@@ -164,7 +164,7 @@ export function generateOrganizationJsonLd(): WithContext<SportsOrganization> {
     name: 'RPB - République Populaire du Beyblade',
     alternateName: 'RPB',
     url: baseUrl,
-    logo: `${baseUrl}/logo.png`,
+    logo: `${baseUrl}/logo.webp`,
     description:
       'La 1ère communauté Beyblade X en France. Tournois officiels, classements nationaux et événements.',
     sport: 'Beyblade X',

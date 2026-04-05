@@ -23,14 +23,14 @@ interface TeamClientContentProps {
 }
 
 const TEAM_LOGOS: Record<string, string> = {
-  ADMIN: '/logo-admin.png',
-  RH: '/logo-rh.png',
-  MODO: '/logo-modo.png',
-  STAFF: '/logo-staff.png',
-  ARBITRE: '/logo-staff.png',
-  DEV: '/logo-staff.png',
-  EVENT: '/logo-staff.png',
-  MEDIA: '/logo-staff.png',
+  ADMIN: '/logo-admin.webp',
+  RH: '/logo-rh.webp',
+  MODO: '/logo-modo.webp',
+  STAFF: '/logo-staff.webp',
+  ARBITRE: '/logo-staff.webp',
+  DEV: '/logo-staff.webp',
+  EVENT: '/logo-staff.webp',
+  MEDIA: '/logo-staff.webp',
 };
 
 const containerVariants = {

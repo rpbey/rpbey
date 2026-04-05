@@ -107,7 +107,7 @@ export async function scrapeAndSyncTournament(
             username: `bot_${cleanName}`.substring(0, 30),
             email: stubEmail,
             role: 'user',
-            image: '/logo.png',
+            image: '/logo.webp',
           },
         });
       }

@@ -340,7 +340,7 @@ export default function HomeClient({
                         activeTournament?.name
                           .toLowerCase()
                           .includes('bey-tamashii series #3')
-                          ? '/tournaments/BTS3_poster.gif'
+                          ? '/tournaments/BTS3_poster.webp'
                           : '/canvas.webp'
                       }
                       alt="RPB Tournament"

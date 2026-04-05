@@ -33,12 +33,12 @@ export interface RoleIconProps {
 }
 
 const ROLE_IMAGES: Record<RoleType, string> = {
-  ADMIN: '/logo-admin.png',
-  MODO: '/logo-modo.png',
-  RH: '/logo-rh.png',
-  STAFF: '/logo-staff.png',
-  ARBITRE: '/logo.png',
-  DEFAULT: '/logo.png',
+  ADMIN: '/logo-admin.webp',
+  MODO: '/logo-modo.webp',
+  RH: '/logo-rh.webp',
+  STAFF: '/logo-staff.webp',
+  ARBITRE: '/logo.webp',
+  DEFAULT: '/logo.webp',
 };
 
 export const RoleIcon: React.FC<RoleIconProps> = ({

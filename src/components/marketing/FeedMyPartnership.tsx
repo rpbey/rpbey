@@ -94,7 +94,7 @@ export function FeedMyPartnership() {
       >
         <Box
           component="img"
-          src="/partners/feedmy-announcement.png"
+          src="/partners/feedmy-announcement.webp"
           alt="FeedMy x RPB Annonce"
           sx={{
             // Reduced mobile sizing

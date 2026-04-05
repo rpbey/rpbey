@@ -169,7 +169,7 @@ export async function generateWelcomeImage(
   const ctx = canvas.getContext('2d');
 
   const [background, splashLines, avatar] = await Promise.all([
-    safeLoadImage('/banner.png'),
+    safeLoadImage('/banner.webp'),
     safeLoadImage(getAssetPath('bot/assets/backgrounds/splash-lines.png')),
     safeLoadImage(avatarUrl),
   ]);
@@ -349,9 +349,9 @@ export async function generateProfileCard(data: ProfileCardData) {
   const ctx = canvas.getContext('2d');
 
   const [background, avatar, logo, ...bladeImages] = await Promise.all([
-    safeLoadImage('/canvas.png'),
+    safeLoadImage('/canvas.webp'),
     safeLoadImage(data.avatarUrl),
-    safeLoadImage('/logo.png'),
+    safeLoadImage('/logo.webp'),
     ...(data.activeDeck?.blades.map((b) => safeLoadImage(b.imageUrl)) || []),
   ]);
 
@@ -998,10 +998,10 @@ export async function generateBattleCard(data: BattleCardData) {
   // ── Load assets ──
   const [background, arenaOverlay, sparks, flare, winnerAvatar, loserAvatar] =
     await Promise.all([
-      safeLoadImage('/banner.png'),
+      safeLoadImage('/banner.webp'),
       safeLoadImage(getAssetPath('bot/assets/backgrounds/arena.png')),
-      safeLoadImage(getAssetPath('bot/assets/battle/sparks-0.png')),
-      safeLoadImage(getAssetPath('bot/assets/battle/flare.png')),
+      safeLoadImage(getAssetPath('bot/assets/battle/sparks-0.webp')),
+      safeLoadImage(getAssetPath('bot/assets/battle/flare.webp')),
       safeLoadImage(data.winnerAvatarUrl),
       safeLoadImage(data.loserAvatarUrl),
     ]);
@@ -1271,8 +1271,8 @@ export async function generateDeckCard(
 
   // Load images
   const [background, logo, ...beyImages] = await Promise.all([
-    safeLoadImage('/deckbox.png'),
-    safeLoadImage('/logo.png'),
+    safeLoadImage('/deckbox.webp'),
+    safeLoadImage('/logo.webp'),
     ...data.beys.map((b) => safeLoadImage(b.bladeImageUrl)),
   ]);
 
@@ -1493,7 +1493,7 @@ async function generateDeckCardLegacy(data: DeckCardDataLegacy) {
   const ctx = canvas.getContext('2d');
 
   const [background, ...beyImages] = await Promise.all([
-    safeLoadImage('/deckbox.png'),
+    safeLoadImage('/deckbox.webp'),
     ...data.beys.map((b) => safeLoadImage(b.imageUrl)),
   ]);
 
@@ -1862,7 +1862,7 @@ export async function generateInteractionCard(
   ctx.fillStyle = '#141111';
   ctx.fillRect(0, 0, width, height);
 
-  const background = await safeLoadImage('/canvas.png');
+  const background = await safeLoadImage('/canvas.webp');
   if (background) {
     ctx.globalAlpha = 0.12;
     ctx.drawImage(background, 0, 0, width, height);
@@ -3866,7 +3866,7 @@ export async function generateGachaMissCard(
   ctx.fillStyle = '#141111';
   ctx.fillRect(0, 0, W, H);
 
-  const background = await safeLoadImage('/canvas.png');
+  const background = await safeLoadImage('/canvas.webp');
   if (background) {
     ctx.globalAlpha = 0.1;
     ctx.drawImage(background, 0, 0, W, H);
@@ -4549,7 +4549,7 @@ export async function generateCollectionCard(
   ctx.fillStyle = '#141111';
   ctx.fillRect(0, 0, W, H);
 
-  const background = await safeLoadImage('/canvas.png');
+  const background = await safeLoadImage('/canvas.webp');
   if (background) {
     ctx.globalAlpha = 0.12;
     ctx.drawImage(background, 0, 0, W, H);
@@ -4845,7 +4845,7 @@ export async function generateBattleResultCard(
   ctx.fillStyle = '#141111';
   ctx.fillRect(0, 0, W, H);
 
-  const background = await safeLoadImage('/canvas.png');
+  const background = await safeLoadImage('/canvas.webp');
   if (background) {
     ctx.globalAlpha = 0.12;
     ctx.drawImage(background, 0, 0, W, H);
@@ -5129,7 +5129,7 @@ export async function generateGachaDuelCard(
   ctx.fillStyle = '#141111';
   ctx.fillRect(0, 0, W, H);
 
-  const background = await safeLoadImage('/canvas.png');
+  const background = await safeLoadImage('/canvas.webp');
   if (background) {
     ctx.globalAlpha = 0.1;
     ctx.drawImage(background, 0, 0, W, H);
@@ -5455,7 +5455,7 @@ export async function generateGachaLeaderboardCard(
   ctx.fillStyle = '#141111';
   ctx.fillRect(0, 0, W, H);
 
-  const background = await safeLoadImage('/canvas.png');
+  const background = await safeLoadImage('/canvas.webp');
   if (background) {
     ctx.globalAlpha = 0.12;
     ctx.drawImage(background, 0, 0, W, H);
@@ -5803,7 +5803,7 @@ export async function generateEconomyProfileCard(
   ctx.fillStyle = '#141111';
   ctx.fillRect(0, 0, W, H);
 
-  const background = await safeLoadImage('/canvas.png');
+  const background = await safeLoadImage('/canvas.webp');
   if (background) {
     ctx.globalAlpha = 0.12;
     ctx.drawImage(background, 0, 0, W, H);

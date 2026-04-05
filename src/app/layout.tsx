@@ -55,8 +55,8 @@ export const metadata: Metadata = {
   ],
   creator: 'Yoyo',
   icons: {
-    icon: '/logo.png',
-    apple: '/logo.png',
+    icon: '/logo.webp',
+    apple: '/logo.webp',
   },
   manifest: '/manifest.json',
   openGraph: {
@@ -69,7 +69,7 @@ export const metadata: Metadata = {
       'Rejoignez la RPB, la 1ère communauté Beyblade X en France. Tournois, classements, meta et passion.',
     images: [
       {
-        url: '/banner.png',
+        url: '/banner.webp',
         width: 1200,
         height: 630,
         alt: 'RPB Banner',
@@ -81,7 +81,7 @@ export const metadata: Metadata = {
     title: 'RPB - République Populaire du Beyblade',
     description:
       'Rejoignez la RPB, la 1ère communauté Beyblade X en France. Tournois, classements, meta et passion.',
-    images: ['/banner.png'],
+    images: ['/banner.webp'],
   },
   robots: {
     index: true,

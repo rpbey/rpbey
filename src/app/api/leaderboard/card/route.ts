@@ -64,7 +64,7 @@ export async function GET() {
 
     // Load assets
     const [background, ...avatars] = (await Promise.all([
-      load('/canvas.png'),
+      load('/canvas.webp'),
       ...season.entries.map((e) => load(e.user?.image ?? null)),
     ])) as unknown[];
 

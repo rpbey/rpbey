@@ -115,14 +115,14 @@ export async function generateMetadata({
         title: `${scraped.name} | RPB`,
         description,
         images: [
-          { url: '/banner.png', width: 1200, height: 630, alt: scraped.name },
+          { url: '/banner.webp', width: 1200, height: 630, alt: scraped.name },
         ],
       },
       twitter: {
         card: 'summary_large_image',
         title: `${scraped.name} | RPB`,
         description,
-        images: ['/banner.png'],
+        images: ['/banner.webp'],
       },
     };
   }
@@ -190,14 +190,14 @@ export async function generateMetadata({
       title: `${tournament.name} | RPB`,
       description,
       images: [
-        { url: '/banner.png', width: 1200, height: 630, alt: tournament.name },
+        { url: '/banner.webp', width: 1200, height: 630, alt: tournament.name },
       ],
     },
     twitter: {
       card: 'summary_large_image',
       title: `${tournament.name} | RPB`,
       description,
-      images: ['/banner.png'],
+      images: ['/banner.webp'],
     },
   };
 }

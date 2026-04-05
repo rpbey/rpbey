@@ -29,7 +29,7 @@ export const RegisteredUser: GuardFunction<CommandInteraction> = async (
           'Tu dois créer un compte RPB pour utiliser cette commande.\n\n' +
             'Connecte-toi sur le dashboard pour lier ton compte Discord !',
         )
-        .setThumbnail('https://rpbey.fr/logo.png')
+        .setThumbnail('https://rpbey.fr/logo.webp')
         .addFields({
           name: '💡 Comment faire ?',
           value:

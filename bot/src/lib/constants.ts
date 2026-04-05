@@ -75,11 +75,11 @@ export const RPB = {
   },
   // Role Icons (External URLs)
   RoleIcons: {
-    Admin: 'https://rpbey.fr/logo-admin.png',
-    Modo: 'https://rpbey.fr/logo-modo.png',
-    Rh: 'https://rpbey.fr/logo-rh.png',
-    Staff: 'https://rpbey.fr/logo-staff.png',
-    Default: 'https://rpbey.fr/logo.png',
+    Admin: 'https://rpbey.fr/logo-admin.webp',
+    Modo: 'https://rpbey.fr/logo-modo.webp',
+    Rh: 'https://rpbey.fr/logo-rh.webp',
+    Staff: 'https://rpbey.fr/logo-staff.webp',
+    Default: 'https://rpbey.fr/logo.webp',
   },
   // Partners
   Partners: {

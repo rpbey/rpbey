@@ -13,7 +13,7 @@ services:
     networks:
       - rpb-network
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5433:5432"
     deploy:
       resources:
         limits:
@@ -46,7 +46,7 @@ services:
     restart: always
     env_file: .env
     extra_hosts:
-      - "host.docker.internal:host-gateway"
+      - "host.docker.internal:172.17.0.1"
     environment:
       DATABASE_URL: postgresql://postgres:rpb_password@db:5432/rpb_dashboard
       NEXT_PUBLIC_APP_URL: https://rpbey.fr
@@ -55,6 +55,8 @@ services:
     volumes:
       - ./public/uploads:/app/public/uploads
       - ./data:/app/data
+    ports:
+      - "127.0.0.1:3000:3000"
     deploy:
       resources:
         limits:
@@ -67,43 +69,6 @@ services:
         condition: service_healthy
     networks:
       - rpb-network
-
-  # Discord Bot runs via systemd (rpb-bot.service), not Docker
-
-  # Nginx Reverse Proxy
-  nginx:
-    image: nginx:alpine
-    container_name: rpb-nginx
-    restart: always
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
-      - ./certbot/conf:/etc/letsencrypt
-      - ./certbot/www:/var/www/certbot
-      - ./public/uploads:/app/public/uploads:ro # Nginx serves uploads directly (read-only)
-    deploy:
-      resources:
-        limits:
-          memory: 256m
-          cpus: "0.5"
-        reservations:
-          memory: 64m
-    depends_on:
-      - dashboard
-    networks:
-      - rpb-network
-
-  # Certbot for SSL (One-off or scheduled)
-  certbot:
-    image: certbot/certbot
-    container_name: rpb-certbot
-    volumes:
-      - ./certbot/conf:/etc/letsencrypt
-      - ./certbot/www:/var/www/certbot
-    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
 
 networks:
   rpb-network:

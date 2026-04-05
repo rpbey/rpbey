@@ -355,7 +355,7 @@ function AllStarSection() {
         }}
       >
         <Image
-          src="https://cdn.discordapp.com/attachments/1469164810103951534/1488348218160058459/image.png?ex=69cd1c8b&is=69cbcb0b&hm=c429b99fd6d09f6964effe24488f0dc9e9f25006d48e59ba064018116e679172&"
+          src="/images/satr-banner.webp"
           alt="All-Star SAtR"
           fill
           style={{ objectFit: 'cover' }}

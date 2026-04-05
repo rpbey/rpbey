@@ -23,6 +23,17 @@ import {
   Tooltip,
 } from '@mui/material';
 import { motion } from 'framer-motion';
+import type { LucideIcon } from 'lucide-react';
+import {
+  Clapperboard,
+  Crown,
+  Gamepad2,
+  House,
+  Swords,
+  Trophy,
+  Tv,
+  Wrench,
+} from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -31,26 +42,15 @@ import { ThemeSwitcher } from '@/components/theme/ThemeSwitcher';
 import { signOut, useSession } from '@/lib/auth-client';
 import { ICON_NAV_WIDTH } from './constants';
 
-// Beyblade X app icons for navigation
-const navItems = [
-  {
-    img: '/bbx-icons/home-icon-3home-on.webp',
-    imgOff: '/bbx-icons/home-icon-3home-off.webp',
-    label: 'Accueil',
-    href: '/',
-  },
-  {
-    img: '/bbx-icons/icon-trophy-active.webp',
-    imgOff: '/bbx-icons/icon-trophy.webp',
-    label: 'Tournois',
-    href: '/tournaments',
-  },
-  { img: '/bbx-icons/ICN_Rank.webp', label: 'Classements', href: '/rankings' },
-  { img: '/bbx-icons/BBX-AttackType.webp', label: 'Meta', href: '/meta' },
-  { img: '/bbx-icons/Icon_Stars_Cyclone.webp', label: 'TV', href: '/tv' },
-  { img: '/bbx-icons/icon-video-play.webp', label: 'Anime', href: '/anime' },
-  { img: '/bbx-icons/icon-scan.webp', label: 'Builder', href: '/builder' },
-  { img: '/bbx-icons/app_icon_round.webp', label: 'App', href: '/app' },
+const navItems: { icon: LucideIcon; label: string; href: string }[] = [
+  { icon: House, label: 'Accueil', href: '/' },
+  { icon: Trophy, label: 'Tournois', href: '/tournaments' },
+  { icon: Crown, label: 'Classements', href: '/rankings' },
+  { icon: Swords, label: 'Meta', href: '/meta' },
+  { icon: Tv, label: 'TV', href: '/tv' },
+  { icon: Clapperboard, label: 'Anime', href: '/anime' },
+  { icon: Wrench, label: 'Builder', href: '/builder' },
+  { icon: Gamepad2, label: 'App', href: '/app' },
 ];
 
 export function IconNav() {
@@ -154,8 +154,7 @@ export function IconNav() {
           const isActive =
             pathname === item.href ||
             (item.href !== '/' && pathname.startsWith(item.href));
-          const iconSrc = isActive && item.imgOff ? item.img : item.img;
-          const iconSrcFinal = !isActive && item.imgOff ? item.imgOff : iconSrc;
+          const Icon = item.icon;
 
           return (
             <Tooltip key={item.href} title={item.label} placement="right">
@@ -170,10 +169,11 @@ export function IconNav() {
                   borderRadius: 0,
                   position: 'relative',
                   transition: 'all 0.15s ease',
+                  color: isActive ? 'primary.main' : 'text.secondary',
                   '&:hover': {
                     bgcolor: (theme) => alpha(theme.palette.primary.main, 0.08),
-                    '& img': {
-                      filter: 'brightness(1.2)',
+                    color: 'primary.main',
+                    '& svg': {
                       transform: 'scale(1.12)',
                     },
                   },
@@ -213,18 +213,15 @@ export function IconNav() {
                     }}
                   />
                 )}
-                <Box
-                  component="img"
-                  src={iconSrcFinal}
-                  alt=""
-                  sx={{
-                    width: 30,
-                    height: 30,
-                    objectFit: 'contain',
+                <Icon
+                  size={24}
+                  strokeWidth={isActive ? 2.5 : 1.8}
+                  style={{
+                    transition: 'all 0.15s ease',
                     filter: isActive
                       ? 'drop-shadow(0 0 4px rgba(var(--rpb-primary-rgb), 0.4))'
-                      : 'grayscale(0.3) opacity(0.55)',
-                    transition: 'all 0.15s ease',
+                      : 'none',
+                    opacity: isActive ? 1 : 0.6,
                   }}
                 />
               </IconButton>
@@ -499,31 +496,16 @@ export function MobileNav() {
           label="Accueil"
           value="/"
           icon={
-            <Box
-              component="img"
-              src={
-                activeValue === '/'
-                  ? '/bbx-icons/home-icon-3home-on.webp'
-                  : '/bbx-icons/home-icon-3home-off.webp'
-              }
-              alt=""
-              sx={{ width: 24, height: 24, objectFit: 'contain' }}
-            />
+            <House size={22} strokeWidth={activeValue === '/' ? 2.5 : 1.8} />
           }
         />
         <BottomNavigationAction
           label="Tournois"
           value="/tournaments"
           icon={
-            <Box
-              component="img"
-              src={
-                activeValue === '/tournaments'
-                  ? '/bbx-icons/icon-trophy-active.webp'
-                  : '/bbx-icons/icon-trophy.webp'
-              }
-              alt=""
-              sx={{ width: 24, height: 24, objectFit: 'contain' }}
+            <Trophy
+              size={22}
+              strokeWidth={activeValue === '/tournaments' ? 2.5 : 1.8}
             />
           }
         />
@@ -531,19 +513,9 @@ export function MobileNav() {
           label="Classements"
           value="/rankings"
           icon={
-            <Box
-              component="img"
-              src="/bbx-icons/ICN_Rank.webp"
-              alt=""
-              sx={{
-                width: 24,
-                height: 24,
-                objectFit: 'contain',
-                filter:
-                  activeValue === '/rankings'
-                    ? 'none'
-                    : 'grayscale(0.3) opacity(0.55)',
-              }}
+            <Crown
+              size={22}
+              strokeWidth={activeValue === '/rankings' ? 2.5 : 1.8}
             />
           }
         />
@@ -551,19 +523,9 @@ export function MobileNav() {
           label="Meta"
           value="/meta"
           icon={
-            <Box
-              component="img"
-              src="/bbx-icons/BBX-AttackType.webp"
-              alt=""
-              sx={{
-                width: 24,
-                height: 24,
-                objectFit: 'contain',
-                filter:
-                  activeValue === '/meta'
-                    ? 'none'
-                    : 'grayscale(0.3) opacity(0.55)',
-              }}
+            <Swords
+              size={22}
+              strokeWidth={activeValue === '/meta' ? 2.5 : 1.8}
             />
           }
         />
@@ -571,19 +533,9 @@ export function MobileNav() {
           label="Anime"
           value="/anime"
           icon={
-            <Box
-              component="img"
-              src="/bbx-icons/icon-video-play.webp"
-              alt=""
-              sx={{
-                width: 24,
-                height: 24,
-                objectFit: 'contain',
-                filter:
-                  activeValue === '/anime'
-                    ? 'none'
-                    : 'grayscale(0.3) opacity(0.55)',
-              }}
+            <Clapperboard
+              size={22}
+              strokeWidth={activeValue === '/anime' ? 2.5 : 1.8}
             />
           }
         />

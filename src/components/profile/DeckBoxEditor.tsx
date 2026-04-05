@@ -71,7 +71,7 @@ export function DeckBoxEditor({
     bg.onload = () => setBgImage(bg);
 
     const logo = new Image();
-    logo.src = '/logo.png';
+    logo.src = '/logo.webp';
     logo.crossOrigin = 'anonymous';
     logo.onload = () => setLogoImage(logo);
   }, [imageUrl]);
