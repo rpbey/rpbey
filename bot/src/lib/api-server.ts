@@ -166,7 +166,7 @@ export function startApiServer(port = 3001) {
   const server = createServer((req, res) => {
     void handleRequest(req, res);
   });
-  server.listen(port, '0.0.0.0', () => {
+  server.listen(port, '127.0.0.1', () => {
     logger.info(`Bot API server listening on port ${port}`);
   });
   return server;
