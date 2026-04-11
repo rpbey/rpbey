@@ -626,7 +626,6 @@ function BeybladesTab() {
   const [beyblades, setBeyblades] = useState<BeybladeWithParts[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
-  const { showToast } = useToast();
 
   const loadData = useCallback(async () => {
     setLoading(true);

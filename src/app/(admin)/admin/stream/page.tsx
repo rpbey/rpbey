@@ -104,7 +104,7 @@ export default function StreamConfigPage() {
     running: boolean;
     url: string;
   }>({ running: false, url: '' });
-  const [_state, setState] = useState<StreamState | null>(null);
+  const [, setState] = useState<StreamState | null>(null);
   const [players, setPlayers] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
 

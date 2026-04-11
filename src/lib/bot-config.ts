@@ -1,18 +1,9 @@
 /**
  * Bot API configuration.
- * Handles production/development URL switching and internal Docker networking.
+ * Both dashboard and bot run natively on the host via systemd.
  */
 export function getBotApiUrl() {
-  const url = process.env.BOT_API_URL;
-
-  if (process.env.NODE_ENV === 'production') {
-    if (url && !url.includes('localhost') && !url.includes('127.0.0.1')) {
-      return url;
-    }
-    return url || 'http://bot:3001';
-  }
-
-  return url || 'http://localhost:3001';
+  return process.env.BOT_API_URL || 'http://127.0.0.1:3001';
 }
 
 export const BOT_API_KEY = process.env.BOT_API_KEY ?? '';

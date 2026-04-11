@@ -64,7 +64,7 @@ export async function GET(request: NextRequest) {
   // Check in-memory cache
   const cached = CACHE.get(cacheKey);
   if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
-    return new NextResponse(cached.buffer, {
+    return new NextResponse(new Uint8Array(cached.buffer), {
       headers: {
         'Content-Type': cached.contentType,
         'Cache-Control': 'public, max-age=2592000, immutable',
@@ -106,9 +106,9 @@ export async function GET(request: NextRequest) {
 
       // Process pixels: make white/near-white pixels transparent
       for (let i = 0; i < pixels.length; i += channels) {
-        const r = pixels[i];
-        const g = pixels[i + 1];
-        const b = pixels[i + 2];
+        const r = pixels[i]!;
+        const g = pixels[i + 1]!;
+        const b = pixels[i + 2]!;
 
         // Check if pixel is white/near-white
         if (r >= threshold && g >= threshold && b >= threshold) {
@@ -128,7 +128,7 @@ export async function GET(request: NextRequest) {
               Math.round((1 - (avg - (threshold - 20)) / 20) * 255),
             ),
           );
-          pixels[i + 3] = Math.min(pixels[i + 3], alpha);
+          pixels[i + 3] = Math.min(pixels[i + 3]!, alpha);
         }
       }
 
@@ -167,7 +167,7 @@ export async function GET(request: NextRequest) {
     }
     CACHE.set(cacheKey, { buffer, contentType, timestamp: Date.now() });
 
-    return new NextResponse(buffer, {
+    return new NextResponse(new Uint8Array(buffer), {
       headers: {
         'Content-Type': contentType,
         'Cache-Control': 'public, max-age=2592000, immutable',

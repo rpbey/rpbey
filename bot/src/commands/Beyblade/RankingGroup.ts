@@ -68,7 +68,7 @@ export class RankingGroup {
         },
         where: { discordId: target.id },
       });
-      if (!user || !user.profile)
+      if (!user?.profile)
         return interaction.editReply({
           content:
             '❌ Profil introuvable. Crée ton compte sur https://rpbey.fr/dashboard',

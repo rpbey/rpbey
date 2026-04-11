@@ -2,7 +2,12 @@ import { ChannelType } from 'discord.js';
 
 import { bot } from '../../lib/bot.js';
 import { logger } from '../../lib/logger.js';
-import { clearMentions, redis, setScanMeta } from '../../lib/redis.js';
+import {
+  clearMentions,
+  redis,
+  setMentions,
+  setScanMeta,
+} from '../../lib/redis.js';
 
 interface ChannelResult {
   counts: Map<string, number>;
@@ -100,15 +105,21 @@ export async function mentionsScanTask() {
     }
   }
 
-  // Write to Redis in one pipeline
+  // Write to Redis (Bun.redis auto-pipelines commands)
   try {
     await clearMentions();
 
-    const pipeline = redis.pipeline();
-    for (const [key, count] of merged) {
-      pipeline.hset('rpb:mentions', key, count);
+    // Batch writes in chunks to avoid overwhelming Redis
+    const entries = Array.from(merged);
+    const BATCH_SIZE = 500;
+    for (let i = 0; i < entries.length; i += BATCH_SIZE) {
+      const batch = entries.slice(i, i + BATCH_SIZE);
+      await Promise.all(
+        batch.map(([key, count]) =>
+          redis.hset('rpb:mentions', key, String(count)),
+        ),
+      );
     }
-    await pipeline.exec();
 
     await setScanMeta(channelsScanned, totalMessages);
   } catch (err) {

@@ -197,13 +197,13 @@ const commonOptions: ThemeOptions = {
     },
   },
   shape: {
-    borderRadius: 0,
+    borderRadius: 12,
   },
   components: {
     MuiButton: {
       styleOverrides: {
         root: {
-          borderRadius: 0,
+          borderRadius: 9999,
           padding: '10px 24px',
           fontWeight: 600,
           minHeight: 44,
@@ -260,7 +260,7 @@ const commonOptions: ThemeOptions = {
       ],
       styleOverrides: {
         root: {
-          borderRadius: 0,
+          borderRadius: 12,
           backgroundImage: 'none',
           transition: 'all 0.2s ease-in-out',
         },
@@ -290,7 +290,14 @@ const commonOptions: ThemeOptions = {
         root: {
           backgroundColor: 'var(--rpb-surface-main)',
           height: 80,
-          borderRadius: 0,
+          borderRadius: 12,
+        },
+      },
+    },
+    MuiChip: {
+      styleOverrides: {
+        root: {
+          borderRadius: 9999,
         },
       },
     },
@@ -301,7 +308,7 @@ const commonOptions: ThemeOptions = {
           '&::-webkit-scrollbar': { height: '6px' },
           '&::-webkit-scrollbar-thumb': {
             backgroundColor: 'rgba(255, 255, 255, 0.1)',
-            borderRadius: 0,
+            borderRadius: 3,
           },
         },
       },

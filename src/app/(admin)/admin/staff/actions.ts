@@ -85,7 +85,7 @@ export async function syncStaffFromDiscord() {
 
   try {
     const { stdout, stderr } = await execAsync(
-      'pnpm exec tsx scripts/sync-staff-db.ts',
+      'bunx tsx scripts/sync-staff-db.ts',
     );
 
     console.log('[SyncStaff] Script output:', stdout);

@@ -276,10 +276,10 @@ function RevealAnimation({
                       borderRadius: '50%',
                       bgcolor: packColor,
                       boxShadow: `0 0 6px ${packColor}`,
-                      top: `${15 + i * 18 + Math.sin(Date.now() / 100 + i) * 10}%`,
+                      top: `${15 + i * 18 + Math.sin(i * 2.3) * 10}%`,
                       left: '50%',
                       transform: `translateX(${Math.sin(i * 1.5) * halfGap * 0.3}px)`,
-                      opacity: 0.5 + Math.random() * 0.5,
+                      opacity: 0.5 + ((i * 7 + 3) % 10) / 20,
                       animation: `spark-float-${i % 3} 0.6s ease-out infinite`,
                       '@keyframes spark-float-0': {
                         '0%': {

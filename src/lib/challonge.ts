@@ -745,8 +745,8 @@ export function getChallongeService(): ChallongeService {
 }
 
 export type {
-  ChallongeTournament,
-  ChallongeParticipant,
-  ChallongeMatch,
   ApiResponse,
+  ChallongeMatch,
+  ChallongeParticipant,
+  ChallongeTournament,
 };

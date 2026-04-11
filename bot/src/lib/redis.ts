@@ -1,25 +1,18 @@
-// eslint-disable-next-line @typescript-eslint/no-require-imports -- ioredis ESM compat
-import IORedis from 'ioredis';
+import { RedisClient } from 'bun';
 
 import { logger } from './logger.js';
 
-// Handle ESM/CJS interop
-const Redis =
-  (IORedis as unknown as { default: new (...args: unknown[]) => IORedis.Redis })
-    .default ?? IORedis;
+export const redis = new RedisClient(
+  process.env.REDIS_URL || 'redis://127.0.0.1:6379',
+);
 
-export const redis = new (
-  Redis as unknown as new (
-    opts: IORedis.RedisOptions,
-  ) => IORedis.Redis
-)({
-  host: '127.0.0.1',
-  port: 6379,
-  maxRetriesPerRequest: 3,
-});
-
-redis.on('error', (err: Error) => logger.error('[Redis]', err.message));
-redis.on('connect', () => logger.info('[Redis] Connected'));
+// Verify connection
+redis
+  .ping()
+  .then(() => logger.info('[Redis] Connected (Bun native client)'))
+  .catch((err: Error) =>
+    logger.error('[Redis] Connection error:', err.message),
+  );
 
 const MENTIONS_KEY = 'rpb:mentions';
 
@@ -48,12 +41,12 @@ export async function setMentions(
   toId: string,
   count: number,
 ): Promise<void> {
-  await redis.hset(MENTIONS_KEY, `${fromId}:${toId}`, count);
+  await redis.hset(MENTIONS_KEY, `${fromId}:${toId}`, String(count));
 }
 
 /** Get all mention pairs */
 export async function getAllMentions(): Promise<Record<string, number>> {
-  const data = await redis.hgetall(MENTIONS_KEY);
+  const data = (await redis.hgetall(MENTIONS_KEY)) as Record<string, string>;
   const result: Record<string, number> = {};
   for (const [key, val] of Object.entries(data)) {
     result[key] = Number.parseInt(val, 10);
@@ -71,11 +64,17 @@ export async function setScanMeta(
   channelsScanned: number,
   messagesScanned: number,
 ): Promise<void> {
-  await redis.hset('rpb:mentions:meta', {
-    channelsScanned: String(channelsScanned),
-    messagesScanned: String(messagesScanned),
-    lastScan: new Date().toISOString(),
-  });
+  await redis.hset(
+    'rpb:mentions:meta',
+    'channelsScanned',
+    String(channelsScanned),
+  );
+  await redis.hset(
+    'rpb:mentions:meta',
+    'messagesScanned',
+    String(messagesScanned),
+  );
+  await redis.hset('rpb:mentions:meta', 'lastScan', new Date().toISOString());
 }
 
 /** Get last scan metadata */
@@ -84,7 +83,10 @@ export async function getScanMeta(): Promise<{
   messagesScanned: number;
   lastScan: string | null;
 }> {
-  const data = await redis.hgetall('rpb:mentions:meta');
+  const data = (await redis.hgetall('rpb:mentions:meta')) as Record<
+    string,
+    string
+  >;
   return {
     channelsScanned: Number.parseInt(data.channelsScanned || '0', 10),
     messagesScanned: Number.parseInt(data.messagesScanned || '0', 10),

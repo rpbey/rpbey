@@ -61,7 +61,7 @@ export default function ThemeRegistry({
     setTheme(newMode);
   }, [mode, setTheme]);
 
-  const backgroundImage = mode === 'blue' ? '/blue.webp' : '/red.webp';
+  const backgroundImage = '/rap-bg.webp';
 
   const activeTheme = mode === 'blue' ? blueTheme : redTheme;
 

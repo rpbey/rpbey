@@ -1,5 +1,5 @@
-import * as fs from 'node:fs';
-import * as path from 'node:path';
+import { mkdir } from 'node:fs/promises';
+import path from 'node:path';
 
 import { ChannelType } from 'discord.js';
 import { type ArgsOf, Discord, On } from 'discordx';
@@ -33,11 +33,11 @@ export class MessageLogger {
 
       try {
         const dir = path.dirname(dataPath);
-        if (!fs.existsSync(dir)) {
-          fs.mkdirSync(dir, { recursive: true });
-        }
+        await mkdir(dir, { recursive: true });
 
-        fs.appendFileSync(dataPath, `${JSON.stringify(logEntry)}\n`);
+        const file = Bun.file(dataPath);
+        const existing = (await file.exists()) ? await file.text() : '';
+        await Bun.write(dataPath, existing + `${JSON.stringify(logEntry)}\n`);
       } catch (error) {
         logger.error('Error logging training message:', error);
       }

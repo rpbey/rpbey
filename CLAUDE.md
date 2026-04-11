@@ -6,40 +6,40 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 RPB (République Populaire du Beyblade) is a French Beyblade X community platform. This monorepo contains:
 - **Next.js 16 Dashboard** - Web application with marketing pages, user dashboard, and admin panel
-- **Discord Bot** - Sapphire Framework bot for community management and tournaments
+- **Discord Bot** - discordx bot for community management and tournaments
 
 ## Commands
 
 ### Development
 ```bash
-pnpm dev              # Start Next.js dashboard (port 3000)
-pnpm bot:dev          # Start Discord bot (uses tsx)
-pnpm dev:all          # Start both simultaneously
+bun dev              # Start Next.js dashboard (port 3000)
+bun bot:dev          # Start Discord bot (Bun --watch, native TS)
+bun dev:all          # Start both simultaneously
 ```
 
 ### Database
 ```bash
-pnpm db:generate      # Generate Prisma client after schema changes
-pnpm db:push          # Push schema changes to DB (dev)
-pnpm db:migrate       # Create migration (dev)
-pnpm db:studio        # Open Prisma Studio GUI
-pnpm db:seed          # Seed database with initial data
+bun db:generate      # Generate Prisma client after schema changes
+bun db:push          # Push schema changes to DB (dev)
+bun db:migrate       # Create migration (dev)
+bun db:studio        # Open Prisma Studio GUI
+bun db:seed          # Seed database with initial data
 ```
 
 ### Build & Lint
 ```bash
-pnpm build            # Build Next.js for production
-pnpm bot:build        # Compile bot TypeScript
-pnpm lint             # Run ESLint
-pnpm format           # Format with Biome
-pnpm check            # Biome check + fix
+bun run build        # Build Next.js for production (standalone output)
+bun bot:build        # Compile bot TypeScript (SWC — required for discordx decorator metadata)
+bun lint             # Run ESLint
+bun format           # Format with Biome
+bun check            # Biome check + fix
 ```
 
-### Scripts (run with `pnpm tsx scripts/<name>.ts`)
+### Scripts (run with `bun scripts/<name>.ts`)
 ```bash
-tsx scripts/sync-products.ts      # Sync Beyblade products from Takara
-tsx scripts/sync-staff-db.ts      # Sync staff from Discord roles
-tsx scripts/generate-knowledge-base.ts  # Generate AI knowledge base
+bun scripts/sync-products.ts      # Sync Beyblade products from Takara
+bun scripts/sync-staff-db.ts      # Sync staff from Discord roles
+bun scripts/generate-knowledge-base.ts  # Generate AI knowledge base
 ```
 
 ## Architecture
@@ -53,23 +53,27 @@ tsx scripts/generate-knowledge-base.ts  # Generate AI knowledge base
 ### Discord Bot Structure
 ```
 bot/src/
-├── commands/           # Slash commands (Sapphire Command class)
-│   ├── Admin/         # Ranking, RoleReaction, teach, scrape
-│   ├── Beyblade/      # profile, battle, randombey, tournament, leaderboard
-│   ├── General/       # ping, ask (AI Q&A), sync, scan
-│   ├── Moderation/    # ban, kick, clear, mute
-│   ├── Music/         # play, skip, stop, nowplaying, volume
-│   └── Voice/         # join, speak (TTS)
-├── listeners/         # Discord events (ready, memberJoin, etc.)
-├── interaction-handlers/  # Button/modal handlers
-└── lib/               # Utilities (api-server, canvas-utils, ai, prisma)
+├── commands/           # Slash commands (discordx @Discord + @Slash decorators)
+│   ├── Admin/         # Ranking, RoleReaction, moderation
+│   ├── Beyblade/      # profile, deck, wiki, meta, ranking, register
+│   └── General/       # ping, help, sync, duel, economy, game, giveaway
+├── events/            # Discord events (ready, memberJoin, logs, reminders)
+├── components/        # Button/modal handlers (Battle, Role, Tournament)
+├── cron/              # Scheduled tasks (Bun.cron)
+└── lib/               # Utilities (api-server, canvas-utils, prisma, redis)
 ```
 
-### Dashboard-Bot Communication
-The bot exposes an HTTP/WebSocket API on port 3001 (`bot/src/lib/api-server.ts`).
-Dashboard connects via `src/lib/bot.ts` using `botClient` singleton with API key auth.
+**Important:** Le bot utilise discordx avec `emitDecoratorMetadata`. Bun ne supporte pas
+les metadata de decorators en TS direct → le bot **doit** être compilé par SWC
+(`bun bot:build`) et exécuté depuis `bot/dist/src/index.js`.
 
-Key endpoints: `/api/status`, `/api/logs`, `/api/member`, `/api/roles`, `/api/agent/dispatch`
+### Dashboard-Bot Communication
+Both services run natively on the host via systemd. The bot exposes an HTTP API
+on `127.0.0.1:3001` via `Bun.serve()` (`bot/src/lib/api-server.ts`).
+Dashboard connects via `src/lib/bot.ts` → `src/lib/bot-config.ts` using `http://127.0.0.1:3001` with API key auth.
+
+Key endpoints: `/api/status`, `/api/logs`, `/api/commands`
+Nginx proxies `/api/bot/*` → `127.0.0.1:3001` and `/socket.io/` for WebSocket.
 
 ### Database Models (Prisma)
 Core entities:
@@ -118,7 +122,7 @@ export class MyCommand extends Command {
 ```
 
 ### Prisma Usage
-Always run `pnpm db:generate` after modifying `prisma/schema.prisma`.
+Always run `bun db:generate` after modifying `prisma/schema.prisma`.
 The dashboard uses a pooled connection via `@prisma/adapter-pg`.
 
 ### Environment Variables
@@ -137,23 +141,38 @@ Required:
 - `bot/data/knowledge_base.txt` - Bot's local knowledge copy
 
 ## Deployment
-- **Dashboard**: Docker Compose (Production) via `docker-compose.prod.yml`
-- **Bot**: Runs via systemd (`rpb-bot.service`), NOT Docker
+
+Both dashboard and bot run natively via **systemd + Bun** (no Docker).
+Only the database runs in Docker (`docker-compose.db.yml`).
+
 - Production URL: `https://rpbey.fr`
-- Hosted on Hetzner dedicated server (root access)
+- Hosted on Hetzner dedicated server
+- Nginx reverse proxy → `127.0.0.1:3000` (dashboard) + `127.0.0.1:3001` (bot)
+- Nginx config: `/etc/nginx/conf.d/rpbey.conf`
+
+### Systemd Services
+| Service | Unit | ExecStart | Port |
+|---------|------|-----------|------|
+| Dashboard | `rpb-dashboard.service` | `bun .next/standalone/server.js` | 3000 |
+| Bot | `rpb-bot.service` | `bun bot/dist/src/index.js` | 3001 |
 
 ### Deploy Commands
 ```bash
-# Dashboard — Build & Deploy
-docker compose -f docker-compose.prod.yml build dashboard --no-cache
-docker compose -f docker-compose.prod.yml up -d dashboard
-docker compose -f docker-compose.prod.yml logs -f dashboard
+# Full deploy (dashboard + bot) — build, copy assets, restart systemd
+bash scripts/deploy.sh
 
-# Bot — Build & Deploy (systemd)
-pnpm bot:build
-systemctl restart rpb-bot
-systemctl status rpb-bot
-journalctl -u rpb-bot -f    # Logs
+# Dashboard only
+bun run build && sudo systemctl restart rpb-dashboard
+
+# Bot only (recompile SWC + restart)
+bun bot:build && sudo systemctl restart rpb-bot
+
+# Logs
+journalctl -u rpb-dashboard -f
+journalctl -u rpb-bot -f
+
+# Database (Docker)
+docker compose -f docker-compose.db.yml up -d
 ```
 
 ## Autonomous Mode Instructions
@@ -163,10 +182,10 @@ Claude Code operates in FULL AUTONOMOUS mode on this project. Follow these rules
 ### Decision Making
 - **DO NOT ask for confirmation** before editing files, running builds, or making git commits
 - **DO NOT ask which approach to use** — pick the best one based on existing patterns
-- **Auto-fix lint/type errors** after any code change — run `pnpm build` or `npx tsc --noEmit` to verify
-- **Auto-format** with `pnpm check` after edits
+- **Auto-fix lint/type errors** after any code change — run `bun run build` or `bunx tsc --noEmit` to verify
+- **Auto-format** with `bun check` after edits
 - **Auto-commit** when a task is fully complete and builds pass
-- **Run `pnpm db:generate`** automatically after any Prisma schema change
+- **Run `bun db:generate`** automatically after any Prisma schema change
 
 ### Workflow
 1. Read relevant files first to understand context
@@ -192,3 +211,32 @@ Claude Code operates in FULL AUTONOMOUS mode on this project. Follow these rules
 - Types: feat, fix, refactor, chore, docs, style, perf, test
 - Branch from `main`, push directly to `main` for small changes
 - Co-author line: `Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>`
+
+## Plugins
+
+### bun-agent (global — `~/.claude/custom-plugins/bun-agent`)
+Custom plugin installé via le marketplace local `custom-plugins`. Fournit :
+
+**Agents spécialisés** :
+- `bun-runner` — Exécution autonome de tâches complexes multi-étapes
+- `bun-explorer` — Exploration codebase read-only
+- `bun-dreamer` — Consolidation mémoire persistante (background)
+- `bun-deployer` — Pipeline de déploiement (Docker/systemd)
+- `bun-reviewer` — Revue de code (sécurité, qualité, performance)
+
+**Skills** (`/bun-agent:<skill>`) :
+- `/bun-agent:run [task]` — Exécuter une tâche autonome avec Bun
+- `/bun-agent:analyze` — Audit santé projet (deps, types, sécurité, build)
+- `/bun-agent:deploy` — Déploiement production
+- `/bun-agent:dream` — Consolidation mémoire depuis les sessions
+
+**Commandes** :
+- `/bun-agent:status` — État mémoire, sessions, dreams
+- `/bun-agent:memory [query]` — Lire/chercher dans la mémoire persistante
+- `/bun-agent:forget [file]` — Supprimer une entrée mémoire
+
+**Installation** :
+```bash
+# Le plugin est dans un marketplace local déclaré dans ~/.claude/settings.json
+claude plugin install bun-agent@custom-plugins --scope user
+```

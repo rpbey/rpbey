@@ -509,7 +509,7 @@ export class DeckCommand {
           },
         },
       });
-      if (!user || !user.decks[0])
+      if (!user?.decks[0])
         return interaction.editReply(
           '❌ Pas de deck actif. Crée-en un avec `/deck creer`.',
         );
@@ -642,8 +642,7 @@ export class DeckCommand {
         decks: { where: { isActive: true }, include: { items: true } },
       },
     });
-    if (!user || !user.decks[0])
-      return interaction.editReply('❌ Pas de deck actif.');
+    if (!user?.decks[0]) return interaction.editReply('❌ Pas de deck actif.');
 
     const isCX = await this.isCXBlade(bladeId);
     await this.prisma.deckItem.updateMany({

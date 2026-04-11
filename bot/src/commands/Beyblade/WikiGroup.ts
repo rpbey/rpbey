@@ -1,4 +1,3 @@
-import fs from 'node:fs';
 import {
   ApplicationCommandOptionType,
   type CommandInteraction,
@@ -29,10 +28,10 @@ export class WikiGroup {
   ) {
     await interaction.deferReply();
     try {
-      const dataPath = resolveDataPath('wbo_rules.json');
-      if (!fs.existsSync(dataPath))
+      const file = Bun.file(resolveDataPath('wbo_rules.json'));
+      if (!(await file.exists()))
         return interaction.editReply('❌ Base de données indisponible.');
-      const data = JSON.parse(fs.readFileSync(dataPath, 'utf-8'));
+      const data = await file.json();
       const paragraphs = (data.translatedMarkdown || data.markdown).split('\n');
       const match = paragraphs.find((p: string) =>
         p.toLowerCase().includes(query.toLowerCase()),

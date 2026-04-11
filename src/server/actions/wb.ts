@@ -118,12 +118,6 @@ function parseMatchScores(
   return { winnerScore: Math.max(a, b), loserScore: Math.min(a, b) };
 }
 
-/** Backwards-compatible wrapper */
-function _getLoserScore(scores: string): number | null {
-  const parsed = parseMatchScores(scores);
-  return parsed ? parsed.loserScore : null;
-}
-
 /**
  * Load all tournament data for a given season from local JSON files.
  */

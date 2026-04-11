@@ -4,7 +4,7 @@ const nextConfig: NextConfig = {
   // Enable React strict mode
   reactStrictMode: true,
 
-  // Output standalone for Docker deployment
+  // Output standalone for systemd deployment
   output: "standalone",
 
   // Disable Node.js compression — Nginx handles gzip

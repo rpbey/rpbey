@@ -86,7 +86,7 @@ export class ReadyListener {
       for (const dbAdmin of dbAdmins) {
         if (!dbAdmin.discordId) continue;
         const member = members.get(dbAdmin.discordId);
-        if (!member || !member.permissions.has('Administrator')) {
+        if (!member?.permissions.has('Administrator')) {
           await this.prisma.user.update({
             where: { discordId: dbAdmin.discordId },
             data: { role: 'user' },

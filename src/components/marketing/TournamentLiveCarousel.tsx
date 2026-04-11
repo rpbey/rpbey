@@ -83,16 +83,17 @@ export function TournamentLiveCarousel({
   if (stations.length > 0) slides.push('stadiums');
   if (standings.length > 0) slides.push('standings');
   if (logs.length > 0) slides.push('logs');
+  const slideCount = slides.length;
 
   // Auto-rotate
   useEffect(() => {
-    if (slides.length <= 1) return;
+    if (slideCount <= 1) return;
     const timer = setInterval(() => {
       setDirection(1);
-      setIndex((prev) => (prev + 1) % slides.length);
+      setIndex((prev) => (prev + 1) % slideCount);
     }, 8000); // 8 seconds per slide
     return () => clearInterval(timer);
-  }, []);
+  }, [slideCount]);
 
   if (slides.length === 0) return null;
 

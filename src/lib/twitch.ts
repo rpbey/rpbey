@@ -67,6 +67,8 @@ export interface VideoInfo {
   publishedAt: Date;
   viewCount: number;
   channelLogo?: string;
+  channelName?: string;
+  channelAvatar?: string | null;
 }
 
 export async function getLatestRPBVideo(): Promise<VideoInfo | null> {

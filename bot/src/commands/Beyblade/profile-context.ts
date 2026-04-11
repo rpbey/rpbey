@@ -34,7 +34,7 @@ export class ProfileContextMenuCommand {
         },
       });
 
-      if (!user || !user.profile) {
+      if (!user?.profile) {
         const embed = new EmbedBuilder()
           .setTitle(`👤 ${targetUser.displayName}`)
           .setDescription(

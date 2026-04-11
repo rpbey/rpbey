@@ -92,7 +92,7 @@ export async function exportTournamentToSheets(tournamentId: string) {
       },
     });
 
-    if (!account || !account.accessToken) {
+    if (!account?.accessToken) {
       return { error: 'NO_GOOGLE_ACCOUNT' };
     }
 

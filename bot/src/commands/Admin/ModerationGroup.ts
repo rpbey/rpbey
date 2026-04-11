@@ -186,7 +186,7 @@ export class ModerationCommands {
     const member = await interaction.guild?.members
       .fetch(target.id)
       .catch(() => null);
-    if (!member || !member.kickable)
+    if (!member?.kickable)
       return interaction.reply({
         content: "❌ Impossible d'expulser ce membre.",
         ephemeral: true,
@@ -241,7 +241,7 @@ export class ModerationCommands {
     const member = await interaction.guild?.members
       .fetch(target.id)
       .catch(() => null);
-    if (!member || !member.moderatable)
+    if (!member?.moderatable)
       return interaction.reply({
         content:
           "❌ Impossible d'agir sur ce membre (rôle trop élevé ou introuvable).",
@@ -577,7 +577,7 @@ export class ModerationCommands {
     const member = await interaction.guild?.members
       .fetch(target.id)
       .catch(() => null);
-    if (!member || !member.manageable)
+    if (!member?.manageable)
       return interaction.reply({
         content:
           '❌ Impossible de modifier ce membre (rôle trop élevé ou introuvable).',

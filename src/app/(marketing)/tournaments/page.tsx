@@ -1,6 +1,5 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import EventIcon from '@mui/icons-material/Event';
 import GroupsIcon from '@mui/icons-material/Groups';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
@@ -96,31 +95,6 @@ const PARTNER_SERIES = [
   },
 ] as const;
 
-const _ALL_STAR_EVENTS = [
-  {
-    id: 'allstar-paris',
-    city: 'Paris',
-    date: '2026-04-19',
-    time: '14h00',
-    venue: 'Saiba Café (étage E-Spot)',
-    count: 16,
-    format: 'Poules + Double Élim BO3',
-    note: 'Spectateurs bienvenus · Twitch',
-    color: '#fbbf24',
-  },
-  {
-    id: 'allstar-marseille',
-    city: 'Marseille',
-    date: '2026-04-11',
-    time: '14h30',
-    venue: 'Chaperon Rouge Bar',
-    count: 16,
-    format: 'Poules + Arbre',
-    note: null,
-    color: '#f87171',
-  },
-] as const;
-
 // ── Page ──
 
 export default async function TournamentsPage() {
@@ -130,25 +104,49 @@ export default async function TournamentsPage() {
   });
 
   const exportDir = join(process.cwd(), 'data/exports');
-  const btsCards: Array<{
+  interface BtsCard {
     id: string;
     name: string;
     date: string;
     poster: string;
     participants: number;
-  }> = [];
+    matchesCount: number;
+    podium: { name: string; rank: number; wins: number; losses: number }[];
+  }
+
+  const btsCards: BtsCard[] = [];
 
   for (const edition of BTS_EDITIONS) {
     try {
       const data = JSON.parse(
         readFileSync(join(exportDir, edition.file), 'utf-8'),
       );
+      const participants = data.participants || [];
+      const podium = participants
+        .filter((p: { rank: number }) => p.rank <= 3)
+        .sort((a: { rank: number }, b: { rank: number }) => a.rank - b.rank)
+        .map(
+          (p: {
+            name: string;
+            rank: number;
+            exactWins?: number;
+            exactLosses?: number;
+          }) => ({
+            name: p.name.replace(/✅|✔️/g, '').trim(),
+            rank: p.rank,
+            wins: p.exactWins || 0,
+            losses: p.exactLosses || 0,
+          }),
+        );
+
       btsCards.push({
         id: edition.id,
         name: edition.name,
         date: edition.date,
         poster: edition.poster,
         participants: data.participantsCount || edition.fallbackCount,
+        matchesCount: data.matchesCount || 0,
+        podium,
       });
     } catch {
       // skip missing
@@ -177,11 +175,6 @@ export default async function TournamentsPage() {
       t.status === 'in_progress',
   );
   const completed = dbCards.filter((t) => t.status === 'complete');
-
-  const totalTournaments = dbCards.length + btsCards.length;
-  const totalParticipants =
-    dbTournaments.reduce((sum, t) => sum + t._count.participants, 0) +
-    btsCards.reduce((sum, b) => sum + b.participants, 0);
 
   return (
     <Box
@@ -250,80 +243,6 @@ export default async function TournamentsPage() {
           >
             Compétitions officielles RPB et séries partenaires
           </Typography>
-
-          {/* Stats */}
-          <Stack
-            direction="row"
-            spacing={{ xs: 1.5, md: 3 }}
-            justifyContent="center"
-            sx={{ mt: 3 }}
-          >
-            {[
-              {
-                label: 'Tournois',
-                value: totalTournaments,
-                icon: EmojiEventsIcon,
-                color: 'secondary.main',
-              },
-              {
-                label: 'Joueurs',
-                value: totalParticipants,
-                icon: GroupsIcon,
-                color: 'primary.main',
-              },
-              {
-                label: 'Séries',
-                value: 1 + PARTNER_SERIES.length,
-                icon: EventIcon,
-                color: '#60a5fa',
-              },
-            ].map((stat) => (
-              <Paper
-                key={stat.label}
-                elevation={0}
-                sx={{
-                  px: { xs: 2, md: 3 },
-                  py: { xs: 1, md: 1.5 },
-                  borderRadius: 2.5,
-                  bgcolor: 'rgba(255,255,255,0.03)',
-                  border: '1px solid rgba(255,255,255,0.06)',
-                  textAlign: 'center',
-                  minWidth: { xs: 80, md: 110 },
-                }}
-              >
-                <stat.icon
-                  sx={{
-                    fontSize: { xs: 18, md: 22 },
-                    color: stat.color,
-                    mb: 0.25,
-                    opacity: 0.7,
-                  }}
-                />
-                <Typography
-                  fontWeight="900"
-                  sx={{
-                    color: stat.color,
-                    fontSize: { xs: '1.2rem', md: '1.4rem' },
-                    lineHeight: 1,
-                  }}
-                >
-                  {stat.value}
-                </Typography>
-                <Typography
-                  variant="caption"
-                  color="text.secondary"
-                  sx={{
-                    fontSize: { xs: '0.55rem', md: '0.65rem' },
-                    textTransform: 'uppercase',
-                    letterSpacing: 1,
-                    fontWeight: 600,
-                  }}
-                >
-                  {stat.label}
-                </Typography>
-              </Paper>
-            ))}
-          </Stack>
         </Box>
 
         {/* ═══════════════════════════════════════
@@ -338,12 +257,9 @@ export default async function TournamentsPage() {
               logo="/logo.webp"
             />
 
-            <Grid container spacing={{ xs: 1.5, md: 2.5 }}>
-              {btsCards.map((bts, i) => (
-                <Grid
-                  key={bts.id}
-                  size={{ xs: 12, sm: i === 0 ? 12 : 6, md: i === 0 ? 12 : 6 }}
-                >
+            <Grid container spacing={{ xs: 2, md: 3 }}>
+              {btsCards.map((bts) => (
+                <Grid key={bts.id} size={{ xs: 12, sm: 6, md: 4 }}>
                   <Link
                     href={`/tournaments/${bts.id}`}
                     style={{ textDecoration: 'none', color: 'inherit' }}
@@ -351,7 +267,7 @@ export default async function TournamentsPage() {
                     <Paper
                       elevation={0}
                       sx={{
-                        borderRadius: { xs: 3, md: 4 },
+                        borderRadius: 3,
                         overflow: 'hidden',
                         bgcolor: 'rgba(var(--rpb-primary-rgb), 0.03)',
                         border: '1px solid rgba(var(--rpb-primary-rgb), 0.1)',
@@ -365,61 +281,63 @@ export default async function TournamentsPage() {
                         },
                       }}
                     >
+                      {/* Poster — uniform max height */}
                       <Box
                         sx={{
                           position: 'relative',
-                          height: {
-                            xs: i === 0 ? 180 : 140,
-                            md: i === 0 ? 240 : 180,
-                          },
                           overflow: 'hidden',
+                          maxHeight: { xs: 300, md: 400 },
                         }}
                       >
                         <Image
                           src={bts.poster}
                           alt={bts.name}
-                          fill
-                          style={{ objectFit: 'cover' }}
+                          width={1040}
+                          height={1467}
+                          style={{
+                            width: '100%',
+                            height: 'auto',
+                            display: 'block',
+                          }}
                         />
                         <Box
                           sx={{
                             position: 'absolute',
-                            inset: 0,
+                            bottom: 0,
+                            left: 0,
+                            right: 0,
+                            height: '40%',
                             background:
-                              'linear-gradient(transparent 40%, rgba(0,0,0,0.8))',
+                              'linear-gradient(transparent, rgba(0,0,0,0.8))',
                           }}
                         />
                       </Box>
-                      <Box sx={{ p: { xs: 1.5, md: 2 } }}>
+
+                      {/* Info */}
+                      <Box sx={{ p: 2 }}>
                         <Stack
                           direction="row"
                           alignItems="center"
                           justifyContent="space-between"
+                          sx={{ mb: 1.5 }}
                         >
                           <Box>
                             <Typography
                               fontWeight="900"
-                              sx={{
-                                fontSize: {
-                                  xs: i === 0 ? '1rem' : '0.9rem',
-                                  md: i === 0 ? '1.1rem' : '0.95rem',
-                                },
-                                lineHeight: 1.3,
-                              }}
+                              sx={{ fontSize: '0.95rem', lineHeight: 1.3 }}
                             >
                               {bts.name}
                             </Typography>
                             <Typography
                               variant="caption"
                               color="text.secondary"
-                              sx={{ fontSize: { xs: '0.7rem', md: '0.75rem' } }}
+                              sx={{ fontSize: '0.72rem' }}
                             >
                               {new Date(bts.date).toLocaleDateString('fr-FR', {
                                 day: 'numeric',
                                 month: 'long',
                                 year: 'numeric',
-                              })}{' '}
-                              · {bts.participants} joueurs
+                              })}
                             </Typography>
                           </Box>
                           <NavigateNextIcon
@@ -429,6 +347,94 @@ export default async function TournamentsPage() {
                             }}
                           />
                         </Stack>
+
+                        {/* Stats chips */}
+                        <Stack direction="row" spacing={1} sx={{ mb: 1.5 }}>
+                          <Chip
+                            icon={<GroupsIcon sx={{ fontSize: 14 }} />}
+                            label={`${bts.participants} joueurs`}
+                            size="small"
+                            sx={{
+                              height: 24,
+                              fontSize: '0.68rem',
+                              fontWeight: 700,
+                              bgcolor: 'rgba(var(--rpb-primary-rgb), 0.08)',
+                              color: 'text.secondary',
+                            }}
+                          />
+                          {bts.matchesCount > 0 && (
+                            <Chip
+                              label={`${bts.matchesCount} matchs`}
+                              size="small"
+                              sx={{
+                                height: 24,
+                                fontSize: '0.68rem',
+                                fontWeight: 700,
+                                bgcolor: 'rgba(255,255,255,0.04)',
+                                color: 'text.secondary',
+                              }}
+                            />
+                          )}
+                        </Stack>
+
+                        {/* Podium */}
+                        {bts.podium.length > 0 && (
+                          <Stack spacing={0.5}>
+                            {bts.podium.map((p) => (
+                              <Stack
+                                key={p.rank}
+                                direction="row"
+                                alignItems="center"
+                                spacing={1}
+                                sx={{
+                                  py: 0.4,
+                                  px: 1,
+                                  borderRadius: 1.5,
+                                  bgcolor:
+                                    p.rank === 1
+                                      ? 'rgba(255,215,0,0.06)'
+                                      : 'transparent',
+                                }}
+                              >
+                                <Typography
+                                  sx={{
+                                    fontSize: '0.8rem',
+                                    width: 20,
+                                    textAlign: 'center',
+                                  }}
+                                >
+                                  {p.rank === 1
+                                    ? '🥇'
+                                    : p.rank === 2
+                                      ? '🥈'
+                                      : '🥉'}
+                                </Typography>
+                                <Typography
+                                  variant="caption"
+                                  fontWeight={p.rank === 1 ? 800 : 600}
+                                  sx={{
+                                    flex: 1,
+                                    fontSize: '0.75rem',
+                                    color:
+                                      p.rank === 1 ? '#fbbf24' : 'text.primary',
+                                  }}
+                                  noWrap
+                                >
+                                  {p.name}
+                                </Typography>
+                                <Typography
+                                  variant="caption"
+                                  sx={{
+                                    fontSize: '0.65rem',
+                                    color: 'text.disabled',
+                                  }}
+                                >
+                                  {p.wins}V-{p.losses}D
+                                </Typography>
+                              </Stack>
+                            ))}
+                          </Stack>
+                        )}
                       </Box>
                     </Paper>
                   </Link>

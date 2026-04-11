@@ -139,7 +139,7 @@ export async function recalculateRankings() {
   const processJsonTournament = (
     tournament: { participants?: JsonParticipant[] } | null,
   ) => {
-    if (!tournament || !tournament.participants) return;
+    if (!tournament?.participants) return;
 
     // In JSON, we don't have weight/category yet, assume multiplier = 1.0
     const multiplier = 1.0;

@@ -6,16 +6,8 @@ const globalForPrisma = global as unknown as { prisma: PrismaClient };
 
 const connectionString = process.env.DATABASE_URL;
 
-// Correct host for production Docker internal network
-const finalConnectionString =
-  process.env.NODE_ENV === 'production' &&
-  (connectionString?.includes('localhost') ||
-    connectionString?.includes('127.0.0.1'))
-    ? connectionString.replace(/localhost|127\.0\.0\.1/, 'db')
-    : connectionString;
-
 const pool = new pg.Pool({
-  connectionString: finalConnectionString,
+  connectionString,
   max: 20,
   min: 2,
   idleTimeoutMillis: 30_000,

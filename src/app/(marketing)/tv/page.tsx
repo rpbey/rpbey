@@ -1,22 +1,20 @@
-import { Box, Container, Typography } from '@mui/material';
+import Box from '@mui/material/Box';
+import Container from '@mui/material/Container';
+import Typography from '@mui/material/Typography';
 import { connection } from 'next/server';
-import { Suspense } from 'react';
 import { getBeyTubeFeatured } from '@/lib/beytube';
+import { prisma } from '@/lib/prisma';
 import { createPageMetadata } from '@/lib/seo-utils';
 import { getTikTokVideos } from '@/lib/tiktok';
-import { getRPBClips, getRPBVideos } from '@/lib/twitch';
-import { getRecentYouTubeVideos } from '@/lib/youtube';
-import { FeaturedVideo } from './_components/FeaturedVideo';
+import { getRPBClips, getRPBStreamInfo } from '@/lib/twitch';
 import { TvFeed } from './_components/TvFeed';
 
 export const metadata = createPageMetadata({
   title: 'RPB TV | Clips & Rediffusions',
   description:
-    'Le meilleur du Beyblade X : Clips Twitch, rediffusions et sélection BeyTube FR.',
+    'Le meilleur du Beyblade X : Clips Twitch, rediffusions et selection BeyTube FR.',
   path: '/tv',
 });
-
-const FEATURED_VIDEO_ID = '4T_oJDeY8PU';
 
 export default async function TVPage() {
   await connection();
@@ -33,21 +31,38 @@ export default async function TVPage() {
     }
   };
 
+  // Stream info (for "En direct" section)
+  const streamPromise = safeFetch(getRPBStreamInfo(), null);
+
+  // Clips
   const clipsPromise = safeFetch(getRPBClips(20), []);
 
-  const rpbVideosPromise = (async () => {
-    const [twitchVods, ytVideos] = await Promise.all([
-      safeFetch(getRPBVideos(15), []),
-      safeFetch(getRecentYouTubeVideos(undefined, 15), []),
-    ]);
-    return [...twitchVods, ...ytVideos].sort(
-      (a, b) =>
-        new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime(),
-    );
-  })();
+  // Rediffusions — vidéos YouTube RPB depuis la DB (avec vrais logos)
+  const rpbVideosPromise = prisma.youTubeVideo
+    .findMany({
+      where: { channelId: 'UCHiDwWI-2uQrsUiJhXt6rng' },
+      orderBy: { publishedAt: 'desc' },
+      take: 20,
+    })
+    .then((vids) =>
+      vids.map((v) => ({
+        id: v.id,
+        title: v.title,
+        url: v.url,
+        thumbnailUrl: v.thumbnail,
+        duration: v.duration,
+        publishedAt: v.publishedAt,
+        viewCount: v.views,
+        channelName: v.channelName,
+        channelAvatar: v.channelAvatar,
+      })),
+    )
+    .catch(() => []);
 
+  // BeyTube community videos
   const beyTubeVideosPromise = safeFetch(getBeyTubeFeatured(), []);
 
+  // TikTok
   const tikTokVideosPromise = (async () => {
     const [rpbTikTok, skarnTikTok, sunTikTok] = await Promise.all([
       safeFetch(getTikTokVideos('rpbeyblade1'), []),
@@ -64,18 +79,18 @@ export default async function TVPage() {
       sx={{
         minHeight: '100vh',
         bgcolor: 'background.default',
-        pb: 8,
+        pb: 4,
       }}
     >
-      <Container maxWidth="lg" sx={{ px: { xs: 1.5, sm: 3 } }}>
-        {/* Hero */}
-        <Box sx={{ pt: { xs: 2, md: 5 }, pb: { xs: 2, md: 4 } }}>
+      <Container maxWidth="xl" sx={{ px: { xs: 1.5, sm: 3 } }}>
+        {/* Header */}
+        <Box sx={{ pt: { xs: 2, md: 4 }, pb: { xs: 1.5, md: 3 } }}>
           <Typography
             variant="h3"
             component="h1"
-            fontWeight="900"
             sx={{
-              fontSize: { xs: '1.6rem', md: '2.4rem' },
+              fontWeight: 900,
+              fontSize: { xs: '1.5rem', md: '2.2rem' },
               letterSpacing: '-0.03em',
               background:
                 'linear-gradient(135deg, var(--rpb-primary), var(--rpb-secondary))',
@@ -86,31 +101,20 @@ export default async function TVPage() {
             RPB TV
           </Typography>
           <Typography
-            variant="body2"
-            color="text.secondary"
-            sx={{ opacity: 0.6, fontSize: { xs: '0.85rem', md: '0.95rem' } }}
+            sx={{
+              color: 'text.secondary',
+              opacity: 0.7,
+              fontSize: { xs: '0.82rem', md: '0.92rem' },
+              mt: 0.3,
+            }}
           >
             Clips, rediffusions et BeyTube FR
           </Typography>
         </Box>
 
-        {/* Featured — lazy YouTube embed */}
-        <Suspense
-          fallback={
-            <Box
-              sx={{
-                aspectRatio: '16/9',
-                borderRadius: { xs: 2.5, md: 3.5 },
-                bgcolor: '#111',
-                mb: 4,
-              }}
-            />
-          }
-        >
-          <FeaturedVideo videoId={FEATURED_VIDEO_ID} />
-        </Suspense>
-
+        {/* Feed: Live, Clips, Rediffusions, BeyTube, TikTok */}
         <TvFeed
+          streamPromise={streamPromise}
           clipsPromise={clipsPromise}
           rpbVideosPromise={rpbVideosPromise}
           beyTubeVideosPromise={beyTubeVideosPromise}

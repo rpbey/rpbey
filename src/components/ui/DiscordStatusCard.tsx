@@ -1,24 +1,23 @@
 'use client';
 
 import Avatar from '@mui/material/Avatar';
+import AvatarGroup from '@mui/material/AvatarGroup';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
-import Divider from '@mui/material/Divider';
+import Chip from '@mui/material/Chip';
 import Skeleton from '@mui/material/Skeleton';
 import Stack from '@mui/material/Stack';
-import { alpha } from '@mui/material/styles';
+import { alpha, useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import { AnimatePresence, motion } from 'framer-motion';
-import Image from 'next/image';
 import useSWR from 'swr';
 import type { DiscordStats, TeamGroup } from '@/lib/discord-data';
-import { RoleColors } from '@/lib/role-colors';
+import { RoleColors, type RoleType } from '@/lib/role-colors';
 import { api } from '@/lib/standard-api';
 import { DiscordRoleBadge } from './DiscordRoleBadge';
 
 const DISCORD_BLUE = '#5865F2';
-const DISCORD_BLUE_HOVER = '#4752C4';
 
 interface DiscordStatusCardProps {
   initialStats?: DiscordStats | null;
@@ -28,10 +27,17 @@ interface DiscordStatusCardProps {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const fetcher = (url: string) => api.get(url).then((res) => res as any);
 
+const roleColor = (role: RoleType) => {
+  const c = RoleColors[role];
+  return 'hex' in c ? c.hex : c.primary;
+};
+
 export function DiscordStatusCard({
   initialStats,
   initialTeam,
 }: DiscordStatusCardProps) {
+  const theme = useTheme();
+
   const { data: stats, isLoading: statsLoading } = useSWR<DiscordStats>(
     '/api/discord/stats',
     fetcher,
@@ -58,14 +64,15 @@ export function DiscordStatusCard({
       <Skeleton
         variant="rounded"
         width="100%"
-        height={320}
-        sx={{ maxWidth: 450, borderRadius: 4 }}
+        height={400}
+        sx={{ borderRadius: 4 }}
       />
     );
   }
 
+  const onlineCount = stats?.onlineCount || 0;
   const totalCount = stats?.memberCount || 0;
-  const serverName = stats?.serverName || 'RPB Community';
+  const allMembers = team.flatMap((g) => g.members);
 
   return (
     <Card
@@ -74,162 +81,190 @@ export function DiscordStatusCard({
         p: 0,
         display: 'flex',
         flexDirection: 'column',
-        maxWidth: 450,
         width: '100%',
-        bgcolor: 'surface.containerLow',
-        borderRadius: 4,
+        height: '100%',
+        bgcolor: 'surface.high',
+        borderRadius: 0,
         border: '1px solid',
         borderColor: 'divider',
         overflow: 'hidden',
-        boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
-        transition: 'all 0.3s ease',
-        '&:hover': {
-          borderColor: RoleColors.DEFAULT.primary,
-          boxShadow: `0 12px 48px ${alpha(RoleColors.DEFAULT.primary, 0.15)}`,
-        },
       }}
     >
-      {/* Header */}
+      {/* Banner */}
       <Box
         sx={{
-          p: 2.5,
-          pb: 2,
-          bgcolor: (theme) => alpha(theme.palette.divider, 0.03),
+          position: 'relative',
+          height: 80,
+          background: `linear-gradient(135deg, ${DISCORD_BLUE} 0%, ${alpha(DISCORD_BLUE, 0.6)} 50%, ${alpha(theme.palette.primary.main, 0.4)} 100%)`,
+          overflow: 'hidden',
+          '&::after': {
+            content: '""',
+            position: 'absolute',
+            inset: 0,
+            background:
+              'repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(255,255,255,0.03) 40px, rgba(255,255,255,0.03) 41px)',
+          },
         }}
       >
-        <Stack direction="row" spacing={2} alignItems="center">
-          <Box
+        {/* Online badge */}
+        <Chip
+          size="small"
+          label={`${onlineCount} en ligne`}
+          sx={{
+            position: 'absolute',
+            top: 10,
+            right: 10,
+            bgcolor: alpha('#22c55e', 0.2),
+            color: '#22c55e',
+            fontWeight: 700,
+            fontSize: '0.7rem',
+            height: 24,
+            border: `1px solid ${alpha('#22c55e', 0.3)}`,
+            '& .MuiChip-label': { px: 1 },
+            '&::before': {
+              content: '""',
+              width: 6,
+              height: 6,
+              borderRadius: '50%',
+              bgcolor: '#22c55e',
+              boxShadow: '0 0 8px #22c55e',
+              ml: 1,
+              animation: 'pulse 2s infinite',
+            },
+          }}
+        />
+      </Box>
+
+      {/* Server info */}
+      <Box sx={{ px: 2.5, mt: -3 }}>
+        <Stack direction="row" spacing={2} alignItems="flex-end">
+          <Avatar
+            src="/logo.webp"
             sx={{
-              position: 'relative',
-              width: 48,
-              height: 48,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
+              width: 56,
+              height: 56,
+              border: '4px solid',
+              borderColor: 'surface.high',
+              bgcolor: 'background.default',
             }}
-          >
-            <Image
-              src="/rpb-3d.gif"
-              alt="RPB Animated Logos"
-              width={48}
-              height={48}
-              style={{
-                objectFit: 'contain',
-                filter: `drop-shadow(0 0 8px ${alpha(
-                  RoleColors.DEFAULT.primary,
-                  0.4,
-                )})`,
-              }}
-              unoptimized
-            />
-          </Box>
-          <Box sx={{ flex: 1 }}>
-            <Typography
-              variant="subtitle1"
-              fontWeight={800}
-              sx={{ color: 'text.primary', lineHeight: 1.2, mb: 0.5 }}
-            >
-              {serverName.toUpperCase()}
+          />
+          <Box sx={{ pb: 0.5 }}>
+            <Typography variant="subtitle1" fontWeight={900} lineHeight={1.2}>
+              RPB
             </Typography>
-            <Stack direction="row" spacing={1.5} alignItems="center">
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                <Box
-                  sx={{
-                    width: 6,
-                    height: 6,
-                    borderRadius: '50%',
-                    bgcolor: 'text.disabled',
-                  }}
-                />
-                <Typography
-                  variant="caption"
-                  color="text.secondary"
-                  fontWeight={600}
-                >
-                  {totalCount.toLocaleString()} MEMBRES
-                </Typography>
-              </Box>
-            </Stack>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              fontWeight={600}
+            >
+              {totalCount.toLocaleString()} membres
+            </Typography>
           </Box>
         </Stack>
       </Box>
 
-      <Divider />
-
-      {/* Team Section */}
+      {/* Team */}
       <Box
         sx={{
-          p: 2,
-          maxHeight: 280,
+          flex: 1,
+          px: 2,
+          pt: 2,
+          pb: 1,
           overflowY: 'auto',
-          '&::-webkit-scrollbar': { width: '4px' },
+          '&::-webkit-scrollbar': { width: 4 },
           '&::-webkit-scrollbar-thumb': {
             bgcolor: 'divider',
-            borderRadius: 0,
+            borderRadius: 2,
           },
         }}
       >
-        <Stack spacing={2.5}>
+        <Stack spacing={2}>
           {team.map((group) => (
             <Box key={group.roleId}>
-              <Box sx={{ mb: 1.5, display: 'flex' }}>
+              <Stack
+                direction="row"
+                spacing={1}
+                alignItems="center"
+                sx={{ mb: 1 }}
+              >
                 <DiscordRoleBadge
                   roleType={group.roleType}
                   size="small"
                   variant="glow"
                   duration={2}
                 />
-              </Box>
-              <Stack spacing={1}>
+                <Typography
+                  variant="caption"
+                  color="text.disabled"
+                  fontWeight={600}
+                >
+                  {group.members.length}
+                </Typography>
+              </Stack>
+
+              <Stack spacing={0.5}>
                 <AnimatePresence>
                   {group.members.map((member, idx) => (
                     <Box
                       component={motion.div}
                       key={member.id}
-                      initial={{ opacity: 0, x: -10 }}
+                      initial={{ opacity: 0, x: -8 }}
                       animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: idx * 0.05 }}
+                      transition={{ delay: idx * 0.03 }}
                       sx={{
                         display: 'flex',
                         alignItems: 'center',
                         gap: 1.5,
-                        p: 0.8,
-                        borderRadius: 2,
-                        transition: 'all 0.2s ease',
+                        py: 0.6,
+                        px: 1,
+                        borderRadius: 1.5,
                         '&:hover': {
-                          bgcolor: (theme) =>
-                            alpha(theme.palette.action.hover, 0.05),
-                          transform: 'translateX(4px)',
+                          bgcolor: (t) => alpha(t.palette.action.hover, 0.06),
                         },
                       }}
                     >
-                      <Avatar
-                        src={member.avatar || undefined}
-                        sx={{
-                          width: 32,
-                          height: 32,
-                          border: '1.5px solid',
-                          borderColor: (theme) =>
-                            alpha(theme.palette.divider, 0.1),
-                        }}
-                      />
-                      <Typography
-                        variant="body2"
-                        fontWeight={600}
-                        sx={{ color: 'text.primary' }}
-                      >
-                        {member.displayName}
-                      </Typography>
-                      <Typography
-                        variant="caption"
-                        sx={{
-                          color: 'text.disabled',
-                          opacity: 0.7,
-                          ml: 'auto',
-                        }}
-                      >
-                        @{member.username}
-                      </Typography>
+                      <Box sx={{ position: 'relative' }}>
+                        <Avatar
+                          src={member.avatar || undefined}
+                          sx={{
+                            width: 30,
+                            height: 30,
+                            border: '2px solid',
+                            borderColor: alpha(roleColor(group.roleType), 0.3),
+                          }}
+                        />
+                        <Box
+                          sx={{
+                            position: 'absolute',
+                            bottom: -1,
+                            right: -1,
+                            width: 10,
+                            height: 10,
+                            borderRadius: '50%',
+                            bgcolor: '#22c55e',
+                            border: '2px solid',
+                            borderColor: 'surface.high',
+                          }}
+                        />
+                      </Box>
+                      <Box sx={{ flex: 1, minWidth: 0 }}>
+                        <Typography
+                          variant="body2"
+                          fontWeight={700}
+                          noWrap
+                          sx={{ lineHeight: 1.2 }}
+                        >
+                          {member.displayName}
+                        </Typography>
+                        <Typography
+                          variant="caption"
+                          color="text.disabled"
+                          noWrap
+                          sx={{ fontSize: '0.65rem' }}
+                        >
+                          {member.username}
+                        </Typography>
+                      </Box>
                     </Box>
                   ))}
                 </AnimatePresence>
@@ -239,8 +274,28 @@ export function DiscordStatusCard({
         </Stack>
       </Box>
 
-      {/* Footer */}
-      <Box sx={{ p: 2, pt: 1 }}>
+      {/* Community avatars + join */}
+      <Box sx={{ p: 2, pt: 1.5 }}>
+        {allMembers.length > 0 && (
+          <AvatarGroup
+            max={8}
+            sx={{
+              mb: 1.5,
+              justifyContent: 'center',
+              '& .MuiAvatar-root': {
+                width: 24,
+                height: 24,
+                fontSize: '0.65rem',
+                border: '2px solid',
+                borderColor: 'surface.high',
+              },
+            }}
+          >
+            {allMembers.slice(0, 8).map((m) => (
+              <Avatar key={m.id} src={m.avatar || undefined} />
+            ))}
+          </AvatarGroup>
+        )}
         <Button
           component="a"
           href="https://discord.gg/rpb"
@@ -252,18 +307,17 @@ export function DiscordStatusCard({
             bgcolor: DISCORD_BLUE,
             color: 'white',
             '&:hover': {
-              bgcolor: DISCORD_BLUE_HOVER,
-              boxShadow: `0 4px 12px ${alpha(DISCORD_BLUE, 0.4)}`,
+              bgcolor: alpha(DISCORD_BLUE, 0.85),
+              boxShadow: `0 6px 20px ${alpha(DISCORD_BLUE, 0.4)}`,
             },
-            py: { xs: 1, md: 1.2 },
-            fontSize: { xs: '0.85rem', md: '0.9rem' },
-            borderRadius: 2.5,
+            py: 1.2,
+            fontSize: '0.85rem',
+            borderRadius: 2,
             textTransform: 'none',
             fontWeight: 800,
-            letterSpacing: '0.02em',
           }}
         >
-          REJOINDRE LE SERVEUR
+          Rejoindre le serveur
         </Button>
       </Box>
     </Card>

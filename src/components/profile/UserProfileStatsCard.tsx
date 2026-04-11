@@ -45,7 +45,7 @@ function StatItem({
     const [scope, shade] = parts;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const palette: any = theme.palette;
-    if (scope && shade && palette[scope] && palette[scope][shade]) {
+    if (scope && shade && palette[scope]?.[shade]) {
       mainColor = palette[scope][shade] as string;
     }
   }

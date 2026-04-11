@@ -1,9 +1,7 @@
+import { BOT_API_KEY, getBotApiUrl } from '@/lib/bot-config';
 import { prisma } from '@/lib/prisma';
 import { DiscordRoleMapping, type RoleType } from '@/lib/role-colors';
 import type { BotMember } from '@/types';
-
-const DISCORD_INVITE_CODE = 'rpb';
-const DISCORD_INVITE_URL = `https://discord.com/api/v9/invites/${DISCORD_INVITE_CODE}?with_counts=true`;
 
 export interface DiscordStats {
   onlineCount: number;
@@ -19,29 +17,34 @@ export interface TeamGroup {
 
 export async function getDiscordStats(): Promise<DiscordStats> {
   const fallbackName = 'République Populaire du Beyblade';
-  let serverName = fallbackName;
-  let onlineCount = 0;
-  let memberCount = 0;
 
   try {
-    const inviteRes = await fetch(DISCORD_INVITE_URL, {
-      next: { revalidate: 60 },
-    });
-    if (inviteRes.ok) {
-      const inviteData = await inviteRes.json();
-      serverName = inviteData.guild?.name || fallbackName;
-      onlineCount = inviteData.approximate_presence_count || 0;
-      memberCount = inviteData.approximate_member_count || 0;
-    }
+    // Fetch from bot API + Discord invite API in parallel
+    const [botRes, inviteRes] = await Promise.all([
+      fetch(`${getBotApiUrl()}/api/status`, {
+        headers: { 'x-api-key': BOT_API_KEY },
+        next: { revalidate: 60 },
+      }).catch(() => null),
+      fetch('https://discord.com/api/v9/invites/rpb?with_counts=true', {
+        next: { revalidate: 60 },
+      }).catch(() => null),
+    ]);
+
+    const botData = botRes?.ok ? await botRes.json() : null;
+    const inviteData = inviteRes?.ok ? await inviteRes.json() : null;
+
+    return {
+      serverName: inviteData?.guild?.name || fallbackName,
+      memberCount:
+        botData?.memberCount || inviteData?.approximate_member_count || 0,
+      onlineCount:
+        inviteData?.approximate_presence_count || botData?.onlineCount || 0,
+    };
   } catch (error) {
     console.error('Failed to fetch Discord stats:', error);
   }
 
-  return {
-    onlineCount,
-    memberCount,
-    serverName,
-  };
+  return { onlineCount: 0, memberCount: 0, serverName: fallbackName };
 }
 
 export async function getDiscordTeam(): Promise<TeamGroup[]> {

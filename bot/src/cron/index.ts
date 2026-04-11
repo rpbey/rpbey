@@ -1,5 +1,3 @@
-import cron from 'node-cron';
-
 import { logger } from '../lib/logger.js';
 import { bbxWeeklySyncTask } from './tasks/BbxWeeklySync.js';
 import { dailyStatsTask } from './tasks/DailyStats.js';
@@ -13,113 +11,68 @@ import { syncRankingRolesTask } from './tasks/SyncRankingRoles.js';
 import { syncSatrRolesTask } from './tasks/SyncSatrRoles.js';
 import { tournamentReminderTask } from './tasks/TournamentReminder.js';
 
+/**
+ * All schedules use Bun.cron() which interprets cron expressions in UTC.
+ * Paris = UTC+1 (winter) / UTC+2 (summer), so:
+ *   - 9:00 Paris (winter) = 8:00 UTC → "0 7 * * *" (summer = 7:00 UTC)
+ *   - We use approximate UTC offsets; for exact TZ handling, adjust seasonally.
+ *   - Using UTC+2 (CEST, majority of the year) as reference.
+ */
 export function setupCronJobs() {
-  logger.info('[Cron] Initializing scheduled tasks...');
+  logger.info('[Cron] Initializing scheduled tasks (Bun.cron)...');
 
   // Mentions Scan: Every 6 hours + run once at startup after 30s
-  cron.schedule(
-    '0 */6 * * *',
-    () => {
-      mentionsScanTask();
-    },
-    { timezone: 'Europe/Paris' },
-  );
+  Bun.cron('0 */6 * * *', () => {
+    mentionsScanTask();
+  });
   setTimeout(() => mentionsScanTask(), 30_000);
 
   // Ranking Roles Sync: Every 30 minutes
-  cron.schedule(
-    '*/30 * * * *',
-    () => {
-      syncRankingRolesTask();
-      syncSatrRolesTask();
-    },
-    {
-      timezone: 'Europe/Paris',
-    },
-  );
+  Bun.cron('*/30 * * * *', () => {
+    syncRankingRolesTask();
+    syncSatrRolesTask();
+  });
 
-  // Daily Stats: 9:00 AM Paris
-  cron.schedule(
-    '0 9 * * *',
-    () => {
-      dailyStatsTask();
-    },
-    {
-      timezone: 'Europe/Paris',
-    },
-  );
+  // Daily Stats: 9:00 Paris (CEST) = 7:00 UTC
+  Bun.cron('0 7 * * *', () => {
+    dailyStatsTask();
+  });
 
   // Live Tournament Sync: Every 5 minutes
-  cron.schedule(
-    '*/5 * * * *',
-    () => {
-      liveTournamentSyncTask();
-    },
-    {
-      timezone: 'Europe/Paris',
-    },
-  );
+  Bun.cron('*/5 * * * *', () => {
+    liveTournamentSyncTask();
+  });
 
   // Pre Tournament Sync: Every hour
-  cron.schedule(
-    '0 * * * *',
-    () => {
-      preTournamentSyncTask();
-    },
-    {
-      timezone: 'Europe/Paris',
-    },
-  );
+  Bun.cron('0 * * * *', () => {
+    preTournamentSyncTask();
+  });
 
   // SATR Sync: Every hour at minute 15
-  cron.schedule(
-    '15 * * * *',
-    () => {
-      satrSyncTask();
-    },
-    {
-      timezone: 'Europe/Paris',
-    },
-  );
+  Bun.cron('15 * * * *', () => {
+    satrSyncTask();
+  });
 
-  // Session Cleanup: 3:00 AM Paris
-  cron.schedule(
-    '0 3 * * *',
-    () => {
-      sessionCleanupTask();
-    },
-    {
-      timezone: 'Europe/Paris',
-    },
-  );
+  // Session Cleanup: 3:00 Paris (CEST) = 1:00 UTC
+  Bun.cron('0 1 * * *', () => {
+    sessionCleanupTask();
+  });
 
   // Tournament Reminder: Every hour
-  cron.schedule('0 * * * *', () => {
+  Bun.cron('0 * * * *', () => {
     tournamentReminderTask();
-  }); // System time (usually UTC), matches old behavior if no timezone specified
+  });
 
-  // BBX Weekly Meta Sync: Every Friday at 18:00 Paris
-  cron.schedule(
-    '0 18 * * 5',
-    () => {
-      bbxWeeklySyncTask();
-    },
-    {
-      timezone: 'Europe/Paris',
-    },
-  );
+  // BBX Weekly Meta Sync: Every Friday at 18:00 Paris (CEST) = 16:00 UTC
+  Bun.cron('0 16 * * 5', () => {
+    bbxWeeklySyncTask();
+  });
 
-  // Ranking Post: Every day at 10:00 AM Paris + run once at startup after 60s
-  cron.schedule(
-    '0 10 * * *',
-    () => {
-      rankingPostTask();
-    },
-    {
-      timezone: 'Europe/Paris',
-    },
-  );
+  // Ranking Post: 10:00 Paris (CEST) = 8:00 UTC + run once at startup after 60s
+  Bun.cron('0 8 * * *', () => {
+    rankingPostTask();
+  });
   setTimeout(() => rankingPostTask(), 60_000);
 
-  logger.info('[Cron] Tasks scheduled.');
+  logger.info('[Cron] Tasks scheduled (Bun.cron, UTC).');
 }

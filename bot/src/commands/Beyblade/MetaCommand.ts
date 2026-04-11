@@ -1,4 +1,3 @@
-import fs from 'node:fs';
 import {
   ApplicationCommandOptionType,
   AttachmentBuilder,
@@ -70,10 +69,10 @@ const PERIOD_CHOICES = [
 ];
 
 // --- Helpers ---
-function loadMetaData(): MetaFileData | null {
-  const dataPath = resolveDataPath('bbx-weekly.json');
-  if (!fs.existsSync(dataPath)) return null;
-  return JSON.parse(fs.readFileSync(dataPath, 'utf-8')) as MetaFileData;
+async function loadMetaData(): Promise<MetaFileData | null> {
+  const file = Bun.file(resolveDataPath('bbx-weekly.json'));
+  if (!(await file.exists())) return null;
+  return file.json() as Promise<MetaFileData>;
 }
 
 function fallbackEmbed(): EmbedBuilder {
@@ -131,7 +130,7 @@ export class MetaCommand {
     await interaction.deferReply();
 
     try {
-      const data = loadMetaData();
+      const data = await loadMetaData();
       if (!data) return interaction.editReply({ embeds: [fallbackEmbed()] });
 
       const resolved = resolvePeriod(data, periodKey);
@@ -190,7 +189,7 @@ export class MetaCommand {
     await interaction.deferReply();
 
     try {
-      const data = loadMetaData();
+      const data = await loadMetaData();
       if (!data) return interaction.editReply({ embeds: [fallbackEmbed()] });
 
       const resolved = resolvePeriod(data, periodKey);
@@ -248,7 +247,7 @@ export class MetaCommand {
     await interaction.deferReply();
 
     try {
-      const data = loadMetaData();
+      const data = await loadMetaData();
       if (!data) return interaction.editReply({ embeds: [fallbackEmbed()] });
 
       const resolved = resolvePeriod(data, periodKey);
@@ -303,7 +302,7 @@ export class MetaCommand {
     await interaction.deferReply();
 
     try {
-      const data = loadMetaData();
+      const data = await loadMetaData();
       if (!data) return interaction.editReply({ embeds: [fallbackEmbed()] });
 
       const resolved = resolvePeriod(data, periodKey);

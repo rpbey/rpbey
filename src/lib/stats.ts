@@ -333,4 +333,4 @@ export async function getHeadToHead(
   return { user1Wins, user2Wins, matches };
 }
 
-export { STARTING_ELO, calculateEloChange };
+export { calculateEloChange, STARTING_ELO };

@@ -1,5 +1,4 @@
 import 'reflect-metadata';
-import 'dotenv/config';
 import { DefaultExtractors } from '@discord-player/extractor';
 import { tsyringeDependencyRegistryEngine } from '@discordx/di';
 import { dirname, importx } from '@discordx/importer';
@@ -79,17 +78,15 @@ async function run() {
   );
   await player.extractors.loadMulti(DefaultExtractors);
 
-  // Verify FFmpeg async
-  void import('node:child_process').then(({ spawnSync }) => {
-    try {
-      const ffmpeg = spawnSync('ffmpeg', ['-version']);
-      if (ffmpeg.status === 0)
-        logger.info('[Music] FFmpeg verified successfully.');
-      else logger.warn('[Music] FFmpeg not found in PATH.');
-    } catch {
-      logger.warn('[Music] Failed to verify FFmpeg.');
-    }
-  });
+  // Verify FFmpeg
+  try {
+    const ffmpeg = Bun.spawnSync(['ffmpeg', '-version']);
+    if (ffmpeg.exitCode === 0)
+      logger.info('[Music] FFmpeg verified successfully.');
+    else logger.warn('[Music] FFmpeg not found in PATH.');
+  } catch {
+    logger.warn('[Music] Failed to verify FFmpeg.');
+  }
 
   // Player Events
   player.events.on('error', (_queue, error) =>

@@ -1,9 +1,4 @@
-import crypto from 'node:crypto';
-import {
-  createServer,
-  type IncomingMessage,
-  type ServerResponse,
-} from 'node:http';
+import { timingSafeEqual } from 'node:crypto';
 import { bot } from './bot.js';
 import { logger } from './logger.js';
 
@@ -56,18 +51,10 @@ function formatUptime(ms: number): string {
   return `${m}m ${s % 60}s`;
 }
 
-function sendJSON(res: ServerResponse, data: unknown, status = 200) {
-  res.writeHead(status, { 'Content-Type': 'application/json' });
-  res.end(JSON.stringify(data));
-}
-
 async function getBotStatus() {
   const client = bot;
   const guild = await client.guilds
-    .fetch({
-      guild: process.env.GUILD_ID ?? '',
-      withCounts: true,
-    })
+    .fetch({ guild: process.env.GUILD_ID ?? '', withCounts: true })
     .catch(() => null);
 
   return {
@@ -80,94 +67,123 @@ async function getBotStatus() {
     onlineCount: guild?.approximatePresenceCount ?? 0,
     ping: client.ws.ping,
     memoryUsage: `${(process.memoryUsage().heapUsed / (1024 * 1024)).toFixed(2)} MB`,
-    nodeVersion: process.version,
+    runtime: `Bun ${Bun.version}`,
   };
 }
 
-async function handleRequest(req: IncomingMessage, res: ServerResponse) {
-  // CORS
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS, POST');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, x-api-key');
+const CORS_HEADERS: Record<string, string> = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, OPTIONS, POST',
+  'Access-Control-Allow-Headers': 'Content-Type, x-api-key',
+};
 
-  if (req.method === 'OPTIONS') {
-    res.writeHead(204);
-    res.end();
-    return;
-  }
-
-  // Rate limiting
-  const ip = req.socket.remoteAddress || 'unknown';
-  if (!checkRateLimit(ip)) {
-    return sendJSON(res, { error: 'Too Many Requests' }, 429);
-  }
-
-  // API key auth
-  const apiKey = req.headers['x-api-key'];
+/** Auth middleware — validates API key on every non-OPTIONS request */
+function authenticate(req: Request): Response | null {
   const expectedKey = process.env.BOT_API_KEY;
-
   if (!expectedKey) {
     logger.error('BOT_API_KEY not set in environment!');
-    return sendJSON(res, { error: 'Server misconfiguration' }, 500);
+    return Response.json(
+      { error: 'Server misconfiguration' },
+      { status: 500, headers: CORS_HEADERS },
+    );
   }
 
-  const providedBuf = Buffer.from(
-    typeof apiKey === 'string' ? apiKey : '',
-    'utf8',
-  );
+  const apiKey = req.headers.get('x-api-key') ?? '';
+  const providedBuf = Buffer.from(apiKey, 'utf8');
   const expectedBuf = Buffer.from(expectedKey, 'utf8');
 
   if (
     providedBuf.length !== expectedBuf.length ||
-    !crypto.timingSafeEqual(providedBuf, expectedBuf)
+    !timingSafeEqual(providedBuf, expectedBuf)
   ) {
-    return sendJSON(res, { error: 'Unauthorized' }, 401);
+    return Response.json(
+      { error: 'Unauthorized' },
+      { status: 401, headers: CORS_HEADERS },
+    );
   }
 
-  const url = new URL(
-    req.url ?? '/',
-    `http://${req.headers.host ?? 'localhost'}`,
-  );
-
-  try {
-    switch (url.pathname) {
-      case '/api/status':
-        return sendJSON(res, await getBotStatus());
-
-      case '/api/logs': {
-        const tail = parseInt(url.searchParams.get('tail') ?? '100', 10);
-        const since = url.searchParams.get('since');
-        let filtered = getLogs(Math.min(tail, MAX_LOGS));
-        if (since) {
-          filtered = filtered.filter((l) => l.timestamp > since);
-        }
-        return sendJSON(res, { logs: filtered });
-      }
-
-      case '/api/commands': {
-        const commands = bot.applicationCommands.map((cmd) => ({
-          name: cmd.name,
-          description: cmd.description,
-          category: 'group' in cmd ? String(cmd.group) : 'Général',
-        }));
-        return sendJSON(res, { commands });
-      }
-
-      default:
-        return sendJSON(res, { error: 'Not found' }, 404);
-    }
-  } catch (error) {
-    logger.error('API Server Error:', error);
-    return sendJSON(res, { error: 'Internal server error' }, 500);
-  }
+  return null; // Auth passed
 }
 
 export function startApiServer(port = 3001) {
-  const server = createServer((req, res) => {
-    void handleRequest(req, res);
+  const server = Bun.serve({
+    port,
+    hostname: '127.0.0.1',
+
+    routes: {
+      '/api/status': {
+        GET: async (req) => {
+          const authError = authenticate(req);
+          if (authError) return authError;
+          return Response.json(await getBotStatus(), { headers: CORS_HEADERS });
+        },
+        OPTIONS: () =>
+          new Response(null, { status: 204, headers: CORS_HEADERS }),
+      },
+
+      '/api/logs': {
+        GET: (req) => {
+          const authError = authenticate(req);
+          if (authError) return authError;
+          const url = new URL(req.url);
+          const tail = parseInt(url.searchParams.get('tail') ?? '100', 10);
+          const since = url.searchParams.get('since');
+          let filtered = getLogs(Math.min(tail, MAX_LOGS));
+          if (since) {
+            filtered = filtered.filter((l) => l.timestamp > since);
+          }
+          return Response.json({ logs: filtered }, { headers: CORS_HEADERS });
+        },
+        OPTIONS: () =>
+          new Response(null, { status: 204, headers: CORS_HEADERS }),
+      },
+
+      '/api/commands': {
+        GET: (req) => {
+          const authError = authenticate(req);
+          if (authError) return authError;
+          const commands = bot.applicationCommands.map((cmd) => ({
+            name: cmd.name,
+            description: cmd.description,
+            category: 'group' in cmd ? String(cmd.group) : 'Général',
+          }));
+          return Response.json({ commands }, { headers: CORS_HEADERS });
+        },
+        OPTIONS: () =>
+          new Response(null, { status: 204, headers: CORS_HEADERS }),
+      },
+    },
+
+    // Fallback for unmatched routes
+    fetch(req) {
+      // Rate limiting on fallback
+      const ip = server.requestIP(req)?.address ?? 'unknown';
+      if (!checkRateLimit(ip)) {
+        return Response.json(
+          { error: 'Too Many Requests' },
+          { status: 429, headers: CORS_HEADERS },
+        );
+      }
+
+      if (req.method === 'OPTIONS') {
+        return new Response(null, { status: 204, headers: CORS_HEADERS });
+      }
+
+      return Response.json(
+        { error: 'Not found' },
+        { status: 404, headers: CORS_HEADERS },
+      );
+    },
+
+    error(error) {
+      logger.error('API Server Error:', error);
+      return Response.json(
+        { error: 'Internal server error' },
+        { status: 500, headers: CORS_HEADERS },
+      );
+    },
   });
-  server.listen(port, '127.0.0.1', () => {
-    logger.info(`Bot API server listening on port ${port}`);
-  });
+
+  logger.info(`Bot API server listening on http://127.0.0.1:${port}`);
   return server;
 }

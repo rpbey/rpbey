@@ -23,18 +23,6 @@ const TYPE_COLORS: Record<string, string> = {
   BALANCE: '#a855f7',
 };
 
-// Type advantage: ATTACK > STAMINA > DEFENSE > ATTACK, BALANCE neutral
-function getTypeAdvantage(atk: string | null, def: string | null): number {
-  if (!atk || !def || atk === 'BALANCE' || def === 'BALANCE') return 1;
-  if (atk === 'ATTACK' && def === 'STAMINA') return 1.3;
-  if (atk === 'STAMINA' && def === 'DEFENSE') return 1.3;
-  if (atk === 'DEFENSE' && def === 'ATTACK') return 1.3;
-  if (atk === 'STAMINA' && def === 'ATTACK') return 0.7;
-  if (atk === 'DEFENSE' && def === 'STAMINA') return 0.7;
-  if (atk === 'ATTACK' && def === 'DEFENSE') return 0.7;
-  return 1;
-}
-
 function parseStat(val: string | number | null | undefined): number {
   if (typeof val === 'number') return val;
   if (!val) return 0;
@@ -230,91 +218,6 @@ function ComboCard({
       </CardContent>
     </Card>
   );
-}
-
-interface BattleResult {
-  winner: 'p1' | 'p2';
-  p1Hp: number;
-  p2Hp: number;
-  log: string[];
-}
-
-function _simulateBattle(p1: BeyCombo, p2: BeyCombo): BattleResult {
-  const s1 = getComboStats(p1);
-  const s2 = getComboStats(p2);
-
-  const typeAdv1 = getTypeAdvantage(s1.type, s2.type);
-  const typeAdv2 = getTypeAdvantage(s2.type, s1.type);
-
-  let hp1 = 100;
-  let hp2 = 100;
-  const log: string[] = [];
-
-  // Name helper
-  const n1 = p1.blade?.name || 'Joueur 1';
-  const n2 = p2.blade?.name || 'Joueur 2';
-
-  if (typeAdv1 > 1) log.push(`${n1} a l'avantage de type !`);
-  if (typeAdv2 > 1) log.push(`${n2} a l'avantage de type !`);
-
-  // 10 rounds of combat
-  for (let round = 1; round <= 10 && hp1 > 0 && hp2 > 0; round++) {
-    // P1 attacks P2
-    const atk1 = (s1.attack * typeAdv1 * (0.8 + Math.random() * 0.4)) / 10;
-    const def2 = (s2.defense * 0.5) / 10;
-    const dmg1 = Math.max(1, Math.round(atk1 - def2 + s1.dash * 0.1));
-    hp2 = Math.max(0, hp2 - dmg1);
-
-    // Burst check
-    const burstChance1 = Math.max(0, (s1.attack - s2.burst) * 0.5);
-    if (Math.random() * 100 < burstChance1 && round > 3) {
-      log.push(`Tour ${round}: ${n1} BURST FINISH ! 💥`);
-      hp2 = 0;
-      break;
-    }
-
-    // P2 attacks P1
-    const atk2 = (s2.attack * typeAdv2 * (0.8 + Math.random() * 0.4)) / 10;
-    const def1 = (s1.defense * 0.5) / 10;
-    const dmg2 = Math.max(1, Math.round(atk2 - def1 + s2.dash * 0.1));
-    hp1 = Math.max(0, hp1 - dmg2);
-
-    // Burst check P2
-    const burstChance2 = Math.max(0, (s2.attack - s1.burst) * 0.5);
-    if (Math.random() * 100 < burstChance2 && round > 3) {
-      log.push(`Tour ${round}: ${n2} BURST FINISH ! 💥`);
-      hp1 = 0;
-      break;
-    }
-
-    // Stamina drain
-    const staminaDrain1 = Math.max(0.5, 10 - s1.stamina * 0.08);
-    const staminaDrain2 = Math.max(0.5, 10 - s2.stamina * 0.08);
-    hp1 = Math.max(0, hp1 - staminaDrain1);
-    hp2 = Math.max(0, hp2 - staminaDrain2);
-
-    if (round % 3 === 0 || round === 10) {
-      log.push(
-        `Tour ${round}: ${n1} ${Math.round(hp1)}% — ${n2} ${Math.round(hp2)}%`,
-      );
-    }
-  }
-
-  // If both alive, winner by remaining HP (stamina out-spin)
-  if (hp1 > 0 && hp2 > 0) {
-    log.push(
-      hp1 > hp2
-        ? `${n1} gagne par Spin Finish !`
-        : `${n2} gagne par Spin Finish !`,
-    );
-  }
-
-  return {
-    winner: hp1 >= hp2 ? 'p1' : 'p2',
-    p1Hp: Math.round(Math.max(0, hp1)),
-    p2Hp: Math.round(Math.max(0, hp2)),
-    log,
-  };
 }
 
 interface CombatTabProps {

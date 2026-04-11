@@ -1,5 +1,3 @@
-import fs from 'node:fs';
-
 import {
   ApplicationCommandOptionType,
   AttachmentBuilder,
@@ -45,17 +43,15 @@ interface BitJson {
   };
 }
 
-function loadJsonData<T>(filename: string): T[] {
-  const candidates = [resolveDataPath('cleaned', filename)];
-  for (const p of candidates) {
-    if (fs.existsSync(p)) return JSON.parse(fs.readFileSync(p, 'utf-8'));
-  }
+async function loadJsonData<T>(filename: string): Promise<T[]> {
+  const file = Bun.file(resolveDataPath('cleaned', filename));
+  if (await file.exists()) return file.json();
   return [];
 }
 
-const BLADE_DATA = loadJsonData<BladeJson>('blades.json');
-const RATCHET_DATA = loadJsonData<RatchetJson>('ratchets.json');
-const BIT_DATA = loadJsonData<BitJson>('bits.json');
+const BLADE_DATA = await loadJsonData<BladeJson>('blades.json');
+const RATCHET_DATA = await loadJsonData<RatchetJson>('ratchets.json');
+const BIT_DATA = await loadJsonData<BitJson>('bits.json');
 
 function normalize(name: string) {
   return name.replace(/[\s-]/g, '').toLowerCase();

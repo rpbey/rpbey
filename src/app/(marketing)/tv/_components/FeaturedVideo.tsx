@@ -1,7 +1,7 @@
 'use client';
 
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import { Box } from '@mui/material';
+import Box from '@mui/material/Box';
 import Image from 'next/image';
 import { useState } from 'react';
 
@@ -18,9 +18,9 @@ export function FeaturedVideo({ videoId }: FeaturedVideoProps) {
         sx={{
           position: 'relative',
           aspectRatio: '16/9',
-          borderRadius: { xs: 2.5, md: 3.5 },
+          borderRadius: { xs: 2.5, md: 3 },
           overflow: 'hidden',
-          mb: { xs: 3, md: 4 },
+          mb: { xs: 2, md: 3 },
           bgcolor: '#000',
         }}
       >
@@ -47,9 +47,9 @@ export function FeaturedVideo({ videoId }: FeaturedVideoProps) {
       sx={{
         position: 'relative',
         aspectRatio: '16/9',
-        borderRadius: { xs: 2.5, md: 3.5 },
+        borderRadius: { xs: 2.5, md: 3 },
         overflow: 'hidden',
-        mb: { xs: 3, md: 4 },
+        mb: { xs: 2, md: 3 },
         cursor: 'pointer',
         '&:hover .play-btn': {
           transform: 'scale(1.1)',
@@ -60,7 +60,7 @@ export function FeaturedVideo({ videoId }: FeaturedVideoProps) {
     >
       <Image
         src={`https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`}
-        alt="Vidéo à la une"
+        alt="Video a la une"
         fill
         priority
         style={{ objectFit: 'cover', transition: 'filter 0.25s' }}

@@ -23,7 +23,7 @@ export async function claimProfile(stubUserId: string) {
       include: { profile: true },
     });
 
-    if (!stubUser || !stubUser.username?.startsWith('bts2_')) {
+    if (!stubUser?.username?.startsWith('bts2_')) {
       return {
         success: false,
         message: "Ce profil n'est pas éligible à la liaison.",

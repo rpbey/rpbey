@@ -1,18 +1,8 @@
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import {
-  alpha,
-  Box,
-  Chip,
-  Container,
-  Grid,
-  Paper,
-  Stack,
-  Typography,
-} from '@mui/material';
+import { Box, Container, Paper, Typography } from '@mui/material';
 import type { SatrBlader, SatrRanking } from '@prisma/client';
 import Image from 'next/image';
-import Link from 'next/link';
 import { Suspense } from 'react';
 import RankingSearch from '@/components/rankings/RankingSearch';
 import { SatrBladersTable } from '@/components/rankings/SatrBladersTable';
@@ -222,9 +212,6 @@ export default async function SatrPage({ searchParams }: SatrPageProps) {
           <Box sx={{ flex: 1, display: { xs: 'none', md: 'block' } }} />
         </Box>
 
-        {/* All-Star Saison 2 */}
-        <AllStarSection />
-
         {/* Hall of Fame */}
         {champions.length > 0 && (
           <SatrHallOfFame
@@ -310,192 +297,6 @@ export default async function SatrPage({ searchParams }: SatrPageProps) {
           SUN AFTER THE REIGN • BEYBLADE BATTLE TOURNAMENT
         </Typography>
       </Container>
-    </Box>
-  );
-}
-
-// ── All-Star Section ──
-
-const ALL_STAR_EVENTS = [
-  {
-    id: 'allstar-paris',
-    city: 'Paris',
-    date: '2026-04-19',
-    time: '14h00',
-    venue: 'Saiba Café (étage E-Spot)',
-    count: 16,
-    format: 'Poules + Double Élim BO3',
-    note: 'Spectateurs bienvenus · Twitch',
-    color: '#fbbf24',
-  },
-  {
-    id: 'allstar-marseille',
-    city: 'Marseille',
-    date: '2026-04-11',
-    time: '14h30',
-    venue: 'Chaperon Rouge Bar',
-    count: 16,
-    format: 'Poules + Arbre',
-    note: null,
-    color: '#f87171',
-  },
-] as const;
-
-function AllStarSection() {
-  return (
-    <Box sx={{ mb: { xs: 4, md: 6 } }}>
-      <Paper
-        elevation={0}
-        sx={{
-          borderRadius: { xs: 3, md: 4 },
-          overflow: 'hidden',
-          position: 'relative',
-          aspectRatio: { xs: '2/1', sm: '16/9', md: '2.5/1' },
-          mb: { xs: 1.5, md: 2 },
-        }}
-      >
-        <Image
-          src="/images/satr-banner.webp"
-          alt="All-Star SAtR"
-          fill
-          style={{ objectFit: 'cover' }}
-        />
-        <Box
-          sx={{
-            position: 'absolute',
-            inset: 0,
-            background: {
-              xs: 'linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.3) 40%, transparent 100%)',
-              md: 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.15) 50%, transparent 100%)',
-            },
-          }}
-        />
-        <Box
-          sx={{
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            px: { xs: 2, md: 3.5 },
-            pb: { xs: 1.5, md: 2.5 },
-          }}
-        >
-          <Typography
-            variant="caption"
-            sx={{
-              color: '#fbbf24',
-              fontWeight: 900,
-              letterSpacing: { xs: 1.5, md: 2 },
-              textTransform: 'uppercase',
-              fontSize: { xs: '0.5rem', md: '0.65rem' },
-            }}
-          >
-            Événement
-          </Typography>
-          <Typography
-            fontWeight="900"
-            sx={{
-              fontSize: { xs: '1.1rem', md: '1.6rem' },
-              lineHeight: 1.2,
-              color: '#fff',
-            }}
-          >
-            All-Star Saison 2
-          </Typography>
-        </Box>
-      </Paper>
-
-      <Grid container spacing={{ xs: 1.5, md: 2 }}>
-        {ALL_STAR_EVENTS.map((event) => (
-          <Grid key={event.id} size={{ xs: 12, sm: 6 }}>
-            <Paper
-              elevation={0}
-              sx={{
-                px: { xs: 1.5, md: 2 },
-                py: { xs: 1.5, md: 2 },
-                borderRadius: { xs: 2.5, md: 3 },
-                bgcolor: 'rgba(255,255,255,0.02)',
-                border: '1px solid rgba(255,255,255,0.06)',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: { xs: 0.75, md: 1 },
-              }}
-            >
-              <Stack
-                direction="row"
-                justifyContent="space-between"
-                alignItems="center"
-              >
-                <Typography
-                  fontWeight="900"
-                  sx={{ fontSize: { xs: '0.9rem', md: '0.95rem' } }}
-                >
-                  {event.city}
-                </Typography>
-                <Chip
-                  label={`${event.count} joueurs`}
-                  size="small"
-                  sx={{
-                    fontWeight: 800,
-                    fontSize: '0.6rem',
-                    height: 20,
-                    bgcolor: alpha(event.color, 0.12),
-                    color: event.color,
-                  }}
-                />
-              </Stack>
-              <Typography
-                variant="body2"
-                fontWeight="700"
-                sx={{
-                  color: 'rgba(255,255,255,0.85)',
-                  fontSize: { xs: '0.78rem', md: '0.85rem' },
-                }}
-              >
-                {new Date(event.date).toLocaleDateString('fr-FR', {
-                  weekday: 'long',
-                  day: 'numeric',
-                  month: 'long',
-                })}{' '}
-                — {event.time}
-              </Typography>
-              <Typography
-                variant="caption"
-                sx={{
-                  color: 'rgba(255,255,255,0.4)',
-                  fontSize: { xs: '0.65rem', md: '0.7rem' },
-                }}
-              >
-                {event.venue} · {event.format}
-                {event.note ? ` · ${event.note}` : ''}
-              </Typography>
-            </Paper>
-          </Grid>
-        ))}
-      </Grid>
-
-      <Link
-        href="https://youtu.be/MFXM_l-tz74"
-        target="_blank"
-        style={{ textDecoration: 'none', color: 'inherit' }}
-      >
-        <Typography
-          variant="caption"
-          sx={{
-            display: 'block',
-            textAlign: 'center',
-            mt: 1.5,
-            color: '#fbbf24',
-            opacity: 0.5,
-            fontWeight: 700,
-            fontSize: '0.65rem',
-            transition: 'opacity 0.2s',
-            '&:hover': { opacity: 1 },
-          }}
-        >
-          VOD récapitulative de la saison
-        </Typography>
-      </Link>
     </Box>
   );
 }

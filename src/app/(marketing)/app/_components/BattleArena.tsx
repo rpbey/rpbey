@@ -279,7 +279,11 @@ export function BattleArena({
     };
   }, []);
 
-  // ── Launch handler ──
+  // ── Launch handler (ref to avoid self-reference in useCallback) ──
+  const handleLaunchRef = useRef<
+    (player: 'p1' | 'p2', params: LaunchParams) => void
+  >(() => {});
+
   const handleLaunch = useCallback(
     (player: 'p1' | 'p2', params: LaunchParams) => {
       const engine = engineRef.current;
@@ -350,7 +354,7 @@ export function BattleArena({
                   : 0.2 + Math.random() * 0.6;
             const aiAngle =
               (Math.PI * 3) / 4 + (Math.random() - 0.5) * (Math.PI / 3);
-            handleLaunch('p2', { power: aiPower, angle: aiAngle });
+            handleLaunchRef.current('p2', { power: aiPower, angle: aiAngle });
           }, 800);
           setPhase('battle');
         } else {
@@ -363,96 +367,23 @@ export function BattleArena({
     [mode, aiDifficulty, p1Stats, p2Stats],
   );
 
-  // ── Start battle loop (as ref to avoid circular deps) ──
-  const startBattleRef = useRef<() => void>(() => {});
-  startBattleRef.current = () => {
-    const engine = engineRef.current;
-    if (!engine) return;
-
-    // Collision handling
-    Matter.Events.on(engine, 'collisionStart', (event) => {
-      for (const pair of event.pairs) {
-        const a = pair.bodyA;
-        const b = pair.bodyB;
-
-        // Bey vs Bey collision
-        if (
-          (a.label === 'p1' && b.label === 'p2') ||
-          (a.label === 'p2' && b.label === 'p1')
-        ) {
-          const p1Body = a.label === 'p1' ? a : b;
-          const p2Body = a.label === 'p1' ? b : a;
-
-          const relSpeed = Math.sqrt(
-            (p1Body.velocity.x - p2Body.velocity.x) ** 2 +
-              (p1Body.velocity.y - p2Body.velocity.y) ** 2,
-          );
-
-          // Burst damage
-          const p1Dmg =
-            ((COLLISION_BURST_DAMAGE *
-              p2Stats.attack *
-              typeAdvantage(p2Stats.type, p1Stats.type)) /
-              Math.max(1, p1Stats.defense)) *
-            relSpeed;
-          const p2Dmg =
-            ((COLLISION_BURST_DAMAGE *
-              p1Stats.attack *
-              typeAdvantage(p1Stats.type, p2Stats.type)) /
-              Math.max(1, p2Stats.defense)) *
-            relSpeed;
-
-          burstRef.current.p1 += p1Dmg;
-          burstRef.current.p2 += p2Dmg;
-
-          // Spin loss on collision
-          spinRef.current.p1 -= relSpeed * 2 * (1 - p1Stats.defense / 200);
-          spinRef.current.p2 -= relSpeed * 2 * (1 - p2Stats.defense / 200);
-
-          if (relSpeed > 3) {
-            eventsRef.current.push({
-              time: frameRef.current,
-              type: 'collision',
-              message: `Impact ! (${relSpeed.toFixed(1)})`,
-              color: '#f59e0b',
-            });
-          }
-        }
-      }
-    });
-
-    // Start physics runner
-    const runner = Matter.Runner.create({ delta: 1000 / 60 });
-    runnerRef.current = runner;
-    Matter.Runner.run(runner, engine);
-
-    // Start render loop
-    const render = () => {
-      frameRef.current++;
-      _updateGameFn();
-      _drawArenaFn();
-      rafRef.current = requestAnimationFrame(render);
-    };
-    rafRef.current = requestAnimationFrame(render);
-  };
-
-  // ── Auto-start battle when both beys are placed ──
   useEffect(() => {
-    if (phase === 'battle' && bey1Ref.current && bey2Ref.current) {
-      startBattleRef.current();
-    }
-  }, [phase]);
+    handleLaunchRef.current = handleLaunch;
+  }, [handleLaunch]);
+
+  // ── Start battle loop (as ref to avoid circular deps) ──
+  const _startBattleRef = useRef<() => void>(() => {});
 
   // ── Game functions as refs (avoids circular useCallback deps) ──
-  const endBattleFn = (winnerName: string, type: string) => {
+  const endBattleFn = useCallback((winnerName: string, type: string) => {
     if (runnerRef.current) Matter.Runner.stop(runnerRef.current);
     cancelAnimationFrame(rafRef.current);
     setWinner(winnerName);
     setWinType(type);
     setPhase('result');
-  };
+  }, []);
 
-  const _updateGameFn = () => {
+  const _updateGameFn = useCallback(() => {
     const b1 = bey1Ref.current;
     const b2 = bey2Ref.current;
     if (!b1 || !b2) return;
@@ -537,10 +468,10 @@ export function BattleArena({
       setSpins({ ...spinRef.current });
       setEvents([...eventsRef.current].slice(-5));
     }
-  };
+  }, [p1Stats, p2Stats, endBattleFn]);
 
   // ── Draw arena + beys ──
-  const _drawArenaFn = () => {
+  const _drawArenaFn = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
@@ -696,7 +627,87 @@ export function BattleArena({
       ctx.stroke();
       ctx.restore();
     }
-  };
+  }, [p1Stats, p2Stats]);
+
+  useEffect(() => {
+    _startBattleRef.current = () => {
+      const engine = engineRef.current;
+      if (!engine) return;
+
+      // Collision handling
+      Matter.Events.on(engine, 'collisionStart', (event) => {
+        for (const pair of event.pairs) {
+          const a = pair.bodyA;
+          const b = pair.bodyB;
+
+          // Bey vs Bey collision
+          if (
+            (a.label === 'p1' && b.label === 'p2') ||
+            (a.label === 'p2' && b.label === 'p1')
+          ) {
+            const p1Body = a.label === 'p1' ? a : b;
+            const p2Body = a.label === 'p1' ? b : a;
+
+            const relSpeed = Math.sqrt(
+              (p1Body.velocity.x - p2Body.velocity.x) ** 2 +
+                (p1Body.velocity.y - p2Body.velocity.y) ** 2,
+            );
+
+            // Burst damage
+            const p1Dmg =
+              ((COLLISION_BURST_DAMAGE *
+                p2Stats.attack *
+                typeAdvantage(p2Stats.type, p1Stats.type)) /
+                Math.max(1, p1Stats.defense)) *
+              relSpeed;
+            const p2Dmg =
+              ((COLLISION_BURST_DAMAGE *
+                p1Stats.attack *
+                typeAdvantage(p1Stats.type, p2Stats.type)) /
+                Math.max(1, p2Stats.defense)) *
+              relSpeed;
+
+            burstRef.current.p1 += p1Dmg;
+            burstRef.current.p2 += p2Dmg;
+
+            // Spin loss on collision
+            spinRef.current.p1 -= relSpeed * 2 * (1 - p1Stats.defense / 200);
+            spinRef.current.p2 -= relSpeed * 2 * (1 - p2Stats.defense / 200);
+
+            if (relSpeed > 3) {
+              eventsRef.current.push({
+                time: frameRef.current,
+                type: 'collision',
+                message: `Impact ! (${relSpeed.toFixed(1)})`,
+                color: '#f59e0b',
+              });
+            }
+          }
+        }
+      });
+
+      // Start physics runner
+      const runner = Matter.Runner.create({ delta: 1000 / 60 });
+      runnerRef.current = runner;
+      Matter.Runner.run(runner, engine);
+
+      // Start render loop
+      const render = () => {
+        frameRef.current++;
+        _updateGameFn();
+        _drawArenaFn();
+        rafRef.current = requestAnimationFrame(render);
+      };
+      rafRef.current = requestAnimationFrame(render);
+    };
+  }, [p1Stats, p2Stats, _drawArenaFn, _updateGameFn]);
+
+  // ── Auto-start battle when both beys are placed ──
+  useEffect(() => {
+    if (phase === 'battle' && bey1Ref.current && bey2Ref.current) {
+      _startBattleRef.current();
+    }
+  }, [phase]);
 
   // ── Initial draw ──
   useEffect(() => {

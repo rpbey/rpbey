@@ -73,10 +73,10 @@ export function DiscordFloatingCTA() {
   }, []);
 
   useEffect(() => {
-    fetch('https://discord.com/api/guilds/1186042507930464367/widget.json')
+    fetch('/api/discord/stats')
       .then((r) => r.json())
       .then((data) => {
-        if (data.presence_count) setMemberCount(data.presence_count);
+        if (data.onlineCount) setMemberCount(data.onlineCount);
       })
       .catch(() => {});
   }, []);

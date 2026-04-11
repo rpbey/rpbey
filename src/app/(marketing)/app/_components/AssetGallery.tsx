@@ -40,50 +40,6 @@ const TEXTURE_CATEGORIES = [
   { label: 'Marketing', value: 'marketing' },
 ];
 
-function _categorizeAsset(name: string): string {
-  const lower = name.toLowerCase();
-  if (
-    lower.includes('blade') ||
-    lower.includes('dran') ||
-    lower.includes('sword') ||
-    lower.includes('scythe') ||
-    lower.includes('wizard') ||
-    lower.includes('knight') ||
-    lower.includes('shark') ||
-    lower.includes('phoenix') ||
-    lower.includes('rhino') ||
-    lower.includes('leon') ||
-    lower.includes('viper') ||
-    lower.includes('dragon') ||
-    lower.includes('wolf') ||
-    lower.includes('tiger') ||
-    lower.includes('whale') ||
-    lower.includes('stag') ||
-    lower.includes('unicorn') ||
-    lower.includes('sphinx') ||
-    lower.includes('gryphon') ||
-    lower.includes('wyvern') ||
-    lower.includes('head_') ||
-    lower.includes('auxblade')
-  )
-    return 'blade';
-  if (lower.includes('ratchet') || /^\d-\d\d/.test(lower)) return 'ratchet';
-  if (lower.startsWith('bit_') || lower.includes('_bit')) return 'bit';
-  if (lower.includes('arena') || lower.includes('stadium')) return 'arena';
-  if (lower.includes('portrait') || lower.includes('frame_')) return 'portrait';
-  if (lower.includes('marketing')) return 'marketing';
-  if (
-    lower.includes('battle') ||
-    lower.includes('screen') ||
-    lower.includes('icon') ||
-    lower.includes('banner') ||
-    lower.includes('button') ||
-    lower.includes('ui')
-  )
-    return 'ui';
-  return 'other';
-}
-
 export function AssetGallery() {
   const [assets, setAssets] = useState<AssetFile[]>([]);
   const [loading, setLoading] = useState(true);

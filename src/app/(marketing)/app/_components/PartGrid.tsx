@@ -20,7 +20,7 @@ import type { Part } from '@prisma/client';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 
-function _useMobile() {
+function useMobile() {
   const [mobile, setMobile] = useState(false);
   useEffect(() => {
     const mql = window.matchMedia('(max-width:599px)');
@@ -314,7 +314,7 @@ interface PartDetailDialogProps {
 }
 
 function PartDetailDialog({ part, onClose }: PartDetailDialogProps) {
-  const isMobile = _useMobile();
+  const isMobile = useMobile();
   if (!part) return null;
 
   const color = (part.beyType && TYPE_COLORS[part.beyType]) || '#6b7280';

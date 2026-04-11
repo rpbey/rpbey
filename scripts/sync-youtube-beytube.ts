@@ -15,6 +15,7 @@ const youtube = google.youtube('v3');
 const apiKey = process.env.YOUTUBE_API_KEY;
 
 const CHANNELS = [
+  { id: 'UCHiDwWI-2uQrsUiJhXt6rng', name: 'RPB' },
   { id: 'UCaGPpRP8MJzc5s8WGOD4jLw', name: 'Le Purgatoire de Ryuk' },
   { id: 'UC7kNAYs7r27OAX0JLjkSt0g', name: 'Skarn Game Master' },
   { id: 'UCu3yEYIoXsNqjGzlAxWRcLw', name: 'Scale Emperors' },
@@ -57,17 +58,21 @@ async function sync() {
     if (!playlistId) continue;
 
     try {
-      const plRes = await youtube.playlistItems.list({
-        key: apiKey,
-        part: ['contentDetails'],
-        playlistId,
-        maxResults: 1 
-      });
-
-      const videoId = plRes.data.items?.[0]?.contentDetails?.videoId;
-      if (videoId) {
-        videoIds.push(videoId);
-      }
+      let nextPageToken: string | undefined;
+      do {
+        const plRes = await youtube.playlistItems.list({
+          key: apiKey,
+          part: ['contentDetails'],
+          playlistId,
+          maxResults: 50,
+          pageToken: nextPageToken,
+        });
+        for (const item of plRes.data.items || []) {
+          const videoId = item.contentDetails?.videoId;
+          if (videoId) videoIds.push(videoId);
+        }
+        nextPageToken = plRes.data.nextPageToken ?? undefined;
+      } while (nextPageToken);
     } catch (e) {
       console.error(`Error fetching playlist for ${channel.name}:`, e);
     }
@@ -78,12 +83,18 @@ async function sync() {
     return;
   }
 
-  // 3. Fetch Video Details (Stats, Duration)
-  const videosRes = await youtube.videos.list({
-    key: apiKey,
-    part: ['snippet', 'statistics', 'contentDetails'],
-    id: videoIds
-  });
+  // 3. Fetch Video Details in batches of 50
+  const allVideoItems: typeof import('googleapis').youtube_v3.Schema$Video[] = [];
+  for (let i = 0; i < videoIds.length; i += 50) {
+    const batch = videoIds.slice(i, i + 50);
+    const videosRes = await youtube.videos.list({
+      key: apiKey,
+      part: ['snippet', 'statistics', 'contentDetails'],
+      id: batch,
+    });
+    allVideoItems.push(...(videosRes.data.items || []));
+  }
+  console.log(`Fetched details for ${allVideoItems.length} videos`);
 
   // 4. Upsert into DB
   // First, clear existing featured videos? 
@@ -94,7 +105,7 @@ async function sync() {
   
   // Let's upsert.
   
-  for (const item of videosRes.data.items || []) {
+  for (const item of allVideoItems) {
     const durationRaw = item.contentDetails?.duration || '';
     const match = durationRaw.match(/PT(\d+H)?(\d+M)?(\d+S)?/);
     const duration = match
