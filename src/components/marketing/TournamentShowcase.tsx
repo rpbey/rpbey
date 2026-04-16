@@ -216,7 +216,7 @@ export function TournamentShowcase({
                   />
                   {i === 0 && (
                     <Chip
-                      label="DERNIER"
+                      label={t.podium.length === 0 ? 'À VENIR' : 'DERNIER'}
                       size="small"
                       sx={{
                         position: 'absolute',
@@ -225,8 +225,16 @@ export function TournamentShowcase({
                         fontWeight: 800,
                         fontSize: '0.55rem',
                         height: 20,
-                        bgcolor: 'rgba(var(--rpb-primary-rgb), 0.9)',
+                        letterSpacing: t.podium.length === 0 ? 1 : 0,
+                        bgcolor:
+                          t.podium.length === 0
+                            ? 'rgba(var(--rpb-primary-rgb), 0.95)'
+                            : 'rgba(var(--rpb-primary-rgb), 0.9)',
                         color: 'white',
+                        boxShadow:
+                          t.podium.length === 0
+                            ? '0 4px 12px rgba(0,0,0,0.4)'
+                            : 'none',
                       }}
                     />
                   )}
@@ -252,80 +260,123 @@ export function TournamentShowcase({
                     })}
                   </Typography>
 
-                  {/* Stats chips */}
-                  <Stack direction="row" spacing={1} sx={{ mt: 1.2, mb: 1.2 }}>
-                    <Chip
-                      label={`${t.participants} joueurs`}
-                      size="small"
+                  {t.podium.length === 0 && t.participants === 0 ? (
+                    /* Upcoming tournament — CTA instead of stats */
+                    <Box
                       sx={{
-                        height: 22,
-                        fontSize: '0.65rem',
-                        fontWeight: 700,
-                        bgcolor: 'rgba(var(--rpb-primary-rgb), 0.08)',
-                        color: 'text.secondary',
+                        mt: 1.5,
+                        py: 1,
+                        px: 2,
+                        borderRadius: 2,
+                        bgcolor: 'rgba(var(--rpb-primary-rgb), 0.1)',
+                        border:
+                          '1px solid rgba(var(--rpb-primary-rgb), 0.2)',
+                        textAlign: 'center',
                       }}
-                    />
-                    {t.matchesCount > 0 && (
-                      <Chip
-                        label={`${t.matchesCount} matchs`}
-                        size="small"
+                    >
+                      <Typography
+                        variant="caption"
+                        fontWeight={900}
                         sx={{
-                          height: 22,
-                          fontSize: '0.65rem',
-                          fontWeight: 700,
-                          bgcolor: 'rgba(255,255,255,0.04)',
-                          color: 'text.secondary',
+                          color: 'var(--rpb-primary)',
+                          fontSize: '0.72rem',
+                          letterSpacing: 0.5,
                         }}
-                      />
-                    )}
-                  </Stack>
-
-                  {/* Podium */}
-                  {t.podium.length > 0 && (
-                    <Stack spacing={0.3}>
-                      {t.podium.map((p) => (
-                        <Stack
-                          key={p.rank}
-                          direction="row"
-                          alignItems="center"
-                          spacing={0.8}
+                      >
+                        VOIR LES DÉTAILS
+                      </Typography>
+                    </Box>
+                  ) : (
+                    <>
+                      {/* Stats chips */}
+                      <Stack
+                        direction="row"
+                        spacing={1}
+                        sx={{ mt: 1.2, mb: 1.2 }}
+                      >
+                        <Chip
+                          label={`${t.participants} joueurs`}
+                          size="small"
                           sx={{
-                            py: 0.3,
-                            px: 0.8,
-                            borderRadius: 1,
-                            bgcolor:
-                              p.rank === 1
-                                ? 'rgba(255,215,0,0.06)'
-                                : 'transparent',
+                            height: 22,
+                            fontSize: '0.65rem',
+                            fontWeight: 700,
+                            bgcolor: 'rgba(var(--rpb-primary-rgb), 0.08)',
+                            color: 'text.secondary',
                           }}
-                        >
-                          <Typography sx={{ fontSize: '0.75rem', width: 18 }}>
-                            {p.rank === 1 ? '🥇' : p.rank === 2 ? '🥈' : '🥉'}
-                          </Typography>
-                          <Typography
-                            variant="caption"
-                            fontWeight={p.rank === 1 ? 800 : 600}
+                        />
+                        {t.matchesCount > 0 && (
+                          <Chip
+                            label={`${t.matchesCount} matchs`}
+                            size="small"
                             sx={{
-                              flex: 1,
-                              fontSize: '0.72rem',
-                              color: p.rank === 1 ? '#fbbf24' : 'text.primary',
+                              height: 22,
+                              fontSize: '0.65rem',
+                              fontWeight: 700,
+                              bgcolor: 'rgba(255,255,255,0.04)',
+                              color: 'text.secondary',
                             }}
-                            noWrap
-                          >
-                            {p.name}
-                          </Typography>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              fontSize: '0.6rem',
-                              color: 'text.disabled',
-                            }}
-                          >
-                            {p.wins}V-{p.losses}D
-                          </Typography>
+                          />
+                        )}
+                      </Stack>
+
+                      {/* Podium */}
+                      {t.podium.length > 0 && (
+                        <Stack spacing={0.3}>
+                          {t.podium.map((p) => (
+                            <Stack
+                              key={p.rank}
+                              direction="row"
+                              alignItems="center"
+                              spacing={0.8}
+                              sx={{
+                                py: 0.3,
+                                px: 0.8,
+                                borderRadius: 1,
+                                bgcolor:
+                                  p.rank === 1
+                                    ? 'rgba(255,215,0,0.06)'
+                                    : 'transparent',
+                              }}
+                            >
+                              <Typography
+                                sx={{ fontSize: '0.75rem', width: 18 }}
+                              >
+                                {p.rank === 1
+                                  ? '🥇'
+                                  : p.rank === 2
+                                    ? '🥈'
+                                    : '🥉'}
+                              </Typography>
+                              <Typography
+                                variant="caption"
+                                fontWeight={p.rank === 1 ? 800 : 600}
+                                sx={{
+                                  flex: 1,
+                                  fontSize: '0.72rem',
+                                  color:
+                                    p.rank === 1
+                                      ? '#fbbf24'
+                                      : 'text.primary',
+                                }}
+                                noWrap
+                              >
+                                {p.name}
+                              </Typography>
+                              <Typography
+                                variant="caption"
+                                sx={{
+                                  fontSize: '0.6rem',
+                                  color: 'text.disabled',
+                                }}
+                              >
+                                {p.wins}V-{p.losses}D
+                              </Typography>
+                            </Stack>
+                          ))}
                         </Stack>
-                      ))}
-                    </Stack>
+                      )}
+                    </>
                   )}
                 </Box>
               </Box>

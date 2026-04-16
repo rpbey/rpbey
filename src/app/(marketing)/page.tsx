@@ -248,6 +248,29 @@ export default async function HomePage() {
 
   const btsTournaments = getBtsTournaments();
 
+  // Add next upcoming BTS tournament at the front of the list
+  const nextBts = await prisma.tournament.findFirst({
+    where: {
+      name: { contains: 'BEY-TAMASHII', mode: 'insensitive' },
+      status: { in: ['UPCOMING', 'REGISTRATION_OPEN', 'CHECKIN', 'UNDERWAY'] },
+    },
+    orderBy: { date: 'asc' },
+    select: { id: true, name: true, date: true, location: true, challongeUrl: true },
+  });
+
+  if (nextBts) {
+    const edition = nextBts.name.match(/#(\d+)/)?.[1];
+    btsTournaments.unshift({
+      id: nextBts.id,
+      name: nextBts.name,
+      date: nextBts.date.toISOString(),
+      poster: edition ? `/tournaments/BTS${edition}_poster.webp` : '/logo.webp',
+      participants: 0,
+      matchesCount: 0,
+      podium: [],
+    });
+  }
+
   return (
     <HomeClient
       activeTournament={activeTournament}

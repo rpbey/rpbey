@@ -1,22 +1,79 @@
 services:
   db:
     image: postgres:17-alpine
-    container_name: rpb-db-standalone
+    container_name: rpb-db
     restart: always
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: rpb_password
       POSTGRES_DB: rpb_dashboard
-    networks:
-      - rpb-network
+    ports:
+      - "127.0.0.1:5433:5432"
     volumes:
       - rpb-db:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
-
-networks:
-  rpb-network:
-    driver: bridge
+    shm_size: 4g
+    deploy:
+      resources:
+        limits:
+          memory: 10g
+        reservations:
+          memory: 4g
+    command:
+      - postgres
+      # === Memory ===
+      - -c
+      - shared_buffers=4GB
+      - -c
+      - effective_cache_size=12GB
+      - -c
+      - work_mem=64MB
+      - -c
+      - maintenance_work_mem=1GB
+      - -c
+      - temp_buffers=64MB
+      - -c
+      - wal_buffers=64MB
+      # === Connections ===
+      - -c
+      - max_connections=100
+      # === WAL / Checkpoints ===
+      - -c
+      - checkpoint_completion_target=0.9
+      - -c
+      - min_wal_size=1GB
+      - -c
+      - max_wal_size=4GB
+      - -c
+      - wal_compression=zstd
+      - -c
+      - checkpoint_timeout=15min
+      # === Parallelism ===
+      - -c
+      - max_worker_processes=8
+      - -c
+      - max_parallel_workers=6
+      - -c
+      - max_parallel_workers_per_gather=3
+      - -c
+      - max_parallel_maintenance_workers=3
+      # === Planner ===
+      - -c
+      - random_page_cost=1.1
+      - -c
+      - effective_io_concurrency=200
+      - -c
+      - default_statistics_target=200
+      # === JIT ===
+      - -c
+      - jit=on
+      # === Huge Pages ===
+      - -c
+      - huge_pages=try
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
   rpb-db:

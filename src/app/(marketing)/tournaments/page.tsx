@@ -1,7 +1,9 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import EventIcon from '@mui/icons-material/Event';
 import GroupsIcon from '@mui/icons-material/Groups';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
@@ -153,9 +155,19 @@ export default async function TournamentsPage() {
     }
   }
 
+  // Find upcoming BTS tournament from DB to feature it in the BTS section
+  const nextBts = dbTournaments.find(
+    (t) =>
+      t.name.toLowerCase().includes('bey-tamashii') &&
+      (t.status === 'UPCOMING' ||
+        t.status === 'REGISTRATION_OPEN' ||
+        t.status === 'CHECKIN' ||
+        t.status === 'UNDERWAY'),
+  );
+
   const dbScrapedIds = new Set(BTS_EDITIONS.map((e) => e.id));
   const dbCards = dbTournaments
-    .filter((t) => !dbScrapedIds.has(t.id))
+    .filter((t) => !dbScrapedIds.has(t.id) && t.id !== nextBts?.id)
     .map((t) => ({
       id: t.id,
       name: t.name,
@@ -248,7 +260,7 @@ export default async function TournamentsPage() {
         {/* ═══════════════════════════════════════
             SECTION 1 — BEY-TAMASHII SÉRIES (NOS TOURNOIS)
             ═══════════════════════════════════════ */}
-        {btsCards.length > 0 && (
+        {(btsCards.length > 0 || nextBts) && (
           <Box sx={{ mb: { xs: 6, md: 8 } }}>
             <Heading
               title="Bey-Tamashii Séries"
@@ -258,6 +270,13 @@ export default async function TournamentsPage() {
             />
 
             <Grid container spacing={{ xs: 2, md: 3 }}>
+              {/* ── Next BTS tournament (upcoming) ── */}
+              {nextBts && (
+                <Grid size={{ xs: 12, sm: 6, md: 4 }} sx={{ order: { xs: -1, md: 1 } }}>
+                  <NextBtsTournamentCard tournament={nextBts} />
+                </Grid>
+              )}
+
               {btsCards.map((bts) => (
                 <Grid key={bts.id} size={{ xs: 12, sm: 6, md: 4 }}>
                   <Link
@@ -580,6 +599,192 @@ export default async function TournamentsPage() {
         </Typography>
       </Container>
     </Box>
+  );
+}
+
+// ── Next BTS Tournament Card (upcoming) ──
+
+function NextBtsTournamentCard({
+  tournament,
+}: {
+  tournament: {
+    id: string;
+    name: string;
+    date: Date;
+    location: string | null;
+    description: string | null;
+    status: string;
+    challongeUrl: string | null;
+  };
+}) {
+  const formattedDate = tournament.date.toLocaleDateString('fr-FR', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  });
+  const formattedTime = tournament.date.toLocaleTimeString('fr-FR', {
+    hour: '2-digit',
+    minute: '2-digit',
+    timeZone: 'Europe/Paris',
+  });
+
+  // Determine poster — match the naming convention
+  const edition = tournament.name.match(/#(\d+)/)?.[1];
+  const poster = edition
+    ? `/tournaments/BTS${edition}_poster.webp`
+    : '/logo.webp';
+
+  return (
+    <Link
+      href={`/tournaments/${tournament.id}`}
+      style={{ textDecoration: 'none', color: 'inherit' }}
+    >
+      <Paper
+        elevation={0}
+        sx={{
+          borderRadius: 3,
+          overflow: 'hidden',
+          position: 'relative',
+          bgcolor: 'rgba(var(--rpb-primary-rgb), 0.03)',
+          border: '1px solid rgba(var(--rpb-primary-rgb), 0.25)',
+          transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
+          '&:hover': {
+            borderColor: 'rgba(var(--rpb-primary-rgb), 0.5)',
+            transform: 'translateY(-3px)',
+            boxShadow: '0 12px 32px rgba(var(--rpb-primary-rgb), 0.2)',
+          },
+        }}
+      >
+        {/* Poster */}
+        <Box
+          sx={{
+            position: 'relative',
+            overflow: 'hidden',
+            maxHeight: { xs: 300, md: 400 },
+          }}
+        >
+          <Image
+            src={poster}
+            alt={tournament.name}
+            width={1040}
+            height={1467}
+            style={{ width: '100%', height: 'auto', display: 'block' }}
+          />
+          <Box
+            sx={{
+              position: 'absolute',
+              bottom: 0,
+              left: 0,
+              right: 0,
+              height: '40%',
+              background:
+                'linear-gradient(transparent, rgba(0,0,0,0.8))',
+            }}
+          />
+          {/* UPCOMING badge */}
+          <Chip
+            label="À VENIR"
+            size="small"
+            sx={{
+              position: 'absolute',
+              top: 12,
+              left: 12,
+              fontWeight: 900,
+              fontSize: '0.65rem',
+              height: 24,
+              bgcolor: 'var(--rpb-primary)',
+              color: '#fff',
+              letterSpacing: 1,
+              boxShadow: '0 4px 12px rgba(0,0,0,0.4)',
+            }}
+          />
+        </Box>
+
+        {/* Info */}
+        <Box sx={{ p: 2 }}>
+          <Stack
+            direction="row"
+            alignItems="center"
+            justifyContent="space-between"
+            sx={{ mb: 1.5 }}
+          >
+            <Box>
+              <Typography
+                fontWeight="900"
+                sx={{ fontSize: '0.95rem', lineHeight: 1.3 }}
+              >
+                {tournament.name}
+              </Typography>
+            </Box>
+            <NavigateNextIcon
+              sx={{ color: 'rgba(var(--rpb-primary-rgb), 0.3)', fontSize: 22 }}
+            />
+          </Stack>
+
+          {/* Date & Location */}
+          <Stack spacing={0.75} sx={{ mb: 1.5 }}>
+            <Stack direction="row" spacing={0.75} alignItems="center">
+              <CalendarMonthIcon
+                sx={{ fontSize: 14, color: 'var(--rpb-primary)', opacity: 0.7 }}
+              />
+              <Typography
+                variant="caption"
+                fontWeight={700}
+                sx={{ fontSize: '0.73rem' }}
+              >
+                {formattedDate} à {formattedTime}
+              </Typography>
+            </Stack>
+            {tournament.location && (
+              <Stack direction="row" spacing={0.75} alignItems="center">
+                <LocationOnIcon
+                  sx={{
+                    fontSize: 14,
+                    color: 'var(--rpb-primary)',
+                    opacity: 0.7,
+                  }}
+                />
+                <Typography
+                  variant="caption"
+                  color="text.secondary"
+                  fontWeight={600}
+                  sx={{ fontSize: '0.7rem' }}
+                  noWrap
+                >
+                  {tournament.location.split(',')[0]}
+                </Typography>
+              </Stack>
+            )}
+          </Stack>
+
+          {/* CTA */}
+          {tournament.challongeUrl && (
+            <Box
+              sx={{
+                py: 1,
+                px: 2,
+                borderRadius: 2,
+                bgcolor: 'rgba(var(--rpb-primary-rgb), 0.1)',
+                border: '1px solid rgba(var(--rpb-primary-rgb), 0.2)',
+                textAlign: 'center',
+              }}
+            >
+              <Typography
+                variant="caption"
+                fontWeight={900}
+                sx={{
+                  color: 'var(--rpb-primary)',
+                  fontSize: '0.72rem',
+                  letterSpacing: 0.5,
+                }}
+              >
+                S&apos;INSCRIRE
+              </Typography>
+            </Box>
+          )}
+        </Box>
+      </Paper>
+    </Link>
   );
 }
 

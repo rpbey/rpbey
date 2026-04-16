@@ -1,11 +1,15 @@
 'use client';
 
 import {
+  CalendarMonth,
+  CardGiftcard,
   FiberManualRecord,
   History,
   Info,
   Leaderboard,
+  LocationOn,
   EmojiEvents as Trophy,
+  WarningAmber,
 } from '@mui/icons-material';
 import {
   alpha,
@@ -156,6 +160,7 @@ export default function TournamentDetail({
   }, [isLive, fetchLiveData]);
 
   const isBTS = tournament.name.toLowerCase().includes('bey-tamashii');
+  const isBTS4 = tournament.name.includes('#4');
   const isBTS3 =
     tournament.name.includes('#3') || tournament.id === 'cm-bts3-auto-imported';
   const isBTS2 = tournament.name.includes('#2');
@@ -167,13 +172,15 @@ export default function TournamentDetail({
   const stations = (liveData?.stations || []) as Station[];
   const activityLog = (liveData?.activityLog || []) as LogEntry[];
 
-  const posterUrl = isBTS3
-    ? '/tournaments/BTS3_poster.webp'
-    : isBTS2
-      ? '/tournaments/BTS2.webp'
-      : isBTS1
-        ? '/tournaments/B_TS1.svg'
-        : '/logo.webp';
+  const posterUrl = isBTS4
+    ? '/tournaments/BTS4_poster.webp'
+    : isBTS3
+      ? '/tournaments/BTS3_poster.webp'
+      : isBTS2
+        ? '/tournaments/BTS2.webp'
+        : isBTS1
+          ? '/tournaments/B_TS1.svg'
+          : '/logo.webp';
 
   return (
     <Box
@@ -297,7 +304,12 @@ export default function TournamentDetail({
                     color="error.main"
                     fontWeight={900}
                   >
-                    Check-in : {isBTS3 || isBTS2 ? '13h00' : '14h00'}
+                    Check-in :{' '}
+                    {new Date(tournament.date).toLocaleTimeString('fr-FR', {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      timeZone: 'Europe/Paris',
+                    })}
                   </Typography>
                 </Box>
 
@@ -332,7 +344,10 @@ export default function TournamentDetail({
                     color="text.disabled"
                     fontWeight={700}
                   >
-                    Capacité: {tournament.maxPlayers} joueurs
+                    Capacité:{' '}
+                    {tournament.maxPlayers > 0
+                      ? `${tournament.maxPlayers} joueurs`
+                      : 'Illimitée'}
                   </Typography>
                 </Box>
 
@@ -540,134 +555,11 @@ export default function TournamentDetail({
           )}
 
           {/* About Section */}
-          <Paper
-            elevation={0}
-            sx={{
-              p: { xs: 3, md: 6 },
-              mb: 4,
-              borderRadius: 6,
-              border: '1px solid',
-              borderColor: isBTS
-                ? (t) => alpha(t.palette.secondary.main, 0.2)
-                : 'divider',
-              background: isBTS
-                ? 'linear-gradient(180deg, rgba(255,255,255,0.01) 0%, transparent 100%)'
-                : 'background.paper',
-            }}
-          >
-            <Typography
-              variant="h5"
-              fontWeight="900"
-              sx={{
-                mb: 4,
-                display: 'flex',
-                alignItems: 'center',
-                gap: 2,
-                color: isBTS ? 'secondary.main' : 'primary.main',
-                letterSpacing: 1,
-              }}
-            >
-              <Info /> À PROPOS DU TOURNOI
-            </Typography>
-            <ReactMarkdown
-              remarkPlugins={[remarkGfm]}
-              components={{
-                p: ({ children }) => {
-                  const content = String(children);
-                  if (
-                    content.includes('🥇') ||
-                    content.includes('🥈') ||
-                    content.includes('🥉')
-                  ) {
-                    return (
-                      <Box
-                        sx={{
-                          my: 2,
-                          p: 2.5,
-                          bgcolor: (t) => alpha(t.palette.secondary.main, 0.08),
-                          borderRadius: 3,
-                          borderLeft: (t) =>
-                            `6px solid ${t.palette.secondary.main}`,
-                        }}
-                      >
-                        <Typography
-                          variant="h6"
-                          fontWeight="900"
-                          sx={{ color: '#fff', m: 0 }}
-                        >
-                          {children}
-                        </Typography>
-                      </Box>
-                    );
-                  }
-                  if (content.includes('⚠️')) {
-                    return (
-                      <Box
-                        sx={{
-                          my: 3,
-                          p: 3,
-                          bgcolor: (t) => alpha(t.palette.primary.main, 0.15),
-                          borderRadius: 4,
-                          border: (t) =>
-                            `2px solid ${alpha(t.palette.primary.main, 0.3)}`,
-                        }}
-                      >
-                        <Typography
-                          variant="body1"
-                          fontWeight="800"
-                          sx={{ color: 'primary.main', m: 0, lineHeight: 1.6 }}
-                        >
-                          {children}
-                        </Typography>
-                      </Box>
-                    );
-                  }
-                  return (
-                    <Typography
-                      variant="body1"
-                      sx={{
-                        mb: 3,
-                        lineHeight: 2,
-                        fontSize: '1.15rem',
-                        color: isBTS ? 'grey.300' : 'text.primary',
-                        fontWeight: 500,
-                      }}
-                    >
-                      {children}
-                    </Typography>
-                  );
-                },
-                strong: ({ children }) => (
-                  <Box
-                    component="span"
-                    sx={{
-                      fontWeight: 900,
-                      color: isBTS ? '#fff' : 'text.primary',
-                    }}
-                  >
-                    {children}
-                  </Box>
-                ),
-                a: ({ href, children }) => (
-                  <Box
-                    component="a"
-                    href={href}
-                    target="_blank"
-                    sx={{
-                      color: 'error.main',
-                      textDecoration: 'none',
-                      fontWeight: 700,
-                      '&:hover': { textDecoration: 'underline' },
-                    }}
-                  >
-                    {children}
-                  </Box>
-                ),
-              }}
-            >
-              {tournament.description || ''}
-            </ReactMarkdown>
-          </Paper>
+          <AboutSection
+            tournament={tournament}
+            formattedDate={formattedDate}
+            isBTS={isBTS}
+          />
 
           {/* Bracket / Results Tabs */}
           <Paper
@@ -726,6 +618,338 @@ export default function TournamentDetail({
         </Grid>
       </Grid>
     </Box>
+  );
+}
+
+// ─── About Section ─────────────────────────────────────────────────────────
+
+const MEDAL_COLORS: Record<string, string> = {
+  '🥇': '#fbbf24',
+  '🥈': '#94a3b8',
+  '🥉': '#d97706',
+};
+
+function parsePrizes(text: string): { intro: string; prizes: string[] } | null {
+  const medals = Object.keys(MEDAL_COLORS);
+  if (!medals.some((m) => text.includes(m))) return null;
+
+  const parts = text.split(/(?=🥇|🥈|🥉)/);
+  const intro = parts[0]?.trim() ?? '';
+  const prizes = parts.slice(intro ? 1 : 0).map((p) => p.trim());
+  return prizes.length > 0 ? { intro, prizes } : null;
+}
+
+function AboutSection({
+  tournament,
+  formattedDate,
+  isBTS,
+}: {
+  tournament: TournamentData;
+  formattedDate: string;
+  isBTS: boolean;
+}) {
+  const accentColor = isBTS ? 'secondary.main' : 'primary.main';
+
+  return (
+    <Paper
+      elevation={0}
+      sx={{
+        mb: 4,
+        borderRadius: 6,
+        border: '1px solid',
+        borderColor: isBTS
+          ? (t) => alpha(t.palette.secondary.main, 0.2)
+          : 'divider',
+        background: isBTS
+          ? 'linear-gradient(180deg, rgba(255,255,255,0.02) 0%, transparent 100%)'
+          : 'background.paper',
+        position: 'relative',
+        overflow: 'hidden',
+      }}
+    >
+      {/* Decorative radial glow */}
+      {isBTS && (
+        <Box
+          sx={{
+            position: 'absolute',
+            top: -60,
+            right: -60,
+            width: 300,
+            height: 300,
+            background: (t) =>
+              `radial-gradient(circle, ${alpha(t.palette.secondary.main, 0.06)} 0%, transparent 70%)`,
+            pointerEvents: 'none',
+          }}
+        />
+      )}
+
+      {/* ── Header ── */}
+      <Box
+        sx={{
+          px: { xs: 3, md: 6 },
+          pt: { xs: 3, md: 5 },
+          pb: 3,
+          borderBottom: '1px solid',
+          borderColor: isBTS
+            ? (t) => alpha(t.palette.secondary.main, 0.1)
+            : 'divider',
+        }}
+      >
+        <Stack direction="row" alignItems="center" spacing={2}>
+          <Box
+            sx={{
+              width: 48,
+              height: 48,
+              borderRadius: 3,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              bgcolor: (t) =>
+                alpha(
+                  isBTS
+                    ? t.palette.secondary.main
+                    : t.palette.primary.main,
+                  0.1,
+                ),
+              color: accentColor,
+              flexShrink: 0,
+            }}
+          >
+            <Info sx={{ fontSize: 24 }} />
+          </Box>
+          <Box sx={{ minWidth: 0 }}>
+            <Typography
+              variant="h5"
+              fontWeight={900}
+              sx={{ color: accentColor, letterSpacing: 1, lineHeight: 1.2 }}
+            >
+              À PROPOS DU TOURNOI
+            </Typography>
+            <Stack
+              direction="row"
+              spacing={2}
+              divider={
+                <Box
+                  sx={{
+                    width: 4,
+                    height: 4,
+                    borderRadius: '50%',
+                    bgcolor: 'text.disabled',
+                    alignSelf: 'center',
+                  }}
+                />
+              }
+              sx={{ mt: 0.5 }}
+            >
+              <Stack direction="row" spacing={0.5} alignItems="center">
+                <CalendarMonth sx={{ fontSize: 14, color: 'text.secondary' }} />
+                <Typography
+                  variant="caption"
+                  color="text.secondary"
+                  fontWeight={600}
+                >
+                  {formattedDate}
+                </Typography>
+              </Stack>
+              {tournament.location && (
+                <Stack direction="row" spacing={0.5} alignItems="center">
+                  <LocationOn sx={{ fontSize: 14, color: 'text.secondary' }} />
+                  <Typography
+                    variant="caption"
+                    color="text.secondary"
+                    fontWeight={600}
+                    noWrap
+                  >
+                    {tournament.location.split(',')[0]}
+                  </Typography>
+                </Stack>
+              )}
+            </Stack>
+          </Box>
+        </Stack>
+      </Box>
+
+      {/* ── Body ── */}
+      <Box sx={{ px: { xs: 3, md: 6 }, py: { xs: 3, md: 5 } }}>
+        <ReactMarkdown
+          remarkPlugins={[remarkGfm]}
+          components={{
+            p: ({ children }) => {
+              const content = String(children);
+
+              // Prize lines → individual cards
+              const parsed = parsePrizes(content);
+              if (parsed) {
+                return (
+                  <Box sx={{ my: 3 }}>
+                    {parsed.intro && (
+                      <Typography
+                        variant="body1"
+                        sx={{
+                          mb: 3,
+                          lineHeight: 1.8,
+                          fontSize: '1.1rem',
+                          color: isBTS ? 'grey.300' : 'text.primary',
+                          fontWeight: 500,
+                        }}
+                      >
+                        {parsed.intro}
+                      </Typography>
+                    )}
+                    <Stack
+                      direction="row"
+                      alignItems="center"
+                      spacing={1}
+                      sx={{ mb: 2 }}
+                    >
+                      <CardGiftcard
+                        sx={{ fontSize: 18, color: accentColor }}
+                      />
+                      <Typography
+                        variant="overline"
+                        fontWeight={900}
+                        sx={{
+                          color: accentColor,
+                          letterSpacing: 2,
+                          fontSize: '0.75rem',
+                        }}
+                      >
+                        RÉCOMPENSES
+                      </Typography>
+                    </Stack>
+                    <Stack spacing={1.5}>
+                      {parsed.prizes.map((line, i) => {
+                        const medal = Object.keys(MEDAL_COLORS).find((m) =>
+                          line.includes(m),
+                        );
+                        const color = (medal ? MEDAL_COLORS[medal] : undefined) ?? '#666';
+                        return (
+                          <Box
+                            key={i}
+                            sx={{
+                              p: 2.5,
+                              borderRadius: 3,
+                              bgcolor: alpha(color, 0.07),
+                              borderLeft: `4px solid ${color}`,
+                              transition: 'transform 0.2s, box-shadow 0.2s',
+                              '&:hover': {
+                                transform: 'translateX(4px)',
+                                boxShadow: `0 4px 20px ${alpha(color, 0.15)}`,
+                              },
+                            }}
+                          >
+                            <Typography
+                              variant="body1"
+                              fontWeight={800}
+                              sx={{ color: '#fff', fontSize: '1.05rem' }}
+                            >
+                              {line}
+                            </Typography>
+                          </Box>
+                        );
+                      })}
+                    </Stack>
+                  </Box>
+                );
+              }
+
+              // Warning / important note
+              if (
+                content.includes('⚠️') ||
+                content.toLowerCase().includes('obligatoire')
+              ) {
+                return (
+                  <Box
+                    sx={{
+                      my: 3,
+                      p: 2.5,
+                      borderRadius: 3,
+                      bgcolor: (t) => alpha(t.palette.warning.main, 0.08),
+                      border: (t) =>
+                        `1px solid ${alpha(t.palette.warning.main, 0.2)}`,
+                      borderLeft: (t) =>
+                        `4px solid ${t.palette.warning.main}`,
+                      display: 'flex',
+                      alignItems: 'flex-start',
+                      gap: 1.5,
+                    }}
+                  >
+                    <WarningAmber
+                      sx={{
+                        fontSize: 20,
+                        color: 'warning.main',
+                        mt: 0.2,
+                        flexShrink: 0,
+                      }}
+                    />
+                    <Typography
+                      variant="body1"
+                      fontWeight={700}
+                      sx={{ color: 'warning.light', m: 0, lineHeight: 1.6 }}
+                    >
+                      {children}
+                    </Typography>
+                  </Box>
+                );
+              }
+
+              // Default paragraph
+              return (
+                <Typography
+                  variant="body1"
+                  sx={{
+                    mb: 3,
+                    lineHeight: 1.9,
+                    fontSize: '1.1rem',
+                    color: isBTS ? 'grey.300' : 'text.primary',
+                    fontWeight: 500,
+                  }}
+                >
+                  {children}
+                </Typography>
+              );
+            },
+            strong: ({ children }) => (
+              <Box
+                component="span"
+                sx={{ fontWeight: 900, color: isBTS ? '#fff' : 'text.primary' }}
+              >
+                {children}
+              </Box>
+            ),
+            a: ({ href, children }) => (
+              <Box
+                component="a"
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                sx={{
+                  color: accentColor,
+                  textDecoration: 'none',
+                  fontWeight: 700,
+                  borderBottom: (t) =>
+                    `1px dashed ${alpha(
+                      isBTS
+                        ? t.palette.secondary.main
+                        : t.palette.primary.main,
+                      0.4,
+                    )}`,
+                  transition: 'border-color 0.2s',
+                  '&:hover': {
+                    borderBottomStyle: 'solid',
+                    borderBottomColor: accentColor,
+                  },
+                }}
+              >
+                {children}
+              </Box>
+            ),
+          }}
+        >
+          {tournament.description || ''}
+        </ReactMarkdown>
+      </Box>
+    </Paper>
   );
 }
 
