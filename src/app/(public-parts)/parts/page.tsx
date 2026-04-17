@@ -33,9 +33,14 @@ import {
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { DataGrid, type GridColDef, type GridRowModel } from '@mui/x-data-grid';
-import type { Beyblade, Part, PartType, Product } from '@prisma/client';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { PageHeader, useToast } from '@/components/ui';
+import {
+  type Beyblade,
+  type Part,
+  type PartType,
+  type Product,
+} from '@/generated/prisma/client';
 import {
   bulkImportParts,
   deletePart,
@@ -123,17 +128,26 @@ export default function AdminPartsPage() {
         title="Gestion des Pièces & Beyblades"
         description="Base de données complète du Builder Beyblade X"
       />
-
       {/* Stats Cards */}
       {stats && (
         <Grid container spacing={2} sx={{ mb: 3 }}>
           <Grid size={{ xs: 6, md: 2 }}>
             <Card variant="outlined">
               <CardContent sx={{ py: 1.5, '&:last-child': { pb: 1.5 } }}>
-                <Typography variant="caption" color="text.secondary">
+                <Typography
+                  variant="caption"
+                  sx={{
+                    color: 'text.secondary',
+                  }}
+                >
                   Total Pièces
                 </Typography>
-                <Typography variant="h5" fontWeight="bold">
+                <Typography
+                  variant="h5"
+                  sx={{
+                    fontWeight: 'bold',
+                  }}
+                >
                   {stats.total}
                 </Typography>
               </CardContent>
@@ -148,10 +162,20 @@ export default function AdminPartsPage() {
                 }}
               >
                 <CardContent sx={{ py: 1.5, '&:last-child': { pb: 1.5 } }}>
-                  <Typography variant="caption" color="text.secondary">
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      color: 'text.secondary',
+                    }}
+                  >
                     {TYPE_LABELS[t.type] || t.type}
                   </Typography>
-                  <Typography variant="h5" fontWeight="bold">
+                  <Typography
+                    variant="h5"
+                    sx={{
+                      fontWeight: 'bold',
+                    }}
+                  >
                     {t.count}
                   </Typography>
                 </CardContent>
@@ -162,13 +186,20 @@ export default function AdminPartsPage() {
             <Grid size={{ xs: 6, md: 2 }}>
               <Card variant="outlined" sx={{ borderLeft: '3px solid #f59e0b' }}>
                 <CardContent sx={{ py: 1.5, '&:last-child': { pb: 1.5 } }}>
-                  <Typography variant="caption" color="warning.main">
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      color: 'warning.main',
+                    }}
+                  >
                     Sans image
                   </Typography>
                   <Typography
                     variant="h5"
-                    fontWeight="bold"
-                    color="warning.main"
+                    sx={{
+                      fontWeight: 'bold',
+                      color: 'warning.main',
+                    }}
                   >
                     {stats.missingImage}
                   </Typography>
@@ -178,7 +209,6 @@ export default function AdminPartsPage() {
           )}
         </Grid>
       )}
-
       {/* Tabs */}
       <Tabs
         value={activeTab}
@@ -191,7 +221,6 @@ export default function AdminPartsPage() {
         <Tab icon={<Extension />} label="Beyblades" iconPosition="start" />
         <Tab icon={<FileUpload />} label="Import" iconPosition="start" />
       </Tabs>
-
       {activeTab === 0 && (
         <PartsTab onStatsChange={() => getPartsStats().then(setStats)} />
       )}
@@ -393,7 +422,12 @@ function PartsTab({ onStatsChange }: { onStatsChange: () => void }) {
               }}
             />
           ) : (
-            <Typography variant="caption" color="text.disabled">
+            <Typography
+              variant="caption"
+              sx={{
+                color: 'text.disabled',
+              }}
+            >
               —
             </Typography>
           ),
@@ -484,9 +518,11 @@ function PartsTab({ onStatsChange }: { onStatsChange: () => void }) {
         <Stack
           direction="row"
           spacing={1}
-          flexWrap="wrap"
           useFlexGap
-          alignItems="center"
+          sx={{
+            flexWrap: 'wrap',
+            alignItems: 'center',
+          }}
         >
           <TextField
             select
@@ -554,7 +590,13 @@ function PartsTab({ onStatsChange }: { onStatsChange: () => void }) {
         </Stack>
 
         {/* Action buttons */}
-        <Stack direction="row" spacing={1} justifyContent="flex-end">
+        <Stack
+          direction="row"
+          spacing={1}
+          sx={{
+            justifyContent: 'flex-end',
+          }}
+        >
           <Button
             size="small"
             variant="outlined"
@@ -576,17 +618,18 @@ function PartsTab({ onStatsChange }: { onStatsChange: () => void }) {
           </Button>
         </Stack>
       </Stack>
-
       {/* Pagination info */}
       <Typography
         variant="caption"
-        color="text.secondary"
-        sx={{ mb: 1, display: 'block' }}
+        sx={{
+          color: 'text.secondary',
+          mb: 1,
+          display: 'block',
+        }}
       >
         {total} résultat{total !== 1 ? 's' : ''}
         {page > 1 && ` — Page ${page}`}
       </Typography>
-
       {/* DataGrid */}
       <Card sx={{ height: { xs: '60vh', md: '68vh' }, overflow: 'auto' }}>
         <DataGrid
@@ -609,7 +652,6 @@ function PartsTab({ onStatsChange }: { onStatsChange: () => void }) {
           }}
         />
       </Card>
-
       <PartDialog
         open={dialogOpen}
         onClose={() => setDialogOpen(false)}
@@ -723,8 +765,10 @@ function BeybladesTab() {
       <Stack
         direction={{ xs: 'column', sm: 'row' }}
         spacing={1.5}
-        sx={{ mb: 2 }}
-        alignItems={{ sm: 'center' }}
+        sx={{
+          alignItems: { sm: 'center' },
+          mb: 2,
+        }}
       >
         <TextField
           placeholder="Rechercher un Beyblade..."
@@ -747,7 +791,6 @@ function BeybladesTab() {
           <Chip label="Beyblades enregistrés" />
         </Badge>
       </Stack>
-
       <Card sx={{ height: { xs: '60vh', md: '68vh' }, overflow: 'auto' }}>
         <DataGrid
           rows={beyblades}
@@ -834,10 +877,22 @@ function ImportTab({ onStatsChange }: { onStatsChange: () => void }) {
       <Grid size={{ xs: 12, md: 8 }}>
         <Card variant="outlined">
           <CardContent>
-            <Typography variant="h6" gutterBottom fontWeight="bold">
+            <Typography
+              variant="h6"
+              gutterBottom
+              sx={{
+                fontWeight: 'bold',
+              }}
+            >
               Import en masse (JSON)
             </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            <Typography
+              variant="body2"
+              sx={{
+                color: 'text.secondary',
+                mb: 2,
+              }}
+            >
               Importez un tableau JSON de pièces. Les pièces existantes (par
               externalId) seront mises à jour, les nouvelles seront créées.
             </Typography>
@@ -902,7 +957,13 @@ function ImportTab({ onStatsChange }: { onStatsChange: () => void }) {
                   {result.errors.length > 0 && (
                     <Box sx={{ mt: 1 }}>
                       {result.errors.map((e, i) => (
-                        <Typography key={i} variant="caption" display="block">
+                        <Typography
+                          key={i}
+                          variant="caption"
+                          sx={{
+                            display: 'block',
+                          }}
+                        >
                           {e}
                         </Typography>
                       ))}
@@ -914,15 +975,25 @@ function ImportTab({ onStatsChange }: { onStatsChange: () => void }) {
           </CardContent>
         </Card>
       </Grid>
-
       <Grid size={{ xs: 12, md: 4 }}>
         <Stack spacing={2}>
           <Card variant="outlined">
             <CardContent>
-              <Typography variant="subtitle2" fontWeight="bold" gutterBottom>
+              <Typography
+                variant="subtitle2"
+                gutterBottom
+                sx={{
+                  fontWeight: 'bold',
+                }}
+              >
                 Format attendu
               </Typography>
-              <Typography variant="body2" color="text.secondary">
+              <Typography
+                variant="body2"
+                sx={{
+                  color: 'text.secondary',
+                }}
+              >
                 Tableau JSON avec les champs suivants :
               </Typography>
               <Box

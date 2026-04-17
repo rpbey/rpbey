@@ -28,8 +28,11 @@ export default function NotFound() {
         >
           <Typography
             variant="h1"
-            fontWeight="bold"
-            sx={{ color: 'primary.main', mb: 2 }}
+            sx={{
+              fontWeight: 'bold',
+              color: 'primary.main',
+              mb: 2,
+            }}
           >
             404
           </Typography>

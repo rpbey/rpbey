@@ -183,10 +183,12 @@ export function DataTable<T extends { id: string | number }>({
         >
           {numSelected > 0 ? (
             <Typography
-              sx={{ flex: '1 1 100%' }}
-              color="inherit"
               variant="subtitle1"
               component="div"
+              sx={{
+                color: 'inherit',
+                flex: '1 1 100%',
+              }}
             >
               {numSelected} sélectionné{numSelected > 1 ? 's' : ''}
             </Typography>
@@ -213,7 +215,9 @@ export function DataTable<T extends { id: string | number }>({
                     indeterminate={numSelected > 0 && numSelected < rowCount}
                     checked={rowCount > 0 && numSelected === rowCount}
                     onChange={handleSelectAllClick}
-                    inputProps={{ 'aria-label': 'sélectionner tout' }}
+                    slotProps={{
+                      input: { 'aria-label': 'sélectionner tout' },
+                    }}
                   />
                 </TableCell>
               )}
@@ -247,7 +251,12 @@ export function DataTable<T extends { id: string | number }>({
                   colSpan={columns.length + (selectable ? 1 : 0)}
                   align="center"
                 >
-                  <Typography color="text.secondary" sx={{ py: 4 }}>
+                  <Typography
+                    sx={{
+                      color: 'text.secondary',
+                      py: 4,
+                    }}
+                  >
                     {emptyMessage}
                   </Typography>
                 </TableCell>
@@ -275,8 +284,10 @@ export function DataTable<T extends { id: string | number }>({
                         <Checkbox
                           color="primary"
                           checked={isSelected}
-                          inputProps={{
-                            'aria-labelledby': `table-row-${row.id}`,
+                          slotProps={{
+                            input: {
+                              'aria-labelledby': `table-row-${row.id}`,
+                            },
                           }}
                         />
                       </TableCell>

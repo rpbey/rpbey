@@ -12,8 +12,8 @@ import {
   Typography,
 } from '@mui/material';
 import { alpha } from '@mui/material/styles';
-import type { Part } from '@prisma/client';
 import { useCallback, useState } from 'react';
+import { type Part } from '@/generated/prisma/client';
 import { BattleArena } from './BattleArena';
 
 const TYPE_COLORS: Record<string, string> = {
@@ -65,9 +65,12 @@ function PartSelector({
     <Box sx={{ mb: 1.5 }}>
       <Typography
         variant="caption"
-        fontWeight="900"
-        color="text.secondary"
-        sx={{ mb: 0.5, display: 'block' }}
+        sx={{
+          fontWeight: '900',
+          color: 'text.secondary',
+          mb: 0.5,
+          display: 'block',
+        }}
       >
         {label}
       </Typography>
@@ -132,7 +135,14 @@ function ComboCard({
       }}
     >
       <CardContent sx={{ p: 2.5 }}>
-        <Typography variant="h6" fontWeight="900" sx={{ color, mb: 2 }}>
+        <Typography
+          variant="h6"
+          sx={{
+            fontWeight: '900',
+            color,
+            mb: 2,
+          }}
+        >
           {title}
         </Typography>
 
@@ -185,15 +195,20 @@ function ComboCard({
                 >
                   <Typography
                     variant="caption"
-                    fontWeight="bold"
-                    sx={{ fontSize: '0.7rem' }}
+                    sx={{
+                      fontWeight: 'bold',
+                      fontSize: '0.7rem',
+                    }}
                   >
                     {s.label}
                   </Typography>
                   <Typography
                     variant="caption"
-                    fontWeight="900"
-                    sx={{ color: s.color, fontSize: '0.7rem' }}
+                    sx={{
+                      fontWeight: '900',
+                      color: s.color,
+                      fontSize: '0.7rem',
+                    }}
                   >
                     {s.value}
                   </Typography>
@@ -441,7 +456,12 @@ export function CombatTab({ blades, ratchets, bits }: CombatTabProps) {
           mb: 3,
         }}
       >
-        <Typography variant="h6" fontWeight="900">
+        <Typography
+          variant="h6"
+          sx={{
+            fontWeight: '900',
+          }}
+        >
           Simulateur de Combat
         </Typography>
 
@@ -518,7 +538,6 @@ export function CombatTab({ blades, ratchets, bits }: CombatTabProps) {
           </Button>
         </Box>
       </Box>
-
       {/* Combo selectors */}
       <Box
         sx={{
@@ -552,8 +571,8 @@ export function CombatTab({ blades, ratchets, bits }: CombatTabProps) {
         >
           <Typography
             variant="h4"
-            fontWeight="900"
             sx={{
+              fontWeight: '900',
               color: 'text.disabled',
               fontSize: { xs: '1.5rem', md: '2rem' },
             }}
@@ -602,15 +621,19 @@ export function CombatTab({ blades, ratchets, bits }: CombatTabProps) {
             />
             <Typography
               variant="body2"
-              fontWeight="900"
-              sx={{ color: '#3b82f6' }}
+              sx={{
+                fontWeight: '900',
+                color: '#3b82f6',
+              }}
             >
               {_aiName} (IA)
             </Typography>
             <Typography
               variant="caption"
-              color="text.disabled"
-              sx={{ textAlign: 'center' }}
+              sx={{
+                color: 'text.disabled',
+                textAlign: 'center',
+              }}
             >
               L'IA choisira son Beyblade au lancement du combat
             </Typography>
@@ -636,7 +659,6 @@ export function CombatTab({ blades, ratchets, bits }: CombatTabProps) {
           </Card>
         )}
       </Box>
-
       {/* Battle button */}
       <Box sx={{ textAlign: 'center', mb: 4 }}>
         <Button

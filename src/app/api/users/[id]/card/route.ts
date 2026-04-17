@@ -3,8 +3,7 @@
  * Generates a shareable profile card image using Canvas
  */
 
-import type { NextRequest } from 'next/server';
-import { NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getUserStats } from '@/lib/stats';
 

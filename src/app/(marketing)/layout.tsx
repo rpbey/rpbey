@@ -1,5 +1,5 @@
 import Box from '@mui/material/Box';
-import type { Metadata } from 'next';
+import { type Metadata } from 'next';
 import {
   IconFooter,
   IconNav,

@@ -1,6 +1,6 @@
 
 import * as fs from 'fs/promises';
-import { PartType } from '@prisma/client';
+import { PartType } from '@/generated/prisma/client';
 
 const BEY_LIBRARY_FILE = 'data/bey-library/bey-library.json';
 const PLANNER_FILE = 'data/planner/parts.json';

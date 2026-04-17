@@ -113,9 +113,9 @@ export default function RulesPage() {
         <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
           <Typography
             variant="h2"
-            fontWeight="bold"
-            textAlign="center"
             sx={{
+              fontWeight: 'bold',
+              textAlign: 'center',
               mb: 2,
               fontSize: { xs: '1.8rem', md: '3.75rem' },
               textTransform: 'uppercase',
@@ -126,8 +126,8 @@ export default function RulesPage() {
           </Typography>
           <Typography
             variant="h6"
-            textAlign="center"
             sx={{
+              textAlign: 'center',
               opacity: 0.9,
               maxWidth: 700,
               mx: 'auto',
@@ -140,7 +140,6 @@ export default function RulesPage() {
           </Typography>
         </Container>
       </Box>
-
       <Container maxWidth="lg" sx={{ py: 8 }}>
         <Paper
           elevation={0}
@@ -169,13 +168,22 @@ export default function RulesPage() {
                     {rule.icon}
                   </Avatar>
                   <Box>
-                    <Typography variant="h6" fontWeight="bold" gutterBottom>
+                    <Typography
+                      variant="h6"
+                      gutterBottom
+                      sx={{
+                        fontWeight: 'bold',
+                      }}
+                    >
                       {index + 1}. {rule.title}
                     </Typography>
                     <Typography
                       variant="body1"
-                      color="text.secondary"
-                      sx={{ fontStyle: 'italic', lineHeight: 1.6 }}
+                      sx={{
+                        color: 'text.secondary',
+                        fontStyle: 'italic',
+                        lineHeight: 1.6,
+                      }}
                     >
                       {rule.description}
                     </Typography>
@@ -206,26 +214,37 @@ export default function RulesPage() {
           <Stack
             direction={{ xs: 'column', md: 'row' }}
             spacing={4}
-            alignItems="center"
+            sx={{
+              alignItems: 'center',
+            }}
           >
             <Box sx={{ textAlign: { xs: 'center', md: 'left' } }}>
               <Typography
                 variant="h5"
-                fontWeight="bold"
                 gutterBottom
-                color="primary.main"
+                sx={{
+                  fontWeight: 'bold',
+                  color: 'primary.main',
+                }}
               >
                 Besoin d'aide ou de médiation ?
               </Typography>
-              <Typography variant="body1" paragraph>
+              <Typography
+                variant="body1"
+                sx={{
+                  marginBottom: '16px',
+                }}
+              >
                 En cas de litige ou de requête spécifique, veuillez vous diriger
                 vers les membres du Staff (Fondateurs, Administrateurs ou
                 Modérateurs) sur notre serveur Discord.
               </Typography>
               <Typography
                 variant="body2"
-                color="text.secondary"
-                sx={{ fontStyle: 'italic' }}
+                sx={{
+                  color: 'text.secondary',
+                  fontStyle: 'italic',
+                }}
               >
                 Toute forme de harcèlement visant un membre ou un staff de la
                 RPB sera sévèrement punie.
@@ -256,8 +275,12 @@ export default function RulesPage() {
         <Box sx={{ textAlign: 'center', py: 4 }}>
           <Typography
             variant="body1"
-            color="text.secondary"
-            sx={{ maxWidth: 800, mx: 'auto', fontStyle: 'italic' }}
+            sx={{
+              color: 'text.secondary',
+              maxWidth: 800,
+              mx: 'auto',
+              fontStyle: 'italic',
+            }}
           >
             Restez courtois et respectueux les uns envers les autres même si vos
             opinions divergent. Profitons ensemble de cette passion pour

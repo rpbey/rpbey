@@ -158,12 +158,19 @@ function SignInContent() {
               <Typography
                 variant="h4"
                 component="h1"
-                fontWeight="bold"
                 gutterBottom
+                sx={{
+                  fontWeight: 'bold',
+                }}
               >
                 {isSignUp ? 'Inscription' : 'Connexion'}
               </Typography>
-              <Typography variant="body2" color="text.secondary">
+              <Typography
+                variant="body2"
+                sx={{
+                  color: 'text.secondary',
+                }}
+              >
                 {isSignUp
                   ? 'Crée ton compte RPB'
                   : 'Connecte-toi à la République Populaire du Beyblade'}
@@ -202,7 +209,12 @@ function SignInContent() {
             </Stack>
 
             <Divider sx={{ my: 3 }}>
-              <Typography variant="body2" color="text.secondary">
+              <Typography
+                variant="body2"
+                sx={{
+                  color: 'text.secondary',
+                }}
+              >
                 ou avec email
               </Typography>
             </Divider>
@@ -239,17 +251,19 @@ function SignInContent() {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   disabled={isLoading}
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton
-                          onClick={() => setShowPassword(!showPassword)}
-                          edge="end"
-                        >
-                          {showPassword ? <VisibilityOff /> : <Visibility />}
-                        </IconButton>
-                      </InputAdornment>
-                    ),
+                  slotProps={{
+                    input: {
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            onClick={() => setShowPassword(!showPassword)}
+                            edge="end"
+                          >
+                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    },
                   }}
                 />
 
@@ -278,7 +292,12 @@ function SignInContent() {
             </form>
 
             <Box sx={{ mt: 3, textAlign: 'center' }}>
-              <Typography variant="body2" color="text.secondary">
+              <Typography
+                variant="body2"
+                sx={{
+                  color: 'text.secondary',
+                }}
+              >
                 {isSignUp ? 'Déjà un compte ?' : 'Pas encore de compte ?'}{' '}
                 <Box
                   component="span"

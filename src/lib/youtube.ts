@@ -1,5 +1,5 @@
 import { parseStringPromise } from 'xml2js';
-import type { VideoInfo } from './twitch';
+import { type VideoInfo } from './twitch';
 
 const YOUTUBE_RSS_URL = 'https://www.youtube.com/feeds/videos.xml?channel_id=';
 const DEFAULT_CHANNEL_ID = 'UCaGPpRP8MJzc5s8WGOD4jLw';
@@ -29,7 +29,6 @@ export async function getRecentYouTubeVideos(
     const entries = result.feed.entry || [];
 
     // Process only the first 'limit' entries
-    // biome-ignore lint/suspicious/noExplicitAny: XML parser result
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return entries.slice(0, limit).map((entry: any) => {
       const videoId = entry['yt:videoId']?.[0];

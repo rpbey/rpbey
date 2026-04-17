@@ -182,16 +182,26 @@ export default async function AdminDashboardPage() {
           }}
         >
           <Box>
-            <Typography variant="h4" fontWeight="bold" gutterBottom>
+            <Typography
+              variant="h4"
+              gutterBottom
+              sx={{
+                fontWeight: 'bold',
+              }}
+            >
               Vue d'ensemble
             </Typography>
-            <Typography variant="body1" color="text.secondary">
+            <Typography
+              variant="body1"
+              sx={{
+                color: 'text.secondary',
+              }}
+            >
               Bienvenue sur le panel d'administration RPB
             </Typography>
           </Box>
         </Box>
       </FadeIn>
-
       <Grid container spacing={3} sx={{ mb: 4 }}>
         {stats.map((stat) => (
           <Grid key={stat.label} size={{ xs: 12, sm: 6, lg: 3 }}>
@@ -202,18 +212,27 @@ export default async function AdminDashboardPage() {
               <CardContent sx={{ p: 3 }}>
                 <Typography
                   variant="body2"
-                  color="text.secondary"
-                  fontWeight="bold"
+                  sx={{
+                    color: 'text.secondary',
+                    fontWeight: 'bold',
+                  }}
                 >
                   {stat.label}
                 </Typography>
-                <Typography variant="h4" fontWeight="bold">
+                <Typography
+                  variant="h4"
+                  sx={{
+                    fontWeight: 'bold',
+                  }}
+                >
                   {stat.value}
                 </Typography>
                 <Typography
                   variant="caption"
-                  color="text.secondary"
-                  fontWeight="bold"
+                  sx={{
+                    color: 'text.secondary',
+                    fontWeight: 'bold',
+                  }}
                 >
                   {stat.change}
                 </Typography>
@@ -222,7 +241,6 @@ export default async function AdminDashboardPage() {
           </Grid>
         ))}
       </Grid>
-
       <Grid container spacing={3}>
         <Grid size={{ xs: 12, lg: 8 }}>
           <Stack spacing={3}>
@@ -260,9 +278,11 @@ export default async function AdminDashboardPage() {
               <CardContent>
                 <Typography
                   variant="h6"
-                  fontWeight="bold"
                   gutterBottom
-                  sx={{ mb: 2 }}
+                  sx={{
+                    fontWeight: 'bold',
+                    mb: 2,
+                  }}
                 >
                   <History /> Activité
                 </Typography>
@@ -281,7 +301,13 @@ export default async function AdminDashboardPage() {
 
             <Card variant="elevated">
               <CardContent>
-                <Typography variant="h6" fontWeight="bold" gutterBottom>
+                <Typography
+                  variant="h6"
+                  gutterBottom
+                  sx={{
+                    fontWeight: 'bold',
+                  }}
+                >
                   Actions rapides
                 </Typography>
                 <QuickActions />
@@ -292,8 +318,10 @@ export default async function AdminDashboardPage() {
               <CardContent>
                 <Typography
                   variant="subtitle2"
-                  color="text.secondary"
                   gutterBottom
+                  sx={{
+                    color: 'text.secondary',
+                  }}
                 >
                   <Dns fontSize="small" /> État des Services
                 </Typography>
@@ -302,7 +330,12 @@ export default async function AdminDashboardPage() {
                     sx={{ display: 'flex', justifyContent: 'space-between' }}
                   >
                     <Typography variant="caption">Database</Typography>
-                    <Typography variant="caption" color="success.main">
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        color: 'success.main',
+                      }}
+                    >
                       Connecté
                     </Typography>
                   </Box>

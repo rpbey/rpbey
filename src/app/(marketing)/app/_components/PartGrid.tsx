@@ -16,9 +16,9 @@ import {
   Typography,
 } from '@mui/material';
 import { alpha } from '@mui/material/styles';
-import type { Part } from '@prisma/client';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
+import { type Part } from '@/generated/prisma/client';
 
 function useMobile() {
   const [mobile, setMobile] = useState(false);
@@ -234,9 +234,11 @@ function PartCard({ part, onSelect }: PartCardProps) {
               >
                 <Typography
                   variant="h4"
-                  color="text.disabled"
-                  fontWeight="900"
-                  sx={{ opacity: 0.3 }}
+                  sx={{
+                    color: 'text.disabled',
+                    fontWeight: '900',
+                    opacity: 0.3,
+                  }}
                 >
                   {part.name.charAt(0)}
                 </Typography>
@@ -247,16 +249,22 @@ function PartCard({ part, onSelect }: PartCardProps) {
           <Box sx={{ textAlign: 'center', width: '100%', mt: 0.5 }}>
             <Typography
               variant="body2"
-              fontWeight="900"
               noWrap
-              sx={{ lineHeight: 1.2, fontSize: '0.8rem' }}
+              sx={{
+                fontWeight: '900',
+                lineHeight: 1.2,
+                fontSize: '0.8rem',
+              }}
             >
               {part.name}
             </Typography>
             <Typography
               variant="caption"
-              color="text.secondary"
-              sx={{ fontSize: '0.65rem', fontWeight: 'bold' }}
+              sx={{
+                color: 'text.secondary',
+                fontSize: '0.65rem',
+                fontWeight: 'bold',
+              }}
             >
               {part.weight
                 ? `${part.weight}g`
@@ -351,8 +359,10 @@ function PartDetailDialog({ part, onClose }: PartDetailDialogProps) {
         <Box sx={{ flex: 1, minWidth: 0 }}>
           <Typography
             variant="h5"
-            fontWeight="900"
-            sx={{ letterSpacing: -0.5 }}
+            sx={{
+              fontWeight: '900',
+              letterSpacing: -0.5,
+            }}
           >
             {part.name}
           </Typography>
@@ -403,7 +413,6 @@ function PartDetailDialog({ part, onClose }: PartDetailDialogProps) {
           <Close />
         </IconButton>
       </DialogTitle>
-
       <DialogContent sx={{ p: 3 }}>
         {/* Image + Info — stack on mobile */}
         <Box
@@ -478,12 +487,19 @@ function PartDetailDialog({ part, onClose }: PartDetailDialogProps) {
               >
                 <Typography
                   variant="caption"
-                  color="text.secondary"
-                  fontWeight="bold"
+                  sx={{
+                    color: 'text.secondary',
+                    fontWeight: 'bold',
+                  }}
                 >
                   {item.label}
                 </Typography>
-                <Typography variant="caption" fontWeight="900">
+                <Typography
+                  variant="caption"
+                  sx={{
+                    fontWeight: '900',
+                  }}
+                >
                   {item.value}
                 </Typography>
               </Box>
@@ -493,7 +509,13 @@ function PartDetailDialog({ part, onClose }: PartDetailDialogProps) {
 
         {/* Combat Stats */}
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <Typography variant="overline" fontWeight="900" color="text.disabled">
+          <Typography
+            variant="overline"
+            sx={{
+              fontWeight: '900',
+              color: 'text.disabled',
+            }}
+          >
             Statistiques de Combat
           </Typography>
           {[
@@ -518,15 +540,19 @@ function PartDetailDialog({ part, onClose }: PartDetailDialogProps) {
                 >
                   <Typography
                     variant="caption"
-                    fontWeight="bold"
-                    color="text.secondary"
+                    sx={{
+                      fontWeight: 'bold',
+                      color: 'text.secondary',
+                    }}
                   >
                     {label}
                   </Typography>
                   <Typography
                     variant="caption"
-                    fontWeight="900"
-                    sx={{ color: statColor }}
+                    sx={{
+                      fontWeight: '900',
+                      color: statColor,
+                    }}
                   >
                     {val}
                   </Typography>
@@ -552,7 +578,13 @@ function PartDetailDialog({ part, onClose }: PartDetailDialogProps) {
 
         {/* Textures section */}
         <Box sx={{ mt: 4 }}>
-          <Typography variant="overline" fontWeight="900" color="text.disabled">
+          <Typography
+            variant="overline"
+            sx={{
+              fontWeight: '900',
+              color: 'text.disabled',
+            }}
+          >
             Textures du jeu
           </Typography>
           <Box
@@ -605,7 +637,12 @@ export function PartGrid({ parts }: PartGridProps) {
   if (parts.length === 0) {
     return (
       <Box sx={{ textAlign: 'center', py: 8, color: 'text.disabled' }}>
-        <Typography variant="h6" fontWeight="900">
+        <Typography
+          variant="h6"
+          sx={{
+            fontWeight: '900',
+          }}
+        >
           Aucune pièce trouvée
         </Typography>
         <Typography variant="body2" sx={{ mt: 1 }}>

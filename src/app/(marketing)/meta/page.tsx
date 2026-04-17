@@ -1,12 +1,11 @@
-import { readFile } from 'node:fs/promises';
-import { join } from 'node:path';
 import { Alert, Box, Container, Typography } from '@mui/material';
-import type { Metadata } from 'next';
+import { type Metadata } from 'next';
+import { loadJsonSafe } from '@/lib/data-cache';
 import { prisma } from '@/lib/prisma';
 import { createPageMetadata } from '@/lib/seo-utils';
 
 import { MetaClient } from './_components/MetaClient';
-import type { BbxWeeklyData, PartStats } from './_components/types';
+import { type BbxWeeklyData, type PartStats } from './_components/types';
 
 export const dynamic = 'force-dynamic';
 
@@ -18,13 +17,7 @@ export const metadata: Metadata = createPageMetadata({
 });
 
 async function getData(): Promise<BbxWeeklyData | null> {
-  try {
-    const filePath = join(process.cwd(), 'data', 'bbx-weekly.json');
-    const raw = await readFile(filePath, 'utf-8');
-    return JSON.parse(raw) as BbxWeeklyData;
-  } catch {
-    return null;
-  }
+  return loadJsonSafe<BbxWeeklyData>('data/bbx-weekly.json');
 }
 
 interface PartMetadata {
@@ -239,7 +232,13 @@ export default async function MetaPage() {
         (data.periods['2weeks'].categories.length === 0 &&
           data.periods['4weeks'].categories.length === 0) ? (
           <Box sx={{ mt: 8, textAlign: 'center' }}>
-            <Typography variant="h3" fontWeight={900} gutterBottom>
+            <Typography
+              variant="h3"
+              gutterBottom
+              sx={{
+                fontWeight: 900,
+              }}
+            >
               Meta Beyblade X
             </Typography>
             <Alert severity="info" sx={{ maxWidth: 500, mx: 'auto', mt: 3 }}>

@@ -9,12 +9,12 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import type { SatrRanking } from '@prisma/client';
 import { motion } from 'framer-motion';
 import {
   DynamicBarChart as BarChart,
   DynamicScatterChart as ScatterChart,
 } from '@/components/ui/DynamicCharts';
+import { type SatrRanking } from '@/generated/prisma/client';
 
 function parseNum(val: string) {
   return parseFloat(val.replace(',', '.').replace('%', '')) || 0;
@@ -106,11 +106,19 @@ export function SatrAnalysis({ rankings }: SatrAnalysisProps) {
                   <Box key={tier.label}>
                     <Stack
                       direction="row"
-                      alignItems="center"
-                      justifyContent="space-between"
-                      sx={{ mb: 0.5 }}
+                      sx={{
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        mb: 0.5,
+                      }}
                     >
-                      <Stack direction="row" alignItems="center" spacing={1}>
+                      <Stack
+                        direction="row"
+                        spacing={1}
+                        sx={{
+                          alignItems: 'center',
+                        }}
+                      >
                         <Chip
                           label={tier.label}
                           size="small"
@@ -340,12 +348,13 @@ export function SatrAnalysis({ rankings }: SatrAnalysisProps) {
                   <Stack
                     key={r.id}
                     direction="row"
-                    alignItems="center"
                     spacing={1.5}
                     sx={{
+                      alignItems: 'center',
                       px: 1.5,
                       py: 1,
                       borderRadius: 2,
+
                       bgcolor:
                         i % 2 === 0 ? 'rgba(255,255,255,0.02)' : 'transparent',
                     }}
@@ -363,9 +372,11 @@ export function SatrAnalysis({ rankings }: SatrAnalysisProps) {
                     </Typography>
                     <Box sx={{ flex: 1, minWidth: 0 }}>
                       <Typography
-                        fontWeight={800}
                         noWrap
-                        sx={{ fontSize: { xs: '0.8rem', md: '0.85rem' } }}
+                        sx={{
+                          fontWeight: 800,
+                          fontSize: { xs: '0.8rem', md: '0.85rem' },
+                        }}
                       >
                         {r.playerName}
                       </Typography>

@@ -19,7 +19,7 @@ import { alpha } from '@mui/material/styles';
 import { useCallback, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { DeckBoxDisplay } from '@/components/deck/DeckBoxDisplay';
-import type { Deck } from '@/components/deck/DeckCard';
+import { type Deck } from '@/components/deck/DeckCard';
 import { useSession } from '@/lib/auth-client';
 import { validateDeck } from '@/lib/tournament-logic';
 import { BeySlotCard } from './BeySlotCard';
@@ -240,13 +240,11 @@ export function DeckComposition() {
           </IconButton>
         </Tooltip>
       </Box>
-
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
         {[0, 1, 2].map((i) => (
           <BeySlotCard key={i} slotIndex={i} />
         ))}
       </Box>
-
       <Box sx={{ mt: 1 }}>
         {validation && !validation.isValid ? (
           <Alert
@@ -262,8 +260,10 @@ export function DeckComposition() {
               <Typography
                 key={i}
                 variant="caption"
-                display="block"
-                fontWeight="bold"
+                sx={{
+                  display: 'block',
+                  fontWeight: 'bold',
+                }}
               >
                 • {err}
               </Typography>
@@ -279,7 +279,12 @@ export function DeckComposition() {
               bgcolor: alpha('#22c55e', 0.02),
             }}
           >
-            <Typography variant="caption" fontWeight="900">
+            <Typography
+              variant="caption"
+              sx={{
+                fontWeight: '900',
+              }}
+            >
               DECK VALIDE ET PRÊT POUR LE TOURNOI !
             </Typography>
           </Alert>
@@ -293,13 +298,17 @@ export function DeckComposition() {
               bgcolor: alpha('#3b82f6', 0.02),
             }}
           >
-            <Typography variant="caption" fontWeight="bold">
+            <Typography
+              variant="caption"
+              sx={{
+                fontWeight: 'bold',
+              }}
+            >
               Complétez les 3 Beyblades pour valider votre deck.
             </Typography>
           </Alert>
         )}
       </Box>
-
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
         <FormControlLabel
           control={
@@ -313,7 +322,13 @@ export function DeckComposition() {
             />
           }
           label={
-            <Typography variant="body2" fontWeight="900" color="text.primary">
+            <Typography
+              variant="body2"
+              sx={{
+                fontWeight: '900',
+                color: 'text.primary',
+              }}
+            >
               DÉFINIR COMME ÉQUIPEMENT ACTIF
             </Typography>
           }
@@ -379,7 +394,6 @@ export function DeckComposition() {
           </Button>
         )}
       </Box>
-
       <Dialog
         open={boxOpen}
         onClose={() => setBoxOpen(false)}
@@ -417,7 +431,6 @@ export function DeckComposition() {
           </Box>
         </DialogContent>
       </Dialog>
-
       {!session?.user && (
         <Button
           variant="outlined"

@@ -5,10 +5,10 @@ import {
   EmojiEvents as TrophyIcon,
   CheckCircle as VerifiedIcon,
 } from '@mui/icons-material';
-import type { Theme } from '@mui/material';
 import {
   alpha,
   Checkbox,
+  type Theme,
   Tooltip,
   useMediaQuery,
   useTheme,
@@ -24,10 +24,10 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
-import type { Profile, User } from '@prisma/client';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useState } from 'react';
+import { type Profile, type User } from '@/generated/prisma/client';
 import { authClient } from '@/lib/auth-client';
 import { getInitials } from '@/lib/utils';
 import BladerComparator from './BladerComparator';
@@ -82,8 +82,8 @@ function BladerInfo({
           }}
         >
           <Typography
-            fontWeight="bold"
             sx={{
+              fontWeight: 'bold',
               transition: 'color 0.2s',
               fontSize: { xs: '0.78rem', sm: '0.9rem' },
               overflow: 'hidden',
@@ -225,9 +225,11 @@ export function RankingsTable({
 
     return (
       <Typography
-        fontWeight="bold"
-        color="text.secondary"
-        sx={{ fontSize: { xs: '0.75rem', sm: '1rem' } }}
+        sx={{
+          fontWeight: 'bold',
+          color: 'text.secondary',
+          fontSize: { xs: '0.75rem', sm: '1rem' },
+        }}
       >
         #{absoluteRank}
       </Typography>
@@ -273,9 +275,11 @@ export function RankingsTable({
             </Typography>
             <Typography
               variant="body2"
-              fontWeight={900}
-              color="primary.main"
-              sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}
+              sx={{
+                fontWeight: 900,
+                color: 'primary.main',
+                fontSize: { xs: '0.75rem', sm: '0.875rem' },
+              }}
             >
               {totalCount} bladers
             </Typography>
@@ -302,9 +306,11 @@ export function RankingsTable({
               </Typography>
               <Typography
                 variant="body2"
-                fontWeight={900}
-                color="success.main"
-                sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}
+                sx={{
+                  fontWeight: 900,
+                  color: 'success.main',
+                  fontSize: { xs: '0.75rem', sm: '0.875rem' },
+                }}
               >
                 {Math.round(
                   profiles.reduce((s, p) => s + p.rankingPoints, 0) /
@@ -317,9 +323,11 @@ export function RankingsTable({
         {compareSelection.length > 0 && (
           <Typography
             variant="caption"
-            color="primary.main"
-            fontWeight={700}
-            sx={{ fontSize: { xs: '0.65rem', sm: '0.75rem' } }}
+            sx={{
+              color: 'primary.main',
+              fontWeight: 700,
+              fontSize: { xs: '0.65rem', sm: '0.75rem' },
+            }}
           >
             <CompareIcon
               sx={{
@@ -332,7 +340,6 @@ export function RankingsTable({
           </Typography>
         )}
       </Box>
-
       <TableContainer
         component={Paper}
         elevation={0}
@@ -537,15 +544,17 @@ export function RankingsTable({
                           size="small"
                           checked={isSelected}
                           aria-label={`Comparer ${profile.bladerName || profile.user?.name || 'ce blader'}`}
-                          inputProps={{
-                            'aria-describedby': undefined,
-                          }}
                           sx={{
                             p: 0,
                             '& .MuiSvgIcon-root': { fontSize: '1.1rem' },
                             color: alpha(theme.palette.text.secondary, 0.3),
                             '&.Mui-checked': {
                               color: 'primary.main',
+                            },
+                          }}
+                          slotProps={{
+                            input: {
+                              'aria-describedby': undefined,
                             },
                           }}
                         />
@@ -571,9 +580,11 @@ export function RankingsTable({
                     </TableCell>
                     <TableCell align="center" sx={{ px: { xs: 0.5, sm: 2 } }}>
                       <Typography
-                        fontWeight="900"
-                        color="primary.main"
-                        sx={{ fontSize: { xs: '0.8rem', sm: '1.1rem' } }}
+                        sx={{
+                          fontWeight: '900',
+                          color: 'primary.main',
+                          fontSize: { xs: '0.8rem', sm: '1.1rem' },
+                        }}
                       >
                         {profile.rankingPoints}
                       </Typography>
@@ -615,13 +626,15 @@ export function RankingsTable({
                       }}
                     >
                       <Typography
-                        fontWeight="bold"
-                        sx={{ fontSize: { xs: '0.7rem', sm: '0.9rem' } }}
                         color={
                           Number.parseFloat(winRate) >= 50
                             ? 'success.main'
                             : 'text.secondary'
                         }
+                        sx={{
+                          fontWeight: 'bold',
+                          fontSize: { xs: '0.7rem', sm: '0.9rem' },
+                        }}
                       >
                         {winRate}%
                       </Typography>
@@ -636,10 +649,21 @@ export function RankingsTable({
                   align="center"
                   sx={{ py: 8 }}
                 >
-                  <Typography variant="h6" color="text.secondary" gutterBottom>
+                  <Typography
+                    variant="h6"
+                    gutterBottom
+                    sx={{
+                      color: 'text.secondary',
+                    }}
+                  >
                     Aucun blader trouvé
                   </Typography>
-                  <Typography variant="body2" color="text.disabled">
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: 'text.disabled',
+                    }}
+                  >
                     Essayez de modifier votre recherche.
                   </Typography>
                 </TableCell>
@@ -648,7 +672,6 @@ export function RankingsTable({
           </TableBody>
         </Table>
       </TableContainer>
-
       {totalPages > 1 && (
         <Box
           sx={{
@@ -678,7 +701,6 @@ export function RankingsTable({
           />
         </Box>
       )}
-
       {/* Blader Comparator */}
       <BladerComparator
         selectedBladers={compareSelection}

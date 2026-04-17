@@ -1,12 +1,12 @@
-import { existsSync, readFileSync } from 'node:fs';
-import { join } from 'node:path';
-import type { Metadata } from 'next';
+import { type Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { JsonLd } from '@/components/seo/JsonLd';
+import { loadJsonSafe } from '@/lib/data-cache';
 import { prisma } from '@/lib/prisma';
 import { generateBreadcrumbJsonLd, generateEventJsonLd } from '@/lib/seo-utils';
-import type { TournamentData } from './_components/TournamentDetail';
-import TournamentDetail from './_components/TournamentDetail';
+import TournamentDetail, {
+  type TournamentData,
+} from './_components/TournamentDetail';
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -57,10 +57,12 @@ async function getScrapedTournament(id: string) {
   const meta = BTS_META[id];
   if (!meta) return null;
 
-  const filePath = join(process.cwd(), 'data/exports', meta.file);
-  if (!existsSync(filePath)) return null;
-
-  const data = JSON.parse(readFileSync(filePath, 'utf-8'));
+  const data = await loadJsonSafe<{
+    url?: string;
+    participants: { rank: number; name: string }[];
+    scrapedAt: string;
+  }>(`data/exports/${meta.file}`);
+  if (!data) return null;
 
   return {
     id,
@@ -73,7 +75,7 @@ async function getScrapedTournament(id: string) {
     maxPlayers: 128,
     challongeId: id,
     challongeUrl: data.url,
-    standings: (data.participants as Array<{ rank: number; name: string }>)
+    standings: data.participants
       .filter((p) => p.rank > 0)
       .sort((a, b) => a.rank - b.rank),
     stations: [],

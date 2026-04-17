@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import { type Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getAnimeSeriesBySlug } from '@/server/actions/anime';
 import { SeriesDetail } from '../_components/SeriesDetail';

@@ -3,7 +3,7 @@ import {
   type GuildMember,
   PermissionFlagsBits,
 } from 'discord.js';
-import type { GuardFunction } from 'discordx';
+import { type GuardFunction } from 'discordx';
 
 export const ModeratorOnly: GuardFunction<CommandInteraction> = async (
   interaction,

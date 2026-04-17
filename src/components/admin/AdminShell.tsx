@@ -95,7 +95,13 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
         >
           <RpbLogo size={32} animated />
           <Box>
-            <Typography variant="h6" fontWeight="800" letterSpacing="-0.02em">
+            <Typography
+              variant="h6"
+              sx={{
+                fontWeight: '800',
+                letterSpacing: '-0.02em',
+              }}
+            >
               RPB Admin
             </Typography>
             <Typography variant="caption" sx={{ opacity: 0.7 }}>
@@ -126,14 +132,22 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
               sx={{ width: 40, height: 40, borderRadius: 2 }}
             />
             <Box sx={{ minWidth: 0 }}>
-              <Typography variant="subtitle2" fontWeight="bold" noWrap>
+              <Typography
+                variant="subtitle2"
+                noWrap
+                sx={{
+                  fontWeight: 'bold',
+                }}
+              >
                 {session.user.name}
               </Typography>
               <Typography
                 variant="caption"
-                sx={{ opacity: 0.7 }}
                 noWrap
-                display="block"
+                sx={{
+                  display: 'block',
+                  opacity: 0.7,
+                }}
               >
                 Super Admin
               </Typography>
@@ -198,9 +212,11 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                   </ListItemIcon>
                   <ListItemText
                     primary={item.label}
-                    primaryTypographyProps={{
-                      fontSize: '0.9rem',
-                      fontWeight: isActive ? 700 : 500,
+                    slotProps={{
+                      primary: {
+                        fontSize: '0.9rem',
+                        fontWeight: isActive ? 700 : 500,
+                      },
                     }}
                   />
                 </ListItemButton>
@@ -235,7 +251,9 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
           </ListItemIcon>
           <ListItemText
             primary="Déconnexion"
-            primaryTypographyProps={{ fontWeight: 600 }}
+            slotProps={{
+              primary: { fontWeight: 600 },
+            }}
           />
         </ListItemButton>
       </Box>
@@ -252,7 +270,6 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
       }}
     >
       <CacheBuster />
-
       {/* Desktop Sidebar */}
       <Box
         component="nav"
@@ -279,7 +296,6 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
           {drawerContent}
         </Drawer>
       </Box>
-
       {/* Mobile Drawer */}
       <Drawer
         variant="temporary"
@@ -297,7 +313,6 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
       >
         {drawerContent}
       </Drawer>
-
       {/* Main Content Area */}
       <Box
         component="main"
@@ -334,9 +349,9 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
 
             <Typography
               variant="h6"
-              fontWeight="800"
-              color="text.primary"
               sx={{
+                fontWeight: '800',
+                color: 'text.primary',
                 flexGrow: 1,
                 display: 'flex',
                 alignItems: 'center',
@@ -346,7 +361,13 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
               Administration
             </Typography>
 
-            <Stack direction="row" spacing={2} alignItems="center">
+            <Stack
+              direction="row"
+              spacing={2}
+              sx={{
+                alignItems: 'center',
+              }}
+            >
               <Button
                 component={Link}
                 href="/dashboard"

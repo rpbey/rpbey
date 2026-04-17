@@ -1,12 +1,12 @@
-import type {
-  AutocompleteInteraction,
-  ButtonInteraction,
-  CommandInteraction,
-  ContextMenuCommandInteraction,
-  ModalSubmitInteraction,
-  SelectMenuInteraction,
+import {
+  type AutocompleteInteraction,
+  type ButtonInteraction,
+  type CommandInteraction,
+  type ContextMenuCommandInteraction,
+  type ModalSubmitInteraction,
+  type SelectMenuInteraction,
 } from 'discord.js';
-import type { GuardFunction } from 'discordx';
+import { type GuardFunction } from 'discordx';
 
 export const NotBot: GuardFunction<
   | CommandInteraction

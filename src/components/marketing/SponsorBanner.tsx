@@ -65,16 +65,19 @@ export function SponsorBanner() {
             <Stack
               direction="row"
               spacing={1.5}
-              alignItems="center"
-              sx={{ textAlign: 'left', width: '100%' }}
+              sx={{
+                alignItems: 'center',
+                textAlign: 'left',
+                width: '100%',
+              }}
             >
               <LocalOfferIcon
                 sx={{ display: { xs: 'none', sm: 'block' }, flexShrink: 0 }}
               />
               <Typography
                 variant="caption"
-                fontWeight="bold"
                 sx={{
+                  fontWeight: 'bold',
                   fontSize: { xs: '0.7rem', sm: '0.875rem' },
                   lineHeight: 1.2,
                   flex: 1,

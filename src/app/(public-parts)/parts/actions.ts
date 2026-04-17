@@ -1,7 +1,7 @@
 'use server';
 
-import type { Part, PartType } from '@prisma/client';
 import { revalidatePath } from 'next/cache';
+import { type Part, type PartType } from '@/generated/prisma/client';
 import { prisma } from '@/lib/prisma';
 
 export async function getPartsStats() {

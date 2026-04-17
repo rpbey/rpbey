@@ -58,22 +58,30 @@ export function VideoCarousel({ videos }: { videos: VideoItem[] }) {
         {/* Header */}
         <Stack
           direction="row"
-          justifyContent="space-between"
-          alignItems="center"
-          sx={{ mb: 3 }}
+          sx={{
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            mb: 3,
+          }}
         >
           <Box>
             <Typography
               variant="h4"
-              fontWeight={900}
               sx={{
+                fontWeight: 900,
                 fontSize: { xs: '1.4rem', md: '2rem' },
                 letterSpacing: '-0.03em',
               }}
             >
               Revivez l'expérience
             </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+            <Typography
+              variant="body2"
+              sx={{
+                color: 'text.secondary',
+                mt: 0.5,
+              }}
+            >
               Les dernières vidéos de la communauté RPB
             </Typography>
           </Box>
@@ -215,8 +223,8 @@ export function VideoCarousel({ videos }: { videos: VideoItem[] }) {
                 <Box sx={{ minWidth: 0 }}>
                   <Typography
                     variant="body2"
-                    fontWeight={600}
                     sx={{
+                      fontWeight: 600,
                       display: '-webkit-box',
                       WebkitLineClamp: 2,
                       WebkitBoxOrient: 'vertical',
@@ -229,15 +237,20 @@ export function VideoCarousel({ videos }: { videos: VideoItem[] }) {
                   </Typography>
                   <Typography
                     variant="caption"
-                    color="text.secondary"
-                    sx={{ fontSize: '0.75rem' }}
+                    sx={{
+                      color: 'text.secondary',
+                      fontSize: '0.75rem',
+                    }}
                   >
                     {video.channelName}
                   </Typography>
                   <Typography
                     variant="caption"
-                    color="text.disabled"
-                    sx={{ display: 'block', fontSize: '0.7rem' }}
+                    sx={{
+                      color: 'text.disabled',
+                      display: 'block',
+                      fontSize: '0.7rem',
+                    }}
                   >
                     {formatViews(video.views)} vues ·{' '}
                     {formatRelativeDate(video.publishedAt)}

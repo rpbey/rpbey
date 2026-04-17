@@ -18,8 +18,12 @@ import {
   useMediaQuery,
   useTheme,
 } from '@mui/material';
-import type { BeyType, Part, PartType } from '@prisma/client';
 import { useEffect, useState } from 'react';
+import {
+  type BeyType,
+  type Part,
+  type PartType,
+} from '@/generated/prisma/client';
 
 interface PartDialogProps {
   open: boolean;
@@ -76,7 +80,13 @@ export function PartDialog({
       fullScreen={isMobile}
     >
       <DialogTitle sx={{ pb: 1 }}>
-        <Stack direction="row" spacing={2} alignItems="center">
+        <Stack
+          direction="row"
+          spacing={2}
+          sx={{
+            alignItems: 'center',
+          }}
+        >
           {/* Preview */}
           <Avatar
             src={form.imageUrl || undefined}
@@ -92,11 +102,21 @@ export function PartDialog({
             {form.name?.charAt(0) || '?'}
           </Avatar>
           <Box>
-            <Typography variant="h6" fontWeight="bold">
+            <Typography
+              variant="h6"
+              sx={{
+                fontWeight: 'bold',
+              }}
+            >
               {initialData ? 'Modifier la pièce' : 'Nouvelle pièce'}
             </Typography>
             {form.name && (
-              <Typography variant="caption" color="text.secondary">
+              <Typography
+                variant="caption"
+                sx={{
+                  color: 'text.secondary',
+                }}
+              >
                 {form.name}
                 {form.system && (
                   <Chip
@@ -110,15 +130,16 @@ export function PartDialog({
           </Box>
         </Stack>
       </DialogTitle>
-
       <DialogContent dividers>
         <Stack spacing={3}>
           {/* Identity */}
           <Box>
             <Typography
               variant="overline"
-              color="text.secondary"
-              fontWeight="bold"
+              sx={{
+                color: 'text.secondary',
+                fontWeight: 'bold',
+              }}
             >
               Identité
             </Typography>
@@ -191,8 +212,10 @@ export function PartDialog({
           <Box>
             <Typography
               variant="overline"
-              color="text.secondary"
-              fontWeight="bold"
+              sx={{
+                color: 'text.secondary',
+                fontWeight: 'bold',
+              }}
             >
               Classification
             </Typography>
@@ -267,8 +290,10 @@ export function PartDialog({
           <Box>
             <Typography
               variant="overline"
-              color="text.secondary"
-              fontWeight="bold"
+              sx={{
+                color: 'text.secondary',
+                fontWeight: 'bold',
+              }}
             >
               Spécifications physiques
             </Typography>
@@ -354,8 +379,10 @@ export function PartDialog({
           <Box>
             <Typography
               variant="overline"
-              color="text.secondary"
-              fontWeight="bold"
+              sx={{
+                color: 'text.secondary',
+                fontWeight: 'bold',
+              }}
             >
               Stats
             </Typography>
@@ -406,8 +433,10 @@ export function PartDialog({
                     </Box>
                     <Typography
                       variant="caption"
-                      color="text.secondary"
-                      fontSize="0.65rem"
+                      sx={{
+                        color: 'text.secondary',
+                        fontSize: '0.65rem',
+                      }}
                     >
                       {stat.slice(0, 3).toUpperCase()} {val || '—'}
                     </Typography>
@@ -423,8 +452,10 @@ export function PartDialog({
           <Box>
             <Typography
               variant="overline"
-              color="text.secondary"
-              fontWeight="bold"
+              sx={{
+                color: 'text.secondary',
+                fontWeight: 'bold',
+              }}
             >
               Médias
             </Typography>
@@ -486,7 +517,6 @@ export function PartDialog({
           </Box>
         </Stack>
       </DialogContent>
-
       <DialogActions sx={{ px: 3, py: 2 }}>
         <Button onClick={onClose}>Annuler</Button>
         <Button

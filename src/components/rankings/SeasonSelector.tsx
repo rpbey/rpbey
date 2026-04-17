@@ -1,7 +1,12 @@
 'use client';
 
-import type { SelectChangeEvent } from '@mui/material';
-import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
+import {
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  type SelectChangeEvent,
+} from '@mui/material';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 interface Season {

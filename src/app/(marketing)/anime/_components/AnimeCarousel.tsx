@@ -74,13 +74,14 @@ export function AnimeCarousel({ generation, series }: AnimeCarouselProps) {
       >
         <Typography
           variant="h6"
-          fontWeight={800}
           sx={{
+            fontWeight: 800,
             color: 'text.primary',
             display: 'flex',
             alignItems: 'center',
             gap: 1.5,
             fontSize: { xs: '0.95rem', md: '1.15rem' },
+
             '&::before': {
               content: '""',
               width: 4,
@@ -110,7 +111,6 @@ export function AnimeCarousel({ generation, series }: AnimeCarouselProps) {
           Voir tout →
         </Typography>
       </Box>
-
       {/* Carousel */}
       <Box
         sx={{

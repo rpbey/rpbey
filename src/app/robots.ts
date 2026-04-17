@@ -1,4 +1,4 @@
-import type { MetadataRoute } from 'next';
+import { type MetadataRoute } from 'next';
 
 // MIGRATED from: export const dynamic = 'force-static';
 // → Dynamic by default with Cache Components.

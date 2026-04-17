@@ -1,5 +1,3 @@
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import EventIcon from '@mui/icons-material/Event';
 import GroupsIcon from '@mui/icons-material/Groups';
@@ -13,11 +11,12 @@ import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import { alpha } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
-import type { Metadata } from 'next';
+import { type Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { TournamentCardGrid } from '@/components/cards/TournamentCard';
-import type { TournamentStatus } from '@/components/ui/StatusChip';
+import { type TournamentStatus } from '@/components/ui/StatusChip';
+import { loadJsonSafe } from '@/lib/data-cache';
 import { prisma } from '@/lib/prisma';
 import { createPageMetadata } from '@/lib/seo-utils';
 
@@ -100,12 +99,6 @@ const PARTNER_SERIES = [
 // ── Page ──
 
 export default async function TournamentsPage() {
-  const dbTournaments = await prisma.tournament.findMany({
-    orderBy: { date: 'desc' },
-    include: { _count: { select: { participants: true } } },
-  });
-
-  const exportDir = join(process.cwd(), 'data/exports');
   interface BtsCard {
     id: string;
     name: string;
@@ -115,44 +108,53 @@ export default async function TournamentsPage() {
     matchesCount: number;
     podium: { name: string; rank: number; wins: number; losses: number }[];
   }
+  type BtsExport = {
+    participants?: {
+      name: string;
+      rank: number;
+      exactWins?: number;
+      exactLosses?: number;
+    }[];
+    participantsCount?: number;
+    matchesCount?: number;
+  };
+
+  const [dbTournaments, btsExports] = await Promise.all([
+    prisma.tournament.findMany({
+      orderBy: { date: 'desc' },
+      include: { _count: { select: { participants: true } } },
+    }),
+    Promise.all(
+      BTS_EDITIONS.map(async (edition) => ({
+        edition,
+        data: await loadJsonSafe<BtsExport>(`data/exports/${edition.file}`),
+      })),
+    ),
+  ]);
 
   const btsCards: BtsCard[] = [];
+  for (const { edition, data } of btsExports) {
+    if (!data) continue;
+    const participants = data.participants || [];
+    const podium = participants
+      .filter((p) => p.rank <= 3)
+      .sort((a, b) => a.rank - b.rank)
+      .map((p) => ({
+        name: p.name.replace(/✅|✔️/g, '').trim(),
+        rank: p.rank,
+        wins: p.exactWins || 0,
+        losses: p.exactLosses || 0,
+      }));
 
-  for (const edition of BTS_EDITIONS) {
-    try {
-      const data = JSON.parse(
-        readFileSync(join(exportDir, edition.file), 'utf-8'),
-      );
-      const participants = data.participants || [];
-      const podium = participants
-        .filter((p: { rank: number }) => p.rank <= 3)
-        .sort((a: { rank: number }, b: { rank: number }) => a.rank - b.rank)
-        .map(
-          (p: {
-            name: string;
-            rank: number;
-            exactWins?: number;
-            exactLosses?: number;
-          }) => ({
-            name: p.name.replace(/✅|✔️/g, '').trim(),
-            rank: p.rank,
-            wins: p.exactWins || 0,
-            losses: p.exactLosses || 0,
-          }),
-        );
-
-      btsCards.push({
-        id: edition.id,
-        name: edition.name,
-        date: edition.date,
-        poster: edition.poster,
-        participants: data.participantsCount || edition.fallbackCount,
-        matchesCount: data.matchesCount || 0,
-        podium,
-      });
-    } catch {
-      // skip missing
-    }
+    btsCards.push({
+      id: edition.id,
+      name: edition.name,
+      date: edition.date,
+      poster: edition.poster,
+      participants: data.participantsCount || edition.fallbackCount,
+      matchesCount: data.matchesCount || 0,
+      podium,
+    });
   }
 
   // Find upcoming BTS tournament from DB to feature it in the BTS section
@@ -245,8 +247,8 @@ export default async function TournamentsPage() {
           </Typography>
           <Typography
             variant="body1"
-            color="text.secondary"
             sx={{
+              color: 'text.secondary',
               maxWidth: 520,
               mx: 'auto',
               fontSize: { xs: '0.9rem', md: '1rem' },
@@ -272,7 +274,10 @@ export default async function TournamentsPage() {
             <Grid container spacing={{ xs: 2, md: 3 }}>
               {/* ── Next BTS tournament (upcoming) ── */}
               {nextBts && (
-                <Grid size={{ xs: 12, sm: 6, md: 4 }} sx={{ order: { xs: -1, md: 1 } }}>
+                <Grid
+                  size={{ xs: 12, sm: 6, md: 4 }}
+                  sx={{ order: { xs: -1, md: 1 } }}
+                >
                   <NextBtsTournamentCard tournament={nextBts} />
                 </Grid>
               )}
@@ -336,21 +341,28 @@ export default async function TournamentsPage() {
                       <Box sx={{ p: 2 }}>
                         <Stack
                           direction="row"
-                          alignItems="center"
-                          justifyContent="space-between"
-                          sx={{ mb: 1.5 }}
+                          sx={{
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            mb: 1.5,
+                          }}
                         >
                           <Box>
                             <Typography
-                              fontWeight="900"
-                              sx={{ fontSize: '0.95rem', lineHeight: 1.3 }}
+                              sx={{
+                                fontWeight: '900',
+                                fontSize: '0.95rem',
+                                lineHeight: 1.3,
+                              }}
                             >
                               {bts.name}
                             </Typography>
                             <Typography
                               variant="caption"
-                              color="text.secondary"
-                              sx={{ fontSize: '0.72rem' }}
+                              sx={{
+                                color: 'text.secondary',
+                                fontSize: '0.72rem',
+                              }}
                             >
                               {new Date(bts.date).toLocaleDateString('fr-FR', {
                                 day: 'numeric',
@@ -403,12 +415,13 @@ export default async function TournamentsPage() {
                               <Stack
                                 key={p.rank}
                                 direction="row"
-                                alignItems="center"
                                 spacing={1}
                                 sx={{
+                                  alignItems: 'center',
                                   py: 0.4,
                                   px: 1,
                                   borderRadius: 1.5,
+
                                   bgcolor:
                                     p.rank === 1
                                       ? 'rgba(255,215,0,0.06)'
@@ -430,14 +443,15 @@ export default async function TournamentsPage() {
                                 </Typography>
                                 <Typography
                                   variant="caption"
-                                  fontWeight={p.rank === 1 ? 800 : 600}
+                                  noWrap
                                   sx={{
+                                    fontWeight: p.rank === 1 ? 800 : 600,
                                     flex: 1,
                                     fontSize: '0.75rem',
+
                                     color:
                                       p.rank === 1 ? '#fbbf24' : 'text.primary',
                                   }}
-                                  noWrap
                                 >
                                   {p.name}
                                 </Typography>
@@ -515,8 +529,8 @@ export default async function TournamentsPage() {
                     </Box>
                     <Box sx={{ flex: 1, minWidth: 0 }}>
                       <Typography
-                        fontWeight="900"
                         sx={{
+                          fontWeight: '900',
                           color: series.color,
                           fontSize: { xs: '0.95rem', md: '1rem' },
                           lineHeight: 1.3,
@@ -526,8 +540,10 @@ export default async function TournamentsPage() {
                       </Typography>
                       <Typography
                         variant="caption"
-                        color="text.secondary"
-                        sx={{ fontSize: '0.7rem' }}
+                        sx={{
+                          color: 'text.secondary',
+                          fontSize: '0.7rem',
+                        }}
                       >
                         {series.subtitle} · Classement & Historique
                       </Typography>
@@ -575,7 +591,12 @@ export default async function TournamentsPage() {
             <EventIcon
               sx={{ fontSize: 40, color: 'rgba(255,255,255,0.15)', mb: 1 }}
             />
-            <Typography variant="body2" color="text.secondary">
+            <Typography
+              variant="body2"
+              sx={{
+                color: 'text.secondary',
+              }}
+            >
               Aucun autre tournoi pour le moment
             </Typography>
           </Paper>
@@ -584,8 +605,8 @@ export default async function TournamentsPage() {
         {/* Footer */}
         <Typography
           variant="caption"
-          color="text.secondary"
           sx={{
+            color: 'text.secondary',
             display: 'block',
             textAlign: 'center',
             mt: 6,
@@ -677,8 +698,7 @@ function NextBtsTournamentCard({
               left: 0,
               right: 0,
               height: '40%',
-              background:
-                'linear-gradient(transparent, rgba(0,0,0,0.8))',
+              background: 'linear-gradient(transparent, rgba(0,0,0,0.8))',
             }}
           />
           {/* UPCOMING badge */}
@@ -704,14 +724,19 @@ function NextBtsTournamentCard({
         <Box sx={{ p: 2 }}>
           <Stack
             direction="row"
-            alignItems="center"
-            justifyContent="space-between"
-            sx={{ mb: 1.5 }}
+            sx={{
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              mb: 1.5,
+            }}
           >
             <Box>
               <Typography
-                fontWeight="900"
-                sx={{ fontSize: '0.95rem', lineHeight: 1.3 }}
+                sx={{
+                  fontWeight: '900',
+                  fontSize: '0.95rem',
+                  lineHeight: 1.3,
+                }}
               >
                 {tournament.name}
               </Typography>
@@ -723,20 +748,34 @@ function NextBtsTournamentCard({
 
           {/* Date & Location */}
           <Stack spacing={0.75} sx={{ mb: 1.5 }}>
-            <Stack direction="row" spacing={0.75} alignItems="center">
+            <Stack
+              direction="row"
+              spacing={0.75}
+              sx={{
+                alignItems: 'center',
+              }}
+            >
               <CalendarMonthIcon
                 sx={{ fontSize: 14, color: 'var(--rpb-primary)', opacity: 0.7 }}
               />
               <Typography
                 variant="caption"
-                fontWeight={700}
-                sx={{ fontSize: '0.73rem' }}
+                sx={{
+                  fontWeight: 700,
+                  fontSize: '0.73rem',
+                }}
               >
                 {formattedDate} à {formattedTime}
               </Typography>
             </Stack>
             {tournament.location && (
-              <Stack direction="row" spacing={0.75} alignItems="center">
+              <Stack
+                direction="row"
+                spacing={0.75}
+                sx={{
+                  alignItems: 'center',
+                }}
+              >
                 <LocationOnIcon
                   sx={{
                     fontSize: 14,
@@ -746,10 +785,12 @@ function NextBtsTournamentCard({
                 />
                 <Typography
                   variant="caption"
-                  color="text.secondary"
-                  fontWeight={600}
-                  sx={{ fontSize: '0.7rem' }}
                   noWrap
+                  sx={{
+                    color: 'text.secondary',
+                    fontWeight: 600,
+                    fontSize: '0.7rem',
+                  }}
                 >
                   {tournament.location.split(',')[0]}
                 </Typography>
@@ -771,8 +812,8 @@ function NextBtsTournamentCard({
             >
               <Typography
                 variant="caption"
-                fontWeight={900}
                 sx={{
+                  fontWeight: 900,
                   color: 'var(--rpb-primary)',
                   fontSize: '0.72rem',
                   letterSpacing: 0.5,
@@ -802,7 +843,14 @@ function Heading({
   logo?: string;
 }) {
   return (
-    <Stack direction="row" alignItems="center" spacing={1.5} sx={{ mb: 2.5 }}>
+    <Stack
+      direction="row"
+      spacing={1.5}
+      sx={{
+        alignItems: 'center',
+        mb: 2.5,
+      }}
+    >
       <Box
         sx={{
           width: 3,
@@ -823,8 +871,11 @@ function Heading({
       )}
       <Typography
         variant="h6"
-        fontWeight="900"
-        sx={{ fontSize: { xs: '1rem', md: '1.15rem' }, letterSpacing: -0.3 }}
+        sx={{
+          fontWeight: '900',
+          fontSize: { xs: '1rem', md: '1.15rem' },
+          letterSpacing: -0.3,
+        }}
       >
         {title}
       </Typography>

@@ -1,5 +1,5 @@
-import { PartType } from '@prisma/client';
 import { connection, NextResponse } from 'next/server';
+import { PartType } from '@/generated/prisma/client';
 import { prisma } from '@/lib/prisma';
 
 async function getRandomPart(type: PartType) {

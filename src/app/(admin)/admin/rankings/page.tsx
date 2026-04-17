@@ -23,22 +23,29 @@ export default async function RankingAdminPage() {
   return (
     <Box sx={{ py: 4 }}>
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" fontWeight="bold" gutterBottom>
+        <Typography
+          variant="h4"
+          gutterBottom
+          sx={{
+            fontWeight: 'bold',
+          }}
+        >
           Gestion des Classements
         </Typography>
-        <Typography color="text.secondary">
+        <Typography
+          sx={{
+            color: 'text.secondary',
+          }}
+        >
           Configurez le barème des points, les catégories de tournois et gérez
           les ajustements manuels.
         </Typography>
       </Box>
-
       <SeasonManager seasons={seasons} />
-
       <RankingSettingsForm
         initialConfig={config}
         initialCategories={categories}
       />
-
       <PointAdjustmentList />
     </Box>
   );

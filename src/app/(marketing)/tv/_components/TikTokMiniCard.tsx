@@ -6,7 +6,7 @@ import Typography from '@mui/material/Typography';
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import Image from 'next/image';
-import type { TikTokVideo } from '@/lib/tiktok';
+import { type TikTokVideo } from '@/lib/tiktok';
 
 interface TikTokMiniCardProps {
   video: TikTokVideo;

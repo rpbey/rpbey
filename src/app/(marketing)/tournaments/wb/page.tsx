@@ -9,8 +9,7 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import type { SvgIconProps } from '@mui/material/SvgIcon';
-import type { WbBlader, WbRanking } from '@prisma/client';
+import { type SvgIconProps } from '@mui/material/SvgIcon';
 import Image from 'next/image';
 import { Suspense } from 'react';
 import RankingSearch from '@/components/rankings/RankingSearch';
@@ -19,6 +18,7 @@ import { WbCharts } from '@/components/rankings/WbCharts';
 import { WbHallOfFame } from '@/components/rankings/WbHallOfFame';
 import { WbTable } from '@/components/rankings/WbTable';
 import { WbTabs } from '@/components/rankings/WbTabs';
+import { type WbBlader, type WbRanking } from '@/generated/prisma/client';
 import { prisma } from '@/lib/prisma';
 import { getWbSeasonStats } from '@/server/actions/wb';
 
@@ -375,8 +375,8 @@ export default async function WbPage({ searchParams }: WbPageProps) {
 
         <Typography
           variant="caption"
-          color="text.secondary"
           sx={{
+            color: 'text.secondary',
             display: 'block',
             textAlign: 'center',
             mt: 6,

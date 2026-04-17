@@ -10,11 +10,11 @@ import {
   useTheme,
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
-import type { StaffMember } from '@prisma/client';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
 import { StaffCard } from '@/components/cards';
+import { type StaffMember } from '@/generated/prisma/client';
 
 interface TeamClientContentProps {
   groupedMembers: Record<string, StaffMember[]>;
@@ -112,7 +112,6 @@ export function TeamClientContent({
           </Typography>
         </Container>
       </Box>
-
       <Container maxWidth="lg" sx={{ py: { xs: 6, md: 10 } }}>
         {teamOrder.map((teamId) => {
           const teamMembers = groupedMembers[teamId];
@@ -136,8 +135,10 @@ export function TeamClientContent({
                 )}
                 <Typography
                   variant="h3"
-                  fontWeight="800"
-                  sx={{ fontSize: { xs: '1.75rem', md: '2.5rem' } }}
+                  sx={{
+                    fontWeight: '800',
+                    fontSize: { xs: '1.75rem', md: '2.5rem' },
+                  }}
                 >
                   {teamLabels[teamId] || teamId}
                 </Typography>
@@ -150,7 +151,6 @@ export function TeamClientContent({
                   }}
                 />
               </Box>
-
               <Grid
                 container
                 spacing={4}
@@ -198,13 +198,23 @@ export function TeamClientContent({
               background: `linear-gradient(90deg, ${primaryColor}, ${secondaryColor})`,
             }}
           />
-          <Typography variant="h4" fontWeight="bold" gutterBottom>
+          <Typography
+            variant="h4"
+            gutterBottom
+            sx={{
+              fontWeight: 'bold',
+            }}
+          >
             Envie de nous rejoindre ?
           </Typography>
           <Typography
             variant="body1"
-            color="text.secondary"
-            sx={{ mb: 4, maxWidth: 600, mx: 'auto' }}
+            sx={{
+              color: 'text.secondary',
+              mb: 4,
+              maxWidth: 600,
+              mx: 'auto',
+            }}
           >
             La RPB est une communauté gérée par des bénévoles. Si vous souhaitez
             apporter votre pierre à l'édifice, n'hésitez pas !

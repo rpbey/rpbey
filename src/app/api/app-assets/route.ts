@@ -1,7 +1,6 @@
 import { readdir } from 'node:fs/promises';
 import path from 'node:path';
-import type { NextRequest } from 'next/server';
-import { NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 
 function categorizeAsset(name: string): string {
   const lower = name.toLowerCase();

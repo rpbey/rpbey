@@ -1,5 +1,9 @@
-import type { SKRSContext2D } from '@napi-rs/canvas';
-import { createCanvas, GlobalFonts, loadImage } from '@napi-rs/canvas';
+import {
+  createCanvas,
+  GlobalFonts,
+  loadImage,
+  type SKRSContext2D,
+} from '@napi-rs/canvas';
 import { resolveRootPath } from './paths.js';
 import prisma from './prisma.js';
 

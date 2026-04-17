@@ -16,9 +16,9 @@ import {
   Typography,
 } from '@mui/material';
 import { alpha } from '@mui/material/styles';
-import type { Part } from '@prisma/client';
 import Image from 'next/image';
 import { useState } from 'react';
+import { type Part } from '@/generated/prisma/client';
 
 const TYPE_COLORS: Record<string, string> = {
   ATTACK: '#ef4444',
@@ -89,9 +89,11 @@ export function CatalogPartCard({
     >
       <Typography
         variant="h4"
-        color="text.disabled"
-        fontWeight="900"
-        sx={{ opacity: 0.3 }}
+        sx={{
+          color: 'text.disabled',
+          fontWeight: '900',
+          opacity: 0.3,
+        }}
       >
         {part.name.charAt(0)}
       </Typography>
@@ -240,9 +242,9 @@ export function CatalogPartCard({
           <Box sx={{ textAlign: 'center', width: '100%', mt: 0.5 }}>
             <Typography
               variant="body2"
-              fontWeight="900"
               noWrap
               sx={{
+                fontWeight: '900',
                 display: 'block',
                 lineHeight: 1.2,
                 color: 'text.primary',
@@ -261,8 +263,11 @@ export function CatalogPartCard({
             >
               <Typography
                 variant="caption"
-                color="text.secondary"
-                sx={{ fontSize: '0.65rem', fontWeight: 'bold' }}
+                sx={{
+                  color: 'text.secondary',
+                  fontSize: '0.65rem',
+                  fontWeight: 'bold',
+                }}
               >
                 {part.weight
                   ? `${part.weight}g`
@@ -346,7 +351,6 @@ export function CatalogPartCard({
           </Box>
         </CardContent>
       </CardActionArea>
-
       {/* Stats Modal */}
       <Dialog
         open={statsOpen}
@@ -377,8 +381,10 @@ export function CatalogPartCard({
           <Box sx={{ flex: 1, minWidth: 0 }}>
             <Typography
               variant="h5"
-              fontWeight="900"
-              sx={{ letterSpacing: -0.5 }}
+              sx={{
+                fontWeight: '900',
+                letterSpacing: -0.5,
+              }}
             >
               {part.name}
             </Typography>
@@ -457,12 +463,19 @@ export function CatalogPartCard({
                 >
                   <Typography
                     variant="caption"
-                    color="text.secondary"
-                    fontWeight="bold"
+                    sx={{
+                      color: 'text.secondary',
+                      fontWeight: 'bold',
+                    }}
                   >
                     {item.label}
                   </Typography>
-                  <Typography variant="caption" fontWeight="900">
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      fontWeight: '900',
+                    }}
+                  >
                     {item.value}
                   </Typography>
                 </Box>
@@ -473,8 +486,10 @@ export function CatalogPartCard({
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             <Typography
               variant="overline"
-              fontWeight="900"
-              color="text.disabled"
+              sx={{
+                fontWeight: '900',
+                color: 'text.disabled',
+              }}
             >
               Statistiques de Combat
             </Typography>
@@ -492,15 +507,19 @@ export function CatalogPartCard({
                   >
                     <Typography
                       variant="caption"
-                      fontWeight="bold"
-                      color="text.secondary"
+                      sx={{
+                        fontWeight: 'bold',
+                        color: 'text.secondary',
+                      }}
                     >
                       {label}
                     </Typography>
                     <Typography
                       variant="caption"
-                      fontWeight="900"
-                      sx={{ color: statColor }}
+                      sx={{
+                        fontWeight: '900',
+                        color: statColor,
+                      }}
                     >
                       {val}
                     </Typography>

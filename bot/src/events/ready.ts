@@ -1,4 +1,4 @@
-import type { GuildMember } from 'discord.js';
+import { type GuildMember } from 'discord.js';
 import { type ArgsOf, type Client, Discord, On } from 'discordx';
 import { inject, injectable } from 'tsyringe';
 

@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import { type Metadata } from 'next';
 import { connection } from 'next/server';
 import { AuthGuard } from '@/components/auth/AuthGuard';
 import { DashboardShell } from '@/components/dashboard/DashboardShell';

@@ -153,13 +153,17 @@ export function DeckBoxUpload({ currentImage, onUpload }: DeckBoxUploadProps) {
           )}
 
           {!currentImage && !uploading && (
-            <Typography variant="caption" color="text.secondary">
+            <Typography
+              variant="caption"
+              sx={{
+                color: 'text.secondary',
+              }}
+            >
               Montre-nous ta Deck Box ou ta mallette !
             </Typography>
           )}
         </Box>
       </Box>
-
       {currentImage && (
         <DeckBoxEditor
           open={editorOpen}

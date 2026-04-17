@@ -11,7 +11,7 @@ import { alpha, useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import { useState } from 'react';
 import useSWR from 'swr';
-import type { FeedMyProduct } from '@/lib/feedmy';
+import { type FeedMyProduct } from '@/lib/feedmy';
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -90,7 +90,9 @@ export function FeedMyPartnership() {
       <Stack
         direction={{ xs: 'column', md: 'row' }}
         spacing={{ xs: 3, md: 4 }}
-        alignItems="center"
+        sx={{
+          alignItems: 'center',
+        }}
       >
         <Box
           component="img"
@@ -116,16 +118,19 @@ export function FeedMyPartnership() {
           <Typography
             variant="overline"
             color="primary"
-            fontWeight="bold"
-            sx={{ fontSize: { xs: '0.7rem', md: '0.75rem' } }}
+            sx={{
+              fontWeight: 'bold',
+              fontSize: { xs: '0.7rem', md: '0.75rem' },
+            }}
           >
             Sponsor Officiel
           </Typography>
           <Typography
             variant="h4"
             gutterBottom
-            fontWeight="bold"
             sx={{
+              fontWeight: 'bold',
+
               // Fluid typography
               fontSize: { xs: '1.5rem', sm: '1.75rem', md: '2rem' },
             }}
@@ -134,12 +139,14 @@ export function FeedMyPartnership() {
           </Typography>
           <Typography
             variant="body1"
-            color="text.secondary"
             sx={{
+              color: 'text.secondary',
               maxWidth: 600,
               mb: { xs: 2, md: 3 },
+
               // Fluid typography
               fontSize: { xs: '0.9rem', md: '1rem' },
+
               lineHeight: 1.6,
             }}
           >
@@ -154,7 +161,9 @@ export function FeedMyPartnership() {
           <Stack
             direction={{ xs: 'column', sm: 'row' }}
             spacing={{ xs: 1.5, sm: 2 }}
-            alignItems={{ xs: 'stretch', md: 'center' }}
+            sx={{
+              alignItems: { xs: 'stretch', md: 'center' },
+            }}
           >
             {/* Copy code box - MD3 touch target */}
             <Box
@@ -206,8 +215,10 @@ export function FeedMyPartnership() {
               {copied ? (
                 <Typography
                   variant="caption"
-                  fontWeight="bold"
-                  color="success.main"
+                  sx={{
+                    fontWeight: 'bold',
+                    color: 'success.main',
+                  }}
                 >
                   Copié !
                 </Typography>
@@ -245,7 +256,6 @@ export function FeedMyPartnership() {
           </Stack>
         </Box>
       </Stack>
-
       {products && products.length > 0 && (
         <Box
           sx={{
@@ -256,8 +266,8 @@ export function FeedMyPartnership() {
         >
           <Typography
             variant="subtitle2"
-            color="text.secondary"
             sx={{
+              color: 'text.secondary',
               mb: { xs: 1.5, md: 2 },
               display: 'flex',
               alignItems: 'center',
@@ -336,20 +346,24 @@ export function FeedMyPartnership() {
                   </Box>
                   <Typography
                     variant="caption"
-                    color="text.primary"
-                    fontWeight="bold"
-                    display="block"
                     noWrap
                     title={product.title}
-                    sx={{ fontSize: { xs: '0.7rem', sm: '0.75rem' } }}
+                    sx={{
+                      color: 'text.primary',
+                      fontWeight: 'bold',
+                      display: 'block',
+                      fontSize: { xs: '0.7rem', sm: '0.75rem' },
+                    }}
                   >
                     {product.title}
                   </Typography>
                   <Typography
                     variant="caption"
                     color="primary"
-                    fontWeight="bold"
-                    sx={{ fontSize: { xs: '0.7rem', sm: '0.75rem' } }}
+                    sx={{
+                      fontWeight: 'bold',
+                      fontSize: { xs: '0.7rem', sm: '0.75rem' },
+                    }}
                   >
                     {product.variants[0]?.price} €
                   </Typography>

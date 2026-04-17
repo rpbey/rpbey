@@ -267,7 +267,12 @@ export function DeckBoxEditor({
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
       <DialogTitle>Personnaliser la Deck Box</DialogTitle>
       <DialogContent>
-        <Stack spacing={2} alignItems="center">
+        <Stack
+          spacing={2}
+          sx={{
+            alignItems: 'center',
+          }}
+        >
           <Box
             sx={{
               width: '100%',
@@ -327,7 +332,13 @@ export function DeckBoxEditor({
                   borderColor: 'divider',
                 }}
               >
-                <Stack direction="row" spacing={2} alignItems="center">
+                <Stack
+                  direction="row"
+                  spacing={2}
+                  sx={{
+                    alignItems: 'center',
+                  }}
+                >
                   <ZoomOutIcon color="action" />
                   <Slider
                     size="small"

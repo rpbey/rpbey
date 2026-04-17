@@ -1,4 +1,4 @@
-import type { TournamentStatus } from "@prisma/client";
+import type { TournamentStatus } from "@/generated/prisma/client";
 import "dotenv/config";
 import { prisma } from "../src/lib/prisma";
 

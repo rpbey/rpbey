@@ -1,13 +1,13 @@
 'use client';
 
 import { Box, Grid, Paper, Typography } from '@mui/material';
-import type { WbBlader } from '@prisma/client';
 import { motion } from 'framer-motion';
 import {
   DynamicBarChart as BarChart,
   DynamicLineChart as LineChart,
   DynamicPieChart as PieChart,
 } from '@/components/ui/DynamicCharts';
+import { type WbBlader } from '@/generated/prisma/client';
 
 interface WbTournamentMeta {
   slug: string;

@@ -6,7 +6,7 @@
 import 'dotenv/config';
 import fs from 'fs';
 import path from 'path';
-import { PrismaClient, PartType, type BeyType } from '@prisma/client';
+import { PrismaClient, PartType, type BeyType } from '@/generated/prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { Pool } from 'pg';
 

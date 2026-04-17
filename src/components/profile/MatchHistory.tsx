@@ -74,7 +74,13 @@ export function MatchHistory({ userId }: MatchHistoryProps) {
         sx={{ borderRadius: 6, border: '1px solid', borderColor: 'divider' }}
       >
         <CardContent sx={{ p: 4 }}>
-          <Typography variant="h6" fontWeight="bold" gutterBottom>
+          <Typography
+            variant="h6"
+            gutterBottom
+            sx={{
+              fontWeight: 'bold',
+            }}
+          >
             Historique des matchs
           </Typography>
           {[1, 2, 3].map((i) => (
@@ -107,7 +113,12 @@ export function MatchHistory({ userId }: MatchHistoryProps) {
       <CardContent sx={{ p: { xs: 2, sm: 4 } }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 3 }}>
           <SportsMmaIcon color="primary" />
-          <Typography variant="h6" fontWeight="bold">
+          <Typography
+            variant="h6"
+            sx={{
+              fontWeight: 'bold',
+            }}
+          >
             Historique des matchs
           </Typography>
         </Box>
@@ -158,8 +169,10 @@ export function MatchHistory({ userId }: MatchHistoryProps) {
           >
             <Typography
               variant="body1"
-              color="text.secondary"
-              fontWeight="medium"
+              sx={{
+                color: 'text.secondary',
+                fontWeight: 'medium',
+              }}
             >
               Aucun match trouvé pour cette catégorie
             </Typography>
@@ -224,8 +237,10 @@ export function MatchHistory({ userId }: MatchHistoryProps) {
                       >
                         <Typography
                           variant="body1"
-                          fontWeight="bold"
-                          sx={{ fontSize: { xs: '0.85rem', sm: '1rem' } }}
+                          sx={{
+                            fontWeight: 'bold',
+                            fontSize: { xs: '0.85rem', sm: '1rem' },
+                          }}
                         >
                           vs {opponentName}
                         </Typography>
@@ -270,9 +285,11 @@ export function MatchHistory({ userId }: MatchHistoryProps) {
                           >
                             <Typography
                               variant="body2"
-                              fontWeight="900"
-                              color="primary.main"
-                              sx={{ fontSize: { xs: '0.75rem', sm: '0.9rem' } }}
+                              sx={{
+                                fontWeight: '900',
+                                color: 'primary.main',
+                                fontSize: { xs: '0.75rem', sm: '0.9rem' },
+                              }}
                             >
                               {match.score}
                             </Typography>
@@ -283,8 +300,12 @@ export function MatchHistory({ userId }: MatchHistoryProps) {
                     secondary={
                       <Typography
                         variant="caption"
-                        color="text.secondary"
-                        sx={{ display: 'block', mt: 0.5, fontSize: '0.7rem' }}
+                        sx={{
+                          color: 'text.secondary',
+                          display: 'block',
+                          mt: 0.5,
+                          fontSize: '0.7rem',
+                        }}
                       >
                         {match.tournament.name} • Round {Math.abs(match.round)}{' '}
                         •{' '}

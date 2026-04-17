@@ -604,7 +604,9 @@ export class DuelCommand {
       fetchReply: true,
     })) as Message;
 
-    let btnResponse;
+    let btnResponse:
+      | Awaited<ReturnType<typeof challengeMsg.awaitMessageComponent>>
+      | undefined;
     try {
       btnResponse = await challengeMsg.awaitMessageComponent({
         componentType: ComponentType.Button,

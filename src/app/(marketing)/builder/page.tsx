@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import { type Metadata } from 'next';
 import { BuilderClient } from './_components/BuilderClient';
 
 export const metadata: Metadata = {

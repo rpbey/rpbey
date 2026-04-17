@@ -10,7 +10,12 @@ dist/
 out/
 build/
 bot/dist/
+bot/dist-bin/
 *.tsbuildinfo
+
+# Cache directories
+.bun-cache/
+.n2bignore
 
 # Environment & Secrets
 .env
@@ -29,6 +34,8 @@ gha-creds-*.json
 
 # Prisma generated
 /generated/prisma
+src/generated/
+bot/prisma/schema.prisma.bak-*
 
 # IDE
 .vscode/

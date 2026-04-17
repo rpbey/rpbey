@@ -126,13 +126,24 @@ function LaunchGauge({
         p: 3,
       }}
     >
-      <Typography variant="h6" fontWeight="900" sx={{ color }}>
+      <Typography
+        variant="h6"
+        sx={{
+          fontWeight: '900',
+          color,
+        }}
+      >
         {player} — Lancement !
       </Typography>
-
       {/* Angle selector */}
       <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-        <Typography variant="caption" color="text.secondary" fontWeight="700">
+        <Typography
+          variant="caption"
+          sx={{
+            color: 'text.secondary',
+            fontWeight: '700',
+          }}
+        >
           Angle
         </Typography>
         <input
@@ -145,13 +156,15 @@ function LaunchGauge({
         />
         <Typography
           variant="caption"
-          fontWeight="900"
-          sx={{ color, minWidth: 40 }}
+          sx={{
+            fontWeight: '900',
+            color,
+            minWidth: 40,
+          }}
         >
           {Math.round((angle * 180) / Math.PI)}°
         </Typography>
       </Box>
-
       {/* Power gauge */}
       <Box
         sx={{
@@ -192,7 +205,6 @@ function LaunchGauge({
           {Math.round(power)}%
         </Typography>
       </Box>
-
       {/* Launch button */}
       <Button
         variant="contained"
@@ -221,8 +233,12 @@ function LaunchGauge({
       >
         {charging ? 'RELÂCHER !' : 'MAINTENIR POUR CHARGER'}
       </Button>
-
-      <Typography variant="caption" color="text.disabled">
+      <Typography
+        variant="caption"
+        sx={{
+          color: 'text.disabled',
+        }}
+      >
         Maintenir le bouton pour charger la puissance, relâcher pour lancer
       </Typography>
     </Box>
@@ -734,15 +750,19 @@ export function BattleArena({
           >
             <Typography
               variant="caption"
-              fontWeight="900"
-              sx={{ color: TYPE_COLORS[p1Stats.type] || '#888' }}
+              sx={{
+                fontWeight: '900',
+                color: TYPE_COLORS[p1Stats.type] || '#888',
+              }}
             >
               {p1Stats.name}
             </Typography>
             <Typography
               variant="caption"
-              fontWeight="700"
-              color="text.secondary"
+              sx={{
+                fontWeight: '700',
+                color: 'text.secondary',
+              }}
             >
               {Math.round(spins.p1)}
             </Typography>
@@ -769,9 +789,11 @@ export function BattleArena({
 
         <Typography
           variant="caption"
-          fontWeight="900"
-          color="text.disabled"
-          sx={{ px: 1 }}
+          sx={{
+            fontWeight: '900',
+            color: 'text.disabled',
+            px: 1,
+          }}
         >
           VS
         </Typography>
@@ -783,15 +805,19 @@ export function BattleArena({
           >
             <Typography
               variant="caption"
-              fontWeight="700"
-              color="text.secondary"
+              sx={{
+                fontWeight: '700',
+                color: 'text.secondary',
+              }}
             >
               {Math.round(spins.p2)}
             </Typography>
             <Typography
               variant="caption"
-              fontWeight="900"
-              sx={{ color: TYPE_COLORS[p2Stats.type] || '#888' }}
+              sx={{
+                fontWeight: '900',
+                color: TYPE_COLORS[p2Stats.type] || '#888',
+              }}
             >
               {p2Stats.name}
             </Typography>
@@ -817,7 +843,6 @@ export function BattleArena({
           </Box>
         </Box>
       </Box>
-
       {/* Canvas */}
       <Box
         sx={{
@@ -899,15 +924,21 @@ export function BattleArena({
             />
             <Typography
               variant="h4"
-              fontWeight="900"
               sx={{
+                fontWeight: '900',
                 color: '#fff',
                 textShadow: '0 0 20px rgba(255,255,255,0.3)',
               }}
             >
               {winner}
             </Typography>
-            <Typography variant="h6" fontWeight="700" color="text.secondary">
+            <Typography
+              variant="h6"
+              sx={{
+                fontWeight: '700',
+                color: 'text.secondary',
+              }}
+            >
               VICTOIRE !
             </Typography>
             <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
@@ -957,7 +988,6 @@ export function BattleArena({
           </Box>
         )}
       </Box>
-
       {/* Battle log */}
       {events.length > 0 && (
         <Box

@@ -1,5 +1,5 @@
-import type { ApiClient } from '@twurple/api';
-import type { ChatClient } from '@twurple/chat';
+import { type ApiClient } from '@twurple/api';
+import { type ChatClient } from '@twurple/chat';
 
 import { logger } from './logger.js';
 import { resolveDataPath } from './paths.js';

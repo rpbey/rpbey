@@ -70,7 +70,6 @@ export function RankingForm({ initialRules }: { initialRules: RankingRules }) {
           {error}
         </Alert>
       )}
-
       <Grid container spacing={3}>
         <Grid size={{ xs: 12, md: 6 }}>
           <Card
@@ -81,7 +80,13 @@ export function RankingForm({ initialRules }: { initialRules: RankingRules }) {
               <Typography variant="h6" gutterBottom color="primary">
                 Match & Participation
               </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+              <Typography
+                variant="body2"
+                sx={{
+                  color: 'text.secondary',
+                  mb: 3,
+                }}
+              >
                 Points attribués pour l'activité de base.
               </Typography>
 
@@ -91,24 +96,28 @@ export function RankingForm({ initialRules }: { initialRules: RankingRules }) {
                   type="number"
                   value={rules.participation}
                   onChange={handleChange('participation')}
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">pts</InputAdornment>
-                    ),
-                  }}
                   helperText="Points reçus juste pour s'être inscrit et check-in."
+                  slotProps={{
+                    input: {
+                      endAdornment: (
+                        <InputAdornment position="end">pts</InputAdornment>
+                      ),
+                    },
+                  }}
                 />
                 <TextField
                   label="Victoire par Match"
                   type="number"
                   value={rules.matchWin}
                   onChange={handleChange('matchWin')}
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">pts</InputAdornment>
-                    ),
-                  }}
                   helperText="Bonus pour chaque match remporté dans l'arbre."
+                  slotProps={{
+                    input: {
+                      endAdornment: (
+                        <InputAdornment position="end">pts</InputAdornment>
+                      ),
+                    },
+                  }}
                 />
               </Box>
             </CardContent>
@@ -124,7 +133,13 @@ export function RankingForm({ initialRules }: { initialRules: RankingRules }) {
               <Typography variant="h6" gutterBottom color="secondary">
                 Performance & Podium
               </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+              <Typography
+                variant="body2"
+                sx={{
+                  color: 'text.secondary',
+                  mb: 3,
+                }}
+              >
                 Points bonus selon le classement final.
               </Typography>
 
@@ -160,7 +175,6 @@ export function RankingForm({ initialRules }: { initialRules: RankingRules }) {
           </Card>
         </Grid>
       </Grid>
-
       <Box sx={{ mt: 4, display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
         <Button
           variant="contained"

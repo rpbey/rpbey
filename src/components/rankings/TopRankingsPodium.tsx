@@ -186,11 +186,12 @@ export default function TopRankingsPodium({
                     <Typography
                       component="h3"
                       variant={isFirst ? 'h6' : 'subtitle1'}
-                      fontWeight={900}
                       noWrap
                       sx={{
+                        fontWeight: 900,
                         color: 'text.primary',
                         mb: 0,
+
                         fontSize: {
                           xs: isFirst ? '0.9rem' : '0.85rem',
                           sm: isFirst ? '1rem' : '0.9rem',
@@ -221,8 +222,8 @@ export default function TopRankingsPodium({
 
                   <Typography
                     variant="caption"
-                    color="text.secondary"
                     sx={{
+                      color: 'text.secondary',
                       display: { xs: 'none', md: 'block' },
                       mb: 1,
                       fontWeight: 700,
@@ -251,8 +252,8 @@ export default function TopRankingsPodium({
                 >
                   <Typography
                     variant="h6"
-                    fontWeight={900}
                     sx={{
+                      fontWeight: 900,
                       fontSize: { xs: '0.85rem', sm: '0.95rem', md: '1.2rem' },
                     }}
                   >
@@ -260,8 +261,8 @@ export default function TopRankingsPodium({
                   </Typography>
                   <Typography
                     variant="caption"
-                    fontWeight={700}
                     sx={{
+                      fontWeight: 700,
                       display: { xs: 'none', md: 'block' },
                       fontSize: '0.65rem',
                     }}

@@ -12,7 +12,7 @@ import { alpha, useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import { AnimatePresence, motion } from 'framer-motion';
 import useSWR from 'swr';
-import type { DiscordStats, TeamGroup } from '@/lib/discord-data';
+import { type DiscordStats, type TeamGroup } from '@/lib/discord-data';
 import { RoleColors, type RoleType } from '@/lib/role-colors';
 import { api } from '@/lib/standard-api';
 import { DiscordRoleBadge } from './DiscordRoleBadge';
@@ -134,10 +134,15 @@ export function DiscordStatusCard({
           }}
         />
       </Box>
-
       {/* Server info */}
       <Box sx={{ px: 2.5, mt: -3 }}>
-        <Stack direction="row" spacing={2} alignItems="flex-end">
+        <Stack
+          direction="row"
+          spacing={2}
+          sx={{
+            alignItems: 'flex-end',
+          }}
+        >
           <Avatar
             src="/logo.webp"
             sx={{
@@ -149,20 +154,27 @@ export function DiscordStatusCard({
             }}
           />
           <Box sx={{ pb: 0.5 }}>
-            <Typography variant="subtitle1" fontWeight={900} lineHeight={1.2}>
+            <Typography
+              variant="subtitle1"
+              sx={{
+                fontWeight: 900,
+                lineHeight: 1.2,
+              }}
+            >
               RPB
             </Typography>
             <Typography
               variant="caption"
-              color="text.secondary"
-              fontWeight={600}
+              sx={{
+                color: 'text.secondary',
+                fontWeight: 600,
+              }}
             >
               {totalCount.toLocaleString()} membres
             </Typography>
           </Box>
         </Stack>
       </Box>
-
       {/* Team */}
       <Box
         sx={{
@@ -184,8 +196,10 @@ export function DiscordStatusCard({
               <Stack
                 direction="row"
                 spacing={1}
-                alignItems="center"
-                sx={{ mb: 1 }}
+                sx={{
+                  alignItems: 'center',
+                  mb: 1,
+                }}
               >
                 <DiscordRoleBadge
                   roleType={group.roleType}
@@ -195,8 +209,10 @@ export function DiscordStatusCard({
                 />
                 <Typography
                   variant="caption"
-                  color="text.disabled"
-                  fontWeight={600}
+                  sx={{
+                    color: 'text.disabled',
+                    fontWeight: 600,
+                  }}
                 >
                   {group.members.length}
                 </Typography>
@@ -250,17 +266,21 @@ export function DiscordStatusCard({
                       <Box sx={{ flex: 1, minWidth: 0 }}>
                         <Typography
                           variant="body2"
-                          fontWeight={700}
                           noWrap
-                          sx={{ lineHeight: 1.2 }}
+                          sx={{
+                            fontWeight: 700,
+                            lineHeight: 1.2,
+                          }}
                         >
                           {member.displayName}
                         </Typography>
                         <Typography
                           variant="caption"
-                          color="text.disabled"
                           noWrap
-                          sx={{ fontSize: '0.65rem' }}
+                          sx={{
+                            color: 'text.disabled',
+                            fontSize: '0.65rem',
+                          }}
                         >
                           {member.username}
                         </Typography>
@@ -273,7 +293,6 @@ export function DiscordStatusCard({
           ))}
         </Stack>
       </Box>
-
       {/* Community avatars + join */}
       <Box sx={{ p: 2, pt: 1.5 }}>
         {allMembers.length > 0 && (

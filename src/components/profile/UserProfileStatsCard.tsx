@@ -15,7 +15,7 @@ import {
   Typography,
   useTheme,
 } from '@mui/material';
-import type { UserStats } from '@/lib/stats';
+import { type UserStats } from '@/lib/stats';
 
 interface StatsCardProps {
   stats: UserStats;
@@ -83,22 +83,34 @@ function StatItem({
         {icon}
       </Box>
       <Box>
-        <Typography variant="h5" fontWeight="900" sx={{ lineHeight: 1 }}>
+        <Typography
+          variant="h5"
+          sx={{
+            fontWeight: '900',
+            lineHeight: 1,
+          }}
+        >
           {value}
         </Typography>
         <Typography
           variant="body2"
-          color="text.secondary"
-          fontWeight="500"
-          sx={{ mt: 0.5 }}
+          sx={{
+            color: 'text.secondary',
+            fontWeight: '500',
+            mt: 0.5,
+          }}
         >
           {label}
         </Typography>
         {subValue && (
           <Typography
             variant="caption"
-            color="text.secondary"
-            sx={{ display: 'block', mt: 0.2, opacity: 0.8 }}
+            sx={{
+              color: 'text.secondary',
+              display: 'block',
+              mt: 0.2,
+              opacity: 0.8,
+            }}
           >
             {subValue}
           </Typography>
@@ -126,7 +138,14 @@ export function UserProfileStatsCard({ stats }: StatsCardProps) {
       }}
     >
       <CardContent sx={{ p: { xs: 2, sm: 4 } }}>
-        <Stack direction="row" alignItems="center" spacing={2} mb={3}>
+        <Stack
+          direction="row"
+          spacing={2}
+          sx={{
+            alignItems: 'center',
+            mb: 3,
+          }}
+        >
           <Box
             sx={{
               width: 4,
@@ -135,7 +154,12 @@ export function UserProfileStatsCard({ stats }: StatsCardProps) {
               borderRadius: 2,
             }}
           />
-          <Typography variant="h6" fontWeight="bold">
+          <Typography
+            variant="h6"
+            sx={{
+              fontWeight: 'bold',
+            }}
+          >
             Statistiques Globales
           </Typography>
         </Stack>
@@ -177,15 +201,19 @@ export function UserProfileStatsCard({ stats }: StatsCardProps) {
               >
                 <Typography
                   variant="body2"
-                  color="text.secondary"
-                  fontWeight="bold"
+                  sx={{
+                    color: 'text.secondary',
+                    fontWeight: 'bold',
+                  }}
                 >
                   Taux de victoire
                 </Typography>
                 <Typography
                   variant="h5"
-                  fontWeight="900"
                   color={stats.winRate >= 50 ? 'success.main' : 'warning.main'}
+                  sx={{
+                    fontWeight: '900',
+                  }}
                 >
                   {stats.winRate.toFixed(1)}%
                 </Typography>
@@ -203,7 +231,12 @@ export function UserProfileStatsCard({ stats }: StatsCardProps) {
                   },
                 }}
               />
-              <Typography variant="caption" color="text.secondary">
+              <Typography
+                variant="caption"
+                sx={{
+                  color: 'text.secondary',
+                }}
+              >
                 Sur {stats.totalMatches} matchs officiels
               </Typography>
             </Box>
@@ -262,9 +295,11 @@ export function UserProfileStatsCard({ stats }: StatsCardProps) {
               <Box>
                 <Typography
                   variant="body2"
-                  color="text.secondary"
-                  fontWeight="bold"
                   gutterBottom
+                  sx={{
+                    color: 'text.secondary',
+                    fontWeight: 'bold',
+                  }}
                 >
                   Forme récente
                 </Typography>
@@ -298,7 +333,12 @@ export function UserProfileStatsCard({ stats }: StatsCardProps) {
                       </Box>
                     ))
                   ) : (
-                    <Typography variant="caption" color="text.secondary">
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        color: 'text.secondary',
+                      }}
+                    >
                       Aucun match récent
                     </Typography>
                   )}

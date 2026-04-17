@@ -13,7 +13,7 @@ import LeaderboardIcon from '@mui/icons-material/Leaderboard';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import PeopleIcon from '@mui/icons-material/People';
-import PeopleOutlineIcon from '@mui/icons-material/PeopleOutline';
+import PeopleOutlineIcon from '@mui/icons-material/PeopleOutlined';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import RadarIcon from '@mui/icons-material/Radar';
 import SensorsIcon from '@mui/icons-material/Sensors';
@@ -339,9 +339,14 @@ export default function TournamentDetailPage({
         >
           Tournois
         </Link>
-        <Typography color="text.primary">{tournament.name}</Typography>
+        <Typography
+          sx={{
+            color: 'text.primary',
+          }}
+        >
+          {tournament.name}
+        </Typography>
       </Breadcrumbs>
-
       {/* Header Card */}
       <Card sx={{ mb: 3 }}>
         <CardContent>
@@ -357,7 +362,12 @@ export default function TournamentDetailPage({
               <Box
                 sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}
               >
-                <Typography variant="h4" fontWeight="bold">
+                <Typography
+                  variant="h4"
+                  sx={{
+                    fontWeight: 'bold',
+                  }}
+                >
                   {tournament.name}
                 </Typography>
                 <Chip
@@ -374,8 +384,11 @@ export default function TournamentDetailPage({
 
               {tournament.description && (
                 <Typography
-                  color="text.secondary"
-                  sx={{ mb: 2, maxWidth: 600 }}
+                  sx={{
+                    color: 'text.secondary',
+                    mb: 2,
+                    maxWidth: 600,
+                  }}
                 >
                   {tournament.description}
                 </Typography>
@@ -509,7 +522,6 @@ export default function TournamentDetailPage({
           </Box>
         </CardContent>
       </Card>
-
       {/* Tabs */}
       <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ mb: 3 }}>
         <Tab label="Bracket" />
@@ -530,7 +542,6 @@ export default function TournamentDetailPage({
           label={`Journal (${liveData?.activityLog?.length ?? 0})`}
         />
       </Tabs>
-
       {/* Tab Panels */}
       {tab === 0 && (
         <Card>
@@ -543,7 +554,6 @@ export default function TournamentDetailPage({
           </CardContent>
         </Card>
       )}
-
       {tab === 1 && (
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, md: 8 }}>
@@ -556,7 +566,6 @@ export default function TournamentDetailPage({
           </Grid>
         </Grid>
       )}
-
       {/* Standings Tab */}
       {tab === 2 && (
         <Card>
@@ -575,23 +584,37 @@ export default function TournamentDetailPage({
                     mb: 1,
                   }}
                 >
-                  <Typography variant="caption" fontWeight={800}>
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      fontWeight: 800,
+                    }}
+                  >
                     #
                   </Typography>
-                  <Typography variant="caption" fontWeight={800}>
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      fontWeight: 800,
+                    }}
+                  >
                     Joueur
                   </Typography>
                   <Typography
                     variant="caption"
-                    fontWeight={800}
-                    textAlign="center"
+                    sx={{
+                      fontWeight: 800,
+                      textAlign: 'center',
+                    }}
                   >
                     W / L
                   </Typography>
                   <Typography
                     variant="caption"
-                    fontWeight={800}
-                    textAlign="right"
+                    sx={{
+                      fontWeight: 800,
+                      textAlign: 'right',
+                    }}
                   >
                     Challonge
                   </Typography>
@@ -616,16 +639,31 @@ export default function TournamentDetailPage({
                       sx={{ width: 32, fontWeight: 900 }}
                     />
                     <Box>
-                      <Typography variant="body2" fontWeight={700}>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          fontWeight: 700,
+                        }}
+                      >
                         {s.name}
                       </Typography>
                       {s.challongeUsername && (
-                        <Typography variant="caption" color="text.secondary">
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: 'text.secondary',
+                          }}
+                        >
                           @{s.challongeUsername}
                         </Typography>
                       )}
                     </Box>
-                    <Typography variant="body2" textAlign="center">
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        textAlign: 'center',
+                      }}
+                    >
                       <strong style={{ color: '#4caf50' }}>{s.wins}</strong>
                       {' / '}
                       <strong style={{ color: '#f44336' }}>{s.losses}</strong>
@@ -656,7 +694,6 @@ export default function TournamentDetailPage({
           </CardContent>
         </Card>
       )}
-
       {/* Stadiums Tab */}
       {tab === 3 && (
         <Grid container spacing={2}>
@@ -685,7 +722,12 @@ export default function TournamentDetailPage({
                           mb: 1,
                         }}
                       >
-                        <Typography variant="subtitle2" fontWeight={800}>
+                        <Typography
+                          variant="subtitle2"
+                          sx={{
+                            fontWeight: 800,
+                          }}
+                        >
                           {station.name}
                         </Typography>
                         <Chip
@@ -713,8 +755,10 @@ export default function TournamentDetailPage({
                         >
                           <Typography
                             variant="body2"
-                            fontWeight={700}
-                            textAlign="center"
+                            sx={{
+                              fontWeight: 700,
+                              textAlign: 'center',
+                            }}
                           >
                             {station.currentMatch.player1 ?? '???'}{' '}
                             <Chip
@@ -728,9 +772,12 @@ export default function TournamentDetailPage({
                           {station.currentMatch.round !== 0 && (
                             <Typography
                               variant="caption"
-                              color="text.secondary"
-                              textAlign="center"
-                              sx={{ display: 'block', mt: 0.5 }}
+                              sx={{
+                                color: 'text.secondary',
+                                textAlign: 'center',
+                                display: 'block',
+                                mt: 0.5,
+                              }}
                             >
                               Round {station.currentMatch.round}
                             </Typography>
@@ -739,8 +786,10 @@ export default function TournamentDetailPage({
                       ) : (
                         <Typography
                           variant="body2"
-                          color="text.secondary"
-                          textAlign="center"
+                          sx={{
+                            color: 'text.secondary',
+                            textAlign: 'center',
+                          }}
                         >
                           Aucun match
                         </Typography>
@@ -760,7 +809,6 @@ export default function TournamentDetailPage({
           )}
         </Grid>
       )}
-
       {/* Activity Log Tab */}
       {tab === 4 && (
         <Card>
@@ -783,8 +831,11 @@ export default function TournamentDetailPage({
                   >
                     <Typography
                       variant="caption"
-                      color="text.secondary"
-                      sx={{ minWidth: 60, flexShrink: 0 }}
+                      sx={{
+                        color: 'text.secondary',
+                        minWidth: 60,
+                        flexShrink: 0,
+                      }}
                     >
                       {entry.timestamp ? formatLogTime(entry.timestamp) : '—'}
                     </Typography>
@@ -814,13 +865,16 @@ export default function TournamentDetailPage({
           </CardContent>
         </Card>
       )}
-
       {/* Last updated */}
       {liveData?.lastUpdated && (
         <Typography
           variant="caption"
-          color="text.secondary"
-          sx={{ display: 'block', mt: 2, textAlign: 'right' }}
+          sx={{
+            color: 'text.secondary',
+            display: 'block',
+            mt: 2,
+            textAlign: 'right',
+          }}
         >
           Dernière mise à jour live :{' '}
           {new Date(liveData.lastUpdated).toLocaleString('fr-FR')}

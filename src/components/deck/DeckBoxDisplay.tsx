@@ -2,7 +2,7 @@
 
 import { Avatar, Box, Tooltip, Typography } from '@mui/material';
 import Image from 'next/image';
-import type { Deck } from './DeckCard';
+import { type Deck } from './DeckCard';
 
 interface DeckBoxDisplayProps {
   deck: Deck;
@@ -28,14 +28,15 @@ export function DeckBoxDisplay({ deck }: DeckBoxDisplayProps) {
       <Box sx={{ textAlign: 'center', mb: 3 }}>
         <Typography
           variant="h5"
-          fontWeight="900"
           sx={{
+            fontWeight: '900',
             color: 'primary.main',
             textTransform: 'uppercase',
             letterSpacing: 1.5,
             textShadow: '0 2px 4px rgba(0,0,0,0.3)',
             display: 'inline-block',
             position: 'relative',
+
             '&::after': {
               content: '""',
               position: 'absolute',
@@ -62,7 +63,6 @@ export function DeckBoxDisplay({ deck }: DeckBoxDisplayProps) {
           ÉQUIPEMENT ACTIF SÉLECTIONNÉ
         </Typography>
       </Box>
-
       {/* Main Container */}
       <Box
         sx={{
@@ -160,7 +160,12 @@ export function DeckBoxDisplay({ deck }: DeckBoxDisplayProps) {
               key={bey.id}
               title={
                 <Box sx={{ p: 0.5 }}>
-                  <Typography variant="subtitle2" fontWeight="bold">
+                  <Typography
+                    variant="subtitle2"
+                    sx={{
+                      fontWeight: 'bold',
+                    }}
+                  >
                     {fullBeyName}
                   </Typography>
                   <Typography

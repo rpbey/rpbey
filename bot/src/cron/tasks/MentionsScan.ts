@@ -1,21 +1,26 @@
-import { ChannelType } from 'discord.js';
+import {
+  ChannelType,
+  type Collection,
+  type Message,
+  type Snowflake,
+} from 'discord.js';
 
 import { bot } from '../../lib/bot.js';
 import { logger } from '../../lib/logger.js';
-import {
-  clearMentions,
-  redis,
-  setMentions,
-  setScanMeta,
-} from '../../lib/redis.js';
+import { clearMentions, redis, setScanMeta } from '../../lib/redis.js';
 
 interface ChannelResult {
   counts: Map<string, number>;
   messages: number;
 }
 
+type FetchMessages = (options: {
+  limit: number;
+  before?: string;
+}) => Promise<Collection<Snowflake, Message>>;
+
 async function scanChannel(
-  channel: { messages: { fetch: Function } },
+  channel: { messages: { fetch: FetchMessages } },
   maxMessages: number,
 ): Promise<ChannelResult> {
   const counts = new Map<string, number>();

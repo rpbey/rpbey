@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import type { MetadataRoute } from 'next';
+import { type MetadataRoute } from 'next';
 import { prisma } from '@/lib/prisma';
 
 export const dynamic = 'force-dynamic';

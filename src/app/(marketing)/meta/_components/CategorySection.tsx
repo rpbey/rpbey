@@ -4,8 +4,11 @@ import { Box, Grid, Typography } from '@mui/material';
 import { alpha, useTheme } from '@mui/material/styles';
 
 import { PartRankCard } from './PartRankCard';
-import type { CategoryData } from './types';
-import { CATEGORY_COLORS, CATEGORY_PALETTE_KEY } from './types';
+import {
+  CATEGORY_COLORS,
+  CATEGORY_PALETTE_KEY,
+  type CategoryData,
+} from './types';
 
 export function CategorySection({ category }: { category: CategoryData }) {
   const theme = useTheme();

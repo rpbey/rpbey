@@ -35,7 +35,7 @@ async function fetchTikTokVideos(username: string): Promise<TikTokVideo[]> {
 
     const result = (await Promise.race([fetchPromise, timeout])) as {
       status: string;
-      result?: Array<Record<string, unknown>>;
+      result?: Record<string, unknown>[];
     };
 
     if (

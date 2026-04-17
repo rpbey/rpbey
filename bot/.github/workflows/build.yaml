@@ -18,14 +18,20 @@ jobs:
       - name: Install Dependencies
         run: bun install
 
+      - name: Check Prisma schema in sync with dashboard
+        run: bun run schema:check
+
+      - name: Generate Prisma client
+        run: bun run db:generate
+
       - name: Check Types
         run: bun tsc
 
       - name: Check Formatting
         run: bunx prettier --check .
 
-      - name: Check Lint
-        run: bun eslint
+      - name: Check Lint (oxlint)
+        run: bun run lint
 
       - name: Build Image
         run: docker build .

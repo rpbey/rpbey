@@ -80,14 +80,16 @@ export function TournamentShowcase({
       <Container maxWidth="lg" sx={{ px: { xs: 2, md: 4 } }}>
         <Stack
           direction="row"
-          justifyContent="space-between"
-          alignItems="center"
-          sx={{ mb: 3 }}
+          sx={{
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            mb: 3,
+          }}
         >
           <Typography
             variant="h4"
-            fontWeight={900}
             sx={{
+              fontWeight: 900,
               fontSize: { xs: '1.4rem', md: '2rem' },
               letterSpacing: '-0.03em',
             }}
@@ -243,15 +245,20 @@ export function TournamentShowcase({
                 {/* Info + stats + podium */}
                 <Box sx={{ p: 2 }}>
                   <Typography
-                    fontWeight={900}
-                    sx={{ fontSize: '0.95rem', lineHeight: 1.3 }}
+                    sx={{
+                      fontWeight: 900,
+                      fontSize: '0.95rem',
+                      lineHeight: 1.3,
+                    }}
                   >
                     {t.name}
                   </Typography>
                   <Typography
                     variant="caption"
-                    color="text.secondary"
-                    sx={{ fontSize: '0.72rem' }}
+                    sx={{
+                      color: 'text.secondary',
+                      fontSize: '0.72rem',
+                    }}
                   >
                     {new Date(t.date).toLocaleDateString('fr-FR', {
                       day: 'numeric',
@@ -269,15 +276,14 @@ export function TournamentShowcase({
                         px: 2,
                         borderRadius: 2,
                         bgcolor: 'rgba(var(--rpb-primary-rgb), 0.1)',
-                        border:
-                          '1px solid rgba(var(--rpb-primary-rgb), 0.2)',
+                        border: '1px solid rgba(var(--rpb-primary-rgb), 0.2)',
                         textAlign: 'center',
                       }}
                     >
                       <Typography
                         variant="caption"
-                        fontWeight={900}
                         sx={{
+                          fontWeight: 900,
                           color: 'var(--rpb-primary)',
                           fontSize: '0.72rem',
                           letterSpacing: 0.5,
@@ -327,12 +333,13 @@ export function TournamentShowcase({
                             <Stack
                               key={p.rank}
                               direction="row"
-                              alignItems="center"
                               spacing={0.8}
                               sx={{
+                                alignItems: 'center',
                                 py: 0.3,
                                 px: 0.8,
                                 borderRadius: 1,
+
                                 bgcolor:
                                   p.rank === 1
                                     ? 'rgba(255,215,0,0.06)'
@@ -350,16 +357,15 @@ export function TournamentShowcase({
                               </Typography>
                               <Typography
                                 variant="caption"
-                                fontWeight={p.rank === 1 ? 800 : 600}
+                                noWrap
                                 sx={{
+                                  fontWeight: p.rank === 1 ? 800 : 600,
                                   flex: 1,
                                   fontSize: '0.72rem',
+
                                   color:
-                                    p.rank === 1
-                                      ? '#fbbf24'
-                                      : 'text.primary',
+                                    p.rank === 1 ? '#fbbf24' : 'text.primary',
                                 }}
-                                noWrap
                               >
                                 {p.name}
                               </Typography>
@@ -435,8 +441,11 @@ export function TournamentShowcase({
                 />
                 <Box sx={{ textAlign: 'center' }}>
                   <Typography
-                    fontWeight={900}
-                    sx={{ fontSize: '0.95rem', color: s.color }}
+                    sx={{
+                      fontWeight: 900,
+                      fontSize: '0.95rem',
+                      color: s.color,
+                    }}
                   >
                     {s.name}
                   </Typography>

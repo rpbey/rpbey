@@ -84,7 +84,13 @@ export default function RankingSearch({
       loading={loading}
       renderOption={(props, option) => (
         <li {...props} key={option.name}>
-          <Box display="flex" alignItems="center" gap={1.5}>
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1.5,
+            }}
+          >
             <Avatar
               src={option.image || undefined}
               sx={{ width: 24, height: 24 }}
@@ -102,8 +108,10 @@ export default function RankingSearch({
           variant="outlined"
           size="small"
           slotProps={{
+            ...params.slotProps,
+
             input: {
-              ...params.InputProps,
+              ...params.slotProps.input,
               startAdornment: (
                 <InputAdornment position="start">
                   <SearchIcon color={inputValue ? 'primary' : 'action'} />
@@ -114,7 +122,7 @@ export default function RankingSearch({
                   {loading ? (
                     <CircularProgress color="inherit" size={20} />
                   ) : null}
-                  {params.InputProps.endAdornment}
+                  {params.slotProps.input.endAdornment}
                 </>
               ),
             },

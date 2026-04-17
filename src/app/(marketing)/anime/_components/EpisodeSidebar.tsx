@@ -76,8 +76,11 @@ export function EpisodeSidebar({
       >
         <Typography
           variant="body2"
-          fontWeight={800}
-          sx={{ color: 'white', fontSize: '0.85rem' }}
+          sx={{
+            fontWeight: 800,
+            color: 'white',
+            fontSize: '0.85rem',
+          }}
         >
           {seriesTitle}
         </Typography>
@@ -88,7 +91,6 @@ export function EpisodeSidebar({
           {episodeCount} épisodes
         </Typography>
       </Box>
-
       {/* Episode list */}
       <Box
         sx={{

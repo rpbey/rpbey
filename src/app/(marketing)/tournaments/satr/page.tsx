@@ -1,7 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { Box, Container, Paper, Typography } from '@mui/material';
-import type { SatrBlader, SatrRanking } from '@prisma/client';
 import Image from 'next/image';
 import { Suspense } from 'react';
 import RankingSearch from '@/components/rankings/RankingSearch';
@@ -10,6 +9,7 @@ import { SatrCharts } from '@/components/rankings/SatrCharts';
 import { SatrHallOfFame } from '@/components/rankings/SatrHallOfFame';
 import { SatrTable } from '@/components/rankings/SatrTable';
 import { SatrTabs } from '@/components/rankings/SatrTabs';
+import { type SatrBlader, type SatrRanking } from '@/generated/prisma/client';
 import { prisma } from '@/lib/prisma';
 import { getSatrSeasonStats } from '@/server/actions/satr';
 
@@ -283,8 +283,8 @@ export default async function SatrPage({ searchParams }: SatrPageProps) {
 
         <Typography
           variant="caption"
-          color="text.secondary"
           sx={{
+            color: 'text.secondary',
             display: 'block',
             textAlign: 'center',
             mt: 6,

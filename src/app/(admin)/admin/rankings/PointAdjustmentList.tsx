@@ -153,7 +153,13 @@ export default function PointAdjustmentList() {
         )}
 
         <form onSubmit={handleSubmit}>
-          <Grid container spacing={2} alignItems="flex-start">
+          <Grid
+            container
+            spacing={2}
+            sx={{
+              alignItems: 'flex-start',
+            }}
+          >
             <Grid size={{ xs: 12, md: 4 }}>
               <Autocomplete
                 options={users}
@@ -169,28 +175,43 @@ export default function PointAdjustmentList() {
                     label="Rechercher un joueur"
                     placeholder="Nom, email ou tag Discord"
                     fullWidth
-                    InputProps={{
-                      ...params.InputProps,
-                      endAdornment: (
-                        <>
-                          {searchLoading ? (
-                            <CircularProgress color="inherit" size={20} />
-                          ) : null}
-                          {params.InputProps.endAdornment}
-                        </>
-                      ),
+                    slotProps={{
+                      ...params.slotProps,
+
+                      input: {
+                        ...params.slotProps.input,
+                        endAdornment: (
+                          <>
+                            {searchLoading ? (
+                              <CircularProgress color="inherit" size={20} />
+                            ) : null}
+                            {params.slotProps.input.endAdornment}
+                          </>
+                        ),
+                      },
                     }}
                   />
                 )}
                 renderOption={(props, option) => (
                   <li {...props} key={option.id}>
-                    <Box display="flex" alignItems="center" gap={1}>
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 1,
+                      }}
+                    >
                       <Avatar
                         src={option.image || undefined}
                         sx={{ width: 24, height: 24 }}
                       />
                       <Typography variant="body2">{option.name}</Typography>
-                      <Typography variant="caption" color="text.secondary">
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          color: 'text.secondary',
+                        }}
+                      >
                         ({option.email})
                       </Typography>
                     </Box>
@@ -282,7 +303,9 @@ export default function PointAdjustmentList() {
                       <Typography
                         variant="body2"
                         component="span"
-                        fontWeight="bold"
+                        sx={{
+                          fontWeight: 'bold',
+                        }}
                       >
                         {adj.user.name}
                       </Typography>
@@ -290,7 +313,9 @@ export default function PointAdjustmentList() {
                         variant="body2"
                         component="span"
                         color={adj.points > 0 ? 'success.main' : 'error.main'}
-                        fontWeight="bold"
+                        sx={{
+                          fontWeight: 'bold',
+                        }}
                       >
                         {adj.points > 0 ? '+' : ''}
                         {adj.points} pts
@@ -309,8 +334,11 @@ export default function PointAdjustmentList() {
             {adjustments.length === 0 && (
               <Typography
                 variant="body2"
-                color="text.secondary"
-                sx={{ py: 2, textAlign: 'center' }}
+                sx={{
+                  color: 'text.secondary',
+                  py: 2,
+                  textAlign: 'center',
+                }}
               >
                 Aucun ajustement récent.
               </Typography>

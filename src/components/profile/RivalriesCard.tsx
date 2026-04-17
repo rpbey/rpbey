@@ -15,7 +15,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
-import type { UserStats } from '@/lib/stats';
+import { type UserStats } from '@/lib/stats';
 
 interface RivalriesCardProps {
   rivalries: UserStats['rivalries'];
@@ -26,10 +26,22 @@ export function RivalriesCard({ rivalries }: RivalriesCardProps) {
     return (
       <Card>
         <CardContent>
-          <Typography variant="h6" fontWeight="bold" gutterBottom>
+          <Typography
+            variant="h6"
+            gutterBottom
+            sx={{
+              fontWeight: 'bold',
+            }}
+          >
             Rivalités
           </Typography>
-          <Typography color="text.secondary" textAlign="center" py={4}>
+          <Typography
+            sx={{
+              color: 'text.secondary',
+              textAlign: 'center',
+              py: 4,
+            }}
+          >
             Pas encore de rivalités établies
           </Typography>
         </CardContent>
@@ -40,7 +52,13 @@ export function RivalriesCard({ rivalries }: RivalriesCardProps) {
   return (
     <Card>
       <CardContent>
-        <Typography variant="h6" fontWeight="bold" gutterBottom>
+        <Typography
+          variant="h6"
+          gutterBottom
+          sx={{
+            fontWeight: 'bold',
+          }}
+        >
           Rivalités
         </Typography>
 
@@ -59,7 +77,12 @@ export function RivalriesCard({ rivalries }: RivalriesCardProps) {
                     <Box
                       sx={{ display: 'flex', justifyContent: 'space-between' }}
                     >
-                      <Typography variant="body1" fontWeight="medium">
+                      <Typography
+                        variant="body1"
+                        sx={{
+                          fontWeight: 'medium',
+                        }}
+                      >
                         {rivalry.opponentName}
                       </Typography>
                       <Typography variant="body2">

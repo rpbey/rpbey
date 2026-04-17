@@ -63,7 +63,12 @@ export function ParticipantList({
     <Card>
       <CardContent>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-          <Typography variant="h6" fontWeight="bold">
+          <Typography
+            variant="h6"
+            sx={{
+              fontWeight: 'bold',
+            }}
+          >
             Participants
           </Typography>
           <Chip
@@ -74,7 +79,13 @@ export function ParticipantList({
         </Box>
 
         {participants.length === 0 ? (
-          <Typography color="text.secondary" textAlign="center" py={4}>
+          <Typography
+            sx={{
+              color: 'text.secondary',
+              textAlign: 'center',
+              py: 4,
+            }}
+          >
             Aucun participant inscrit
           </Typography>
         ) : (
@@ -135,7 +146,12 @@ export function ParticipantList({
                         <Box
                           sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
                         >
-                          <Typography variant="body2" fontWeight="medium">
+                          <Typography
+                            variant="body2"
+                            sx={{
+                              fontWeight: 'medium',
+                            }}
+                          >
                             {index + 1}. {name}
                           </Typography>
                           {participant.seed && (

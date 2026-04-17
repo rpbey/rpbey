@@ -9,7 +9,6 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import type { SatrBlader, SatrRanking } from '@prisma/client';
 import { motion } from 'framer-motion';
 import {
   DynamicBarChart as BarChart,
@@ -17,6 +16,7 @@ import {
   DynamicPieChart as PieChart,
   DynamicScatterChart as ScatterChart,
 } from '@/components/ui/DynamicCharts';
+import { type SatrBlader, type SatrRanking } from '@/generated/prisma/client';
 
 interface TournamentMeta {
   slug: string;
@@ -350,11 +350,19 @@ export function SatrCharts({
                     <Box key={tier.label}>
                       <Stack
                         direction="row"
-                        alignItems="center"
-                        justifyContent="space-between"
-                        sx={{ mb: 0.5 }}
+                        sx={{
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          mb: 0.5,
+                        }}
                       >
-                        <Stack direction="row" alignItems="center" spacing={1}>
+                        <Stack
+                          direction="row"
+                          spacing={1}
+                          sx={{
+                            alignItems: 'center',
+                          }}
+                        >
                           <Chip
                             label={tier.label}
                             size="small"
@@ -470,12 +478,13 @@ export function SatrCharts({
                     <Stack
                       key={r.id}
                       direction="row"
-                      alignItems="center"
                       spacing={1.5}
                       sx={{
+                        alignItems: 'center',
                         px: 1.5,
                         py: 0.75,
                         borderRadius: 2,
+
                         bgcolor:
                           i % 2 === 0
                             ? 'rgba(255,255,255,0.02)'
@@ -494,9 +503,9 @@ export function SatrCharts({
                         {i + 1}
                       </Typography>
                       <Typography
-                        fontWeight={800}
                         noWrap
                         sx={{
+                          fontWeight: 800,
                           flex: 1,
                           fontSize: { xs: '0.78rem', md: '0.82rem' },
                         }}

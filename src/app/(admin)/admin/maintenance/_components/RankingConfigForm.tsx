@@ -57,7 +57,13 @@ export default function RankingConfigForm() {
     <Card variant="outlined">
       <CardHeader
         title={
-          <Typography fontWeight="bold">Barème des Points (Ranking)</Typography>
+          <Typography
+            sx={{
+              fontWeight: 'bold',
+            }}
+          >
+            Barème des Points (Ranking)
+          </Typography>
         }
       />
       <CardContent>

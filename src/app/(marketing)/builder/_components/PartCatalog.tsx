@@ -20,7 +20,6 @@ import {
   Typography,
 } from '@mui/material';
 import { alpha } from '@mui/material/styles';
-import type { Part } from '@prisma/client';
 import {
   useCallback,
   useEffect,
@@ -28,6 +27,7 @@ import {
   useState,
   useTransition,
 } from 'react';
+import { type Part } from '@/generated/prisma/client';
 import { getPublicParts } from '@/server/actions/parts';
 import { type BuilderStep, isCXBlade, useBuilder } from './BuilderContext';
 import { CatalogFilters } from './CatalogFilters';
@@ -199,7 +199,6 @@ export function PartCatalog() {
           onSpinChange={setSpin}
         />
       </Box>
-
       <Tabs
         value={resolvedTabIndex}
         onChange={handleTabChange}
@@ -252,7 +251,6 @@ export function PartCatalog() {
           />
         ))}
       </Tabs>
-
       <Box sx={{ position: 'relative', flex: 1, minHeight: 400 }}>
         {isPending && (
           <Box
@@ -284,10 +282,22 @@ export function PartCatalog() {
               borderColor: 'divider',
             }}
           >
-            <Typography color="text.disabled" variant="h6" fontWeight="bold">
+            <Typography
+              variant="h6"
+              sx={{
+                color: 'text.disabled',
+                fontWeight: 'bold',
+              }}
+            >
               Aucune pièce trouvée
             </Typography>
-            <Typography color="text.secondary" variant="body2" sx={{ mt: 1 }}>
+            <Typography
+              variant="body2"
+              sx={{
+                color: 'text.secondary',
+                mt: 1,
+              }}
+            >
               Essayez de modifier vos filtres ou votre recherche.
             </Typography>
           </Box>
@@ -316,7 +326,6 @@ export function PartCatalog() {
           </Box>
         )}
       </Box>
-
       {totalPages > 1 && (
         <Box
           sx={{
@@ -330,9 +339,11 @@ export function PartCatalog() {
         >
           <Typography
             variant="caption"
-            color="text.secondary"
-            fontWeight="900"
-            sx={{ letterSpacing: 1 }}
+            sx={{
+              color: 'text.secondary',
+              fontWeight: '900',
+              letterSpacing: 1,
+            }}
           >
             {total} PIÈCES DISPONIBLES
           </Typography>

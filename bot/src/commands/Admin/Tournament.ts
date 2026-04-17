@@ -10,9 +10,9 @@ import { scrapeAndSyncTournament } from '../../lib/challonge-sync.js';
 import { Colors } from '../../lib/constants.js';
 import { logger } from '../../lib/logger.js';
 import prisma from '../../lib/prisma.js';
-import type {
-  ScrapedStanding,
-  ScrapedStation,
+import {
+  type ScrapedStanding,
+  type ScrapedStation,
 } from '../../lib/scrapers/challonge-scraper.js';
 
 @Discord()

@@ -188,7 +188,14 @@ export default function TournamentDetail({
     >
       {/* --- HEADER --- */}
       <Box sx={{ mb: 4 }}>
-        <Stack direction="row" spacing={1.5} alignItems="center" sx={{ mb: 1 }}>
+        <Stack
+          direction="row"
+          spacing={1.5}
+          sx={{
+            alignItems: 'center',
+            mb: 1,
+          }}
+        >
           <TournamentStatusChip
             status={(tournament.status || '').toLowerCase() as TournamentStatus}
           />
@@ -227,8 +234,8 @@ export default function TournamentDetail({
         </Stack>
         <Typography
           variant="h1"
-          fontWeight="900"
           sx={{
+            fontWeight: '900',
             letterSpacing: '-0.05em',
             fontSize: { xs: '2.5rem', sm: '3.5rem', md: '4.5rem' },
             lineHeight: 1,
@@ -239,7 +246,6 @@ export default function TournamentDetail({
           {tournament.name}
         </Typography>
       </Box>
-
       <Grid container spacing={{ xs: 3, md: 5 }}>
         {/* SIDEBAR (Top on Mobile, Right on Desktop) */}
         <Grid size={{ xs: 12, lg: 4, xl: 3 }} sx={{ order: { xs: 1, lg: 2 } }}>
@@ -290,19 +296,30 @@ export default function TournamentDetail({
                 <Box>
                   <Typography
                     variant="caption"
-                    color="text.secondary"
-                    fontWeight={900}
-                    sx={{ display: 'block', mb: 0.5, letterSpacing: 1 }}
+                    sx={{
+                      color: 'text.secondary',
+                      fontWeight: 900,
+                      display: 'block',
+                      mb: 0.5,
+                      letterSpacing: 1,
+                    }}
                   >
                     DATE & HEURE
                   </Typography>
-                  <Typography variant="h6" fontWeight={900}>
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      fontWeight: 900,
+                    }}
+                  >
                     {formattedDate}
                   </Typography>
                   <Typography
                     variant="subtitle2"
-                    color="error.main"
-                    fontWeight={900}
+                    sx={{
+                      color: 'error.main',
+                      fontWeight: 900,
+                    }}
                   >
                     Check-in :{' '}
                     {new Date(tournament.date).toLocaleTimeString('fr-FR', {
@@ -316,13 +333,22 @@ export default function TournamentDetail({
                 <Box>
                   <Typography
                     variant="caption"
-                    color="text.secondary"
-                    fontWeight={900}
-                    sx={{ display: 'block', mb: 0.5, letterSpacing: 1 }}
+                    sx={{
+                      color: 'text.secondary',
+                      fontWeight: 900,
+                      display: 'block',
+                      mb: 0.5,
+                      letterSpacing: 1,
+                    }}
                   >
                     LIEU
                   </Typography>
-                  <Typography variant="body1" fontWeight={800}>
+                  <Typography
+                    variant="body1"
+                    sx={{
+                      fontWeight: 800,
+                    }}
+                  >
                     {tournament.location}
                   </Typography>
                 </Box>
@@ -330,19 +356,30 @@ export default function TournamentDetail({
                 <Box>
                   <Typography
                     variant="caption"
-                    color="text.secondary"
-                    fontWeight={900}
-                    sx={{ display: 'block', mb: 0.5, letterSpacing: 1 }}
+                    sx={{
+                      color: 'text.secondary',
+                      fontWeight: 900,
+                      display: 'block',
+                      mb: 0.5,
+                      letterSpacing: 1,
+                    }}
                   >
                     FORMAT
                   </Typography>
-                  <Typography variant="body1" fontWeight={800}>
+                  <Typography
+                    variant="body1"
+                    sx={{
+                      fontWeight: 800,
+                    }}
+                  >
                     {tournament.format}
                   </Typography>
                   <Typography
                     variant="caption"
-                    color="text.disabled"
-                    fontWeight={700}
+                    sx={{
+                      color: 'text.disabled',
+                      fontWeight: 700,
+                    }}
                   >
                     Capacité:{' '}
                     {tournament.maxPlayers > 0
@@ -365,7 +402,13 @@ export default function TournamentDetail({
                       }}
                     >
                       {profileData?.challongeUsername ? (
-                        <Stack direction="row" spacing={1} alignItems="center">
+                        <Stack
+                          direction="row"
+                          spacing={1}
+                          sx={{
+                            alignItems: 'center',
+                          }}
+                        >
                           <Box
                             component="img"
                             src="https://challonge.com/favicon.ico"
@@ -470,8 +513,11 @@ export default function TournamentDetail({
             >
               <Typography
                 variant="h5"
-                fontWeight="900"
-                sx={{ mb: 4, letterSpacing: 1 }}
+                sx={{
+                  fontWeight: '900',
+                  mb: 4,
+                  letterSpacing: 1,
+                }}
               >
                 STADIUMS EN DIRECT
               </Typography>
@@ -495,9 +541,9 @@ export default function TournamentDetail({
                       >
                         <Typography
                           variant="caption"
-                          fontWeight="900"
                           color="primary"
                           sx={{
+                            fontWeight: '900',
                             display: 'block',
                             mb: 2,
                             textTransform: 'uppercase',
@@ -508,21 +554,25 @@ export default function TournamentDetail({
                         {station.currentMatch ? (
                           <Stack
                             direction="row"
-                            justifyContent="space-between"
-                            alignItems="center"
+                            sx={{
+                              justifyContent: 'space-between',
+                              alignItems: 'center',
+                            }}
                           >
                             <Typography
                               variant="body2"
-                              fontWeight="900"
                               noWrap
-                              sx={{ maxWidth: '40%' }}
+                              sx={{
+                                fontWeight: '900',
+                                maxWidth: '40%',
+                              }}
                             >
                               {station.currentMatch.player1}
                             </Typography>
                             <Typography
                               variant="caption"
-                              fontWeight="900"
                               sx={{
+                                fontWeight: '900',
                                 px: 1.5,
                                 py: 0.5,
                                 bgcolor: 'error.main',
@@ -534,16 +584,23 @@ export default function TournamentDetail({
                             </Typography>
                             <Typography
                               variant="body2"
-                              fontWeight="900"
                               noWrap
-                              sx={{ maxWidth: '40%' }}
-                              textAlign="right"
+                              sx={{
+                                fontWeight: '900',
+                                textAlign: 'right',
+                                maxWidth: '40%',
+                              }}
                             >
                               {station.currentMatch.player2}
                             </Typography>
                           </Stack>
                         ) : (
-                          <Typography variant="body2" color="text.disabled">
+                          <Typography
+                            variant="body2"
+                            sx={{
+                              color: 'text.disabled',
+                            }}
+                          >
                             Disponible pour combat
                           </Typography>
                         )}
@@ -682,7 +739,6 @@ function AboutSection({
           }}
         />
       )}
-
       {/* ── Header ── */}
       <Box
         sx={{
@@ -695,7 +751,13 @@ function AboutSection({
             : 'divider',
         }}
       >
-        <Stack direction="row" alignItems="center" spacing={2}>
+        <Stack
+          direction="row"
+          spacing={2}
+          sx={{
+            alignItems: 'center',
+          }}
+        >
           <Box
             sx={{
               width: 48,
@@ -706,9 +768,7 @@ function AboutSection({
               justifyContent: 'center',
               bgcolor: (t) =>
                 alpha(
-                  isBTS
-                    ? t.palette.secondary.main
-                    : t.palette.primary.main,
+                  isBTS ? t.palette.secondary.main : t.palette.primary.main,
                   0.1,
                 ),
               color: accentColor,
@@ -720,8 +780,12 @@ function AboutSection({
           <Box sx={{ minWidth: 0 }}>
             <Typography
               variant="h5"
-              fontWeight={900}
-              sx={{ color: accentColor, letterSpacing: 1, lineHeight: 1.2 }}
+              sx={{
+                fontWeight: 900,
+                color: accentColor,
+                letterSpacing: 1,
+                lineHeight: 1.2,
+              }}
             >
               À PROPOS DU TOURNOI
             </Typography>
@@ -741,24 +805,40 @@ function AboutSection({
               }
               sx={{ mt: 0.5 }}
             >
-              <Stack direction="row" spacing={0.5} alignItems="center">
+              <Stack
+                direction="row"
+                spacing={0.5}
+                sx={{
+                  alignItems: 'center',
+                }}
+              >
                 <CalendarMonth sx={{ fontSize: 14, color: 'text.secondary' }} />
                 <Typography
                   variant="caption"
-                  color="text.secondary"
-                  fontWeight={600}
+                  sx={{
+                    color: 'text.secondary',
+                    fontWeight: 600,
+                  }}
                 >
                   {formattedDate}
                 </Typography>
               </Stack>
               {tournament.location && (
-                <Stack direction="row" spacing={0.5} alignItems="center">
+                <Stack
+                  direction="row"
+                  spacing={0.5}
+                  sx={{
+                    alignItems: 'center',
+                  }}
+                >
                   <LocationOn sx={{ fontSize: 14, color: 'text.secondary' }} />
                   <Typography
                     variant="caption"
-                    color="text.secondary"
-                    fontWeight={600}
                     noWrap
+                    sx={{
+                      color: 'text.secondary',
+                      fontWeight: 600,
+                    }}
                   >
                     {tournament.location.split(',')[0]}
                   </Typography>
@@ -768,7 +848,6 @@ function AboutSection({
           </Box>
         </Stack>
       </Box>
-
       {/* ── Body ── */}
       <Box sx={{ px: { xs: 3, md: 6 }, py: { xs: 3, md: 5 } }}>
         <ReactMarkdown
@@ -798,17 +877,17 @@ function AboutSection({
                     )}
                     <Stack
                       direction="row"
-                      alignItems="center"
                       spacing={1}
-                      sx={{ mb: 2 }}
+                      sx={{
+                        alignItems: 'center',
+                        mb: 2,
+                      }}
                     >
-                      <CardGiftcard
-                        sx={{ fontSize: 18, color: accentColor }}
-                      />
+                      <CardGiftcard sx={{ fontSize: 18, color: accentColor }} />
                       <Typography
                         variant="overline"
-                        fontWeight={900}
                         sx={{
+                          fontWeight: 900,
                           color: accentColor,
                           letterSpacing: 2,
                           fontSize: '0.75rem',
@@ -822,7 +901,8 @@ function AboutSection({
                         const medal = Object.keys(MEDAL_COLORS).find((m) =>
                           line.includes(m),
                         );
-                        const color = (medal ? MEDAL_COLORS[medal] : undefined) ?? '#666';
+                        const color =
+                          (medal ? MEDAL_COLORS[medal] : undefined) ?? '#666';
                         return (
                           <Box
                             key={i}
@@ -840,8 +920,11 @@ function AboutSection({
                           >
                             <Typography
                               variant="body1"
-                              fontWeight={800}
-                              sx={{ color: '#fff', fontSize: '1.05rem' }}
+                              sx={{
+                                fontWeight: 800,
+                                color: '#fff',
+                                fontSize: '1.05rem',
+                              }}
                             >
                               {line}
                             </Typography>
@@ -867,8 +950,7 @@ function AboutSection({
                       bgcolor: (t) => alpha(t.palette.warning.main, 0.08),
                       border: (t) =>
                         `1px solid ${alpha(t.palette.warning.main, 0.2)}`,
-                      borderLeft: (t) =>
-                        `4px solid ${t.palette.warning.main}`,
+                      borderLeft: (t) => `4px solid ${t.palette.warning.main}`,
                       display: 'flex',
                       alignItems: 'flex-start',
                       gap: 1.5,
@@ -884,8 +966,12 @@ function AboutSection({
                     />
                     <Typography
                       variant="body1"
-                      fontWeight={700}
-                      sx={{ color: 'warning.light', m: 0, lineHeight: 1.6 }}
+                      sx={{
+                        fontWeight: 700,
+                        color: 'warning.light',
+                        m: 0,
+                        lineHeight: 1.6,
+                      }}
                     >
                       {children}
                     </Typography>
@@ -929,9 +1015,7 @@ function AboutSection({
                   fontWeight: 700,
                   borderBottom: (t) =>
                     `1px dashed ${alpha(
-                      isBTS
-                        ? t.palette.secondary.main
-                        : t.palette.primary.main,
+                      isBTS ? t.palette.secondary.main : t.palette.primary.main,
                       0.4,
                     )}`,
                   transition: 'border-color 0.2s',
@@ -961,9 +1045,11 @@ function StandingsPanel({ standings }: { standings: Standing[] }) {
       {standings.length === 0 && (
         <Typography
           variant="body2"
-          color="text.secondary"
-          textAlign="center"
-          sx={{ py: 4 }}
+          sx={{
+            color: 'text.secondary',
+            textAlign: 'center',
+            py: 4,
+          }}
         >
           Classement non disponible pour le moment.
         </Typography>
@@ -1008,13 +1094,21 @@ function StandingsPanel({ standings }: { standings: Standing[] }) {
             >
               {s.rank}
             </Box>
-            <Typography variant="h6" fontWeight={900} sx={{ flex: 1 }}>
+            <Typography
+              variant="h6"
+              sx={{
+                fontWeight: 900,
+                flex: 1,
+              }}
+            >
               {s.name}
             </Typography>
             <Typography
               variant="subtitle1"
-              fontWeight={900}
-              color="success.main"
+              sx={{
+                fontWeight: 900,
+                color: 'success.main',
+              }}
             >
               {s.stats?.wins ?? s.wins}W{' '}
               <Box component="span" sx={{ color: 'text.disabled', mx: 0.5 }}>
@@ -1049,9 +1143,11 @@ function ActivityLogPanel({ log }: { log: LogEntry[] }) {
       {log.length === 0 && (
         <Typography
           variant="body2"
-          color="text.secondary"
-          textAlign="center"
-          sx={{ py: 4 }}
+          sx={{
+            color: 'text.secondary',
+            textAlign: 'center',
+            py: 4,
+          }}
         >
           Aucune activité récente.
         </Typography>
@@ -1069,11 +1165,17 @@ function ActivityLogPanel({ log }: { log: LogEntry[] }) {
               : 'divider',
           }}
         >
-          <Stack direction="row" justifyContent="space-between" sx={{ mb: 1 }}>
+          <Stack
+            direction="row"
+            sx={{
+              justifyContent: 'space-between',
+              mb: 1,
+            }}
+          >
             <Typography
               variant="caption"
-              fontWeight={900}
               sx={{
+                fontWeight: 900,
                 textTransform: 'uppercase',
                 color: 'primary.main',
                 letterSpacing: 1,
@@ -1083,13 +1185,21 @@ function ActivityLogPanel({ log }: { log: LogEntry[] }) {
             </Typography>
             <Typography
               variant="caption"
-              color="text.secondary"
-              fontWeight={700}
+              sx={{
+                color: 'text.secondary',
+                fontWeight: 700,
+              }}
             >
               {new Date(entry.timestamp).toLocaleTimeString('fr-FR')}
             </Typography>
           </Stack>
-          <Typography variant="body2" fontWeight={600} sx={{ lineHeight: 1.5 }}>
+          <Typography
+            variant="body2"
+            sx={{
+              fontWeight: 600,
+              lineHeight: 1.5,
+            }}
+          >
             {entry.message}
           </Typography>
         </Box>

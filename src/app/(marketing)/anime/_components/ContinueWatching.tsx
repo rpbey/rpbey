@@ -38,8 +38,8 @@ export function ContinueWatching() {
     <Box sx={{ mb: { xs: 3.5, md: 5 } }}>
       <Typography
         variant="h6"
-        fontWeight={800}
         sx={{
+          fontWeight: 800,
           px: { xs: 1.5, md: 4 },
           mb: { xs: 1.5, md: 2 },
           color: 'text.primary',
@@ -47,6 +47,7 @@ export function ContinueWatching() {
           display: 'flex',
           alignItems: 'center',
           gap: 1,
+
           '&::before': {
             content: '""',
             width: 4,
@@ -59,7 +60,6 @@ export function ContinueWatching() {
       >
         Reprendre la lecture
       </Typography>
-
       <Box
         sx={{
           display: 'flex',

@@ -163,7 +163,6 @@ export default function AdminAnimePage() {
         actionLabel="Nouvelle série"
         onAction={handleOpenNew}
       />
-
       {/* Series table */}
       <Box sx={{ overflowX: 'auto' }}>
         <Box
@@ -199,15 +198,30 @@ export default function AdminAnimePage() {
             {series.map((s) => (
               <tr key={s.id}>
                 <td>
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: 'text.secondary',
+                    }}
+                  >
                     {s.sortOrder}
                   </Typography>
                 </td>
                 <td>
-                  <Typography variant="body2" fontWeight={600}>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      fontWeight: 600,
+                    }}
+                  >
                     {s.titleFr || s.title}
                   </Typography>
-                  <Typography variant="caption" color="text.secondary">
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      color: 'text.secondary',
+                    }}
+                  >
                     {s.slug}
                   </Typography>
                 </td>
@@ -273,14 +287,15 @@ export default function AdminAnimePage() {
           </tbody>
         </Box>
       </Box>
-
       {/* Series Dialog */}
       <Dialog
         open={dialogOpen}
         onClose={() => setDialogOpen(false)}
         maxWidth="sm"
         fullWidth
-        PaperProps={{ sx: { borderRadius: 3, bgcolor: 'background.paper' } }}
+        slotProps={{
+          paper: { sx: { borderRadius: 3, bgcolor: 'background.paper' } },
+        }}
       >
         <DialogTitle fontWeight={700}>
           {editId ? 'Modifier la série' : 'Nouvelle série'}

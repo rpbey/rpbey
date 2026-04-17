@@ -11,8 +11,8 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Stack from '@mui/material/Stack';
 import { alpha, useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
-import type { Part } from '@prisma/client';
 import { useCallback, useEffect, useState } from 'react';
+import { type Part } from '@/generated/prisma/client';
 
 interface RandomComboData {
   blade: Part;
@@ -67,12 +67,19 @@ export function RandomCombo() {
         <Typography
           variant="h4"
           gutterBottom
-          fontWeight="900"
-          sx={{ letterSpacing: '-0.02em' }}
+          sx={{
+            fontWeight: '900',
+            letterSpacing: '-0.02em',
+          }}
         >
           Générateur de Combo
         </Typography>
-        <Typography color="text.secondary" sx={{ mb: 5 }}>
+        <Typography
+          sx={{
+            color: 'text.secondary',
+            mb: 5,
+          }}
+        >
           Laisse le hasard décider de ta prochaine configuration de combat !
         </Typography>
 
@@ -93,13 +100,19 @@ export function RandomCombo() {
           }}
         >
           {loading ? (
-            <Stack alignItems="center" spacing={2}>
+            <Stack
+              spacing={2}
+              sx={{
+                alignItems: 'center',
+              }}
+            >
               <CircularProgress size={60} thickness={5} />
               <Typography
                 variant="h6"
-                fontWeight="bold"
                 sx={{
+                  fontWeight: 'bold',
                   animation: 'pulse 1.5s infinite',
+
                   '@keyframes pulse': {
                     '0%': { opacity: 0.5 },
                     '50%': { opacity: 1 },
@@ -143,12 +156,20 @@ export function RandomCombo() {
               <Typography
                 variant="caption"
                 color="primary"
-                fontWeight="900"
-                sx={{ letterSpacing: '0.2em', textTransform: 'uppercase' }}
+                sx={{
+                  fontWeight: '900',
+                  letterSpacing: '0.2em',
+                  textTransform: 'uppercase',
+                }}
               >
                 Blade
               </Typography>
-              <Typography variant="h5" fontWeight="800">
+              <Typography
+                variant="h5"
+                sx={{
+                  fontWeight: '800',
+                }}
+              >
                 {combo.blade.name}
               </Typography>
             </Box>
@@ -166,13 +187,20 @@ export function RandomCombo() {
               >
                 <Typography
                   variant="caption"
-                  color="text.secondary"
-                  fontWeight="bold"
-                  sx={{ letterSpacing: '0.1em' }}
+                  sx={{
+                    color: 'text.secondary',
+                    fontWeight: 'bold',
+                    letterSpacing: '0.1em',
+                  }}
                 >
                   RATCHET
                 </Typography>
-                <Typography variant="h6" fontWeight="bold">
+                <Typography
+                  variant="h6"
+                  sx={{
+                    fontWeight: 'bold',
+                  }}
+                >
                   {combo.ratchet.name}
                 </Typography>
               </Box>
@@ -188,13 +216,20 @@ export function RandomCombo() {
               >
                 <Typography
                   variant="caption"
-                  color="text.secondary"
-                  fontWeight="bold"
-                  sx={{ letterSpacing: '0.1em' }}
+                  sx={{
+                    color: 'text.secondary',
+                    fontWeight: 'bold',
+                    letterSpacing: '0.1em',
+                  }}
                 >
                   BIT
                 </Typography>
-                <Typography variant="h6" fontWeight="bold">
+                <Typography
+                  variant="h6"
+                  sx={{
+                    fontWeight: 'bold',
+                  }}
+                >
                   {combo.bit.name}
                 </Typography>
               </Box>

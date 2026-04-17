@@ -1,7 +1,7 @@
 'use client';
 
 import { Box } from '@mui/material';
-import type { ReactNode } from 'react';
+import { type ReactNode } from 'react';
 import { useSession } from '@/lib/auth-client';
 import { AnimeHero } from './AnimeHero';
 import { AnimeSearch } from './AnimeSearch';

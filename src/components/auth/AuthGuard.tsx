@@ -45,7 +45,13 @@ export function AuthGuard({
           }}
         >
           <CircularProgress size={40} />
-          <Typography color="text.secondary">Chargement...</Typography>
+          <Typography
+            sx={{
+              color: 'text.secondary',
+            }}
+          >
+            Chargement...
+          </Typography>
         </Box>
       )
     );
@@ -66,7 +72,13 @@ export function AuthGuard({
           }}
         >
           <CircularProgress size={40} />
-          <Typography color="text.secondary">Redirection...</Typography>
+          <Typography
+            sx={{
+              color: 'text.secondary',
+            }}
+          >
+            Redirection...
+          </Typography>
         </Box>
       )
     );
@@ -111,7 +123,13 @@ export function GuestGuard({
           }}
         >
           <CircularProgress size={40} />
-          <Typography color="text.secondary">Chargement...</Typography>
+          <Typography
+            sx={{
+              color: 'text.secondary',
+            }}
+          >
+            Chargement...
+          </Typography>
         </Box>
       )
     );
@@ -132,7 +150,13 @@ export function GuestGuard({
           }}
         >
           <CircularProgress size={40} />
-          <Typography color="text.secondary">Redirection...</Typography>
+          <Typography
+            sx={{
+              color: 'text.secondary',
+            }}
+          >
+            Redirection...
+          </Typography>
         </Box>
       )
     );
@@ -182,7 +206,11 @@ export function RoleGuard({
           }}
         >
           <CircularProgress size={40} />
-          <Typography color="text.secondary">
+          <Typography
+            sx={{
+              color: 'text.secondary',
+            }}
+          >
             Vérification des permissions...
           </Typography>
         </Box>
@@ -207,7 +235,11 @@ export function RoleGuard({
           <Typography variant="h6" color="error">
             Accès refusé
           </Typography>
-          <Typography color="text.secondary">
+          <Typography
+            sx={{
+              color: 'text.secondary',
+            }}
+          >
             Vous n&apos;avez pas les permissions nécessaires pour accéder à
             cette page.
           </Typography>

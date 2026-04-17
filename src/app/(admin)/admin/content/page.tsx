@@ -3,7 +3,6 @@
 import { Delete as DeleteIcon, Edit as EditIcon } from '@mui/icons-material';
 import { Box, Chip, IconButton, Tooltip, Typography } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
-import type { ContentBlock } from '@prisma/client';
 import { useCallback, useEffect, useState } from 'react';
 import {
   DataTable,
@@ -11,9 +10,10 @@ import {
   useConfirmDialog,
   useToast,
 } from '@/components/ui';
-import type { Column } from '@/components/ui/DataTable';
-import type { ContentBlockInput } from './actions';
+import { type Column } from '@/components/ui/DataTable';
+import { type ContentBlock } from '@/generated/prisma/client';
 import {
+  type ContentBlockInput,
   createContentBlock,
   deleteContentBlock,
   getContentBlocks,
@@ -111,13 +111,20 @@ export default function AdminContentPage() {
       label: 'Titre / Slug',
       render: (row) => (
         <Box>
-          <Typography variant="subtitle2" fontWeight="bold">
+          <Typography
+            variant="subtitle2"
+            sx={{
+              fontWeight: 'bold',
+            }}
+          >
             {row.title}
           </Typography>
           <Typography
             variant="caption"
-            color="text.secondary"
-            sx={{ fontFamily: 'monospace' }}
+            sx={{
+              color: 'text.secondary',
+              fontFamily: 'monospace',
+            }}
           >
             {row.slug}
           </Typography>
@@ -156,9 +163,11 @@ export default function AdminContentPage() {
       render: (row) => (
         <Typography
           variant="body2"
-          color="text.secondary"
           noWrap
-          sx={{ maxWidth: 300 }}
+          sx={{
+            color: 'text.secondary',
+            maxWidth: 300,
+          }}
         >
           {row.content}
         </Typography>

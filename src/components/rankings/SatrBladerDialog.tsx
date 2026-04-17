@@ -22,9 +22,9 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import type { SatrBlader } from '@prisma/client';
 import Link from 'next/link';
 import { useState } from 'react';
+import { type SatrBlader } from '@/generated/prisma/client';
 import {
   getPlayerTournamentMatches,
   getTournamentMeta,
@@ -116,7 +116,9 @@ export function SatrBladerDialog({
       onClose={onClose}
       fullWidth
       maxWidth="xs"
-      PaperProps={{ sx: { borderRadius: 3 } }}
+      slotProps={{
+        paper: { sx: { borderRadius: 3 } },
+      }}
     >
       <DialogTitle
         sx={{
@@ -127,7 +129,12 @@ export function SatrBladerDialog({
           alignItems: 'center',
         }}
       >
-        <Typography variant="h6" fontWeight="bold">
+        <Typography
+          variant="h6"
+          sx={{
+            fontWeight: 'bold',
+          }}
+        >
           Parcours : {blader.name}
         </Typography>
         <IconButton onClick={onClose} size="small">
@@ -138,26 +145,56 @@ export function SatrBladerDialog({
         <Box sx={{ px: 2, pb: 2 }}>
           <Stack direction="row" spacing={4} sx={{ mb: 2 }}>
             <Box>
-              <Typography variant="caption" color="text.secondary">
+              <Typography
+                variant="caption"
+                sx={{
+                  color: 'text.secondary',
+                }}
+              >
                 Winrate
               </Typography>
-              <Typography variant="body1" fontWeight="bold">
+              <Typography
+                variant="body1"
+                sx={{
+                  fontWeight: 'bold',
+                }}
+              >
                 {winrate}%
               </Typography>
             </Box>
             <Box>
-              <Typography variant="caption" color="text.secondary">
+              <Typography
+                variant="caption"
+                sx={{
+                  color: 'text.secondary',
+                }}
+              >
                 Matchs
               </Typography>
-              <Typography variant="body1" fontWeight="bold">
+              <Typography
+                variant="body1"
+                sx={{
+                  fontWeight: 'bold',
+                }}
+              >
                 {totalMatches}
               </Typography>
             </Box>
             <Box>
-              <Typography variant="caption" color="text.secondary">
+              <Typography
+                variant="caption"
+                sx={{
+                  color: 'text.secondary',
+                }}
+              >
                 Tournois
               </Typography>
-              <Typography variant="body1" fontWeight="bold">
+              <Typography
+                variant="body1"
+                sx={{
+                  fontWeight: 'bold',
+                }}
+              >
                 {blader.tournamentsCount}
               </Typography>
             </Box>
@@ -191,7 +228,13 @@ export function SatrBladerDialog({
                   sx={{ cursor: 'pointer' }}
                   onClick={() => handleToggleExpand(h.tournament)}
                   secondaryAction={
-                    <Stack direction="row" spacing={1} alignItems="center">
+                    <Stack
+                      direction="row"
+                      spacing={1}
+                      sx={{
+                        alignItems: 'center',
+                      }}
+                    >
                       <IconButton
                         size="small"
                         component="a"
@@ -212,9 +255,11 @@ export function SatrBladerDialog({
                   <ListItemText
                     primary={h.tournament.toUpperCase().replace('_', ' ')}
                     secondary={`${h.wins}W - ${h.losses}L`}
-                    primaryTypographyProps={{
-                      fontWeight: 'bold',
-                      fontSize: '0.9rem',
+                    slotProps={{
+                      primary: {
+                        fontWeight: 'bold',
+                        fontSize: '0.9rem',
+                      },
                     }}
                   />
                   <Chip

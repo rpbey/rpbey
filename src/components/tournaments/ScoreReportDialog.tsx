@@ -57,25 +57,40 @@ export function ScoreReportDialog({
               {/* Player 1 */}
               <Stack
                 direction="row"
-                alignItems="center"
                 spacing={2}
-                justifyContent="space-between"
+                sx={{
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                }}
               >
-                <Stack direction="row" alignItems="center" spacing={1}>
+                <Stack
+                  direction="row"
+                  spacing={1}
+                  sx={{
+                    alignItems: 'center',
+                  }}
+                >
                   <Avatar
                     src={match.player1?.avatarUrl}
                     sx={{ width: 32, height: 32 }}
                   />
                   <Typography
                     variant="body1"
-                    fontWeight={
-                      winnerId === match.player1?.id ? 'bold' : 'normal'
-                    }
+                    sx={{
+                      fontWeight:
+                        winnerId === match.player1?.id ? 'bold' : 'normal',
+                    }}
                   >
                     {match.player1?.name || 'Joueur 1'}
                   </Typography>
                 </Stack>
-                <Stack direction="row" alignItems="center" spacing={1}>
+                <Stack
+                  direction="row"
+                  spacing={1}
+                  sx={{
+                    alignItems: 'center',
+                  }}
+                >
                   <TextField
                     size="small"
                     type="number"
@@ -95,25 +110,40 @@ export function ScoreReportDialog({
               {/* Player 2 */}
               <Stack
                 direction="row"
-                alignItems="center"
                 spacing={2}
-                justifyContent="space-between"
+                sx={{
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                }}
               >
-                <Stack direction="row" alignItems="center" spacing={1}>
+                <Stack
+                  direction="row"
+                  spacing={1}
+                  sx={{
+                    alignItems: 'center',
+                  }}
+                >
                   <Avatar
                     src={match.player2?.avatarUrl}
                     sx={{ width: 32, height: 32 }}
                   />
                   <Typography
                     variant="body1"
-                    fontWeight={
-                      winnerId === match.player2?.id ? 'bold' : 'normal'
-                    }
+                    sx={{
+                      fontWeight:
+                        winnerId === match.player2?.id ? 'bold' : 'normal',
+                    }}
                   >
                     {match.player2?.name || 'Joueur 2'}
                   </Typography>
                 </Stack>
-                <Stack direction="row" alignItems="center" spacing={1}>
+                <Stack
+                  direction="row"
+                  spacing={1}
+                  sx={{
+                    alignItems: 'center',
+                  }}
+                >
                   <TextField
                     size="small"
                     type="number"

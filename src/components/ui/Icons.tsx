@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import type { SVGProps } from 'react';
+import { type SVGProps } from 'react';
 
 interface IconProps extends SVGProps<SVGSVGElement> {
   size?: number;

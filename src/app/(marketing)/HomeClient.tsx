@@ -199,7 +199,13 @@ export default function HomeClient({
               py: { xs: 4, md: 10 },
             }}
           >
-            <Grid container spacing={6} alignItems="center">
+            <Grid
+              container
+              spacing={6}
+              sx={{
+                alignItems: 'center',
+              }}
+            >
               <Grid size={{ xs: 12, md: 7 }}>
                 <Box
                   component={m.div}
@@ -309,7 +315,9 @@ export default function HomeClient({
                   <Stack
                     direction={{ xs: 'column', sm: 'row' }}
                     spacing={2}
-                    alignItems={{ xs: 'center', md: 'flex-start' }}
+                    sx={{
+                      alignItems: { xs: 'center', md: 'flex-start' },
+                    }}
                   >
                     <Button
                       component={Link}
@@ -367,7 +375,6 @@ export default function HomeClient({
           </Container>
         </m.div>
       </Box>
-
       {/* Tournament Showcase Section */}
       <Box
         component={m.section}
@@ -378,7 +385,6 @@ export default function HomeClient({
       >
         <TournamentShowcase tournaments={tournaments} />
       </Box>
-
       {/* Videos Section */}
       {recentVideos.length > 0 && (
         <Box
@@ -391,7 +397,6 @@ export default function HomeClient({
           <VideoCarousel videos={recentVideos} />
         </Box>
       )}
-
       {/* Ranking + Meta Section */}
       <Box
         component={m.section}
@@ -421,24 +426,30 @@ export default function HomeClient({
                   <CardContent>
                     <Stack
                       direction="row"
-                      justifyContent="space-between"
-                      alignItems="center"
-                      sx={{ mb: 3 }}
+                      sx={{
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        mb: 3,
+                      }}
                     >
                       <Box>
                         <Typography
                           variant="h5"
                           component="h2"
-                          fontWeight={900}
-                          color="text.primary"
-                          sx={{ letterSpacing: '-0.02em' }}
+                          sx={{
+                            fontWeight: 900,
+                            color: 'text.primary',
+                            letterSpacing: '-0.02em',
+                          }}
                         >
                           Classement Live
                         </Typography>
                         <Typography
                           variant="caption"
-                          color="text.secondary"
-                          fontWeight={600}
+                          sx={{
+                            color: 'text.secondary',
+                            fontWeight: 600,
+                          }}
                         >
                           TOP 20 BLADERS - RPB
                         </Typography>
@@ -483,24 +494,30 @@ export default function HomeClient({
                     <CardContent>
                       <Stack
                         direction="row"
-                        justifyContent="space-between"
-                        alignItems="center"
-                        sx={{ mb: 3 }}
+                        sx={{
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          mb: 3,
+                        }}
                       >
                         <Box>
                           <Typography
                             variant="h5"
                             component="h2"
-                            fontWeight={900}
-                            color="text.primary"
-                            sx={{ letterSpacing: '-0.02em' }}
+                            sx={{
+                              fontWeight: 900,
+                              color: 'text.primary',
+                              letterSpacing: '-0.02em',
+                            }}
                           >
                             Meta Beyblade X
                           </Typography>
                           <Typography
                             variant="caption"
-                            color="text.secondary"
-                            fontWeight={600}
+                            sx={{
+                              color: 'text.secondary',
+                              fontWeight: 600,
+                            }}
                           >
                             TOP PIECES PAR CATEGORIE - WBO
                           </Typography>
@@ -530,7 +547,6 @@ export default function HomeClient({
           </Box>
         </Container>
       </Box>
-
       {/* Partnership Section */}
       <Box
         component={m.section}

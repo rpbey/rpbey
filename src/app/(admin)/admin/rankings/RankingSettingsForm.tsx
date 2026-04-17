@@ -156,7 +156,6 @@ export default function RankingSettingsForm({
           {message.text}
         </Alert>
       )}
-
       <Grid container spacing={3}>
         <Grid size={{ xs: 12, md: 8 }}>
           <form onSubmit={handleSubmit(onSubmit)}>
@@ -356,7 +355,13 @@ export default function RankingSettingsForm({
             <CardHeader title="Actions" subheader="Opérations de maintenance" />
             <Divider />
             <CardContent>
-              <Typography variant="body2" color="text.secondary" paragraph>
+              <Typography
+                variant="body2"
+                sx={{
+                  color: 'text.secondary',
+                  marginBottom: '16px',
+                }}
+              >
                 Si vous changez les règles de points ou si vous modifiez
                 manuellement des résultats de tournoi, vous devez relancer le
                 calcul des points pour que le classement soit mis à jour.

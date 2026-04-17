@@ -79,9 +79,12 @@ export function SatrHallOfFame({
     <Box sx={{ mb: 4 }}>
       <Stack
         direction="row"
-        alignItems="center"
         spacing={1}
-        sx={{ mb: 1.5, px: 1 }}
+        sx={{
+          alignItems: 'center',
+          mb: 1.5,
+          px: 1,
+        }}
       >
         <Box sx={{ display: 'flex', color: 'secondary.main' }}>
           <TrophyIcon size={18} />
@@ -98,7 +101,6 @@ export function SatrHallOfFame({
           Hall of Fame
         </Typography>
       </Stack>
-
       <Stack
         direction="row"
         spacing={1.5}
@@ -157,7 +159,6 @@ export function SatrHallOfFame({
               >
                 <TrophyIcon size={60} />
               </Box>
-
               <Typography
                 variant="caption"
                 sx={{
@@ -173,9 +174,9 @@ export function SatrHallOfFame({
               </Typography>
               <Typography
                 variant="body2"
-                fontWeight="900"
                 onClick={() => handleChampionClick(c.winner)}
                 sx={{
+                  fontWeight: '900',
                   color: '#fff',
                   textShadow: '0 1px 2px rgba(0,0,0,0.5)',
                   cursor: 'pointer',
@@ -188,7 +189,6 @@ export function SatrHallOfFame({
               >
                 {c.winner}
               </Typography>
-
               {meta && (
                 <Typography
                   variant="caption"
@@ -203,7 +203,6 @@ export function SatrHallOfFame({
                   {meta.participantsCount} participants
                 </Typography>
               )}
-
               <Button
                 size="small"
                 fullWidth
@@ -228,7 +227,6 @@ export function SatrHallOfFame({
           );
         })}
       </Stack>
-
       <Modal
         open={openTop10}
         onClose={() => setOpenTop10(false)}
@@ -246,15 +244,20 @@ export function SatrHallOfFame({
         >
           <Stack
             direction="row"
-            justifyContent="space-between"
-            alignItems="center"
-            sx={{ mb: 2 }}
+            sx={{
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              mb: 2,
+            }}
           >
             <Typography
               variant="subtitle1"
-              fontWeight="900"
-              color="secondary.main"
-              sx={{ fontSize: '0.9rem', letterSpacing: 0.5 }}
+              sx={{
+                fontWeight: '900',
+                color: 'secondary.main',
+                fontSize: '0.9rem',
+                letterSpacing: 0.5,
+              }}
             >
               TOP 10 • {selectedTournament?.replace('SATR_', '').toUpperCase()}
             </Typography>

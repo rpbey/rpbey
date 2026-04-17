@@ -53,10 +53,21 @@ export default function SatrSyncActions() {
           borderRadius: 2,
         }}
       >
-        <Typography variant="subtitle1" fontWeight="bold">
+        <Typography
+          variant="subtitle1"
+          sx={{
+            fontWeight: 'bold',
+          }}
+        >
           Classement Saison 2
         </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+        <Typography
+          variant="body2"
+          sx={{
+            color: 'text.secondary',
+            mb: 2,
+          }}
+        >
           Récupère les dernières données du Google Sheet officiel (SAtR - Top
           Bladers).
         </Typography>
@@ -75,7 +86,6 @@ export default function SatrSyncActions() {
           {loadingRanking ? 'Synchronisation...' : 'Synchroniser maintenant'}
         </Button>
       </Box>
-
       <Box
         sx={{
           p: 2,
@@ -84,10 +94,21 @@ export default function SatrSyncActions() {
           borderRadius: 2,
         }}
       >
-        <Typography variant="subtitle1" fontWeight="bold">
+        <Typography
+          variant="subtitle1"
+          sx={{
+            fontWeight: 'bold',
+          }}
+        >
           Liaison des Comptes
         </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+        <Typography
+          variant="body2"
+          sx={{
+            color: 'text.secondary',
+            mb: 2,
+          }}
+        >
           Analyse les noms des bladers SATR et tente de les lier aux comptes
           utilisateurs RPB existants.
         </Typography>

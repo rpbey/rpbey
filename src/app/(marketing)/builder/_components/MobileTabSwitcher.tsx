@@ -35,7 +35,6 @@ export function MobileTabSwitcher() {
         }
         variant="fullWidth"
         textColor="inherit"
-        TabIndicatorProps={{ sx: { bgcolor: 'error.main', height: 3 } }}
         sx={{
           minHeight: 48,
           '& .MuiTab-root': {
@@ -44,6 +43,9 @@ export function MobileTabSwitcher() {
             fontSize: '0.85rem',
             textTransform: 'none',
           },
+        }}
+        slotProps={{
+          indicator: { sx: { bgcolor: 'error.main', height: 3 } },
         }}
       >
         <Tab

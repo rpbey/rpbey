@@ -1,6 +1,8 @@
 generator client {
-  provider   = "prisma-client-js"
-  engineType = "library"
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  runtime      = "bun"
+  moduleFormat = "esm"
 }
 
 datasource db {
@@ -62,6 +64,10 @@ model User {
   winnerMatches    TournamentMatch[]       @relation("WinnerMatches")
   tournaments      TournamentParticipant[]
   twoFactors       TwoFactor[]
+  animeProgress    AnimeWatchProgress[]
+  cardInventory    CardInventory[]
+  partInventory    PartInventory[]
+  transactions     CurrencyTransaction[]
 
   @@map("users")
 }
@@ -193,9 +199,20 @@ model Profile {
   deckBoxImage      String?
   currency          Int             @default(0)
   lastDaily         DateTime?
+  dailyStreak       Int             @default(0)
+  pityCount         Int             @default(0)
+  lastGiftSent      DateTime?
+  // Duel TCG stats
+  duelRating        Int             @default(1000)
+  duelWins          Int             @default(0)
+  duelLosses        Int             @default(0)
+  duelStreak        Int             @default(0)
+  duelBestStreak    Int             @default(0)
   user              User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  wishlist          CardWishlist[]
 
   @@index([rankingPoints])
+  @@index([duelRating])
   @@map("profiles")
 }
 
@@ -263,6 +280,7 @@ model Part {
   deckRatchets     DeckItem[] @relation("RatchetRelation")
   deckLockChips    DeckItem[] @relation("LockChipRelation")
   deckAssistBlades DeckItem[] @relation("AssistBladeRelation")
+  partInventory    PartInventory[]
 
   @@index([type])
   @@index([beyType])
@@ -557,6 +575,7 @@ model SatrRanking {
   playerName    String
   score         Int
   wins          Int
+  losses        Int      @default(0)
   participation Int
   winRate       String
   pointsAverage String
@@ -582,6 +601,40 @@ model SatrBlader {
 
   @@index([name])
   @@map("satr_bladers")
+}
+
+model WbRanking {
+  id            String   @id @default(cuid())
+  rank          Int
+  playerName    String
+  score         Int
+  wins          Int
+  losses        Int      @default(0)
+  participation Int
+  winRate       String
+  pointsAverage String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([playerName])
+  @@index([score])
+  @@map("wb_rankings")
+}
+
+model WbBlader {
+  id               String   @id @default(cuid())
+  name             String   @unique
+  totalWins        Int      @default(0)
+  totalLosses      Int      @default(0)
+  tournamentWins   Int      @default(0)
+  tournamentsCount Int      @default(0)
+  history          Json
+  linkedUserId     String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([name])
+  @@map("wb_bladers")
 }
 
 enum BeyType {
@@ -633,4 +686,288 @@ enum ProductLine {
   BX
   UX
   CX
+}
+
+// Economy & Gacha System
+enum CardRarity {
+  COMMON    // Commun
+  RARE      // Rare
+  SUPER_RARE // Super Rare (ex-EPIC)
+  LEGENDARY // Légendaire
+  SECRET    // Secrète (animation/effet spécial)
+}
+
+enum CardType {
+  PNG       // Image existante/officielle
+  ARTIST    // Dessinée par un artiste RPB
+}
+
+enum TransactionType {
+  DAILY_CLAIM
+  GACHA_PULL
+  ADMIN_GIVE
+  ADMIN_TAKE
+  TOURNAMENT_REWARD
+  SELL_CARD
+  STREAK_BONUS
+  MULTI_PULL
+  BADGE_REWARD
+  DUEL_REWARD
+}
+
+model DuelMatch {
+  id           String   @id @default(cuid())
+  challengerId String
+  opponentId   String
+  winnerId     String
+  bet          Int      @default(0)
+  score        String   // "2-1"
+  rounds       Json     @default("[]")
+  finishType   String   @default("SPIN FINISH")
+  createdAt    DateTime @default(now())
+
+  @@index([challengerId])
+  @@index([opponentId])
+  @@map("duel_matches")
+}
+
+// ── TCG Drop (collection thématique limitée) ──
+model GachaDrop {
+  id          String      @id @default(cuid())
+  slug        String      @unique
+  name        String      // "Personnages Principaux", etc.
+  theme       String      // Description du thème
+  season      Int         @default(1) // Numéro du drop (1, 2, 3...)
+  maxCards    Int         @default(32) // Max cartes dans ce drop
+  startDate   DateTime
+  endDate     DateTime    // ~3 mois après startDate
+  isActive    Boolean     @default(false)
+  imageUrl    String?     // Bannière/visuel du drop
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  cards       GachaCard[]
+
+  @@index([isActive])
+  @@map("gacha_drops")
+}
+
+model GachaCard {
+  id          String        @id @default(cuid())
+  slug        String        @unique
+  name        String
+  nameJp      String?
+  series      String        // Legacy: "METAL_MASTERS", etc.
+  rarity      CardRarity    @default(COMMON)
+  cardType    CardType      @default(PNG)
+  artistName  String?       // Nom de l'artiste (si ARTIST)
+  imageUrl    String?
+  beyblade    String?       // Associated beyblade name
+  description String?
+  dropRate    Float         @default(0)
+  isActive    Boolean       @default(true)
+  // Drop link
+  dropId      String?
+  drop        GachaDrop?    @relation(fields: [dropId], references: [id])
+  // TCG Stats
+  att         Int           @default(0)
+  def         Int           @default(0)
+  end         Int           @default(0)
+  equilibre   Int           @default(0)
+  element     String        @default("NEUTRAL")
+  specialMove String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  inventory   CardInventory[]
+  wishedBy    CardWishlist[]
+
+  @@index([series])
+  @@index([rarity])
+  @@index([dropId])
+  @@map("gacha_cards")
+}
+
+model CardInventory {
+  id        String    @id @default(cuid())
+  userId    String
+  cardId    String
+  count     Int       @default(1)
+  obtainedAt DateTime @default(now())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  card      GachaCard @relation(fields: [cardId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, cardId])
+  @@index([userId])
+  @@map("card_inventory")
+}
+
+model CardWishlist {
+  id        String    @id @default(cuid())
+  profileId String
+  cardId    String
+  createdAt DateTime  @default(now())
+  profile   Profile   @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  card      GachaCard @relation(fields: [cardId], references: [id], onDelete: Cascade)
+
+  @@unique([profileId, cardId])
+  @@index([profileId])
+  @@map("card_wishlists")
+}
+
+model PartInventory {
+  id         String   @id @default(cuid())
+  userId     String
+  partId     String
+  count      Int      @default(1)
+  obtainedAt DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  part       Part     @relation(fields: [partId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, partId])
+  @@index([userId])
+  @@map("part_inventory")
+}
+
+model CurrencyTransaction {
+  id        String          @id @default(cuid())
+  userId    String
+  amount    Int             // positive = gain, negative = spend
+  type      TransactionType
+  note      String?
+  createdAt DateTime        @default(now())
+  user      User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([createdAt])
+  @@map("currency_transactions")
+}
+
+// Anime Streaming
+enum AnimeGeneration {
+  ORIGINAL
+  METAL
+  BURST
+  X
+}
+
+enum EpisodeSourceType {
+  YOUTUBE
+  DAILYMOTION
+  MP4
+  HLS
+  IFRAME
+}
+
+enum WatchStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+}
+
+model AnimeSeries {
+  id           String          @id @default(cuid())
+  slug         String          @unique
+  title        String
+  titleJp      String?
+  titleFr      String?
+  generation   AnimeGeneration
+  synopsis     String?
+  posterUrl    String?
+  bannerUrl    String?
+  year         Int
+  episodeCount Int             @default(0)
+  sortOrder    Int             @default(0)
+  isPublished  Boolean         @default(true)
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  episodes     AnimeEpisode[]
+
+  @@index([generation])
+  @@index([isPublished])
+  @@map("anime_series")
+}
+
+model AnimeEpisode {
+  id           String               @id @default(cuid())
+  seriesId     String
+  number       Int
+  title        String
+  titleFr      String?
+  titleJp      String?
+  synopsis     String?
+  thumbnailUrl String?
+  duration     Int                  @default(0)
+  isPublished  Boolean              @default(true)
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
+  series       AnimeSeries          @relation(fields: [seriesId], references: [id], onDelete: Cascade)
+  sources      AnimeEpisodeSource[]
+  progress     AnimeWatchProgress[]
+
+  @@unique([seriesId, number])
+  @@index([seriesId])
+  @@map("anime_episodes")
+}
+
+model AnimeEpisodeSource {
+  id        String            @id @default(cuid())
+  episodeId String
+  type      EpisodeSourceType
+  url       String
+  quality   String            @default("720p")
+  language  String            @default("VOSTFR")
+  priority  Int               @default(0)
+  isActive  Boolean           @default(true)
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+  episode   AnimeEpisode      @relation(fields: [episodeId], references: [id], onDelete: Cascade)
+
+  @@index([episodeId])
+  @@map("anime_episode_sources")
+}
+
+model AnimeWatchProgress {
+  id           String       @id @default(cuid())
+  userId       String
+  episodeId    String
+  status       WatchStatus  @default(NOT_STARTED)
+  progressTime Int          @default(0)
+  completedAt  DateTime?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  episode      AnimeEpisode @relation(fields: [episodeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, episodeId])
+  @@index([userId])
+  @@index([episodeId])
+  @@map("anime_watch_progress")
+}
+
+// ─── Moderation ─────────────────────────────────────────────────────────────
+
+model Warning {
+  id        String   @id @default(cuid())
+  discordId String
+  moderator String
+  reason    String
+  createdAt DateTime @default(now())
+
+  @@index([discordId])
+  @@map("warnings")
+}
+
+// ─── Reminders ──────────────────────────────────────────────────────────────
+
+model Reminder {
+  id        String   @id @default(cuid())
+  discordId String
+  channelId String
+  message   String
+  expiresAt DateTime
+  fired     Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([discordId])
+  @@index([expiresAt])
+  @@map("reminders")
 }

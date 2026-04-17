@@ -97,14 +97,13 @@ export function WbTabs({
           }}
         />
       </Tabs>
-
       <Stack direction="row" spacing={{ xs: 2, md: 4 }} sx={{ px: 2 }}>
         {stats.map((s) => (
           <Box key={s.label} sx={{ textAlign: 'center' }}>
             <Typography
               variant="caption"
-              color="text.secondary"
               sx={{
+                color: 'text.secondary',
                 display: 'block',
                 fontWeight: 800,
                 letterSpacing: 1,
@@ -115,8 +114,11 @@ export function WbTabs({
             </Typography>
             <Typography
               variant="h6"
-              fontWeight="900"
-              sx={{ color: s.color, lineHeight: 1.2 }}
+              sx={{
+                fontWeight: '900',
+                color: s.color,
+                lineHeight: 1.2,
+              }}
             >
               {s.value}
             </Typography>

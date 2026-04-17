@@ -2,7 +2,7 @@
 import * as dotenv from 'dotenv';
 dotenv.config();
 
-import { ProductType, ProductLine } from '@prisma/client';
+import { ProductType, ProductLine } from '@/generated/prisma/client';
 import * as fs from 'fs/promises';
 import { prisma } from '../src/lib/prisma'; // Use existing client
 

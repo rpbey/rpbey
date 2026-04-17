@@ -11,11 +11,11 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
-import type { SatrBlader } from '@prisma/client';
 import { motion } from 'framer-motion';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { TrophyIcon } from '@/components/ui/Icons';
+import { type SatrBlader } from '@/generated/prisma/client';
 import { SatrBladerDialog } from './SatrBladerDialog';
 
 interface SatrBladersTableProps {
@@ -202,8 +202,11 @@ export function SatrBladersTable({
                         sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}
                       >
                         <Typography
-                          fontWeight="800"
-                          sx={{ fontSize: '0.9rem', color: '#fff' }}
+                          sx={{
+                            fontWeight: '800',
+                            fontSize: '0.9rem',
+                            color: '#fff',
+                          }}
                         >
                           {row.name}
                         </Typography>
@@ -248,30 +251,43 @@ export function SatrBladersTable({
                     </TableCell>
                     <TableCell align="center">
                       <Typography
-                        color="success.main"
-                        fontWeight="bold"
-                        sx={{ fontSize: '0.9rem' }}
+                        sx={{
+                          color: 'success.main',
+                          fontWeight: 'bold',
+                          fontSize: '0.9rem',
+                        }}
                       >
                         {row.totalWins}
                       </Typography>
                     </TableCell>
                     <TableCell align="center">
                       <Typography
-                        color="error.main"
-                        sx={{ fontSize: '0.9rem', opacity: 0.8 }}
+                        sx={{
+                          color: 'error.main',
+                          fontSize: '0.9rem',
+                          opacity: 0.8,
+                        }}
                       >
                         {row.totalLosses}
                       </Typography>
                     </TableCell>
                     <TableCell align="center">
-                      <Typography fontWeight="900" sx={{ fontSize: '0.9rem' }}>
+                      <Typography
+                        sx={{
+                          fontWeight: '900',
+                          fontSize: '0.9rem',
+                        }}
+                      >
                         {winRate}%
                       </Typography>
                     </TableCell>
                     <TableCell align="center">
                       <Typography
-                        fontWeight="700"
-                        sx={{ fontSize: '0.9rem', opacity: 0.9 }}
+                        sx={{
+                          fontWeight: '700',
+                          fontSize: '0.9rem',
+                          opacity: 0.9,
+                        }}
                       >
                         {row.tournamentsCount}
                       </Typography>
@@ -318,7 +334,11 @@ export function SatrBladersTable({
             ) : (
               <TableRow>
                 <TableCell colSpan={8} align="center" sx={{ py: 10 }}>
-                  <Typography color="text.secondary">
+                  <Typography
+                    sx={{
+                      color: 'text.secondary',
+                    }}
+                  >
                     Aucun blader trouvé
                   </Typography>
                 </TableCell>
@@ -327,7 +347,6 @@ export function SatrBladersTable({
           </TableBody>
         </Table>
       </TableContainer>
-
       {totalPages > 1 && (
         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4, mb: 4 }}>
           <Pagination
@@ -353,7 +372,6 @@ export function SatrBladersTable({
           />
         </Box>
       )}
-
       <SatrBladerDialog
         blader={selectedBlader}
         open={!!selectedBlader}

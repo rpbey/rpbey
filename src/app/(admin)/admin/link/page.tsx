@@ -106,16 +106,25 @@ export default function AdminLinkPage() {
       <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', gap: 2 }}>
         <LinkIcon sx={{ fontSize: 40, color: 'error.main' }} />
         <Box>
-          <Typography variant="h4" fontWeight="900">
+          <Typography
+            variant="h4"
+            sx={{
+              fontWeight: '900',
+            }}
+          >
             LIAISON DE COMPTES
           </Typography>
-          <Typography variant="body2" color="text.secondary">
+          <Typography
+            variant="body2"
+            sx={{
+              color: 'text.secondary',
+            }}
+          >
             Associez les pseudos Challonge des tournois aux vrais comptes
             Discord des joueurs.
           </Typography>
         </Box>
       </Box>
-
       {/* Selector */}
       <Stack
         direction="row"
@@ -133,7 +142,6 @@ export default function AdminLinkPage() {
           />
         ))}
       </Stack>
-
       {!activeTournament ? (
         <Alert severity="info">Aucun tournoi trouvé.</Alert>
       ) : (
@@ -156,13 +164,21 @@ export default function AdminLinkPage() {
                     }}
                   >
                     <CardContent sx={{ p: 2 }}>
-                      <Grid container spacing={2} alignItems="center">
+                      <Grid
+                        container
+                        spacing={2}
+                        sx={{
+                          alignItems: 'center',
+                        }}
+                      >
                         {/* Left: Challonge Info */}
                         <Grid size={{ xs: 12, md: 4 }}>
                           <Stack
                             direction="row"
                             spacing={2}
-                            alignItems="center"
+                            sx={{
+                              alignItems: 'center',
+                            }}
                           >
                             <Avatar
                               src={p.user?.image || undefined}
@@ -173,15 +189,19 @@ export default function AdminLinkPage() {
                             <Box sx={{ minWidth: 0 }}>
                               <Typography
                                 variant="subtitle1"
-                                fontWeight="900"
                                 noWrap
+                                sx={{
+                                  fontWeight: '900',
+                                }}
                               >
                                 {p.user?.name}
                               </Typography>
                               <Typography
                                 variant="caption"
-                                color="text.secondary"
-                                display="block"
+                                sx={{
+                                  color: 'text.secondary',
+                                  display: 'block',
+                                }}
                               >
                                 ID Challonge: {p.challongeParticipantId}
                               </Typography>
@@ -232,7 +252,9 @@ export default function AdminLinkPage() {
                           <Stack
                             direction="row"
                             spacing={2}
-                            alignItems="center"
+                            sx={{
+                              alignItems: 'center',
+                            }}
                           >
                             <Autocomplete
                               fullWidth
@@ -250,13 +272,17 @@ export default function AdminLinkPage() {
                                   <Box>
                                     <Typography
                                       variant="body2"
-                                      fontWeight="bold"
+                                      sx={{
+                                        fontWeight: 'bold',
+                                      }}
                                     >
                                       {option.name}
                                     </Typography>
                                     <Typography
                                       variant="caption"
-                                      color="text.secondary"
+                                      sx={{
+                                        color: 'text.secondary',
+                                      }}
                                     >
                                       @{option.discordTag}
                                     </Typography>
@@ -274,8 +300,10 @@ export default function AdminLinkPage() {
                                   label="Lier à un compte Discord..."
                                   placeholder="Rechercher par nom..."
                                   slotProps={{
+                                    ...params.slotProps,
+
                                     input: {
-                                      ...params.InputProps,
+                                      ...params.slotProps.input,
                                       startAdornment: (
                                         <>
                                           <Search
@@ -285,7 +313,10 @@ export default function AdminLinkPage() {
                                               color: 'text.disabled',
                                             }}
                                           />
-                                          {params.InputProps.startAdornment}
+                                          {
+                                            params.slotProps.input
+                                              .startAdornment
+                                          }
                                         </>
                                       ),
                                     },

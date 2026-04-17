@@ -11,11 +11,11 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
-import type { WbBlader, WbRanking } from '@prisma/client';
 import { motion } from 'framer-motion';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { type WbBlader, type WbRanking } from '@/generated/prisma/client';
 import { getWbBladerByName } from '@/server/actions/wb';
 import { WbBladerDialog } from './WbBladerDialog';
 
@@ -92,9 +92,12 @@ export function WbTable({ rankings, totalPages, currentPage }: WbTableProps) {
 
     return (
       <Typography
-        fontWeight="900"
-        color="text.secondary"
-        sx={{ fontSize: { xs: '0.75rem', md: '0.85rem' }, opacity: 0.6 }}
+        sx={{
+          fontWeight: '900',
+          color: 'text.secondary',
+          fontSize: { xs: '0.75rem', md: '0.85rem' },
+          opacity: 0.6,
+        }}
       >
         #{rank}
       </Typography>
@@ -233,8 +236,8 @@ export function WbTable({ rankings, totalPages, currentPage }: WbTableProps) {
                   <TableCell align="center">{getRankBadge(row.rank)}</TableCell>
                   <TableCell>
                     <Typography
-                      fontWeight="800"
                       sx={{
+                        fontWeight: '800',
                         fontSize: { xs: '0.85rem', md: '0.95rem' },
                         color: '#fff',
                         whiteSpace: 'nowrap',
@@ -245,8 +248,8 @@ export function WbTable({ rankings, totalPages, currentPage }: WbTableProps) {
                   </TableCell>
                   <TableCell align="center">
                     <Typography
-                      fontWeight="900"
                       sx={{
+                        fontWeight: '900',
                         fontSize: { xs: '0.85rem', md: '1rem' },
                         color: 'primary.main',
                       }}
@@ -255,7 +258,12 @@ export function WbTable({ rankings, totalPages, currentPage }: WbTableProps) {
                     </Typography>
                   </TableCell>
                   <TableCell align="center">
-                    <Typography fontWeight="700" sx={{ fontSize: '0.85rem' }}>
+                    <Typography
+                      sx={{
+                        fontWeight: '700',
+                        fontSize: '0.85rem',
+                      }}
+                    >
                       <Box component="span" sx={{ color: 'success.main' }}>
                         {row.wins}
                       </Box>
@@ -289,7 +297,12 @@ export function WbTable({ rankings, totalPages, currentPage }: WbTableProps) {
                         border: '1px solid rgba(255,255,255,0.1)',
                       }}
                     >
-                      <Typography fontWeight="800" sx={{ fontSize: '0.8rem' }}>
+                      <Typography
+                        sx={{
+                          fontWeight: '800',
+                          fontSize: '0.8rem',
+                        }}
+                      >
                         {row.winRate}
                       </Typography>
                     </Box>
@@ -307,7 +320,12 @@ export function WbTable({ rankings, totalPages, currentPage }: WbTableProps) {
             ) : (
               <TableRow>
                 <TableCell colSpan={7} align="center" sx={{ py: 10 }}>
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: 'text.secondary',
+                    }}
+                  >
                     Aucun blader trouvé
                   </Typography>
                 </TableCell>
@@ -316,7 +334,6 @@ export function WbTable({ rankings, totalPages, currentPage }: WbTableProps) {
           </TableBody>
         </Table>
       </TableContainer>
-
       {totalPages > 1 && (
         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4, mb: 4 }}>
           <Pagination
@@ -342,7 +359,6 @@ export function WbTable({ rankings, totalPages, currentPage }: WbTableProps) {
           />
         </Box>
       )}
-
       <WbBladerDialog
         blader={selectedBlader}
         open={!!selectedBlader}

@@ -3,8 +3,7 @@
  * Get user statistics and leaderboard
  */
 
-import type { NextRequest } from 'next/server';
-import { connection, NextResponse } from 'next/server';
+import { connection, type NextRequest, NextResponse } from 'next/server';
 import { getLeaderboard, getUserStats } from '@/lib/stats';
 
 // GET - Get stats for a specific user or leaderboard

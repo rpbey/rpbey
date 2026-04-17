@@ -672,9 +672,12 @@ export class ModerationCommands {
   async handleClose(interaction: ButtonInteraction) {
     await interaction.deferReply();
     const channel = interaction.channel as TextChannel;
-    const attachment = await (createTranscript as Function)(channel, {
-      filename: `${channel.name}.html`,
-    });
+    const attachment = await (createTranscript as (...args: never) => unknown)(
+      channel,
+      {
+        filename: `${channel.name}.html`,
+      },
+    );
     const logChannel = interaction.guild?.channels.cache.get(
       RPB.Channels.Announcements,
     ) as TextChannel;

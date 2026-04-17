@@ -178,7 +178,6 @@ export function SeriesDetail({ series }: { series: SeriesData }) {
           }}
         />
       </Box>
-
       {/* Series info */}
       <Box
         sx={{
@@ -246,8 +245,8 @@ export function SeriesDetail({ series }: { series: SeriesData }) {
           <Typography
             variant="h3"
             component="h1"
-            fontWeight={900}
             sx={{
+              fontWeight: 900,
               color: 'white',
               mb: 0.5,
               fontSize: '1.5rem',
@@ -497,8 +496,8 @@ export function SeriesDetail({ series }: { series: SeriesData }) {
             <Typography
               variant="h3"
               component="h1"
-              fontWeight={900}
               sx={{
+                fontWeight: 900,
                 color: 'white',
                 mb: 0.5,
                 fontSize: '2.5rem',
@@ -710,8 +709,8 @@ export function SeriesDetail({ series }: { series: SeriesData }) {
         >
           <Typography
             variant="h5"
-            fontWeight={800}
             sx={{
+              fontWeight: 800,
               color: 'text.primary',
               fontSize: { xs: '1rem', md: '1.3rem' },
             }}

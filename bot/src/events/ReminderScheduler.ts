@@ -1,4 +1,4 @@
-import type { Client, TextChannel } from 'discord.js';
+import { type Client, type TextChannel } from 'discord.js';
 import { type ArgsOf, Discord, On } from 'discordx';
 import { inject, injectable } from 'tsyringe';
 

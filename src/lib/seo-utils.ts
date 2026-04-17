@@ -1,12 +1,12 @@
-import type { Metadata } from 'next';
-import type {
-  BreadcrumbList,
-  Event,
-  ItemList,
-  SportsOrganization,
-  TechArticle,
-  WebSite,
-  WithContext,
+import { type Metadata } from 'next';
+import {
+  type BreadcrumbList,
+  type Event,
+  type ItemList,
+  type SportsOrganization,
+  type TechArticle,
+  type WebSite,
+  type WithContext,
 } from 'schema-dts';
 
 const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://rpbey.fr';

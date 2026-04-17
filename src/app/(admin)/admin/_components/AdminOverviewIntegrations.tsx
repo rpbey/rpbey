@@ -68,8 +68,20 @@ export default function AdminOverviewIntegrations(_props: {
               borderColor: 'divider',
             }}
           >
-            <Stack direction="row" justifyContent="space-between" mb={2}>
-              <Typography fontWeight="bold">Challonge</Typography>
+            <Stack
+              direction="row"
+              sx={{
+                justifyContent: 'space-between',
+                mb: 2,
+              }}
+            >
+              <Typography
+                sx={{
+                  fontWeight: 'bold',
+                }}
+              >
+                Challonge
+              </Typography>
               <Chip
                 label={challongeStatus === 'success' ? 'Connecté' : 'Vérifier'}
                 color={challongeStatus === 'success' ? 'success' : 'default'}
@@ -105,8 +117,20 @@ export default function AdminOverviewIntegrations(_props: {
               borderColor: 'divider',
             }}
           >
-            <Stack direction="row" justifyContent="space-between" mb={2}>
-              <Typography fontWeight="bold">Twitch</Typography>
+            <Stack
+              direction="row"
+              sx={{
+                justifyContent: 'space-between',
+                mb: 2,
+              }}
+            >
+              <Typography
+                sx={{
+                  fontWeight: 'bold',
+                }}
+              >
+                Twitch
+              </Typography>
               <Chip
                 label="Actif"
                 color="success"
@@ -114,7 +138,12 @@ export default function AdminOverviewIntegrations(_props: {
                 variant="outlined"
               />
             </Stack>
-            <Typography variant="caption" color="text.secondary">
+            <Typography
+              variant="caption"
+              sx={{
+                color: 'text.secondary',
+              }}
+            >
               Surveillance du stream tv_rpb
             </Typography>
           </Box>
@@ -129,8 +158,20 @@ export default function AdminOverviewIntegrations(_props: {
               borderColor: 'divider',
             }}
           >
-            <Stack direction="row" justifyContent="space-between" mb={2}>
-              <Typography fontWeight="bold">Cloud</Typography>
+            <Stack
+              direction="row"
+              sx={{
+                justifyContent: 'space-between',
+                mb: 2,
+              }}
+            >
+              <Typography
+                sx={{
+                  fontWeight: 'bold',
+                }}
+              >
+                Cloud
+              </Typography>
               <Chip
                 label="Configuré"
                 color="info"
@@ -138,7 +179,12 @@ export default function AdminOverviewIntegrations(_props: {
                 variant="outlined"
               />
             </Stack>
-            <Typography variant="caption" color="text.secondary">
+            <Typography
+              variant="caption"
+              sx={{
+                color: 'text.secondary',
+              }}
+            >
               Google Drive & Sheets
             </Typography>
           </Box>

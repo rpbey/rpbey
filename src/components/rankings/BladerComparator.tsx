@@ -4,7 +4,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import PersonIcon from '@mui/icons-material/Person';
-import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
+import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutlined';
 import {
   Avatar,
   alpha,
@@ -22,7 +22,7 @@ import {
   useMediaQuery,
   useTheme,
 } from '@mui/material';
-import type { TransitionProps } from '@mui/material/transitions';
+import { type TransitionProps } from '@mui/material/transitions';
 import { AnimatePresence, motion } from 'framer-motion';
 import Link from 'next/link';
 import React, { forwardRef } from 'react';
@@ -34,7 +34,7 @@ import {
   RadarChart,
   ResponsiveContainer,
 } from 'recharts';
-import type { ProfileWithUser } from './RankingsTable';
+import { type ProfileWithUser } from './RankingsTable';
 
 const Transition = forwardRef(function Transition(
   props: TransitionProps & { children: React.ReactElement },
@@ -526,31 +526,34 @@ export default function BladerComparator({
           </Box>
         </motion.div>
       </AnimatePresence>
-
       {/* Comparison Dialog */}
       <Dialog
         open={dialogOpen}
         onClose={() => setDialogOpen(false)}
-        TransitionComponent={Transition}
         maxWidth="sm"
         fullWidth
         fullScreen={isMobile}
-        PaperProps={{
-          sx: {
-            bgcolor: 'background.default',
-            backgroundImage: 'none',
-            borderRadius: isMobile ? 0 : 3,
-            overflow: 'hidden',
-            '&::before': {
-              content: '""',
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              height: '30%',
-              background: (t) =>
-                `radial-gradient(ellipse at 50% -20%, ${alpha(t.palette.primary.main, 0.08)} 0%, transparent 70%)`,
-              pointerEvents: 'none',
+        slots={{
+          transition: Transition,
+        }}
+        slotProps={{
+          paper: {
+            sx: {
+              bgcolor: 'background.default',
+              backgroundImage: 'none',
+              borderRadius: isMobile ? 0 : 3,
+              overflow: 'hidden',
+              '&::before': {
+                content: '""',
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                height: '30%',
+                background: (t) =>
+                  `radial-gradient(ellipse at 50% -20%, ${alpha(t.palette.primary.main, 0.08)} 0%, transparent 70%)`,
+                pointerEvents: 'none',
+              },
             },
           },
         }}
@@ -571,8 +574,10 @@ export default function BladerComparator({
             />
             <Typography
               variant="h6"
-              fontWeight={900}
-              sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }}
+              sx={{
+                fontWeight: 900,
+                fontSize: { xs: '1rem', sm: '1.25rem' },
+              }}
             >
               Comparaison
             </Typography>
@@ -622,9 +627,11 @@ export default function BladerComparator({
                           />
                           <Typography
                             variant="subtitle2"
-                            fontWeight={900}
                             noWrap
-                            sx={{ fontSize: { xs: '0.8rem', sm: '0.95rem' } }}
+                            sx={{
+                              fontWeight: 900,
+                              fontSize: { xs: '0.8rem', sm: '0.95rem' },
+                            }}
                           >
                             {blader.bladerName || blader.user?.name || 'Blader'}
                           </Typography>
@@ -722,14 +729,16 @@ export default function BladerComparator({
                     return (
                       <Typography
                         variant="body2"
-                        fontWeight={700}
-                        sx={{ fontSize: { xs: '0.8rem', sm: '0.875rem' } }}
+                        sx={{
+                          fontWeight: 700,
+                          fontSize: { xs: '0.8rem', sm: '0.875rem' },
+                        }}
                       >
                         <span style={{ color: 'var(--rpb-primary)' }}>
                           {nameA}
                         </span>{' '}
-                        domine dans {scoreA} catégorie
-                        {scoreA > 1 ? 's' : ''} sur {total}
+                        domine dans {scoreA}catégorie
+                        {scoreA > 1 ? 's' : ''}sur {total}
                       </Typography>
                     );
                   }
@@ -737,20 +746,24 @@ export default function BladerComparator({
                     return (
                       <Typography
                         variant="body2"
-                        fontWeight={700}
-                        sx={{ fontSize: { xs: '0.8rem', sm: '0.875rem' } }}
+                        sx={{
+                          fontWeight: 700,
+                          fontSize: { xs: '0.8rem', sm: '0.875rem' },
+                        }}
                       >
-                        <span style={{ color: COLOR_B }}>{nameB}</span> domine
-                        dans {scoreB} catégorie
-                        {scoreB > 1 ? 's' : ''} sur {total}
+                        <span style={{ color: COLOR_B }}>{nameB}</span>domine
+                        dans {scoreB}catégorie
+                        {scoreB > 1 ? 's' : ''}sur {total}
                       </Typography>
                     );
                   }
                   return (
                     <Typography
                       variant="body2"
-                      fontWeight={700}
-                      sx={{ fontSize: { xs: '0.8rem', sm: '0.875rem' } }}
+                      sx={{
+                        fontWeight: 700,
+                        fontSize: { xs: '0.8rem', sm: '0.875rem' },
+                      }}
                     >
                       Égalité parfaite !
                     </Typography>

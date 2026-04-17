@@ -3,9 +3,8 @@
  * GET /api/parts - Liste toutes les pièces avec filtres
  */
 
-import { BeyType, PartType } from '@prisma/client';
-import type { NextRequest } from 'next/server';
-import { connection, NextResponse } from 'next/server';
+import { connection, type NextRequest, NextResponse } from 'next/server';
+import { BeyType, PartType } from '@/generated/prisma/client';
 import { prisma } from '@/lib/prisma';
 
 export async function GET(request: NextRequest) {

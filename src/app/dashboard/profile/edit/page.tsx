@@ -151,20 +151,31 @@ export default function EditProfilePage() {
 
   return (
     <Box sx={{ maxWidth: 1200, mx: 'auto' }}>
-      <Box mb={5}>
+      <Box
+        sx={{
+          mb: 5,
+        }}
+      >
         <Typography
           variant="h3"
-          fontWeight="900"
           gutterBottom
-          sx={{ letterSpacing: '-0.03em' }}
+          sx={{
+            fontWeight: '900',
+            letterSpacing: '-0.03em',
+          }}
         >
           Modifier mon profil
         </Typography>
-        <Typography color="text.secondary" variant="h6" fontWeight="normal">
+        <Typography
+          variant="h6"
+          sx={{
+            color: 'text.secondary',
+            fontWeight: 'normal',
+          }}
+        >
           Personnalise ton identité de Blader et tes préférences.
         </Typography>
       </Box>
-
       <Grid container spacing={4}>
         {/* Main Info */}
         <Grid size={{ xs: 12, md: 8 }}>
@@ -195,7 +206,12 @@ export default function EditProfilePage() {
                       }}
                     >
                       <PersonIcon color="primary" sx={{ fontSize: 28 }} />
-                      <Typography variant="h5" fontWeight="800">
+                      <Typography
+                        variant="h5"
+                        sx={{
+                          fontWeight: '800',
+                        }}
+                      >
                         Identité Blader
                       </Typography>
                     </Box>
@@ -204,9 +220,11 @@ export default function EditProfilePage() {
                       {/* Avatar Upload Section - NEW */}
                       <Grid
                         size={{ xs: 12 }}
-                        display="flex"
-                        justifyContent="center"
-                        mb={2}
+                        sx={{
+                          display: 'flex',
+                          justifyContent: 'center',
+                          mb: 2,
+                        }}
                       >
                         <AvatarUpload
                           currentImage={watchedImage}
@@ -240,7 +258,9 @@ export default function EditProfilePage() {
                         <Typography
                           variant="subtitle2"
                           gutterBottom
-                          fontWeight="bold"
+                          sx={{
+                            fontWeight: 'bold',
+                          }}
                         >
                           Ma Deck Box
                         </Typography>
@@ -307,8 +327,11 @@ export default function EditProfilePage() {
                       <Grid size={{ xs: 12 }}>
                         <Typography
                           variant="caption"
-                          color="text.secondary"
-                          sx={{ mb: 1, display: 'block' }}
+                          sx={{
+                            color: 'text.secondary',
+                            mb: 1,
+                            display: 'block',
+                          }}
                         >
                           Biographie
                         </Typography>
@@ -379,7 +402,13 @@ export default function EditProfilePage() {
                 '& .MuiAlert-icon': { color: 'info.main' },
               }}
             >
-              <Typography variant="subtitle2" fontWeight="bold" gutterBottom>
+              <Typography
+                variant="subtitle2"
+                gutterBottom
+                sx={{
+                  fontWeight: 'bold',
+                }}
+              >
                 Le savais-tu ?
               </Typography>
               Ton nom de Blader est unique et sera affiché sur les classements
@@ -403,7 +432,12 @@ export default function EditProfilePage() {
                   src="https://challonge.com/favicon.ico"
                   sx={{ width: 16, height: 16 }}
                 />
-                <Typography variant="subtitle2" fontWeight="bold">
+                <Typography
+                  variant="subtitle2"
+                  sx={{
+                    fontWeight: 'bold',
+                  }}
+                >
                   Compte Challonge
                 </Typography>
               </Box>
@@ -411,8 +445,10 @@ export default function EditProfilePage() {
                 <Stack spacing={1}>
                   <Typography
                     variant="caption"
-                    color="success.main"
-                    fontWeight="bold"
+                    sx={{
+                      color: 'success.main',
+                      fontWeight: 'bold',
+                    }}
                   >
                     Lié : {profileData.challongeUsername}
                   </Typography>
@@ -463,16 +499,20 @@ export default function EditProfilePage() {
             >
               <Typography
                 variant="caption"
-                color="text.secondary"
-                display="block"
+                sx={{
+                  color: 'text.secondary',
+                  display: 'block',
+                }}
               >
                 Inscrit le{' '}
                 {user ? new Date(user.createdAt).toLocaleDateString() : '-'}
               </Typography>
               <Typography
                 variant="caption"
-                color="text.secondary"
-                display="block"
+                sx={{
+                  color: 'text.secondary',
+                  display: 'block',
+                }}
               >
                 ID: {user?.id}
               </Typography>

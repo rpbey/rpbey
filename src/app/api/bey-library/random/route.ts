@@ -3,8 +3,7 @@
  * Returns a random part, optionally filtered
  */
 
-import type { NextRequest } from 'next/server';
-import { NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import { type BeyLibraryCategory, getRandomPart } from '@/lib/bey-library';
 
 export const dynamic = 'force-dynamic';

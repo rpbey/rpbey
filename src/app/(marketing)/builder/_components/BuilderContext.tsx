@@ -1,6 +1,5 @@
 'use client';
 
-import type { Part } from '@prisma/client';
 import {
   createContext,
   type Dispatch,
@@ -11,6 +10,7 @@ import {
   useReducer,
   useRef,
 } from 'react';
+import { type Part } from '@/generated/prisma/client';
 
 // --- Types ---
 

@@ -59,9 +59,11 @@ export function FormDialog({
       onClose={isLoading ? undefined : onClose}
       maxWidth={maxWidth}
       fullWidth
-      PaperProps={{
-        component: 'form',
-        onSubmit: handleSubmit,
+      slotProps={{
+        paper: {
+          component: 'form',
+          onSubmit: handleSubmit,
+        },
       }}
     >
       <DialogTitle sx={{ m: 0, p: 2, pr: 6 }}>

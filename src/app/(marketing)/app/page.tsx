@@ -1,6 +1,5 @@
-import { readFileSync } from 'node:fs';
-import path from 'node:path';
-import type { Metadata } from 'next';
+import { type Metadata } from 'next';
+import { loadJsonSafe } from '@/lib/data-cache';
 import { prisma } from '@/lib/prisma';
 import { AppClient } from './_components/AppClient';
 
@@ -24,43 +23,33 @@ interface ProductEntry {
   date: string;
 }
 
-function loadProducts(): ProductEntry[] {
-  try {
-    const raw = readFileSync(
-      path.join(process.cwd(), 'data', 'fandom_products.json'),
-      'utf-8',
-    );
-    return JSON.parse(raw) as ProductEntry[];
-  } catch {
-    return [];
-  }
-}
-
 export default async function AppPage() {
-  const [blades, ratchets, bits, lockChips, assistBlades] = await Promise.all([
-    prisma.part.findMany({
-      where: { type: { in: ['BLADE', 'OVER_BLADE'] } },
-      orderBy: { name: 'asc' },
-    }),
-    prisma.part.findMany({
-      where: { type: 'RATCHET' },
-      orderBy: { name: 'asc' },
-    }),
-    prisma.part.findMany({
-      where: { type: 'BIT' },
-      orderBy: { name: 'asc' },
-    }),
-    prisma.part.findMany({
-      where: { type: 'LOCK_CHIP' },
-      orderBy: { name: 'asc' },
-    }),
-    prisma.part.findMany({
-      where: { type: 'ASSIST_BLADE' },
-      orderBy: { name: 'asc' },
-    }),
-  ]);
-
-  const products = loadProducts();
+  const [blades, ratchets, bits, lockChips, assistBlades, products] =
+    await Promise.all([
+      prisma.part.findMany({
+        where: { type: { in: ['BLADE', 'OVER_BLADE'] } },
+        orderBy: { name: 'asc' },
+      }),
+      prisma.part.findMany({
+        where: { type: 'RATCHET' },
+        orderBy: { name: 'asc' },
+      }),
+      prisma.part.findMany({
+        where: { type: 'BIT' },
+        orderBy: { name: 'asc' },
+      }),
+      prisma.part.findMany({
+        where: { type: 'LOCK_CHIP' },
+        orderBy: { name: 'asc' },
+      }),
+      prisma.part.findMany({
+        where: { type: 'ASSIST_BLADE' },
+        orderBy: { name: 'asc' },
+      }),
+      loadJsonSafe<ProductEntry[]>('data/fandom_products.json').then(
+        (p) => p ?? [],
+      ),
+    ]);
 
   return (
     <AppClient

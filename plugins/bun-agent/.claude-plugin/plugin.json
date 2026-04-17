@@ -1,0 +1,11 @@
+{
+  "name": "bun-agent",
+  "version": "2.1.0",
+  "description": "Claude Code plugin — specialized agents (runner, explorer, dreamer, deployer, reviewer), Bun-powered skills, session tracking hooks, and persistent memory system.",
+  "author": {
+    "name": "RPB Dev",
+    "url": "https://rpbey.fr"
+  },
+  "license": "MIT",
+  "keywords": ["bun", "agent", "autonomous", "memory", "dream", "deploy", "claude-code", "plugin"]
+}

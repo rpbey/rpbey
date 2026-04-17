@@ -253,7 +253,11 @@ export function RichTextEditor({
             onClick={openLinkDialog}
             color={editor.isActive('link') ? 'primary' : 'default'}
           >
-            <LinkIcon fontSize="small" />
+            <LinkIcon
+              sx={{
+                fontSize: 'small',
+              }}
+            />
           </IconButton>
         </Tooltip>
         <Tooltip title="Retirer le lien">
@@ -288,10 +292,8 @@ export function RichTextEditor({
           <Redo fontSize="small" />
         </IconButton>
       </Box>
-
       {/* Content */}
       <EditorContent editor={editor} />
-
       {/* Link Dialog */}
       <Dialog open={linkDialogOpen} onClose={() => setLinkDialogOpen(false)}>
         <DialogTitle>Ajouter un lien</DialogTitle>

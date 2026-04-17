@@ -506,9 +506,12 @@ function MeshCard({ mesh }: { mesh: MeshAsset }) {
           >
             <Typography
               variant="body2"
-              fontWeight="900"
               noWrap
-              sx={{ fontSize: '0.75rem', color: '#e4e4e7' }}
+              sx={{
+                fontWeight: '900',
+                fontSize: '0.75rem',
+                color: '#e4e4e7',
+              }}
             >
               {displayName}
             </Typography>
@@ -530,7 +533,6 @@ function MeshCard({ mesh }: { mesh: MeshAsset }) {
           </CardContent>
         </CardActionArea>
       </Card>
-
       <Dialog
         open={dialogOpen}
         onClose={() => setDialogOpen(false)}
@@ -565,7 +567,12 @@ function MeshCard({ mesh }: { mesh: MeshAsset }) {
         >
           <Box>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Typography variant="h6" fontWeight="900">
+              <Typography
+                variant="h6"
+                sx={{
+                  fontWeight: '900',
+                }}
+              >
                 {displayName}
               </Typography>
               <Chip
@@ -694,19 +701,24 @@ export function MeshGallery() {
           );
         })}
       </Box>
-
       <Typography
         variant="caption"
-        color="text.disabled"
-        sx={{ mb: 2, display: 'block' }}
+        sx={{
+          color: 'text.disabled',
+          mb: 2,
+          display: 'block',
+        }}
       >
         {filtered.length} modèle{filtered.length !== 1 ? 's' : ''} 3D avec
         textures PBR — Rotation auto, cliquer pour vue plein écran
       </Typography>
-
       {loading ? (
         <Box sx={{ textAlign: 'center', py: 8 }}>
-          <Typography color="text.disabled">
+          <Typography
+            sx={{
+              color: 'text.disabled',
+            }}
+          >
             Chargement des modèles 3D...
           </Typography>
         </Box>
@@ -728,7 +740,6 @@ export function MeshGallery() {
           ))}
         </Box>
       )}
-
       {filtered.length > _page * _MESHES_PER_PAGE && (
         <Box sx={{ textAlign: 'center', mt: 3 }}>
           <Button

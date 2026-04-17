@@ -173,23 +173,27 @@ export function ProductCatalog({ products }: { products: ProductEntry[] }) {
           >
             <Typography
               variant="h5"
-              fontWeight="900"
-              sx={{ color: stat.color }}
+              sx={{
+                fontWeight: '900',
+                color: stat.color,
+              }}
             >
               {stat.value}
             </Typography>
             <Typography
               variant="caption"
-              color="text.secondary"
-              fontWeight="700"
-              sx={{ textTransform: 'uppercase', letterSpacing: 0.5 }}
+              sx={{
+                color: 'text.secondary',
+                fontWeight: '700',
+                textTransform: 'uppercase',
+                letterSpacing: 0.5,
+              }}
             >
               {stat.label}
             </Typography>
           </Paper>
         ))}
       </Box>
-
       {/* Search & Filters */}
       <Box
         sx={{
@@ -263,13 +267,15 @@ export function ProductCatalog({ products }: { products: ProductEntry[] }) {
 
         <Typography
           variant="caption"
-          color="text.disabled"
-          sx={{ ml: 'auto', fontWeight: 600 }}
+          sx={{
+            color: 'text.disabled',
+            ml: 'auto',
+            fontWeight: 600,
+          }}
         >
           {filtered.length} produit{filtered.length !== 1 ? 's' : ''}
         </Typography>
       </Box>
-
       {/* Mobile: card layout */}
       <Box
         sx={{
@@ -315,8 +321,10 @@ export function ProductCatalog({ products }: { products: ProductEntry[] }) {
                 />
                 <Typography
                   variant="caption"
-                  color="text.disabled"
-                  fontWeight="600"
+                  sx={{
+                    color: 'text.disabled',
+                    fontWeight: '600',
+                  }}
                 >
                   {pType}
                 </Typography>
@@ -337,15 +345,19 @@ export function ProductCatalog({ products }: { products: ProductEntry[] }) {
               </Box>
               <Typography
                 variant="body2"
-                fontWeight="700"
-                sx={{ fontSize: '0.8rem' }}
+                sx={{
+                  fontWeight: '700',
+                  fontSize: '0.8rem',
+                }}
               >
                 {product.name}
               </Typography>
               <Typography
                 variant="caption"
-                color="text.disabled"
-                sx={{ fontSize: '0.7rem' }}
+                sx={{
+                  color: 'text.disabled',
+                  fontSize: '0.7rem',
+                }}
               >
                 {cleanDate}
               </Typography>
@@ -353,7 +365,6 @@ export function ProductCatalog({ products }: { products: ProductEntry[] }) {
           );
         })}
       </Box>
-
       {/* Desktop: table layout */}
       <TableContainer
         component={Paper}
@@ -420,8 +431,10 @@ export function ProductCatalog({ products }: { products: ProductEntry[] }) {
                   <TableCell>
                     <Typography
                       variant="body2"
-                      fontWeight="700"
-                      sx={{ fontSize: '0.8rem' }}
+                      sx={{
+                        fontWeight: '700',
+                        fontSize: '0.8rem',
+                      }}
                     >
                       {product.name}
                     </Typography>
@@ -442,8 +455,11 @@ export function ProductCatalog({ products }: { products: ProductEntry[] }) {
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                       <Typography
                         variant="caption"
-                        fontWeight="600"
-                        sx={{ fontSize: '0.75rem', whiteSpace: 'nowrap' }}
+                        sx={{
+                          fontWeight: '600',
+                          fontSize: '0.75rem',
+                          whiteSpace: 'nowrap',
+                        }}
                       >
                         {cleanDate}
                       </Typography>

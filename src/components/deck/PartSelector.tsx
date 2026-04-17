@@ -11,8 +11,12 @@ import Chip from '@mui/material/Chip';
 import CircularProgress from '@mui/material/CircularProgress';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import type { BeyType, Part, PartType } from '@prisma/client';
 import { useCallback, useEffect, useState } from 'react';
+import {
+  type BeyType,
+  type Part,
+  type PartType,
+} from '@/generated/prisma/client';
 
 interface PartSelectorProps {
   type: PartType;
@@ -151,14 +155,16 @@ export function PartSelector({
               : {}
           }
           slotProps={{
+            ...params.slotProps,
+
             input: {
-              ...params.InputProps,
+              ...params.slotProps.input,
               endAdornment: (
                 <>
                   {loading ? (
                     <CircularProgress color="inherit" size={20} />
                   ) : null}
-                  {params.InputProps.endAdornment}
+                  {params.slotProps.input.endAdornment}
                 </>
               ),
             },
@@ -186,10 +192,14 @@ export function PartSelector({
             >
               {option.name.charAt(0)}
             </Avatar>
-
             <Box sx={{ flexGrow: 1 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Typography variant="body2" fontWeight="bold">
+                <Typography
+                  variant="body2"
+                  sx={{
+                    fontWeight: 'bold',
+                  }}
+                >
                   {option.name}
                 </Typography>
                 {option.system && (
@@ -208,8 +218,12 @@ export function PartSelector({
 
               <Typography
                 variant="caption"
-                color="text.secondary"
-                sx={{ display: 'flex', gap: 1, mt: 0.5 }}
+                sx={{
+                  color: 'text.secondary',
+                  display: 'flex',
+                  gap: 1,
+                  mt: 0.5,
+                }}
               >
                 {option.beyType && (
                   <span

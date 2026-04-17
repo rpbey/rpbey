@@ -13,8 +13,7 @@
  *           and WB tournaments (wb_ub3..wb_ub13)
  */
 
-import type { NextRequest } from 'next/server';
-import { NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
 interface RouteParams {

@@ -364,7 +364,7 @@ function buildBattleNarrative(
 
 // ─── Discord Types ──────────────────────────────────────────────────────────
 
-import type { ImageURLOptions } from 'discord.js';
+import { type ImageURLOptions } from 'discord.js';
 
 interface BattleUser {
   id: string;

@@ -24,7 +24,7 @@ import {
 } from '@mui/material';
 import Link from 'next/link';
 import { useState } from 'react';
-import type { UserStats } from '@/lib/stats';
+import { type UserStats } from '@/lib/stats';
 
 interface BladerProfileHeaderProps {
   stats: UserStats;
@@ -172,11 +172,19 @@ export function BladerProfileHeader({
             <Stack
               direction="row"
               spacing={2}
-              alignItems="center"
-              justifyContent={{ xs: 'center', md: 'flex-start' }}
-              sx={{ mb: 0.5 }}
+              sx={{
+                alignItems: 'center',
+                justifyContent: { xs: 'center', md: 'flex-start' },
+                mb: 0.5,
+              }}
             >
-              <Typography variant="h3" fontWeight="900" letterSpacing="-0.03em">
+              <Typography
+                variant="h3"
+                sx={{
+                  fontWeight: '900',
+                  letterSpacing: '-0.03em',
+                }}
+              >
                 {stats.bladerName}
               </Typography>
               {isOwnProfile && (
@@ -194,9 +202,13 @@ export function BladerProfileHeader({
             {/* Handle Challonge Display */}
             <Typography
               variant="subtitle1"
-              fontWeight="bold"
-              color="primary.main"
-              sx={{ mb: 2, display: 'block', opacity: 0.9 }}
+              sx={{
+                fontWeight: 'bold',
+                color: 'primary.main',
+                mb: 2,
+                display: 'block',
+                opacity: 0.9,
+              }}
             >
               @
               {challongeUsername ||
@@ -208,9 +220,12 @@ export function BladerProfileHeader({
             <Stack
               direction="row"
               spacing={1}
-              flexWrap="wrap"
-              justifyContent={{ xs: 'center', md: 'flex-start' }}
-              sx={{ mb: 3, gap: 1 }}
+              sx={{
+                flexWrap: 'wrap',
+                justifyContent: { xs: 'center', md: 'flex-start' },
+                mb: 3,
+                gap: 1,
+              }}
             >
               {Array.isArray(discordRoles) &&
                 discordRoles.map((role) => {
@@ -249,8 +264,10 @@ export function BladerProfileHeader({
             <Stack
               direction="row"
               spacing={2}
-              sx={{ mb: 3 }}
-              justifyContent={{ xs: 'center', md: 'flex-start' }}
+              sx={{
+                justifyContent: { xs: 'center', md: 'flex-start' },
+                mb: 3,
+              }}
             >
               <Chip
                 label={getRankTitle(stats.points)}
@@ -274,8 +291,8 @@ export function BladerProfileHeader({
             {bio ? (
               <Typography
                 variant="body1"
-                color="text.secondary"
                 sx={{
+                  color: 'text.secondary',
                   maxWidth: 600,
                   lineHeight: 1.6,
                   borderLeft: '2px solid',
@@ -291,8 +308,10 @@ export function BladerProfileHeader({
             ) : (
               <Typography
                 variant="body1"
-                color="text.disabled"
-                sx={{ fontStyle: 'italic' }}
+                sx={{
+                  color: 'text.disabled',
+                  fontStyle: 'italic',
+                }}
               >
                 Pas de bio renseignée.
               </Typography>
@@ -339,8 +358,8 @@ export function BladerProfileHeader({
             {joinDate && (
               <Typography
                 variant="caption"
-                color="text.disabled"
                 sx={{
+                  color: 'text.disabled',
                   mt: 2,
                   display: 'block',
                   textTransform: 'uppercase',

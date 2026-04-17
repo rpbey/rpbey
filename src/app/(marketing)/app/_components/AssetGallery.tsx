@@ -123,7 +123,6 @@ export function AssetGallery() {
           </ToggleButtonGroup>
         </Box>
       </Box>
-
       {/* Category filters */}
       <Box sx={{ display: 'flex', gap: 0.75, flexWrap: 'wrap', mb: 3 }}>
         {TEXTURE_CATEGORIES.map((cat) => {
@@ -155,26 +154,35 @@ export function AssetGallery() {
           );
         })}
       </Box>
-
       {/* Results count */}
       <Typography
         variant="caption"
-        color="text.disabled"
-        sx={{ mb: 2, display: 'block' }}
+        sx={{
+          color: 'text.disabled',
+          mb: 2,
+          display: 'block',
+        }}
       >
         {filtered.length} fichier{filtered.length !== 1 ? 's' : ''}
       </Typography>
-
       {/* Gallery grid */}
       {loading ? (
         <Box sx={{ textAlign: 'center', py: 8 }}>
-          <Typography color="text.disabled">
+          <Typography
+            sx={{
+              color: 'text.disabled',
+            }}
+          >
             Chargement des assets...
           </Typography>
         </Box>
       ) : filtered.length === 0 ? (
         <Box sx={{ textAlign: 'center', py: 8 }}>
-          <Typography color="text.disabled">
+          <Typography
+            sx={{
+              color: 'text.disabled',
+            }}
+          >
             Aucun asset dans cette catégorie
           </Typography>
         </Box>
@@ -240,7 +248,6 @@ export function AssetGallery() {
           ))}
         </ImageList>
       )}
-
       {filtered.length > 200 && (
         <Paper
           sx={{
@@ -253,13 +260,17 @@ export function AssetGallery() {
             borderColor: (t) => alpha(t.palette.primary.main, 0.1),
           }}
         >
-          <Typography variant="body2" color="text.secondary">
+          <Typography
+            variant="body2"
+            sx={{
+              color: 'text.secondary',
+            }}
+          >
             Affichage limité à 200 fichiers — {filtered.length - 200} fichiers
             supplémentaires disponibles
           </Typography>
         </Paper>
       )}
-
       {/* Full-size image dialog */}
       <Dialog
         open={!!selectedImage}

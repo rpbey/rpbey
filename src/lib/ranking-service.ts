@@ -1,11 +1,11 @@
 import { prisma } from '@/lib/prisma';
 
-export class RankingService {
+export const RankingService = {
   /**
    * Recalcule les points de classement pour TOUS les utilisateurs
    * basé sur l'historique complet des tournois.
    */
-  static async recalculateAll() {
+  async recalculateAll() {
     // console.log('🔄 Recalcul global du classement...');
 
     // 1. Récupérer les règles
@@ -122,5 +122,5 @@ export class RankingService {
         },
       });
     }
-  }
-}
+  },
+};

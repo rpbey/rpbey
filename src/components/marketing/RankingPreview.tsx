@@ -58,9 +58,12 @@ function RankBadge({ rank }: { rank: number }) {
 
   return (
     <Typography
-      fontWeight="bold"
-      color="text.secondary"
-      sx={{ fontSize: '0.75rem', textAlign: 'center' }}
+      sx={{
+        fontWeight: 'bold',
+        color: 'text.secondary',
+        fontSize: '0.75rem',
+        textAlign: 'center',
+      }}
     >
       #{rank}
     </Typography>
@@ -74,10 +77,13 @@ export function RankingPreview({ rankings }: RankingPreviewProps) {
     return (
       <Typography
         variant="body2"
-        color="text.secondary"
-        sx={{ py: 4, textAlign: 'center' }}
+        sx={{
+          color: 'text.secondary',
+          py: 4,
+          textAlign: 'center',
+        }}
       >
-        Aucun blader class&eacute;
+        Aucun blader classé
       </Typography>
     );
   }
@@ -198,7 +204,6 @@ export function RankingPreview({ rankings }: RankingPreviewProps) {
                 <TableCell align="center" sx={{ px: 0.5, py: 0.75 }}>
                   <RankBadge rank={rank} />
                 </TableCell>
-
                 {/* Blader info */}
                 <TableCell sx={{ px: 1, py: 0.75 }}>
                   <Box
@@ -240,9 +245,9 @@ export function RankingPreview({ rankings }: RankingPreviewProps) {
                       >
                         <Typography
                           className="blader-name"
-                          fontWeight={800}
                           noWrap
                           sx={{
+                            fontWeight: 800,
                             fontSize: '0.78rem',
                             transition: 'color 0.2s',
                             overflow: 'hidden',
@@ -283,18 +288,18 @@ export function RankingPreview({ rankings }: RankingPreviewProps) {
                     </Box>
                   </Box>
                 </TableCell>
-
                 {/* Points */}
                 <TableCell align="center" sx={{ px: 0.5, py: 0.75 }}>
                   <Typography
-                    fontWeight={900}
-                    color="primary.main"
-                    sx={{ fontSize: '0.8rem' }}
+                    sx={{
+                      fontWeight: 900,
+                      color: 'primary.main',
+                      fontSize: '0.8rem',
+                    }}
                   >
                     {profile.points}
                   </Typography>
                 </TableCell>
-
                 {/* V/D with win rate */}
                 <TableCell align="center" sx={{ px: 0.5, py: 0.75 }}>
                   <Typography

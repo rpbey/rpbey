@@ -115,16 +115,20 @@ export function ProfileSettingsForm() {
 
   return (
     <Paper sx={{ p: 4, maxWidth: 600, mx: 'auto', mt: 4 }}>
-      <Typography variant="h5" gutterBottom fontWeight="bold">
+      <Typography
+        variant="h5"
+        gutterBottom
+        sx={{
+          fontWeight: 'bold',
+        }}
+      >
         Paramètres du Profil
       </Typography>
-
       {message && (
         <Alert severity={message.type} sx={{ mb: 3 }}>
           {message.text}
         </Alert>
       )}
-
       <form onSubmit={handleSubmit}>
         <Stack spacing={4}>
           {/* Avatar Section */}
@@ -156,9 +160,11 @@ export function ProfileSettingsForm() {
               </Button>
               <Typography
                 variant="caption"
-                display="block"
-                color="text.secondary"
-                sx={{ mt: 1 }}
+                sx={{
+                  display: 'block',
+                  color: 'text.secondary',
+                  mt: 1,
+                }}
               >
                 Max 5MB. Formats: JPG, PNG, GIF.
               </Typography>

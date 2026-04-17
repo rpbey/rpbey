@@ -10,8 +10,8 @@ import {
   Typography,
 } from '@mui/material';
 import { alpha } from '@mui/material/styles';
-import type { Part } from '@prisma/client';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { type Part } from '@/generated/prisma/client';
 import { useSession } from '@/lib/auth-client';
 import {
   claimDaily,
@@ -1230,15 +1230,20 @@ export function BoosterTab({ allParts }: BoosterTabProps) {
           <Box>
             <Typography
               variant="h5"
-              fontWeight="900"
-              sx={{ color: '#f59e0b', lineHeight: 1 }}
+              sx={{
+                fontWeight: '900',
+                color: '#f59e0b',
+                lineHeight: 1,
+              }}
             >
               {currency}
             </Typography>
             <Typography
               variant="caption"
-              color="text.secondary"
-              fontWeight="600"
+              sx={{
+                color: 'text.secondary',
+                fontWeight: '600',
+              }}
             >
               BeyCoins{!isLoggedIn ? ' (démo)' : ''}
             </Typography>
@@ -1260,7 +1265,6 @@ export function BoosterTab({ allParts }: BoosterTabProps) {
           + Récompense quotidienne
         </Button>
       </Box>
-
       {message && (
         <Typography
           sx={{
@@ -1276,12 +1280,16 @@ export function BoosterTab({ allParts }: BoosterTabProps) {
           {message}
         </Typography>
       )}
-
       {/* Pack selection */}
-      <Typography variant="h6" fontWeight="900" sx={{ mb: 2 }}>
+      <Typography
+        variant="h6"
+        sx={{
+          fontWeight: '900',
+          mb: 2,
+        }}
+      >
         Choisissez un Booster
       </Typography>
-
       <Box
         sx={{
           display: 'grid',
@@ -1331,8 +1339,8 @@ export function BoosterTab({ allParts }: BoosterTabProps) {
                 }}
               />
               <Typography
-                fontWeight="900"
                 sx={{
+                  fontWeight: '900',
                   color: pack.color,
                   fontSize: { xs: '0.8rem', sm: '1.1rem' },
                 }}
@@ -1341,8 +1349,10 @@ export function BoosterTab({ allParts }: BoosterTabProps) {
               </Typography>
               <Typography
                 variant="caption"
-                color="text.secondary"
-                sx={{ display: { xs: 'none', sm: 'block' } }}
+                sx={{
+                  color: 'text.secondary',
+                  display: { xs: 'none', sm: 'block' },
+                }}
               >
                 {pack.desc}
               </Typography>
@@ -1350,7 +1360,6 @@ export function BoosterTab({ allParts }: BoosterTabProps) {
           </Card>
         ))}
       </Box>
-
       {/* Pull buttons */}
       {selectedLine && (
         <Box
@@ -1407,19 +1416,19 @@ export function BoosterTab({ allParts }: BoosterTabProps) {
           </Button>
         </Box>
       )}
-
       {/* Drop rates */}
       <Box sx={{ mt: 4, textAlign: 'center' }}>
         <Typography
           variant="caption"
-          color="text.disabled"
-          sx={{ display: 'block' }}
+          sx={{
+            color: 'text.disabled',
+            display: 'block',
+          }}
         >
           Taux : Commune 35% · Rare 22% · Super Rare 10% · Légendaire 3% · Raté
           30%
         </Typography>
       </Box>
-
       {/* VFX Animation overlay */}
       {showAnimation && (
         <RevealAnimation
@@ -1429,7 +1438,6 @@ export function BoosterTab({ allParts }: BoosterTabProps) {
           }
         />
       )}
-
       {/* Reveal dialog — professional layout */}
       <Dialog
         open={showReveal}
@@ -1477,8 +1485,11 @@ export function BoosterTab({ allParts }: BoosterTabProps) {
               />
               <Typography
                 variant="h5"
-                fontWeight="900"
-                sx={{ color: '#fff', letterSpacing: 1 }}
+                sx={{
+                  fontWeight: '900',
+                  color: '#fff',
+                  letterSpacing: 1,
+                }}
               >
                 {revealedParts.length > 1
                   ? `${revealedParts.length}x Pull`

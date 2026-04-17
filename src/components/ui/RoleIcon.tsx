@@ -4,7 +4,7 @@ import Box from '@mui/material/Box';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import type React from 'react';
-import type { RoleType } from '@/lib/role-colors';
+import { type RoleType } from '@/lib/role-colors';
 
 export interface RoleIconProps {
   /**

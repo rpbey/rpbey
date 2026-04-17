@@ -1,7 +1,7 @@
 import { PrismaPg } from '@prisma/adapter-pg';
-import { PrismaClient } from '@prisma/client';
 import pg from 'pg';
 import { singleton } from 'tsyringe';
+import { PrismaClient } from '../generated/prisma/client.js';
 
 const { Pool } = pg;
 
@@ -34,7 +34,7 @@ function createPrismaClient() {
   const connectionString = process.env.DATABASE_URL;
 
   if (!connectionString) {
-    return new PrismaClient();
+    throw new Error('DATABASE_URL environment variable is not set');
   }
 
   // Removed auto-fallback for production internal networking since bot is on host.

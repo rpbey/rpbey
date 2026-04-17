@@ -6,7 +6,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
-import type { Metadata } from 'next';
+import { type Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Politique de Confidentialité',
@@ -26,20 +26,43 @@ export default function PrivacyPage() {
           borderColor: 'divider',
         }}
       >
-        <Typography variant="h3" component="h1" gutterBottom fontWeight="bold">
+        <Typography
+          variant="h3"
+          component="h1"
+          gutterBottom
+          sx={{
+            fontWeight: 'bold',
+          }}
+        >
           Politique de Confidentialité
         </Typography>
-        <Typography variant="subtitle1" color="text.secondary" paragraph>
+        <Typography
+          variant="subtitle1"
+          sx={{
+            color: 'text.secondary',
+            marginBottom: '16px',
+          }}
+        >
           Dernière mise à jour : 7 Janvier 2026
         </Typography>
 
         <Divider sx={{ my: 4 }} />
 
         <Box component="section" sx={{ mb: 4 }}>
-          <Typography variant="h5" gutterBottom fontWeight="bold">
+          <Typography
+            variant="h5"
+            gutterBottom
+            sx={{
+              fontWeight: 'bold',
+            }}
+          >
             1. Introduction
           </Typography>
-          <Typography paragraph>
+          <Typography
+            sx={{
+              marginBottom: '16px',
+            }}
+          >
             La République Populaire du Beyblade ("RPB", "nous") s'engage à
             protéger votre vie privée. Cette politique de confidentialité
             explique comment nous collectons, utilisons et protégeons vos
@@ -49,10 +72,20 @@ export default function PrivacyPage() {
         </Box>
 
         <Box component="section" sx={{ mb: 4 }}>
-          <Typography variant="h5" gutterBottom fontWeight="bold">
+          <Typography
+            variant="h5"
+            gutterBottom
+            sx={{
+              fontWeight: 'bold',
+            }}
+          >
             2. Données collectées
           </Typography>
-          <Typography paragraph>
+          <Typography
+            sx={{
+              marginBottom: '16px',
+            }}
+          >
             Nous collectons les informations suivantes lorsque vous vous
             connectez à notre service :
           </Typography>
@@ -79,15 +112,29 @@ export default function PrivacyPage() {
         </Box>
 
         <Box component="section" sx={{ mb: 4 }}>
-          <Typography variant="h5" gutterBottom fontWeight="bold">
+          <Typography
+            variant="h5"
+            gutterBottom
+            sx={{
+              fontWeight: 'bold',
+            }}
+          >
             3. Utilisation des données Google
           </Typography>
-          <Typography paragraph>
+          <Typography
+            sx={{
+              marginBottom: '16px',
+            }}
+          >
             Notre application utilise les services Google OAuth pour permettre
             aux administrateurs d'exporter les données de tournoi vers Google
             Sheets.
           </Typography>
-          <Typography paragraph>
+          <Typography
+            sx={{
+              marginBottom: '16px',
+            }}
+          >
             L'utilisation et le transfert vers toute autre application des
             informations reçues des API Google respecteront la
             <a
@@ -101,7 +148,12 @@ export default function PrivacyPage() {
             </a>
             , y compris les exigences d'utilisation limitée.
           </Typography>
-          <Typography paragraph fontWeight="medium">
+          <Typography
+            sx={{
+              fontWeight: 'medium',
+              marginBottom: '16px',
+            }}
+          >
             Si vous connectez votre compte Google pour utiliser la
             fonctionnalité d'exportation vers Sheets :
           </Typography>
@@ -128,10 +180,20 @@ export default function PrivacyPage() {
         </Box>
 
         <Box component="section" sx={{ mb: 4 }}>
-          <Typography variant="h5" gutterBottom fontWeight="bold">
+          <Typography
+            variant="h5"
+            gutterBottom
+            sx={{
+              fontWeight: 'bold',
+            }}
+          >
             4. Partage des données
           </Typography>
-          <Typography paragraph>
+          <Typography
+            sx={{
+              marginBottom: '16px',
+            }}
+          >
             Nous ne vendons, n'échangeons ni ne louons vos informations
             personnelles à des tiers. Nous pouvons partager des données agrégées
             et anonymes à des fins statistiques.
@@ -139,10 +201,20 @@ export default function PrivacyPage() {
         </Box>
 
         <Box component="section" sx={{ mb: 4 }}>
-          <Typography variant="h5" gutterBottom fontWeight="bold">
+          <Typography
+            variant="h5"
+            gutterBottom
+            sx={{
+              fontWeight: 'bold',
+            }}
+          >
             5. Vos droits
           </Typography>
-          <Typography paragraph>
+          <Typography
+            sx={{
+              marginBottom: '16px',
+            }}
+          >
             Conformément au RGPD et aux lois applicables, vous avez le droit de
             :
           </Typography>
@@ -163,14 +235,28 @@ export default function PrivacyPage() {
         </Box>
 
         <Box component="section">
-          <Typography variant="h5" gutterBottom fontWeight="bold">
+          <Typography
+            variant="h5"
+            gutterBottom
+            sx={{
+              fontWeight: 'bold',
+            }}
+          >
             6. Contact
           </Typography>
-          <Typography paragraph>
+          <Typography
+            sx={{
+              marginBottom: '16px',
+            }}
+          >
             Pour toute question concernant cette politique de confidentialité ou
             pour exercer vos droits, veuillez nous contacter :
           </Typography>
-          <Typography paragraph>
+          <Typography
+            sx={{
+              marginBottom: '16px',
+            }}
+          >
             Email : contact@rpbey.fr
             <br />
             Discord : Via le serveur officiel RPB

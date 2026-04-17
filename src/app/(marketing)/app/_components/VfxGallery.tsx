@@ -280,9 +280,11 @@ function AnimatedPreview({ sequence }: { sequence: VfxSequence }) {
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
             <Typography
               variant="body2"
-              fontWeight="900"
               noWrap
-              sx={{ flex: 1 }}
+              sx={{
+                fontWeight: '900',
+                flex: 1,
+              }}
             >
               {sequence.name}
             </Typography>
@@ -301,14 +303,15 @@ function AnimatedPreview({ sequence }: { sequence: VfxSequence }) {
           </Box>
           <Typography
             variant="caption"
-            color="text.secondary"
-            sx={{ fontSize: '0.7rem' }}
+            sx={{
+              color: 'text.secondary',
+              fontSize: '0.7rem',
+            }}
           >
             {sequence.description}
           </Typography>
         </CardContent>
       </Card>
-
       {/* Full-size dialog */}
       <Dialog
         open={dialogOpen}
@@ -329,7 +332,13 @@ function AnimatedPreview({ sequence }: { sequence: VfxSequence }) {
             gap: 2,
           }}
         >
-          <Typography variant="h6" fontWeight="900" sx={{ color: '#fff' }}>
+          <Typography
+            variant="h6"
+            sx={{
+              fontWeight: '900',
+              color: '#fff',
+            }}
+          >
             {sequence.name}
           </Typography>
           <Box
@@ -404,7 +413,13 @@ function StaticVfxGrid() {
 
   return (
     <Box sx={{ mt: 4 }}>
-      <Typography variant="h6" fontWeight="900" sx={{ mb: 2 }}>
+      <Typography
+        variant="h6"
+        sx={{
+          fontWeight: '900',
+          mb: 2,
+        }}
+      >
         Textures VFX individuelles ({assets.length})
       </Typography>
       <Box
@@ -453,7 +468,6 @@ function StaticVfxGrid() {
           </Box>
         ))}
       </Box>
-
       <Dialog
         open={!!selectedImage}
         onClose={() => setSelectedImage(null)}

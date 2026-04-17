@@ -48,7 +48,6 @@ export function IconFooter() {
           <DiscordIcon size={20} />
         </IconButton>
       </Tooltip>
-
       <Tooltip title="GitHub">
         <IconButton
           component="a"
@@ -66,7 +65,6 @@ export function IconFooter() {
           <GitHub sx={{ fontSize: 20 }} />
         </IconButton>
       </Tooltip>
-
       <Tooltip title="Twitch">
         <IconButton
           component="a"
@@ -84,7 +82,6 @@ export function IconFooter() {
           <TwitchIcon size={20} />
         </IconButton>
       </Tooltip>
-
       <Tooltip title="TikTok">
         <IconButton
           component="a"
@@ -102,7 +99,6 @@ export function IconFooter() {
           <TikTokIcon size={20} />
         </IconButton>
       </Tooltip>
-
       <Tooltip title="X (Twitter)">
         <IconButton
           component="a"
@@ -120,43 +116,42 @@ export function IconFooter() {
           <XIcon sx={{ fontSize: 20 }} />
         </IconButton>
       </Tooltip>
-
       {/* Divider */}
       <Box sx={{ width: '1px', height: 16, bgcolor: 'divider', mx: 1 }} />
-
       {/* Links */}
       <Typography
         component="a"
         href="/reglement"
         variant="caption"
-        color="text.secondary"
         sx={{
+          color: 'text.secondary',
           textDecoration: 'none',
           '&:hover': { textDecoration: 'underline' },
         }}
       >
         Règlement
       </Typography>
-
       <Box sx={{ width: '1px', height: 16, bgcolor: 'divider', mx: 1 }} />
-
       <Typography
         component="a"
         href="/privacy"
         variant="caption"
-        color="text.secondary"
         sx={{
+          color: 'text.secondary',
           textDecoration: 'none',
           '&:hover': { textDecoration: 'underline' },
         }}
       >
         Confidentialité
       </Typography>
-
       <Box sx={{ width: '1px', height: 16, bgcolor: 'divider', mx: 1 }} />
-
       {/* Copyright */}
-      <Typography variant="caption" color="text.secondary">
+      <Typography
+        variant="caption"
+        sx={{
+          color: 'text.secondary',
+        }}
+      >
         © {new Date().getFullYear()} RPB
       </Typography>
     </Box>

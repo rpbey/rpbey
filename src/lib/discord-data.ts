@@ -1,7 +1,7 @@
 import { BOT_API_KEY, getBotApiUrl } from '@/lib/bot-config';
 import { prisma } from '@/lib/prisma';
 import { DiscordRoleMapping, type RoleType } from '@/lib/role-colors';
-import type { BotMember } from '@/types';
+import { type BotMember } from '@/types';
 
 export interface DiscordStats {
   onlineCount: number;

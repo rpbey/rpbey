@@ -32,8 +32,10 @@ export const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ items }) => {
           return (
             <Typography
               key={item.label}
-              color="text.primary"
-              fontWeight={isLast ? 'medium' : 'regular'}
+              sx={{
+                color: 'text.primary',
+                fontWeight: isLast ? 'medium' : 'regular',
+              }}
             >
               {item.label}
             </Typography>

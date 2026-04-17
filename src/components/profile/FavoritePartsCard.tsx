@@ -12,7 +12,7 @@ import Chip from '@mui/material/Chip';
 import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import type { UserStats } from '@/lib/stats';
+import { type UserStats } from '@/lib/stats';
 
 interface FavoritePartsCardProps {
   blades: UserStats['mostUsedBlades'];
@@ -32,10 +32,21 @@ function PartSection({
   if (parts.length === 0) {
     return (
       <Box>
-        <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+        <Typography
+          variant="subtitle2"
+          gutterBottom
+          sx={{
+            color: 'text.secondary',
+          }}
+        >
           {title}
         </Typography>
-        <Typography variant="body2" color="text.secondary">
+        <Typography
+          variant="body2"
+          sx={{
+            color: 'text.secondary',
+          }}
+        >
           Aucune donnée
         </Typography>
       </Box>
@@ -44,10 +55,23 @@ function PartSection({
 
   return (
     <Box>
-      <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+      <Typography
+        variant="subtitle2"
+        gutterBottom
+        sx={{
+          color: 'text.secondary',
+        }}
+      >
         {title}
       </Typography>
-      <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+      <Stack
+        direction="row"
+        spacing={1}
+        useFlexGap
+        sx={{
+          flexWrap: 'wrap',
+        }}
+      >
         {parts.map((part, index) => (
           <Chip
             key={part.partId}
@@ -88,12 +112,24 @@ export function FavoritePartsCard({
   return (
     <Card>
       <CardContent>
-        <Typography variant="h6" fontWeight="bold" gutterBottom>
+        <Typography
+          variant="h6"
+          gutterBottom
+          sx={{
+            fontWeight: 'bold',
+          }}
+        >
           Pièces favorites
         </Typography>
 
         {!hasData ? (
-          <Typography color="text.secondary" textAlign="center" py={4}>
+          <Typography
+            sx={{
+              color: 'text.secondary',
+              textAlign: 'center',
+              py: 4,
+            }}
+          >
             Aucune pièce utilisée pour le moment
           </Typography>
         ) : (

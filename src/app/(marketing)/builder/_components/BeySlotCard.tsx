@@ -3,8 +3,8 @@
 import { Close, WarningAmber } from '@mui/icons-material';
 import { Avatar, Box, Chip, IconButton, Typography } from '@mui/material';
 import { alpha, keyframes } from '@mui/material/styles';
-import type { Part } from '@prisma/client';
 import { StatRadar } from '@/components/ui/StatRadar';
+import { type Part } from '@/generated/prisma/client';
 import { type BuilderStep, isCXBlade, useBuilder } from './BuilderContext';
 
 const pulse = keyframes`
@@ -177,15 +177,19 @@ export function BeySlotCard({ slotIndex }: BeySlotCardProps) {
           <Box>
             <Typography
               variant="subtitle2"
-              fontWeight="900"
-              sx={{ lineHeight: 1 }}
+              sx={{
+                fontWeight: '900',
+                lineHeight: 1,
+              }}
             >
               BEYBLADE
             </Typography>
             <Typography
               variant="caption"
-              color="text.secondary"
-              sx={{ fontWeight: 'bold' }}
+              sx={{
+                color: 'text.secondary',
+                fontWeight: 'bold',
+              }}
             >
               {filledCount}/{rows.length} PIÈCES
             </Typography>
@@ -239,7 +243,6 @@ export function BeySlotCard({ slotIndex }: BeySlotCardProps) {
           )}
         </Box>
       </Box>
-
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
         {rows.map(({ key, label, step, color }) => {
           const part = bey[key];
@@ -293,18 +296,20 @@ export function BeySlotCard({ slotIndex }: BeySlotCardProps) {
                 <Typography
                   variant="caption"
                   color={isActiveRow ? 'error.main' : 'text.secondary'}
-                  fontSize="0.6rem"
-                  fontWeight="900"
-                  textTransform="uppercase"
-                  letterSpacing={1}
+                  sx={{
+                    fontSize: '0.6rem',
+                    fontWeight: '900',
+                    textTransform: 'uppercase',
+                    letterSpacing: 1,
+                  }}
                 >
                   {label}
                 </Typography>
                 <Typography
                   variant="body2"
-                  fontWeight="900"
                   noWrap
                   sx={{
+                    fontWeight: '900',
                     color: part ? 'text.primary' : 'text.disabled',
                     fontStyle: part ? 'normal' : 'italic',
                   }}
@@ -333,7 +338,6 @@ export function BeySlotCard({ slotIndex }: BeySlotCardProps) {
           );
         })}
       </Box>
-
       {isComplete && (
         <Box
           sx={{
@@ -401,13 +405,21 @@ export function BeySlotCard({ slotIndex }: BeySlotCardProps) {
           >
             <Typography
               variant="caption"
-              fontWeight="900"
-              color="text.secondary"
-              sx={{ letterSpacing: 1 }}
+              sx={{
+                fontWeight: '900',
+                color: 'text.secondary',
+                letterSpacing: 1,
+              }}
             >
               POIDS TOTAL COMBINÉ
             </Typography>
-            <Typography variant="h6" fontWeight="900" color="error.main">
+            <Typography
+              variant="h6"
+              sx={{
+                fontWeight: '900',
+                color: 'error.main',
+              }}
+            >
               {stats.weight.toFixed(1)}g
             </Typography>
           </Box>

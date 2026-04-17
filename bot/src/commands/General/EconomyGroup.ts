@@ -243,7 +243,6 @@ export class EconomyGroup {
     return { userId: user.id, profile };
   }
 
-  // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: debt check helper
   private debtEmbed(profile: { currency: number }): EmbedBuilder | null {
     if (profile.currency >= 0) return null;
     const debt = Math.abs(profile.currency);

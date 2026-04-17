@@ -2,8 +2,7 @@
  * POST /api/gacha/duel
  * Duel with a random opponent card using element advantages
  */
-import type { NextRequest } from 'next/server';
-import { NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { badRequest, getApiUser, serverError, unauthorized } from '../helpers';
 

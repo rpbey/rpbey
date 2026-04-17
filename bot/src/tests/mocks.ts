@@ -1,4 +1,8 @@
-import type { CommandInteraction, Guild, TextChannel } from 'discord.js';
+import {
+  type CommandInteraction,
+  type Guild,
+  type TextChannel,
+} from 'discord.js';
 import { vi } from 'vitest';
 
 export function createMockInteraction(options: {

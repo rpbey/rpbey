@@ -165,8 +165,8 @@ export function AnimeSeriesCard({
         {/* Title */}
         <Typography
           variant="body2"
-          fontWeight={700}
           sx={{
+            fontWeight: 700,
             mt: 1,
             color: 'text.primary',
             overflow: 'hidden',

@@ -114,7 +114,7 @@ export default function ThemeRegistry({
       setTheme,
       backgroundImage,
     }),
-    [mode, toggleTheme, setTheme, backgroundImage],
+    [mode, toggleTheme, setTheme],
   );
 
   return (

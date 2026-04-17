@@ -19,9 +19,8 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { useEffect, useState } from 'react';
 import { validateDeck } from '@/lib/tournament-logic';
-import type { BeyData } from './BeyBuilder';
-import { BeyBuilder } from './BeyBuilder';
-import type { Deck } from './DeckCard';
+import { BeyBuilder, type BeyData } from './BeyBuilder';
+import { type Deck } from './DeckCard';
 
 interface DeckBuilderModalProps {
   open: boolean;
@@ -245,11 +244,13 @@ export function DeckBuilderModal({
       maxWidth="lg"
       fullWidth
       fullScreen={isMobile}
-      PaperProps={{
-        sx: {
-          bgcolor: '#0a0a0a',
-          backgroundImage:
-            'url("https://www.transparenttextures.com/patterns/dark-matter.png")',
+      slotProps={{
+        paper: {
+          sx: {
+            bgcolor: '#0a0a0a',
+            backgroundImage:
+              'url("https://www.transparenttextures.com/patterns/dark-matter.png")',
+          },
         },
       }}
     >
@@ -262,7 +263,13 @@ export function DeckBuilderModal({
           alignItems: 'center',
         }}
       >
-        <Typography variant="h6" fontWeight="900" sx={{ letterSpacing: 2 }}>
+        <Typography
+          variant="h6"
+          sx={{
+            fontWeight: '900',
+            letterSpacing: 2,
+          }}
+        >
           {deck ? "MODIFIER L'ÉQUIPEMENT" : 'NOUVELLE DECK BOX'}
         </Typography>
         <FormControlLabel
@@ -283,7 +290,6 @@ export function DeckBuilderModal({
           }
         />
       </DialogTitle>
-
       <DialogContent sx={{ p: 0 }}>
         <Box sx={{ p: 3, display: 'flex', flexDirection: 'column', gap: 3 }}>
           {error && <Alert severity="error">{error}</Alert>}
@@ -392,7 +398,6 @@ export function DeckBuilderModal({
           </Box>
         </Box>
       </DialogContent>
-
       <DialogActions
         sx={{ bgcolor: '#0a0a0a', borderTop: '1px solid #222', p: 3 }}
       >

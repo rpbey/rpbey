@@ -241,9 +241,12 @@ export function WbHallOfFame({
     <Box sx={{ mb: 4 }}>
       <Stack
         direction="row"
-        alignItems="center"
         spacing={1}
-        sx={{ mb: 1.5, px: 1 }}
+        sx={{
+          alignItems: 'center',
+          mb: 1.5,
+          px: 1,
+        }}
       >
         <Box sx={{ display: 'flex', color: 'primary.main' }}>
           <TrophyIcon size={18} />
@@ -260,7 +263,6 @@ export function WbHallOfFame({
           Hall of Fame
         </Typography>
       </Stack>
-
       <Stack
         direction="row"
         spacing={1.5}
@@ -323,7 +325,6 @@ export function WbHallOfFame({
               >
                 <TrophyIcon size={60} />
               </Box>
-
               {/* Theme icon + UB number */}
               <Box
                 sx={{
@@ -353,7 +354,6 @@ export function WbHallOfFame({
                   {c.date}
                 </Typography>
               </Box>
-
               {/* Theme name */}
               {info && (
                 <Typography
@@ -370,13 +370,12 @@ export function WbHallOfFame({
                   {info.theme}
                 </Typography>
               )}
-
               {/* Winner name */}
               <Typography
                 variant="body2"
-                fontWeight="900"
                 onClick={() => handleChampionClick(c.winner)}
                 sx={{
+                  fontWeight: '900',
                   color: '#fff',
                   textShadow: '0 1px 2px rgba(0,0,0,0.5)',
                   cursor: 'pointer',
@@ -384,6 +383,7 @@ export function WbHallOfFame({
                   whiteSpace: 'nowrap',
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
+
                   '&:hover': {
                     color: info ? info.color : 'primary.main',
                   },
@@ -391,7 +391,6 @@ export function WbHallOfFame({
               >
                 {c.winner}
               </Typography>
-
               {/* Participants */}
               {(meta || info) && (
                 <Typography
@@ -407,7 +406,6 @@ export function WbHallOfFame({
                   {meta?.participantsCount || info?.participants} participants
                 </Typography>
               )}
-
               <Button
                 size="small"
                 fullWidth
@@ -434,7 +432,6 @@ export function WbHallOfFame({
           );
         })}
       </Stack>
-
       {/* ── Modal: Tournament Info + Top 10 ── */}
       <Modal
         open={openTop10}
@@ -524,8 +521,8 @@ export function WbHallOfFame({
                     </Typography>
                     <Typography
                       variant="h6"
-                      fontWeight={900}
                       sx={{
+                        fontWeight: 900,
                         color: '#f5f0f0',
                         lineHeight: 1.2,
                         fontSize: '1.1rem',
@@ -578,7 +575,13 @@ export function WbHallOfFame({
                     alignItems: 'center',
                   }}
                 >
-                  <Stack direction="row" spacing={0.5} alignItems="center">
+                  <Stack
+                    direction="row"
+                    spacing={0.5}
+                    sx={{
+                      alignItems: 'center',
+                    }}
+                  >
                     <GroupsIcon
                       sx={{ fontSize: 14, color: alpha('#fff', 0.3) }}
                     />
@@ -594,7 +597,13 @@ export function WbHallOfFame({
                     </Typography>
                   </Stack>
                   {selectedChampion && (
-                    <Stack direction="row" spacing={0.5} alignItems="center">
+                    <Stack
+                      direction="row"
+                      spacing={0.5}
+                      sx={{
+                        alignItems: 'center',
+                      }}
+                    >
                       <EmojiEventsIcon
                         sx={{ fontSize: 14, color: selectedInfo.color }}
                       />

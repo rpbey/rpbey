@@ -17,20 +17,35 @@ export function Footer() {
       <Container maxWidth="lg">
         <Stack
           direction={{ xs: 'column', sm: 'row' }}
-          justifyContent="space-between"
-          alignItems="center"
           spacing={2}
+          sx={{
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
         >
-          <Typography variant="body2" color="text.secondary">
+          <Typography
+            variant="body2"
+            sx={{
+              color: 'text.secondary',
+            }}
+          >
             © {new Date().getFullYear()} République Populaire du Beyblade
           </Typography>
 
-          <Stack direction="row" spacing={3} alignItems="center">
+          <Stack
+            direction="row"
+            spacing={3}
+            sx={{
+              alignItems: 'center',
+            }}
+          >
             <Link href="/notre-equipe" style={{ textDecoration: 'none' }}>
               <Typography
                 variant="body2"
-                color="text.secondary"
-                sx={{ '&:hover': { color: 'primary.main' } }}
+                sx={{
+                  color: 'text.secondary',
+                  '&:hover': { color: 'primary.main' },
+                }}
               >
                 Notre Équipe
               </Typography>

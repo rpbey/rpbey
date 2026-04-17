@@ -132,7 +132,12 @@ export default function SecuritySettings() {
       <CardContent sx={{ p: 4 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 3 }}>
           <LockIcon color="primary" sx={{ fontSize: 28 }} />
-          <Typography variant="h5" fontWeight="800">
+          <Typography
+            variant="h5"
+            sx={{
+              fontWeight: '800',
+            }}
+          >
             Sécurité
           </Typography>
         </Box>
@@ -155,8 +160,12 @@ export default function SecuritySettings() {
             <Box>
               <Typography
                 variant="subtitle1"
-                fontWeight="bold"
-                sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
+                sx={{
+                  fontWeight: 'bold',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1,
+                }}
               >
                 Authentification à deux facteurs (A2F)
                 {is2FAEnabled ? (
@@ -179,8 +188,10 @@ export default function SecuritySettings() {
               </Typography>
               <Typography
                 variant="body2"
-                color="text.secondary"
-                sx={{ mt: 0.5 }}
+                sx={{
+                  color: 'text.secondary',
+                  mt: 0.5,
+                }}
               >
                 Protégez votre compte avec une couche de sécurité
                 supplémentaire.
@@ -208,15 +219,16 @@ export default function SecuritySettings() {
           </Box>
         </Stack>
       </CardContent>
-
       {/* Enable 2FA Dialog */}
       <Dialog
         open={openEnable}
         onClose={() => setOpenEnable(false)}
         maxWidth="sm"
         fullWidth
-        PaperProps={{
-          sx: { borderRadius: 4, p: 1 },
+        slotProps={{
+          paper: {
+            sx: { borderRadius: 4, p: 1 },
+          },
         }}
       >
         <DialogTitle sx={{ fontWeight: 'bold' }}>
@@ -225,7 +237,11 @@ export default function SecuritySettings() {
         <DialogContent>
           {step === 'password' && (
             <Stack spacing={2} sx={{ pt: 1 }}>
-              <Typography color="text.secondary">
+              <Typography
+                sx={{
+                  color: 'text.secondary',
+                }}
+              >
                 Pour activer l'authentification à deux facteurs, veuillez
                 confirmer votre mot de passe.
               </Typography>
@@ -247,7 +263,12 @@ export default function SecuritySettings() {
 
           {step === 'qr' && (
             <Stack spacing={3} sx={{ pt: 1, alignItems: 'center' }}>
-              <Typography align="center" color="text.secondary">
+              <Typography
+                align="center"
+                sx={{
+                  color: 'text.secondary',
+                }}
+              >
                 Scannez ce QR Code avec votre application d'authentification
                 (Google Authenticator, Authy, etc.).
               </Typography>
@@ -366,17 +387,22 @@ export default function SecuritySettings() {
           )}
         </DialogActions>
       </Dialog>
-
       {/* Disable 2FA Dialog */}
       <Dialog
         open={openDisable}
         onClose={() => setOpenDisable(false)}
-        PaperProps={{ sx: { borderRadius: 4, p: 1 } }}
+        slotProps={{
+          paper: { sx: { borderRadius: 4, p: 1 } },
+        }}
       >
         <DialogTitle sx={{ fontWeight: 'bold' }}>Désactiver l'A2F</DialogTitle>
         <DialogContent>
           <Stack spacing={2} sx={{ pt: 1 }}>
-            <Typography color="text.secondary">
+            <Typography
+              sx={{
+                color: 'text.secondary',
+              }}
+            >
               Êtes-vous sûr de vouloir désactiver l'authentification à deux
               facteurs ? Votre compte sera moins sécurisé.
             </Typography>

@@ -8,7 +8,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import DownloadIcon from '@mui/icons-material/Download';
 import EditIcon from '@mui/icons-material/Edit';
 import StarIcon from '@mui/icons-material/Star';
-import StarOutlineIcon from '@mui/icons-material/StarOutline';
+import StarOutlineIcon from '@mui/icons-material/StarOutlined';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -20,8 +20,8 @@ import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import { alpha, useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
-import type { Part } from '@prisma/client';
 import { StatRadar } from '@/components/ui/StatRadar';
+import { type Part } from '@/generated/prisma/client';
 
 export interface DeckBey {
   id: string;
@@ -111,7 +111,13 @@ function BeyLine({ bey }: { bey: DeckBey }) {
         </Avatar>
         <Box sx={{ flex: 1, minWidth: 0 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Typography variant="subtitle2" fontWeight="900" noWrap>
+            <Typography
+              variant="subtitle2"
+              noWrap
+              sx={{
+                fontWeight: '900',
+              }}
+            >
               {bey.nickname ||
                 (partsAvailable ? bey.blade?.name : 'Bey incomplet')}
             </Typography>
@@ -131,8 +137,11 @@ function BeyLine({ bey }: { bey: DeckBey }) {
           </Box>
           <Typography
             variant="caption"
-            color="text.secondary"
-            sx={{ display: 'block', mt: 0.25 }}
+            sx={{
+              color: 'text.secondary',
+              display: 'block',
+              mt: 0.25,
+            }}
           >
             {partsAvailable
               ? `${bey.ratchet?.name} • ${bey.bit?.name}`
@@ -140,7 +149,6 @@ function BeyLine({ bey }: { bey: DeckBey }) {
           </Typography>
         </Box>
       </Box>
-
       {partsAvailable && (
         <Box
           sx={{
@@ -309,9 +317,11 @@ export function DeckCard({
           <Box sx={{ minWidth: 0 }}>
             <Typography
               variant="h6"
-              fontWeight="900"
               noWrap
-              letterSpacing="-0.01em"
+              sx={{
+                fontWeight: '900',
+                letterSpacing: '-0.01em',
+              }}
             >
               {deck.name}
             </Typography>
@@ -384,7 +394,6 @@ export function DeckCard({
           ))}
         </Box>
       </CardContent>
-
       {!deck.isActive && onActivate && (
         <Box sx={{ p: 2, pt: 0 }}>
           <Button

@@ -1,4 +1,5 @@
 import { timingSafeEqual } from 'node:crypto';
+import { type Server, type ServerWebSocket } from 'bun';
 import { bot } from './bot.js';
 import { logger } from './logger.js';
 
@@ -7,8 +8,26 @@ const logs: { timestamp: string; level: string; message: string }[] = [];
 const MAX_LOGS = 1000;
 
 export function addLog(level: string, message: string) {
-  logs.push({ timestamp: new Date().toISOString(), level, message });
+  const entry = { timestamp: new Date().toISOString(), level, message };
+  logs.push(entry);
   if (logs.length > MAX_LOGS) logs.shift();
+  // Fan out to any WebSocket subscriber on the "logs" topic.
+  publishEvent('logs', entry);
+}
+
+type WsData = { ip: string; topics: Set<string> };
+
+// Module-level handle so other files (bot.ts, log-capture) can publish events.
+let serverRef: Server<WsData> | null = null;
+
+export function publishEvent(topic: string, payload: unknown): number {
+  if (!serverRef) return 0;
+  const msg = JSON.stringify({ topic, data: payload, ts: Date.now() });
+  return serverRef.publish(topic, msg);
+}
+
+export function wsSubscriberCount(topic: string): number {
+  return serverRef?.subscriberCount(topic) ?? 0;
 }
 
 export function getLogs(tail = 100) {
@@ -105,14 +124,99 @@ function authenticate(req: Request): Response | null {
   return null; // Auth passed
 }
 
+const ALLOWED_TOPICS = new Set(['logs', 'bot-events', 'discord-events']);
+
 export function startApiServer(port = 3001) {
-  const server = Bun.serve({
+  let server: Server<WsData>;
+  try {
+    server = buildServer(port);
+  } catch (e) {
+    const code = (e as NodeJS.ErrnoException).code;
+    if (code === 'EADDRINUSE') {
+      console.error(
+        `[api-server] Port ${port} is already bound — another bot instance is likely running. Aborting.`,
+      );
+      process.exit(13);
+    }
+    throw e;
+  }
+  serverRef = server;
+  logger.info(`Bot API server listening on http://127.0.0.1:${port} (ws: /ws)`);
+  return server;
+}
+
+function buildServer(port: number): Server<WsData> {
+  return Bun.serve<WsData>({
     port,
     hostname: '127.0.0.1',
 
     routes: {
+      // WebSocket upgrade — auth via `?key=<BOT_API_KEY>` (browser clients can't set headers).
+      '/ws': (req: Request, srv: Server<WsData>) => {
+        const expectedKey = process.env.BOT_API_KEY ?? '';
+        const providedKey = new URL(req.url).searchParams.get('key') ?? '';
+        if (!expectedKey) {
+          return new Response('BOT_API_KEY not configured', { status: 500 });
+        }
+        const a = Buffer.from(providedKey, 'utf8');
+        const b = Buffer.from(expectedKey, 'utf8');
+        if (a.length !== b.length || !timingSafeEqual(a, b)) {
+          return new Response('Unauthorized', { status: 401 });
+        }
+        const ip = srv.requestIP(req)?.address ?? 'unknown';
+        const ok = srv.upgrade(req, {
+          data: { ip, topics: new Set<string>() },
+        });
+        return ok ? undefined : new Response('Upgrade failed', { status: 400 });
+      },
+
+      // Public health probes — no auth, no state exposure beyond liveness/readiness.
+      // Consumed by systemd watchdog + `next service monitor`.
+      '/health': () =>
+        Response.json(
+          { status: 'ok', uptime: process.uptime() },
+          { headers: CORS_HEADERS },
+        ),
+      '/ready': () => {
+        const ready = bot.isReady();
+        return Response.json(
+          { ready, ping: ready ? bot.ws.ping : null },
+          { status: ready ? 200 : 503, headers: CORS_HEADERS },
+        );
+      },
+      '/metrics': () => {
+        const mem = process.memoryUsage();
+        const body = [
+          `# HELP rpb_bot_ready 1 if Discord gateway is ready, 0 otherwise`,
+          `# TYPE rpb_bot_ready gauge`,
+          `rpb_bot_ready ${bot.isReady() ? 1 : 0}`,
+          `# HELP rpb_bot_ws_ping Discord websocket ping in ms`,
+          `# TYPE rpb_bot_ws_ping gauge`,
+          `rpb_bot_ws_ping ${bot.isReady() ? bot.ws.ping : -1}`,
+          `# HELP rpb_bot_guilds Number of cached guilds`,
+          `# TYPE rpb_bot_guilds gauge`,
+          `rpb_bot_guilds ${bot.guilds.cache.size}`,
+          `# HELP rpb_bot_heap_bytes Heap used in bytes`,
+          `# TYPE rpb_bot_heap_bytes gauge`,
+          `rpb_bot_heap_bytes ${mem.heapUsed}`,
+          `# HELP rpb_bot_rss_bytes Resident set size in bytes`,
+          `# TYPE rpb_bot_rss_bytes gauge`,
+          `rpb_bot_rss_bytes ${mem.rss}`,
+          `# HELP rpb_bot_uptime_seconds Process uptime in seconds`,
+          `# TYPE rpb_bot_uptime_seconds counter`,
+          `rpb_bot_uptime_seconds ${process.uptime()}`,
+          '',
+        ].join('\n');
+        return new Response(body, {
+          headers: {
+            ...CORS_HEADERS,
+            'Content-Type': 'text/plain; version=0.0.4',
+          },
+        });
+      },
+
       '/api/status': {
-        GET: async (req) => {
+        GET: async (req: Request) => {
           const authError = authenticate(req);
           if (authError) return authError;
           return Response.json(await getBotStatus(), { headers: CORS_HEADERS });
@@ -122,7 +226,7 @@ export function startApiServer(port = 3001) {
       },
 
       '/api/logs': {
-        GET: (req) => {
+        GET: (req: Request) => {
           const authError = authenticate(req);
           if (authError) return authError;
           const url = new URL(req.url);
@@ -139,7 +243,7 @@ export function startApiServer(port = 3001) {
       },
 
       '/api/commands': {
-        GET: (req) => {
+        GET: (req: Request) => {
           const authError = authenticate(req);
           if (authError) return authError;
           const commands = bot.applicationCommands.map((cmd) => ({
@@ -155,9 +259,9 @@ export function startApiServer(port = 3001) {
     },
 
     // Fallback for unmatched routes
-    fetch(req) {
+    fetch(req: Request, srv: Server<WsData>) {
       // Rate limiting on fallback
-      const ip = server.requestIP(req)?.address ?? 'unknown';
+      const ip = srv.requestIP(req)?.address ?? 'unknown';
       if (!checkRateLimit(ip)) {
         return Response.json(
           { error: 'Too Many Requests' },
@@ -175,6 +279,55 @@ export function startApiServer(port = 3001) {
       );
     },
 
+    websocket: {
+      maxPayloadLength: 256 * 1024, // 256 KB — no client needs more than that for control msgs
+      perMessageDeflate: true,
+      idleTimeout: 120,
+      backpressureLimit: 1024 * 1024,
+      publishToSelf: false,
+
+      open(ws: ServerWebSocket<WsData>) {
+        ws.send(
+          JSON.stringify({
+            topic: 'welcome',
+            data: { availableTopics: [...ALLOWED_TOPICS] },
+            ts: Date.now(),
+          }),
+        );
+      },
+
+      message(ws: ServerWebSocket<WsData>, raw: string | Buffer) {
+        // Clients send JSON {action: "subscribe"|"unsubscribe", topic: string}
+        let payload: { action?: string; topic?: string };
+        try {
+          payload = JSON.parse(typeof raw === 'string' ? raw : raw.toString());
+        } catch {
+          ws.send(JSON.stringify({ error: 'invalid_json' }));
+          return;
+        }
+        const { action, topic } = payload;
+        if (!topic || !ALLOWED_TOPICS.has(topic)) {
+          ws.send(JSON.stringify({ error: 'unknown_topic', topic }));
+          return;
+        }
+        if (action === 'subscribe') {
+          ws.subscribe(topic);
+          ws.data.topics.add(topic);
+          ws.send(JSON.stringify({ ack: 'subscribed', topic }));
+        } else if (action === 'unsubscribe') {
+          ws.unsubscribe(topic);
+          ws.data.topics.delete(topic);
+          ws.send(JSON.stringify({ ack: 'unsubscribed', topic }));
+        } else {
+          ws.send(JSON.stringify({ error: 'invalid_action', action }));
+        }
+      },
+
+      close(ws: ServerWebSocket<WsData>) {
+        for (const t of ws.data.topics) ws.unsubscribe(t);
+      },
+    },
+
     error(error) {
       logger.error('API Server Error:', error);
       return Response.json(
@@ -183,7 +336,4 @@ export function startApiServer(port = 3001) {
       );
     },
   });
-
-  logger.info(`Bot API server listening on http://127.0.0.1:${port}`);
-  return server;
 }

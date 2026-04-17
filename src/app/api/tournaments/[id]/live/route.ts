@@ -4,8 +4,7 @@
  * GET: Return stored live data (standings, stations, activityLog)
  */
 
-import type { NextRequest } from 'next/server';
-import { NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import { requireStaff } from '@/lib/auth-utils';
 import { prisma } from '@/lib/prisma';
 

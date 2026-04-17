@@ -46,8 +46,10 @@ export const StatsCard: React.FC<StatsCardProps> = ({
       >
         <Typography
           variant="subtitle2"
-          color="text.secondary"
-          fontWeight="medium"
+          sx={{
+            color: 'text.secondary',
+            fontWeight: 'medium',
+          }}
         >
           {title}
         </Typography>
@@ -69,9 +71,14 @@ export const StatsCard: React.FC<StatsCardProps> = ({
           </Box>
         )}
       </Box>
-
       <Box>
-        <Typography variant="h4" fontWeight="bold" sx={{ mb: 1 }}>
+        <Typography
+          variant="h4"
+          sx={{
+            fontWeight: 'bold',
+            mb: 1,
+          }}
+        >
           {value}
         </Typography>
 
@@ -98,13 +105,23 @@ export const StatsCard: React.FC<StatsCardProps> = ({
             >
               {isPositive && <TrendingUp fontSize="small" sx={{ mr: 0.5 }} />}
               {isNegative && <TrendingDown fontSize="small" sx={{ mr: 0.5 }} />}
-              <Typography variant="caption" fontWeight="bold">
+              <Typography
+                variant="caption"
+                sx={{
+                  fontWeight: 'bold',
+                }}
+              >
                 {trend > 0 ? '+' : ''}
                 {trend}%
               </Typography>
             </Box>
             {trendLabel && (
-              <Typography variant="caption" color="text.secondary">
+              <Typography
+                variant="caption"
+                sx={{
+                  color: 'text.secondary',
+                }}
+              >
                 {trendLabel}
               </Typography>
             )}

@@ -1,5 +1,5 @@
 import { betterFetch } from '@better-fetch/fetch';
-import type { Session, User } from 'better-auth/types';
+import { type Session, type User } from 'better-auth/types';
 import { type NextRequest, NextResponse } from 'next/server';
 
 // Extend User type to include properties from plugins (like admin)

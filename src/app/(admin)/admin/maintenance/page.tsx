@@ -125,14 +125,22 @@ export default function MaintenancePage() {
   return (
     <Box sx={{ py: 4 }}>
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" fontWeight="bold">
+        <Typography
+          variant="h4"
+          sx={{
+            fontWeight: 'bold',
+          }}
+        >
           🛠️ Maintenance Système
         </Typography>
-        <Typography color="text.secondary">
+        <Typography
+          sx={{
+            color: 'text.secondary',
+          }}
+        >
           Outils d'administration et de gestion de l'intégrité des données
         </Typography>
       </Box>
-
       <Grid container spacing={3}>
         <Grid size={{ xs: 12, md: 8 }}>
           <Stack spacing={3}>
@@ -141,7 +149,11 @@ export default function MaintenancePage() {
               <CardHeader
                 avatar={<CloudDownload color="primary" />}
                 title={
-                  <Typography fontWeight="bold">
+                  <Typography
+                    sx={{
+                      fontWeight: 'bold',
+                    }}
+                  >
                     Importation Challonge Express
                   </Typography>
                 }
@@ -187,7 +199,12 @@ export default function MaintenancePage() {
               <CardHeader
                 avatar={<Update color="error" />}
                 title={
-                  <Typography fontWeight="bold" color="error">
+                  <Typography
+                    color="error"
+                    sx={{
+                      fontWeight: 'bold',
+                    }}
+                  >
                     Clore la Saison et Archiver
                   </Typography>
                 }
@@ -239,14 +256,22 @@ export default function MaintenancePage() {
                     <CardHeader
                       avatar={task.icon}
                       title={
-                        <Typography fontWeight="bold">{task.title}</Typography>
+                        <Typography
+                          sx={{
+                            fontWeight: 'bold',
+                          }}
+                        >
+                          {task.title}
+                        </Typography>
                       }
                     />
                     <CardContent sx={{ flexGrow: 1 }}>
                       <Typography
                         variant="body2"
-                        color="text.secondary"
                         gutterBottom
+                        sx={{
+                          color: 'text.secondary',
+                        }}
                       >
                         {task.description}
                       </Typography>

@@ -7,21 +7,29 @@ const nextConfig: NextConfig = {
   // Output standalone for systemd deployment
   output: "standalone",
 
+  // Trace dynamic requires that static analysis misses (tiktok-api-dl loads signature.js/webmssdk.js at runtime)
+  outputFileTracingIncludes: {
+    "/**/*": [
+      "./node_modules/@tobyg74/tiktok-api-dl/helper/**",
+    ],
+  },
+
   // Disable Node.js compression — Nginx handles gzip
   compress: false,
 
   // Cache Components (Next.js 16+)
   cacheComponents: false, // Disabled due to instability with external scraping
 
-  // External packages for server (Puppeteer/Crawlee)
+  // External packages for server — packages listed in Next.js' built-in
+  // server-external-packages.jsonc (puppeteer, prisma, pg, jsdom, sharp, canvas, etc.)
+  // are auto-externalized and don't need to be repeated here.
   serverExternalPackages: [
-    "puppeteer",
     "puppeteer-extra",
     "puppeteer-extra-plugin-stealth",
     "crawlee",
     "turndown",
     "@napi-rs/canvas",
-    "@tobyg74/tiktok-api-dl"
+    "@tobyg74/tiktok-api-dl",
   ],
 
   // Experimental features
@@ -38,10 +46,13 @@ const nextConfig: NextConfig = {
     serverActions: {
       allowedOrigins: [
         process.env.NEXT_PUBLIC_APP_URL?.replace("https://", "").replace("http://", "") || "localhost:3000",
-        "rpbey.fr", 
+        "rpbey.fr",
         "localhost:3000",
+        "localhost:3001",
         "localhost:8000",
-        "46.224.145.55"
+        "127.0.0.1:3000",
+        "127.0.0.1:3001",
+        "51.77.147.152",
       ],
     },
   },
@@ -50,7 +61,8 @@ const nextConfig: NextConfig = {
   allowedDevOrigins: [
     process.env.NEXT_PUBLIC_APP_URL?.replace("https://", "").replace("http://", "").split(":")[0] || "localhost",
     "rpbey.fr",
-    "46.224.145.55"
+    "127.0.0.1",
+    "51.77.147.152",
   ],
 
   // Image optimization

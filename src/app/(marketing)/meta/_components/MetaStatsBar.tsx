@@ -4,7 +4,7 @@ import { Box, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { alpha, useTheme } from '@mui/material/styles';
 
-import type { PeriodMetadata } from './types';
+import { type PeriodMetadata } from './types';
 
 function StatCard({ label, value }: { label: string; value: string }) {
   const theme = useTheme();
@@ -41,9 +41,9 @@ function StatCard({ label, value }: { label: string; value: string }) {
       </Typography>
       <Typography
         variant="body2"
-        fontWeight={900}
         noWrap
         sx={{
+          fontWeight: 900,
           mt: 0.25,
           fontSize: { xs: '0.75rem', md: '0.875rem' },
           color: 'text.primary',

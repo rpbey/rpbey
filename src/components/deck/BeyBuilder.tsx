@@ -9,8 +9,8 @@ import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import type { Part } from '@prisma/client';
 import { StatRadar } from '@/components/ui/StatRadar';
+import { type Part } from '@/generated/prisma/client';
 import { PartSelector } from './PartSelector';
 
 export interface BeyData {

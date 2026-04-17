@@ -46,7 +46,13 @@ export function StatsCharts({
           }}
         >
           <CardContent sx={{ p: 3 }}>
-            <Typography variant="h6" fontWeight="bold" gutterBottom>
+            <Typography
+              variant="h6"
+              gutterBottom
+              sx={{
+                fontWeight: 'bold',
+              }}
+            >
               Croissance Utilisateurs & Tournois
             </Typography>
             <Box sx={{ height: 350, width: '100%' }}>
@@ -74,12 +80,18 @@ export function StatsCharts({
                 />
               ) : (
                 <Box
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="center"
-                  height="100%"
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    height: '100%',
+                  }}
                 >
-                  <Typography color="text.secondary">
+                  <Typography
+                    sx={{
+                      color: 'text.secondary',
+                    }}
+                  >
                     Aucune donnée disponible
                   </Typography>
                 </Box>
@@ -88,7 +100,6 @@ export function StatsCharts({
           </CardContent>
         </Card>
       </Grid>
-
       {/* Match Status Distribution */}
       <Grid size={{ xs: 12, md: 4 }}>
         <Card
@@ -105,7 +116,13 @@ export function StatsCharts({
           }}
         >
           <CardContent sx={{ p: 3 }}>
-            <Typography variant="h6" fontWeight="bold" gutterBottom>
+            <Typography
+              variant="h6"
+              gutterBottom
+              sx={{
+                fontWeight: 'bold',
+              }}
+            >
               État des Matchs
             </Typography>
             <Box
@@ -152,7 +169,11 @@ export function StatsCharts({
                   }}
                 />
               ) : (
-                <Typography color="text.secondary">
+                <Typography
+                  sx={{
+                    color: 'text.secondary',
+                  }}
+                >
                   Aucun match enregistré
                 </Typography>
               )}

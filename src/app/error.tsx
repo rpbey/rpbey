@@ -24,24 +24,34 @@ export default function ErrorPage({
         textAlign: 'center',
       }}
     >
-      <Typography variant="h4" fontWeight="bold" color="error">
+      <Typography
+        variant="h4"
+        color="error"
+        sx={{
+          fontWeight: 'bold',
+        }}
+      >
         Une erreur est survenue
       </Typography>
-
-      <Typography variant="body1" color="text.secondary">
+      <Typography
+        variant="body1"
+        sx={{
+          color: 'text.secondary',
+        }}
+      >
         Désolé, impossible d'afficher cette page pour le moment.
       </Typography>
-
       {error.digest && (
         <Typography
           variant="caption"
-          color="text.disabled"
-          fontFamily="monospace"
+          sx={{
+            color: 'text.disabled',
+            fontFamily: 'monospace',
+          }}
         >
           ID: {error.digest}
         </Typography>
       )}
-
       <Button
         variant="contained"
         onClick={reset}

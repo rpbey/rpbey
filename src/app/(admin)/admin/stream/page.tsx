@@ -258,16 +258,29 @@ export default function StreamConfigPage() {
     <Box sx={{ py: 4 }}>
       <Stack
         direction="row"
-        justifyContent="space-between"
-        alignItems="center"
-        sx={{ mb: 4 }}
+        sx={{
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          mb: 4,
+        }}
       >
         <Box>
-          <Typography variant="h4" fontWeight="bold" gutterBottom>
+          <Typography
+            variant="h4"
+            gutterBottom
+            sx={{
+              fontWeight: 'bold',
+            }}
+          >
             <Videocam sx={{ mr: 1, verticalAlign: 'middle' }} />
             Configuration Stream
           </Typography>
-          <Typography variant="body2" color="text.secondary">
+          <Typography
+            variant="body2"
+            sx={{
+              color: 'text.secondary',
+            }}
+          >
             Contrôlez le Tournament Stream Helper en temps réel
           </Typography>
         </Box>
@@ -283,7 +296,6 @@ export default function StreamConfigPage() {
           </IconButton>
         </Stack>
       </Stack>
-
       <Grid container spacing={3}>
         {/* ─── Scoreboard Control ─── */}
         <Grid size={{ xs: 12, lg: 8 }}>
@@ -295,7 +307,13 @@ export default function StreamConfigPage() {
               borderColor: 'divider',
             }}
           >
-            <Typography variant="h6" fontWeight="bold" gutterBottom>
+            <Typography
+              variant="h6"
+              gutterBottom
+              sx={{
+                fontWeight: 'bold',
+              }}
+            >
               Scoreboard
             </Typography>
 
@@ -313,29 +331,47 @@ export default function StreamConfigPage() {
             >
               <Stack
                 direction="row"
-                alignItems="center"
-                justifyContent="center"
                 spacing={2}
+                sx={{
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
               >
                 {/* Player 1 */}
-                <Stack alignItems="center" spacing={1} sx={{ flex: 1 }}>
+                <Stack
+                  spacing={1}
+                  sx={{
+                    alignItems: 'center',
+                    flex: 1,
+                  }}
+                >
                   <Typography
                     variant="body2"
-                    color="text.secondary"
-                    fontWeight="bold"
-                    textTransform="uppercase"
+                    sx={{
+                      color: 'text.secondary',
+                      fontWeight: 'bold',
+                      textTransform: 'uppercase',
+                    }}
                   >
                     Joueur 1
                   </Typography>
                   <Typography
                     variant="h5"
-                    fontWeight="900"
-                    sx={{ color: 'primary.main' }}
                     noWrap
+                    sx={{
+                      fontWeight: '900',
+                      color: 'primary.main',
+                    }}
                   >
                     {player1 || '—'}
                   </Typography>
-                  <Stack direction="row" alignItems="center" spacing={1}>
+                  <Stack
+                    direction="row"
+                    spacing={1}
+                    sx={{
+                      alignItems: 'center',
+                    }}
+                  >
                     <IconButton
                       size="small"
                       onClick={() => handleScoreChange('1', -1)}
@@ -349,8 +385,8 @@ export default function StreamConfigPage() {
                     </IconButton>
                     <Typography
                       variant="h3"
-                      fontWeight="900"
                       sx={{
+                        fontWeight: '900',
                         color: 'primary.main',
                         minWidth: 50,
                         textAlign: 'center',
@@ -372,11 +408,18 @@ export default function StreamConfigPage() {
                 </Stack>
 
                 {/* VS / Swap */}
-                <Stack alignItems="center" spacing={1}>
+                <Stack
+                  spacing={1}
+                  sx={{
+                    alignItems: 'center',
+                  }}
+                >
                   <Typography
                     variant="h6"
-                    color="text.secondary"
-                    fontWeight="bold"
+                    sx={{
+                      color: 'text.secondary',
+                      fontWeight: 'bold',
+                    }}
                   >
                     VS
                   </Typography>
@@ -398,24 +441,40 @@ export default function StreamConfigPage() {
                 </Stack>
 
                 {/* Player 2 */}
-                <Stack alignItems="center" spacing={1} sx={{ flex: 1 }}>
+                <Stack
+                  spacing={1}
+                  sx={{
+                    alignItems: 'center',
+                    flex: 1,
+                  }}
+                >
                   <Typography
                     variant="body2"
-                    color="text.secondary"
-                    fontWeight="bold"
-                    textTransform="uppercase"
+                    sx={{
+                      color: 'text.secondary',
+                      fontWeight: 'bold',
+                      textTransform: 'uppercase',
+                    }}
                   >
                     Joueur 2
                   </Typography>
                   <Typography
                     variant="h5"
-                    fontWeight="900"
-                    sx={{ color: 'secondary.main' }}
                     noWrap
+                    sx={{
+                      fontWeight: '900',
+                      color: 'secondary.main',
+                    }}
                   >
                     {player2 || '—'}
                   </Typography>
-                  <Stack direction="row" alignItems="center" spacing={1}>
+                  <Stack
+                    direction="row"
+                    spacing={1}
+                    sx={{
+                      alignItems: 'center',
+                    }}
+                  >
                     <IconButton
                       size="small"
                       onClick={() => handleScoreChange('2', -1)}
@@ -429,8 +488,8 @@ export default function StreamConfigPage() {
                     </IconButton>
                     <Typography
                       variant="h3"
-                      fontWeight="900"
                       sx={{
+                        fontWeight: '900',
                         color: 'secondary.main',
                         minWidth: 50,
                         textAlign: 'center',
@@ -454,7 +513,13 @@ export default function StreamConfigPage() {
 
               {/* Phase & Match */}
               <Divider sx={{ my: 2 }} />
-              <Stack direction="row" justifyContent="center" spacing={2}>
+              <Stack
+                direction="row"
+                spacing={2}
+                sx={{
+                  justifyContent: 'center',
+                }}
+              >
                 <Chip
                   label={phase || 'Phase'}
                   color="primary"
@@ -570,12 +635,28 @@ export default function StreamConfigPage() {
             {/* TSH Status */}
             <Card variant="outlined" sx={{ borderRadius: 4 }}>
               <CardContent>
-                <Typography variant="h6" fontWeight="bold" gutterBottom>
+                <Typography
+                  variant="h6"
+                  gutterBottom
+                  sx={{
+                    fontWeight: 'bold',
+                  }}
+                >
                   TSH Status
                 </Typography>
                 <Stack spacing={1.5}>
-                  <Stack direction="row" justifyContent="space-between">
-                    <Typography variant="body2" color="text.secondary">
+                  <Stack
+                    direction="row"
+                    sx={{
+                      justifyContent: 'space-between',
+                    }}
+                  >
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        color: 'text.secondary',
+                      }}
+                    >
                       Statut
                     </Typography>
                     <Chip
@@ -584,19 +665,49 @@ export default function StreamConfigPage() {
                       color={tshStatus.running ? 'success' : 'error'}
                     />
                   </Stack>
-                  <Stack direction="row" justifyContent="space-between">
-                    <Typography variant="body2" color="text.secondary">
+                  <Stack
+                    direction="row"
+                    sx={{
+                      justifyContent: 'space-between',
+                    }}
+                  >
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        color: 'text.secondary',
+                      }}
+                    >
                       Port
                     </Typography>
-                    <Typography variant="body2" fontWeight="bold">
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        fontWeight: 'bold',
+                      }}
+                    >
                       5000
                     </Typography>
                   </Stack>
-                  <Stack direction="row" justifyContent="space-between">
-                    <Typography variant="body2" color="text.secondary">
+                  <Stack
+                    direction="row"
+                    sx={{
+                      justifyContent: 'space-between',
+                    }}
+                  >
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        color: 'text.secondary',
+                      }}
+                    >
                       Joueurs
                     </Typography>
-                    <Typography variant="body2" fontWeight="bold">
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        fontWeight: 'bold',
+                      }}
+                    >
                       {players.length}
                     </Typography>
                   </Stack>
@@ -619,7 +730,13 @@ export default function StreamConfigPage() {
             {/* Tournament Info */}
             <Card variant="outlined" sx={{ borderRadius: 4 }}>
               <CardContent>
-                <Typography variant="h6" fontWeight="bold" gutterBottom>
+                <Typography
+                  variant="h6"
+                  gutterBottom
+                  sx={{
+                    fontWeight: 'bold',
+                  }}
+                >
                   Tournoi
                 </Typography>
                 <Stack spacing={2}>
@@ -644,7 +761,13 @@ export default function StreamConfigPage() {
             {/* Quick Presets */}
             <Card variant="outlined" sx={{ borderRadius: 4 }}>
               <CardContent>
-                <Typography variant="h6" fontWeight="bold" gutterBottom>
+                <Typography
+                  variant="h6"
+                  gutterBottom
+                  sx={{
+                    fontWeight: 'bold',
+                  }}
+                >
                   Presets rapides
                 </Typography>
                 <Stack spacing={1}>
@@ -691,7 +814,13 @@ export default function StreamConfigPage() {
             {/* API Links */}
             <Card variant="outlined" sx={{ borderRadius: 4 }}>
               <CardContent>
-                <Typography variant="h6" fontWeight="bold" gutterBottom>
+                <Typography
+                  variant="h6"
+                  gutterBottom
+                  sx={{
+                    fontWeight: 'bold',
+                  }}
+                >
                   Liens API
                 </Typography>
                 <Stack spacing={1}>

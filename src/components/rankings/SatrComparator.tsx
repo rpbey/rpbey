@@ -3,7 +3,7 @@
 import CloseIcon from '@mui/icons-material/Close';
 import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
 import PersonIcon from '@mui/icons-material/Person';
-import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
+import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutlined';
 import {
   alpha,
   Box,
@@ -20,8 +20,7 @@ import {
   useMediaQuery,
   useTheme,
 } from '@mui/material';
-import type { TransitionProps } from '@mui/material/transitions';
-import type { SatrRanking } from '@prisma/client';
+import { type TransitionProps } from '@mui/material/transitions';
 import { AnimatePresence, motion } from 'framer-motion';
 import React, { forwardRef } from 'react';
 import {
@@ -32,6 +31,7 @@ import {
   RadarChart,
   ResponsiveContainer,
 } from 'recharts';
+import { type SatrRanking } from '@/generated/prisma/client';
 
 const Transition = forwardRef(function Transition(
   props: TransitionProps & { children: React.ReactElement },
@@ -377,21 +377,24 @@ export function SatrComparator({
           </Box>
         </motion.div>
       </AnimatePresence>
-
       {/* Dialog */}
       <Dialog
         open={dialogOpen}
         onClose={() => setDialogOpen(false)}
-        TransitionComponent={Transition}
         maxWidth="sm"
         fullWidth
         fullScreen={isMobile}
-        PaperProps={{
-          sx: {
-            bgcolor: 'background.default',
-            backgroundImage: 'none',
-            borderRadius: isMobile ? 0 : 3,
-            overflow: 'hidden',
+        slots={{
+          transition: Transition,
+        }}
+        slotProps={{
+          paper: {
+            sx: {
+              bgcolor: 'background.default',
+              backgroundImage: 'none',
+              borderRadius: isMobile ? 0 : 3,
+              overflow: 'hidden',
+            },
           },
         }}
       >
@@ -408,8 +411,10 @@ export function SatrComparator({
             <CompareArrowsIcon sx={{ color: COLOR_A, fontSize: '1.3rem' }} />
             <Typography
               variant="h6"
-              fontWeight={900}
-              sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }}
+              sx={{
+                fontWeight: 900,
+                fontSize: { xs: '1rem', sm: '1.25rem' },
+              }}
             >
               Comparaison
             </Typography>
@@ -436,8 +441,8 @@ export function SatrComparator({
                     <Box key={r.id} sx={{ textAlign: 'center' }}>
                       <Typography
                         variant="h6"
-                        fontWeight={900}
                         sx={{
+                          fontWeight: 900,
                           color: c,
                           fontSize: { xs: '1rem', sm: '1.2rem' },
                         }}
@@ -501,7 +506,12 @@ export function SatrComparator({
 
                   if (!winner) {
                     return (
-                      <Typography variant="body2" fontWeight={700}>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          fontWeight: 700,
+                        }}
+                      >
                         Égalité parfaite !
                       </Typography>
                     );
@@ -509,11 +519,13 @@ export function SatrComparator({
                   return (
                     <Typography
                       variant="body2"
-                      fontWeight={700}
-                      sx={{ fontSize: { xs: '0.8rem', sm: '0.875rem' } }}
+                      sx={{
+                        fontWeight: 700,
+                        fontSize: { xs: '0.8rem', sm: '0.875rem' },
+                      }}
                     >
-                      <span style={{ color }}>{winner.playerName}</span> domine
-                      dans {winCount} catégorie{winCount > 1 ? 's' : ''} sur 5
+                      <span style={{ color }}>{winner.playerName}</span>domine
+                      dans {winCount}catégorie{winCount > 1 ? 's' : ''}sur 5
                     </Typography>
                   );
                 })()}

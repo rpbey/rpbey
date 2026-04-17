@@ -2,7 +2,7 @@ import { google } from 'googleapis';
 import { prisma } from '../src/lib/prisma.js'; // Use .js extension for ESM or let tsx handle it? tsx usually handles .ts. 
 // But if I use relative import to src, I might hit issues with other imports inside src/lib/prisma.
 // Let's try to replicate the init logic locally in the script to avoid dependency hell.
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@/generated/prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import pg from 'pg';
 import 'dotenv/config';

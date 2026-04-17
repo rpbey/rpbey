@@ -7,10 +7,10 @@ import {
   Switch,
   TextField,
 } from '@mui/material';
-import type { StaffMember } from '@prisma/client';
 import { useEffect, useState } from 'react';
 import { FormDialog } from '@/components/ui';
-import type { StaffMemberInput } from './actions';
+import { type StaffMember } from '@/generated/prisma/client';
+import { type StaffMemberInput } from './actions';
 
 const TEAMS = [
   { value: 'admin', label: 'Administration' },

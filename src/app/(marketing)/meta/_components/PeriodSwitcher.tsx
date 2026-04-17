@@ -2,7 +2,7 @@
 
 import { Box, ToggleButton, ToggleButtonGroup } from '@mui/material';
 
-import type { PeriodKey } from './types';
+import { type PeriodKey } from './types';
 
 export function PeriodSwitcher({
   period,

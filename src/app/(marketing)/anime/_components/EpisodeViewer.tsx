@@ -90,7 +90,11 @@ export function EpisodeViewer({
           border: '1px solid rgba(255,255,255,0.05)',
         }}
       >
-        <Typography color="text.secondary">
+        <Typography
+          sx={{
+            color: 'text.secondary',
+          }}
+        >
           Aucune source disponible pour cet épisode.
         </Typography>
       </Box>
@@ -112,7 +116,6 @@ export function EpisodeViewer({
         }
         onEnded={onEnded}
       />
-
       {/* Controls bar — glassmorphism */}
       {hasControls && (
         <Box
@@ -133,7 +136,13 @@ export function EpisodeViewer({
         >
           {/* Language selector */}
           {languages.length > 1 && (
-            <Stack direction="row" spacing={0.5} alignItems="center">
+            <Stack
+              direction="row"
+              spacing={0.5}
+              sx={{
+                alignItems: 'center',
+              }}
+            >
               <Language sx={{ color: 'rgba(255,255,255,0.3)', fontSize: 16 }} />
               {languages.map((lang) => (
                 <Chip
@@ -184,7 +193,13 @@ export function EpisodeViewer({
 
           {/* Source selector */}
           {langSources.length > 1 && (
-            <Stack direction="row" spacing={0.5} alignItems="center">
+            <Stack
+              direction="row"
+              spacing={0.5}
+              sx={{
+                alignItems: 'center',
+              }}
+            >
               <OndemandVideo
                 sx={{ color: 'rgba(255,255,255,0.3)', fontSize: 16 }}
               />

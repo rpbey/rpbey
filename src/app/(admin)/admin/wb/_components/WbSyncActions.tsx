@@ -59,10 +59,21 @@ export default function WbSyncActions() {
           borderRadius: 2,
         }}
       >
-        <Typography variant="subtitle1" fontWeight="bold">
+        <Typography
+          variant="subtitle1"
+          sx={{
+            fontWeight: 'bold',
+          }}
+        >
           Classement Ultim Bataille
         </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+        <Typography
+          variant="body2"
+          sx={{
+            color: 'text.secondary',
+            mb: 2,
+          }}
+        >
           Recalcule le classement à partir des fichiers JSON de tournois
           (data/wb_history/).
         </Typography>
@@ -82,7 +93,6 @@ export default function WbSyncActions() {
           {loadingRanking ? 'Synchronisation...' : 'Synchroniser maintenant'}
         </Button>
       </Box>
-
       <Box
         sx={{
           p: 2,
@@ -91,10 +101,21 @@ export default function WbSyncActions() {
           borderRadius: 2,
         }}
       >
-        <Typography variant="subtitle1" fontWeight="bold">
+        <Typography
+          variant="subtitle1"
+          sx={{
+            fontWeight: 'bold',
+          }}
+        >
           Liaison des Comptes
         </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+        <Typography
+          variant="body2"
+          sx={{
+            color: 'text.secondary',
+            mb: 2,
+          }}
+        >
           Analyse les noms des bladers WB et tente de les lier aux comptes
           utilisateurs RPB existants.
         </Typography>

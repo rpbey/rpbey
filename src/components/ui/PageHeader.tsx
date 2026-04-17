@@ -25,21 +25,30 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
     <Box sx={{ mb: 4 }}>
       <Stack
         direction={{ xs: 'column', sm: 'row' }}
-        justifyContent="space-between"
-        alignItems={{ xs: 'flex-start', sm: 'center' }}
         spacing={2}
+        sx={{
+          justifyContent: 'space-between',
+          alignItems: { xs: 'flex-start', sm: 'center' },
+        }}
       >
         <Box>
           <Typography
             variant="h4"
             component="h1"
-            fontWeight="bold"
             gutterBottom
+            sx={{
+              fontWeight: 'bold',
+            }}
           >
             {title}
           </Typography>
           {description && (
-            <Typography variant="body1" color="text.secondary">
+            <Typography
+              variant="body1"
+              sx={{
+                color: 'text.secondary',
+              }}
+            >
               {description}
             </Typography>
           )}

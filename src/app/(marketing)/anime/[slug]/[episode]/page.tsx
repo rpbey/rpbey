@@ -5,7 +5,7 @@ import {
   Home,
 } from '@mui/icons-material';
 import { Box, Button, Chip, Typography } from '@mui/material';
-import type { Metadata } from 'next';
+import { type Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -134,7 +134,6 @@ export default async function EpisodePage({ params }: Props) {
           Épisode {ep.number}
         </Typography>
       </Box>
-
       {/* Main content: Player + Sidebar */}
       <Box
         sx={{
@@ -228,8 +227,8 @@ export default async function EpisodePage({ params }: Props) {
                 </Box>
                 <Typography
                   variant="h6"
-                  fontWeight={800}
                   sx={{
+                    fontWeight: 800,
                     color: 'text.primary',
                     lineHeight: 1.3,
                     fontSize: { xs: '1rem', md: '1.25rem' },
@@ -332,8 +331,8 @@ export default async function EpisodePage({ params }: Props) {
           >
             <Typography
               variant="body2"
-              fontWeight={700}
               sx={{
+                fontWeight: 700,
                 color: 'text.secondary',
                 mb: 1.5,
                 fontSize: '0.8rem',

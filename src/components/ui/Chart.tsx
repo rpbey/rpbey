@@ -37,7 +37,13 @@ export const BarChart: React.FC<ChartProps> = ({
           borderRadius: 1,
         }}
       >
-        <Typography color="text.secondary">Chargement...</Typography>
+        <Typography
+          sx={{
+            color: 'text.secondary',
+          }}
+        >
+          Chargement...
+        </Typography>
       </Box>
     );
   }

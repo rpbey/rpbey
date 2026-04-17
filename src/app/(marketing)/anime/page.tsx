@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import { type Metadata } from 'next';
 import { createPageMetadata } from '@/lib/seo-utils';
 import {
   getAnimeSeriesByGeneration,

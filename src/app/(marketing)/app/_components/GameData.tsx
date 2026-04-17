@@ -121,8 +121,14 @@ function Section({
     <Box sx={{ mb: 4 }}>
       <Typography
         variant="h6"
-        fontWeight="900"
-        sx={{ mb: 2, color, display: 'flex', alignItems: 'center', gap: 1 }}
+        sx={{
+          fontWeight: '900',
+          mb: 2,
+          color,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 1,
+        }}
       >
         <Box sx={{ width: 4, height: 20, bgcolor: color, borderRadius: 2 }} />
         {title}
@@ -147,15 +153,25 @@ export function GameData() {
           borderColor: (t) => alpha(t.palette.primary.main, 0.15),
         }}
       >
-        <Typography variant="h5" fontWeight="900" sx={{ mb: 1 }}>
+        <Typography
+          variant="h5"
+          sx={{
+            fontWeight: '900',
+            mb: 1,
+          }}
+        >
           Données extraites de l'application
         </Typography>
-        <Typography variant="body2" color="text.secondary">
+        <Typography
+          variant="body2"
+          sx={{
+            color: 'text.secondary',
+          }}
+        >
           Règles officielles, mécaniques de jeu, systèmes de progression et
           contenu dataminé de l'app Beyblade X.
         </Typography>
       </Paper>
-
       {/* Scoring */}
       <Section title="Système de scoring" color="#ef4444">
         <Box
@@ -184,7 +200,12 @@ export function GameData() {
                     mb: 1,
                   }}
                 >
-                  <Typography fontWeight="900" sx={{ fontSize: '0.9rem' }}>
+                  <Typography
+                    sx={{
+                      fontWeight: '900',
+                      fontSize: '0.9rem',
+                    }}
+                  >
                     {s.name}
                   </Typography>
                   <Chip
@@ -200,8 +221,10 @@ export function GameData() {
                 </Box>
                 <Typography
                   variant="caption"
-                  color="text.secondary"
-                  sx={{ fontSize: '0.75rem' }}
+                  sx={{
+                    color: 'text.secondary',
+                    fontSize: '0.75rem',
+                  }}
                 >
                   {s.desc}
                 </Typography>
@@ -210,7 +233,6 @@ export function GameData() {
           ))}
         </Box>
       </Section>
-
       {/* Match & Battle Types */}
       <Box
         sx={{
@@ -237,15 +259,20 @@ export function GameData() {
                 }}
               >
                 <Typography
-                  fontWeight="900"
-                  sx={{ fontSize: '0.85rem', minWidth: 100 }}
+                  sx={{
+                    fontWeight: '900',
+                    fontSize: '0.85rem',
+                    minWidth: 100,
+                  }}
                 >
                   {m.name}
                 </Typography>
                 <Typography
                   variant="caption"
-                  color="text.secondary"
-                  sx={{ flex: 1 }}
+                  sx={{
+                    color: 'text.secondary',
+                    flex: 1,
+                  }}
                 >
                   {m.desc}
                 </Typography>
@@ -284,15 +311,20 @@ export function GameData() {
                 }}
               >
                 <Typography
-                  fontWeight="900"
-                  sx={{ fontSize: '0.85rem', minWidth: 80 }}
+                  sx={{
+                    fontWeight: '900',
+                    fontSize: '0.85rem',
+                    minWidth: 80,
+                  }}
                 >
                   {b.name}
                 </Typography>
                 <Typography
                   variant="caption"
-                  color="text.secondary"
-                  sx={{ flex: 1 }}
+                  sx={{
+                    color: 'text.secondary',
+                    flex: 1,
+                  }}
                 >
                   {b.desc}
                 </Typography>
@@ -314,7 +346,6 @@ export function GameData() {
           </Box>
         </Section>
       </Box>
-
       {/* Deck Rules + Banned */}
       <Box
         sx={{
@@ -363,19 +394,26 @@ export function GameData() {
               }}
             >
               <Typography
-                fontWeight="900"
-                sx={{ color: '#ef4444', fontSize: '0.85rem' }}
+                sx={{
+                  fontWeight: '900',
+                  color: '#ef4444',
+                  fontSize: '0.85rem',
+                }}
               >
                 {p.name}
               </Typography>
-              <Typography variant="caption" color="text.secondary">
+              <Typography
+                variant="caption"
+                sx={{
+                  color: 'text.secondary',
+                }}
+              >
                 {p.reason}
               </Typography>
             </Paper>
           ))}
         </Section>
       </Box>
-
       {/* Datamined: PowerCores */}
       <Section title="PowerCores (dataminé)" color="#22c55e">
         <Box
@@ -416,15 +454,20 @@ export function GameData() {
                   }}
                 />
                 <Typography
-                  fontWeight="900"
-                  sx={{ fontSize: '0.8rem', color: pc.color }}
+                  sx={{
+                    fontWeight: '900',
+                    fontSize: '0.8rem',
+                    color: pc.color,
+                  }}
                 >
                   {pc.name}
                 </Typography>
                 <Typography
                   variant="caption"
-                  color="text.secondary"
-                  sx={{ fontSize: '0.65rem' }}
+                  sx={{
+                    color: 'text.secondary',
+                    fontSize: '0.65rem',
+                  }}
                 >
                   {pc.desc}
                 </Typography>
@@ -433,7 +476,6 @@ export function GameData() {
           ))}
         </Box>
       </Section>
-
       {/* Datamined: Battlepass Seasons */}
       <Section title="Battlepass — Saisons (dataminé)" color="#f59e0b">
         <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
@@ -465,14 +507,18 @@ export function GameData() {
                   e.currentTarget.style.display = 'none';
                 }}
               />
-              <Typography fontWeight="900" sx={{ fontSize: '0.75rem' }}>
+              <Typography
+                sx={{
+                  fontWeight: '900',
+                  fontSize: '0.75rem',
+                }}
+              >
                 {s.name}
               </Typography>
             </Paper>
           ))}
         </Box>
       </Section>
-
       {/* XP Rewards */}
       <Section title="Récompenses XP (dataminé)" color="#a855f7">
         <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
@@ -501,20 +547,27 @@ export function GameData() {
                   }}
                 />
                 <Typography
-                  fontWeight="900"
-                  sx={{ color: '#a855f7', fontSize: '0.85rem' }}
+                  sx={{
+                    fontWeight: '900',
+                    color: '#a855f7',
+                    fontSize: '0.85rem',
+                  }}
                 >
                   {r.xp} XP
                 </Typography>
               </Box>
-              <Typography variant="caption" color="text.secondary">
+              <Typography
+                variant="caption"
+                sx={{
+                  color: 'text.secondary',
+                }}
+              >
                 {r.items}
               </Typography>
             </Paper>
           ))}
         </Box>
       </Section>
-
       {/* Arena Backgrounds */}
       <Section title="Fonds d'arène (dataminé)" color="#3b82f6">
         <Box
@@ -564,7 +617,6 @@ export function GameData() {
           ))}
         </Box>
       </Section>
-
       {/* Footer */}
       <Paper
         elevation={0}
@@ -576,7 +628,12 @@ export function GameData() {
           mt: 4,
         }}
       >
-        <Typography variant="caption" color="text.disabled">
+        <Typography
+          variant="caption"
+          sx={{
+            color: 'text.disabled',
+          }}
+        >
           Données extraites de l'application Beyblade X v2.x — Certaines
           fonctionnalités sont en développement et peuvent ne pas être
           disponibles dans l'app.

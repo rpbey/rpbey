@@ -155,7 +155,13 @@ export function TournamentLiveCarousel({
                 bgcolor: alpha(theme.palette.primary.main, 0.05),
               }}
             >
-              <Stack direction="row" spacing={1.5} alignItems="center">
+              <Stack
+                direction="row"
+                spacing={1.5}
+                sx={{
+                  alignItems: 'center',
+                }}
+              >
                 <Box
                   sx={{
                     p: 0.8,
@@ -169,7 +175,12 @@ export function TournamentLiveCarousel({
                   {activeSlide === 'standings' && <Trophy fontSize="small" />}
                   {activeSlide === 'logs' && <History fontSize="small" />}
                 </Box>
-                <Typography variant="subtitle1" fontWeight={800}>
+                <Typography
+                  variant="subtitle1"
+                  sx={{
+                    fontWeight: 800,
+                  }}
+                >
                   {activeSlide === 'stadiums' && 'En Direct : Stadiums'}
                   {activeSlide === 'standings' && 'Top Classement'}
                   {activeSlide === 'logs' && 'Dernières Activités'}
@@ -210,14 +221,18 @@ export function TournamentLiveCarousel({
                     >
                       <Stack
                         direction="row"
-                        justifyContent="space-between"
-                        alignItems="center"
-                        sx={{ mb: 1 }}
+                        sx={{
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          mb: 1,
+                        }}
                       >
                         <Typography
                           variant="caption"
-                          fontWeight={700}
-                          color="text.secondary"
+                          sx={{
+                            fontWeight: 700,
+                            color: 'text.secondary',
+                          }}
                         >
                           {s.name}
                         </Typography>
@@ -236,14 +251,18 @@ export function TournamentLiveCarousel({
                       {s.currentMatch ? (
                         <Stack
                           direction="row"
-                          justifyContent="space-between"
-                          alignItems="center"
+                          sx={{
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                          }}
                         >
                           <Typography
                             variant="body2"
-                            fontWeight={800}
                             noWrap
-                            sx={{ maxWidth: '40%' }}
+                            sx={{
+                              fontWeight: 800,
+                              maxWidth: '40%',
+                            }}
                           >
                             {s.currentMatch.player1}
                           </Typography>
@@ -255,10 +274,12 @@ export function TournamentLiveCarousel({
                           />
                           <Typography
                             variant="body2"
-                            fontWeight={800}
                             noWrap
-                            sx={{ maxWidth: '40%' }}
-                            textAlign="right"
+                            sx={{
+                              fontWeight: 800,
+                              textAlign: 'right',
+                              maxWidth: '40%',
+                            }}
                           >
                             {s.currentMatch.player2}
                           </Typography>
@@ -266,8 +287,10 @@ export function TournamentLiveCarousel({
                       ) : (
                         <Typography
                           variant="body2"
-                          color="text.secondary"
-                          textAlign="center"
+                          sx={{
+                            color: 'text.secondary',
+                            textAlign: 'center',
+                          }}
                         >
                           En attente de match...
                         </Typography>
@@ -283,11 +306,12 @@ export function TournamentLiveCarousel({
                     <Stack
                       key={s.rank}
                       direction="row"
-                      alignItems="center"
                       spacing={2}
                       sx={{
+                        alignItems: 'center',
                         p: 1.5,
                         borderRadius: 2,
+
                         bgcolor:
                           i === 0
                             ? alpha(theme.palette.primary.main, 0.08)
@@ -312,15 +336,19 @@ export function TournamentLiveCarousel({
                       </Box>
                       <Typography
                         variant="body2"
-                        fontWeight={700}
-                        sx={{ flex: 1 }}
+                        sx={{
+                          fontWeight: 700,
+                          flex: 1,
+                        }}
                       >
                         {s.name}
                       </Typography>
                       <Typography
                         variant="caption"
-                        fontWeight={700}
-                        color="text.secondary"
+                        sx={{
+                          fontWeight: 700,
+                          color: 'text.secondary',
+                        }}
                       >
                         {s.wins}W - {s.losses}L
                       </Typography>
@@ -343,12 +371,17 @@ export function TournamentLiveCarousel({
                       <Stack
                         direction="row"
                         spacing={1.5}
-                        alignItems="flex-start"
+                        sx={{
+                          alignItems: 'flex-start',
+                        }}
                       >
                         <Typography
                           variant="caption"
-                          color="text.secondary"
-                          sx={{ minWidth: 50, pt: 0.3 }}
+                          sx={{
+                            color: 'text.secondary',
+                            minWidth: 50,
+                            pt: 0.3,
+                          }}
                         >
                           {new Date(log.timestamp).toLocaleTimeString('fr-FR', {
                             hour: '2-digit',

@@ -22,7 +22,6 @@ import {
   Typography,
 } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
-import type { StaffMember } from '@prisma/client';
 import { useCallback, useEffect, useState } from 'react';
 import {
   PageHeader,
@@ -30,12 +29,13 @@ import {
   useConfirmDialog,
   useToast,
 } from '@/components/ui';
+import { type StaffMember } from '@/generated/prisma/client';
 import { RoleColors } from '@/lib/role-colors';
-import type { StaffMemberInput } from './actions';
 import {
   createStaffMember,
   deleteStaffMember,
   getStaffMembers,
+  type StaffMemberInput,
   syncStaffFromDiscord,
   updateStaffMember,
 } from './actions';
@@ -184,7 +184,6 @@ export default function AdminStaffPage() {
           </Button>
         </ButtonGroup>
       </PageHeader>
-
       {loading ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
           <CircularProgress />
@@ -200,7 +199,12 @@ export default function AdminStaffPage() {
                 <Box
                   sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}
                 >
-                  <Typography variant="h6" fontWeight="bold">
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      fontWeight: 'bold',
+                    }}
+                  >
                     {TEAM_LABELS[roleKey]}
                   </Typography>
                   <StatusChip
@@ -210,7 +214,6 @@ export default function AdminStaffPage() {
                   />
                   <Box sx={{ flex: 1, height: '1px', bgcolor: 'divider' }} />
                 </Box>
-
                 <MuiGrid container spacing={2}>
                   {teamMembers.map((member) => (
                     <MuiGrid
@@ -256,16 +259,20 @@ export default function AdminStaffPage() {
                             <Box sx={{ flex: 1, minWidth: 0 }}>
                               <Typography
                                 variant="subtitle1"
-                                fontWeight="bold"
                                 noWrap
+                                sx={{
+                                  fontWeight: 'bold',
+                                }}
                               >
                                 {member.name}
                               </Typography>
                               <Typography
                                 variant="body2"
-                                color="text.secondary"
                                 noWrap
                                 gutterBottom
+                                sx={{
+                                  color: 'text.secondary',
+                                }}
                               >
                                 {member.role}
                               </Typography>
@@ -324,7 +331,6 @@ export default function AdminStaffPage() {
           })}
         </Stack>
       )}
-
       <StaffDialog
         open={dialogOpen}
         onClose={() => setDialogOpen(false)}

@@ -1,5 +1,5 @@
 import InitColorSchemeScript from '@mui/material/InitColorSchemeScript';
-import type { Metadata, Viewport } from 'next';
+import { type Metadata, type Viewport } from 'next';
 import Script from 'next/script';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import { JsonLd } from '@/components/seo/JsonLd';
@@ -98,6 +98,7 @@ export default function RootLayout({
     <html
       lang="fr"
       className={googleSansFlex.variable}
+      data-scroll-behavior="smooth"
       suppressHydrationWarning
     >
       <body>

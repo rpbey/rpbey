@@ -1,7 +1,7 @@
-import type { Prisma } from '@prisma/client';
+import { type Prisma } from '@/generated/prisma/client';
 
 // Re-export full Prisma types
-export * from '@prisma/client';
+export * from '@/generated/prisma/client';
 
 // === Extended Types ===
 

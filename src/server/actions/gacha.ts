@@ -1,7 +1,7 @@
 'use server';
 
-import type { Part, PartType } from '@prisma/client';
 import { headers } from 'next/headers';
+import { type Part, type PartType } from '@/generated/prisma/client';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 

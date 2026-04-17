@@ -33,7 +33,6 @@ export default async function AdminSatrPage() {
         title="Gestion SATR"
         description="Contrôlez la synchronisation des données de Sun After The Reign."
       />
-
       <Grid container spacing={3}>
         <Grid size={{ xs: 12, md: 8 }}>
           <Paper
@@ -44,10 +43,22 @@ export default async function AdminSatrPage() {
               borderColor: 'divider',
             }}
           >
-            <Typography variant="h6" fontWeight="bold" gutterBottom>
+            <Typography
+              variant="h6"
+              gutterBottom
+              sx={{
+                fontWeight: 'bold',
+              }}
+            >
               Synchronisation Manuelle
             </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+            <Typography
+              variant="body2"
+              sx={{
+                color: 'text.secondary',
+                mb: 3,
+              }}
+            >
               Utilisez les boutons ci-dessous pour forcer la mise à jour des
               données sans attendre les tâches planifiées.
             </Typography>
@@ -62,8 +73,10 @@ export default async function AdminSatrPage() {
               <CardContent>
                 <Typography
                   variant="overline"
-                  color="text.secondary"
-                  fontWeight="bold"
+                  sx={{
+                    color: 'text.secondary',
+                    fontWeight: 'bold',
+                  }}
                 >
                   État des données
                 </Typography>
@@ -76,7 +89,12 @@ export default async function AdminSatrPage() {
                     }}
                   >
                     <Typography variant="body2">Saison 2</Typography>
-                    <Typography variant="body2" fontWeight="bold">
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        fontWeight: 'bold',
+                      }}
+                    >
                       {rankingCount} joueurs
                     </Typography>
                   </Box>
@@ -88,12 +106,22 @@ export default async function AdminSatrPage() {
                     }}
                   >
                     <Typography variant="body2">Carrière</Typography>
-                    <Typography variant="body2" fontWeight="bold">
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        fontWeight: 'bold',
+                      }}
+                    >
                       {bladerCount} profils
                     </Typography>
                   </Box>
                   <Divider sx={{ my: 1 }} />
-                  <Typography variant="caption" color="text.secondary">
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      color: 'text.secondary',
+                    }}
+                  >
                     Dernière mise à jour :{' '}
                     {lastUpdate?.updatedAt
                       ? formatDateTime(lastUpdate.updatedAt)

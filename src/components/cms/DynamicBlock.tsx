@@ -50,9 +50,11 @@ export function DynamicBlock({
 
   return (
     <Box
-      position="relative"
       className={className}
-      sx={{ '&:hover .edit-btn': { opacity: 1 } }}
+      sx={{
+        position: 'relative',
+        '&:hover .edit-btn': { opacity: 1 },
+      }}
     >
       {isAdmin && (
         <Tooltip title="Éditer le contenu">
@@ -79,12 +81,10 @@ export function DynamicBlock({
           </IconButton>
         </Tooltip>
       )}
-
       {/* Markdown Render */}
       <Box sx={{ '& p': { mb: 1.5 }, '& ul': { pl: 3, mb: 2 } }}>
         <ReactMarkdown>{content}</ReactMarkdown>
       </Box>
-
       {/* Edit Dialog */}
       <Dialog
         open={isEditing}

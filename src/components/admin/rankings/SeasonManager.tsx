@@ -69,7 +69,12 @@ export default function SeasonManager({ seasons }: { seasons: Season[] }) {
       <CardContent>
         {currentSeason ? (
           <Box sx={{ mb: 3, p: 2, bgcolor: 'action.hover', borderRadius: 2 }}>
-            <Typography variant="subtitle2" color="text.secondary">
+            <Typography
+              variant="subtitle2"
+              sx={{
+                color: 'text.secondary',
+              }}
+            >
               Saison Actuelle
             </Typography>
             <Box
@@ -80,12 +85,23 @@ export default function SeasonManager({ seasons }: { seasons: Season[] }) {
                 mt: 1,
               }}
             >
-              <Typography variant="h6" color="primary.main" fontWeight="bold">
+              <Typography
+                variant="h6"
+                sx={{
+                  color: 'primary.main',
+                  fontWeight: 'bold',
+                }}
+              >
                 {currentSeason.name}
               </Typography>
               <Chip label="En cours" color="success" size="small" />
             </Box>
-            <Typography variant="caption" color="text.secondary">
+            <Typography
+              variant="caption"
+              sx={{
+                color: 'text.secondary',
+              }}
+            >
               Débutée le{' '}
               {new Date(currentSeason.startDate).toLocaleDateString()}
             </Typography>
@@ -135,7 +151,13 @@ export default function SeasonManager({ seasons }: { seasons: Season[] }) {
               borderRadius: 2,
             }}
           >
-            <Typography fontWeight="bold">Aucune saison active !</Typography>
+            <Typography
+              sx={{
+                fontWeight: 'bold',
+              }}
+            >
+              Aucune saison active !
+            </Typography>
             <Typography variant="body2">
               Le système de classement nécessite une saison active pour
               fonctionner correctement.
@@ -183,13 +205,17 @@ export default function SeasonManager({ seasons }: { seasons: Season[] }) {
               </ListItem>
             ))}
           {seasons.filter((s) => !s.isActive).length === 0 && (
-            <Typography variant="body2" color="text.secondary">
+            <Typography
+              variant="body2"
+              sx={{
+                color: 'text.secondary',
+              }}
+            >
               Aucune archive.
             </Typography>
           )}
         </List>
       </CardContent>
-
       <Dialog open={open} onClose={() => setOpen(false)}>
         <DialogTitle>Nouvelle Saison</DialogTitle>
         <DialogContent>

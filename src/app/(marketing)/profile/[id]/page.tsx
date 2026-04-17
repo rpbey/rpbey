@@ -3,7 +3,7 @@
  * Publicly accessible blader profile with dynamic metadata
  */
 
-import type { Metadata } from 'next';
+import { type Metadata } from 'next';
 import { prisma } from '@/lib/prisma';
 import PublicProfile from './_components/PublicProfile';
 

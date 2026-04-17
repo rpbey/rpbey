@@ -41,10 +41,21 @@ export default async function TeamPage() {
   if (members.length === 0) {
     return (
       <Box sx={{ textAlign: 'center', py: 20 }}>
-        <Typography variant="h4" fontWeight="bold" gutterBottom>
+        <Typography
+          variant="h4"
+          gutterBottom
+          sx={{
+            fontWeight: 'bold',
+          }}
+        >
           Notre Équipe
         </Typography>
-        <Typography variant="h6" color="text.secondary">
+        <Typography
+          variant="h6"
+          sx={{
+            color: 'text.secondary',
+          }}
+        >
           L'équipe est en cours de formation... Revenez bientôt !
         </Typography>
       </Box>

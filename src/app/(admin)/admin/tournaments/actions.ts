@@ -1,7 +1,7 @@
 'use server';
 
-import type { TournamentStatus } from '@prisma/client';
 import { revalidatePath } from 'next/cache';
+import { type TournamentStatus } from '@/generated/prisma/client';
 import { getChallongeService } from '@/lib/challonge';
 import { prisma } from '@/lib/prisma';
 

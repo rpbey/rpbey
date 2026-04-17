@@ -240,3 +240,28 @@ Custom plugin installé via le marketplace local `custom-plugins`. Fournit :
 # Le plugin est dans un marketplace local déclaré dans ~/.claude/settings.json
 claude plugin install bun-agent@custom-plugins --scope user
 ```
+
+### web3d-agent (global — `~/.claude/custom-plugins/web3d-agent`)
+Plugin dédié au développement 3D natif web et WebAssembly pour RPB. Construit depuis `docs/3d-graphics.md` et `docs/webassembly.md`.
+
+**Agents spécialisés** :
+- `web3d-coder` — Implémentation R3F, Drei, Three.js WebGPU, Rapier WASM, migration MeshViewer/BattleArena
+- `wasm-builder` — Pipeline Rust→WASM (wasm-pack), configuration Next.js WASM, déclarations TypeScript, wasm-opt
+- `vfx-shader` — Shaders TSL/WGSL, post-processing (Bloom/Glitch), particules Sparkles/Trail, GSAP timelines
+
+**Skill** :
+- `/web3d:code [task]` — Implémente ou migre du code 3D/WASM (R3F, Rapier, VFX, shaders)
+
+**Stack couverte** :
+- `three ^0.182.0` (WebGPU natif via `three/webgpu` + TSL)
+- `@react-three/fiber` + `@react-three/drei`
+- `@dimforge/rapier2d-compat` (physique Beyblade)
+- `@react-three/postprocessing` + `postprocessing`
+- `gsap` (animations 3D séquencées)
+- Rust + `wasm-pack` + `wasm-bindgen` + `serde-wasm-bindgen`
+- Next.js 16 WASM (Turbopack dev / Webpack build)
+
+**Installation** :
+```bash
+claude plugin install web3d-agent@custom-plugins --scope user
+```

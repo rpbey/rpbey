@@ -12,8 +12,8 @@ import {
   Typography,
 } from '@mui/material';
 import { alpha } from '@mui/material/styles';
-import type { Part } from '@prisma/client';
 import { useMemo, useState } from 'react';
+import { type Part } from '@/generated/prisma/client';
 import { AssetGallery } from './AssetGallery';
 import { CombatTab } from './CombatTab';
 import { GameData } from './GameData';
@@ -176,8 +176,10 @@ function FeatureCard({
         </Box>
         <Typography
           variant="subtitle1"
-          fontWeight={900}
-          sx={{ color: '#f5f0f0' }}
+          sx={{
+            fontWeight: 900,
+            color: '#f5f0f0',
+          }}
         >
           {title}
         </Typography>
@@ -204,8 +206,8 @@ function StatCounter({
     <Box sx={{ textAlign: 'center' }}>
       <Typography
         variant="h4"
-        fontWeight={900}
         sx={{
+          fontWeight: 900,
           color,
           textShadow: `0 0 20px ${alpha(color, 0.3)}`,
           lineHeight: 1,
@@ -215,8 +217,12 @@ function StatCounter({
       </Typography>
       <Typography
         variant="caption"
-        fontWeight={700}
-        sx={{ color: '#a89999', textTransform: 'uppercase', letterSpacing: 1 }}
+        sx={{
+          fontWeight: 700,
+          color: '#a89999',
+          textTransform: 'uppercase',
+          letterSpacing: 1,
+        }}
       >
         {label}
       </Typography>
@@ -235,7 +241,13 @@ function SectionHeader({
 }) {
   return (
     <Box sx={{ mb: 3 }}>
-      <Typography variant="h6" fontWeight={900} sx={{ color: '#f5f0f0' }}>
+      <Typography
+        variant="h6"
+        sx={{
+          fontWeight: 900,
+          color: '#f5f0f0',
+        }}
+      >
         {title}
       </Typography>
       {subtitle && (
@@ -344,8 +356,8 @@ export function AppClient({
           <Box>
             <Typography
               variant="h5"
-              fontWeight={900}
               sx={{
+                fontWeight: 900,
                 lineHeight: 1.2,
                 background: 'linear-gradient(90deg, #ce0c07, #e68002, #f7d301)',
                 WebkitBackgroundClip: 'text',
@@ -356,8 +368,11 @@ export function AppClient({
             </Typography>
             <Typography
               variant="caption"
-              fontWeight={700}
-              sx={{ color: '#a89999', letterSpacing: 0.5 }}
+              sx={{
+                fontWeight: 700,
+                color: '#a89999',
+                letterSpacing: 0.5,
+              }}
             >
               TAKARA TOMY · {allParts.length} pièces · {products.length}{' '}
               produits
@@ -509,8 +524,8 @@ export function AppClient({
                   </Typography>
                   <Typography
                     variant="h3"
-                    fontWeight={900}
                     sx={{
+                      fontWeight: 900,
                       color: '#f5f0f0',
                       mb: 1,
                       fontSize: { xs: '1.8rem', md: '2.5rem' },

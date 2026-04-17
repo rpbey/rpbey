@@ -14,7 +14,7 @@ import {
   RivalriesCard,
   UserProfileStatsCard,
 } from '@/components/profile';
-import type { UserStats } from '@/lib/stats';
+import { type UserStats } from '@/lib/stats';
 
 interface PublicProfileProps {
   id: string;
@@ -79,8 +79,18 @@ export default function PublicProfile({ id }: PublicProfileProps) {
   if (!stats) {
     return (
       <Container maxWidth="lg" sx={{ py: 4 }}>
-        <Box textAlign="center" py={8}>
-          <Typography variant="h5" color="text.secondary">
+        <Box
+          sx={{
+            textAlign: 'center',
+            py: 8,
+          }}
+        >
+          <Typography
+            variant="h5"
+            sx={{
+              color: 'text.secondary',
+            }}
+          >
             Profil introuvable
           </Typography>
         </Box>

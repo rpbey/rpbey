@@ -3,8 +3,7 @@
  * Generates a shareable beyblade combo card from query params
  */
 
-import type { NextRequest } from 'next/server';
-import { NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
 const TYPE_COLORS: Record<string, number> = {

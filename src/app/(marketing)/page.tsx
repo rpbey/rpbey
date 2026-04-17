@@ -1,8 +1,6 @@
-import { readFileSync } from 'node:fs';
-import { readFile } from 'node:fs/promises';
-import { join } from 'node:path';
-import type { MetaPartPreview } from '@/components/marketing';
-import type { TournamentShowcaseItem } from '@/components/marketing/TournamentShowcase';
+import { type MetaPartPreview } from '@/components/marketing';
+import { type TournamentShowcaseItem } from '@/components/marketing/TournamentShowcase';
+import { loadJsonSafe } from '@/lib/data-cache';
 import { prisma } from '@/lib/prisma';
 import { getContent } from '@/server/actions/cms';
 import HomeClient from './HomeClient';
@@ -51,9 +49,7 @@ function normalizeName(name: string): string {
 
 async function getTopMetaParts(): Promise<MetaPartPreview[]> {
   try {
-    const filePath = join(process.cwd(), 'data', 'bbx-weekly.json');
-    const raw = await readFile(filePath, 'utf-8');
-    const data = JSON.parse(raw) as {
+    const data = await loadJsonSafe<{
       periods: {
         '4weeks': {
           categories: {
@@ -67,9 +63,9 @@ async function getTopMetaParts(): Promise<MetaPartPreview[]> {
           }[];
         };
       };
-    };
+    }>('data/bbx-weekly.json');
 
-    const period = data.periods['4weeks'];
+    const period = data?.periods['4weeks'];
     if (!period?.categories) return [];
 
     // Fetch part images from DB
@@ -135,128 +131,144 @@ const BTS_EDITIONS = [
   },
 ];
 
-function getBtsTournaments(): TournamentShowcaseItem[] {
-  const exportDir = join(process.cwd(), 'data/exports');
+async function getBtsTournaments(): Promise<TournamentShowcaseItem[]> {
+  type BtsExport = {
+    participants?: {
+      name: string;
+      rank: number;
+      exactWins?: number;
+      exactLosses?: number;
+    }[];
+    participantsCount?: number;
+    matchesCount?: number;
+  };
+
+  const loaded = await Promise.all(
+    BTS_EDITIONS.map(async (edition) => ({
+      edition,
+      data: await loadJsonSafe<BtsExport>(`data/exports/${edition.file}`),
+    })),
+  );
+
   const cards: TournamentShowcaseItem[] = [];
-  for (const edition of BTS_EDITIONS) {
-    try {
-      const data = JSON.parse(
-        readFileSync(join(exportDir, edition.file), 'utf-8'),
-      );
-      const participants = data.participants || [];
-      const podium = participants
-        .filter((p: { rank: number }) => p.rank <= 3)
-        .sort((a: { rank: number }, b: { rank: number }) => a.rank - b.rank)
-        .map(
-          (p: {
-            name: string;
-            rank: number;
-            exactWins?: number;
-            exactLosses?: number;
-          }) => ({
-            name: p.name.replace(/✅|✔️/g, '').trim(),
-            rank: p.rank,
-            wins: p.exactWins || 0,
-            losses: p.exactLosses || 0,
-          }),
-        );
-      cards.push({
-        id: edition.id,
-        name: edition.name,
-        date: edition.date,
-        poster: edition.poster,
-        participants: data.participantsCount || edition.fallbackCount,
-        matchesCount: data.matchesCount || 0,
-        podium,
-      });
-    } catch {
-      /* skip */
-    }
+  for (const { edition, data } of loaded) {
+    if (!data) continue;
+    const participants = data.participants || [];
+    const podium = participants
+      .filter((p) => p.rank <= 3)
+      .sort((a, b) => a.rank - b.rank)
+      .map((p) => ({
+        name: p.name.replace(/✅|✔️/g, '').trim(),
+        rank: p.rank,
+        wins: p.exactWins || 0,
+        losses: p.exactLosses || 0,
+      }));
+    cards.push({
+      id: edition.id,
+      name: edition.name,
+      date: edition.date,
+      poster: edition.poster,
+      participants: data.participantsCount || edition.fallbackCount,
+      matchesCount: data.matchesCount || 0,
+      podium,
+    });
   }
   return cards;
 }
 
 export default async function HomePage() {
-  const [activeTournament, heroContent, rankings, metaParts, recentVideos] =
-    await Promise.all([
-      prisma.tournament.findFirst({
-        where: {
-          status: {
-            in: ['UNDERWAY', 'CHECKIN', 'REGISTRATION_OPEN'],
-          },
-          challongeUrl: { not: null },
+  const [
+    activeTournament,
+    heroContent,
+    rankings,
+    metaParts,
+    recentVideos,
+    btsTournaments,
+    nextBts,
+  ] = await Promise.all([
+    prisma.tournament.findFirst({
+      where: {
+        status: {
+          in: ['UNDERWAY', 'CHECKIN', 'REGISTRATION_OPEN'],
         },
-        orderBy: { date: 'desc' },
-        select: {
-          id: true,
-          challongeUrl: true,
-          name: true,
-          standings: true,
-          stations: true,
-          activityLog: true,
-        },
-      }),
-      getContent('home-hero-text'),
-      prisma.globalRanking.findMany({
-        where: {
-          points: { gt: 0 },
-          playerName: { notIn: ['Yoyo', 'Loteux', '𝓡𝓟𝓑 | LOTTEUX!'] },
-        },
-        take: 20,
-        orderBy: [
-          { points: 'desc' },
-          { tournamentWins: 'desc' },
-          { wins: 'desc' },
-          { playerName: 'asc' },
-        ],
-        include: {
-          user: {
-            include: {
-              _count: {
-                select: { tournaments: true },
-              },
+        challongeUrl: { not: null },
+      },
+      orderBy: { date: 'desc' },
+      select: {
+        id: true,
+        challongeUrl: true,
+        name: true,
+        standings: true,
+        stations: true,
+        activityLog: true,
+      },
+    }),
+    getContent('home-hero-text'),
+    prisma.globalRanking.findMany({
+      where: {
+        points: { gt: 0 },
+        playerName: { notIn: ['Yoyo', 'Loteux', '𝓡𝓟𝓑 | LOTTEUX!'] },
+      },
+      take: 20,
+      orderBy: [
+        { points: 'desc' },
+        { tournamentWins: 'desc' },
+        { wins: 'desc' },
+        { playerName: 'asc' },
+      ],
+      include: {
+        user: {
+          include: {
+            _count: {
+              select: { tournaments: true },
             },
           },
         },
-      }),
-      getTopMetaParts(),
-      prisma.youTubeVideo
-        .findMany({
-          where: { isFeatured: true, channelId: 'UCHiDwWI-2uQrsUiJhXt6rng' },
-          orderBy: { publishedAt: 'desc' },
-          take: 12,
-          select: {
-            id: true,
-            title: true,
-            channelName: true,
-            channelAvatar: true,
-            thumbnail: true,
-            views: true,
-            duration: true,
-            publishedAt: true,
-          },
-        })
-        .then((vids) =>
-          vids.map((v) => ({
-            ...v,
-            videoId: v.id,
-            publishedAt: v.publishedAt.toISOString(),
-          })),
-        )
-        .catch(() => []),
-    ]);
-
-  const btsTournaments = getBtsTournaments();
-
-  // Add next upcoming BTS tournament at the front of the list
-  const nextBts = await prisma.tournament.findFirst({
-    where: {
-      name: { contains: 'BEY-TAMASHII', mode: 'insensitive' },
-      status: { in: ['UPCOMING', 'REGISTRATION_OPEN', 'CHECKIN', 'UNDERWAY'] },
-    },
-    orderBy: { date: 'asc' },
-    select: { id: true, name: true, date: true, location: true, challongeUrl: true },
-  });
+      },
+    }),
+    getTopMetaParts(),
+    prisma.youTubeVideo
+      .findMany({
+        where: { isFeatured: true, channelId: 'UCHiDwWI-2uQrsUiJhXt6rng' },
+        orderBy: { publishedAt: 'desc' },
+        take: 12,
+        select: {
+          id: true,
+          title: true,
+          channelName: true,
+          channelAvatar: true,
+          thumbnail: true,
+          views: true,
+          duration: true,
+          publishedAt: true,
+        },
+      })
+      .then((vids) =>
+        vids.map((v) => ({
+          ...v,
+          videoId: v.id,
+          publishedAt: v.publishedAt.toISOString(),
+        })),
+      )
+      .catch(() => []),
+    getBtsTournaments(),
+    prisma.tournament.findFirst({
+      where: {
+        name: { contains: 'BEY-TAMASHII', mode: 'insensitive' },
+        status: {
+          in: ['UPCOMING', 'REGISTRATION_OPEN', 'CHECKIN', 'UNDERWAY'],
+        },
+      },
+      orderBy: { date: 'asc' },
+      select: {
+        id: true,
+        name: true,
+        date: true,
+        location: true,
+        challongeUrl: true,
+      },
+    }),
+  ]);
 
   if (nextBts) {
     const edition = nextBts.name.match(/#(\d+)/)?.[1];

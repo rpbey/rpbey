@@ -14,12 +14,14 @@ import {
   Stack,
   TextField,
 } from '@mui/material';
-import type { Tournament, TournamentStatus } from '@prisma/client';
-import type { Dayjs } from 'dayjs';
-import dayjs from 'dayjs';
+import dayjs, { type Dayjs } from 'dayjs';
 import { useEffect, useState } from 'react';
 import { DatePicker } from '@/components/ui';
-import type { TournamentInput } from './actions';
+import {
+  type Tournament,
+  type TournamentStatus,
+} from '@/generated/prisma/client';
+import { type TournamentInput } from './actions';
 
 interface TournamentDialogProps {
   open: boolean;

@@ -106,7 +106,6 @@ export function AnimeHero({ featured }: { featured: FeaturedSeries[] }) {
           )}
         </Box>
       </AnimatePresence>
-
       {/* Gradient overlays — deeper Netflix-style */}
       <Box
         sx={{
@@ -133,7 +132,6 @@ export function AnimeHero({ featured }: { featured: FeaturedSeries[] }) {
             'linear-gradient(to bottom, rgba(10,10,10,0.4) 0%, transparent 20%)',
         }}
       />
-
       {/* Content */}
       <AnimatePresence mode="wait">
         <Box
@@ -185,8 +183,8 @@ export function AnimeHero({ featured }: { featured: FeaturedSeries[] }) {
           <Typography
             variant="h3"
             component="h1"
-            fontWeight={900}
             sx={{
+              fontWeight: 900,
               color: 'white',
               mb: 1.5,
               fontSize: { xs: '1.75rem', sm: '2.5rem', md: '3.25rem' },
@@ -272,7 +270,6 @@ export function AnimeHero({ featured }: { featured: FeaturedSeries[] }) {
           </Box>
         </Box>
       </AnimatePresence>
-
       {/* Bottom dots + progress bar */}
       {featured.length > 1 && (
         <Box

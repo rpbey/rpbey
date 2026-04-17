@@ -46,8 +46,10 @@ export function MarketingHeader() {
       <Container maxWidth="lg">
         <Stack
           direction="row"
-          alignItems="center"
-          justifyContent="space-between"
+          sx={{
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}
         >
           <Link
             href="/"
@@ -61,10 +63,12 @@ export function MarketingHeader() {
             <RpbLogo size={28} />
             <Typography
               variant="h6"
-              fontWeight="900"
               sx={{
+                fontWeight: '900',
+
                 background: (t) =>
                   `linear-gradient(135deg, ${t.palette.secondary.main} 0%, ${t.palette.primary.main} 100%)`,
+
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 letterSpacing: '-0.02em',
@@ -76,7 +80,13 @@ export function MarketingHeader() {
             </Typography>
           </Link>
 
-          <Stack direction="row" spacing={0.5} alignItems="center">
+          <Stack
+            direction="row"
+            spacing={0.5}
+            sx={{
+              alignItems: 'center',
+            }}
+          >
             <Tooltip
               title={
                 mode === 'red' ? 'Passer en Mode Bleu' : 'Passer en Mode Rouge'

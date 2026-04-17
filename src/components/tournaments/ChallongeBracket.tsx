@@ -94,8 +94,8 @@ export function ChallongeBracket({
           />
           <Typography
             variant="subtitle1"
-            fontWeight="900"
             sx={{
+              fontWeight: '900',
               letterSpacing: 1,
               textTransform: 'uppercase',
               fontSize: '0.8rem',
@@ -129,7 +129,6 @@ export function ChallongeBracket({
           </Tooltip>
         </Box>
       </Box>
-
       {/* Bracket Content */}
       <Box
         sx={{
@@ -228,7 +227,6 @@ export function ChallongeBracket({
           </>
         )}
       </Box>
-
       {/* Footer Info */}
       <Box
         sx={{

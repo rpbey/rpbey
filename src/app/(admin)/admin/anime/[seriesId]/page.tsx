@@ -250,7 +250,6 @@ export default function AdminAnimeSeriesPage() {
       >
         Retour aux séries
       </Button>
-
       <PageHeader
         title={seriesData.titleFr || seriesData.title}
         description={`${seriesData.episodes.length} / ${seriesData.episodeCount} épisodes · ${seriesData.generation}`}
@@ -274,7 +273,6 @@ export default function AdminAnimeSeriesPage() {
           </Button>
         </Stack>
       </PageHeader>
-
       {/* Episodes table */}
       <Box sx={{ overflowX: 'auto' }}>
         <Box
@@ -309,29 +307,55 @@ export default function AdminAnimeSeriesPage() {
             {seriesData.episodes.map((ep) => (
               <tr key={ep.id}>
                 <td>
-                  <Typography variant="body2" fontWeight={700}>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      fontWeight: 700,
+                    }}
+                  >
                     {ep.number}
                   </Typography>
                 </td>
                 <td>
-                  <Typography variant="body2" fontWeight={600}>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      fontWeight: 600,
+                    }}
+                  >
                     {ep.titleFr || ep.title}
                   </Typography>
                   {ep.titleFr && (
-                    <Typography variant="caption" color="text.secondary">
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        color: 'text.secondary',
+                      }}
+                    >
                       {ep.title}
                     </Typography>
                   )}
                 </td>
                 <td>
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: 'text.secondary',
+                    }}
+                  >
                     {ep.duration > 0
                       ? `${Math.floor(ep.duration / 60)}:${(ep.duration % 60).toString().padStart(2, '0')}`
                       : '-'}
                   </Typography>
                 </td>
                 <td>
-                  <Stack direction="row" spacing={0.5} flexWrap="wrap">
+                  <Stack
+                    direction="row"
+                    spacing={0.5}
+                    sx={{
+                      flexWrap: 'wrap',
+                    }}
+                  >
                     {ep.sources.map((src) => (
                       <Chip
                         key={src.id}
@@ -386,14 +410,15 @@ export default function AdminAnimeSeriesPage() {
           </tbody>
         </Box>
       </Box>
-
       {/* Episode Dialog */}
       <Dialog
         open={epDialogOpen}
         onClose={() => setEpDialogOpen(false)}
         maxWidth="sm"
         fullWidth
-        PaperProps={{ sx: { borderRadius: 3 } }}
+        slotProps={{
+          paper: { sx: { borderRadius: 3 } },
+        }}
       >
         <DialogTitle fontWeight={700}>
           {editEpId ? `Modifier l'épisode ${epForm.number}` : 'Nouvel épisode'}
@@ -487,14 +512,15 @@ export default function AdminAnimeSeriesPage() {
           </Button>
         </DialogActions>
       </Dialog>
-
       {/* Source Dialog */}
       <Dialog
         open={sourceDialogOpen}
         onClose={() => setSourceDialogOpen(false)}
         maxWidth="sm"
         fullWidth
-        PaperProps={{ sx: { borderRadius: 3 } }}
+        slotProps={{
+          paper: { sx: { borderRadius: 3 } },
+        }}
       >
         <DialogTitle fontWeight={700}>
           {editSourceId ? 'Modifier la source' : 'Nouvelle source'}
@@ -589,18 +615,25 @@ export default function AdminAnimeSeriesPage() {
           </Button>
         </DialogActions>
       </Dialog>
-
       {/* Bulk Import Dialog */}
       <Dialog
         open={importDialogOpen}
         onClose={() => setImportDialogOpen(false)}
         maxWidth="md"
         fullWidth
-        PaperProps={{ sx: { borderRadius: 3 } }}
+        slotProps={{
+          paper: { sx: { borderRadius: 3 } },
+        }}
       >
         <DialogTitle fontWeight={700}>Import JSON des épisodes</DialogTitle>
         <DialogContent>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+          <Typography
+            variant="body2"
+            sx={{
+              color: 'text.secondary',
+              mb: 2,
+            }}
+          >
             Format : [{`{`}&quot;number&quot;: 1, &quot;title&quot;:
             &quot;Episode 1&quot;, &quot;titleFr&quot;: &quot;Épisode 1&quot;,
             &quot;duration&quot;: 1440{`}`}]

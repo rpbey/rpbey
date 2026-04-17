@@ -16,7 +16,7 @@ import { useState } from 'react';
 import { DynamicRadarChart } from '@/components/ui/DynamicCharts';
 
 import { SynergyList } from './SynergyList';
-import type { ComponentData } from './types';
+import { type ComponentData } from './types';
 
 function PositionIndicator({ change }: { change: number | 'NEW' }) {
   if (change === 'NEW') {
@@ -219,8 +219,8 @@ export function PartRankCard({
             >
               <Typography
                 variant="caption"
-                color="text.secondary"
                 sx={{
+                  color: 'text.secondary',
                   fontSize: { xs: '0.55rem', md: '0.6rem' },
                   fontWeight: 700,
                   letterSpacing: 0.5,

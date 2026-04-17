@@ -46,7 +46,9 @@ export async function rankingPostTask() {
       if (botMessages.size > 0) {
         await textChannel.bulkDelete(botMessages, true).catch(() => {
           // Fallback: delete one by one (messages older than 14 days)
-          botMessages.forEach((m) => m.delete().catch(() => {}));
+          botMessages.forEach((m) => {
+            m.delete().catch(() => {});
+          });
         });
       }
     } catch {

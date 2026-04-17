@@ -6,7 +6,7 @@ import CardActionArea from '@mui/material/CardActionArea';
 import { alpha } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import Link from 'next/link';
-import type { ElementType } from 'react';
+import { type ElementType } from 'react';
 
 interface FeatureCardProps {
   icon: ElementType;
@@ -63,10 +63,21 @@ export function FeatureCard({
         >
           <IconAny size={28} style={{ width: 28, height: 28 }} />
         </Box>
-        <Typography variant="h6" fontWeight="bold" gutterBottom>
+        <Typography
+          variant="h6"
+          gutterBottom
+          sx={{
+            fontWeight: 'bold',
+          }}
+        >
           {title}
         </Typography>
-        <Typography variant="body2" color="text.secondary">
+        <Typography
+          variant="body2"
+          sx={{
+            color: 'text.secondary',
+          }}
+        >
           {description}
         </Typography>
       </CardActionArea>

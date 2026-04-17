@@ -7,7 +7,7 @@ import DialogContent from '@mui/material/DialogContent';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import { useEffect, useState } from 'react';
-import type { VideoInfo } from '@/lib/twitch';
+import { type VideoInfo } from '@/lib/twitch';
 
 interface VideoPlayerModalProps {
   open: boolean;
@@ -49,12 +49,14 @@ export function VideoPlayerModal({
       onClose={onClose}
       maxWidth="lg"
       fullWidth
-      PaperProps={{
-        sx: {
-          bgcolor: 'black',
-          backgroundImage: 'none',
-          overflow: 'hidden',
-          borderRadius: 2,
+      slotProps={{
+        paper: {
+          sx: {
+            bgcolor: 'black',
+            backgroundImage: 'none',
+            overflow: 'hidden',
+            borderRadius: 2,
+          },
         },
       }}
     >

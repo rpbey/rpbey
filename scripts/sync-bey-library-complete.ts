@@ -2,7 +2,7 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 
 import { PrismaPg } from '@prisma/adapter-pg';
-import { BeyType, PartType, PrismaClient } from '@prisma/client';
+import { BeyType, PartType, PrismaClient } from '@/generated/prisma/client';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import pg from 'pg';

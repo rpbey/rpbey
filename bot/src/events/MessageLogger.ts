@@ -37,7 +37,7 @@ export class MessageLogger {
 
         const file = Bun.file(dataPath);
         const existing = (await file.exists()) ? await file.text() : '';
-        await Bun.write(dataPath, existing + `${JSON.stringify(logEntry)}\n`);
+        await Bun.write(dataPath, `${existing}${JSON.stringify(logEntry)}\n`);
       } catch (error) {
         logger.error('Error logging training message:', error);
       }

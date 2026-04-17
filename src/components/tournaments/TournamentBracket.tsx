@@ -226,8 +226,17 @@ export function TournamentBracket({
 
   if (roundNumbers.length === 0) {
     return (
-      <Box textAlign="center" py={4}>
-        <Typography color="text.secondary">
+      <Box
+        sx={{
+          textAlign: 'center',
+          py: 4,
+        }}
+      >
+        <Typography
+          sx={{
+            color: 'text.secondary',
+          }}
+        >
           Le bracket sera généré au lancement du tournoi
         </Typography>
       </Box>
@@ -256,9 +265,11 @@ export function TournamentBracket({
         >
           <Typography
             variant="subtitle2"
-            color="text.secondary"
-            textAlign="center"
-            fontWeight="bold"
+            sx={{
+              color: 'text.secondary',
+              textAlign: 'center',
+              fontWeight: 'bold',
+            }}
           >
             {getRoundName(roundNum, maxRound)}
           </Typography>
@@ -282,7 +293,6 @@ export function TournamentBracket({
           </Box>
         </Box>
       ))}
-
       {selectedMatch && (
         <ScoreReportDialog
           open={!!selectedMatch}

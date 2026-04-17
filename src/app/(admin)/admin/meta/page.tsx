@@ -62,16 +62,25 @@ export default function AdminMetaPage() {
           <Hub sx={{ fontSize: { xs: 32, md: 40 }, color: 'primary.main' }} />
         </Box>
         <Box>
-          <Typography variant="h4" fontWeight="900">
+          <Typography
+            variant="h4"
+            sx={{
+              fontWeight: '900',
+            }}
+          >
             GESTION META
           </Typography>
-          <Typography variant="body2" color="text.secondary">
+          <Typography
+            variant="body2"
+            sx={{
+              color: 'text.secondary',
+            }}
+          >
             Analyse de l'utilisation des pièces basée sur les decks de la
             communauté.
           </Typography>
         </Box>
       </Box>
-
       <Grid container spacing={3}>
         <StatSection
           title="Top Blades"
@@ -131,8 +140,11 @@ function StatSection({
             <Box sx={{ color: color, display: 'flex' }}>{icon}</Box>
             <Typography
               variant="h6"
-              fontWeight="900"
-              sx={{ fontSize: '1rem', letterSpacing: 0.5 }}
+              sx={{
+                fontWeight: '900',
+                fontSize: '1rem',
+                letterSpacing: 0.5,
+              }}
             >
               {title.toUpperCase()}
             </Typography>
@@ -141,9 +153,11 @@ function StatSection({
           {data.length === 0 ? (
             <Typography
               variant="body2"
-              color="text.disabled"
-              textAlign="center"
-              sx={{ py: 4 }}
+              sx={{
+                color: 'text.disabled',
+                textAlign: 'center',
+                py: 4,
+              }}
             >
               Aucune donnée
             </Typography>
@@ -177,14 +191,22 @@ function StatSection({
                       {item.name?.[0]}
                     </Avatar>
                     <Box sx={{ flex: 1, minWidth: 0 }}>
-                      <Typography variant="body2" fontWeight="bold" noWrap>
+                      <Typography
+                        variant="body2"
+                        noWrap
+                        sx={{
+                          fontWeight: 'bold',
+                        }}
+                      >
                         {item.name}
                       </Typography>
                     </Box>
                     <Typography
                       variant="caption"
-                      fontWeight="900"
-                      color="text.secondary"
+                      sx={{
+                        fontWeight: '900',
+                        color: 'text.secondary',
+                      }}
                     >
                       {item.count}
                     </Typography>

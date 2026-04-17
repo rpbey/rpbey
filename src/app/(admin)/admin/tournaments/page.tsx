@@ -28,7 +28,6 @@ import {
   Typography,
 } from '@mui/material';
 import TablePagination from '@mui/material/TablePagination';
-import type { Tournament } from '@prisma/client';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 import {
@@ -37,14 +36,15 @@ import {
   useToast,
   // Remove Button from here
 } from '@/components/ui';
+import { type Tournament } from '@/generated/prisma/client';
 import { useDebounce } from '@/hooks/use-debounce';
 import { formatDateShort } from '@/lib/utils';
 import { getTournamentCategories } from '@/server/actions/ranking';
-import type { TournamentInput } from './actions';
 import {
   createTournament,
   deleteTournament,
   getTournaments,
+  type TournamentInput,
   updateTournament,
 } from './actions';
 import { CommunitySyncDialog } from './CommunitySyncDialog';
@@ -230,7 +230,6 @@ export default function AdminTournamentsPage() {
           </Button>
         </Box>
       </Box>
-
       {/* Stats */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
         {[
@@ -248,10 +247,21 @@ export default function AdminTournamentsPage() {
               }}
             >
               <CardContent sx={{ textAlign: 'center' }}>
-                <Typography variant="h3" fontWeight="bold" color="primary">
+                <Typography
+                  variant="h3"
+                  color="primary"
+                  sx={{
+                    fontWeight: 'bold',
+                  }}
+                >
                   {stat.value}
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: 'text.secondary',
+                  }}
+                >
                   {stat.label}
                 </Typography>
               </CardContent>
@@ -259,7 +269,6 @@ export default function AdminTournamentsPage() {
           </Grid>
         ))}
       </Grid>
-
       {/* Search Bar */}
       <Box sx={{ mb: 3 }}>
         <TextField
@@ -284,7 +293,6 @@ export default function AdminTournamentsPage() {
           }}
         />
       </Box>
-
       {loading && tournaments.length === 0 ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
           <CircularProgress />
@@ -333,7 +341,11 @@ export default function AdminTournamentsPage() {
                 {tournaments.map((tournament) => (
                   <TableRow key={tournament.id} hover>
                     <TableCell>
-                      <Typography fontWeight="bold">
+                      <Typography
+                        sx={{
+                          fontWeight: 'bold',
+                        }}
+                      >
                         {tournament.name}
                       </Typography>
                       {tournament.challongeUrl && (
@@ -350,9 +362,11 @@ export default function AdminTournamentsPage() {
                           />
                           <Typography
                             variant="caption"
-                            color="text.secondary"
                             noWrap
-                            sx={{ maxWidth: 200 }}
+                            sx={{
+                              color: 'text.secondary',
+                              maxWidth: 200,
+                            }}
                           >
                             {tournament.challongeUrl}
                           </Typography>
@@ -398,7 +412,11 @@ export default function AdminTournamentsPage() {
                 {tournaments.length === 0 && !loading && (
                   <TableRow>
                     <TableCell colSpan={5} align="center" sx={{ py: 4 }}>
-                      <Typography color="text.secondary">
+                      <Typography
+                        sx={{
+                          color: 'text.secondary',
+                        }}
+                      >
                         Aucun tournoi trouvé
                       </Typography>
                     </TableCell>
@@ -419,7 +437,6 @@ export default function AdminTournamentsPage() {
           />
         </Card>
       )}
-
       <TournamentDialog
         open={dialogOpen}
         onClose={() => setDialogOpen(false)}
@@ -433,7 +450,6 @@ export default function AdminTournamentsPage() {
         onClose={() => setSyncDialogOpen(false)}
         onSuccess={fetchTournaments}
       />
-
       {ConfirmDialogComponent}
     </Box>
   );

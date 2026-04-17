@@ -3,9 +3,8 @@
  * GET, PUT, DELETE operations with Challonge sync
  */
 
-import type { TournamentStatus } from '@prisma/client';
-import type { NextRequest } from 'next/server';
-import { NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
+import { type TournamentStatus } from '@/generated/prisma/client';
 import { requireAdmin, requireStaff } from '@/lib/auth-utils';
 import { getChallongeService } from '@/lib/challonge';
 import { prisma } from '@/lib/prisma';

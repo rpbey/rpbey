@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { CategorySection } from './CategorySection';
 import { MetaStatsBar } from './MetaStatsBar';
 import { PeriodSwitcher } from './PeriodSwitcher';
-import type { BbxWeeklyData, CategoryData, PeriodKey } from './types';
+import { type BbxWeeklyData, type CategoryData, type PeriodKey } from './types';
 
 const CATEGORY_ORDER = ['Blade', 'Ratchet', 'Bit', 'Lock Chip', 'Assist Blade'];
 
@@ -40,8 +40,8 @@ export function MetaClient({ data }: { data: BbxWeeklyData }) {
         </Typography>
         <Typography
           variant="body2"
-          color="text.secondary"
           sx={{
+            color: 'text.secondary',
             mt: 0.5,
             maxWidth: 600,
             mx: 'auto',
@@ -59,13 +59,10 @@ export function MetaClient({ data }: { data: BbxWeeklyData }) {
           </Link>
         </Typography>
       </Box>
-
       {/* Period Switcher - Sticky on mobile */}
       <PeriodSwitcher period={period} onChange={setPeriod} />
-
       {/* Stats Bar */}
       <MetaStatsBar metadata={periodData.metadata} scrapedAt={data.scrapedAt} />
-
       {/* Category Sections */}
       <Box
         sx={{
@@ -79,7 +76,6 @@ export function MetaClient({ data }: { data: BbxWeeklyData }) {
           <CategorySection key={cat.category} category={cat} />
         ))}
       </Box>
-
       {/* Footer */}
       <Box
         sx={{
@@ -92,8 +88,10 @@ export function MetaClient({ data }: { data: BbxWeeklyData }) {
       >
         <Typography
           variant="caption"
-          color="text.secondary"
-          sx={{ fontSize: { xs: '0.65rem', md: '0.75rem' } }}
+          sx={{
+            color: 'text.secondary',
+            fontSize: { xs: '0.65rem', md: '0.75rem' },
+          }}
         >
           Données :{' '}
           <Link

@@ -209,7 +209,14 @@ export function WbTournamentShowcase() {
   return (
     <Box sx={{ mb: 4 }}>
       {/* Section header */}
-      <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 2 }}>
+      <Stack
+        direction="row"
+        spacing={1}
+        sx={{
+          alignItems: 'center',
+          mb: 2,
+        }}
+      >
         <SportsKabaddiIcon sx={{ fontSize: 18, color: 'var(--rpb-primary)' }} />
         <Typography
           variant="overline"
@@ -234,7 +241,6 @@ export function WbTournamentShowcase() {
           }}
         />
       </Stack>
-
       {/* Tournament Grid */}
       <Box
         sx={{
@@ -383,7 +389,13 @@ export function WbTournamentShowcase() {
               }}
             >
               <Stack direction="row" spacing={2}>
-                <Stack direction="row" spacing={0.5} alignItems="center">
+                <Stack
+                  direction="row"
+                  spacing={0.5}
+                  sx={{
+                    alignItems: 'center',
+                  }}
+                >
                   <GroupsIcon
                     sx={{ fontSize: 13, color: alpha('#fff', 0.3) }}
                   />
@@ -400,7 +412,13 @@ export function WbTournamentShowcase() {
                 </Stack>
               </Stack>
 
-              <Stack direction="row" spacing={0.5} alignItems="center">
+              <Stack
+                direction="row"
+                spacing={0.5}
+                sx={{
+                  alignItems: 'center',
+                }}
+              >
                 <EmojiEventsIcon sx={{ fontSize: 13, color: t.color }} />
                 <Typography
                   variant="caption"

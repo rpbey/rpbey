@@ -128,19 +128,26 @@ export function BuilderHeader() {
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mr: 'auto' }}>
         <Construction sx={{ fontSize: 32, color: 'error.main' }} />
         <Box>
-          <Typography variant="h5" fontWeight="900" lineHeight={1.1}>
+          <Typography
+            variant="h5"
+            sx={{
+              fontWeight: '900',
+              lineHeight: 1.1,
+            }}
+          >
             DECK BUILDER
           </Typography>
           <Typography
             variant="caption"
-            color="text.secondary"
-            fontWeight="bold"
+            sx={{
+              color: 'text.secondary',
+              fontWeight: 'bold',
+            }}
           >
             CONFIGURATION 3ON3
           </Typography>
         </Box>
       </Box>
-
       {/* Tools: Undo, Redo, Share */}
       <Box sx={{ display: 'flex', gap: 0.5, mr: 1 }}>
         <Tooltip title="Annuler (Ctrl+Z)" arrow>
@@ -177,7 +184,6 @@ export function BuilderHeader() {
           </IconButton>
         </Tooltip>
       </Box>
-
       <Box
         sx={{
           display: 'flex',

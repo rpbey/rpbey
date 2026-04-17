@@ -18,11 +18,11 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
-import type { SatrBlader, SatrRanking } from '@prisma/client';
 import { motion } from 'framer-motion';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useState } from 'react';
 import { toast } from 'sonner';
+import { type SatrBlader, type SatrRanking } from '@/generated/prisma/client';
 import { getSatrBladerByName } from '@/server/actions/satr';
 import { SatrBladerDialog } from './SatrBladerDialog';
 import { SatrComparator } from './SatrComparator';
@@ -126,9 +126,12 @@ export function SatrTable({
 
     return (
       <Typography
-        fontWeight="900"
-        color="text.secondary"
-        sx={{ fontSize: { xs: '0.75rem', md: '0.85rem' }, opacity: 0.6 }}
+        sx={{
+          fontWeight: '900',
+          color: 'text.secondary',
+          fontSize: { xs: '0.75rem', md: '0.85rem' },
+          opacity: 0.6,
+        }}
       >
         #{rank}
       </Typography>
@@ -293,8 +296,8 @@ export function SatrTable({
                   <TableCell align="center">{getRankBadge(row.rank)}</TableCell>
                   <TableCell>
                     <Typography
-                      fontWeight="800"
                       sx={{
+                        fontWeight: '800',
                         fontSize: { xs: '0.85rem', md: '0.95rem' },
                         color: '#fff',
                         whiteSpace: 'nowrap',
@@ -305,8 +308,8 @@ export function SatrTable({
                   </TableCell>
                   <TableCell align="center">
                     <Typography
-                      fontWeight="900"
                       sx={{
+                        fontWeight: '900',
                         fontSize: { xs: '0.85rem', md: '1rem' },
                         color: 'secondary.main',
                       }}
@@ -315,7 +318,12 @@ export function SatrTable({
                     </Typography>
                   </TableCell>
                   <TableCell align="center">
-                    <Typography fontWeight="700" sx={{ fontSize: '0.85rem' }}>
+                    <Typography
+                      sx={{
+                        fontWeight: '700',
+                        fontSize: '0.85rem',
+                      }}
+                    >
                       <Box component="span" sx={{ color: 'success.main' }}>
                         {row.wins}
                       </Box>
@@ -349,7 +357,12 @@ export function SatrTable({
                         border: '1px solid rgba(255,255,255,0.1)',
                       }}
                     >
-                      <Typography fontWeight="800" sx={{ fontSize: '0.8rem' }}>
+                      <Typography
+                        sx={{
+                          fontWeight: '800',
+                          fontSize: '0.8rem',
+                        }}
+                      >
                         {row.winRate}
                       </Typography>
                     </Box>
@@ -367,7 +380,12 @@ export function SatrTable({
             ) : (
               <TableRow>
                 <TableCell colSpan={8} align="center" sx={{ py: 10 }}>
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: 'text.secondary',
+                    }}
+                  >
                     Aucun blader trouvé
                   </Typography>
                 </TableCell>
@@ -376,7 +394,6 @@ export function SatrTable({
           </TableBody>
         </Table>
       </TableContainer>
-
       {totalPages > 1 && (
         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4, mb: 4 }}>
           <Pagination
@@ -402,13 +419,11 @@ export function SatrTable({
           />
         </Box>
       )}
-
       <SatrBladerDialog
         blader={selectedBlader}
         open={!!selectedBlader}
         onClose={() => setSelectedBlader(null)}
       />
-
       <SatrComparator
         selected={compareList}
         onRemove={(id) =>

@@ -34,9 +34,9 @@ import {
   type GridPaginationModel,
 } from '@mui/x-data-grid';
 import { frFR } from '@mui/x-data-grid/locales';
-import type { User } from '@prisma/client';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
+import { type User } from '@/generated/prisma/client';
 import { useDebounce } from '@/hooks/use-debounce';
 import { formatDateShort } from '@/lib/utils';
 import { deleteUser, getUsers, updateUser } from './actions';
@@ -157,7 +157,12 @@ export default function AdminUsersPage() {
             {params.row.name?.charAt(0)}
           </Avatar>
           <Box>
-            <Typography fontWeight="bold" variant="body2">
+            <Typography
+              variant="body2"
+              sx={{
+                fontWeight: 'bold',
+              }}
+            >
               {params.row.name || 'Anonyme'}
             </Typography>
             {params.row.banned && (
@@ -255,29 +260,41 @@ export default function AdminUsersPage() {
 
   return (
     <Box sx={{ py: 4 }}>
-      <Typography variant="h4" fontWeight="bold" gutterBottom>
+      <Typography
+        variant="h4"
+        gutterBottom
+        sx={{
+          fontWeight: 'bold',
+        }}
+      >
         Utilisateurs
       </Typography>
-      <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
+      <Typography
+        variant="body1"
+        sx={{
+          color: 'text.secondary',
+          mb: 4,
+        }}
+      >
         Gérez les utilisateurs de la plateforme ({total} au total)
       </Typography>
-
       {/* Search */}
       <TextField
         fullWidth
         placeholder="Rechercher un utilisateur (nom ou email)..."
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <Search />
-            </InputAdornment>
-          ),
-        }}
         sx={{ mb: 3 }}
+        slotProps={{
+          input: {
+            startAdornment: (
+              <InputAdornment position="start">
+                <Search />
+              </InputAdornment>
+            ),
+          },
+        }}
       />
-
       <Card
         elevation={0}
         sx={{
@@ -312,7 +329,6 @@ export default function AdminUsersPage() {
           }}
         />
       </Card>
-
       {/* Edit User Dialog */}
       <Dialog
         open={!!editUser}
@@ -340,11 +356,21 @@ export default function AdminUsersPage() {
               {editUser?.name?.charAt(0)}
             </Avatar>
             <Box>
-              <Typography variant="body2" color="text.secondary">
+              <Typography
+                variant="body2"
+                sx={{
+                  color: 'text.secondary',
+                }}
+              >
                 {editUser?.email}
               </Typography>
               {editUser?.discordTag && (
-                <Typography variant="caption" color="text.disabled">
+                <Typography
+                  variant="caption"
+                  sx={{
+                    color: 'text.disabled',
+                  }}
+                >
                   Discord : {editUser.discordTag}
                 </Typography>
               )}
@@ -406,7 +432,6 @@ export default function AdminUsersPage() {
           </Button>
         </DialogActions>
       </Dialog>
-
       {/* Delete Confirmation Dialog */}
       <Dialog
         open={!!deleteTarget}

@@ -61,8 +61,8 @@ export function NextEpisodeOverlay({
         </Typography>
         <Typography
           variant="body2"
-          fontWeight={700}
           sx={{
+            fontWeight: 700,
             color: 'white',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
@@ -86,7 +86,6 @@ export function NextEpisodeOverlay({
           }}
         />
       </Box>
-
       <Box sx={{ display: 'flex', gap: 1, flexShrink: 0 }}>
         <Button
           onClick={() => setDismissed(true)}

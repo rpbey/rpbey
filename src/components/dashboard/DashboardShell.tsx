@@ -149,7 +149,13 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           }}
         >
           <RpbLogo size={32} animated />
-          <Typography variant="h6" fontWeight="800" letterSpacing="-0.02em">
+          <Typography
+            variant="h6"
+            sx={{
+              fontWeight: '800',
+              letterSpacing: '-0.02em',
+            }}
+          >
             RPB Dashboard
           </Typography>
         </Link>
@@ -175,14 +181,22 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
               sx={{ width: 40, height: 40, borderRadius: 2 }}
             />
             <Box sx={{ minWidth: 0 }}>
-              <Typography variant="subtitle2" fontWeight="bold" noWrap>
+              <Typography
+                variant="subtitle2"
+                noWrap
+                sx={{
+                  fontWeight: 'bold',
+                }}
+              >
                 {session.user.name}
               </Typography>
               <Typography
                 variant="caption"
-                color="text.secondary"
                 noWrap
-                display="block"
+                sx={{
+                  color: 'text.secondary',
+                  display: 'block',
+                }}
               >
                 {isAdmin ? 'Administrateur' : 'Blader'}
               </Typography>
@@ -197,9 +211,9 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           subheader={
             <Typography
               variant="caption"
-              fontWeight="bold"
-              color="text.secondary"
               sx={{
+                fontWeight: 'bold',
+                color: 'text.secondary',
                 px: 3,
                 mb: 1,
                 display: 'block',
@@ -254,9 +268,11 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                   </ListItemIcon>
                   <ListItemText
                     primary={item.label}
-                    primaryTypographyProps={{
-                      fontSize: '0.9rem',
-                      fontWeight: isActive ? 700 : 500,
+                    slotProps={{
+                      primary: {
+                        fontSize: '0.9rem',
+                        fontWeight: isActive ? 700 : 500,
+                      },
                     }}
                   />
                 </ListItemButton>
@@ -272,9 +288,9 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             subheader={
               <Typography
                 variant="caption"
-                fontWeight="bold"
-                color="text.secondary"
                 sx={{
+                  fontWeight: 'bold',
+                  color: 'text.secondary',
                   px: 3,
                   mb: 1,
                   display: 'block',
@@ -320,9 +336,11 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                     </ListItemIcon>
                     <ListItemText
                       primary={item.label}
-                      primaryTypographyProps={{
-                        fontSize: '0.9rem',
-                        fontWeight: 700,
+                      slotProps={{
+                        primary: {
+                          fontSize: '0.9rem',
+                          fontWeight: 700,
+                        },
                       }}
                     />
                   </ListItemButton>
@@ -349,7 +367,9 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           </ListItemIcon>
           <ListItemText
             primary="Déconnexion"
-            primaryTypographyProps={{ fontWeight: 600 }}
+            slotProps={{
+              primary: { fontWeight: 600 },
+            }}
           />
         </ListItemButton>
       </Box>
@@ -391,7 +411,6 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           {drawerContent}
         </Drawer>
       </Box>
-
       {/* Mobile Menu Drawer */}
       <Drawer
         variant="temporary"
@@ -411,7 +430,6 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
       >
         {drawerContent}
       </Drawer>
-
       {/* Main Content */}
       <Box
         component="main"
@@ -470,9 +488,9 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
               )}
               <Typography
                 variant="h6"
-                fontWeight="800"
-                color="text.primary"
                 sx={{
+                  fontWeight: '800',
+                  color: 'text.primary',
                   fontSize: { xs: '1.1rem', md: '1.25rem' },
                   lineHeight: 1.2,
                 }}
@@ -481,7 +499,13 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
               </Typography>
             </Box>
 
-            <Stack direction="row" spacing={1} alignItems="center">
+            <Stack
+              direction="row"
+              spacing={1}
+              sx={{
+                alignItems: 'center',
+              }}
+            >
               <Button
                 component={Link}
                 href="/"
@@ -523,7 +547,6 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           <PageTransition>{children}</PageTransition>
         </Box>
       </Box>
-
       {isMobile && (
         <Box
           sx={{
@@ -576,7 +599,6 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           </BottomNavigation>
         </Box>
       )}
-
       <Menu
         sx={{ mt: '45px' }}
         id="menu-appbar"

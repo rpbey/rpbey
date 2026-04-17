@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import { prisma } from '../src/lib/prisma';
 import type { BeyManifest } from '../src/types/bey';
-import { PartType } from '@prisma/client';
+import { PartType } from '@/generated/prisma/client';
 
 const MANIFEST_PATH = path.join(process.cwd(), 'public/bey-manifest.json');
 const OUTPUT_PATH = path.join(process.cwd(), 'public/data/part-model-map.json');

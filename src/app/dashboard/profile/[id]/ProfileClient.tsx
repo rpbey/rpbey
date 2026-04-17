@@ -20,7 +20,7 @@ import {
   UserProfileStatsCard,
 } from '@/components/profile';
 import { useAuth } from '@/hooks';
-import type { UserStats } from '@/lib/stats';
+import { type UserStats } from '@/lib/stats';
 
 interface ProfilePageProps {
   params: Promise<{ id: string }>;
@@ -91,8 +91,18 @@ export default function ProfilePage({ params }: ProfilePageProps) {
 
   if (!stats) {
     return (
-      <Box textAlign="center" py={8}>
-        <Typography variant="h5" color="text.secondary">
+      <Box
+        sx={{
+          textAlign: 'center',
+          py: 8,
+        }}
+      >
+        <Typography
+          variant="h5"
+          sx={{
+            color: 'text.secondary',
+          }}
+        >
           Profil introuvable
         </Typography>
       </Box>

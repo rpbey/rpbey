@@ -18,7 +18,7 @@ import {
 } from '@mui/material';
 import { useState } from 'react';
 import { useToast } from '@/components/ui';
-import type { ChallongeTournament } from '@/lib/challonge';
+import { type ChallongeTournament } from '@/lib/challonge';
 import {
   importTournamentFromChallonge,
   syncCommunityTournaments,

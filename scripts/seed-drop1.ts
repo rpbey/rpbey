@@ -13,8 +13,8 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 
 import { PrismaPg } from '@prisma/adapter-pg';
-import type { CardRarity, CardType } from '@prisma/client';
-import { PrismaClient } from '@prisma/client';
+import type { CardRarity, CardType } from '@/generated/prisma/client';
+import { PrismaClient } from '@/generated/prisma/client';
 import * as fs from 'fs/promises';
 import pg from 'pg';
 

@@ -75,7 +75,12 @@ export function ProfileDecksSection({
             mb: 2,
           }}
         >
-          <Typography variant="h6" fontWeight="800">
+          <Typography
+            variant="h6"
+            sx={{
+              fontWeight: '800',
+            }}
+          >
             Mes Decks
           </Typography>
           <Link href="/builder" passHref style={{ textDecoration: 'none' }}>
@@ -96,7 +101,12 @@ export function ProfileDecksSection({
 
         {!decks || decks.length === 0 ? (
           <Box sx={{ textAlign: 'center', py: 4 }}>
-            <Typography color="text.secondary" gutterBottom>
+            <Typography
+              gutterBottom
+              sx={{
+                color: 'text.secondary',
+              }}
+            >
               Aucun deck sauvegardé
             </Typography>
             <Link href="/builder" passHref style={{ textDecoration: 'none' }}>

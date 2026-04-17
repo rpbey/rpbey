@@ -421,8 +421,8 @@ export function EpisodeCard({
         {/* Title */}
         <Typography
           variant="body2"
-          fontWeight={600}
           sx={{
+            fontWeight: 600,
             mt: 0.8,
             color: isCompleted ? 'rgba(255,255,255,0.5)' : 'text.primary',
             overflow: 'hidden',

@@ -11,15 +11,29 @@ export function RpbLogo({
   className,
   animated = false,
 }: RpbLogoProps) {
+  if (animated) {
+    return (
+      <video
+        src="/rpb.webm"
+        width={size}
+        height={size}
+        className={className}
+        autoPlay
+        loop
+        muted
+        playsInline
+        aria-label="RPB Logo"
+      />
+    );
+  }
   return (
     <Image
-      src={animated ? '/rpb.gif' : '/logo.webp'}
+      src="/logo.webp"
       alt="RPB Logo"
       width={size}
       height={size}
       className={className}
       priority
-      unoptimized={animated}
     />
   );
 }

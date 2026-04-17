@@ -117,7 +117,13 @@ export function StaffCard({ member }: StaffCardProps) {
           {member.name.charAt(0)}
         </Avatar>
 
-        <Typography variant="h6" fontWeight="bold" sx={{ mb: 0.5 }}>
+        <Typography
+          variant="h6"
+          sx={{
+            fontWeight: 'bold',
+            mb: 0.5,
+          }}
+        >
           {member.name}
         </Typography>
 

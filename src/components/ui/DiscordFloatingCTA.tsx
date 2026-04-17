@@ -156,8 +156,11 @@ export function DiscordFloatingCTA() {
 
         <Box sx={{ flex: 1, minWidth: 0, pr: 2 }}>
           <Typography
-            fontWeight={800}
-            sx={{ fontSize: { xs: '0.85rem', md: '0.95rem' }, lineHeight: 1.2 }}
+            sx={{
+              fontWeight: 800,
+              fontSize: { xs: '0.85rem', md: '0.95rem' },
+              lineHeight: 1.2,
+            }}
           >
             {config.title}
           </Typography>

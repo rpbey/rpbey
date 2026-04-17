@@ -70,14 +70,26 @@ export default function AdminLoginPage() {
           }}
         >
           <Stack spacing={3} component="form" onSubmit={handleSubmit}>
-            <Box textAlign="center">
-              <Typography variant="h5" fontWeight="bold" color="white">
+            <Box
+              sx={{
+                textAlign: 'center',
+              }}
+            >
+              <Typography
+                variant="h5"
+                color="white"
+                sx={{
+                  fontWeight: 'bold',
+                }}
+              >
                 Admin RPB
               </Typography>
               <Typography
                 variant="body2"
-                color="text.secondary"
-                sx={{ mt: 0.5 }}
+                sx={{
+                  color: 'text.secondary',
+                  mt: 0.5,
+                }}
               >
                 Connexion rapide avec Discord ID + PIN
               </Typography>

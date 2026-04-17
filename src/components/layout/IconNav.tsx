@@ -23,12 +23,12 @@ import {
   Tooltip,
 } from '@mui/material';
 import { motion } from 'framer-motion';
-import type { LucideIcon } from 'lucide-react';
 import {
   Clapperboard,
   Crown,
   Gamepad2,
   House,
+  type LucideIcon,
   Swords,
   Trophy,
   Tv,

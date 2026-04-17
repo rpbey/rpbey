@@ -522,23 +522,27 @@ export default async function RankingsPage({
           </Box>
           <Box sx={{ flex: 1, minWidth: 0 }}>
             <Typography
-              fontWeight={800}
-              sx={{ fontSize: { xs: '0.85rem', md: '1rem' } }}
+              sx={{
+                fontWeight: 800,
+                fontSize: { xs: '0.85rem', md: '1rem' },
+              }}
             >
               Tu veux monter dans le classement ?
             </Typography>
             <Typography
               variant="body2"
-              color="text.secondary"
-              sx={{ fontSize: { xs: '0.72rem', md: '0.82rem' } }}
+              sx={{
+                color: 'text.secondary',
+                fontSize: { xs: '0.72rem', md: '0.82rem' },
+              }}
             >
               Rejoins le Discord RPB pour participer aux tournois officiels et
               gagner des points.
             </Typography>
           </Box>
           <Typography
-            fontWeight={800}
             sx={{
+              fontWeight: 800,
               color: '#5865F2',
               fontSize: { xs: '0.75rem', md: '0.9rem' },
               whiteSpace: 'nowrap',
@@ -589,22 +593,26 @@ export default async function RankingsPage({
           </Box>
           <Box sx={{ flex: 1, minWidth: 0 }}>
             <Typography
-              fontWeight={800}
-              sx={{ fontSize: { xs: '0.85rem', md: '1rem' } }}
+              sx={{
+                fontWeight: 800,
+                fontSize: { xs: '0.85rem', md: '1rem' },
+              }}
             >
               Suis la RPB sur X
             </Typography>
             <Typography
               variant="body2"
-              color="text.secondary"
-              sx={{ fontSize: { xs: '0.72rem', md: '0.82rem' } }}
+              sx={{
+                color: 'text.secondary',
+                fontSize: { xs: '0.72rem', md: '0.82rem' },
+              }}
             >
               Résultats en direct, clips de tournois et annonces exclusives.
             </Typography>
           </Box>
           <Typography
-            fontWeight={800}
             sx={{
+              fontWeight: 800,
               color: 'text.secondary',
               fontSize: { xs: '0.75rem', md: '0.9rem' },
               whiteSpace: 'nowrap',
@@ -617,8 +625,8 @@ export default async function RankingsPage({
 
         <Typography
           variant="caption"
-          color="text.secondary"
           sx={{
+            color: 'text.secondary',
             display: 'block',
             textAlign: 'center',
             mt: { xs: 4, md: 6 },
@@ -631,7 +639,6 @@ export default async function RankingsPage({
           RÉPUBLIQUE POPULAIRE DU BEYBLADE • CLASSEMENT OFFICIEL
         </Typography>
       </Container>
-
       <ScrollToTop />
     </Box>
   );

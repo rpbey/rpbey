@@ -2,7 +2,7 @@
 
 import { Avatar, Box, LinearProgress, Typography } from '@mui/material';
 
-import type { SynergyItem } from './types';
+import { type SynergyItem } from './types';
 
 const DEFAULT_VISIBLE = 5;
 
