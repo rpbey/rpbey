@@ -11,7 +11,7 @@ import {
   useToast,
 } from '@/components/ui';
 import { type Column } from '@/components/ui/DataTable';
-import { type ContentBlock } from '@/generated/prisma/client';
+import { type ContentBlock } from '@/generated/prisma/browser';
 import {
   type ContentBlockInput,
   createContentBlock,

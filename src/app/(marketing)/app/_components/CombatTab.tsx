@@ -13,7 +13,7 @@ import {
 } from '@mui/material';
 import { alpha } from '@mui/material/styles';
 import { useCallback, useState } from 'react';
-import { type Part } from '@/generated/prisma/client';
+import { type Part } from '@/generated/prisma/browser';
 import { BattleArena } from './BattleArena';
 
 const TYPE_COLORS: Record<string, string> = {

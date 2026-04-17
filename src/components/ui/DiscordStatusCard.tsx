@@ -12,7 +12,7 @@ import { alpha, useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import { AnimatePresence, motion } from 'framer-motion';
 import useSWR from 'swr';
-import { type DiscordStats, type TeamGroup } from '@/lib/discord-data';
+import { type DiscordStats, type TeamGroup } from '@/lib/discord-types';
 import { RoleColors, type RoleType } from '@/lib/role-colors';
 import { api } from '@/lib/standard-api';
 import { DiscordRoleBadge } from './DiscordRoleBadge';

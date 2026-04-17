@@ -12,7 +12,7 @@ import Stack from '@mui/material/Stack';
 import { alpha, useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import { useCallback, useEffect, useState } from 'react';
-import { type Part } from '@/generated/prisma/client';
+import { type Part } from '@/generated/prisma/browser';
 
 interface RandomComboData {
   blade: Part;

@@ -14,7 +14,7 @@ import {
   DynamicBarChart as BarChart,
   DynamicScatterChart as ScatterChart,
 } from '@/components/ui/DynamicCharts';
-import { type SatrRanking } from '@/generated/prisma/client';
+import { type SatrRanking } from '@/generated/prisma/browser';
 
 function parseNum(val: string) {
   return parseFloat(val.replace(',', '.').replace('%', '')) || 0;

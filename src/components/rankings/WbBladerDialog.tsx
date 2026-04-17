@@ -24,7 +24,7 @@ import {
 } from '@mui/material';
 import Link from 'next/link';
 import { useState } from 'react';
-import { type WbBlader } from '@/generated/prisma/client';
+import { type WbBlader } from '@/generated/prisma/browser';
 import {
   getWbPlayerTournamentMatches,
   getWbTournamentMeta,
@@ -265,8 +265,10 @@ export function WbBladerDialog({ blader, open, onClose }: WbBladerDialogProps) {
                     secondary={`${h.wins}W - ${h.losses}L`}
                     slotProps={{
                       primary: {
-                        fontWeight: 'bold',
-                        fontSize: '0.9rem',
+                        sx: {
+                          fontWeight: 'bold',
+                          fontSize: '0.9rem',
+                        },
                       },
                     }}
                   />

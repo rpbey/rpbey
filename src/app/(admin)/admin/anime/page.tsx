@@ -297,7 +297,7 @@ export default function AdminAnimePage() {
           paper: { sx: { borderRadius: 3, bgcolor: 'background.paper' } },
         }}
       >
-        <DialogTitle fontWeight={700}>
+        <DialogTitle sx={{ fontWeight: 700 }}>
           {editId ? 'Modifier la série' : 'Nouvelle série'}
         </DialogTitle>
         <DialogContent>

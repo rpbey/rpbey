@@ -14,7 +14,7 @@ import {
   RivalriesCard,
   UserProfileStatsCard,
 } from '@/components/profile';
-import { type UserStats } from '@/lib/stats';
+import { type UserStats } from '@/lib/stats-types';
 
 interface PublicProfileProps {
   id: string;

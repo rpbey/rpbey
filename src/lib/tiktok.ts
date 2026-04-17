@@ -1,23 +1,8 @@
 import { GetUserPosts } from '@tobyg74/tiktok-api-dl';
 import { unstable_cache } from 'next/cache';
+import { type TikTokVideo } from '@/lib/tiktok-types';
 
-export interface TikTokVideo {
-  id: string;
-  desc: string;
-  createTime: number;
-  cover: string;
-  playUrl: string;
-  author: {
-    username: string;
-    nickname: string;
-    avatarThumb: string;
-  };
-  stats: {
-    playCount: number;
-    diggCount: number;
-  };
-  url: string;
-}
+export { type TikTokVideo };
 
 async function fetchTikTokVideos(username: string): Promise<TikTokVideo[]> {
   // TikTok API is highly unstable and often blocks cloud IPs (like Hetzner)

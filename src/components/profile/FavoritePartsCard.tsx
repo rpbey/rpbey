@@ -12,7 +12,7 @@ import Chip from '@mui/material/Chip';
 import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { type UserStats } from '@/lib/stats';
+import { type UserStats } from '@/lib/stats-types';
 
 interface FavoritePartsCardProps {
   blades: UserStats['mostUsedBlades'];

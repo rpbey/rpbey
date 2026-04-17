@@ -23,7 +23,7 @@ import {
   type BeyType,
   type Part,
   type PartType,
-} from '@/generated/prisma/client';
+} from '@/generated/prisma/browser';
 
 interface PartDialogProps {
   open: boolean;

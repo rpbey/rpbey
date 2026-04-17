@@ -1,19 +1,13 @@
 import { BOT_API_KEY, getBotApiUrl } from '@/lib/bot-config';
+import {
+  type DiscordStats,
+  type TeamGroup,
+} from '@/lib/discord-types';
 import { prisma } from '@/lib/prisma';
 import { DiscordRoleMapping, type RoleType } from '@/lib/role-colors';
 import { type BotMember } from '@/types';
 
-export interface DiscordStats {
-  onlineCount: number;
-  memberCount: number;
-  serverName: string;
-}
-
-export interface TeamGroup {
-  roleId: string;
-  roleType: RoleType;
-  members: BotMember[];
-}
+export { type DiscordStats, type TeamGroup };
 
 export async function getDiscordStats(): Promise<DiscordStats> {
   const fallbackName = 'République Populaire du Beyblade';

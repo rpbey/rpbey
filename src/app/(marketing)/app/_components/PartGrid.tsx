@@ -18,7 +18,7 @@ import {
 import { alpha } from '@mui/material/styles';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
-import { type Part } from '@/generated/prisma/client';
+import { type Part } from '@/generated/prisma/browser';
 
 function useMobile() {
   const [mobile, setMobile] = useState(false);

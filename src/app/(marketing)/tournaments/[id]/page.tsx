@@ -74,7 +74,7 @@ async function getScrapedTournament(id: string) {
     format: '3on3 Double Elimination',
     maxPlayers: 128,
     challongeId: id,
-    challongeUrl: data.url,
+    challongeUrl: data.url ?? null,
     standings: data.participants
       .filter((p) => p.rank > 0)
       .sort((a, b) => a.rank - b.rank),

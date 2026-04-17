@@ -21,7 +21,7 @@ import Stack from '@mui/material/Stack';
 import { alpha, useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import { StatRadar } from '@/components/ui/StatRadar';
-import { type Part } from '@/generated/prisma/client';
+import { type Part } from '@/generated/prisma/browser';
 
 export interface DeckBey {
   id: string;

@@ -15,7 +15,7 @@ import { motion } from 'framer-motion';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { type WbBlader, type WbRanking } from '@/generated/prisma/client';
+import { type WbBlader, type WbRanking } from '@/generated/prisma/browser';
 import { getWbBladerByName } from '@/server/actions/wb';
 import { WbBladerDialog } from './WbBladerDialog';
 

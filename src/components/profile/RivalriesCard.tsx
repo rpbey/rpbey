@@ -15,7 +15,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
-import { type UserStats } from '@/lib/stats';
+import { type UserStats } from '@/lib/stats-types';
 
 interface RivalriesCardProps {
   rivalries: UserStats['rivalries'];

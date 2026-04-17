@@ -278,18 +278,20 @@ export function IconNav() {
         open={open}
         onClose={handleMenuClose}
         onClick={handleMenuClose}
-        PaperProps={{
-          elevation: 0,
-          sx: {
-            minWidth: 200,
-            overflow: 'visible',
-            mt: 1.5,
-            ml: 2,
-            bgcolor: 'surface.high',
-            boxShadow:
-              '0 4px 24px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.06)',
-            border: '1px solid',
-            borderColor: 'divider',
+        slotProps={{
+          paper: {
+            elevation: 0,
+            sx: {
+              minWidth: 200,
+              overflow: 'visible',
+              mt: 1.5,
+              ml: 2,
+              bgcolor: 'surface.high',
+              boxShadow:
+                '0 4px 24px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.06)',
+              border: '1px solid',
+              borderColor: 'divider',
+            },
           },
         }}
         transformOrigin={{ horizontal: 'left', vertical: 'bottom' }}

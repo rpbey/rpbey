@@ -1,4 +1,4 @@
-import { Pagination, PaginationType } from '@discordx/pagination';
+import { Pagination } from '@discordx/pagination';
 import {
   ApplicationCommandOptionType,
   type CommandInteraction,
@@ -117,9 +117,7 @@ export class ProductCommand {
       return interaction.editReply(pages[0]!);
     }
 
-    const pagination = new Pagination(interaction, pages, {
-      type: PaginationType.Button,
-    });
+    const pagination = new Pagination(interaction, pages);
     return pagination.send();
   }
 

@@ -10,7 +10,7 @@ import Chip from '@mui/material/Chip';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { StatRadar } from '@/components/ui/StatRadar';
-import { type Part } from '@/generated/prisma/client';
+import { type Part } from '@/generated/prisma/browser';
 import { PartSelector } from './PartSelector';
 
 export interface BeyData {

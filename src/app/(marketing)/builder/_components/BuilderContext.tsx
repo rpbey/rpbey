@@ -10,7 +10,7 @@ import {
   useReducer,
   useRef,
 } from 'react';
-import { type Part } from '@/generated/prisma/client';
+import { type Part } from '@/generated/prisma/browser';
 
 // --- Types ---
 

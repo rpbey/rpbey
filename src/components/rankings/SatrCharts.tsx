@@ -16,7 +16,7 @@ import {
   DynamicPieChart as PieChart,
   DynamicScatterChart as ScatterChart,
 } from '@/components/ui/DynamicCharts';
-import { type SatrBlader, type SatrRanking } from '@/generated/prisma/client';
+import { type SatrBlader, type SatrRanking } from '@/generated/prisma/browser';
 
 interface TournamentMeta {
   slug: string;

@@ -9,7 +9,7 @@ import {
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { FormDialog } from '@/components/ui';
-import { type StaffMember } from '@/generated/prisma/client';
+import { type StaffMember } from '@/generated/prisma/browser';
 import { type StaffMemberInput } from './actions';
 
 const TEAMS = [

@@ -13,7 +13,7 @@ import {
 } from '@mui/material';
 import { alpha } from '@mui/material/styles';
 import { useMemo, useState } from 'react';
-import { type Part } from '@/generated/prisma/client';
+import { type Part } from '@/generated/prisma/browser';
 import { AssetGallery } from './AssetGallery';
 import { CombatTab } from './CombatTab';
 import { GameData } from './GameData';

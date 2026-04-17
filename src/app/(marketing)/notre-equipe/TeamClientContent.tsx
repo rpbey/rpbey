@@ -14,7 +14,7 @@ import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
 import { StaffCard } from '@/components/cards';
-import { type StaffMember } from '@/generated/prisma/client';
+import { type StaffMember } from '@/generated/prisma/browser';
 
 interface TeamClientContentProps {
   groupedMembers: Record<string, StaffMember[]>;

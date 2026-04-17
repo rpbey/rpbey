@@ -36,7 +36,7 @@ import {
 import { frFR } from '@mui/x-data-grid/locales';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
-import { type User } from '@/generated/prisma/client';
+import { type User } from '@/generated/prisma/browser';
 import { useDebounce } from '@/hooks/use-debounce';
 import { formatDateShort } from '@/lib/utils';
 import { deleteUser, getUsers, updateUser } from './actions';

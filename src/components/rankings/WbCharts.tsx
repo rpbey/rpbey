@@ -7,7 +7,7 @@ import {
   DynamicLineChart as LineChart,
   DynamicPieChart as PieChart,
 } from '@/components/ui/DynamicCharts';
-import { type WbBlader } from '@/generated/prisma/client';
+import { type WbBlader } from '@/generated/prisma/browser';
 
 interface WbTournamentMeta {
   slug: string;

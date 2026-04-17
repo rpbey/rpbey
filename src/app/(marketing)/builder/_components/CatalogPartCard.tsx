@@ -18,7 +18,7 @@ import {
 import { alpha } from '@mui/material/styles';
 import Image from 'next/image';
 import { useState } from 'react';
-import { type Part } from '@/generated/prisma/client';
+import { type Part } from '@/generated/prisma/browser';
 
 const TYPE_COLORS: Record<string, string> = {
   ATTACK: '#ef4444',

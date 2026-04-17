@@ -27,7 +27,7 @@ import {
   useState,
   useTransition,
 } from 'react';
-import { type Part } from '@/generated/prisma/client';
+import { type Part } from '@/generated/prisma/browser';
 import { getPublicParts } from '@/server/actions/parts';
 import { type BuilderStep, isCXBlade, useBuilder } from './BuilderContext';
 import { CatalogFilters } from './CatalogFilters';

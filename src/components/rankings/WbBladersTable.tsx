@@ -15,7 +15,7 @@ import { motion } from 'framer-motion';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { TrophyIcon } from '@/components/ui/Icons';
-import { type WbBlader } from '@/generated/prisma/client';
+import { type WbBlader } from '@/generated/prisma/browser';
 import { WbBladerDialog } from './WbBladerDialog';
 
 interface WbBladersTableProps {

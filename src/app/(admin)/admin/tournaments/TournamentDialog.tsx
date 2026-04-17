@@ -20,7 +20,7 @@ import { DatePicker } from '@/components/ui';
 import {
   type Tournament,
   type TournamentStatus,
-} from '@/generated/prisma/client';
+} from '@/generated/prisma/browser';
 import { type TournamentInput } from './actions';
 
 interface TournamentDialogProps {

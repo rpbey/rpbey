@@ -27,7 +27,7 @@ import Typography from '@mui/material/Typography';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useState } from 'react';
-import { type Profile, type User } from '@/generated/prisma/client';
+import { type Profile, type User } from '@/generated/prisma/browser';
 import { authClient } from '@/lib/auth-client';
 import { getInitials } from '@/lib/utils';
 import BladerComparator from './BladerComparator';

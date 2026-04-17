@@ -15,7 +15,7 @@ import { motion } from 'framer-motion';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { TrophyIcon } from '@/components/ui/Icons';
-import { type SatrBlader } from '@/generated/prisma/client';
+import { type SatrBlader } from '@/generated/prisma/browser';
 import { SatrBladerDialog } from './SatrBladerDialog';
 
 interface SatrBladersTableProps {

@@ -20,7 +20,7 @@ import {
   UserProfileStatsCard,
 } from '@/components/profile';
 import { useAuth } from '@/hooks';
-import { type UserStats } from '@/lib/stats';
+import { type UserStats } from '@/lib/stats-types';
 
 interface ProfilePageProps {
   params: Promise<{ id: string }>;

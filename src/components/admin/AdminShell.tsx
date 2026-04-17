@@ -214,8 +214,10 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                     primary={item.label}
                     slotProps={{
                       primary: {
-                        fontSize: '0.9rem',
-                        fontWeight: isActive ? 700 : 500,
+                        sx: {
+                          fontSize: '0.9rem',
+                          fontWeight: isActive ? 700 : 500,
+                        },
                       },
                     }}
                   />
@@ -252,7 +254,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
           <ListItemText
             primary="Déconnexion"
             slotProps={{
-              primary: { fontWeight: 600 },
+              primary: { sx: { fontWeight: 600 } },
             }}
           />
         </ListItemButton>

@@ -24,7 +24,7 @@ import {
 } from '@mui/material';
 import Link from 'next/link';
 import { useState } from 'react';
-import { type UserStats } from '@/lib/stats';
+import { type UserStats } from '@/lib/stats-types';
 
 interface BladerProfileHeaderProps {
   stats: UserStats;

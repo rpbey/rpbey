@@ -22,7 +22,7 @@ import { motion } from 'framer-motion';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useState } from 'react';
 import { toast } from 'sonner';
-import { type SatrBlader, type SatrRanking } from '@/generated/prisma/client';
+import { type SatrBlader, type SatrRanking } from '@/generated/prisma/browser';
 import { getSatrBladerByName } from '@/server/actions/satr';
 import { SatrBladerDialog } from './SatrBladerDialog';
 import { SatrComparator } from './SatrComparator';

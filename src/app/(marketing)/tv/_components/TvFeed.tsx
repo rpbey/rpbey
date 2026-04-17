@@ -10,7 +10,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { Suspense, use, useState } from 'react';
 import { type BeyTubeVideo } from '@/lib/beytube';
-import { type TikTokVideo } from '@/lib/tiktok';
+import { type TikTokVideo } from '@/lib/tiktok-types';
 import { type StreamInfo, type VideoInfo } from '@/lib/twitch';
 import { LiveBanner } from './LiveBanner';
 import { TikTokMiniCard } from './TikTokMiniCard';

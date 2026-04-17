@@ -36,7 +36,7 @@ import {
   useToast,
   // Remove Button from here
 } from '@/components/ui';
-import { type Tournament } from '@/generated/prisma/client';
+import { type Tournament } from '@/generated/prisma/browser';
 import { useDebounce } from '@/hooks/use-debounce';
 import { formatDateShort } from '@/lib/utils';
 import { getTournamentCategories } from '@/server/actions/ranking';

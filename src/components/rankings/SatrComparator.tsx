@@ -31,7 +31,7 @@ import {
   RadarChart,
   ResponsiveContainer,
 } from 'recharts';
-import { type SatrRanking } from '@/generated/prisma/client';
+import { type SatrRanking } from '@/generated/prisma/browser';
 
 const Transition = forwardRef(function Transition(
   props: TransitionProps & { children: React.ReactElement },

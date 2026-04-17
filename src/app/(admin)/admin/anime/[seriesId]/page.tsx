@@ -420,7 +420,7 @@ export default function AdminAnimeSeriesPage() {
           paper: { sx: { borderRadius: 3 } },
         }}
       >
-        <DialogTitle fontWeight={700}>
+        <DialogTitle sx={{ fontWeight: 700 }}>
           {editEpId ? `Modifier l'épisode ${epForm.number}` : 'Nouvel épisode'}
         </DialogTitle>
         <DialogContent>
@@ -522,7 +522,7 @@ export default function AdminAnimeSeriesPage() {
           paper: { sx: { borderRadius: 3 } },
         }}
       >
-        <DialogTitle fontWeight={700}>
+        <DialogTitle sx={{ fontWeight: 700 }}>
           {editSourceId ? 'Modifier la source' : 'Nouvelle source'}
         </DialogTitle>
         <DialogContent>
@@ -625,7 +625,7 @@ export default function AdminAnimeSeriesPage() {
           paper: { sx: { borderRadius: 3 } },
         }}
       >
-        <DialogTitle fontWeight={700}>Import JSON des épisodes</DialogTitle>
+        <DialogTitle sx={{ fontWeight: 700 }}>Import JSON des épisodes</DialogTitle>
         <DialogContent>
           <Typography
             variant="body2"

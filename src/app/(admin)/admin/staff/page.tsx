@@ -29,7 +29,7 @@ import {
   useConfirmDialog,
   useToast,
 } from '@/components/ui';
-import { type StaffMember } from '@/generated/prisma/client';
+import { type StaffMember } from '@/generated/prisma/browser';
 import { RoleColors } from '@/lib/role-colors';
 import {
   createStaffMember,

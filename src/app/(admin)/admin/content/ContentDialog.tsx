@@ -14,7 +14,7 @@ import {
   TextField,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { type ContentBlock } from '@/generated/prisma/client';
+import { type ContentBlock } from '@/generated/prisma/browser';
 import { type ContentBlockInput } from './actions';
 
 interface ContentDialogProps {

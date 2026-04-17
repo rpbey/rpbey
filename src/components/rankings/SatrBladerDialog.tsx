@@ -24,7 +24,7 @@ import {
 } from '@mui/material';
 import Link from 'next/link';
 import { useState } from 'react';
-import { type SatrBlader } from '@/generated/prisma/client';
+import { type SatrBlader } from '@/generated/prisma/browser';
 import {
   getPlayerTournamentMatches,
   getTournamentMeta,
@@ -257,8 +257,10 @@ export function SatrBladerDialog({
                     secondary={`${h.wins}W - ${h.losses}L`}
                     slotProps={{
                       primary: {
-                        fontWeight: 'bold',
-                        fontSize: '0.9rem',
+                        sx: {
+                          fontWeight: 'bold',
+                          fontSize: '0.9rem',
+                        },
                       },
                     }}
                   />

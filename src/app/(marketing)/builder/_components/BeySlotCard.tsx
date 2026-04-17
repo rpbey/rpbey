@@ -4,7 +4,7 @@ import { Close, WarningAmber } from '@mui/icons-material';
 import { Avatar, Box, Chip, IconButton, Typography } from '@mui/material';
 import { alpha, keyframes } from '@mui/material/styles';
 import { StatRadar } from '@/components/ui/StatRadar';
-import { type Part } from '@/generated/prisma/client';
+import { type Part } from '@/generated/prisma/browser';
 import { type BuilderStep, isCXBlade, useBuilder } from './BuilderContext';
 
 const pulse = keyframes`

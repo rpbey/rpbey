@@ -40,7 +40,7 @@ import {
   type Part,
   type PartType,
   type Product,
-} from '@/generated/prisma/client';
+} from '@/generated/prisma/browser';
 import {
   bulkImportParts,
   deletePart,
