@@ -237,9 +237,12 @@ async function run() {
   });
 }
 
-// Global Rejection Handler
-process.on('unhandledRejection', (reason) => {
-  logger.error('Unhandled Rejection:', reason);
+// Global error handlers
+process.on('unhandledRejection', (err) => {
+  logger.error('unhandled rejection:', err);
+});
+process.on('uncaughtException', (err) => {
+  logger.error('uncaught exception:', err);
 });
 
 void run().catch(async (err) => {
