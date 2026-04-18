@@ -16,6 +16,13 @@ import { claimSingletonOrExit } from './lib/singleton-guard.js';
 // Refuse to start a second instance — exit(11) if another PID owns the lock.
 claimSingletonOrExit();
 
+// Preconnect to hot hosts to reduce first-request latency (Bun-native)
+if (typeof fetch.preconnect === 'function') {
+  fetch.preconnect('https://discord.com');
+  fetch.preconnect('https://api.twitch.tv');
+  fetch.preconnect('https://api.challonge.com');
+}
+
 // Capture logs to in-memory buffer for API access
 setupLogCapture();
 
