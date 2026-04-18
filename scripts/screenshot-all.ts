@@ -1,7 +1,7 @@
 import puppeteer from 'puppeteer';
 import path from 'node:path';
 import fs from 'node:fs';
-import { execSync } from 'node:child_process';
+import { $ } from 'bun';
 
 const BASE_URL = process.argv[2] || 'https://rpbey.fr';
 const OUTPUT_DIR = path.resolve('/tmp/trailer-screenshots');
@@ -58,7 +58,7 @@ async function takeScreenshots() {
   console.log(`\n✅ ${PAGES.length} screenshots capturées`);
 }
 
-function createTrailer() {
+async function createTrailer() {
   console.log('\n🎬 Création de la vidéo trailer...');
 
   // Build ffmpeg filter for smooth transitions between slides
@@ -105,7 +105,7 @@ function createTrailer() {
   ].join(' ');
 
   console.log('Running ffmpeg...');
-  execSync(cmd, { stdio: 'inherit' });
+  await $.raw`${cmd}`;
 
   const stats = fs.statSync(VIDEO_OUTPUT);
   const sizeMB = (stats.size / 1024 / 1024).toFixed(1);
@@ -114,7 +114,7 @@ function createTrailer() {
 
 async function main() {
   await takeScreenshots();
-  createTrailer();
+  await createTrailer();
 }
 
 main();

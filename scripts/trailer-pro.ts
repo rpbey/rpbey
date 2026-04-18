@@ -1,7 +1,7 @@
 import puppeteer, { type Page } from 'puppeteer';
 import path from 'node:path';
 import fs from 'node:fs';
-import { execSync } from 'node:child_process';
+import { $ } from 'bun';
 
 const BASE_URL = 'https://rpbey.fr';
 const CLIPS_DIR = path.resolve('/tmp/trailer-clips');
@@ -329,7 +329,7 @@ async function postProcess() {
 
     const cmd = `ffmpeg -y -i "${input}" -vf "${filter}" -c:v libx264 -preset fast -crf 20 -pix_fmt yuv420p -an "${output}" 2>&1 | tail -3`;
     console.log(`   🏷️  ${scene.name}${scene.title ? ` [${scene.title}]` : ''}`);
-    execSync(cmd, { stdio: 'inherit' });
+    await $.raw`${cmd}`;
   }
 
   // Step 2: Create intro (3s black with logo + title)
@@ -340,10 +340,7 @@ async function postProcess() {
     `drawtext=fontfile='${FONT_PATH}':text='DU BEYBLADE':fontcolor=white:fontsize=80:x=(w-text_w)/2:y=(h/2)+10:alpha='if(lt(t,0.7),max((t-0.2)/0.5,0),if(lt(t,3),1,max(1-(t-3),0)))'`,
     `drawtext=fontfile='${FONT_PATH}':text='— rpbey.fr —':fontcolor=white@0.6:fontsize=32:x=(w-text_w)/2:y=(h/2)+120:alpha='if(lt(t,1),max((t-0.5)/0.5,0),if(lt(t,3),1,max(1-(t-3),0)))'`,
   ].join(',');
-  execSync(
-    `ffmpeg -y -f lavfi -i "${introFilter}" -c:v libx264 -preset fast -crf 18 -pix_fmt yuv420p -t 4 "${introPath}" 2>&1 | tail -3`,
-    { stdio: 'inherit' },
-  );
+  await $.raw`ffmpeg -y -f lavfi -i "${introFilter}" -c:v libx264 -preset fast -crf 18 -pix_fmt yuv420p -t 4 "${introPath}" 2>&1 | tail -3`;
   console.log('   ✅ Title card');
 
   // Step 3: Create outro (3s)
@@ -354,10 +351,7 @@ async function postProcess() {
     `drawtext=fontfile='${FONT_PATH}':text='rpbey.fr':fontcolor=red@0.9:fontsize=48:x=(w-text_w)/2:y=(h/2)+40:alpha='if(lt(t,0.8),max((t-0.3)/0.5,0),if(lt(t,3),1,max(1-(t-3),0)))'`,
     `drawtext=fontfile='${FONT_PATH}':text='Discord · TikTok · Twitch':fontcolor=white@0.5:fontsize=24:x=(w-text_w)/2:y=(h/2)+120:alpha='if(lt(t,1.2),max((t-0.7)/0.5,0),if(lt(t,3),1,max(1-(t-3),0)))'`,
   ].join(',');
-  execSync(
-    `ffmpeg -y -f lavfi -i "${outroFilter}" -c:v libx264 -preset fast -crf 18 -pix_fmt yuv420p -t 4 "${outroPath}" 2>&1 | tail -3`,
-    { stdio: 'inherit' },
-  );
+  await $.raw`ffmpeg -y -f lavfi -i "${outroFilter}" -c:v libx264 -preset fast -crf 18 -pix_fmt yuv420p -t 4 "${outroPath}" 2>&1 | tail -3`;
   console.log('   ✅ Outro card');
 
   // Step 4: Build concat file
@@ -374,10 +368,7 @@ async function postProcess() {
 
   // Step 5: Concat all clips
   const concatOutput = path.join(CLIPS_DIR, 'concat-raw.mp4');
-  execSync(
-    `ffmpeg -y -f concat -safe 0 -i "${concatFile}" -c:v libx264 -preset fast -crf 18 -pix_fmt yuv420p "${concatOutput}" 2>&1 | tail -3`,
-    { stdio: 'inherit' },
-  );
+  await $.raw`ffmpeg -y -f concat -safe 0 -i "${concatFile}" -c:v libx264 -preset fast -crf 18 -pix_fmt yuv420p "${concatOutput}" 2>&1 | tail -3`;
   console.log('   ✅ Concatenated');
 
   // Step 6: Add watermark logo + final polish
@@ -390,14 +381,14 @@ async function postProcess() {
     finalFilter = `ffmpeg -y -i "${concatOutput}" -c:v libx264 -preset fast -crf 18 -pix_fmt yuv420p -an "${FINAL_OUTPUT}"`;
   }
 
-  execSync(`${finalFilter} 2>&1 | tail -3`, { stdio: 'inherit' });
+  await $.raw`${finalFilter} 2>&1 | tail -3`;
 
   const stats = fs.statSync(FINAL_OUTPUT);
   const sizeMB = (stats.size / 1024 / 1024).toFixed(1);
 
   // Get duration
   try {
-    const probe = execSync(`ffprobe -v error -show_entries format=duration -of csv=p=0 "${FINAL_OUTPUT}" 2>/dev/null`).toString().trim();
+    const probe = (await $`ffprobe -v error -show_entries format=duration -of csv=p=0 ${FINAL_OUTPUT}`.text()).trim();
     const duration = Math.round(Number.parseFloat(probe));
     console.log(`\n🎬 TRAILER PRO: ${FINAL_OUTPUT}`);
     console.log(`   📐 ${WIDTH}x${HEIGHT} · ${duration}s · ${sizeMB} MB`);

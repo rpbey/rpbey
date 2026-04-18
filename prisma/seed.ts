@@ -117,12 +117,12 @@ Que tu sois un vétéran des premières générations ou un nouveau venu découv
 }
 
 // Helper to run other seed scripts
-import { execSync } from "node:child_process";
+import { $ } from "bun";
 
-function runSeed(script: string) {
+async function runSeed(script: string) {
   console.log(`\n▶ Running ${script}...`);
   try {
-    execSync(`bunx tsx prisma/${script}`, { stdio: "inherit" });
+    await $`bun prisma/${script}`;
   } catch (error) {
     console.error(`❌ Failed to run ${script}`);
     throw error;
@@ -133,9 +133,9 @@ async function runAll() {
   await main();
 
   // Run specialized seeders
-  runSeed("seed-products.ts");
-  runSeed("seed-parts.ts");
-  runSeed("seed-beyblades.ts");
+  await runSeed("seed-products.ts");
+  await runSeed("seed-parts.ts");
+  await runSeed("seed-beyblades.ts");
 }
 
 runAll()
