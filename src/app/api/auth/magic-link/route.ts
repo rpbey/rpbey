@@ -68,9 +68,13 @@ export async function POST(request: Request) {
   }
 
   // Create session
-  const crypto = await import('node:crypto');
-  const token = crypto.randomBytes(32).toString('hex');
-  const sessionId = crypto.randomBytes(16).toString('hex');
+  const token = Array.from(crypto.getRandomValues(new Uint8Array(32)), (b) =>
+    b.toString(16).padStart(2, '0'),
+  ).join('');
+  const sessionId = Array.from(
+    crypto.getRandomValues(new Uint8Array(16)),
+    (b) => b.toString(16).padStart(2, '0'),
+  ).join('');
 
   await prisma.session.create({
     data: {

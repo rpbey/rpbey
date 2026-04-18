@@ -17,7 +17,6 @@
  * Usage: pnpm tsx scripts/scrape-wbo-meta.ts [--pages N] [--force]
  */
 
-import 'dotenv/config';
 import {
   existsSync,
   mkdirSync,

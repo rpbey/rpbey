@@ -2,7 +2,6 @@
  * Send the full Mudae rules panel to the #mudae-règles channel.
  * Usage: pnpm tsx scripts/update-mudae-panel.ts
  */
-import 'dotenv/config';
 
 import {
   ActionRowBuilder,

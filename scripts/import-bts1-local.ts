@@ -2,9 +2,6 @@
 import fs from 'fs';
 import path from 'path';
 import { prisma } from '../src/lib/prisma';
-import dotenv from 'dotenv';
-
-dotenv.config();
 
 // Types basés sur le JSON extrait
 interface ChallongePlayer {

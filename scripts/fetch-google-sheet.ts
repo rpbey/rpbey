@@ -1,5 +1,4 @@
 import pg from 'pg';
-import 'dotenv/config';
 
 /**
  * Script pour récupérer les données d'une Google Sheet SATR et les stocker en base de données via PG direct.

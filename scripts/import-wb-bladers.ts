@@ -1,7 +1,6 @@
 import pg from 'pg';
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import 'dotenv/config';
 
 const { Pool } = pg;
 const connectionString = process.env.DATABASE_URL || "postgresql://postgres:rpb_password@localhost:5432/rpb_dashboard";

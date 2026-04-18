@@ -2,8 +2,6 @@
  * Animated holographic GIF — Kyoya card + Beyblade X lightning VFX.
  * Usage: pnpm tsx scripts/test-kyoya-gif.ts
  */
-import * as dotenv from 'dotenv';
-dotenv.config();
 
 import { createCanvas, loadImage } from '@napi-rs/canvas';
 import { AttachmentBuilder, Client, GatewayIntentBits } from 'discord.js';

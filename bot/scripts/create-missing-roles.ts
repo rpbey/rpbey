@@ -1,5 +1,4 @@
 import { Client, GatewayIntentBits } from 'discord.js';
-import 'dotenv/config';
 
 const ROLES_TO_CREATE = ['Participant', 'Spectateur'];
 const ROLES_TO_FIND = ['Reseaux', 'Events', 'Leaks-beyblade'];

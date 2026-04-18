@@ -1,5 +1,4 @@
 import type { TournamentStatus } from "@/generated/prisma/client";
-import "dotenv/config";
 import { prisma } from "../src/lib/prisma";
 
 async function main() {

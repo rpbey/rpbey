@@ -2,7 +2,6 @@
  * Re-scrape B_TS2 from Challonge and rebuild B_TS2.json
  * with accurate exactWins/exactLosses computed from match data.
  */
-import 'dotenv/config';
 import { writeFileSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { ChallongeScraper } from '../bot/src/lib/scrapers/challonge-scraper.js';

@@ -3,7 +3,6 @@
  * Imports cleaned Beyblade X parts from local JSON files (derived from new HTML extraction)
  */
 
-import 'dotenv/config';
 import fs from 'fs';
 import path from 'path';
 import { PrismaClient, PartType, type BeyType } from '@/generated/prisma/client';

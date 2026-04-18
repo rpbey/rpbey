@@ -1,5 +1,4 @@
 
-import 'dotenv/config';
 import { Client, GatewayIntentBits, TextChannel } from 'discord.js';
 
 const TARGET_CHANNEL_ID = '1455336947903103027';

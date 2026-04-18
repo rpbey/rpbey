@@ -3,7 +3,6 @@
  * Exchange Discord OAuth code for a session token (mobile app)
  */
 
-import crypto from 'node:crypto';
 import { type NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
@@ -109,7 +108,10 @@ export async function POST(request: NextRequest) {
     });
 
     // Create session token
-    const sessionToken = crypto.randomBytes(32).toString('hex');
+    const sessionToken = Array.from(
+      crypto.getRandomValues(new Uint8Array(32)),
+      (b) => b.toString(16).padStart(2, '0'),
+    ).join('');
     const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days
 
     await prisma.session.create({

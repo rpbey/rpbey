@@ -5,8 +5,6 @@
  * Usage: pnpm tsx scripts/test-kyoya-card.ts
  */
 
-import * as dotenv from 'dotenv';
-dotenv.config();
 
 import { createCanvas, loadImage } from '@napi-rs/canvas';
 import { Client, GatewayIntentBits, AttachmentBuilder } from 'discord.js';

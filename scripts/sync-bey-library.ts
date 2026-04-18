@@ -1,5 +1,3 @@
-import * as dotenv from 'dotenv';
-dotenv.config();
 
 import { PartType, BeyType, PrismaClient } from '@/generated/prisma/client';
 import * as fs from 'fs/promises';

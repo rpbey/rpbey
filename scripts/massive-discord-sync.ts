@@ -1,8 +1,4 @@
 import { prisma } from '../src/lib/prisma';
-import dotenv from 'dotenv';
-
-dotenv.config();
-
 async function massiveSync() {
   const BOT_API = process.env.BOT_API_URL || 'http://127.0.0.1:3001';
   const API_KEY = process.env.BOT_API_KEY;

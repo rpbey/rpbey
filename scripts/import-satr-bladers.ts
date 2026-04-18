@@ -1,7 +1,6 @@
 import pg from 'pg';
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import 'dotenv/config';
 
 const { Pool } = pg;
 // Utilisation de l'URL directe pour les scripts hors-conteneur si nécessaire

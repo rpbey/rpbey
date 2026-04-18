@@ -1,4 +1,3 @@
-import crypto from 'node:crypto';
 import { NextResponse } from 'next/server';
 
 const TWITCH_MESSAGE_ID = 'Twitch-Eventsub-Message-Id'.toLowerCase();
@@ -27,13 +26,27 @@ export async function POST(req: Request) {
     return new NextResponse('Missing headers', { status: 400 });
   }
 
-  // Verify signature
+  // Verify signature (Web Crypto — edge runtime compatible)
   const secret = process.env.TWITCH_WEBHOOK_SECRET;
   if (secret) {
     const message = messageId + messageTimestamp + body;
+    const key = await crypto.subtle.importKey(
+      'raw',
+      new TextEncoder().encode(secret),
+      { name: 'HMAC', hash: 'SHA-256' },
+      false,
+      ['sign'],
+    );
+    const sig = await crypto.subtle.sign(
+      'HMAC',
+      key,
+      new TextEncoder().encode(message),
+    );
     const hmac =
       HMAC_PREFIX +
-      crypto.createHmac('sha256', secret).update(message).digest('hex');
+      Array.from(new Uint8Array(sig), (b) =>
+        b.toString(16).padStart(2, '0'),
+      ).join('');
 
     if (messageSignature !== hmac) {
       return new NextResponse('Invalid signature', { status: 403 });

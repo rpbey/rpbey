@@ -1,7 +1,4 @@
 import { prisma } from '../src/lib/prisma';
-import dotenv from 'dotenv';
-
-dotenv.config();
 
 // Distance de Levenshtein pour la similarité
 function levenshteinDistance(a: string, b: string): number {

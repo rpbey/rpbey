@@ -1,6 +1,5 @@
 import { exchangeCode } from '@twurple/auth';
-import 'dotenv/config';
-import readline from 'readline';
+import readline from 'node:readline';
 
 const clientId = process.env.TWITCH_CLIENT_ID;
 const clientSecret = process.env.TWITCH_CLIENT_SECRET;

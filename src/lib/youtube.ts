@@ -9,15 +9,10 @@ export async function getRecentYouTubeVideos(
   limit = 6,
 ): Promise<VideoInfo[]> {
   try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 6000); // 6s timeout
-
     const response = await fetch(`${YOUTUBE_RSS_URL}${channelId}`, {
       next: { revalidate: 3600 }, // Cache for 1 hour
-      signal: controller.signal,
+      signal: AbortSignal.timeout(6000),
     });
-
-    clearTimeout(timeoutId);
 
     if (!response.ok) {
       throw new Error(`Failed to fetch YouTube RSS: ${response.statusText}`);

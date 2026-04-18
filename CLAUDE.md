@@ -99,23 +99,28 @@ Enums: `BeyType` (ATTACK/DEFENSE/STAMINA/BALANCE), `PartType` (BLADE/RATCHET/BIT
 - TypeScript strict mode, ESM modules
 - Biome for formatting, ESLint for linting
 
-### Bot Commands Pattern
+### Bot Commands Pattern (discordx)
 ```typescript
-import { Command } from '@sapphire/framework';
+import { ApplicationCommandOptionType, type CommandInteraction } from 'discord.js';
+import { Discord, Slash, SlashOption } from 'discordx';
+import { injectable } from 'tsyringe';
 import { Colors, RPB } from '../../lib/constants.js';
 
-export class MyCommand extends Command {
-  constructor(context: Command.LoaderContext, options: Command.Options) {
-    super(context, { ...options, description: 'Description en français' });
-  }
-
-  override registerApplicationCommands(registry: Command.Registry) {
-    registry.registerChatInputCommand((builder) =>
-      builder.setName('mycommand').setDescription('Description')
-    );
-  }
-
-  override async chatInputRun(interaction: Command.ChatInputCommandInteraction) {
+@Discord()
+@injectable()
+export class MyCommand {
+  @Slash({ name: 'mycommand', description: 'Description en français' })
+  async run(
+    @SlashOption({
+      name: 'terme',
+      description: 'Argument',
+      required: true,
+      type: ApplicationCommandOptionType.String,
+    })
+    term: string,
+    interaction: CommandInteraction,
+  ) {
+    await interaction.deferReply();
     // Implementation
   }
 }
@@ -182,7 +187,7 @@ Claude Code operates in FULL AUTONOMOUS mode on this project. Follow these rules
 ### Decision Making
 - **DO NOT ask for confirmation** before editing files, running builds, or making git commits
 - **DO NOT ask which approach to use** — pick the best one based on existing patterns
-- **Auto-fix lint/type errors** after any code change — run `bun run build` or `bunx tsc --noEmit` to verify
+- **Auto-fix lint/type errors** after any code change — run `bun run build` to verify (jamais `tsc`, refusé sur ce projet)
 - **Auto-format** with `bun check` after edits
 - **Auto-commit** when a task is fully complete and builds pass
 - **Run `bun db:generate`** automatically after any Prisma schema change
@@ -199,47 +204,27 @@ Claude Code operates in FULL AUTONOMOUS mode on this project. Follow these rules
 - Use `prisma` client from `src/lib/prisma.ts` (dashboard) or `bot/src/lib/prisma.ts` (bot)
 - Server Actions go in `src/server/actions/`
 - API routes follow REST conventions in `src/app/api/`
-- Use shadcn/ui components from `src/components/ui/`
 - Tailwind CSS for styling, no CSS modules
 - French for all user-facing text, English for code
 - Always use `import type` for type-only imports
 - Prefer `const` over `let`, arrow functions for callbacks
 - Use Zod for validation at API boundaries
 
+### Build Constraints (erreurs déjà vues, à éviter)
+- **Prisma dans Client Components** : importer depuis `@/generated/prisma/browser` — JAMAIS `@/generated/prisma/client`. `client.ts` importe `node:module`, Turbopack crash avec *"chunking context does not support external modules"*.
+- **Types partagés client/serveur** : extraire dans `src/lib/*-types.ts` (ex : `discord-types.ts`, `stats-types.ts`, `tiktok-types.ts`) sans aucun import Prisma serveur ni `node:*`.
+- **Pas de binaire `next` global** : `which next` doit pointer nulle part ou vers `./node_modules/.bin/next`. Si `/usr/local/bin/next` existe (CLI Rust neval), `bun run build` échoue silencieusement → le supprimer.
+- **MUI v7** : props typographie via `sx={{ fontWeight, fontSize }}`, overrides via `slotProps.<slot>` (`slotProps.paper`, `slotProps.primary`). Plus de `PaperProps` ni `primaryTypographyProps`.
+- **`@discordx/pagination` v4** : pas d'`PaginationType` enum (Button est le défaut).
+- **Bot en TS direct** : impossible — decorators discordx requièrent SWC (`bun bot:build`).
+
 ### Git Conventions
 - Commit format: `type(scope): description` (e.g., `feat(rankings): add season filter`)
 - Types: feat, fix, refactor, chore, docs, style, perf, test
 - Branch from `main`, push directly to `main` for small changes
-- Co-author line: `Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>`
+- Co-author line: `Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>`
 
 ## Plugins
-
-### bun-agent (global — `~/.claude/custom-plugins/bun-agent`)
-Custom plugin installé via le marketplace local `custom-plugins`. Fournit :
-
-**Agents spécialisés** :
-- `bun-runner` — Exécution autonome de tâches complexes multi-étapes
-- `bun-explorer` — Exploration codebase read-only
-- `bun-dreamer` — Consolidation mémoire persistante (background)
-- `bun-deployer` — Pipeline de déploiement (Docker/systemd)
-- `bun-reviewer` — Revue de code (sécurité, qualité, performance)
-
-**Skills** (`/bun-agent:<skill>`) :
-- `/bun-agent:run [task]` — Exécuter une tâche autonome avec Bun
-- `/bun-agent:analyze` — Audit santé projet (deps, types, sécurité, build)
-- `/bun-agent:deploy` — Déploiement production
-- `/bun-agent:dream` — Consolidation mémoire depuis les sessions
-
-**Commandes** :
-- `/bun-agent:status` — État mémoire, sessions, dreams
-- `/bun-agent:memory [query]` — Lire/chercher dans la mémoire persistante
-- `/bun-agent:forget [file]` — Supprimer une entrée mémoire
-
-**Installation** :
-```bash
-# Le plugin est dans un marketplace local déclaré dans ~/.claude/settings.json
-claude plugin install bun-agent@custom-plugins --scope user
-```
 
 ### web3d-agent (global — `~/.claude/custom-plugins/web3d-agent`)
 Plugin dédié au développement 3D natif web et WebAssembly pour RPB. Construit depuis `docs/3d-graphics.md` et `docs/webassembly.md`.
@@ -260,8 +245,3 @@ Plugin dédié au développement 3D natif web et WebAssembly pour RPB. Construit
 - `gsap` (animations 3D séquencées)
 - Rust + `wasm-pack` + `wasm-bindgen` + `serde-wasm-bindgen`
 - Next.js 16 WASM (Turbopack dev / Webpack build)
-
-**Installation** :
-```bash
-claude plugin install web3d-agent@custom-plugins --scope user
-```

@@ -1,5 +1,3 @@
-import { fetch } from 'undici';
-
 /**
  * Challonge API v2.1 Client
  * Documentation: https://challonge.apidog.io/

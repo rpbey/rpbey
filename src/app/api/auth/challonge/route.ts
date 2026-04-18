@@ -1,4 +1,3 @@
-import crypto from 'node:crypto';
 import { headers } from 'next/headers';
 import { connection, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
@@ -33,13 +32,16 @@ export async function GET(request: Request) {
     const challonge = getChallongeService();
 
     // Generate a random state for security
-    const state = Buffer.from(
+    const nonce = Array.from(crypto.getRandomValues(new Uint8Array(16)), (b) =>
+      b.toString(16).padStart(2, '0'),
+    ).join('');
+    const state = btoa(
       JSON.stringify({
         userId: session.user.id,
-        nonce: crypto.randomBytes(16).toString('hex'),
+        nonce,
         returnTo,
       }),
-    ).toString('base64');
+    );
 
     const authUrl = challonge.getAuthorizationUrl(state);
     console.log(`🚀 Initiating Challonge OAuth for user ${session.user.id}`);

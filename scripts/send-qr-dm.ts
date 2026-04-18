@@ -1,11 +1,8 @@
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import { AttachmentBuilder, Client, GatewayIntentBits } from 'discord.js';
-import dotenv from 'dotenv';
 import QRCode from 'qrcode';
 import WebSocket from 'ws';
-
-dotenv.config();
 
 const YOYO_ID = '281114294152724491';
 const REMOTE_AUTH_WS = 'wss://remote-auth-gateway.discord.gg/?v=2';

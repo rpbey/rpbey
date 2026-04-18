@@ -1,9 +1,6 @@
 import axios from 'axios';
-import dotenv from 'dotenv';
 import { readFileSync, writeFileSync } from 'fs';
 import { resolve } from 'path';
-
-dotenv.config();
 
 async function fetchAvatarsViaAPI() {
     const apiKey = process.env.CHALLONGE_API_KEY;

@@ -4,7 +4,6 @@ import {
 } from 'discord.js';
 import {
 	config
-} from 'dotenv';
 
 // Load .env
 config();

@@ -1,4 +1,3 @@
-import 'dotenv/config';
 import { ChallongeScraper } from '../src/lib/scrapers/challonge-scraper';
 import { prisma } from '../src/lib/prisma';
 

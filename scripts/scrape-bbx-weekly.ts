@@ -1,4 +1,3 @@
-import 'dotenv/config';
 import { writeFileSync, mkdirSync, renameSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';

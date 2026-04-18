@@ -115,6 +115,7 @@ class ChallongeService {
         client_secret: clientSecret,
         redirect_uri: redirectUri,
       }).toString(),
+      signal: AbortSignal.timeout(10_000),
     });
 
     if (!response.ok) {
@@ -147,6 +148,7 @@ class ChallongeService {
         client_id: clientId,
         client_secret: clientSecret,
       }).toString(),
+      signal: AbortSignal.timeout(10_000),
     });
 
     if (!response.ok) {
@@ -191,6 +193,7 @@ class ChallongeService {
         scope:
           'me tournaments:read tournaments:write matches:read matches:write participants:read participants:write',
       }).toString(),
+      signal: AbortSignal.timeout(10_000),
     });
 
     if (!response.ok) {
@@ -235,6 +238,7 @@ class ChallongeService {
       method,
       headers,
       body: body ? JSON.stringify(body) : undefined,
+      signal: AbortSignal.timeout(10_000),
     });
 
     if (response.status === 429) {

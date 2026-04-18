@@ -3,7 +3,6 @@
  * Links official products to their component parts
  */
 
-import 'dotenv/config'
 import pg from 'pg'
 import { PrismaClient, type BeyType } from '@prisma/client'
 import { PrismaPg } from '@prisma/adapter-pg'

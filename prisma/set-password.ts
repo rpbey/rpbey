@@ -1,4 +1,3 @@
-import "dotenv/config";
 
 // Wait, Better Auth manages passwords. We need to update the account table.
 // However, seeding password directly into Account table requires hashing.

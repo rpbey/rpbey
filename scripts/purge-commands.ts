@@ -1,5 +1,4 @@
 import { REST, Routes } from 'discord.js';
-import 'dotenv/config';
 
 async function clearAll() {
   const token = process.env.DISCORD_TOKEN;

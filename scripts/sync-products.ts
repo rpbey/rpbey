@@ -1,6 +1,4 @@
 
-import * as dotenv from 'dotenv';
-dotenv.config();
 
 import { ProductType, ProductLine } from '@/generated/prisma/client';
 import * as fs from 'fs/promises';

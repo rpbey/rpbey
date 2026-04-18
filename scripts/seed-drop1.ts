@@ -9,8 +9,6 @@
  *        pnpm tsx scripts/seed-drop1.ts --reset      (delete existing drop1 cards first)
  */
 
-import * as dotenv from 'dotenv';
-dotenv.config();
 
 import { PrismaPg } from '@prisma/adapter-pg';
 import type { CardRarity, CardType } from '@/generated/prisma/client';

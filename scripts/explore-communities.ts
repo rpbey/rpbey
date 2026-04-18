@@ -1,9 +1,5 @@
 
 import { getChallongeService } from '../src/lib/challonge';
-import dotenv from 'dotenv';
-
-dotenv.config();
-
 async function exploreCommunities() {
   const service = getChallongeService();
   try {

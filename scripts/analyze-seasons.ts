@@ -1,7 +1,6 @@
 import { PrismaClient } from '@/generated/prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import pg from 'pg';
-import 'dotenv/config';
 
 async function main() {
   let connectionString = process.env.DATABASE_URL;

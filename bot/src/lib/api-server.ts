@@ -108,8 +108,8 @@ function authenticate(req: Request): Response | null {
   }
 
   const apiKey = req.headers.get('x-api-key') ?? '';
-  const providedBuf = Buffer.from(apiKey, 'utf8');
-  const expectedBuf = Buffer.from(expectedKey, 'utf8');
+  const providedBuf = new TextEncoder().encode(apiKey);
+  const expectedBuf = new TextEncoder().encode(expectedKey);
 
   if (
     providedBuf.length !== expectedBuf.length ||
@@ -158,8 +158,8 @@ function buildServer(port: number): Server<WsData> {
         if (!expectedKey) {
           return new Response('BOT_API_KEY not configured', { status: 500 });
         }
-        const a = Buffer.from(providedKey, 'utf8');
-        const b = Buffer.from(expectedKey, 'utf8');
+        const a = new TextEncoder().encode(providedKey);
+        const b = new TextEncoder().encode(expectedKey);
         if (a.length !== b.length || !timingSafeEqual(a, b)) {
           return new Response('Unauthorized', { status: 401 });
         }

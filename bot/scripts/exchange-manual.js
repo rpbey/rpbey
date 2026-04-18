@@ -1,7 +1,6 @@
 import { exchangeCode } from '@twurple/auth';
-import { promises as fs } from 'fs';
-import path from 'path';
-import 'dotenv/config';
+import { promises as fs } from 'node:fs';
+import path from 'node:path';
 
 const clientId = process.env.TWITCH_CLIENT_ID;
 const clientSecret = process.env.TWITCH_CLIENT_SECRET;

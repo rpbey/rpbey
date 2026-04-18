@@ -1,6 +1,5 @@
 import { writeFile, mkdir } from 'node:fs/promises';
 import { join } from 'node:path';
-import 'dotenv/config';
 
 /**
  * Fetch WB tournament history via Challonge API v1 (fast, no browser needed)

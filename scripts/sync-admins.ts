@@ -3,13 +3,8 @@ import { Client, GatewayIntentBits } from 'discord.js';
 import { PrismaClient } from '@/generated/prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { Pool } from 'pg';
-import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
-
-// 1. Setup Environment
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-dotenv.config({ path: path.join(__dirname, '../.env') });
 
 const connectionString = process.env.DATABASE_URL;
 const pool = new Pool({ connectionString });

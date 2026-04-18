@@ -5,7 +5,6 @@
 
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
-import 'dotenv/config';
 import pg from 'pg';
 
 interface MasterPart {

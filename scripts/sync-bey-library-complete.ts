@@ -1,5 +1,3 @@
-import * as dotenv from 'dotenv';
-dotenv.config();
 
 import { PrismaPg } from '@prisma/adapter-pg';
 import { BeyType, PartType, PrismaClient } from '@/generated/prisma/client';

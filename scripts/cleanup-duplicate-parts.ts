@@ -1,7 +1,4 @@
 import { prisma } from '../src/lib/prisma';
-import dotenv from 'dotenv';
-
-dotenv.config();
 
 async function cleanupDuplicateParts() {
   console.log('🧹 Début du nettoyage des pièces en double...');

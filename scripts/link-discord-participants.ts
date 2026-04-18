@@ -1,9 +1,6 @@
 import { prisma } from '../src/lib/prisma';
 import fs from 'fs';
 import path from 'path';
-import dotenv from 'dotenv';
-
-dotenv.config();
 
 // Fonction de distance de Levenshtein simple
 function levenshteinDistance(a: string, b: string): number {

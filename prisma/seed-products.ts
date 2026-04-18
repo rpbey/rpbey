@@ -3,7 +3,6 @@
  * Data source: https://beyblade.takaratomy.co.jp/beyblade-x/lineup/
  */
 
-import 'dotenv/config'
 import pg from 'pg'
 import fs from 'fs'
 import path from 'path'
