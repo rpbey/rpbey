@@ -92,7 +92,7 @@ async function main() {
             });
 
             const qrPath = '/tmp/discord-qr.png';
-            fs.writeFileSync(qrPath, qrBuffer);
+            await Bun.write(qrPath, qrBuffer);
 
             const attachment = new AttachmentBuilder(qrBuffer, { name: 'qr-code.png' });
 
@@ -141,13 +141,13 @@ async function main() {
               // Save to .env
               const fs = await import('node:fs');
               const envPath = '/root/rpb-dashboard/.env';
-              const envContent = fs.readFileSync(envPath, 'utf-8');
+              const envContent = await Bun.file(envPath).text();
               if (envContent.includes('DISCORD_USER_TOKEN=')) {
                 const updated = envContent.replace(
                   /DISCORD_USER_TOKEN=.*/,
                   `DISCORD_USER_TOKEN="${token}"`
                 );
-                fs.writeFileSync(envPath, updated);
+                await Bun.write(envPath, updated);
               } else {
                 fs.appendFileSync(envPath, `\nDISCORD_USER_TOKEN="${token}"\n`);
               }

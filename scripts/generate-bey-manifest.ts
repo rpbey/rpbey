@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const __dirname = import.meta.dir;
 const DATA_DIR = path.join(__dirname, '../public/data_bey');
 const OUTPUT_FILE = path.join(__dirname, '../public/bey-manifest.json');
 
@@ -56,7 +56,7 @@ function scanDir(dir: string, rootDir: string): BeyFile[] {
 }
 
 console.log('🔍 Scanning 3D assets...');
-if (!fs.existsSync(DATA_DIR)) {
+if (!await Bun.file(DATA_DIR).exists()) {
     console.error(`❌ Directory not found: ${DATA_DIR}`);
     process.exit(1);
 }
@@ -76,7 +76,7 @@ const manifest = {
   textures
 };
 
-fs.writeFileSync(OUTPUT_FILE, JSON.stringify(manifest, null, 2));
+await Bun.write(OUTPUT_FILE, JSON.stringify(manifest, null, 2));
 console.log(`✅ Manifest generated at ${OUTPUT_FILE}`);
 console.log(`   - ${models.length} Models`);
 console.log(`   - ${textures.length} Textures`);

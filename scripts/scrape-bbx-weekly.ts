@@ -3,7 +3,7 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
+const __dirname = import.meta.dir;
 const OUTPUT_PATH = join(__dirname, '..', 'data', 'bbx-weekly.json');
 
 const BASE_URL = 'https://bbxweekly.com';

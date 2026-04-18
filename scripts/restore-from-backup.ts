@@ -14,11 +14,11 @@ async function restoreBackup() {
     console.log("🚑 RESTAURATION DEPUIS LE BACKUP LOCAL...");
 
     const backupPath = path.resolve(process.cwd(), 'data/exports/standalone_ranking.json');
-    if (!fs.existsSync(backupPath)) {
+    if (!await Bun.file(backupPath).exists()) {
         return console.error("❌ Fichier de backup introuvable !");
     }
 
-    const data = JSON.parse(fs.readFileSync(backupPath, 'utf-8'));
+    const data = await Bun.file(backupPath).json();
     console.log(`📄 ${data.length} bladers trouvés dans la sauvegarde.`);
 
     // Purge de sécurité

@@ -10,10 +10,10 @@ function normalize(s: string | null | undefined): string {
 }
 
 async function main() {
-  if (fs.existsSync(LOCK_FILE)) {
+  if (await Bun.file(LOCK_FILE).exists()) {
     fs.unlinkSync(LOCK_FILE);
   }
-  fs.writeFileSync(LOCK_FILE, process.pid.toString());
+  await Bun.write(LOCK_FILE, process.pid.toString());
 
   const scraper = new ChallongeScraper();
   const slug = 'fr/B_TS3';
@@ -156,7 +156,7 @@ async function main() {
   } finally {
     await scraper.close();
     await prisma.$disconnect();
-    if (fs.existsSync(LOCK_FILE)) fs.unlinkSync(LOCK_FILE);
+    if (await Bun.file(LOCK_FILE).exists()) fs.unlinkSync(LOCK_FILE);
   }
 }
 

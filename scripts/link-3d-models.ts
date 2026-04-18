@@ -15,12 +15,12 @@ function normalize(str: string): string {
 async function link() {
   console.log('🔗 Linking DB Parts with 3D Models (Strict Mode)...');
 
-  if (!fs.existsSync(MANIFEST_PATH)) {
+  if (!await Bun.file(MANIFEST_PATH).exists()) {
     console.error('❌ Manifest not found');
     process.exit(1);
   }
 
-  const manifest: BeyManifest = JSON.parse(fs.readFileSync(MANIFEST_PATH, 'utf-8'));
+  const manifest: BeyManifest = await Bun.file(MANIFEST_PATH).json();
   const parts = await prisma.part.findMany();
   
   const mapping: Record<string, { model?: string; texture?: string }> = {};
@@ -120,7 +120,7 @@ async function link() {
     }
   }
 
-  fs.writeFileSync(OUTPUT_PATH, JSON.stringify(mapping, null, 2));
+  await Bun.write(OUTPUT_PATH, JSON.stringify(mapping, null, 2));
   console.log(`✅ Linked ${matches} / ${parts.length} parts.`);
   console.log(`📂 Mapping saved to ${OUTPUT_PATH}`);
 }

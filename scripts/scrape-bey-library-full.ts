@@ -84,7 +84,7 @@ async function downloadImage(
     : `${BASE_URL}${encodeURI(url)}`;
   const filePath = path.join(IMAGES_DIR, filename);
 
-  if (fs.existsSync(filePath) && fs.statSync(filePath).size > 0) {
+  if (await Bun.file(filePath).exists() && fs.statSync(filePath).size > 0) {
     return `images/${filename}`;
   }
 
@@ -295,7 +295,7 @@ async function main() {
 
   // Save full database
   const jsonPath = path.join(OUTPUT_DIR, 'bey-library-full.json');
-  fs.writeFileSync(jsonPath, JSON.stringify(allParts, null, 2));
+  await Bun.write(jsonPath, JSON.stringify(allParts, null, 2));
 
   // Also save a lightweight index (no variants, for API)
   const index = allParts.map((p) => ({
@@ -311,7 +311,7 @@ async function main() {
     variantCount: p.variants.length,
   }));
   const indexPath = path.join(OUTPUT_DIR, 'bey-library-index.json');
-  fs.writeFileSync(indexPath, JSON.stringify(index, null, 2));
+  await Bun.write(indexPath, JSON.stringify(index, null, 2));
 
   console.log('\n=== Done! ===');
   console.log(`Total: ${allParts.length} parts`);

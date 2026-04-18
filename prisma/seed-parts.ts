@@ -81,12 +81,12 @@ function normalizeId(name: string): string {
   return name.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
 }
 
-function readJson<T>(filename: string): T {
+async function readJson<T>(filename: string): Promise<T> {
   const filePath = path.join(CLEANED_DATA_DIR, filename);
-  if (!fs.existsSync(filePath)) {
+  if (!await Bun.file(filePath).exists()) {
     throw new Error(`File not found: ${filePath}`);
   }
-  return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+  return await Bun.file(filePath).json();
 }
 
 function normalizeName(name: string): string {
@@ -101,9 +101,9 @@ function normalizeName(name: string): string {
 }
 
 async function seedBlades(): Promise<number> {
-  const blades = readJson<CleanedBlade[]>('blades.json');
-  const beys = readJson<CleanedBey[]>('beys.json');
-  const images = readJson<{ blades: Record<string, string> }>('images.json').blades;
+  const blades = await readJson<CleanedBlade[]>('blades.json');
+  const beys = await readJson<CleanedBey[]>('beys.json');
+  const images = (await readJson<{ blades: Record<string, string> }>('images.json')).blades;
   
   // Create a map of Blade Name -> Type from the Beys list
   const bladeTypeMap = new Map<string, string>();
@@ -166,8 +166,8 @@ async function seedBlades(): Promise<number> {
 }
 
 async function seedRatchets(): Promise<number> {
-  const ratchets = readJson<CleanedRatchet[]>('ratchets.json');
-  const images = readJson<{ ratchets: Record<string, string> }>('images.json').ratchets;
+  const ratchets = await readJson<CleanedRatchet[]>('ratchets.json');
+  const images = (await readJson<{ ratchets: Record<string, string> }>('images.json')).ratchets;
 
   console.log(`  → Found ${ratchets.length} ratchets from local data`);
 
@@ -218,8 +218,8 @@ async function seedRatchets(): Promise<number> {
 }
 
 async function seedBits(): Promise<number> {
-  const bits = readJson<CleanedBit[]>('bits.json');
-  const images = readJson<{ bits: Record<string, string> }>('images.json').bits;
+  const bits = await readJson<CleanedBit[]>('bits.json');
+  const images = (await readJson<{ bits: Record<string, string> }>('images.json')).bits;
 
   console.log(`  → Found ${bits.length} bits from local data`);
 

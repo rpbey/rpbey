@@ -302,7 +302,7 @@ async function recordScenes() {
   await browser.close();
 }
 
-function postProcess() {
+async function postProcess() {
   console.log('\n🎨 Post-production...');
 
   const clips = scenes.map((s) => path.join(CLIPS_DIR, `${s.name}.webm`));
@@ -313,7 +313,7 @@ function postProcess() {
     const input = clips[i]!;
     const output = path.join(CLIPS_DIR, `${scene.name}-titled.mp4`);
 
-    if (!fs.existsSync(input)) {
+    if (!await Bun.file(input).exists()) {
       console.log(`   ⚠️ Skip missing: ${input}`);
       continue;
     }
@@ -366,11 +366,11 @@ function postProcess() {
 
   for (const scene of scenes) {
     const titled = path.join(CLIPS_DIR, `${scene.name}-titled.mp4`);
-    if (fs.existsSync(titled)) parts.push(titled);
+    if (await Bun.file(titled).exists()) parts.push(titled);
   }
   parts.push(outroPath);
 
-  fs.writeFileSync(concatFile, parts.map((p) => `file '${p}'`).join('\n'));
+  await Bun.write(concatFile, parts.map((p) => `file '${p}'`).join('\n'));
 
   // Step 5: Concat all clips
   const concatOutput = path.join(CLIPS_DIR, 'concat-raw.mp4');
@@ -381,7 +381,7 @@ function postProcess() {
   console.log('   ✅ Concatenated');
 
   // Step 6: Add watermark logo + final polish
-  const logoExists = fs.existsSync(LOGO_PATH);
+  const logoExists = await Bun.file(LOGO_PATH).exists();
   let finalFilter: string;
 
   if (logoExists) {
@@ -412,7 +412,7 @@ async function main() {
   console.log('═══════════════════════════════════════\n');
 
   await recordScenes();
-  postProcess();
+  await postProcess();
 }
 
 main();

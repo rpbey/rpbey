@@ -61,8 +61,8 @@ async function linkParticipants() {
   // Chargement du mapping manuel
   const mappingPath = path.resolve(process.cwd(), 'data/discord_mapping.json');
   let manualMapping: Record<string, string> = {};
-  if (fs.existsSync(mappingPath)) {
-    manualMapping = JSON.parse(fs.readFileSync(mappingPath, 'utf-8'));
+  if (await Bun.file(mappingPath).exists()) {
+    manualMapping = await Bun.file(mappingPath).json();
     console.log(`📂 Mapping manuel chargé : ${Object.keys(manualMapping).length} entrées.`);
   }
 
@@ -198,7 +198,7 @@ async function linkParticipants() {
 
   // Sauvegarde des incertitudes
   const uncertainPath = path.resolve(process.cwd(), 'data/uncertain_matches.json');
-  fs.writeFileSync(uncertainPath, JSON.stringify(uncertainMatches, null, 2));
+  await Bun.write(uncertainPath, JSON.stringify(uncertainMatches, null, 2));
   
   console.log(`
 📊 Bilan :

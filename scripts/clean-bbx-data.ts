@@ -22,12 +22,12 @@ const cleanStr = (val: any): string => {
 async function cleanData() {
   console.log('🧹 Cleaning BBX Data...');
   
-  if (!fs.existsSync(inputFile)) {
+  if (!await Bun.file(inputFile).exists()) {
     console.error(`❌ Input file not found: ${inputFile}`);
     process.exit(1);
   }
 
-  const rawData = JSON.parse(fs.readFileSync(inputFile, 'utf8'));
+  const rawData = await Bun.file(inputFile).json();
   const partList = rawData['Bey X Part List'];
 
   if (!partList || !Array.isArray(partList)) {
@@ -109,9 +109,9 @@ async function cleanData() {
   }
 
   // Save to files
-  fs.writeFileSync(path.join(outputDir, 'blades.json'), JSON.stringify(blades, null, 2));
-  fs.writeFileSync(path.join(outputDir, 'ratchets.json'), JSON.stringify(ratchets, null, 2));
-  fs.writeFileSync(path.join(outputDir, 'bits.json'), JSON.stringify(bits, null, 2));
+  await Bun.write(path.join(outputDir, 'blades.json'), JSON.stringify(blades, null, 2));
+  await Bun.write(path.join(outputDir, 'ratchets.json'), JSON.stringify(ratchets, null, 2));
+  await Bun.write(path.join(outputDir, 'bits.json'), JSON.stringify(bits, null, 2));
 
   console.log(`✅ Extracted:`);
   console.log(`   - ${blades.length} Blades`);

@@ -27,7 +27,7 @@ import {
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
+const __dirname = import.meta.dir;
 const DATA_DIR = join(__dirname, '..', 'data');
 const COMBOS_PATH = join(DATA_DIR, 'wbo-combos.json');
 const META_PATH = join(DATA_DIR, 'wbo-meta.json');

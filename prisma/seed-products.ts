@@ -26,8 +26,8 @@ const prisma = new PrismaClient({ adapter })
 const hasbroDataPath = path.resolve(process.cwd(), 'data/cleaned/hasbro.json');
 let hasbroData: { ttId: string, hasbroId: string, hasbroName: string }[] = [];
 
-if (fs.existsSync(hasbroDataPath)) {
-    hasbroData = JSON.parse(fs.readFileSync(hasbroDataPath, 'utf-8'));
+if (await Bun.file(hasbroDataPath).exists()) {
+    hasbroData = await Bun.file(hasbroDataPath).json();
 }
 
 const hasbroMap = new Map(hasbroData.map(h => [h.ttId, h]));

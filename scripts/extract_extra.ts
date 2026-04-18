@@ -10,7 +10,7 @@ function cleanText(str: string): string {
   return str ? str.trim() : '';
 }
 
-function extractImages() {
+async function extractImages() {
   console.log('🖼️ Extracting Images from "Pic Bank.html"...');
   const html = fs.readFileSync(path.join(DATA_DIR, 'Pic Bank.html'), 'utf-8');
   const $ = cheerio.load(html);
@@ -48,13 +48,13 @@ function extractImages() {
     }
   }
 
-  fs.writeFileSync(path.join(OUTPUT_DIR, 'images.json'), JSON.stringify(images, null, 2));
+  await Bun.write(path.join(OUTPUT_DIR, 'images.json'), JSON.stringify(images, null, 2));
   console.log(`   Found ${Object.keys(images.blades).length} blade images.`);
   console.log(`   Found ${Object.keys(images.ratchets).length} ratchet images.`);
   console.log(`   Found ${Object.keys(images.bits).length} bit images.`);
 }
 
-function extractHasbro() {
+async function extractHasbro() {
   console.log('🌍 Extracting Hasbro Data from "Release TT-HASBRO.html"...');
   const html = fs.readFileSync(path.join(DATA_DIR, 'Release TT-HASBRO.html'), 'utf-8');
   const $ = cheerio.load(html);
@@ -82,13 +82,13 @@ function extractHasbro() {
     }
   }
 
-  fs.writeFileSync(path.join(OUTPUT_DIR, 'hasbro.json'), JSON.stringify(hasbroData, null, 2));
+  await Bun.write(path.join(OUTPUT_DIR, 'hasbro.json'), JSON.stringify(hasbroData, null, 2));
   console.log(`   Found ${hasbroData.length} Hasbro mappings.`);
 }
 
 async function main() {
-    extractImages();
-    extractHasbro();
+    await extractImages();
+    await extractHasbro();
 }
 
 main();

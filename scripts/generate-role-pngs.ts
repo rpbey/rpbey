@@ -10,7 +10,7 @@ async function generateRolePngs() {
 
   for (const fileName of files) {
     const filePath = path.join(publicDir, fileName);
-    if (!fs.existsSync(filePath)) {
+    if (!await Bun.file(filePath).exists()) {
         console.warn(`File not found: ${filePath}`);
         continue;
     }

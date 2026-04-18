@@ -30,7 +30,7 @@ async function downloadImage(url: string, filename: string): Promise<string | nu
   const fullUrl = url.startsWith('http') ? url : `${BASE_URL}${url}`;
   const filePath = path.join(IMAGES_DIR, filename);
 
-  if (fs.existsSync(filePath)) {
+  if (await Bun.file(filePath).exists()) {
     // Déjà téléchargé
     return filePath;
   }
@@ -160,7 +160,7 @@ Finished ${cat}.
   }
 
   const jsonPath = path.join(OUTPUT_DIR, 'bey-library.json');
-  fs.writeFileSync(jsonPath, JSON.stringify(allParts, null, 2));
+  await Bun.write(jsonPath, JSON.stringify(allParts, null, 2));
   console.log(`
 🎉 DONE! Scraped ${allParts.length} parts.`);
   console.log(`Data saved to ${jsonPath}`);

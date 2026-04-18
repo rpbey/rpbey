@@ -39,13 +39,13 @@ async function importBTS1() {
   const detailsPath = path.resolve(process.cwd(), 'data/B_TS1_full_details.json');
   const standingsPath = path.resolve(process.cwd(), 'data/B_TS1_standings.json');
 
-  if (!fs.existsSync(detailsPath) || !fs.existsSync(standingsPath)) {
+  if (!await Bun.file(detailsPath).exists() || !await Bun.file(standingsPath).exists()) {
     console.error('❌ Fichiers de données manquants. Lancez les scripts de scraping d\'abord.');
     return;
   }
 
-  const rawDetails = JSON.parse(fs.readFileSync(detailsPath, 'utf-8'));
-  const rawStandings = JSON.parse(fs.readFileSync(standingsPath, 'utf-8')) as Standing[];
+  const rawDetails = await Bun.file(detailsPath).json();
+  const rawStandings = await Bun.file(standingsPath).json() as Standing[];
 
   // Extraction des données utiles du store Challonge
   const tournamentData = rawDetails.data.tournament;
