@@ -8,7 +8,7 @@ import {
   TextInputBuilder,
   TextInputStyle,
 } from 'discord.js';
-import { ButtonComponent, Discord } from 'discordx';
+import { ButtonComponent, Discord } from '@aphrody/discordx';
 
 import { Colors, RPB } from '../lib/constants.js';
 import { logger } from '../lib/logger.js';

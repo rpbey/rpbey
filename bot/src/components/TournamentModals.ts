@@ -1,5 +1,5 @@
 import { EmbedBuilder, type ModalSubmitInteraction } from 'discord.js';
-import { Discord, ModalComponent } from 'discordx';
+import { Discord, ModalComponent } from '@aphrody/discordx';
 import { inject, injectable } from 'tsyringe';
 
 import { Colors, RPB } from '../lib/constants.js';

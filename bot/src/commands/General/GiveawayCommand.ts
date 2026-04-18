@@ -15,7 +15,7 @@ import {
   Slash,
   SlashGroup,
   SlashOption,
-} from 'discordx';
+} from '@aphrody/discordx';
 import { injectable } from 'tsyringe';
 
 import { Colors } from '../../lib/constants.js';

@@ -1,4 +1,4 @@
-import { Client } from 'discordx';
+import { Client } from '@aphrody/discordx';
 
 export const bot = new Client({
   botId: 'rpb-bot',

@@ -3,7 +3,12 @@ import {
   type Guild,
   type TextChannel,
 } from 'discord.js';
-import { vi } from 'vitest';
+import { mock } from 'bun:test';
+
+const vi = {
+  fn: mock,
+  mock: mock.module,
+};
 
 export function createMockInteraction(options: {
   commandName: string;

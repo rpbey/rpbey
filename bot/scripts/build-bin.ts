@@ -5,7 +5,7 @@ const ROOT = resolve(import.meta.dirname, '..');
 const ENTRY = resolve(ROOT, 'src/index.ts');
 const OUTFILE = resolve(ROOT, 'dist-bin/rpb-bot');
 
-const start = performance.now();
+const start = Bun.nanoseconds();
 
 const result = await Bun.build({
   entrypoints: [ENTRY],
@@ -30,7 +30,7 @@ const result = await Bun.build({
   },
 });
 
-const ms = Math.round(performance.now() - start);
+const ms = Math.round((Bun.nanoseconds() - start) / 1e6);
 
 if (!result.success) {
   console.error('[build:bin] Build failed:');

@@ -15,7 +15,7 @@ import {
   SlashChoice,
   SlashGroup,
   SlashOption,
-} from 'discordx';
+} from '@aphrody/discordx';
 
 import { ModeratorOnly } from '../../guards/ModeratorOnly.js';
 import { getChallongeClient } from '../../lib/challonge.js';

@@ -5,7 +5,7 @@ import {
   type Guild,
   type GuildTextBasedChannel,
 } from 'discord.js';
-import { type ArgsOf, Discord, On } from 'discordx';
+import { type ArgsOf, Discord, On } from '@aphrody/discordx';
 import { injectable } from 'tsyringe';
 
 import { Colors } from '../lib/constants.js';

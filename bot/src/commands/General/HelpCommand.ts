@@ -1,5 +1,5 @@
 import { type CommandInteraction, EmbedBuilder } from 'discord.js';
-import { Discord, Slash } from 'discordx';
+import { Discord, Slash } from '@aphrody/discordx';
 import { injectable } from 'tsyringe';
 
 import { Colors, RPB } from '../../lib/constants.js';

@@ -1,10 +1,10 @@
-import { Pagination } from '@discordx/pagination';
+import { Pagination } from '@aphrody/pagination';
 import {
   ApplicationCommandOptionType,
   type CommandInteraction,
   EmbedBuilder,
 } from 'discord.js';
-import { Discord, Slash, SlashChoice, SlashGroup, SlashOption } from 'discordx';
+import { Discord, Slash, SlashChoice, SlashGroup, SlashOption } from '@aphrody/discordx';
 import { inject, injectable } from 'tsyringe';
 
 import { Colors, RPB } from '../../lib/constants.js';

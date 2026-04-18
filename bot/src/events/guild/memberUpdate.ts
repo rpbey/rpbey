@@ -1,4 +1,4 @@
-import { type ArgsOf, Discord, On } from 'discordx';
+import { type ArgsOf, Discord, On } from '@aphrody/discordx';
 
 import { logger } from '../../lib/logger.js';
 import prisma from '../../lib/prisma.js';

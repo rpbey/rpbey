@@ -1,5 +1,5 @@
 import { type CommandInteraction, type GuildMember } from 'discord.js';
-import { type GuardFunction } from 'discordx';
+import { type GuardFunction } from '@aphrody/discordx';
 
 import { RPB } from '../lib/constants.js';
 

@@ -6,7 +6,7 @@ import {
   EmbedBuilder,
   type User,
 } from 'discord.js';
-import { Discord, Slash, SlashChoice, SlashGroup, SlashOption } from 'discordx';
+import { Discord, Slash, SlashChoice, SlashGroup, SlashOption } from '@aphrody/discordx';
 import { inject, injectable } from 'tsyringe';
 
 import {

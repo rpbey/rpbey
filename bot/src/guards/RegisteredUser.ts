@@ -5,7 +5,7 @@ import {
   type CommandInteraction,
   EmbedBuilder,
 } from 'discord.js';
-import { type GuardFunction } from 'discordx';
+import { type GuardFunction } from '@aphrody/discordx';
 
 import { logger } from '../lib/logger.js';
 import { prisma } from '../lib/prisma.js';

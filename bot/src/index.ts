@@ -1,9 +1,9 @@
 import 'reflect-metadata';
 import { DefaultExtractors } from '@discord-player/extractor';
-import { tsyringeDependencyRegistryEngine } from '@discordx/di';
+import { tsyringeDependencyRegistryEngine } from '@aphrody/di';
 import { PermissionsBitField } from 'discord.js';
 import { Player } from 'discord-player';
-import { DIService } from 'discordx';
+import { DIService } from '@aphrody/discordx';
 import { container } from 'tsyringe';
 import { startApiServer } from './lib/api-server.js';
 import { bot } from './lib/bot.js';
@@ -17,10 +17,13 @@ import { claimSingletonOrExit } from './lib/singleton-guard.js';
 claimSingletonOrExit();
 
 // Preconnect to hot hosts to reduce first-request latency (Bun-native)
+// Wrapped in try/catch: Bun 1.3.13-canary throws "Invalid port" on bare hostnames.
 if (typeof fetch.preconnect === 'function') {
-  fetch.preconnect('https://discord.com');
-  fetch.preconnect('https://api.twitch.tv');
-  fetch.preconnect('https://api.challonge.com');
+  for (const url of ['https://discord.com', 'https://api.twitch.tv', 'https://api.challonge.com']) {
+    try {
+      fetch.preconnect(url);
+    } catch {}
+  }
 }
 
 // Capture logs to in-memory buffer for API access

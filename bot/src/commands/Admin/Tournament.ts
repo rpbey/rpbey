@@ -4,7 +4,7 @@ import {
   EmbedBuilder,
   PermissionFlagsBits,
 } from 'discord.js';
-import { Discord, Slash, SlashGroup, SlashOption } from 'discordx';
+import { Discord, Slash, SlashGroup, SlashOption } from '@aphrody/discordx';
 
 import { scrapeAndSyncTournament } from '../../lib/challonge-sync.js';
 import { Colors } from '../../lib/constants.js';

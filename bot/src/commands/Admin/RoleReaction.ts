@@ -8,7 +8,7 @@ import {
   PermissionFlagsBits,
   type TextChannel,
 } from 'discord.js';
-import { Discord, Guard, Slash, SlashOption } from 'discordx';
+import { Discord, Guard, Slash, SlashOption } from '@aphrody/discordx';
 
 import { OwnerOnly } from '../../guards/OwnerOnly.js';
 import { RPB } from '../../lib/constants.js';

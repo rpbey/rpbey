@@ -3,7 +3,7 @@ import {
   version as djsVersion,
   EmbedBuilder,
 } from 'discord.js';
-import { Discord, Slash, SlashGroup } from 'discordx';
+import { Discord, Slash, SlashGroup } from '@aphrody/discordx';
 import { inject, injectable } from 'tsyringe';
 
 import { Colors, RPB } from '../../lib/constants.js';
@@ -161,6 +161,20 @@ export class InfoGroup {
 export class PingCommand {
   @Slash({ name: 'ping', description: 'Vérifier la latence du bot' })
   async ping(interaction: CommandInteraction) {
-    return interaction.reply(`🏓 Pong ! \`${interaction.client.ws.ping}ms\``);
+    const before = Date.now();
+    await interaction.deferReply();
+    const api = Date.now() - before;
+    const ws = interaction.client.ws.ping;
+    return interaction.editReply({
+      embeds: [
+        new EmbedBuilder()
+          .setColor(Colors.Primary)
+          .setTitle('🏓 Pong !')
+          .addFields(
+            { name: '📡 WebSocket', value: `\`${ws}ms\``, inline: true },
+            { name: '⚡ API', value: `\`${api}ms\``, inline: true },
+          ),
+      ],
+    });
   }
 }

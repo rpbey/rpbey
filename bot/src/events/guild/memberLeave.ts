@@ -1,5 +1,5 @@
 import { EmbedBuilder, type TextChannel } from 'discord.js';
-import { type ArgsOf, Discord, On } from 'discordx';
+import { type ArgsOf, Discord, On } from '@aphrody/discordx';
 import { Colors, RPB } from '../../lib/constants.js';
 import { logger } from '../../lib/logger.js';
 

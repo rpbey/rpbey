@@ -4,7 +4,7 @@ import {
   type CommandInteraction,
   EmbedBuilder,
 } from 'discord.js';
-import { Discord, Guard, Slash, SlashGroup, SlashOption } from 'discordx';
+import { Discord, Guard, Slash, SlashGroup, SlashOption } from '@aphrody/discordx';
 import { inject, injectable } from 'tsyringe';
 
 import { StaffOnly } from '../../guards/StaffOnly.js';

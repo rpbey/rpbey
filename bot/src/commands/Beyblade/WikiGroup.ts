@@ -3,7 +3,7 @@ import {
   type CommandInteraction,
   EmbedBuilder,
 } from 'discord.js';
-import { Discord, Slash, SlashGroup, SlashOption } from 'discordx';
+import { Discord, Slash, SlashGroup, SlashOption } from '@aphrody/discordx';
 import { injectable } from 'tsyringe';
 
 import { Colors } from '../../lib/constants.js';

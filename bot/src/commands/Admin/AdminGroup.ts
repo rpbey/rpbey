@@ -1,5 +1,5 @@
 import { type CommandInteraction, PermissionFlagsBits } from 'discord.js';
-import { Discord, Slash, SlashGroup } from 'discordx';
+import { Discord, Slash, SlashGroup } from '@aphrody/discordx';
 import { inject, injectable } from 'tsyringe';
 import { syncRankingRolesTask } from '../../cron/tasks/SyncRankingRoles.js';
 import { logger } from '../../lib/logger.js';

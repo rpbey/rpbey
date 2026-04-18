@@ -6,7 +6,7 @@ import {
   type ModalSubmitInteraction,
   type SelectMenuInteraction,
 } from 'discord.js';
-import { type GuardFunction } from 'discordx';
+import { type GuardFunction } from '@aphrody/discordx';
 
 export const NotBot: GuardFunction<
   | CommandInteraction

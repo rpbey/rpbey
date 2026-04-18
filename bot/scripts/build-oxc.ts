@@ -12,7 +12,7 @@ const SRC = join(ROOT, 'src');
 const OUT = join(ROOT, 'dist');
 
 const glob = new Glob('**/*.{ts,tsx}');
-const start = performance.now();
+const start = Bun.nanoseconds();
 
 let fileCount = 0;
 let errorCount = 0;
@@ -39,6 +39,6 @@ for await (const rel of glob.scan({ cwd: SRC })) {
   fileCount += 1;
 }
 
-const ms = Math.round(performance.now() - start);
+const ms = Math.round((Bun.nanoseconds() - start) / 1e6);
 console.log(`oxc-transform: ${fileCount} files in ${ms}ms (${errorCount} errors)`);
 if (errorCount > 0) process.exit(1);

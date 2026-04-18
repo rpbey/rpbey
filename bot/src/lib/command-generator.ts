@@ -11,7 +11,7 @@ const COMMAND_TEMPLATE = (
   response: string,
 ) => `
 import { CommandInteraction } from 'discord.js';
-import { Discord, Slash } from 'discordx';
+import { Discord, Slash } from '@aphrody/discordx';
 
 @Discord()
 export class ${name.replace(/[^a-zA-Z0-9]/g, '')}Command {

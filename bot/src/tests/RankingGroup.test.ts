@@ -1,4 +1,10 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, mock, jest } from 'bun:test';
+
+const vi = {
+  fn: mock,
+  mock: mock.module,
+  clearAllMocks: () => jest.clearAllMocks(),
+};
 import { RankingGroup } from '../commands/Beyblade/RankingGroup.js';
 import { createMockInteraction, mockPrisma } from './mocks.js';
 

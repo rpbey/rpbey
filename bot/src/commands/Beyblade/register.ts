@@ -8,7 +8,7 @@ import {
   ComponentType,
   EmbedBuilder,
 } from 'discord.js';
-import { Discord, Slash, SlashGroup, SlashOption } from 'discordx';
+import { Discord, Slash, SlashGroup, SlashOption } from '@aphrody/discordx';
 
 import { getChallongeClient } from '../../lib/challonge.js';
 import { Colors, RPB } from '../../lib/constants.js';

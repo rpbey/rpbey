@@ -3,7 +3,7 @@ import {
   type CommandInteraction,
   PermissionFlagsBits,
 } from 'discord.js';
-import { Discord, Slash } from 'discordx';
+import { Discord, Slash } from '@aphrody/discordx';
 
 import { logger } from '../../lib/logger.js';
 import prisma from '../../lib/prisma.js';

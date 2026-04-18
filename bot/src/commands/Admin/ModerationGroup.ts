@@ -18,7 +18,7 @@ import {
   Slash,
   SlashChoice,
   SlashOption,
-} from 'discordx';
+} from '@aphrody/discordx';
 import { inject, injectable } from 'tsyringe';
 
 import { Colors, RPB } from '../../lib/constants.js';
@@ -672,12 +672,9 @@ export class ModerationCommands {
   async handleClose(interaction: ButtonInteraction) {
     await interaction.deferReply();
     const channel = interaction.channel as TextChannel;
-    const attachment = await (createTranscript as (...args: never) => unknown)(
-      channel,
-      {
-        filename: `${channel.name}.html`,
-      },
-    );
+    const attachment = await createTranscript(channel, {
+      filename: `${channel.name}.html`,
+    });
     const logChannel = interaction.guild?.channels.cache.get(
       RPB.Channels.Announcements,
     ) as TextChannel;

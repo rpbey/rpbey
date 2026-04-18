@@ -5,7 +5,7 @@ import {
   EmbedBuilder,
   type User,
 } from 'discord.js';
-import { Discord, Slash, SlashGroup, SlashOption } from 'discordx';
+import { Discord, Slash, SlashGroup, SlashOption } from '@aphrody/discordx';
 import { inject, injectable } from 'tsyringe';
 
 import { p as parseNum } from '../../lib/battle-utils.js';
