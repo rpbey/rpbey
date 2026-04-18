@@ -5,8 +5,8 @@
 
 import { createCanvas, loadImage } from '@napi-rs/canvas';
 import { AttachmentBuilder, Client, GatewayIntentBits } from 'discord.js';
-import * as fs from 'fs/promises';
-import * as path from 'path';
+import * as fs from 'node:fs/promises';
+import * as path from 'node:path';
 import sharp from 'sharp';
 
 const YOYO_ID = '281114294152724491';

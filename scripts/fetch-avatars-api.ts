@@ -1,6 +1,6 @@
 import axios from 'axios';
-import { readFileSync, writeFileSync } from 'fs';
-import { resolve } from 'path';
+import { readFileSync, writeFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 
 async function fetchAvatarsViaAPI() {
     const apiKey = process.env.CHALLONGE_API_KEY;

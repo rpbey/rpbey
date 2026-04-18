@@ -13,7 +13,7 @@
 import { PrismaPg } from '@prisma/adapter-pg';
 import type { CardRarity, CardType } from '@/generated/prisma/client';
 import { PrismaClient } from '@/generated/prisma/client';
-import * as fs from 'fs/promises';
+import * as fs from 'node:fs/promises';
 import pg from 'pg';
 
 // Parse DATABASE_URL into explicit pool config (avoids SCRAM password issue)

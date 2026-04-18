@@ -1,5 +1,5 @@
 
-import * as fs from 'fs/promises';
+import * as fs from 'node:fs/promises';
 import { PartType } from '@/generated/prisma/client';
 
 const BEY_LIBRARY_FILE = 'data/bey-library/bey-library.json';

@@ -8,8 +8,8 @@
 
 import { createCanvas, loadImage } from '@napi-rs/canvas';
 import { Client, GatewayIntentBits, AttachmentBuilder } from 'discord.js';
-import * as fs from 'fs/promises';
-import * as path from 'path';
+import * as fs from 'node:fs/promises';
+import * as path from 'node:path';
 
 // We import generateGachaCard from the bot's canvas-utils
 import { generateGachaCard } from '../bot/src/lib/canvas-utils.js';

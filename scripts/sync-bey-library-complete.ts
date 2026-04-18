@@ -1,8 +1,8 @@
 
 import { PrismaPg } from '@prisma/adapter-pg';
 import { BeyType, PartType, PrismaClient } from '@/generated/prisma/client';
-import * as fs from 'fs/promises';
-import * as path from 'path';
+import * as fs from 'node:fs/promises';
+import * as path from 'node:path';
 import pg from 'pg';
 
 // Create a direct pg pool for script usage

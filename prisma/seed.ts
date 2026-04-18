@@ -117,7 +117,7 @@ Que tu sois un vétéran des premières générations ou un nouveau venu découv
 }
 
 // Helper to run other seed scripts
-import { execSync } from "child_process";
+import { execSync } from "node:child_process";
 
 function runSeed(script: string) {
   console.log(`\n▶ Running ${script}...`);

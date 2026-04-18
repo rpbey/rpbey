@@ -4,10 +4,10 @@
  * Downloads images and builds a complete JSON database.
  */
 
-import * as fs from 'fs';
-import * as path from 'path';
-import { Readable } from 'stream';
-import { finished } from 'stream/promises';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
+import { Readable } from 'node:stream';
+import { finished } from 'node:stream/promises';
 import * as cheerio from 'cheerio';
 
 const BASE_URL = 'https://bey-library.vercel.app';

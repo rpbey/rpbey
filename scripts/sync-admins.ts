@@ -3,8 +3,8 @@ import { Client, GatewayIntentBits } from 'discord.js';
 import { PrismaClient } from '@/generated/prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { Pool } from 'pg';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const connectionString = process.env.DATABASE_URL;
 const pool = new Pool({ connectionString });

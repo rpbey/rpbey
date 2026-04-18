@@ -1,5 +1,5 @@
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 import { prisma } from '../src/lib/prisma';
 import type { BeyManifest } from '../src/types/bey';
 import { PartType } from '@/generated/prisma/client';

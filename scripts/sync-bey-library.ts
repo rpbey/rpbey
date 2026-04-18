@@ -1,7 +1,7 @@
 
 import { PartType, BeyType, PrismaClient } from '@/generated/prisma/client';
-import * as fs from 'fs/promises';
-import * as path from 'path';
+import * as fs from 'node:fs/promises';
+import * as path from 'node:path';
 import { prisma } from '../src/lib/prisma';
 
 const DATA_FILE = 'data/bey-library/bey-library.json';

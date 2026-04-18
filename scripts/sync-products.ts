@@ -1,7 +1,7 @@
 
 
 import { ProductType, ProductLine } from '@/generated/prisma/client';
-import * as fs from 'fs/promises';
+import * as fs from 'node:fs/promises';
 import { prisma } from '../src/lib/prisma'; // Use existing client
 
 const DATA_FILE = 'data/fandom_products.json';

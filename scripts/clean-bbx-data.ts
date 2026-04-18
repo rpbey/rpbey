@@ -1,5 +1,5 @@
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 
 const inputFile = path.join(process.cwd(), 'public/data/bbx_data.json');
 const outputDir = path.join(process.cwd(), 'data/cleaned');

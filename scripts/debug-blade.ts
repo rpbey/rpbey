@@ -1,7 +1,7 @@
 
 import puppeteer from 'puppeteer-extra';
 import StealthPlugin from 'puppeteer-extra-plugin-stealth';
-import * as fs from 'fs/promises';
+import * as fs from 'node:fs/promises';
 
 puppeteer.use(StealthPlugin());
 

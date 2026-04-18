@@ -9,7 +9,7 @@ set +a
 
 cd /root/rpb-dashboard
 
-npx tsx scripts/tweet-human.ts \
+bunx tsx scripts/tweet-human.ts \
 "🚨 OFFICIEL 🚨
 La RPB passe encore un cap avec le début de la collaboration LFBX !
 

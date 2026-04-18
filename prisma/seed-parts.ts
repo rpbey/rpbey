@@ -3,8 +3,8 @@
  * Imports cleaned Beyblade X parts from local JSON files (derived from new HTML extraction)
  */
 
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 import { PrismaClient, PartType, type BeyType } from '@/generated/prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { Pool } from 'pg';

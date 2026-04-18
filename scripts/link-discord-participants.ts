@@ -1,6 +1,6 @@
 import { prisma } from '../src/lib/prisma';
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 
 // Fonction de distance de Levenshtein simple
 function levenshteinDistance(a: string, b: string): number {

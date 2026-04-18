@@ -1,6 +1,6 @@
 import puppeteer from 'puppeteer';
-import path from 'path';
-import fs from 'fs';
+import path from 'node:path';
+import fs from 'node:fs';
 
 const BASE_URL = process.argv[2] || 'https://rpbey.fr';
 const OUTPUT_DIR = path.resolve('screenshots');

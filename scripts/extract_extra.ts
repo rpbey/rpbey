@@ -1,6 +1,6 @@
 
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 import * as cheerio from 'cheerio';
 
 const DATA_DIR = path.resolve(process.cwd(), 'temp_extract');

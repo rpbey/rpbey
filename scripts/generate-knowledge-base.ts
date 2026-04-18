@@ -1,4 +1,4 @@
-import * as fs from 'fs/promises';
+import * as fs from 'node:fs/promises';
 
 const CHAR_FILE = 'data/universe_characters.json';
 const BEY_FILE = 'data/universe_beys.json';
