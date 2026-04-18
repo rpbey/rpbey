@@ -18,7 +18,7 @@ export async function GET(request: Request) {
   let returnTo: string;
 
   try {
-    const state = JSON.parse(Buffer.from(stateBase64, 'base64').toString());
+    const state = JSON.parse(atob(stateBase64));
     userId = state.userId;
     returnTo = state.returnTo || '/admin/settings';
   } catch (err) {

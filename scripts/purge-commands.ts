@@ -6,7 +6,7 @@ async function clearAll() {
   
   if (!token) throw new Error('DISCORD_TOKEN missing');
   
-  const getClientId = (t: string) => Buffer.from(t.split('.')[0], 'base64').toString('utf-8');
+  const getClientId = (t: string) => atob(t.split('.')[0] ?? '');
   const clientId = getClientId(token);
 
   const rest = new REST({ version: '10' }).setToken(token);

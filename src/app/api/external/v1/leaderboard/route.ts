@@ -27,8 +27,8 @@ export async function GET(request: Request) {
   }
 
   // Security: Constant-time comparison
-  const providedKeyBuffer = Buffer.from(apiKey || '', 'utf8');
-  const expectedKeyBuffer = Buffer.from(expectedApiKey, 'utf8');
+  const providedKeyBuffer = new TextEncoder().encode(apiKey || '');
+  const expectedKeyBuffer = new TextEncoder().encode(expectedApiKey);
 
   if (
     providedKeyBuffer.length !== expectedKeyBuffer.length ||

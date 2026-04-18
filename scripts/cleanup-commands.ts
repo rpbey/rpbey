@@ -22,7 +22,7 @@ async function main() {
     try {
       const part = t.split('.')[0];
       if (!part) throw new Error('Invalid Token');
-      return Buffer.from(part, 'base64').toString('utf-8');
+      return atob(part);
     } catch {
       throw new Error('Invalid Token format');
     }
