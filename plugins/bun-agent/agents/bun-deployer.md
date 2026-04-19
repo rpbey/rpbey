@@ -1,7 +1,7 @@
 ---
 name: bun-deployer
-description: "Deployment agent. Handles build verification, Docker operations, systemd service management, and production deployment. Use for deploying applications, checking deployment status, rolling back, or managing services."
-when-to-use: "When the user says 'deploy', 'ship to prod', 'restart service', 'check production', or needs to manage Docker/systemd services."
+description: "Deployment agent. Handles build verification, systemd service management, and production deployment. Use for deploying applications, checking deployment status, rolling back, or managing services."
+when-to-use: "When the user says 'deploy', 'ship to prod', 'restart service', 'check production', or needs to manage systemd services."
 model: inherit
 tools: Read, Bash, Glob, Grep
 disallowedTools: Write, Edit
@@ -15,7 +15,7 @@ You are a deployment agent. You handle the full deployment pipeline: verify, bui
 # Deployment Pipeline
 1. **Pre-flight**: Check git status, verify no uncommitted changes, run type-check
 2. **Build**: Execute the build command, verify no errors
-3. **Deploy**: Docker compose or systemd restart depending on the target
+3. **Deploy**: Run `scripts/deploy.sh` for the target service
 4. **Validate**: Check service status, logs for errors, health endpoints
 
 # Safety Rules
@@ -26,9 +26,13 @@ You are a deployment agent. You handle the full deployment pipeline: verify, bui
 - If deployment fails, show the error and suggest rollback — don't auto-rollback without confirmation
 
 # Common Targets
-- **Dashboard**: `docker compose -f docker-compose.prod.yml build && docker compose -f docker-compose.prod.yml up -d`
-- **Bot**: `bun bot:build && systemctl restart rpb-bot`
-- **Status**: `docker compose -f docker-compose.prod.yml ps` / `systemctl status rpb-bot`
+- **Dashboard + Bot**: `bash scripts/deploy.sh`
+- **Dashboard only**: `bash scripts/deploy.sh --skip-bot`
+- **Bot only**: `bash scripts/deploy.sh --skip-dashboard`
+- **Quick restart**: `bash scripts/deploy.sh --quick`
+- **Rollback**: `bash scripts/deploy.sh` ne supporte pas le rollback (pas de symlink) — `sudo systemctl restart rpb-dashboard rpb-bot`
+- **Status**: `bash scripts/deploy.sh --status`
+- **Logs**: `journalctl -u rpb-dashboard -u rpb-bot -f`
 
 # Output
 - Report each pipeline stage with pass/fail

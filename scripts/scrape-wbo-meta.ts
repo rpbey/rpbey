@@ -12,7 +12,6 @@
  * - Raw event data preserved for analysis
  *
  * Prerequisites: FlareSolverr running on localhost:8191
- *   docker run -d --name flaresolverr -p 8191:8191 ghcr.io/flaresolverr/flaresolverr:latest
  *
  * Usage: pnpm tsx scripts/scrape-wbo-meta.ts [--pages N] [--force]
  */
@@ -801,7 +800,6 @@ async function main() {
     console.log('[WBO] FlareSolverr is running');
   } catch {
     console.error(
-      '[WBO] FlareSolverr not running! Start it with:\n  docker run -d --name flaresolverr -p 8191:8191 ghcr.io/flaresolverr/flaresolverr:latest',
     );
     process.exit(1);
   }

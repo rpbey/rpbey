@@ -65,7 +65,7 @@ bot/src/
 
 **Important:** Le bot utilise discordx avec `emitDecoratorMetadata`. Bun ne supporte pas
 les metadata de decorators en TS direct → le bot **doit** être compilé par SWC
-(`bun bot:build`) et exécuté depuis `bot/dist/src/index.js`.
+(`bun bot:build`) et exécuté depuis `bot/dist/index.js`.
 
 ### Dashboard-Bot Communication
 Both services run natively on the host via systemd. The bot exposes an HTTP API
@@ -147,8 +147,7 @@ Required:
 
 ## Deployment
 
-Both dashboard and bot run natively via **systemd + Bun** (no Docker).
-Only the database runs in Docker (`docker-compose.db.yml`).
+Dashboard, bot et base de données tournent nativement via **systemd + Bun**.
 
 - Production URL: `https://rpbey.fr`
 - Hosted on Hetzner dedicated server
@@ -159,7 +158,7 @@ Only the database runs in Docker (`docker-compose.db.yml`).
 | Service | Unit | ExecStart | Port |
 |---------|------|-----------|------|
 | Dashboard | `rpb-dashboard.service` | `bun .next/standalone/server.js` | 3000 |
-| Bot | `rpb-bot.service` | `bun bot/dist/src/index.js` | 3001 |
+| Bot | `rpb-bot.service` | `bun bot/dist/index.js` | 3001 |
 
 ### Deploy Commands
 ```bash
@@ -176,8 +175,8 @@ bun bot:build && sudo systemctl restart rpb-bot
 journalctl -u rpb-dashboard -f
 journalctl -u rpb-bot -f
 
-# Database (Docker)
-docker compose -f docker-compose.db.yml up -d
+# Base de données (PostgreSQL)
+sudo systemctl start postgresql
 ```
 
 ## Autonomous Mode Instructions
