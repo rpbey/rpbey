@@ -13,7 +13,7 @@ function getPureUsername(s: string | null | undefined): string {
 async function main() {
   const slug = process.argv[2];
   if (!slug) {
-    console.error("Usage: npx tsx scripts/import-challonge-generic.ts <slug>");
+    console.error("Usage: bun scripts/import-challonge-generic.ts <slug>");
     process.exit(1);
   }
 

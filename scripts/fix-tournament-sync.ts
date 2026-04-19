@@ -6,8 +6,8 @@ async function main() {
   const targetChallongeId = process.argv[2]; 
 
   if (!targetChallongeId) {
-    console.log("Usage: npx tsx scripts/fix-tournament-sync.ts <CHALLONGE_ID_OR_SLUG>");
-    console.log("Exemple: npx tsx scripts/fix-tournament-sync.ts 12345678");
+    console.log("Usage: bun scripts/fix-tournament-sync.ts <CHALLONGE_ID_OR_SLUG>");
+    console.log("Exemple: bun scripts/fix-tournament-sync.ts 12345678");
     console.log("\nNote: L'ID peut être l'ID numérique ou le slug (ex: 'B_TS1').");
     console.log("Si le tournoi est privé, assurez-vous que le bot a les droits.");
     return;
